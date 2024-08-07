@@ -1,0 +1,201 @@
+body {
+  box-sizing: border-box;
+  background: black;
+  font-size: 24pt;
+  font-family: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
+  font-weight: normal;
+}
+
+main {
+  max-width: calc(100vw - 8rem);
+  max-height: calc(100vh - 8rem);
+  aspect-ratio: 1/1;
+  margin: 4rem auto;
+
+  --tile-size: min(calc((100vw - 8rem) / 16), calc((100vh - 8rem) / 16));
+  --tile-front: #f4f0eb;
+  --tile-front-side: #f0ece7;
+  --tile-back: #f0974c;
+  --tile-back-side: #f0974c;
+  position: relative;
+}
+main::before {
+  content: "";
+  position: absolute;
+  top: -1rem;
+  left: -1rem;
+  background: #0f6f2f;
+  border-radius: 1rem;
+  width: calc(100% + 2rem);
+  height: calc(100% + 2rem);
+  z-index: -1;
+}
+
+/* hands */
+div.hand, div.tiles, div.calls, div.call {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+div.hand {
+  position: absolute;
+  transform-style: preserve-3d;
+  width: 100%;
+}
+div.tiles {
+  padding-left: calc(2 * var(--tile-size));
+}
+div.calls {
+  position: absolute;
+  right: 0;
+}
+div.call, div.tile.draw {
+  margin-left: calc(0.375 * var(--tile-size));
+}
+div.hand.self {
+  bottom: 0;
+}
+div.hand.self > div.tiles > div.tile {
+  cursor: pointer;
+}
+div.hand.shimocha {
+  right: var(--tile-size);
+  transform: rotate(270deg);
+  transform-origin: top right;
+}
+div.hand.toimen {
+  top: 0;
+  transform: rotate(180deg);
+}
+div.hand.kamicha {
+  left: var(--tile-size);
+  transform: rotate(90deg);
+  transform-origin: top left;
+}
+
+
+/* ponds */
+div.pond {
+  display: flex;
+  flex-flow: row wrap;
+  /*flex-direction: row;*/
+  justify-content: left;
+  align-items: flex-end;
+  position: absolute;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: calc(3 * var(--tile-size));
+  left: calc(50% - (2.375 * var(--tile-size)));
+  top: calc(50% + (2.375 * var(--tile-size)));
+  transform-origin: calc(2.375 * var(--tile-size)) calc(-2.625 * var(--tile-size));
+  overflow: visible;
+}
+div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
+.pond > .tile:nth-child(n+7) { order: 1; }
+.pond > .tile:nth-child(n+13) { order: 2; }
+div.pond > div.tile:nth-child(n+7):not(:nth-child(n+19)) { filter: none; }
+div.pond.shimocha { transform: rotate(270deg); }
+div.pond.toimen { transform: rotate(180deg); }
+div.pond.kamicha { transform: rotate(90deg); }
+
+/* compass */
+div.compass {
+  position: absolute;
+  width: calc(4.75 * var(--tile-size));
+  height: calc(4.75 * var(--tile-size));
+  left: calc(50% - (2.375 * var(--tile-size)));
+  top: calc(50% - (2.625 * var(--tile-size)));
+  background: gray;
+}
+div.seating {
+  position: absolute;
+}
+
+
+/* tiles */
+div.tile {
+  --tile-width: calc(0.75 * var(--tile-size));
+  --tile-height: calc(1 * var(--tile-size));
+  width: var(--tile-width);
+  height: var(--tile-height);
+  background: url("/images/tiles.png") no-repeat;
+  background-size: auto calc(38 * var(--tile-size));
+  background-position-x: 0;
+  background-position-y: 0;
+}
+div.tile:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
+}
+div.tile.sideways {
+  width: var(--tile-height);
+  clip-path: polygon(0% 5%, 100% 5%, 100% 100%, 0% 100%); /* get rid of residual pixels on top */
+}
+div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size)); }
+div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size)); }
+div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size)); }
+div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size)); }
+div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size)); }
+div.tile.\33 m { background-position-y: calc(-3 * var(--tile-size)); }
+div.tile.\34 m { background-position-y: calc(-4 * var(--tile-size)); }
+div.tile.\35 m { background-position-y: calc(-5 * var(--tile-size)); }
+div.tile.\36 m { background-position-y: calc(-6 * var(--tile-size)); }
+div.tile.\37 m { background-position-y: calc(-7 * var(--tile-size)); }
+div.tile.\38 m { background-position-y: calc(-8 * var(--tile-size)); }
+div.tile.\39 m { background-position-y: calc(-9 * var(--tile-size)); }
+div.tile.\30 p { background-position-y: calc(-10 * var(--tile-size)); }
+div.tile.\31 p { background-position-y: calc(-11 * var(--tile-size)); }
+div.tile.\32 p { background-position-y: calc(-12 * var(--tile-size)); }
+div.tile.\33 p { background-position-y: calc(-13 * var(--tile-size)); }
+div.tile.\34 p { background-position-y: calc(-14 * var(--tile-size)); }
+div.tile.\35 p { background-position-y: calc(-15 * var(--tile-size)); }
+div.tile.\36 p { background-position-y: calc(-16 * var(--tile-size)); }
+div.tile.\37 p { background-position-y: calc(-17 * var(--tile-size)); }
+div.tile.\38 p { background-position-y: calc(-18 * var(--tile-size)); }
+div.tile.\39 p { background-position-y: calc(-19 * var(--tile-size)); }
+div.tile.\30 s { background-position-y: calc(-20 * var(--tile-size)); }
+div.tile.\31 s { background-position-y: calc(-21 * var(--tile-size)); }
+div.tile.\32 s { background-position-y: calc(-22 * var(--tile-size)); }
+div.tile.\33 s { background-position-y: calc(-23 * var(--tile-size)); }
+div.tile.\34 s { background-position-y: calc(-24 * var(--tile-size)); }
+div.tile.\35 s { background-position-y: calc(-25 * var(--tile-size)); }
+div.tile.\36 s { background-position-y: calc(-26 * var(--tile-size)); }
+div.tile.\37 s { background-position-y: calc(-27 * var(--tile-size)); }
+div.tile.\38 s { background-position-y: calc(-28 * var(--tile-size)); }
+div.tile.\39 s { background-position-y: calc(-29 * var(--tile-size)); }
+div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size)); }
+div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size)); }
+div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size)); }
+div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size)); }
+div.tile.\35 z { background-position-y: calc(-34 * var(--tile-size)); }
+div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size)); }
+div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size)); }
+div.tile.\31 x { background-position-y: calc(-37 * var(--tile-size)); }
+div.tile.\31 x:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
+          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side));
+}
+/* tile animations */
+div.tile.removed {
+  background: transparent;
+  filter: none;
+  width: 0;
+  transition: width 0.2s ease;
+}
+div.tile.removed ~ div.tile.draw {
+  margin-left: 0;
+}
+@keyframes slideIn {
+  0% {
+    transform: translateY(calc(2 * var(--tile-size)));
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+div.pond > div.tile.just-played:last-child {
+  animation: slideIn 0.2s ease forwards;
+}
