@@ -20,7 +20,7 @@ defmodule RiichiAdvanced.GlobalState do
 
     wall = rules["wall"]
     wall = Enum.shuffle(wall)
-    hands = %{:east => sort_tiles(Enum.slice(wall, 0..5) ++ ["7z"]),
+    hands = %{:east => sort_tiles(Enum.slice(wall, 0..12)),
               :south => sort_tiles(Enum.slice(wall, 13..25)),
               :west => sort_tiles(Enum.slice(wall, 26..38)),
               :north => sort_tiles(Enum.slice(wall, 39..51))}
@@ -109,7 +109,6 @@ defmodule RiichiAdvanced.GlobalState do
     update_state(&Map.put(&1, seat, socket.id))
     GenServer.call(RiichiAdvanced.ExitMonitor, {:new_player, socket.root_pid, fn -> delete_player(seat) end})
     IO.puts("Player #{socket.id} joined as #{seat}")
-    IO.puts("Figuring out seat: #{seat}")
     get_player(seat)
   end
   
@@ -189,8 +188,7 @@ defmodule RiichiAdvanced.GlobalState do
 
   def reindex_hand(seat, from, to) do
     temp_disable_play_tile(seat)
-    IO.puts("#{seat} moved tile from #{from} to #{to}")
-    # TODO disallow moving the draw tiles over
+    # IO.puts("#{seat} moved tile from #{from} to #{to}")
     update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand ->
       {l1, [tile | r1]} = Enum.split(hand, from)
       {l2, r2} = Enum.split(l1 ++ r1, to)
@@ -211,7 +209,7 @@ defmodule RiichiAdvanced.GlobalState do
     if gas > 0 do
       state = get_state()
       if not Enum.any?(state.hands[seat] ++ state.draws[seat], &is_playable/1) do
-        IO.puts("player #{seat} has no valid plays")
+        # IO.puts("player #{seat} has no valid plays")
         Enum.each(state.rules["on_no_valid_tiles"]["actions"], fn [action | opts] ->
           case action do
             "draw" -> draw_tile(seat, Enum.at(opts, 0, 1))
@@ -221,10 +219,10 @@ defmodule RiichiAdvanced.GlobalState do
         if state.rules["on_no_valid_tiles"]["recurse"] do
           trigger_on_no_valid_tiles(seat, gas - 1)
         end
-      else
-        IO.puts("player #{seat} has valid plays:")
-        IO.inspect(state.hands[seat] ++ state.draws[seat])
-        IO.inspect(Enum.map(state.hands[seat] ++ state.draws[seat], &is_playable/1))
+      # else
+      #   IO.puts("player #{seat} has valid plays:")
+      #   IO.inspect(state.hands[seat] ++ state.draws[seat])
+      #   IO.inspect(Enum.map(state.hands[seat] ++ state.draws[seat], &is_playable/1))
       end
     end
   end
