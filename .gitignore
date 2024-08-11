@@ -38,5 +38,5 @@ npm-debug.log
 # my stuff
 
 /config
-/priv
+/priv/cert
 *.sh

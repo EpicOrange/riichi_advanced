@@ -32,7 +32,7 @@ main::before {
 }
 
 /* hands */
-div.hand, div.tiles, div.calls, div.call {
+div.hand, div.tiles, div.calls, div.call, div.draws {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -178,6 +178,9 @@ div.tile.\31 x { background-position-y: calc(-37 * var(--tile-size)); }
 div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side));
+}
+div.tile.inactive {
+  opacity: 0.6;
 }
 /* tile animations */
 div.tile.removed {

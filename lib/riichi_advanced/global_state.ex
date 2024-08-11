@@ -3,43 +3,13 @@ defmodule RiichiAdvanced.GlobalState do
 
   def start_link(_initial_data) do
     initial_data = %{:turn => :east}
+    
+    rules = Jason.decode!(File.read!(Application.app_dir(:riichi_advanced, "priv/static/uno.json")))
+    initial_data = Map.put(initial_data, :rules, rules)
 
-    wall = ["1m", "1m", "1m", "1m",
-            "2m", "2m", "2m", "2m",
-            "3m", "3m", "3m", "3m",
-            "4m", "4m", "4m", "4m",
-            "0m", "5m", "5m", "5m",
-            "6m", "6m", "6m", "6m",
-            "7m", "7m", "7m", "7m",
-            "8m", "8m", "8m", "8m",
-            "9m", "9m", "9m", "9m",
-            "1p", "1p", "1p", "1p",
-            "2p", "2p", "2p", "2p",
-            "3p", "3p", "3p", "3p",
-            "4p", "4p", "4p", "4p",
-            "0p", "5p", "5p", "5p",
-            "6p", "6p", "6p", "6p",
-            "7p", "7p", "7p", "7p",
-            "8p", "8p", "8p", "8p",
-            "9p", "9p", "9p", "9p",
-            "1s", "1s", "1s", "1s",
-            "2s", "2s", "2s", "2s",
-            "3s", "3s", "3s", "3s",
-            "4s", "4s", "4s", "4s",
-            "0s", "5s", "5s", "5s",
-            "6s", "6s", "6s", "6s",
-            "7s", "7s", "7s", "7s",
-            "8s", "8s", "8s", "8s",
-            "9s", "9s", "9s", "9s",
-            "1z", "1z", "1z", "1z",
-            "2z", "2z", "2z", "2z",
-            "3z", "3z", "3z", "3z",
-            "4z", "4z", "4z", "4z",
-            "5z", "5z", "5z", "5z",
-            "6z", "6z", "6z", "6z",
-            "7z", "7z", "7z", "7z"]
+    wall = rules["wall"]
     wall = Enum.shuffle(wall)
-    hands = %{:east => sort_tiles(Enum.slice(wall, 0..12)),
+    hands = %{:east => sort_tiles(Enum.slice(wall, 0..5)),
               :south => sort_tiles(Enum.slice(wall, 13..25)),
               :west => sort_tiles(Enum.slice(wall, 26..38)),
               :north => sort_tiles(Enum.slice(wall, 39..51))}
@@ -52,6 +22,7 @@ defmodule RiichiAdvanced.GlobalState do
     initial_data = Map.put(initial_data, :hands, hands)
     initial_data = Map.put(initial_data, :draws, draws)
     initial_data = Map.put(initial_data, :ponds, ponds)
+    initial_data = Map.put(initial_data, :last_discard, nil)
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
     initial_data = Map.put(initial_data, :play_tile_debounce, play_tile_debounce)
 
@@ -142,6 +113,36 @@ defmodule RiichiAdvanced.GlobalState do
     IO.puts("#{seat} player exited")
   end
 
+  def is_playable(tile) do
+    state = get_state()
+    Enum.all?(state.rules["play_restrictions"], fn [tile_spec, rule, opts] -> 
+      tile != tile_spec || case rule do
+        "disable_unless_any" -> Enum.any?(opts, fn [restriction_spec, restriction_opts] ->
+            case restriction_spec do
+              "last_tile" -> state.last_discard == nil || case restriction_opts do
+                  "manzu" -> String.ends_with?(state.last_discard, "m")
+                  "pinzu" -> String.ends_with?(state.last_discard, "p")
+                  "souzu" -> String.ends_with?(state.last_discard, "s")
+                  "jihai" -> String.ends_with?(state.last_discard, "z")
+                  "0" -> String.starts_with?(state.last_discard, "0")
+                  "1" -> String.starts_with?(state.last_discard, "1")
+                  "2" -> String.starts_with?(state.last_discard, "2")
+                  "3" -> String.starts_with?(state.last_discard, "3")
+                  "4" -> String.starts_with?(state.last_discard, "4")
+                  "5" -> String.starts_with?(state.last_discard, "5")
+                  "6" -> String.starts_with?(state.last_discard, "6")
+                  "7" -> String.starts_with?(state.last_discard, "7")
+                  "8" -> String.starts_with?(state.last_discard, "8")
+                  "9" -> String.starts_with?(state.last_discard, "9")
+                end
+              _ -> true
+            end
+          end)
+        _ -> true
+      end
+    end)
+  end
+
   def play_tile(seat, tile, index) do
     state = get_state()
     if state.play_tile_debounce[seat] != true do
@@ -150,6 +151,7 @@ defmodule RiichiAdvanced.GlobalState do
       update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand -> List.delete_at(hand ++ &1.draws[seat], index) end) end))
       update_state(&Map.update!(&1, :ponds, fn ponds -> Map.update!(ponds, seat, fn pond -> pond ++ [tile] end) end))
       update_state(&Map.update!(&1, :draws, fn draws -> Map.put(draws, seat, []) end))
+      update_state(&Map.put(&1, :last_discard, tile))
       RiichiAdvancedWeb.Endpoint.broadcast("game:main", "played_tile", %{"seat" => seat, "tile" => tile, "index" => index})
       change_turn(next_turn(get_state().turn))
     end
@@ -171,12 +173,44 @@ defmodule RiichiAdvanced.GlobalState do
     end) end))
   end
 
+  def draw_tile(seat, num) do
+    if num > 0 do
+      update_state(&Map.update!(&1, :draws, fn draws -> Map.update!(draws, &1.turn, fn draw -> draw ++ [Enum.at(&1.wall, &1.wall_index)] end) end))
+      update_state(&Map.update!(&1, :wall_index, fn ix -> ix + 1 end))
+      # IO.puts("wall index is now #{get_state().wall_index}")
+      draw_tile(seat, num - 1)
+    end
+  end
+
+  def trigger_on_no_valid_tiles(seat, gas \\ 100) do
+    if gas > 0 do
+      state = get_state()
+      if not Enum.any?(state.hands[seat] ++ state.draws[seat], &is_playable/1) do
+        IO.puts("player #{seat} has no valid plays")
+        Enum.each(state.rules["on_no_valid_tiles"]["actions"], fn [action | opts] ->
+          case action do
+            "draw" -> draw_tile(seat, Enum.at(opts, 0, 1))
+            _      -> IO.puts("Unhandled action #{action}")
+          end
+        end)
+        if state.rules["on_no_valid_tiles"]["recurse"] do
+          trigger_on_no_valid_tiles(seat, gas - 1)
+        end
+      else
+        IO.puts("player #{seat} has valid plays:")
+        IO.inspect(state.hands[seat] ++ state.draws[seat])
+        IO.inspect(Enum.map(state.hands[seat] ++ state.draws[seat], &is_playable/1))
+      end
+    end
+  end
+
   def change_turn(seat) do
     update_state(&Map.put(&1, :turn, seat))
-    update_state(&Map.update!(&1, :draws, fn draws -> Map.put(draws, &1.turn, [Enum.at(&1.wall, &1.wall_index)]) end))
-    IO.puts("#{seat} drew: #{get_state().draws[seat]}")
-    update_state(&Map.update!(&1, :wall_index, fn ix -> ix + 1 end))
-    IO.puts("wall index is now #{get_state().wall_index}")
+    # check if any tiles are playable for this next player
+    state = get_state()
+    if Map.has_key?(state.rules, "on_no_valid_tiles") do
+      trigger_on_no_valid_tiles(seat)
+    end
   end
 
   def sort_tiles(tiles) do
