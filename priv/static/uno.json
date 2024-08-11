@@ -60,6 +60,9 @@
     ["8s", "disable_unless_any", [["last_tile", "souzu"], ["last_tile", "jihai"], ["last_tile", "8"]]],
     ["9s", "disable_unless_any", [["last_tile", "souzu"], ["last_tile", "jihai"], ["last_tile", "9"]]]
   ],
+  "play_effects": [
+    ["7z", "reverse_turn_order"]
+  ],
   "on_no_valid_tiles": {
     "actions": [["draw"]],
     "recurse": true

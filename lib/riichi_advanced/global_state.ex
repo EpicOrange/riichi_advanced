@@ -2,30 +2,9 @@ defmodule RiichiAdvanced.GlobalState do
   use Agent
 
   def start_link(_initial_data) do
-    initial_data = %{:turn => :east}
-    
-    rules = Jason.decode!(File.read!(Application.app_dir(:riichi_advanced, "priv/static/uno.json")))
-    initial_data = Map.put(initial_data, :rules, rules)
-
-    wall = rules["wall"]
-    wall = Enum.shuffle(wall)
-    hands = %{:east => sort_tiles(Enum.slice(wall, 0..5)),
-              :south => sort_tiles(Enum.slice(wall, 13..25)),
-              :west => sort_tiles(Enum.slice(wall, 26..38)),
-              :north => sort_tiles(Enum.slice(wall, 39..51))}
-
-    draws = %{:east => [Enum.at(wall, 52)], :south => [], :west => [], :north => []}
-    wall_index = 53
-    ponds = %{:east => [], :south => [], :west => [], :north => []}
-    initial_data = Map.put(initial_data, :wall, wall)
-    initial_data = Map.put(initial_data, :wall_index, wall_index)
-    initial_data = Map.put(initial_data, :hands, hands)
-    initial_data = Map.put(initial_data, :draws, draws)
-    initial_data = Map.put(initial_data, :ponds, ponds)
-    initial_data = Map.put(initial_data, :last_discard, nil)
+    initial_data = %{initialized: false}
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
     initial_data = Map.put(initial_data, :play_tile_debounce, play_tile_debounce)
-
     debouncers = %{
       :east => DebounceEast,
       :south => DebounceSouth,
@@ -35,13 +14,41 @@ defmodule RiichiAdvanced.GlobalState do
     Agent.start_link(fn -> %{main: initial_data, debouncers: debouncers} end, name: __MODULE__)
   end
 
+  def initialize_game do
+    rules = Jason.decode!(File.read!(Application.app_dir(:riichi_advanced, "priv/static/uno.json")))
+    update_state(&Map.put(&1, :rules, rules))
+
+    wall = rules["wall"]
+    wall = Enum.shuffle(wall)
+    hands = %{:east => sort_tiles(Enum.slice(wall, 0..5) ++ ["7z"]),
+              :south => sort_tiles(Enum.slice(wall, 13..25)),
+              :west => sort_tiles(Enum.slice(wall, 26..38)),
+              :north => sort_tiles(Enum.slice(wall, 39..51))}
+    draws = %{:east => [], :south => [], :west => [], :north => []}
+    ponds = %{:east => [], :south => [], :west => [], :north => []}
+    wall_index = 52
+    update_state(&Map.put(&1, :wall, wall))
+    update_state(&Map.put(&1, :hands, hands))
+    update_state(&Map.put(&1, :draws, draws))
+    update_state(&Map.put(&1, :ponds, ponds))
+    update_state(&Map.put(&1, :wall_index, wall_index))
+    update_state(&Map.put(&1, :last_discard, nil))
+    update_state(&Map.put(&1, :reversed_turn_order, false))
+
+    change_turn(:east)
+
+    update_state(&Map.put(&1, :initialized, true))
+  end
+
   def get_state do
     Agent.get(__MODULE__, & &1.main)
   end
 
   def update_state(fun) do
     Agent.update(__MODULE__, &Map.update!(&1, :main, fun))
-    RiichiAdvancedWeb.Endpoint.broadcast("game:main", "state_updated", %{"state" => get_state()})
+    if get_state().initialized == true do
+      RiichiAdvancedWeb.Endpoint.broadcast("game:main", "state_updated", %{"state" => get_state()})
+    end
   end
 
   def print_state do
@@ -95,6 +102,9 @@ defmodule RiichiAdvanced.GlobalState do
       state[:west] == nil  -> :west
       state[:north] == nil -> :north
       true                 -> :spectator
+    end
+    if seat == :east do
+      initialize_game()
     end
     update_state(&Map.put(&1, seat, socket.id))
     GenServer.call(RiichiAdvanced.ExitMonitor, {:new_player, socket.root_pid, fn -> delete_player(seat) end})
@@ -153,7 +163,22 @@ defmodule RiichiAdvanced.GlobalState do
       update_state(&Map.update!(&1, :draws, fn draws -> Map.put(draws, seat, []) end))
       update_state(&Map.put(&1, :last_discard, tile))
       RiichiAdvancedWeb.Endpoint.broadcast("game:main", "played_tile", %{"seat" => seat, "tile" => tile, "index" => index})
-      change_turn(next_turn(get_state().turn))
+
+      # trigger play effects
+      if Map.has_key?(state.rules, "play_effects") do
+        Enum.each(state.rules["play_effects"], fn [tile_spec, action] ->
+          if tile == tile_spec do
+            case action do
+              "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
+              _                    -> IO.puts("Unhandled action #{action}")
+            end
+          end
+        end)
+      end
+
+      # change turn
+      state = get_state()
+      change_turn(next_turn(state.turn, if state.reversed_turn_order do 3 else 1 end))
     end
   end
 
