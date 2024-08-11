@@ -28,14 +28,14 @@ main::before {
   border-radius: 1rem;
   width: calc(100% + 2rem);
   height: calc(100% + 2rem);
-  z-index: -1;
+  z-index: -100;
 }
 
 /* hands */
 div.hand, div.tiles, div.calls, div.call {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-end;
 }
 div.hand {
@@ -50,13 +50,14 @@ div.calls {
   position: absolute;
   right: 0;
 }
-div.call, div.tile.draw {
+div.call, div.draws {
   margin-left: calc(0.375 * var(--tile-size));
 }
 div.hand.self {
   bottom: 0;
 }
-div.hand.self > div.tiles > div.tile {
+div.hand.self > div.tiles > div.tile,
+div.hand.self > div.draws > div.tile {
   cursor: pointer;
 }
 div.hand.shimocha {
@@ -81,7 +82,8 @@ div.pond {
   flex-flow: row wrap;
   /*flex-direction: row;*/
   justify-content: left;
-  align-items: flex-end;
+  align-content: flex-start;
+  align-items: flex-start;
   position: absolute;
   transform-style: preserve-3d;
   width: 100%;
@@ -90,6 +92,7 @@ div.pond {
   top: calc(50% + (2.375 * var(--tile-size)));
   transform-origin: calc(2.375 * var(--tile-size)) calc(-2.625 * var(--tile-size));
   overflow: visible;
+  z-index: -1;
 }
 div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
 .pond > .tile:nth-child(n+7) { order: 1; }
@@ -186,7 +189,7 @@ div.tile.removed {
 div.tile.removed ~ div.tile.draw {
   margin-left: 0;
 }
-@keyframes slideIn {
+@keyframes slideUp {
   0% {
     transform: translateY(calc(2 * var(--tile-size)));
     opacity: 0;
@@ -197,5 +200,19 @@ div.tile.removed ~ div.tile.draw {
   }
 }
 div.pond > div.tile.just-played:last-child {
-  animation: slideIn 0.2s ease forwards;
+  animation: slideUp 0.2s ease forwards;
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(calc(2 * var(--tile-size)));
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+div.hand > div.tiles > div.tile.draw:last-child {
+  animation: slideLeft 0.2s ease forwards;
 }

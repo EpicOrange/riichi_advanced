@@ -10,7 +10,7 @@ defmodule RiichiAdvanced.Application do
     children = [
       RiichiAdvancedWeb.Telemetry,
       RiichiAdvanced.Repo,
-      RiichiAdvanced.GlobalState,
+      RiichiAdvanced.GameSupervisor,
       {DNSCluster, query: Application.get_env(:riichi_advanced, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: RiichiAdvanced.PubSub},
       # Start the Finch HTTP client for sending emails

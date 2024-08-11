@@ -1,87 +1,76 @@
 defmodule RiichiAdvancedWeb.HandComponent do
   use RiichiAdvancedWeb, :live_component
 
-  # This function initializes the state
   def mount(socket) do
-    hand = ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]
-    draw = "0m"
-    socket = assign(socket, :hand, hand)
-    socket = assign(socket, :last_tile, nil)
-    socket = assign(socket, :draw, draw)
+    socket = assign(socket, :played_tile_index, nil)
     {:ok, socket}
   end
 
-  # Render the template using the assigned state
   def render(assigns) do
     ~H"""
     <div class={@id}>
-      <div class="tiles">
-        <%= if @your_turn do %>
-          <%= for {tile, draw, removed} <- prepare_tiles(assigns) do %>
+      <%= if @your_hand? do %>
+        <div class="tiles" phx-hook="Sortable" id={@id}>
+          <%= for {i, tile, removed} <- prepare_tiles(assigns) do %>
             <%= if removed do %>
-              <div class={["tile", tile, draw && "draw", "removed"]}></div>
+              <div class={["tile", tile, "removed"]} data-id={i}></div>
             <% else %>
-              <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} class={["tile", tile, draw && "draw"]}></div>
+              <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
             <% end %>
           <% end %>
-        <% else %>
-          <%= for {tile, draw, removed} <- prepare_tiles(assigns) do %>
-            <div class={["tile", tile, draw && "draw", removed && "removed"]}></div>
+        </div>
+        <div class="draws">
+          <%= for {tile, i} <- Enum.with_index(assigns.draw) do %>
+            <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
           <% end %>
-        <% end %>
-      </div>
+        </div>
+      <% else %>
+        <div class="tiles">
+          <%= for {i, tile, removed} <- prepare_tiles(assigns) do %>
+            <div class={["tile", tile, removed && "removed"]} data-id={i}></div>
+          <% end %>
+        </div>
+        <div class="draws">
+          <%= for tile <- assigns.draw do %>
+            <div class={["tile", tile]}></div>
+          <% end %>
+        </div>
+      <% end %>
       <div class="calls">
-        <div class="call">
-          <div class="tile 7p sideways"></div>
-          <div class="tile 6p"></div>
-          <div class="tile 8p"></div>
-        </div>
-        <div class="call">
-          <div class="tile 1x"></div>
-          <div class="tile 4p"></div>
-          <div class="tile 4p"></div>
-          <div class="tile 1x"></div>
-        </div>
       </div>
     </div>
     """
   end
 
-  def handle_event("play_tile", %{"tile" => tile}, socket) do
-    socket.assigns.play_tile.(tile)
+  def handle_event("play_tile", %{"tile" => tile, "index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    socket.assigns.play_tile.(tile, ix)
+    {:noreply, socket}
+  end
+
+  def handle_event("reposition", %{"id" => _id, "new" => to, "old" => from}, socket) do
+    socket.assigns.reindex_hand.(from, to)
     {:noreply, socket}
   end
 
   def prepare_tiles(assigns) do
-    # map tiles to [{tile, is_draw, is_last_discard}]
-    {result, _found} = Enum.reduce(assigns.hand ++ [assigns.draw], {[], false}, fn tile, {acc, found} ->
-      if tile == assigns.last_tile and not found do
-        {[{tile, tile == assigns.draw, true} | acc], true}
-      else
-        {[{tile, tile == assigns.draw, false} | acc], found}
-      end
-    end)
-    Enum.reverse(result) # since reduce accumulates in reverse order
+    # map tiles to [{index, tile, is_last_discard}]
+    assigns.hand
+      |> Enum.with_index
+      |> Enum.map(fn {tile, i} -> {i, tile, i == assigns.played_tile_index} end)
   end
 
   def update(assigns, socket) do
-    socket = assign(socket, :id, assigns.id)
-    socket = if Map.has_key?(assigns, :seat) do assign(socket, :seat, assigns.seat) else socket end
-    socket = if Map.has_key?(assigns, :your_turn) do assign(socket, :your_turn, assigns.your_turn) else socket end
-    socket = if Map.has_key?(assigns, :play_tile) do assign(socket, :play_tile, assigns.play_tile) else socket end
-    if Map.has_key?(assigns, :played_tile) do
-      hand = socket.assigns.hand
-      last_tile = socket.assigns.last_tile
-      socket = assign(socket, :last_tile, assigns.played_tile)
-      socket = assign(socket, :your_turn, false)
-      if Enum.member?(hand, last_tile) do
-        hand = List.delete_at(hand, Enum.find_index(hand, fn x -> x == last_tile end))
-        socket = assign(socket, :hand, hand)
-        {:ok, socket}
-      else
-        {:ok, socket}
-      end
+    socket = assigns
+             |> Map.drop([:flash])
+             |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
+    if Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index < length(socket.assigns.hand) do
+      # Animate the last tile
+      IO.puts("Animating tile at index #{assigns.played_tile_index}")
+      socket = assign(socket, :hand, List.insert_at(socket.assigns.hand, assigns.played_tile_index, assigns.played_tile))
+      {:ok, socket}
     else
+      socket = assign(socket, :played_tile_index, nil)
       {:ok, socket}
     end
   end
