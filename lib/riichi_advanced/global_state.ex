@@ -165,12 +165,9 @@ defmodule RiichiAdvanced.GlobalState do
 
       # trigger play effects
       if Map.has_key?(state.rules, "play_effects") do
-        Enum.each(state.rules["play_effects"], fn [tile_spec, action] ->
+        Enum.each(state.rules["play_effects"], fn [tile_spec, actions] ->
           if tile == tile_spec do
-            case action do
-              "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
-              _                    -> IO.puts("Unhandled action #{action}")
-            end
+            run_actions(seat, actions)
           end
         end)
       end
@@ -205,24 +202,24 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
+  def run_actions(seat, actions) do
+    Enum.each(actions, fn [action | opts] ->
+      case action do
+        "draw"               -> draw_tile(seat, Enum.at(opts, 0, 1))
+        "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
+        _                    -> IO.puts("Unhandled action #{action}")
+      end
+    end)
+  end
+
   def trigger_on_no_valid_tiles(seat, gas \\ 100) do
     if gas > 0 do
       state = get_state()
       if not Enum.any?(state.hands[seat] ++ state.draws[seat], &is_playable/1) do
-        # IO.puts("player #{seat} has no valid plays")
-        Enum.each(state.rules["on_no_valid_tiles"]["actions"], fn [action | opts] ->
-          case action do
-            "draw" -> draw_tile(seat, Enum.at(opts, 0, 1))
-            _      -> IO.puts("Unhandled action #{action}")
-          end
-        end)
+        run_actions(seat, state.rules["on_no_valid_tiles"]["actions"])
         if state.rules["on_no_valid_tiles"]["recurse"] do
           trigger_on_no_valid_tiles(seat, gas - 1)
         end
-      # else
-      #   IO.puts("player #{seat} has valid plays:")
-      #   IO.inspect(state.hands[seat] ++ state.draws[seat])
-      #   IO.inspect(Enum.map(state.hands[seat] ++ state.draws[seat], &is_playable/1))
       end
     end
   end
