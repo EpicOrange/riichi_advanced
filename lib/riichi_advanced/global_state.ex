@@ -15,15 +15,15 @@ defmodule RiichiAdvanced.GlobalState do
   end
 
   def initialize_game do
-    rules = Jason.decode!(File.read!(Application.app_dir(:riichi_advanced, "priv/static/uno.json")))
+    rules = Jason.decode!(File.read!(Application.app_dir(:riichi_advanced, "priv/static/riichi.json")))
     update_state(&Map.put(&1, :rules, rules))
 
-    wall = rules["wall"]
+    wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    hands = %{:east => sort_tiles(Enum.slice(wall, 0..12)),
-              :south => sort_tiles(Enum.slice(wall, 13..25)),
-              :west => sort_tiles(Enum.slice(wall, 26..38)),
-              :north => sort_tiles(Enum.slice(wall, 39..51))}
+    hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
+              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
+              :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
+              :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
     draws = %{:east => [], :south => [], :west => [], :north => []}
     ponds = %{:east => [], :south => [], :west => [], :north => []}
     wall_index = 52
@@ -59,12 +59,20 @@ defmodule RiichiAdvanced.GlobalState do
   def next_turn(seat, iterations \\ 1) do
     next = cond do
       seat == :east -> :south
-      seat == :spectator -> :south
       seat == :south -> :west
       seat == :west -> :north
       seat == :north -> :east
     end
     if iterations <= 1 do next else next_turn(next, iterations - 1) end
+  end
+  def prev_turn(seat, iterations \\ 1) do
+    prev = cond do
+      seat == :east -> :north
+      seat == :south -> :east
+      seat == :west -> :south
+      seat == :north -> :west
+    end
+    if iterations <= 1 do prev else prev_turn(prev, iterations - 1) end
   end
   
   def get_seat(seat, direction) do
@@ -129,20 +137,19 @@ defmodule RiichiAdvanced.GlobalState do
         "disable_unless_any" -> Enum.any?(opts, fn [restriction_spec, restriction_opts] ->
             case restriction_spec do
               "last_tile" -> state.last_discard == nil || case restriction_opts do
-                  "manzu" -> String.ends_with?(state.last_discard, "m")
-                  "pinzu" -> String.ends_with?(state.last_discard, "p")
-                  "souzu" -> String.ends_with?(state.last_discard, "s")
-                  "jihai" -> String.ends_with?(state.last_discard, "z")
-                  "0" -> String.starts_with?(state.last_discard, "0")
-                  "1" -> String.starts_with?(state.last_discard, "1")
-                  "2" -> String.starts_with?(state.last_discard, "2")
-                  "3" -> String.starts_with?(state.last_discard, "3")
-                  "4" -> String.starts_with?(state.last_discard, "4")
-                  "5" -> String.starts_with?(state.last_discard, "5")
-                  "6" -> String.starts_with?(state.last_discard, "6")
-                  "7" -> String.starts_with?(state.last_discard, "7")
-                  "8" -> String.starts_with?(state.last_discard, "8")
-                  "9" -> String.starts_with?(state.last_discard, "9")
+                  "manzu" -> Riichi.is_manzu?(state.last_discard)
+                  "pinzu" -> Riichi.is_pinzu?(state.last_discard)
+                  "souzu" -> Riichi.is_souzu?(state.last_discard)
+                  "jihai" -> Riichi.is_jihai?(state.last_discard)
+                  "1" -> Riichi.is_num?(state.last_discard, 1)
+                  "2" -> Riichi.is_num?(state.last_discard, 2)
+                  "3" -> Riichi.is_num?(state.last_discard, 3)
+                  "4" -> Riichi.is_num?(state.last_discard, 4)
+                  "5" -> Riichi.is_num?(state.last_discard, 5)
+                  "6" -> Riichi.is_num?(state.last_discard, 6)
+                  "7" -> Riichi.is_num?(state.last_discard, 7)
+                  "8" -> Riichi.is_num?(state.last_discard, 8)
+                  "9" -> Riichi.is_num?(state.last_discard, 9)
                 end
               _ -> true
             end
@@ -156,7 +163,7 @@ defmodule RiichiAdvanced.GlobalState do
     state = get_state()
     if state.play_tile_debounce[seat] != true do
       temp_disable_play_tile(seat)
-      IO.puts("#{seat} played tile: #{tile} at index #{index}")
+      IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand -> List.delete_at(hand ++ &1.draws[seat], index) end) end))
       update_state(&Map.update!(&1, :ponds, fn ponds -> Map.update!(ponds, seat, fn pond -> pond ++ [tile] end) end))
       update_state(&Map.update!(&1, :draws, fn draws -> Map.put(draws, seat, []) end))
@@ -174,7 +181,7 @@ defmodule RiichiAdvanced.GlobalState do
 
       # change turn
       state = get_state()
-      change_turn(next_turn(state.turn, if state.reversed_turn_order do 3 else 1 end))
+      change_turn(if state.reversed_turn_order do prev_turn(state.turn) else next_turn(state.turn) end)
     end
   end
 
@@ -195,7 +202,8 @@ defmodule RiichiAdvanced.GlobalState do
 
   def draw_tile(seat, num) do
     if num > 0 do
-      update_state(&Map.update!(&1, :draws, fn draws -> Map.update!(draws, &1.turn, fn draw -> draw ++ [Enum.at(&1.wall, &1.wall_index)] end) end))
+      update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, &1.turn, fn hand -> hand ++ &1.draws[&1.turn] end) end))
+      update_state(&Map.update!(&1, :draws, fn draws -> Map.put(draws, &1.turn, [Enum.at(&1.wall, &1.wall_index)]) end))
       update_state(&Map.update!(&1, :wall_index, fn ix -> ix + 1 end))
       # IO.puts("wall index is now #{get_state().wall_index}")
       draw_tile(seat, num - 1)
@@ -207,6 +215,11 @@ defmodule RiichiAdvanced.GlobalState do
       case action do
         "draw"               -> draw_tile(seat, Enum.at(opts, 0, 1))
         "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
+        "chii"               -> IO.puts("Chii not implemented")
+        "pon"                -> IO.puts("Pon not implemented")
+        "kan"                -> IO.puts("Kan not implemented")
+        "unpause"            -> IO.puts("Skip not implemented")
+        "change_turn"        -> change_turn(get_seat(seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
         _                    -> IO.puts("Unhandled action #{action}")
       end
     end)
@@ -224,22 +237,69 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
-  def change_turn(seat) do
+  def change_turn(seat, via_action \\ false) do
     update_state(&Map.put(&1, :turn, seat))
-    # check if any tiles are playable for this next player
+
+    # run on turn change
     state = get_state()
+    if not via_action && Map.has_key?(state.rules, "on_turn_change") do
+      run_actions(seat, state.rules["on_turn_change"]["actions"])
+    end
+
+    # check if any tiles are playable for this next player
     if Map.has_key?(state.rules, "on_no_valid_tiles") do
       trigger_on_no_valid_tiles(seat)
     end
   end
 
-  def sort_tiles(tiles) do
-    Enum.sort_by(tiles, &case &1 do
-      "1m" -> 0; "2m" -> 1; "3m" -> 2; "4m" -> 3; "0m" -> 4; "5m" -> 5; "6m" -> 6; "7m" -> 7; "8m" -> 8; "9m" -> 9;
-      "1p" -> 10; "2p" -> 11; "3p" -> 12; "4p" -> 13; "0p" -> 14; "5p" -> 15; "6p" -> 16; "7p" -> 17; "8p" -> 18; "9p" -> 19;
-      "1s" -> 20; "2s" -> 21; "3s" -> 22; "4s" -> 23; "0s" -> 24; "5s" -> 25; "6s" -> 26; "7s" -> 27; "8s" -> 28; "9s" -> 29;
-      "1z" -> 30; "2z" -> 31; "3z" -> 32; "4z" -> 33; "5z" -> 34; "6z" -> 35; "7z" -> 36;
-      "1x" -> 37;
-    end)
+  def get_buttons(seat) do
+    state = get_state()
+    if Map.has_key?(state.rules, "buttons") do
+      buttons = state.rules["buttons"]
+      Map.filter(buttons, &check_cnf_condition(seat, elem(&1, 1)["show_when"]))
+    else
+      %{}
+    end
   end
+
+  def check_condition(seat, cond_spec) do
+    state = get_state()
+    case cond_spec do
+      "our_turn"       -> state.turn == seat
+      "chii_available" -> Riichi.can_chii?(state.hands[seat], state.last_discard)
+      "pon_available"  -> Riichi.can_pon?(state.hands[seat], state.last_discard)
+      "kan_available"  -> Riichi.can_kan?(state.hands[seat], state.last_discard)
+      _                ->
+        IO.puts "Unhandled condition #{inspect(cond_spec)}"
+        true
+    end
+  end
+
+  def check_dnf_condition(seat, cond_spec) do
+    cond do
+      is_binary(cond_spec) -> check_condition(seat, cond_spec)
+      is_list(cond_spec)   -> Enum.any?(cond_spec, &check_cnf_condition(seat, &1))
+      true                 ->
+        IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
+        true
+    end
+  end
+
+  def check_cnf_condition(seat, cond_spec) do
+    cond do
+      is_binary(cond_spec) -> check_condition(seat, cond_spec)
+      is_list(cond_spec)   -> Enum.all?(cond_spec, &check_dnf_condition(seat, &1))
+      true                 ->
+        IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
+        true
+    end
+  end
+
+  def press_button(seat, button_name) do
+    buttons = get_buttons(seat)
+    if Map.has_key?(buttons, button_name) do
+      run_actions(seat, buttons[button_name]["actions"])
+    end
+  end
+
 end

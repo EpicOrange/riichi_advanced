@@ -48,6 +48,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def handle_event("play_tile", %{"tile" => tile, "index" => index}, socket) do
     {ix, _} = Integer.parse(index)
+    tile = Riichi.to_tile(tile)
     socket.assigns.play_tile.(tile, ix)
     {:noreply, socket}
   end
@@ -70,7 +71,6 @@ defmodule RiichiAdvancedWeb.HandComponent do
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
     if Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index < length(socket.assigns.hand) do
       # Animate the last tile
-      IO.puts("Animating tile at index #{assigns.played_tile_index}")
       socket = assign(socket, :hand, List.insert_at(socket.assigns.hand, assigns.played_tile_index, assigns.played_tile))
       {:ok, socket}
     else

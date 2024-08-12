@@ -20,6 +20,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :hands, hands)
       socket = assign(socket, :ponds, ponds)
       socket = assign(socket, :draws, draws)
+      socket = assign(socket, :buttons, Map.keys(RiichiAdvanced.GlobalState.get_buttons(seat)))
       {:ok, socket}
     else
       socket = assign(socket, :seat, :east)
@@ -30,6 +31,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :hands, %{:east => [], :south => [], :west => [], :north => []})
       socket = assign(socket, :ponds, %{:east => [], :south => [], :west => [], :north => []})
       socket = assign(socket, :draws, %{:east => [], :south => [], :west => [], :north => []})
+      socket = assign(socket, :buttons, [])
       {:ok, socket}
     end
   end
@@ -77,11 +79,21 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
     <div class="seating">You are <%= @seat %><br>It is <%= @turn %>'s turn</div>
     <div class="compass" phx-click="set_turn"></div>
+    <div class="buttons">
+      <%= for name <- @buttons do %>
+        <button class="button" phx-click="button_clicked" phx-value-name={name}><%= name %></button>
+      <% end %>
+    </div>
     """
   end
 
   def handle_event("set_turn", _assigns, socket) do
     RiichiAdvanced.GlobalState.change_turn(socket.assigns.seat)
+    {:noreply, socket}
+  end
+
+  def handle_event("button_clicked", %{"name" => name}, socket) do
+    RiichiAdvanced.GlobalState.press_button(socket.assigns.seat, name)
     {:noreply, socket}
   end
 
@@ -109,6 +121,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :turn, state.turn)
     socket = assign(socket, :hands, state.hands)
     socket = assign(socket, :draws, state.draws)
+    socket = assign(socket, :buttons, Map.keys(RiichiAdvanced.GlobalState.get_buttons(socket.assigns.seat)))
     {:noreply, socket}
   end
 

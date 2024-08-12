@@ -32,7 +32,7 @@ main::before {
 }
 
 /* hands */
-div.hand, div.tiles, div.calls, div.call, div.draws {
+div.hand, div.tiles, div.calls, div.call, div.draws, div.buttons {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -218,4 +218,19 @@ div.pond > div.tile.just-played:last-child {
 }
 div.hand > div.tiles > div.tile.draw:last-child {
   animation: slideLeft 0.2s ease forwards;
+}
+
+div.buttons {
+  position: absolute;
+  bottom: calc(1.5 * var(--tile-size));
+  right: calc(1.5 * var(--tile-size));
+}
+div.buttons > button {
+  font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+  border: 1px solid var(--tile-back);
+  border-radius: 4px;
+  background: var(--tile-back);
+  margin-left: calc(0.25 * var(--tile-size));
+  transform: skew(-20deg);
+  cursor: pointer;
 }
