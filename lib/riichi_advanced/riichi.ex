@@ -62,7 +62,6 @@ defmodule Riichi do
     c2 = Enum.member?(hand, pred(tile))
     c3 = Enum.member?(hand, succ(tile))
     c4 = Enum.member?(hand, succ(succ(tile)))
-    IO.inspect(tile)
     c1 && c2 || c2 && c3 || c3 && c4
   end
 
@@ -71,7 +70,7 @@ defmodule Riichi do
     Enum.count(hand, &tile == &1) >= 2
   end
 
-  def can_kan?(hand, tile) do
+  def can_daiminkan?(hand, tile) do
     hand = normalize_red_fives(hand)
     Enum.count(hand, &tile == &1) >= 3
   end

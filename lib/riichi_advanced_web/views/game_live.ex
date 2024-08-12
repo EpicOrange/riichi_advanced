@@ -8,8 +8,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
 
       # TODO notify all other players that we have joined the game
-      IO.inspect(socket)
-      [turn, hands, ponds, draws, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
+      # IO.inspect(socket)
+      [turn, hands, ponds, draws, buttons, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
 
       socket = assign(socket, :player_id, socket.id)
       socket = assign(socket, :turn, turn)
@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :hands, hands)
       socket = assign(socket, :ponds, ponds)
       socket = assign(socket, :draws, draws)
-      socket = assign(socket, :buttons, Map.keys(RiichiAdvanced.GlobalState.get_buttons(seat)))
+      socket = assign(socket, :buttons, buttons)
       {:ok, socket}
     else
       socket = assign(socket, :seat, :east)
@@ -31,7 +31,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :hands, %{:east => [], :south => [], :west => [], :north => []})
       socket = assign(socket, :ponds, %{:east => [], :south => [], :west => [], :north => []})
       socket = assign(socket, :draws, %{:east => [], :south => [], :west => [], :north => []})
-      socket = assign(socket, :buttons, [])
+      socket = assign(socket, :buttons, %{:east => [], :south => [], :west => [], :north => []})
       {:ok, socket}
     end
   end
@@ -80,7 +80,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <div class="seating">You are <%= @seat %><br>It is <%= @turn %>'s turn</div>
     <div class="compass" phx-click="set_turn"></div>
     <div class="buttons">
-      <%= for name <- @buttons do %>
+      <%= for name <- @buttons[@seat] do %>
         <button class="button" phx-click="button_clicked" phx-value-name={name}><%= name %></button>
       <% end %>
     </div>
@@ -116,12 +116,10 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: "game:main", event: "state_updated", payload: %{"state" => state}}, socket) do
-    # IO.puts("Global state updated event:")
-    # IO.inspect(state)
     socket = assign(socket, :turn, state.turn)
     socket = assign(socket, :hands, state.hands)
     socket = assign(socket, :draws, state.draws)
-    socket = assign(socket, :buttons, Map.keys(RiichiAdvanced.GlobalState.get_buttons(socket.assigns.seat)))
+    socket = assign(socket, :buttons, state.buttons)
     {:noreply, socket}
   end
 
