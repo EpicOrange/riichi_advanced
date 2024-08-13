@@ -9,7 +9,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       # TODO notify all other players that we have joined the game
       # IO.inspect(socket)
-      [turn, hands, ponds, calls, draws, buttons, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
+      [turn, hands, ponds, calls, draws, buttons, call_buttons, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
 
       socket = assign(socket, :player_id, socket.id)
       socket = assign(socket, :turn, turn)
@@ -22,6 +22,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :calls, calls)
       socket = assign(socket, :draws, draws)
       socket = assign(socket, :buttons, buttons)
+      socket = assign(socket, :call_buttons, call_buttons)
       {:ok, socket}
     else
       socket = assign(socket, :seat, :east)
@@ -34,6 +35,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :calls, %{:east => [], :south => [], :west => [], :north => []})
       socket = assign(socket, :draws, %{:east => [], :south => [], :west => [], :north => []})
       socket = assign(socket, :buttons, %{:east => [], :south => [], :west => [], :north => []})
+      socket = assign(socket, :call_buttons, %{:east => [], :south => [], :west => [], :north => []})
       {:ok, socket}
     end
   end
@@ -90,6 +92,15 @@ defmodule RiichiAdvancedWeb.GameLive do
         <button class="button" phx-click="button_clicked" phx-value-name={name}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
       <% end %>
     </div>
+    <div class="call-buttons">
+      <%= for choice <- @call_buttons[@seat] do %>
+        <button class="call-button" phx-click="call_button_clicked" phx-value-choice={Enum.join(choice, ",")}>
+        <%= for tile <- choice do %>
+          <div class={["tile", tile]}></div>
+        <% end %>
+        </button>
+      <% end %>
+    </div>
     """
   end
 
@@ -100,6 +111,11 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
     RiichiAdvanced.GlobalState.press_button(socket.assigns.seat, name)
+    {:noreply, socket}
+  end
+
+  def handle_event("call_button_clicked", %{"choice" => choice}, socket) do
+    RiichiAdvanced.GlobalState.trigger_call(socket.assigns.seat, Enum.map(String.split(choice, ","), &Riichi.to_tile/1))
     {:noreply, socket}
   end
 
@@ -137,6 +153,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :draws, state.draws)
     socket = assign(socket, :ponds, state.ponds)
     socket = assign(socket, :calls, state.calls)
+    socket = assign(socket, :call_buttons, state.call_buttons)
     socket = assign(socket, :buttons, state.buttons)
 
     {:noreply, socket}

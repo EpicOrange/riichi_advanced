@@ -31,7 +31,6 @@ defmodule Riichi do
              :"1s"=>:"1s", :"2s"=>:"2s", :"3s"=>:"3s", :"4s"=>:"4s", :"5s"=>:"5s", :"6s"=>:"6s", :"7s"=>:"7s", :"8s"=>:"8s", :"9s"=>:"9s", :"0s"=>:"0s",
              :"1z"=>:"1z", :"2z"=>:"2z", :"3z"=>:"3z", :"4z"=>:"4z", :"5z"=>:"5z", :"6z"=>:"6z", :"7z"=>:"7z"}
   def to_tile(tile_str), do: @to_tile[tile_str]
-  def from_tile(tile), do: Atom.to_string(tile)
 
   def to_red(tile) do
     case tile do
@@ -83,7 +82,7 @@ defmodule Riichi do
   # return all possible calls of tile, given hand
   # includes returning multiple choices for red fives
   def make_calls(calls_spec, hand, tile) do
-    IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(tile)}")
+    # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(tile)}")
     Enum.flat_map(calls_spec, fn call_spec ->
       tile = normalize_red_five(tile)
       other_tiles = Enum.map(call_spec, &offset_tile(tile, &1))
@@ -97,7 +96,7 @@ defmodule Riichi do
       result = choices
              |> Enum.reduce([[]], fn cs, accs -> for choice <- cs, acc <- accs, do: acc ++ [choice] end)
              |> Enum.map(fn tiles -> sort_tiles(tiles) end)
-      IO.puts("#{inspect(call_spec)}: #{inspect(result)}")
+      # IO.puts("#{inspect(call_spec)}: #{inspect(result)}")
       result
     end)
   end

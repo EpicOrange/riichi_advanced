@@ -32,7 +32,7 @@ main::before {
 }
 
 /* hands */
-div.hand, div.tiles, div.calls, div.call, div.draws, div.buttons {
+div.hand, div.tiles, div.calls, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -238,17 +238,34 @@ div.hand > div.calls > div.call.just_called:first-child {
   animation: slideRight 0.4s ease forwards;
 }
 
-div.buttons {
+div.buttons, div.call-buttons {
   position: absolute;
   bottom: calc(1.5 * var(--tile-size));
   right: calc(1.5 * var(--tile-size));
 }
-div.buttons > button {
+div.buttons > button,
+div.call-buttons > button {
   font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
   border: 1px solid var(--tile-back);
   border-radius: 4px;
   background: var(--tile-back);
   margin-left: calc(0.25 * var(--tile-size));
-  transform: skew(-20deg);
   cursor: pointer;
 }
+div.buttons > button {
+  transform: skew(-20deg);
+}
+div.call-buttons > button {
+  padding-top: calc(0.25 * var(--tile-size));
+}
+
+
+
+
+
+
+
+
+
+
+

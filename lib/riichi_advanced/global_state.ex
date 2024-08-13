@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.GlobalState do
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
     hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12) ++ [:"5m", :"0m", :"6m", :"6m"]),
-              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
+              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25) ++ [:"4m", :"4m"]),
               :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
               :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
     update_state(&Map.put(&1, :wall, wall))
@@ -32,6 +32,8 @@ defmodule RiichiAdvanced.GlobalState do
     update_state(&Map.put(&1, :ponds, Map.new(dirs, fn dir -> {dir, [:"4m"]} end)))
     update_state(&Map.put(&1, :calls, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :buttons, Map.new(dirs, fn dir -> {dir, []} end)))
+    update_state(&Map.put(&1, :call_buttons, Map.new(dirs, fn dir -> {dir, []} end)))
+    update_state(&Map.put(&1, :deferred_actions, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :button_choice, Map.new(dirs, fn dir -> {dir, nil} end)))
     update_state(&Map.put(&1, :wall_index, 52))
     update_state(&Map.put(&1, :last_discard, :"4m"))
@@ -121,7 +123,7 @@ defmodule RiichiAdvanced.GlobalState do
   
   def get_player(seat) do
     state = get_state()
-    [state.turn, state.hands, state.ponds, state.calls, state.draws, state.buttons] ++ rotate_4([:east, :south, :west, :north], seat)
+    [state.turn, state.hands, state.ponds, state.calls, state.draws, state.buttons, state.call_buttons] ++ rotate_4([:east, :south, :west, :north], seat)
   end
   
   def delete_player(seat) do
@@ -181,6 +183,10 @@ defmodule RiichiAdvanced.GlobalState do
       # update buttons for all players
       update_buttons()
 
+      # clear call choices and deferred actions (if any)
+      update_state(&Map.update!(&1, :call_buttons, fn buttons -> Map.put(buttons, seat, []) end))
+      update_state(&Map.update!(&1, :deferred_actions, fn actions -> Map.put(actions, seat, []) end))
+
       # change turn if no buttons exist to interrupt the turn change
       if no_buttons_remaining?() do
         state = get_state()
@@ -233,7 +239,7 @@ defmodule RiichiAdvanced.GlobalState do
     state = get_state()
     Enum.flat_map(state.button_choice, fn {_seat, button_name} -> 
       if button_name != nil && button_name != "skip" do
-        state.rules["buttons"][button_name]["precedence_over"]
+        ["skip"] ++ state.rules["buttons"][button_name]["precedence_over"]
       else
         []
       end
@@ -289,21 +295,23 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
-  def run_actions(seat, actions, calls_spec \\ nil) do
+  def trigger_call(seat, call_choice) do
+    state = get_state()
+    tile = List.last(state.ponds[state.turn])
+    call = [{tile, true} | Enum.map(call_choice, fn t -> {t, false} end)]
+    update_state(&Map.update!(&1, :ponds, fn ponds -> Map.update!(ponds, &1.turn, fn pond -> pond |> Enum.reverse() |> tl() |> Enum.reverse() end) end))
+    update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand -> hand -- call_choice end) end))
+    update_state(&Map.update!(&1, :calls, fn all_calls -> Map.update!(all_calls, seat, fn calls -> [call] ++ calls end) end))
+    run_actions(seat, state.deferred_actions[seat])
+    update_state(&Map.update!(&1, :call_buttons, fn buttons -> Map.put(buttons, seat, []) end))
+    update_state(&Map.update!(&1, :deferred_actions, fn buttons -> Map.put(buttons, seat, []) end))
+  end
+
+  def run_actions(seat, actions) do
     Enum.each(actions, fn [action | opts] ->
       case action do
         "draw"               -> draw_tile(seat, Enum.at(opts, 0, 1))
         "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
-        "call"               -> 
-          state = get_state()
-          tile = List.last(state.ponds[state.turn])
-          call_choices = Riichi.make_calls(calls_spec, state.hands[seat], tile)
-          call_choice = Enum.at(call_choices, 0)
-
-          call = [{tile, true} | Enum.map(call_choice, fn t -> {t, false} end)]
-          update_state(&Map.update!(&1, :ponds, fn ponds -> Map.update!(ponds, &1.turn, fn pond -> pond |> Enum.reverse() |> tl() |> Enum.reverse() end) end))
-          update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand -> hand -- call_choice end) end))
-          update_state(&Map.update!(&1, :calls, fn all_calls -> Map.update!(all_calls, seat, fn calls -> [call] ++ calls end) end))
         "pon"                -> IO.puts("Pon not implemented")
         "daiminkan"          -> IO.puts("Kan not implemented")
         "shouminkan"         -> IO.puts("Kan not implemented")
@@ -386,16 +394,33 @@ defmodule RiichiAdvanced.GlobalState do
         Enum.each(state.button_choice, fn {seat, button_name} ->
           if button_name != nil && button_name != "skip" && not Enum.member?(superceded_buttons, button_name) do
             IO.puts("Running button actions for player #{seat}")
-            run_actions(seat, state.rules["buttons"][button_name]["actions"], state.rules["buttons"][button_name]["call"])
+            # run actions up to the first "call" action
+            {actions, deferred_actions} = Enum.split_while(state.rules["buttons"][button_name]["actions"], fn action -> action != ["call"] end)
+            run_actions(seat, actions)
+            # if there is a call action, schedule deferred actions for after the call is made
+            # (this just to handle the case that multiple call choices are possible)
+            if not Enum.empty?(deferred_actions) do
+              [_ | deferred_actions] = deferred_actions
+              update_state(&Map.update!(&1, :deferred_actions, fn actions -> Map.put(actions, seat, deferred_actions) end))
+              state = get_state()
+              tile = List.last(state.ponds[state.turn])
+              call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.hands[seat], tile)
+              if length(call_choices) == 1 do
+                call_choice = Enum.at(call_choices, 0)
+                trigger_call(seat, call_choice)
+              else
+                update_state(&Map.update!(&1, :call_buttons, fn choices -> Map.put(choices, seat, call_choices) end))
+              end
+            end
           end
         end)
 
         # unmark all buttons pressed
         update_state(&Map.update!(&1, :button_choice, fn choices -> Map.new(choices, fn {seat, _} -> {seat, nil} end) end))
 
-        # resume play, if it hasn't been resumed by change_turn actions
+        # resume play, if it hasn't been resumed by change_turn actions and we don't have call buttons displaying
         state = get_state()
-        if state.paused do
+        if state.paused and Enum.all?(state.call_buttons, fn {_seat, buttons} -> Enum.empty?(buttons) end) do
           change_turn(if state.reversed_turn_order do prev_turn(state.turn) else next_turn(state.turn) end)
         end
       else
