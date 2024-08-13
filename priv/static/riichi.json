@@ -62,7 +62,9 @@
   "tenpai_definition": [
     [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 6] ],
+    [ [["pair"], 6] ]
+  ],
+  "kokushi_tenpai_definition": [
     [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
@@ -112,19 +114,34 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["have_draw", "our_turn", "tenpai", "not_riichi"],
+      "show_when": ["have_draw", "our_turn", {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]}, "not_riichi"],
       "actions": [["riichi"], ["big_text", "Riichi"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "ron": {
       "display_name": "Ron",
-      "show_when": ["not_our_turn", "someone_else_discarded", "tenpai", "has_yaku", "not_furiten", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
+      "show_when": ["not_our_turn",
+                    "someone_else_discarded",
+                    {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]},
+                    "has_yaku",
+                    "not_furiten",
+                    [
+                      {"name": "hand_discard_matches", "opts": ["win"]},
+                      {"name": "hand_kakan_matches", "opts": ["win"]},
+                      [
+                        {"name": "hand_matches", "opts": ["kokushi_tenpai"]},
+                        {"name": "hand_ankan_matches", "opts": ["win"]}
+                      ]
+                    ]],
       "actions": [["ron"], ["big_text", "Ron"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Tsumo",
-      "show_when": ["our_turn", "tenpai", "has_yaku", "tsumo_available"],
+      "show_when": ["our_turn",
+                    {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]},
+                    "has_yaku",
+                    {"name": "hand_matches", "opts": ["win"]}],
       "actions": [["tsumo"], ["big_text", "Tsumo"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     }

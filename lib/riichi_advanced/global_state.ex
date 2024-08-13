@@ -286,6 +286,7 @@ defmodule RiichiAdvanced.GlobalState do
     state = get_state()
     if not via_action && Map.has_key?(state.rules, "on_turn_change") do
       run_actions(seat, state.rules["on_turn_change"]["actions"])
+      update_buttons()
     end
 
     # check if any tiles are playable for this next player
@@ -351,7 +352,7 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
-  def check_condition(seat, cond_spec, calls_spec, _opts \\ []) do
+  def check_condition(seat, cond_spec, calls_spec, opts \\ []) do
     state = get_state()
     case cond_spec do
       "our_turn"               -> state.turn == seat
@@ -363,13 +364,13 @@ defmodule RiichiAdvanced.GlobalState do
       "kamicha_discarded"      -> state.last_discarder != nil && state.last_discarder == Utils.prev_turn(seat)
       "someone_else_discarded" -> state.last_discarder != nil && state.last_discarder != seat
       "call_available"         -> Riichi.can_call?(calls_spec, state.players[seat].hand, state.last_discard)
-      "shouminkan_available"   -> false
-      "ankan_available"        -> false
-      "tenpai"                 -> Riichi.check_hand(state.players[seat].hand ++ state.players[seat].draw, get_hand_definition("tenpai_definition"), "tenpai")
-      "kokushi_tenpai"         -> false
+      "shouminkan_available"   -> false # TODO kakan
+      "ankan_available"        -> false # TODO ankan
+      "hand_matches"           -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[seat].hand ++ state.players[seat].draw, get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
+      "hand_discard_matches"   -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[seat].hand ++ [state.last_discard], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
+      "hand_kakan_matches"     -> false
+      "hand_ankan_matches"     -> false
       "chankan_available"      -> false
-      "ron_available"          -> Riichi.check_hand(state.players[seat].hand ++ [state.last_discard], get_hand_definition("win_definition"), "win")
-      "tsumo_available"        -> Riichi.check_hand(state.players[seat].hand ++ state.players[seat].draw, get_hand_definition("win_definition"), "win")
       "have_draw"              -> not Enum.empty?(state.players[seat].draw)
       "not_furiten"            -> true
       "not_riichi"             -> not state.players[seat].riichi
