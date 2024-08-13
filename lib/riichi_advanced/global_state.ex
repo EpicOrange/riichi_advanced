@@ -2,12 +2,13 @@ defmodule Player do
   defstruct [
     hand: [],
     draw: [],
-    pond: [],
+    pond: [:"3m"],
     calls: [],
     buttons: [],
-    call_buttons: [],
+    call_buttons: %{},
     deferred_actions: [],
     button_choice: nil,
+    call_source: nil,
     big_text: "",
     riichi: false
   ]
@@ -45,10 +46,10 @@ defmodule RiichiAdvanced.GlobalState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    hands = %{:east => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+    hands = %{:east => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
               :south => Riichi.sort_tiles([:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]),
               :west => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"1p", :"3p", :"4p"]),
-              :north => Riichi.sort_tiles([:"1m", :"3m", :"3m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"2z"])}
+              :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
     # hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
     #           :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
     #           :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
@@ -170,7 +171,7 @@ defmodule RiichiAdvanced.GlobalState do
 
       # clear call choices and deferred actions (if any)
       update_state(&Map.update!(&1, :players, fn players -> Map.new(players, fn {seat, player} ->
-        {seat, %Player{ player | call_buttons: [], deferred_actions: [] }}
+        {seat, %Player{ player | call_buttons: %{}, deferred_actions: [], call_source: nil }}
       end) end))
 
       # change turn if no buttons exist to interrupt the turn change
@@ -296,24 +297,28 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
-  def trigger_call(seat, call_choice) do
+  def trigger_call(seat, call_choice, called_tile, call_source) do
     state = get_state()
-    tile = List.last(state.players[state.turn].pond)
     tiles = Enum.map(call_choice, fn t -> {t, false} end)
     call = case Utils.get_relative_seat(seat, state.turn) do
-      :kamicha -> [{tile, true} | tiles]
+      :kamicha -> [{called_tile, true} | tiles]
       :toimen ->
         [first | rest] = tiles
-        [first, {tile, true} | rest]
-      :shimocha -> tiles ++ [{tile, true}]
+        [first, {called_tile, true} | rest]
+      :shimocha -> tiles ++ [{called_tile, true}]
+      :self -> 
+        red = Riichi.to_red(called_tile)
+        [{:"1x", false}, {if red in call_choice do red else called_tile end, false}, {called_tile, false}, {:"1x", false}] # TODO support more than just ankan
     end
-    IO.inspect(call)
-
-    update_player(state.turn, fn player -> %Player{ player | pond: player.pond |> Enum.reverse() |> tl() |> Enum.reverse() } end)
+    case call_source do
+      :discards -> update_player(state.turn, fn player -> %Player{ player | pond: player.pond |> Enum.reverse() |> tl() |> Enum.reverse() } end)
+      :hand     -> update_player(seat, fn player -> %Player{ player | hand: player.hand -- [called_tile] } end)
+      _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
+    end
     update_player(seat, fn player -> %Player{ player | hand: player.hand -- call_choice, calls: [call] ++ player.calls } end)
     update_state(&Map.put(&1, :last_discard, nil))
     run_actions(seat, state.players[seat].deferred_actions)
-    update_player(seat, fn player -> %Player{ player | call_buttons: [], deferred_actions: [] } end)
+    update_player(seat, fn player -> %Player{ player | call_buttons: %{}, deferred_actions: [], call_source: nil } end)
   end
 
   def run_actions(seat, actions) do
@@ -363,9 +368,9 @@ defmodule RiichiAdvanced.GlobalState do
       "our_turn_is_not_prev"   -> state.turn != if state.reversed_turn_order do Utils.prev_turn(seat) else Utils.next_turn(seat) end
       "kamicha_discarded"      -> state.last_discarder != nil && state.last_discarder == Utils.prev_turn(seat)
       "someone_else_discarded" -> state.last_discarder != nil && state.last_discarder != seat
-      "call_available"         -> Riichi.can_call?(calls_spec, state.players[seat].hand, state.last_discard)
+      "call_available"         -> Riichi.can_call?(calls_spec, state.players[seat].hand, [state.last_discard])
+      "self_call_available"    -> Riichi.can_call?(calls_spec, state.players[seat].hand ++ state.players[seat].draw)
       "shouminkan_available"   -> false # TODO kakan
-      "ankan_available"        -> false # TODO ankan
       "hand_matches"           -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[seat].hand ++ state.players[seat].draw, get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
       "hand_discard_matches"   -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[seat].hand ++ [state.last_discard], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
       "hand_kakan_matches"     -> false
@@ -426,21 +431,24 @@ defmodule RiichiAdvanced.GlobalState do
           if button_name != nil && button_name != "skip" && not Enum.member?(superceded_buttons, button_name) do
             IO.puts("Running button actions for player #{seat}")
             # run actions up to the first "call" action
-            {actions, deferred_actions} = Enum.split_while(state.rules["buttons"][button_name]["actions"], fn action -> action != ["call"] end)
+            {actions, deferred_actions} = Enum.split_while(state.rules["buttons"][button_name]["actions"], fn action -> action not in [["call"], ["self_call"]] end)
             run_actions(seat, actions)
             # if there is a call action, schedule deferred actions for after the call is made
             # (this just to handle the case that multiple call choices are possible)
             if not Enum.empty?(deferred_actions) do
-              [_ | deferred_actions] = deferred_actions
+              [[call_type] | deferred_actions] = deferred_actions
               update_player(seat, fn player -> %Player{ player | deferred_actions: deferred_actions } end)
               state = get_state()
-              tile = List.last(state.players[state.turn].pond)
-              call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand, tile)
-              if length(call_choices) == 1 do
-                call_choice = Enum.at(call_choices, 0)
-                trigger_call(seat, call_choice)
+              called_tiles = if call_type == "self_call" do [] else [List.last(state.players[state.turn].pond)] end
+              call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand, called_tiles)
+              # if there's only one choice, automatically choose it
+              flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
+              call_source = if call_type == "self_call" do :hand else :discards end
+              if length(flattened_call_choices) == 1 do
+                {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
+                trigger_call(seat, call_choice, called_tile, call_source)
               else
-                update_player(seat, fn player -> %Player{ player | call_buttons: call_choices } end)
+                update_player(seat, fn player -> %Player{ player | call_buttons: call_choices, call_source: call_source } end)
               end
             end
           end

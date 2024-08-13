@@ -330,10 +330,29 @@ div.hand > div.calls > div.call.just_called:first-child {
   animation: slideRight 0.4s ease forwards;
 }
 
-div.buttons, div.call-buttons {
+/* buttons and call choice buttons */
+div.call-buttons-container {
+  display: flex;
+  flex-direction: column-reverse;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.buttons, div.call-buttons-container {
   position: absolute;
   bottom: calc(1.5 * var(--tile-size));
   right: calc(1.5 * var(--tile-size));
+  align-items: flex-end;
+}
+div.call-buttons {
+  align-items: center;
+  column-gap: calc(0.25 * var(--tile-size));
+}
+div.call-buttons > div.tile:first-child {
+  margin-top: calc(0.25 * var(--tile-size));
+}
+div.call-buttons > div.call-button-separator {
+  border-left: calc(0.5 * var(--tile-size)) solid var(--tile-back);
+  border-top: calc(0.25 * var(--tile-size)) solid transparent;
+  border-bottom: calc(0.25 * var(--tile-size)) solid transparent;
 }
 div.buttons > button,
 div.call-buttons > button {
@@ -341,7 +360,6 @@ div.call-buttons > button {
   border: 1px solid var(--tile-back);
   border-radius: 4px;
   background: var(--tile-back);
-  margin-left: calc(0.25 * var(--tile-size));
   cursor: pointer;
 }
 div.buttons > button {

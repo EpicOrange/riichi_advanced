@@ -79,29 +79,35 @@ defmodule Riichi do
     end)
   end
 
-  # return all possible calls of tile, given hand
+  # return all possible calls of each tile in called_tiles, given hand
   # includes returning multiple choices for red fives
-  def make_calls(calls_spec, hand, tile) do
-    # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(tile)}")
-    Enum.flat_map(calls_spec, fn call_spec ->
-      tile = normalize_red_five(tile)
-      other_tiles = Enum.map(call_spec, &offset_tile(tile, &1))
-      {_, choices} = Enum.reduce(other_tiles, {hand, []}, fn t, {remaining_hand, tiles} ->
-        exists = Enum.member?(remaining_hand, t)
-        red_exists = Enum.member?(remaining_hand, to_red(t))
-        {List.delete(remaining_hand, if red_exists do to_red(t) else t end),
-         [(if exists do [t] else [] end) ++ (if red_exists do [to_red(t)] else [] end) | tiles]}
-      end)
-      # take the cartesian product of tile choices to get all choice sets
-      result = choices
-             |> Enum.reduce([[]], fn cs, accs -> for choice <- cs, acc <- accs, do: acc ++ [choice] end)
-             |> Enum.map(fn tiles -> sort_tiles(tiles) end)
-      # IO.puts("#{inspect(call_spec)}: #{inspect(result)}")
-      result
+  # if called_tiles is an empty list, then we choose from our hand
+  def make_calls(calls_spec, hand, called_tiles \\ []) do
+    # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
+    from_hand = Enum.empty?(called_tiles)
+    call_choices = if from_hand do hand else called_tiles end
+    Map.new(normalize_red_fives(call_choices), fn tile ->
+      {tile, Enum.flat_map(calls_spec, fn call_spec ->
+        hand = if from_hand do List.delete(hand, tile) else hand end
+        other_tiles = Enum.map(call_spec, &offset_tile(tile, &1))
+        {_, choices} = Enum.reduce(other_tiles, {hand, []}, fn t, {remaining_hand, tiles} ->
+          exists = Enum.member?(remaining_hand, t)
+          red_exists = Enum.member?(remaining_hand, to_red(t))
+          {List.delete(remaining_hand, if red_exists do to_red(t) else t end),
+           [(if exists do [t] else [] end) ++ (if red_exists do [to_red(t)] else [] end) | tiles]}
+        end)
+        # take the cartesian product of tile choices to get all choice sets
+        result = choices
+               |> Enum.reduce([[]], fn cs, accs -> for choice <- cs, acc <- accs, do: acc ++ [choice] end)
+               |> Enum.map(fn tiles -> sort_tiles(tiles) end)
+               |> Enum.uniq()
+        # IO.puts("#{inspect(call_spec)}: #{inspect(result)}")
+        result
+      end)}
     end)
   end
 
-  def can_call?(calls_spec, hand, tile), do: not Enum.empty?(make_calls(calls_spec, hand, tile))
+  def can_call?(calls_spec, hand, called_tiles \\ []), do: Enum.any?(make_calls(calls_spec, hand, called_tiles), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
   def try_remove_all_tiles(hand, tiles) do
     removed = hand -- tiles
@@ -156,6 +162,7 @@ defmodule Riichi do
       [] -> 
         result = _check_hand(hand, hand_definition)
         RiichiAdvanced.ETSCache.put({:check_tenpai, hand, key}, result)
+        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  key: #{inspect(key)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end

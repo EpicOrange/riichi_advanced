@@ -42,6 +42,7 @@
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
+    "ankan": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
@@ -59,6 +60,9 @@
     "orphans_12": ["1m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
     "orphans_13": ["9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]
   },
+  "ankan_definition": [
+    [ [["ankan"], 1] ]
+  ],
   "tenpai_definition": [
     [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ [["shuntsu", "koutsu"], 4] ],
@@ -102,8 +106,9 @@
     },
     "ankan": {
       "display_name": "Kan",
-      "show_when": ["our_turn", "ankan_available"],
-      "actions": [["ankan"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
+      "call": [[0, 0, 0]],
+      "show_when": ["our_turn", "self_call_available"],
+      "actions": [["self_call"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
     "kakan": {
