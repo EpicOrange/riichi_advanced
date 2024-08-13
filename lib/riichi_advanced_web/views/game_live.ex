@@ -24,10 +24,12 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
       socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
       socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, player.riichi} end))
+      socket = assign(socket, :big_text, Map.new(players, fn {seat, player} -> {seat, player.big_text} end))
       {:ok, socket}
     else
       empty_lists = %{:east => [], :south => [], :west => [], :north => []}
       empty_bools = %{:east => false, :south => false, :west => false, :north => false}
+      empty_strs = %{:east => "", :south => "", :west => "", :north => ""}
       socket = assign(socket, :seat, :east)
       socket = assign(socket, :turn, :east)
       socket = assign(socket, :shimocha, nil)
@@ -40,6 +42,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :buttons, empty_lists)
       socket = assign(socket, :call_buttons, empty_lists)
       socket = assign(socket, :riichi, empty_bools)
+      socket = assign(socket, :big_text, empty_strs)
       {:ok, socket}
     end
   end
@@ -104,6 +107,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         </button>
       <% end %>
     </div>
+    <div class={["big-text", Utils.get_relative_seat(@seat, seat)]} :for={{seat, text} <- @big_text} :if={text != ""}><%= text %></div>
     """
   end
 
@@ -154,6 +158,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
     socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
     socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, player.riichi} end))
+    socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
 
     {:noreply, socket}
   end

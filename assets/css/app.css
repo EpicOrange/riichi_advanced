@@ -351,8 +351,30 @@ div.call-buttons > button {
   padding-top: calc(0.25 * var(--tile-size));
 }
 
-
-
+/* big text */
+@keyframes textFade {
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+div.big-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-size: calc(4 * var(--tile-size));
+  text-shadow: black 0.1rem 0.1rem;
+  z-index: 50;
+  animation: textFade 1.5s ease forwards;
+  pointer-events: none;
+}
+div.big-text.self { bottom: 1rem; }
+div.big-text.kamicha { left: calc(-50% + (3 * var(--tile-size))); top: calc(50% - (3 * var(--tile-size))); }
+div.big-text.toimen { top: 1rem; }
+div.big-text.shimocha { left: calc(50% - (3 * var(--tile-size))); top: calc(50% - (3 * var(--tile-size))); }
 
 
 

@@ -81,51 +81,51 @@
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "show_when": ["kamicha_discarded", "call_available"],
-      "actions": [["call"], ["change_turn", "self"]],
+      "actions": [["call"], ["big_text", "Chii"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
       "show_when": ["someone_else_discarded", "call_available"],
-      "actions": [["call"], ["change_turn", "self"]],
+      "actions": [["call"], ["big_text", "Pon"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "kan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "show_when": ["someone_else_discarded", "call_available"],
-      "actions": [["call"], ["change_turn", "self"], ["draw"]],
+      "actions": [["call"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": ["chii", "pon"]
     },
     "ankan": {
       "display_name": "Kan",
       "show_when": ["our_turn", "ankan_available"],
-      "actions": [["ankan"], ["change_turn", "self"], ["draw"]],
+      "actions": [["ankan"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
     "kakan": {
       "display_name": "Kan",
       "show_when": ["our_turn", "shouminkan_available"],
-      "actions": [["shouminkan"], ["change_turn", "self"], ["draw"]],
+      "actions": [["shouminkan"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
     "riichi": {
       "display_name": "Riichi",
       "show_when": ["have_draw", "our_turn", "tenpai", "not_riichi"],
-      "actions": [["riichi"], ["change_turn", "self"]],
+      "actions": [["riichi"], ["big_text", "Riichi"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "ron": {
       "display_name": "Ron",
       "show_when": ["not_our_turn", "someone_else_discarded", "tenpai", "has_yaku", "not_furiten", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
-      "actions": [["ron"]],
+      "actions": [["ron"], ["big_text", "Ron"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Tsumo",
       "show_when": ["our_turn", "tenpai", "has_yaku", "tsumo_available"],
-      "actions": [["tsumo"]],
+      "actions": [["tsumo"], ["big_text", "Tsumo"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     }
   }

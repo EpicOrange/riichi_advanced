@@ -8,6 +8,7 @@ defmodule Player do
     call_buttons: [],
     deferred_actions: [],
     button_choice: nil,
+    big_text: "",
     riichi: false
   ]
 end
@@ -19,13 +20,23 @@ defmodule RiichiAdvanced.GlobalState do
     initial_data = %{initialized: false}
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
     initial_data = Map.put(initial_data, :play_tile_debounce, play_tile_debounce)
-    debouncers = %{
-      :east => DebounceEast,
-      :south => DebounceSouth,
-      :west => DebounceWest,
-      :north => DebounceNorth
+    play_tile_debouncers = %{
+      :east => PlayTileDebounceEast,
+      :south => PlayTileDebounceSouth,
+      :west => PlayTileDebounceWest,
+      :north => PlayTileDebounceNorth
     }
-    Agent.start_link(fn -> %{main: initial_data, debouncers: debouncers} end, name: __MODULE__)
+    big_text_debouncers = %{
+      :east => BigTextDebounceEast,
+      :south => BigTextDebounceSouth,
+      :west => BigTextDebounceWest,
+      :north => BigTextDebounceNorth
+    }
+    Agent.start_link(fn -> %{
+      main: initial_data,
+      play_tile_debouncers: play_tile_debouncers,
+      big_text_debouncers: big_text_debouncers,
+    } end, name: __MODULE__)
   end
 
   def initialize_game do
@@ -174,7 +185,12 @@ defmodule RiichiAdvanced.GlobalState do
 
   def temp_disable_play_tile(seat) do
     update_state(&Map.update!(&1, :play_tile_debounce, fn dbs -> Map.put(dbs, seat, true) end))
-    Debounce.apply(Agent.get(__MODULE__, & &1.debouncers[seat]))
+    Debounce.apply(Agent.get(__MODULE__, & &1.play_tile_debouncers[seat]))
+  end
+
+  def temp_display_big_text(seat, text) do
+    update_player(seat, fn player -> %Player{ player | big_text: text } end )
+    Debounce.apply(Agent.get(__MODULE__, & &1.big_text_debouncers[seat]))
   end
 
   defp _reindex_hand(hand, from, to) do
@@ -304,8 +320,6 @@ defmodule RiichiAdvanced.GlobalState do
       case action do
         "draw"               -> draw_tile(seat, Enum.at(opts, 0, 1))
         "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
-        "pon"                -> IO.puts("Pon not implemented")
-        "daiminkan"          -> IO.puts("Kan not implemented")
         "shouminkan"         -> IO.puts("Kan not implemented")
         "ankan"              -> IO.puts("Kan not implemented")
         "change_turn"        -> change_turn(Utils.get_seat(seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
@@ -313,6 +327,7 @@ defmodule RiichiAdvanced.GlobalState do
         "ron"                -> IO.puts("Ron not implemented")
         "tsumo"              -> IO.puts("Tsumo not implemented")
         "riichi"             -> update_player(seat, fn player -> %Player{ player | riichi: true } end)
+        "big_text"           -> temp_display_big_text(seat, Enum.at(opts, 0, ""))
         _                    -> IO.puts("Unhandled action #{action}")
       end
     end)
