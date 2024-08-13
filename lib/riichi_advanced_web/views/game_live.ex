@@ -126,7 +126,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: "game:main", event: "played_tile", payload: %{"seat" => seat, "tile" => tile, "index" => index}}, socket) do
-    relative_seat = RiichiAdvanced.GlobalState.get_relative_seat(socket.assigns.seat, seat)
+    relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
     send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", played_tile: tile, played_tile_index: index)
     send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
     {:noreply, socket}
@@ -138,7 +138,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
     Enum.each(Map.keys(num_calls_before), fn seat ->
       if num_calls_after[seat] > num_calls_before[seat] do
-        relative_seat = RiichiAdvanced.GlobalState.get_relative_seat(socket.assigns.seat, seat)
+        relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
         send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", num_new_calls: num_calls_after[seat] - num_calls_before[seat])
       end
     end)

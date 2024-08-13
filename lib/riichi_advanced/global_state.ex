@@ -73,53 +73,6 @@ defmodule RiichiAdvanced.GlobalState do
 
   def print_state, do: IO.puts("Global state: #{inspect(get_state())}")
   
-  # TODO move to riichi.ex
-  def next_turn(seat, iterations \\ 1) do
-    next = cond do
-      seat == :east  -> :south
-      seat == :south -> :west
-      seat == :west  -> :north
-      seat == :north -> :east
-    end
-    if iterations <= 1 do next else next_turn(next, iterations - 1) end
-  end
-  def prev_turn(seat, iterations \\ 1) do
-    prev = cond do
-      seat == :east  -> :north
-      seat == :south -> :east
-      seat == :west  -> :south
-      seat == :north -> :west
-    end
-    if iterations <= 1 do prev else prev_turn(prev, iterations - 1) end
-  end
-  
-  def get_seat(seat, direction) do
-    cond do
-      direction == :shimocha -> next_turn(seat)
-      direction == :toimen   -> next_turn(seat, 2)
-      direction == :kamicha  -> next_turn(seat, 3)
-      direction == :self     -> next_turn(seat, 4)
-    end
-  end
-
-  def get_relative_seat(seat, seat2) do
-    cond do
-      seat2 == next_turn(seat)    -> :shimocha
-      seat2 == next_turn(seat, 2) -> :toimen
-      seat2 == next_turn(seat, 3) -> :kamicha
-      seat2 == next_turn(seat, 4) -> :self
-    end
-  end
-  
-  def rotate_4([a,b,c,d], seat) do
-    case seat do
-      :east  -> [a,b,c,d]
-      :south -> [b,c,d,a]
-      :west  -> [c,d,a,b]
-      :north -> [d,a,b,c]
-    end
-  end
-
   def new_player(socket) do
     state = get_state()
     seat = cond do
@@ -140,7 +93,7 @@ defmodule RiichiAdvanced.GlobalState do
   
   def get_player(seat) do
     state = get_state()
-    [state.turn, state.players] ++ rotate_4([:east, :south, :west, :north], seat)
+    [state.turn, state.players] ++ Utils.rotate_4([:east, :south, :west, :north], seat)
   end
   
   def delete_player(seat) do
@@ -212,7 +165,7 @@ defmodule RiichiAdvanced.GlobalState do
       # change turn if no buttons exist to interrupt the turn change
       if no_buttons_remaining?() do
         state = get_state()
-        change_turn(if state.reversed_turn_order do prev_turn(state.turn) else next_turn(state.turn) end)
+        change_turn(if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end)
       else
         update_state(&Map.put(&1, :paused, true))
       end
@@ -330,7 +283,7 @@ defmodule RiichiAdvanced.GlobalState do
     state = get_state()
     tile = List.last(state.players[state.turn].pond)
     tiles = Enum.map(call_choice, fn t -> {t, false} end)
-    call = case get_relative_seat(seat, state.turn) do
+    call = case Utils.get_relative_seat(seat, state.turn) do
       :kamicha -> [{tile, true} | tiles]
       :toimen ->
         [first | rest] = tiles
@@ -355,7 +308,7 @@ defmodule RiichiAdvanced.GlobalState do
         "daiminkan"          -> IO.puts("Kan not implemented")
         "shouminkan"         -> IO.puts("Kan not implemented")
         "ankan"              -> IO.puts("Kan not implemented")
-        "change_turn"        -> change_turn(get_seat(seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
+        "change_turn"        -> change_turn(Utils.get_seat(seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
         "flower"             -> IO.puts("Flower not implemented")
         "ron"                -> IO.puts("Ron not implemented")
         "tsumo"              -> IO.puts("Tsumo not implemented")
@@ -388,11 +341,11 @@ defmodule RiichiAdvanced.GlobalState do
     case cond_spec do
       "our_turn"               -> state.turn == seat
       "not_our_turn"           -> state.turn != seat
-      "our_turn_is_next"       -> state.turn == if state.reversed_turn_order do next_turn(seat) else prev_turn(seat) end
-      "our_turn_is_not_next"   -> state.turn != if state.reversed_turn_order do next_turn(seat) else prev_turn(seat) end
-      "our_turn_is_prev"       -> state.turn == if state.reversed_turn_order do prev_turn(seat) else next_turn(seat) end
-      "our_turn_is_not_prev"   -> state.turn != if state.reversed_turn_order do prev_turn(seat) else next_turn(seat) end
-      "kamicha_discarded"      -> state.last_discarder != nil && state.last_discarder == prev_turn(seat)
+      "our_turn_is_next"       -> state.turn == if state.reversed_turn_order do Utils.next_turn(seat) else Utils.prev_turn(seat) end
+      "our_turn_is_not_next"   -> state.turn != if state.reversed_turn_order do Utils.next_turn(seat) else Utils.prev_turn(seat) end
+      "our_turn_is_prev"       -> state.turn == if state.reversed_turn_order do Utils.prev_turn(seat) else Utils.next_turn(seat) end
+      "our_turn_is_not_prev"   -> state.turn != if state.reversed_turn_order do Utils.prev_turn(seat) else Utils.next_turn(seat) end
+      "kamicha_discarded"      -> state.last_discarder != nil && state.last_discarder == Utils.prev_turn(seat)
       "someone_else_discarded" -> state.last_discarder != nil && state.last_discarder != seat
       "call_available"         -> Riichi.can_call?(calls_spec, state.players[seat].hand, state.last_discard)
       "shouminkan_available"   -> false
@@ -485,7 +438,7 @@ defmodule RiichiAdvanced.GlobalState do
         # resume play, if it hasn't been resumed by change_turn actions and we don't have call buttons displaying
         state = get_state()
         if state.paused and Enum.all?(state.players, fn {_seat, player} -> Enum.empty?(player.call_buttons) end) do
-          change_turn(if state.reversed_turn_order do prev_turn(state.turn) else next_turn(state.turn) end)
+          change_turn(if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end)
         end
       else
         update_state(&Map.put(&1, :paused, true))
