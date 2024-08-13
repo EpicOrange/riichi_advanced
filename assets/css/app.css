@@ -153,11 +153,31 @@ div.compass > div.direction > div.riichi-tray {
   height: calc(0.625 * var(--tile-size));
   bottom: calc(0.3125 * var(--tile-size));
   left: calc(50% - (1.125 * var(--tile-size)));
-  border-radius: 50%;
-  background: var(--tile-front);
+  border-radius: calc(0.25 * var(--tile-size));
+  background: darkgray;
 }
 div.compass > div.direction > div.riichi-tray.highlighted {
   background: var(--tile-back);
+}
+div.compass > div.direction > div.riichi-tray.riichi::before {
+  content: "";
+  position: absolute;
+  width: calc(2 * var(--tile-size));
+  height: calc(0.2 * var(--tile-size));
+  border-radius: calc(0.0625 * var(--tile-size));
+  left: calc(50% - (1 * var(--tile-size)));
+  bottom: calc(50% - (0.1 * var(--tile-size)));
+  background: white;
+}
+div.compass > div.direction > div.riichi-tray.riichi::after {
+  content: "";
+  position: absolute;
+  width: calc(0.1 * var(--tile-size));
+  height: calc(0.1 * var(--tile-size));
+  border-radius: 50%;
+  left: calc(50% - (0.05 * var(--tile-size)));
+  bottom: calc(50% - (0.05 * var(--tile-size)));
+  background: red;
 }
 div.compass > div.direction > div.wind-marker {
   position: absolute;

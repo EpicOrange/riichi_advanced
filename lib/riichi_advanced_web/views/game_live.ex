@@ -23,20 +23,23 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :draws, Map.new(players, fn {seat, player} -> {seat, player.draw} end))
       socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
       socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
+      socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, player.riichi} end))
       {:ok, socket}
     else
-      empty = %{:east => [], :south => [], :west => [], :north => []}
+      empty_lists = %{:east => [], :south => [], :west => [], :north => []}
+      empty_bools = %{:east => false, :south => false, :west => false, :north => false}
       socket = assign(socket, :seat, :east)
       socket = assign(socket, :turn, :east)
       socket = assign(socket, :shimocha, nil)
       socket = assign(socket, :toimen, nil)
       socket = assign(socket, :kamicha, nil)
-      socket = assign(socket, :hands, empty)
-      socket = assign(socket, :ponds, empty)
-      socket = assign(socket, :calls, empty)
-      socket = assign(socket, :draws, empty)
-      socket = assign(socket, :buttons, empty)
-      socket = assign(socket, :call_buttons, empty)
+      socket = assign(socket, :hands, empty_lists)
+      socket = assign(socket, :ponds, empty_lists)
+      socket = assign(socket, :calls, empty_lists)
+      socket = assign(socket, :draws, empty_lists)
+      socket = assign(socket, :buttons, empty_lists)
+      socket = assign(socket, :call_buttons, empty_lists)
+      socket = assign(socket, :riichi, empty_bools)
       {:ok, socket}
     end
   end
@@ -86,7 +89,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} />
+    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} riichi={@riichi} />
     <div class="buttons">
       <%= for name <- @buttons[@seat] do %>
         <button class="button" phx-click="button_clicked" phx-value-name={name}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
@@ -150,6 +153,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
     socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
     socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
+    socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, player.riichi} end))
 
     {:noreply, socket}
   end

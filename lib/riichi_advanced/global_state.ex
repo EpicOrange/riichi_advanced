@@ -357,7 +357,7 @@ defmodule RiichiAdvanced.GlobalState do
       "tsumo_available"        -> Riichi.check_hand(state.players[seat].hand ++ state.players[seat].draw, get_hand_definition("win_definition"), "win")
       "have_draw"              -> not Enum.empty?(state.players[seat].draw)
       "not_furiten"            -> true
-      "not_riichi"             -> true
+      "not_riichi"             -> not state.players[seat].riichi
       "has_yaku"               -> true
       _                        ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
