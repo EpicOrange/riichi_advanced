@@ -89,7 +89,7 @@ div.pond {
   width: 100%;
   height: calc(3 * var(--tile-size));
   left: calc(50% - (2.375 * var(--tile-size)));
-  top: calc(50% + (2.375 * var(--tile-size)));
+  top: calc(50% + (2.625 * var(--tile-size)));
   transform-origin: calc(2.375 * var(--tile-size)) calc(-2.625 * var(--tile-size));
   overflow: visible;
   z-index: -1;
@@ -104,16 +104,86 @@ div.pond.kamicha { transform: rotate(90deg); }
 
 /* compass */
 div.compass {
-  position: absolute;
+  position: relative;
   width: calc(4.75 * var(--tile-size));
   height: calc(4.75 * var(--tile-size));
   left: calc(50% - (2.375 * var(--tile-size)));
-  top: calc(50% - (2.625 * var(--tile-size)));
-  background: gray;
+  top: calc(50% - (2.375 * var(--tile-size)));
+  transform-origin: 50% 50%;
 }
-div.seating {
+div.compass.east {}
+div.compass.south { transform: rotate(90deg); }
+div.compass.west { transform: rotate(180deg); }
+div.compass.north { transform: rotate(270deg); }
+div.compass::before {
   position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: gray;
+  border-radius: calc(0.25 * var(--tile-size));
+  z-index: -2;
 }
+div.compass > div.score-box {
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: calc(50% - (1.125 * var(--tile-size)));
+  top: calc(50% - (1.125 * var(--tile-size)));
+  border-radius: calc(0.25 * var(--tile-size));
+  border-width: calc(1.125 * var(--tile-size));
+  border-style: groove;
+  border-color: lightgray;
+  z-index: -1;
+}
+div.compass > div.direction {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  top: 50%;
+  transform-origin: 50% 0%;
+}
+div.compass > div.direction.east {}
+div.compass > div.direction.south { transform: rotate(270deg); }
+div.compass > div.direction.west { transform: rotate(180deg); }
+div.compass > div.direction.north { transform: rotate(90deg); }
+div.compass > div.direction > div.riichi-tray {
+  position: absolute;
+  width: calc(2.25 * var(--tile-size));
+  height: calc(0.625 * var(--tile-size));
+  bottom: calc(0.3125 * var(--tile-size));
+  left: calc(50% - (1.125 * var(--tile-size)));
+  border-radius: 50%;
+  background: var(--tile-front);
+}
+div.compass > div.direction > div.riichi-tray.highlighted {
+  background: var(--tile-back);
+}
+div.compass > div.direction > div.wind-marker {
+  position: absolute;
+  font-size: calc(0.75 * var(--tile-size));
+  color: var(--tile-front);
+  width: var(--tile-size);
+  height: var(--tile-size);
+  bottom: calc(0.125 * var(--tile-size));
+  right: calc(-0.0625 * var(--tile-size));
+}
+div.compass > div.direction > div.wind-marker.highlighted {
+  color: var(--tile-back);
+}
+div.compass > div.direction > div.score {
+  position: absolute;
+  text-align: center;
+  width: calc(1.25 * var(--tile-size));
+  height: calc(0.4 * var(--tile-size));
+  font-size: calc(0.32 * var(--tile-size));
+  color: var(--tile-back);
+  background: black;
+  left: calc(50% - (0.625 * var(--tile-size)));
+  bottom: calc(50% + (0.25 * var(--tile-size)));
+  border-radius: calc(0.25 * var(--tile-size));
+}
+
 
 
 /* tiles */
@@ -222,7 +292,7 @@ div.pond > div.tile.just-played:last-child {
     opacity: 1;
   }
 }
-div.hand > div.tiles > div.tile.draw:last-child {
+div.hand > div.draws > div.tile {
   animation: slideLeft 0.2s ease forwards;
 }
 

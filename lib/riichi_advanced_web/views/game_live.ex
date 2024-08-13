@@ -85,8 +85,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
-    <div class="seating">You are <%= @seat %><br>It is <%= @turn %>'s turn</div>
-    <div class="compass" phx-click="set_turn"></div>
+    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} />
     <div class="buttons">
       <%= for name <- @buttons[@seat] do %>
         <button class="button" phx-click="button_clicked" phx-value-name={name}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
@@ -102,11 +101,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       <% end %>
     </div>
     """
-  end
-
-  def handle_event("set_turn", _assigns, socket) do
-    RiichiAdvanced.GlobalState.change_turn(socket.assigns.seat)
-    {:noreply, socket}
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do

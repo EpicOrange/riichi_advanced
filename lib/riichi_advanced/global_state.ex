@@ -20,27 +20,27 @@ defmodule RiichiAdvanced.GlobalState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12) ++ [:"5m", :"0m", :"6m", :"6m"]),
-              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25) ++ [:"4m", :"4m"]),
-              :west => Riichi.sort_tiles(Enum.slice(wall, 26..38) ++ [:"4m", :"4m", :"4m"]),
+    hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
+              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
+              :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
               :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
     update_state(&Map.put(&1, :wall, wall))
     update_state(&Map.put(&1, :hands, hands))
 
     dirs = [:east, :south, :west, :north]
     update_state(&Map.put(&1, :draws, Map.new(dirs, fn dir -> {dir, []} end)))
-    update_state(&Map.put(&1, :ponds, Map.new(dirs, fn dir -> {dir, [:"4m"]} end)))
+    update_state(&Map.put(&1, :ponds, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :calls, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :buttons, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :call_buttons, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :deferred_actions, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :button_choice, Map.new(dirs, fn dir -> {dir, nil} end)))
     update_state(&Map.put(&1, :wall_index, 52))
-    update_state(&Map.put(&1, :last_discard, :"4m"))
+    update_state(&Map.put(&1, :last_discard, nil))
     update_state(&Map.put(&1, :reversed_turn_order, false))
     update_state(&Map.put(&1, :paused, false))
 
-    change_turn(:north)
+    change_turn(:east)
     update_buttons()
 
     update_state(&Map.put(&1, :initialized, true))
@@ -214,7 +214,7 @@ defmodule RiichiAdvanced.GlobalState do
 
   def draw_tile(seat, num) do
     if num > 0 do
-      update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, &1.turn, fn hand -> hand ++ &1.draws[&1.turn] end) end))
+      update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, &1.turn, fn hand -> Riichi.sort_tiles(hand ++ &1.draws[&1.turn]) end) end))
       update_state(&Map.update!(&1, :draws, fn draws -> Map.put(draws, &1.turn, [Enum.at(&1.wall, &1.wall_index)]) end))
       update_state(&Map.update!(&1, :wall_index, fn ix -> ix + 1 end))
       # IO.puts("wall index is now #{get_state().wall_index}")
@@ -310,6 +310,7 @@ defmodule RiichiAdvanced.GlobalState do
     update_state(&Map.update!(&1, :ponds, fn ponds -> Map.update!(ponds, &1.turn, fn pond -> pond |> Enum.reverse() |> tl() |> Enum.reverse() end) end))
     update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand -> hand -- call_choice end) end))
     update_state(&Map.update!(&1, :calls, fn all_calls -> Map.update!(all_calls, seat, fn calls -> [call] ++ calls end) end))
+    update_state(&Map.put(&1, :last_discard, nil))
     run_actions(seat, state.deferred_actions[seat])
     update_state(&Map.update!(&1, :call_buttons, fn buttons -> Map.put(buttons, seat, []) end))
     update_state(&Map.update!(&1, :deferred_actions, fn buttons -> Map.put(buttons, seat, []) end))
