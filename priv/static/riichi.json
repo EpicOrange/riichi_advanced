@@ -39,64 +39,56 @@
     "actions": [["draw"]]
   },
   "buttons": {
-    "Chii": {
-      "show_when": ["our_turn_is_next", "chii_available"],
-      "actions": [["chii"], ["change_turn", "self"]],
+    "chii": {
+      "display_name": "Chii",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "show_when": ["our_turn_is_next", "call_available"],
+      "actions": [["call"], ["change_turn", "self"]],
       "precedence_over": []
     },
-    "Pon": {
-      "show_when": ["not_our_turn", "pon_available"],
-      "actions": [["pon"], ["change_turn", "self"]],
-      "precedence_over": ["Chii", "Skip"]
+    "pon": {
+      "display_name": "Pon",
+      "call": [[0, 0]],
+      "show_when": ["our_turn_is_not_prev", "not_our_turn", "call_available"],
+      "actions": [["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii", "skip"]
     },
-    "Kan": {
-      "show_when": ["not_our_turn", "daiminkan_available"],
-      "actions": [["daiminkan"], ["change_turn", "self"], ["draw"]],
-      "precedence_over": ["Chii", "Skip"]
+    "kan": {
+      "display_name": "Kan",
+      "call": [[0, 0, 0]],
+      "show_when": ["our_turn_is_not_prev", "not_our_turn", "call_available"],
+      "actions": [["call"], ["change_turn", "self"], ["draw"]],
+      "precedence_over": ["chii", "skip"]
     },
-    "Ankan": {
+    "ankan": {
+      "display_name": "Kan",
       "show_when": ["our_turn", "ankan_available"],
       "actions": [["ankan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
-    "Kakan": {
+    "kakan": {
+      "display_name": "Kan",
       "show_when": ["our_turn", "shouminkan_available"],
       "actions": [["shouminkan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
-    "Pei": {
-      "show_when": ["our_turn", "pei_in_hand"],
-      "actions": [["flower", "4z"], ["change_turn", "self"], ["draw"]],
-      "precedence_over": []
-    },
-    "Riichi": {
+    "riichi": {
+      "display_name": "Riichi",
       "show_when": ["our_turn", "tenpai"],
       "actions": ["riichi"],
       "precedence_over": []
     },
-    "Ron": {
-      "show_when": ["not_our_turn", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
+    "ron": {
+      "display_name": "Ron",
+      "show_when": ["our_turn_is_not_prev", "not_our_turn", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
       "actions": ["ron"],
-      "precedence_over": ["Chii", "Pon", "Skip"]
+      "precedence_over": ["chii", "pon", "skip"]
     },
-    "Tsumo": {
+    "tsumo": {
+      "display_name": "Tsumo",
       "show_when": ["our_turn", "tsumo_available"],
       "actions": ["tsumo"],
-      "precedence_over": ["Chii", "Pon", "Skip"]
-    },
-    "Skip": {
-      "show_when": [[["our_turn_is_next", "chii_available"],
-                     ["not_our_turn", "pon_available"],
-                     ["not_our_turn", "daiminkan_available"],
-                     ["our_turn", "ankan_available"],
-                     ["our_turn", "shouminkan_available"],
-                     ["our_turn", "pei_in_hand"],
-                     ["our_turn", "tenpai"],
-                     ["not_our_turn", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
-                     ["our_turn", "tsumo_available"]
-                   ]],
-      "actions": [],
-      "precedence_over": []
+      "precedence_over": ["chii", "pon", "skip"]
     }
   }
 }

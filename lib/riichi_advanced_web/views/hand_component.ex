@@ -3,6 +3,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def mount(socket) do
     socket = assign(socket, :played_tile_index, nil)
+    socket = assign(socket, :num_new_calls, 0)
     {:ok, socket}
   end
 
@@ -24,7 +25,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
         <div class="draws">
-          <%= for {tile, i} <- Enum.with_index(assigns.draw) do %>
+          <%= for {tile, i} <- Enum.with_index(@draw) do %>
             <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
           <% end %>
         </div>
@@ -35,12 +36,19 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
         <div class="draws">
-          <%= for tile <- assigns.draw do %>
+          <%= for tile <- @draw do %>
             <div class={["tile", tile]}></div>
           <% end %>
         </div>
       <% end %>
       <div class="calls">
+          <%= for {call, i} <- Enum.with_index(@calls) do %>
+            <div class={["call", i < @num_new_calls && "just_called"]}>
+              <%= for {tile, sideways} <- call do %>
+                <div class={["tile", tile, sideways && "sideways"]}></div>
+              <% end %>
+            </div>
+          <% end %>
       </div>
     </div>
     """

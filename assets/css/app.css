@@ -131,9 +131,13 @@ div.tile:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
 }
+div.tile.sideways:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
+}
 div.tile.sideways {
   width: var(--tile-height);
-  clip-path: polygon(0% 5%, 100% 5%, 100% 100%, 0% 100%); /* get rid of residual pixels on top */
+  clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%); /* get rid of residual pixels from filter */
 }
 div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size)); }
 div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size)); }
@@ -218,6 +222,20 @@ div.pond > div.tile.just-played:last-child {
 }
 div.hand > div.tiles > div.tile.draw:last-child {
   animation: slideLeft 0.2s ease forwards;
+}
+
+@keyframes slideRight {
+  0% {
+    transform: translateX(calc(-6 * var(--tile-size)));
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+div.hand > div.calls > div.call.just_called:first-child {
+  animation: slideRight 0.4s ease forwards;
 }
 
 div.buttons {
