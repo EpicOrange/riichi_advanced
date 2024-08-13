@@ -44,6 +44,7 @@
     "koutsu": [0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
+    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
     "orphans_1": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z"],
     "orphans_2": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","7z"],
     "orphans_3": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","6z","7z"],
@@ -65,25 +66,35 @@
     [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
+  "win_definition": [
+    [ [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 7] ],
+    [ [["orphans_all"], 1],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
+  ],
+  "yaku": {
+    "riichi": [["riichi"]],
+    "menzentsumo": [["tsumo_only", "closed_hand"]]
+  },
   "buttons": {
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": ["our_turn_is_next", "call_available"],
+      "show_when": ["kamicha_discarded", "call_available"],
       "actions": [["call"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "call_available"],
+      "show_when": ["someone_else_discarded", "call_available"],
       "actions": [["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "kan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "call_available"],
+      "show_when": ["someone_else_discarded", "call_available"],
       "actions": [["call"], ["change_turn", "self"], ["draw"]],
       "precedence_over": ["chii", "pon"]
     },
@@ -101,21 +112,21 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", "tenpai", "not_riichi"],
+      "show_when": ["have_draw", "our_turn", "tenpai", "not_riichi"],
       "actions": [["riichi"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "ron": {
       "display_name": "Ron",
-      "show_when": ["not_our_turn", "tenpai", "has_yaku", "not_furiten", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
-      "actions": ["ron"],
-      "precedence_over": ["chii", "pon", "kan"]
+      "show_when": ["not_our_turn", "someone_else_discarded", "tenpai", "has_yaku", "not_furiten", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
+      "actions": [["ron"]],
+      "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Tsumo",
       "show_when": ["our_turn", "tenpai", "has_yaku", "tsumo_available"],
-      "actions": ["tsumo"],
-      "precedence_over": ["chii", "pon", "kan"]
+      "actions": [["tsumo"]],
+      "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     }
   }
 }

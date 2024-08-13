@@ -138,4 +138,27 @@ defmodule Riichi do
     end
   end
 
+  # check if hand contains all groups in hand_definition
+  defp _check_hand(hand, hand_definition) do
+    Enum.any?(hand_definition, fn tenpai_def ->
+      Enum.reduce(tenpai_def, [Riichi.normalize_red_fives(hand)], fn [groups, num], all_hands ->
+        Enum.reduce(1..num, all_hands, fn _, hands ->
+          for hand <- hands, group <- groups do
+            Riichi.remove_group(hand, group)
+          end |> Enum.concat()
+        end) |> Enum.uniq_by(fn hand -> Enum.sort(hand) end)
+      end) |> Enum.empty?() |> (&not &1).()
+    end)
+  end
+
+  def check_hand(hand, hand_definition, key) do
+    case RiichiAdvanced.ETSCache.get({:check_tenpai, hand, key}) do
+      [] -> 
+        result = _check_hand(hand, hand_definition)
+        RiichiAdvanced.ETSCache.put({:check_tenpai, hand, key}, result)
+        result
+      [result] -> result
+    end
+  end
+
 end
