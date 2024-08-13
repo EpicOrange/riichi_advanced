@@ -9,7 +9,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       # TODO notify all other players that we have joined the game
       # IO.inspect(socket)
-      [turn, hands, ponds, calls, draws, buttons, call_buttons, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
+      [turn, players, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
 
       socket = assign(socket, :player_id, socket.id)
       socket = assign(socket, :turn, turn)
@@ -17,25 +17,26 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :shimocha, shimocha)
       socket = assign(socket, :toimen, toimen)
       socket = assign(socket, :kamicha, kamicha)
-      socket = assign(socket, :hands, hands)
-      socket = assign(socket, :ponds, ponds)
-      socket = assign(socket, :calls, calls)
-      socket = assign(socket, :draws, draws)
-      socket = assign(socket, :buttons, buttons)
-      socket = assign(socket, :call_buttons, call_buttons)
+      socket = assign(socket, :hands, Map.new(players, fn {seat, player} -> {seat, player.hand} end))
+      socket = assign(socket, :ponds, Map.new(players, fn {seat, player} -> {seat, player.pond} end))
+      socket = assign(socket, :calls, Map.new(players, fn {seat, player} -> {seat, player.calls} end))
+      socket = assign(socket, :draws, Map.new(players, fn {seat, player} -> {seat, player.draw} end))
+      socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
+      socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
       {:ok, socket}
     else
+      empty = %{:east => [], :south => [], :west => [], :north => []}
       socket = assign(socket, :seat, :east)
       socket = assign(socket, :turn, :east)
       socket = assign(socket, :shimocha, nil)
       socket = assign(socket, :toimen, nil)
       socket = assign(socket, :kamicha, nil)
-      socket = assign(socket, :hands, %{:east => [], :south => [], :west => [], :north => []})
-      socket = assign(socket, :ponds, %{:east => [], :south => [], :west => [], :north => []})
-      socket = assign(socket, :calls, %{:east => [], :south => [], :west => [], :north => []})
-      socket = assign(socket, :draws, %{:east => [], :south => [], :west => [], :north => []})
-      socket = assign(socket, :buttons, %{:east => [], :south => [], :west => [], :north => []})
-      socket = assign(socket, :call_buttons, %{:east => [], :south => [], :west => [], :north => []})
+      socket = assign(socket, :hands, empty)
+      socket = assign(socket, :ponds, empty)
+      socket = assign(socket, :calls, empty)
+      socket = assign(socket, :draws, empty)
+      socket = assign(socket, :buttons, empty)
+      socket = assign(socket, :call_buttons, empty)
       {:ok, socket}
     end
   end
@@ -134,7 +135,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info(%{topic: "game:main", event: "state_updated", payload: %{"state" => state}}, socket) do
     # animate new calls
     num_calls_before = Map.new(socket.assigns.calls, fn {seat, calls} -> {seat, length(calls)} end)
-    num_calls_after = Map.new(state.calls, fn {seat, calls} -> {seat, length(calls)} end)
+    num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
     Enum.each(Map.keys(num_calls_before), fn seat ->
       if num_calls_after[seat] > num_calls_before[seat] do
         relative_seat = RiichiAdvanced.GlobalState.get_relative_seat(socket.assigns.seat, seat)
@@ -143,12 +144,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     end)
 
     socket = assign(socket, :turn, state.turn)
-    socket = assign(socket, :hands, state.hands)
-    socket = assign(socket, :draws, state.draws)
-    socket = assign(socket, :ponds, state.ponds)
-    socket = assign(socket, :calls, state.calls)
-    socket = assign(socket, :call_buttons, state.call_buttons)
-    socket = assign(socket, :buttons, state.buttons)
+    socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
+    socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
+    socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
+    socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
+    socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
+    socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
 
     {:noreply, socket}
   end
