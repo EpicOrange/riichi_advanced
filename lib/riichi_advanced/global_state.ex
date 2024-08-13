@@ -315,7 +315,7 @@ defmodule RiichiAdvanced.GlobalState do
       :hand     -> update_player(seat, fn player -> %Player{ player | hand: player.hand -- [called_tile] } end)
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
-    update_player(seat, fn player -> %Player{ player | hand: player.hand -- call_choice, calls: [call] ++ player.calls } end)
+    update_player(seat, fn player -> %Player{ player | hand: player.hand -- call_choice, calls: player.calls ++ [call] } end)
     update_state(&Map.put(&1, :last_discard, nil))
     run_actions(seat, state.players[seat].deferred_actions)
     update_player(seat, fn player -> %Player{ player | call_buttons: %{}, deferred_actions: [], call_source: nil } end)

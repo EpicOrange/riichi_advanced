@@ -48,6 +48,7 @@ div.tiles {
 }
 div.calls {
   position: absolute;
+  flex-direction: row-reverse;
   right: 0;
 }
 div.call, div.draws {
@@ -326,7 +327,7 @@ div.hand > div.draws > div.tile {
     opacity: 1;
   }
 }
-div.hand > div.calls > div.call.just_called:first-child {
+div.hand > div.calls > div.call.just_called:last-child {
   animation: slideRight 0.4s ease forwards;
 }
 
@@ -342,7 +343,7 @@ div.buttons, div.call-buttons-container {
   right: calc(1.5 * var(--tile-size));
   align-items: flex-end;
 }
-div.call-buttons {
+div.buttons, div.call-buttons {
   align-items: center;
   column-gap: calc(0.25 * var(--tile-size));
 }
