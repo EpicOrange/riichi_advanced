@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.GameSupervisor do
     children = [
       RiichiAdvanced.GlobalState,
       RiichiAdvanced.ExitMonitor,
+      RiichiAdvanced.ETSCache,
       %{
         id: DebounceEast,
         start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_state, [&Map.update!(&1, :play_tile_debounce, fn dbs -> Map.put(dbs, :east, false) end)]}, 100, [name: DebounceEast]]},

@@ -20,10 +20,14 @@ defmodule RiichiAdvanced.GlobalState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
-              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
-              :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
-              :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
+    hands = %{:east => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+              :south => Riichi.sort_tiles([:"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z"]),
+              :west => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"1p", :"3p", :"4p"]),
+              :north => Riichi.sort_tiles([:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"])}
+    # hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
+    #           :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
+    #           :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
+    #           :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
     update_state(&Map.put(&1, :wall, wall))
     update_state(&Map.put(&1, :hands, hands))
 
@@ -35,6 +39,7 @@ defmodule RiichiAdvanced.GlobalState do
     update_state(&Map.put(&1, :call_buttons, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :deferred_actions, Map.new(dirs, fn dir -> {dir, []} end)))
     update_state(&Map.put(&1, :button_choice, Map.new(dirs, fn dir -> {dir, nil} end)))
+    update_state(&Map.put(&1, :riichi, Map.new(dirs, fn dir -> {dir, false} end)))
     update_state(&Map.put(&1, :wall_index, 52))
     update_state(&Map.put(&1, :last_discard, nil))
     update_state(&Map.put(&1, :reversed_turn_order, false))
@@ -335,6 +340,34 @@ defmodule RiichiAdvanced.GlobalState do
     end)
   end
 
+  defp _check_tenpai(hand) do
+    state = get_state()
+    Enum.any?(state.rules["tenpai_definition"], fn tenpai_definition ->
+      Enum.reduce(tenpai_definition, [Riichi.normalize_red_fives(hand)], fn [groups, num], all_hands ->
+        Enum.reduce(1..num, all_hands, fn _, hands ->
+          for hand <- hands, group <- groups do
+            group = if Map.has_key?(state.rules, "set_definitions") && Map.has_key?(state.rules["set_definitions"], group) do
+              state.rules["set_definitions"][group]
+            else
+              group
+            end
+            Riichi.remove_group(hand, group)
+          end |> Enum.concat()
+        end) |> Enum.uniq()
+      end) |> Enum.empty?() |> (&not &1).()
+    end)
+  end
+
+  def check_tenpai(hand) do
+    case RiichiAdvanced.ETSCache.get({:check_tenpai, hand}) do
+      [] -> 
+        result = _check_tenpai(hand)
+        RiichiAdvanced.ETSCache.put({:check_tenpai, hand}, result)
+        result
+      [result] -> result
+    end
+  end
+
   def check_condition(seat, cond_spec, calls_spec, _opts \\ []) do
     state = get_state()
     case cond_spec do
@@ -347,11 +380,14 @@ defmodule RiichiAdvanced.GlobalState do
       "call_available"       -> Riichi.can_call?(calls_spec, state.hands[seat], state.last_discard)
       "shouminkan_available" -> false
       "ankan_available"      -> false
-      "tenpai"               -> false
+      "tenpai"               -> check_tenpai(state.hands[seat])
       "kokushi_tenpai"       -> false
       "chankan_available"    -> false
       "ron_available"        -> false
       "tsumo_available"      -> false
+      "not_furiten"          -> false
+      "not_riichi"           -> true
+      "has_yaku"             -> false
       _                      ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

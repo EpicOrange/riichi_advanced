@@ -103,4 +103,39 @@ defmodule Riichi do
 
   def can_call?(calls_spec, hand, tile), do: not Enum.empty?(make_calls(calls_spec, hand, tile))
 
+  def try_remove_all_tiles(hand, tiles) do
+    removed = hand -- tiles
+    if length(removed) + length(tiles) == length(hand) do
+      [removed]
+    else
+      []
+    end
+  end
+
+  def remove_group(hand, group) do
+    # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
+    cond do
+      is_list(group) && not Enum.empty?(group) ->
+        if Enum.all?(group, fn tile -> to_tile(tile) != nil end) do
+          tiles = Enum.map(group, fn tile -> to_tile(tile) end)
+          try_remove_all_tiles(hand, tiles)
+        else
+          hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+            tiles = Enum.map(group, fn tile_or_offset -> if to_tile(tile_or_offset) != nil do to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
+            # IO.inspect(tiles)
+            try_remove_all_tiles(hand, tiles)
+          end)
+        end
+      to_tile(group) != nil -> 
+        if Enum.member?(hand, to_tile(group)) do
+          [List.delete(hand, to_tile(group))]
+        else
+          []
+        end
+      true ->
+        IO.puts("Unhandled group #{inspect(group)}")
+        []
+    end
+  end
+
 end
