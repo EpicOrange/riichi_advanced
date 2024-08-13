@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.GlobalState do
     wall = Enum.shuffle(wall)
     hands = %{:east => Riichi.sort_tiles(Enum.slice(wall, 0..12) ++ [:"5m", :"0m", :"6m", :"6m"]),
               :south => Riichi.sort_tiles(Enum.slice(wall, 13..25) ++ [:"4m", :"4m"]),
-              :west => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
+              :west => Riichi.sort_tiles(Enum.slice(wall, 26..38) ++ [:"4m", :"4m", :"4m"]),
               :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
     update_state(&Map.put(&1, :wall, wall))
     update_state(&Map.put(&1, :hands, hands))
@@ -59,18 +59,18 @@ defmodule RiichiAdvanced.GlobalState do
   
   def next_turn(seat, iterations \\ 1) do
     next = cond do
-      seat == :east -> :south
+      seat == :east  -> :south
       seat == :south -> :west
-      seat == :west -> :north
+      seat == :west  -> :north
       seat == :north -> :east
     end
     if iterations <= 1 do next else next_turn(next, iterations - 1) end
   end
   def prev_turn(seat, iterations \\ 1) do
     prev = cond do
-      seat == :east -> :north
+      seat == :east  -> :north
       seat == :south -> :east
-      seat == :west -> :south
+      seat == :west  -> :south
       seat == :north -> :west
     end
     if iterations <= 1 do prev else prev_turn(prev, iterations - 1) end
@@ -79,15 +79,15 @@ defmodule RiichiAdvanced.GlobalState do
   def get_seat(seat, direction) do
     cond do
       direction == :shimocha -> next_turn(seat)
-      direction == :toimen -> next_turn(seat, 2)
-      direction == :kamicha -> next_turn(seat, 3)
-      direction == :self -> next_turn(seat, 4)
+      direction == :toimen   -> next_turn(seat, 2)
+      direction == :kamicha  -> next_turn(seat, 3)
+      direction == :self     -> next_turn(seat, 4)
     end
   end
 
   def get_relative_seat(seat, seat2) do
     cond do
-      seat2 == next_turn(seat) -> :shimocha
+      seat2 == next_turn(seat)    -> :shimocha
       seat2 == next_turn(seat, 2) -> :toimen
       seat2 == next_turn(seat, 3) -> :kamicha
       seat2 == next_turn(seat, 4) -> :self
@@ -298,7 +298,15 @@ defmodule RiichiAdvanced.GlobalState do
   def trigger_call(seat, call_choice) do
     state = get_state()
     tile = List.last(state.ponds[state.turn])
-    call = [{tile, true} | Enum.map(call_choice, fn t -> {t, false} end)]
+    tiles = Enum.map(call_choice, fn t -> {t, false} end)
+    call = case get_relative_seat(seat, state.turn) do
+      :kamicha -> [{tile, true} | tiles]
+      :toimen ->
+        [first | rest] = tiles
+        [first, {tile, true} | rest]
+      :shimocha -> tiles ++ [{tile, true}]
+    end
+    IO.inspect(call)
     update_state(&Map.update!(&1, :ponds, fn ponds -> Map.update!(ponds, &1.turn, fn pond -> pond |> Enum.reverse() |> tl() |> Enum.reverse() end) end))
     update_state(&Map.update!(&1, :hands, fn hands -> Map.update!(hands, seat, fn hand -> hand -- call_choice end) end))
     update_state(&Map.update!(&1, :calls, fn all_calls -> Map.update!(all_calls, seat, fn calls -> [call] ++ calls end) end))

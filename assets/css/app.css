@@ -137,7 +137,9 @@ div.tile.sideways:not(.flat) {
 }
 div.tile.sideways {
   width: var(--tile-height);
-  clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%); /* get rid of residual pixels from filter */
+  /* get rid of residual pixels from filter */
+  clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%);
+  transform: translateX(-0.75%) scaleX(calc(100% / 0.985));
 }
 div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size)); }
 div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size)); }

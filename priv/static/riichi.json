@@ -49,16 +49,16 @@
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
-      "show_when": ["our_turn_is_not_prev", "not_our_turn", "call_available"],
+      "show_when": ["not_our_turn", "call_available"],
       "actions": [["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "kan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "show_when": ["our_turn_is_not_prev", "not_our_turn", "call_available"],
+      "show_when": ["not_our_turn", "call_available"],
       "actions": [["call"], ["change_turn", "self"], ["draw"]],
-      "precedence_over": ["chii"]
+      "precedence_over": ["chii", "pon"]
     },
     "ankan": {
       "display_name": "Kan",
@@ -80,15 +80,15 @@
     },
     "ron": {
       "display_name": "Ron",
-      "show_when": ["our_turn_is_not_prev", "not_our_turn", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
+      "show_when": ["not_our_turn", ["ron_available", "chankan_available", ["kokushi_tenpai", "kokushi_chankan_available"]]],
       "actions": ["ron"],
-      "precedence_over": ["chii", "pon"]
+      "precedence_over": ["chii", "pon", "kan"]
     },
     "tsumo": {
       "display_name": "Tsumo",
       "show_when": ["our_turn", "tsumo_available"],
       "actions": ["tsumo"],
-      "precedence_over": ["chii", "pon"]
+      "precedence_over": ["chii", "pon", "kan"]
     }
   }
 }
