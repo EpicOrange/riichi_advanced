@@ -7,6 +7,7 @@ defmodule RiichiAdvanced.GameSupervisor do
 
   def init(:ok) do
     children = [
+      {RiichiAdvanced.AISupervisor, name: RiichiAdvanced.AISupervisor},
       RiichiAdvanced.GlobalState,
       RiichiAdvanced.ExitMonitor,
       RiichiAdvanced.ETSCache,

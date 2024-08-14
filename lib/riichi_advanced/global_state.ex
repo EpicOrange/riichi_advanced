@@ -100,18 +100,31 @@ defmodule RiichiAdvanced.GlobalState do
   def new_player(socket) do
     state = get_state()
     seat = cond do
-      state[:east] == nil  -> :east
-      state[:south] == nil -> :south
-      state[:west] == nil  -> :west
-      state[:north] == nil -> :north
-      true                 -> :spectator
+      state[:east] == nil  || is_pid(state[:east])  -> :east
+      state[:south] == nil || is_pid(state[:south]) -> :south
+      state[:west] == nil  || is_pid(state[:west])  -> :west
+      state[:north] == nil || is_pid(state[:north]) -> :north
+      true                                          -> :spectator
     end
+
+    # if we're joining as east, restart the game
     if seat == :east do
       initialize_game()
     end
+
     update_state(&Map.put(&1, seat, socket.id))
     GenServer.call(RiichiAdvanced.ExitMonitor, {:new_player, socket.root_pid, fn -> delete_player(seat) end})
     IO.puts("Player #{socket.id} joined as #{seat}")
+
+    # if we're replacing an ai, shutdown the ai
+    if is_pid(state[seat]) do
+      IO.puts("Stopping AI for #{seat}: #{inspect(state[seat])}")
+      DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[seat])
+    end
+
+    # for players with no seats, initialize an ai
+    fill_empty_seats_with_ai()
+
     get_player(seat)
   end
   
@@ -123,6 +136,18 @@ defmodule RiichiAdvanced.GlobalState do
   def delete_player(seat) do
     update_state(&Map.put(&1, seat, nil))
     IO.puts("#{seat} player exited")
+    fill_empty_seats_with_ai()
+  end
+
+  def fill_empty_seats_with_ai do
+    state = get_state()
+    Enum.each([:east, :south, :west, :north], fn dir ->
+      if state[dir] == nil do
+        {:ok, ai_pid} = DynamicSupervisor.start_child(RiichiAdvanced.AISupervisor, {RiichiAdvanced.AIPlayer, %{seat: dir, player: state.players[dir]}})
+        IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
+        update_state(&Map.put(&1, dir, ai_pid))
+      end
+    end)
   end
 
   def temp_disable_play_tile(seat) do
@@ -246,16 +271,24 @@ defmodule RiichiAdvanced.GlobalState do
     # change turn
     update_state(&Map.put(&1, :turn, seat))
 
-    # run on turn change (unless this turn change was triggered by an action)
     state = get_state()
-    if not via_action && Map.has_key?(state.rules, "on_turn_change") do
-      run_actions(state.rules["on_turn_change"]["actions"], %{seat: seat})
-    end
+    if state.winner == nil do
+      # run on turn change (unless this turn change was triggered by an action)
+      state = get_state()
+      if not via_action && Map.has_key?(state.rules, "on_turn_change") do
+        run_actions(state.rules["on_turn_change"]["actions"], %{seat: seat})
+      end
 
-    # check if any tiles are playable for this next player
-    state = get_state()
-    if Map.has_key?(state.rules, "on_no_valid_tiles") do
-      trigger_on_no_valid_tiles(seat)
+      # check if any tiles are playable for this next player
+      state = get_state()
+      if Map.has_key?(state.rules, "on_no_valid_tiles") do
+        trigger_on_no_valid_tiles(seat)
+      end
+
+      # check if the next player's turn is an AI, and if so, send a message
+      if is_pid(state[seat]) do
+        send(state[seat], {:your_turn, %{player: state.players[seat]}})
+      end
     end
   end
 
@@ -381,6 +414,13 @@ defmodule RiichiAdvanced.GlobalState do
               # IO.puts("Updating buttons after action #{action}: #{inspect(new_buttons)}")
               update_all_players(fn seat, player -> %Player{ player | buttons: new_buttons[seat] } end)
             end
+            # if there are any buttons for any AI players, notify them
+            state = get_state()
+            Enum.each([:east, :south, :west, :north], fn seat ->
+              if is_pid(state[seat]) && not Enum.empty?(state.players[seat].buttons) do
+                send(state[seat], {:buttons, %{player: state.players[seat]}})
+              end
+            end)
           end
           no_buttons_remaining?()
         else
