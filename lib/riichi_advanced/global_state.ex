@@ -6,6 +6,7 @@ defmodule Player do
     calls: [],
     buttons: [],
     call_buttons: %{},
+    call_name: "",
     deferred_actions: [],
     button_choice: nil,
     big_text: "",
@@ -146,7 +147,7 @@ defmodule RiichiAdvanced.GlobalState do
   def play_tile(seat, tile, index) do
     state = get_state()
     # assume we're skipping our button choices
-    update_player(seat, fn player -> %Player{ player | buttons: %{}, call_buttons: %{}, deferred_actions: [] } end)
+    update_player(seat, fn player -> %Player{ player | buttons: %{}, call_buttons: %{}, call_name: "", deferred_actions: [] } end)
     if state.play_tile_debounce[seat] != true && no_buttons_remaining?() do
       temp_disable_play_tile(seat)
       IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
@@ -255,7 +256,7 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
-  def trigger_call(seat, call_choice, called_tile, call_source) do
+  def trigger_call(seat, call_name, call_choice, called_tile, call_source) do
     state = get_state()
     tiles = Enum.map(call_choice, fn t -> {t, false} end)
     call = case Utils.get_relative_seat(seat, state.turn) do
@@ -274,8 +275,8 @@ defmodule RiichiAdvanced.GlobalState do
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
     update_player(seat, fn player -> %Player{ player | hand: player.hand -- call_choice, calls: player.calls ++ [call] } end)
-    update_action(seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice})
-    update_player(seat, fn player -> %Player{ player | call_buttons: %{} } end)
+    update_action(seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+    update_player(seat, fn player -> %Player{ player | call_buttons: %{}, call_name: "" } end)
     # since we interrupted the player we called from, cancel their remaining actions
     update_player(state.turn, fn player -> %Player{ player | deferred_actions: [] } end)
   end
@@ -295,8 +296,8 @@ defmodule RiichiAdvanced.GlobalState do
         "draw"               -> draw_tile(context.seat, Enum.at(opts, 0, 1))
         "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
         "shouminkan"         -> IO.puts("Kan not implemented") # TODO give calls names, and implement "upgrade_call" instead
-        "call"               -> trigger_call(context.seat, context.call_choice, context.called_tile, :discards)
-        "self_call"          -> trigger_call(context.seat, context.call_choice, context.called_tile, :hand)
+        "call"               -> trigger_call(context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
+        "self_call"          -> trigger_call(context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
         "advance_turn"       -> advance_turn()
         "change_turn"        -> change_turn(Utils.get_seat(context.seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
         "flower"             -> IO.puts("Flower not implemented")
@@ -370,12 +371,10 @@ defmodule RiichiAdvanced.GlobalState do
       "self_call_available"    -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
       "shouminkan_available"   -> false # TODO "upgrade_call_available"
       "hand_matches"           -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
-      "hand_discard_matches"   -> get_last_action().action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
+      "discard_matches"        -> get_last_action().action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
       "game_start"             -> get_last_action().action == nil
       "last_discard_matches"   -> get_last_action().action == :discard && Riichi.tile_matches(get_last_action().tile, opts)
-      "hand_kakan_matches"     -> false
-      "hand_ankan_matches"     -> false
-      "chankan_available"      -> false
+      "call_matches"           -> get_last_action().action == :call && get_last_action().call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().called_tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
       "have_draw"              -> not Enum.empty?(state.players[context.seat].draw)
       "not_furiten"            -> true
       "not_riichi"             -> not state.players[context.seat].riichi
@@ -384,7 +383,7 @@ defmodule RiichiAdvanced.GlobalState do
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
     end
-    # IO.puts("#{inspect(context)}, #{inspect(cond_spec)} => #{result}")
+    IO.puts("#{inspect(context)}, #{inspect(cond_spec)} => #{result}")
     result
   end
 
@@ -441,10 +440,10 @@ defmodule RiichiAdvanced.GlobalState do
               if length(flattened_call_choices) == 1 do
                 # if there's only one choice, automatically choose it
                 {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
-                run_actions(actions, %{seat: seat, call_choice: call_choice, called_tile: called_tile})
+                run_actions(actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
               else
                 # otherwise, defer all actions and display call choices
-                update_player(seat, fn player -> %Player{ player | deferred_actions: actions, call_buttons: call_choices } end)
+                update_player(seat, fn player -> %Player{ player | deferred_actions: actions, call_buttons: call_choices, call_name: button_name } end)
               end
             else
               # otherwise, just run all button actions as normal

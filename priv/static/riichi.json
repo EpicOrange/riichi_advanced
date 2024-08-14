@@ -126,16 +126,18 @@
     "ron": {
       "display_name": "Ron",
       "show_when": ["not_our_turn",
-                    "someone_else_discarded",
                     {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]},
                     "has_yaku",
                     "not_furiten",
                     [
-                      {"name": "hand_discard_matches", "opts": ["win"]},
-                      {"name": "hand_kakan_matches", "opts": ["win"]},
+                      [
+                        "someone_else_discarded",
+                        {"name": "discard_matches", "opts": ["win"]}
+                      ],
+                      {"name": "call_matches", "opts": ["kakan", ["win"]]},
                       [
                         {"name": "hand_matches", "opts": ["kokushi_tenpai"]},
-                        {"name": "hand_ankan_matches", "opts": ["win"]}
+                        {"name": "call_matches", "opts": ["ankan", ["win"]]}
                       ]
                     ]],
       "actions": [["big_text", "Ron"], ["ron"]],
