@@ -343,6 +343,21 @@ div.hand > div.calls > div.call.just_called:last-child {
   animation: slideRight 0.4s ease forwards;
 }
 
+@keyframes slideDown {
+  0% {
+    transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-3 * var(--tile-width)));
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
+    opacity: 1;
+  }
+}
+div.tile.sideways + div.tile.sideways::before {
+  animation: slideDown 0.2s ease forwards;
+}
+
+
 /* buttons and call choice buttons */
 div.call-buttons-container {
   display: flex;
