@@ -94,10 +94,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} riichi={@riichi} />
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" />
     <div class="buttons">
-      <%= for name <- @buttons[@seat] do %>
-        <button class="button" phx-click="button_clicked" phx-value-name={name}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
-      <% end %>
+      <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
     </div>
     <div class="call-buttons-container">
       <%= for {called_tile, choices} <- @call_buttons[@seat] do %>
