@@ -3,12 +3,14 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   # This function initializes the state
   def mount(_params, _session, socket) do
+    socket = assign(socket, :winner, nil)
     # liveviews mount twice
     if socket.root_pid != nil do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
 
       [turn, players, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
 
+      socket = assign(socket, :loading, false)
       socket = assign(socket, :player_id, socket.id)
       socket = assign(socket, :turn, turn)
       socket = assign(socket, :seat, seat)
@@ -30,6 +32,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       empty_lists = %{:east => [], :south => [], :west => [], :north => []}
       empty_maps = %{:east => %{}, :south => %{}, :west => %{}, :north => %{}}
       empty_strs = %{:east => "", :south => "", :west => "", :north => ""}
+      socket = assign(socket, :loading, true)
       socket = assign(socket, :seat, :east)
       socket = assign(socket, :turn, :east)
       socket = assign(socket, :shimocha, nil)
@@ -94,7 +97,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} riichi={@riichi} />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" />
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" winner={@winner}/>
     <div class="buttons">
       <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
     </div>
@@ -116,6 +119,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <% end %>
     </div>
     <div class={["big-text", Utils.get_relative_seat(@seat, seat)]} :for={{seat, text} <- @big_text} :if={text != ""}><%= text %></div>
+    <div class={["big-text"]} :if={@loading}>Loading...</div>
     """
   end
 
@@ -160,6 +164,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     end)
 
     socket = assign(socket, :turn, state.turn)
+    socket = assign(socket, :winner, state.winner)
     socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
     socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
     socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))

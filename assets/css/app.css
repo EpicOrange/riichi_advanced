@@ -429,7 +429,10 @@ div.win-window {
   top: -20%;
   z-index: 10;
   float: left;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
+div.win-window.inactive { opacity: 0; }
 div.win-window::before {
   position: absolute;
   content: "";
