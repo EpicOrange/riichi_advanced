@@ -3,7 +3,7 @@ defmodule Player do
     hand: [],
     draw: [],
     pond: [],
-    calls: [{"pon", [{:"5s", false}, {:"5s", true}, {:"5s", false}]}, {"pon", [{:"2m", false}, {:"2m", true}, {:"2m", false}]}],
+    calls: [{"pon", [{:"2p", false}, {:"2p", true}, {:"2p", false}]}],
     buttons: [],
     call_buttons: %{},
     call_name: "",
@@ -46,7 +46,7 @@ defmodule RiichiAdvanced.GlobalState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"0p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
+    hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
               :south => Riichi.sort_tiles([:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
               :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"1p", :"3p", :"4p"]),
               :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
@@ -266,8 +266,9 @@ defmodule RiichiAdvanced.GlobalState do
         [first, {called_tile, true} | rest]
       :shimocha -> tiles ++ [{called_tile, true}]
       :self -> 
+        # TODO support more than just ankan
         red = Riichi.to_red(called_tile)
-        [{:"1x", false}, {if red in call_choice do red else called_tile end, false}, {called_tile, false}, {:"1x", false}] # TODO support more than just ankan
+        [{:"1x", false}, {if red in call_choice do red else called_tile end, false}, {called_tile, false}, {:"1x", false}]
     end
     case call_source do
       :discards -> update_player(state.turn, fn player -> %Player{ player | pond: player.pond |> Enum.reverse() |> tl() |> Enum.reverse() } end)
@@ -309,7 +310,6 @@ defmodule RiichiAdvanced.GlobalState do
         "play_tile"          -> play_tile(context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
         "draw"               -> draw_tile(context.seat, Enum.at(opts, 0, 1))
         "reverse_turn_order" -> update_state(&Map.update!(&1, :reversed_turn_order, fn flag -> not flag end))
-        "shouminkan"         -> IO.puts("Kan not implemented") # TODO give calls names, and implement "upgrade_call" instead
         "call"               -> trigger_call(context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
         "self_call"          -> trigger_call(context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
         "upgrade_call"       -> upgrade_call(context.seat, context.call_name, context.call_choice, context.called_tile)
@@ -385,7 +385,6 @@ defmodule RiichiAdvanced.GlobalState do
       "someone_else_discarded" -> get_last_action().action == :discard && get_last_action().seat != context.seat
       "call_available"         -> get_last_action().action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [get_last_action().tile])
       "self_call_available"    -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
-      "shouminkan_available"   -> false # TODO "upgrade_call_available"
       "hand_matches"           -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
       "discard_matches"        -> get_last_action().action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
       "game_start"             -> get_last_action().action == nil

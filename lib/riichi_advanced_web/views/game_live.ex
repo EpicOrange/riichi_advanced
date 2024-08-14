@@ -7,8 +7,6 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
 
-      # TODO notify all other players that we have joined the game
-      # IO.inspect(socket)
       [turn, players, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
 
       socket = assign(socket, :player_id, socket.id)

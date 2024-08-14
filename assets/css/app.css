@@ -116,6 +116,10 @@ div.compass.east {}
 div.compass.south { transform: rotate(90deg); }
 div.compass.west { transform: rotate(180deg); }
 div.compass.north { transform: rotate(270deg); }
+div.compass.east > div.score-box { border-style: ridge; }
+div.compass.south > div.score-box { border-style: ridge; }
+div.compass.west > div.score-box { border-style: groove; }
+div.compass.north > div.score-box { border-style: groove; }
 div.compass::before {
   position: absolute;
   content: "";
@@ -133,7 +137,6 @@ div.compass > div.score-box {
   top: calc(50% - (1.125 * var(--tile-size)));
   border-radius: calc(0.25 * var(--tile-size));
   border-width: calc(1.125 * var(--tile-size));
-  border-style: groove;
   border-color: lightgray;
   z-index: -1;
 }
@@ -231,6 +234,15 @@ div.tile.sideways {
   /* get rid of residual pixels from filter */
   clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%);
   transform: translateX(-0.75%) scaleX(calc(100% / 0.985));
+}
+div.tile.sideways + div.tile.sideways { width: 0; clip-path: none; }
+div.tile.sideways + div.tile.sideways::before {
+  display: block;
+  content: "";
+  width: var(--tile-height);
+  height: var(--tile-height);
+  background: inherit;
+  transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
 }
 div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size)); }
 div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size)); }
