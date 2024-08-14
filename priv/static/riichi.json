@@ -105,7 +105,7 @@
       "precedence_over": ["chii", "pon"]
     },
     "ankan": {
-      "display_name": "Kan",
+      "display_name": "Ankan",
       "call": [[0, 0, 0]],
       "show_when": ["our_turn", "have_draw", "self_call_available"],
       "actions": [["big_text", "Kan"], ["self_call"], ["change_turn", "self"], ["draw"]],
@@ -113,8 +113,10 @@
     },
     "kakan": {
       "display_name": "Kan",
-      "show_when": ["our_turn", "have_draw", "shouminkan_available"],
-      "actions": [["big_text", "Kan"], ["shouminkan"], ["change_turn", "self"], ["draw"]],
+      "call": [[0, 0, 0]],
+      "upgrades": "pon",
+      "show_when": ["our_turn", "have_draw", "can_upgrade_call"],
+      "actions": [["big_text", "Kan"], ["upgrade_call"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
     "riichi": {

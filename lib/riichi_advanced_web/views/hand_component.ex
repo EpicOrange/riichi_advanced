@@ -42,7 +42,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         </div>
       <% end %>
       <div class="calls">
-          <%= for {call, i} <- Enum.with_index(@calls) do %>
+          <%= for {{_name, call}, i} <- Enum.with_index(@calls) do %>
             <div class={["call", (i >= length(@calls) - @num_new_calls) && "just_called"]}>
               <%= for {tile, sideways} <- call do %>
                 <div class={["tile", tile, sideways && "sideways"]}></div>

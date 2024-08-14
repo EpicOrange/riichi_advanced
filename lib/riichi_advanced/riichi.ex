@@ -12,7 +12,7 @@ defmodule Riichi do
 
   def offset_tile(tile, n) do
     if n == 0 || n < -10 || n > 10 do
-      tile
+      normalize_red_five(tile)
     else
       if n < 0 do
         offset_tile(pred(tile), n+1)
@@ -86,7 +86,7 @@ defmodule Riichi do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     call_choices = if from_hand do hand else called_tiles end
-    Map.new(normalize_red_fives(call_choices), fn tile ->
+    Map.new(call_choices, fn tile ->
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
         other_tiles = Enum.map(call_spec, &offset_tile(tile, &1))
