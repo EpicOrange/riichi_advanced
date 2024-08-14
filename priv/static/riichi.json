@@ -87,40 +87,40 @@
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "show_when": ["kamicha_discarded", "call_available"],
-      "actions": [["call"], ["big_text", "Chii"], ["change_turn", "self"]],
+      "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
       "show_when": ["someone_else_discarded", "call_available"],
-      "actions": [["call"], ["big_text", "Pon"], ["change_turn", "self"]],
+      "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "kan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "show_when": ["someone_else_discarded", "call_available"],
-      "actions": [["call"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
+      "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"], ["draw"]],
       "precedence_over": ["chii", "pon"]
     },
     "ankan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "show_when": ["our_turn", "self_call_available"],
-      "actions": [["self_call"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
+      "show_when": ["our_turn", "have_draw", "self_call_available"],
+      "actions": [["big_text", "Kan"], ["self_call"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
     "kakan": {
       "display_name": "Kan",
-      "show_when": ["our_turn", "shouminkan_available"],
-      "actions": [["shouminkan"], ["big_text", "Kan"], ["change_turn", "self"], ["draw"]],
+      "show_when": ["our_turn", "have_draw", "shouminkan_available"],
+      "actions": [["big_text", "Kan"], ["shouminkan"], ["change_turn", "self"], ["draw"]],
       "precedence_over": []
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["have_draw", "our_turn", {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]}, "not_riichi"],
-      "actions": [["riichi"], ["big_text", "Riichi"], ["change_turn", "self"]],
+      "show_when": ["our_turn", "have_draw", {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]}, "not_riichi"],
+      "actions": [["big_text", "Riichi"], ["riichi"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "ron": {
@@ -138,7 +138,7 @@
                         {"name": "hand_ankan_matches", "opts": ["win"]}
                       ]
                     ]],
-      "actions": [["ron"], ["big_text", "Ron"]],
+      "actions": [["big_text", "Ron"], ["ron"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     },
     "tsumo": {
@@ -147,7 +147,7 @@
                     {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]},
                     "has_yaku",
                     {"name": "hand_matches", "opts": ["win"]}],
-      "actions": [["tsumo"], ["big_text", "Tsumo"]],
+      "actions": [["big_text", "Tsumo"], ["tsumo"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     }
   }

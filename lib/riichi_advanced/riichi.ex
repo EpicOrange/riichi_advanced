@@ -101,7 +101,6 @@ defmodule Riichi do
                |> Enum.reduce([[]], fn cs, accs -> for choice <- cs, acc <- accs, do: acc ++ [choice] end)
                |> Enum.map(fn tiles -> sort_tiles(tiles) end)
                |> Enum.uniq()
-        # IO.puts("#{inspect(call_spec)}: #{inspect(result)}")
         result
       end)}
     end)
@@ -168,4 +167,28 @@ defmodule Riichi do
     end
   end
 
+  def tile_matches(tile, tile_specs) do
+    Enum.any?(tile_specs, &case &1 do
+      "manzu" -> is_manzu?(tile)
+      "pinzu" -> is_pinzu?(tile)
+      "souzu" -> is_souzu?(tile)
+      "jihai" -> is_jihai?(tile)
+      "1" -> is_num?(tile, 1)
+      "2" -> is_num?(tile, 2)
+      "3" -> is_num?(tile, 3)
+      "4" -> is_num?(tile, 4)
+      "5" -> is_num?(tile, 5)
+      "6" -> is_num?(tile, 6)
+      "7" -> is_num?(tile, 7)
+      "8" -> is_num?(tile, 8)
+      "9" -> is_num?(tile, 9)
+      _   ->
+        if to_tile(&1) != nil do
+          tile == to_tile(&1)
+        else
+          IO.puts("Unhandled tile spec #{inspect(&1)}")
+          true
+        end
+    end)
+  end
 end

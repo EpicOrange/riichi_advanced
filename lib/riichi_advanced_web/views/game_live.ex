@@ -23,7 +23,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :draws, Map.new(players, fn {seat, player} -> {seat, player.draw} end))
       socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
       socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
-      socket = assign(socket, :call_source, Map.new(players, fn {seat, player} -> {seat, player.call_source} end))
       socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, player.riichi} end))
       socket = assign(socket, :big_text, Map.new(players, fn {seat, player} -> {seat, player.big_text} end))
       {:ok, socket}
@@ -31,7 +30,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       empty_bools = %{:east => false, :south => false, :west => false, :north => false}
       empty_lists = %{:east => [], :south => [], :west => [], :north => []}
       empty_maps = %{:east => %{}, :south => %{}, :west => %{}, :north => %{}}
-      empty_nils = %{:east => nil, :south => nil, :west => nil, :north => nil}
       empty_strs = %{:east => "", :south => "", :west => "", :north => ""}
       socket = assign(socket, :seat, :east)
       socket = assign(socket, :turn, :east)
@@ -44,7 +42,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :draws, empty_lists)
       socket = assign(socket, :buttons, empty_lists)
       socket = assign(socket, :call_buttons, empty_maps)
-      socket = assign(socket, :call_source, empty_nils)
       socket = assign(socket, :riichi, empty_bools)
       socket = assign(socket, :big_text, empty_strs)
       {:ok, socket}
@@ -129,13 +126,14 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "choice" => choice}, socket) do
-    RiichiAdvanced.GlobalState.trigger_call(socket.assigns.seat, Enum.map(String.split(choice, ","), &Riichi.to_tile/1), Riichi.to_tile(called_tile), socket.assigns.call_source[socket.assigns.seat])
+    call_choice = Enum.map(String.split(choice, ","), &Riichi.to_tile/1)
+    RiichiAdvanced.GlobalState.run_actions([], %{seat: socket.assigns.seat, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)})
     {:noreply, socket}
   end
 
   def handle_info({:play_tile, tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.turn do
-      RiichiAdvanced.GlobalState.play_tile(socket.assigns.seat, tile, index)
+      RiichiAdvanced.GlobalState.run_actions([["play_tile", tile, index], ["advance_turn"]], %{seat: socket.assigns.seat})
     end
     {:noreply, socket}
   end
@@ -169,7 +167,6 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
     socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
     socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
-    socket = assign(socket, :call_source, Map.new(state.players, fn {seat, player} -> {seat, player.call_source} end))
     socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, player.riichi} end))
     socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
 

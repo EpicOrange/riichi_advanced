@@ -16,7 +16,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
             <%= if removed do %>
               <div class={["tile", tile, "removed"]} data-id={i}></div>
             <% else %>
-              <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(tile) do %>
+              <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(@seat, tile) do %>
                 <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
               <% else %>
                 <div class={["tile", tile, "inactive"]} data-id={i}></div>
