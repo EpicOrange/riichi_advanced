@@ -34,11 +34,12 @@
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z"],
   "play_restrictions": [
-    [["any"], [[{"name": "not_status", "opts": ["riichi"]}, {"name": "not_needed_for_hand", "opts": ["tenpai"]}]]],
-    [["any"], [["did_not_call", [{"name": "last_called_tile_matches", "opts": ["not_same"]}]]]]
+    [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}]]]]
   ],
   "on_turn_change": {
-    "actions": [["draw"], ["unset_status", ["just_reached"]]]
+    "actions": [["unset_status", "just_reached"], ["draw"], ["unset_status", "ippatsu"]]
   },
   "set_definitions": {
     "pair": [0, 0],
@@ -93,21 +94,21 @@
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": ["not_our_turn", "kamicha_discarded", {"name": "not_status", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "someone_else_discarded", {"name": "not_status", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "someone_else_discarded", {"name": "not_status", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"], ["draw"]],
       "precedence_over": ["chii", "pon"]
     },
@@ -128,8 +129,8 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", "have_draw", {"name": "not_status", "opts": ["riichi"]}, {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}],
-      "actions": [["big_text", "Riichi"], ["set_status", "riichi", "just_reached"]],
+      "show_when": ["our_turn", "have_draw", {"name": "status_missing", "opts": ["riichi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}],
+      "actions": [["big_text", "Riichi"], ["set_status", "riichi", "just_reached", "ippatsu"]],
       "precedence_over": []
     },
     "ron": {

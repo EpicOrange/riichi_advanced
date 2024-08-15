@@ -12,11 +12,11 @@ defmodule RiichiAdvancedWeb.HandComponent do
     <div class={@id}>
       <%= if @your_hand? do %>
         <div class="tiles" phx-hook="Sortable" id={@id}>
-          <%= for {i, tile, removed} <- prepare_tiles(assigns) do %>
+          <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
             <%= if removed do %>
               <div class={["tile", tile, "removed"]} data-id={i}></div>
             <% else %>
-              <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(@seat, tile) do %>
+              <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(@seat, tile, :hand) do %>
                 <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
               <% else %>
                 <div class={["tile", tile, "inactive"]} data-id={i}></div>
@@ -25,13 +25,17 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
         <div class="draws">
-          <%= for {tile, i} <- Enum.with_index(@draw) do %>
-            <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
+          <%= for {tile, i} <- prepare_draw(assigns) do %>
+            <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(@seat, tile, :draw) do %>
+              <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
+            <% else %>
+              <div class={["tile", tile, "inactive"]}></div>
+            <% end %>
           <% end %>
         </div>
       <% else %>
         <div class="tiles">
-          <%= for {i, tile, removed} <- prepare_tiles(assigns) do %>
+          <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
             <div class={["tile", tile, removed && "removed"]} data-id={i}></div>
           <% end %>
         </div>
@@ -64,11 +68,17 @@ defmodule RiichiAdvancedWeb.HandComponent do
     {:noreply, socket}
   end
 
-  def prepare_tiles(assigns) do
+  def prepare_hand(assigns) do
     # map tiles to [{index, tile, is_last_discard}]
     assigns.hand
       |> Enum.with_index
       |> Enum.map(fn {tile, i} -> {i, tile, i == assigns.played_tile_index} end)
+  end
+
+  def prepare_draw(assigns) do
+    # map tiles to [{index, tile}]
+    # this function is necessary since we need phoenix to update draws when anything in assigns changes
+    assigns.draw |> Enum.with_index
   end
 
   def update(assigns, socket) do

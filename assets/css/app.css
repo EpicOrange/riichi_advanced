@@ -307,7 +307,6 @@ div.tile.removed ~ div.tile.draw {
   }
   100% {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 div.pond > div.tile.just-played:last-child {
@@ -321,7 +320,6 @@ div.pond > div.tile.just-played:last-child {
   }
   100% {
     transform: translateX(0);
-    opacity: 1;
   }
 }
 div.hand > div.draws > div.tile {
@@ -335,7 +333,6 @@ div.hand > div.draws > div.tile {
   }
   100% {
     transform: translateX(0);
-    opacity: 1;
   }
 }
 div.hand > div.calls > div.call.just_called:last-child {
@@ -349,7 +346,6 @@ div.hand > div.calls > div.call.just_called:last-child {
   }
   100% {
     transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
-    opacity: 1;
   }
 }
 div.tile.sideways + div.tile.sideways::before {
@@ -444,13 +440,8 @@ div.win-window::before {
   background: black;
   opacity: 0.6;
   z-index: -1;
-  pointer-events: none;
 }
-
-div.winning-hand {
-  justify-content: center;
-}
-
+div.winning-hand { justify-content: center; }
 /* yakus */
 div.yakus {
   display: flex;
