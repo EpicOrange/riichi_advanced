@@ -46,18 +46,18 @@ defmodule RiichiAdvanced.GlobalState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.insert_at(wall, 52, :"2p")
-    wall = List.insert_at(wall, 53, :"1z")
-    hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"8p", :"8p", :"1s", :"3p", :"4p"]),
-              :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
+    # wall = List.insert_at(wall, 52, :"2p")
+    # wall = List.insert_at(wall, 53, :"1z")
+    # hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"8p", :"8p", :"1s", :"3p", :"4p"]),
+    #           :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :south => Riichi.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
               # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
-              :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
-              :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
-    # hands = %{:east  => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
-    #           :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
-    #           :west  => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
-    #           :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
+              # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
+              # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
+    hands = %{:east  => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
+              :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
+              :west  => Riichi.sort_tiles(Enum.slice(wall, 26..38)),
+              :north => Riichi.sort_tiles(Enum.slice(wall, 39..51))}
     update_state(&Map.put(&1, :wall, wall))
 
     dirs = [:east, :south, :west, :north]
@@ -189,7 +189,7 @@ defmodule RiichiAdvanced.GlobalState do
       update_player(seat, fn player -> %Player{ player | buttons: %{}, call_buttons: %{}, call_name: "", deferred_actions: [] } end)
       if state.play_tile_debounce[seat] != true && no_buttons_remaining?() do
         temp_disable_play_tile(seat)
-        IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
+        # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
         update_player(seat, fn player ->
           %Player{ player |
                    hand: Riichi.sort_tiles(List.delete_at(player.hand ++ player.draw, index)),
@@ -392,7 +392,7 @@ defmodule RiichiAdvanced.GlobalState do
     if state.winner == nil do
       call_choices = state.players[seat].call_buttons
       if is_pid(state[seat]) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
-        IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+        # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
         send(state[seat], {:call_buttons, %{player: state.players[seat]}})
       end
     end
@@ -405,14 +405,14 @@ defmodule RiichiAdvanced.GlobalState do
       # otherwise, just tell the current player it's their turn
       if no_buttons_remaining?() do
         if is_pid(state[state.turn]) do
-          IO.puts("Notifying #{state.turn} AI that it's their turn")
+          # IO.puts("Notifying #{state.turn} AI that it's their turn")
           send(state[state.turn], {:your_turn, %{player: state.players[state.turn]}})
         end
       else
         Enum.each([:east, :south, :west, :north], fn seat ->
           has_buttons = Enum.empty?(state.players[seat].buttons)
           if is_pid(state[seat]) && not has_buttons do
-            IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
+            # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
             send(state[seat], {:buttons, %{player: state.players[seat]}})
           end
         end)
@@ -603,7 +603,7 @@ defmodule RiichiAdvanced.GlobalState do
 
   def adjudicate_buttons() do
     lock = Mutex.await(RiichiAdvanced.GlobalStateMutex, __MODULE__)
-    IO.puts("Lock obtained")
+    # IO.puts("Lock obtained")
     superceded_buttons = get_superceded_buttons()
     state = get_state()
     Enum.each(state.players, fn {seat, player} ->
@@ -644,7 +644,7 @@ defmodule RiichiAdvanced.GlobalState do
       end
     end)
     Mutex.release(RiichiAdvanced.GlobalStateMutex, lock)
-    IO.puts("Lock released")
+    # IO.puts("Lock released")
   end
 
   def press_button(seat, button_name) do

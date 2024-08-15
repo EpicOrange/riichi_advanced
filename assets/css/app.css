@@ -110,6 +110,7 @@ div.compass {
   left: calc(50% - (2.375 * var(--tile-size)));
   top: calc(50% - (2.375 * var(--tile-size)));
   transform-origin: 50% 50%;
+  user-select: none;
 }
 div.compass.east {}
 div.compass.south { transform: rotate(90deg); }
@@ -427,6 +428,7 @@ div.win-window {
   float: left;
   pointer-events: none;
   transition: opacity 0.5s ease;
+  user-select: none;
 }
 div.win-window.inactive { opacity: 0; }
 div.win-window::before {
@@ -525,7 +527,7 @@ div.yaku > div.han-counter::before {
   z-index: -1;
   width: 125%;
   height: 160%;
-  left: -17.5%;
+  left: -27.5%;
   top: -37.5%;
 }
 
