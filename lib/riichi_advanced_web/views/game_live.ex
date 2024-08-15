@@ -24,7 +24,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
       socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
       socket = assign(socket, :call_name, Map.new(players, fn {seat, player} -> {seat, player.call_name} end))
-      socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, player.riichi} end))
+      socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, "riichi" in player.status} end))
       socket = assign(socket, :big_text, Map.new(players, fn {seat, player} -> {seat, player.big_text} end))
       {:ok, socket}
     else
@@ -64,6 +64,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@calls[@seat]}
       play_tile={&send(self(), {:play_tile, &1, &2})}
       reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
+      riichi={@riichi[@seat]}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" pond={@ponds[@seat]} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
@@ -172,7 +173,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
     socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
     socket = assign(socket, :call_name, Map.new(state.players, fn {seat, player} -> {seat, player.call_name} end))
-    socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, player.riichi} end))
+    socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, "riichi" in player.status} end))
     socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
 
     {:noreply, socket}

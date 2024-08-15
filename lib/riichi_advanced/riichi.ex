@@ -11,7 +11,7 @@ defmodule Riichi do
   def succ(tile), do: @succ[tile]
 
   def offset_tile(tile, n) do
-    if n == 0 || n < -10 || n > 10 do
+    if (n < 1 && n > -1) || n < -10 || n > 10 do
       normalize_red_five(tile)
     else
       if n < 0 do
@@ -143,52 +143,76 @@ defmodule Riichi do
     end
   end
 
-  # check if hand contains all groups in hand_definition
-  defp _check_hand(hand, hand_definition) do
-    Enum.any?(hand_definition, fn tenpai_def ->
-      Enum.reduce(tenpai_def, [Riichi.normalize_red_fives(hand)], fn [groups, num], all_hands ->
-        Enum.reduce(1..num, all_hands, fn _, hands ->
-          for hand <- hands, group <- groups do
-            Riichi.remove_group(hand, group)
-          end |> Enum.concat()
-        end) |> Enum.uniq_by(fn hand -> Enum.sort(hand) end)
-      end) |> Enum.empty?() |> (&not &1).()
+  defp _remove_hand_definition(hand, hand_definition) do
+    Enum.reduce(hand_definition, [Riichi.normalize_red_fives(hand)], fn [groups, num], all_hands ->
+      Enum.reduce(1..num, all_hands, fn _, hands ->
+        for hand <- hands, group <- groups do
+          Riichi.remove_group(hand, group)
+        end |> Enum.concat()
+      end) |> Enum.uniq_by(fn hand -> Enum.sort(hand) end)
     end)
   end
 
-  def check_hand(hand, hand_definition, key) do
-    case RiichiAdvanced.ETSCache.get({:check_tenpai, hand, key}) do
+  def remove_hand_definition(hand, hand_definition) do
+    case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, hand_definition}) do
       [] -> 
-        result = _check_hand(hand, hand_definition)
-        RiichiAdvanced.ETSCache.put({:check_tenpai, hand, key}, result)
+        result = _remove_hand_definition(hand, hand_definition)
+        RiichiAdvanced.ETSCache.put({:remove_hand_definition, hand, hand_definition}, result)
+        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  result: #{inspect(result)}")
+        result
+      [result] -> result
+    end
+  end
+
+  # check if hand contains all groups in each definition in hand_definitions
+  defp _check_hand(hand, hand_definitions) do
+    Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, hand_definition)) end)
+  end
+
+  def check_hand(hand, hand_definitions, key) do
+    case RiichiAdvanced.ETSCache.get({:check_hand, hand, key}) do
+      [] -> 
+        result = _check_hand(hand, hand_definitions)
+        RiichiAdvanced.ETSCache.put({:check_hand, hand, key}, result)
         # IO.puts("Results:\n  hand: #{inspect(hand)}\n  key: #{inspect(key)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
   end
 
-  def tile_matches(tile, tile_specs) do
+  def tile_matches(tile_specs, context) do
     Enum.any?(tile_specs, &case &1 do
-      "manzu" -> is_manzu?(tile)
-      "pinzu" -> is_pinzu?(tile)
-      "souzu" -> is_souzu?(tile)
-      "jihai" -> is_jihai?(tile)
-      "1" -> is_num?(tile, 1)
-      "2" -> is_num?(tile, 2)
-      "3" -> is_num?(tile, 3)
-      "4" -> is_num?(tile, 4)
-      "5" -> is_num?(tile, 5)
-      "6" -> is_num?(tile, 6)
-      "7" -> is_num?(tile, 7)
-      "8" -> is_num?(tile, 8)
-      "9" -> is_num?(tile, 9)
+      "any" -> true
+      "same" -> context.tile == context.tile2
+      "not_same" -> context.tile != context.tile2
+      "manzu" -> is_manzu?(context.tile)
+      "pinzu" -> is_pinzu?(context.tile)
+      "souzu" -> is_souzu?(context.tile)
+      "jihai" -> is_jihai?(context.tile)
+      "1" -> is_num?(context.tile, 1)
+      "2" -> is_num?(context.tile, 2)
+      "3" -> is_num?(context.tile, 3)
+      "4" -> is_num?(context.tile, 4)
+      "5" -> is_num?(context.tile, 5)
+      "6" -> is_num?(context.tile, 6)
+      "7" -> is_num?(context.tile, 7)
+      "8" -> is_num?(context.tile, 8)
+      "9" -> is_num?(context.tile, 9)
       _   ->
+        # "1m", "2z" are also specs
         if to_tile(&1) != nil do
-          tile == to_tile(&1)
+          context.tile == to_tile(&1)
         else
           IO.puts("Unhandled tile spec #{inspect(&1)}")
           true
         end
+    end)
+  end
+
+  def not_needed_for_hand(hand, tile, hand_definitions) do
+    Enum.any?(hand_definitions, fn hand_definition ->
+      removed = remove_hand_definition(hand, hand_definition)
+      tile in Enum.concat(removed)
     end)
   end
 end

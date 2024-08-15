@@ -10,7 +10,7 @@ defmodule Player do
     deferred_actions: [],
     button_choice: nil,
     big_text: "",
-    riichi: false
+    status: []
   ]
 end
 
@@ -47,9 +47,11 @@ defmodule RiichiAdvanced.GlobalState do
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
     wall = List.insert_at(wall, 52, :"2p")
-    hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
-              :south => Riichi.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
-              :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"2p", :"2p", :"3p", :"4p"]),
+    wall = List.insert_at(wall, 53, :"1z")
+    hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+              :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
+              # :south => Riichi.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
+              :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
               :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
     # hands = %{:east  => Riichi.sort_tiles(Enum.slice(wall, 0..12)),
     #           :south => Riichi.sort_tiles(Enum.slice(wall, 13..25)),
@@ -165,7 +167,7 @@ defmodule RiichiAdvanced.GlobalState do
   def is_playable(seat, tile) do
     state = get_state()
     Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
-      not Riichi.tile_matches(tile, tile_spec) || check_cnf_condition(cond_spec, %{seat: seat})
+      not Riichi.tile_matches(tile_spec, %{tile: tile}) || check_cnf_condition(cond_spec, %{seat: seat, tile: tile})
     end)
   end
 
@@ -178,7 +180,7 @@ defmodule RiichiAdvanced.GlobalState do
       IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       update_player(seat, fn player ->
         %Player{ player |
-                 hand: List.delete_at(player.hand ++ player.draw, index),
+                 hand: Riichi.sort_tiles(List.delete_at(player.hand ++ player.draw, index)),
                  pond: player.pond ++ [tile],
                  draw: [] }
       end)
@@ -372,34 +374,34 @@ defmodule RiichiAdvanced.GlobalState do
     end
   end
 
+  def notify_ai_call_buttons(seat) do
+    state = get_state()
+    if state.winner == nil do
+      if is_pid(state[seat]) && not Enum.empty?(state.players[seat].call_buttons) do
+        IO.puts("Notifying #{seat} AI about their call buttons")
+        send(state[seat], {:call_buttons, %{player: state.players[seat]}})
+      end
+    end
+  end
+
   def notify_ai do
     state = get_state()
     if state.winner == nil do
       # if there are any new buttons for any AI players, notify them
       # otherwise, just tell the current player it's their turn
-      if not Enum.all?(state.players, fn {_seat, player} -> Enum.empty?(player.call_buttons) end) do
+      if no_buttons_remaining?() do
+        if is_pid(state[state.turn]) do
+          IO.puts("Notifying #{state.turn} AI that it's their turn")
+          send(state[state.turn], {:your_turn, %{player: state.players[state.turn]}})
+        end
+      else
         Enum.each([:east, :south, :west, :north], fn seat ->
-          has_buttons = Enum.empty?(state.players[seat].call_buttons)
+          has_buttons = Enum.empty?(state.players[seat].buttons)
           if is_pid(state[seat]) && not has_buttons do
-            IO.puts("Notifying #{seat} AI about their call buttons")
-            send(state[seat], {:call_buttons, %{player: state.players[seat]}})
+            IO.puts("Notifying #{seat} AI about their buttons")
+            send(state[seat], {:buttons, %{player: state.players[seat]}})
           end
         end)
-      else
-        if no_buttons_remaining?() do
-          if is_pid(state[state.turn]) do
-            IO.puts("Notifying #{state.turn} AI that it's their turn")
-            send(state[state.turn], {:your_turn, %{player: state.players[state.turn]}})
-          end
-        else
-          Enum.each([:east, :south, :west, :north], fn seat ->
-            has_buttons = Enum.empty?(state.players[seat].buttons)
-            if is_pid(state[seat]) && not has_buttons do
-              IO.puts("Notifying #{seat} AI about their buttons")
-              send(state[seat], {:buttons, %{player: state.players[seat]}})
-            end
-          end)
-        end
       end
     end
   end
@@ -439,7 +441,8 @@ defmodule RiichiAdvanced.GlobalState do
           "win_by_discard"     -> win(context.seat, get_last_action().tile, :discard)
           "win_by_call"        -> win(context.seat, get_last_action().called_tile, :call)
           "win_by_draw"        -> win(context.seat, state.players[context.seat].draw, :draw)
-          "riichi"             -> update_player(context.seat, fn player -> %Player{ player | riichi: true } end)
+          "set_status"         -> update_player(context.seat, fn player -> %Player{ player | status: player.status ++ opts } end)
+          "unset_status"       -> update_player(context.seat, fn player -> %Player{ player | status: player.status -- opts } end)
           "big_text"           -> temp_display_big_text(context.seat, Enum.at(opts, 0, ""))
           "pause"              -> update_state(&Map.put(&1, :paused, true))
           _                    -> IO.puts("Unhandled action #{action}")
@@ -508,40 +511,43 @@ defmodule RiichiAdvanced.GlobalState do
   def check_condition(cond_spec, context \\ %{}, opts \\ []) do
     state = get_state()
     result = case cond_spec do
-      "our_turn"               -> state.turn == context.seat
-      "not_our_turn"           -> state.turn != context.seat
-      "our_turn_is_next"       -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
-      "our_turn_is_not_next"   -> state.turn != if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
-      "our_turn_is_prev"       -> state.turn == if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
-      "our_turn_is_not_prev"   -> state.turn != if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
-      "kamicha_discarded"      -> get_last_action().action == :discard && get_last_action().seat == state.turn && state.turn == Utils.prev_turn(context.seat)
-      "someone_else_discarded" -> get_last_action().action == :discard && get_last_action().seat == state.turn && state.turn != context.seat
-      "call_available"         -> get_last_action().action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [get_last_action().tile])
-      "self_call_available"    -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
-      "hand_matches"           -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
-      "discard_matches"        -> get_last_action().action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
-      "game_start"             -> get_last_action().action == nil
-      "last_discard_matches"   -> get_last_action().action == :discard && Riichi.tile_matches(get_last_action().tile, opts)
-      "call_matches"           -> get_last_action().action == :call && get_last_action().call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().called_tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
-      "can_upgrade_call"       -> state.players[context.seat].calls
+      "our_turn"                 -> state.turn == context.seat
+      "not_our_turn"             -> state.turn != context.seat
+      "our_turn_is_next"         -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
+      "our_turn_is_not_next"     -> state.turn != if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
+      "our_turn_is_prev"         -> state.turn == if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
+      "our_turn_is_not_prev"     -> state.turn != if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
+      "game_start"               -> get_last_action().action == nil
+      "kamicha_discarded"        -> get_last_action().action == :discard && get_last_action().seat == state.turn && state.turn == Utils.prev_turn(context.seat)
+      "someone_else_discarded"   -> get_last_action().action == :discard && get_last_action().seat == state.turn && state.turn != context.seat
+      "did_not_call"             -> get_last_action().action != :call
+      "call_available"           -> get_last_action().action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [get_last_action().tile])
+      "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
+      "hand_matches_hand"        -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
+      "discard_matches_hand"     -> get_last_action().action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
+      "call_matches_hand"        -> get_last_action().action == :call && get_last_action().call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [get_last_action().called_tile], get_hand_definition(name <> "_definition"), String.to_atom(name)) end)
+      "last_discard_matches"     -> get_last_action().action == :discard && Riichi.tile_matches(opts, %{tile: context.tile, tile2: get_last_action().tile})
+      "last_called_tile_matches" -> get_last_action().action == :call && Riichi.tile_matches(opts, %{tile: context.tile, tile2: get_last_action().called_tile})
+      "not_needed_for_hand"      -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, context.tile, get_hand_definition(name <> "_definition")) end)
+      "can_upgrade_call"         -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.any?(fn {_name, call} ->
           call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
           Riichi.can_call?(context.calls_spec, call_tiles, state.players[context.seat].hand ++ state.players[context.seat].draw)
         end)
-      "have_draw"              -> not Enum.empty?(state.players[context.seat].draw)
-      "not_furiten"            -> true
-      "has_yaku"               -> true
-      "in_riichi"              -> state.players[context.seat].riichi
-      "not_in_riichi"          -> not state.players[context.seat].riichi
-      "has_calls"              -> not Enum.empty?(state.players[context.seat].calls)
-      "no_calls"               -> Enum.empty?(state.players[context.seat].calls)
-      "has_call_named"         -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name in opts end)
-      "has_no_call_named"      -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name not in opts end)
-      "won_by_call"            -> context.win_source == :call
-      "won_by_draw"            -> context.win_source == :draw
-      "won_by_discard"         -> context.win_source == :discard
-      _                        ->
+      "have_draw"                -> not Enum.empty?(state.players[context.seat].draw)
+      "not_furiten"              -> true
+      "has_yaku"                 -> true
+      "has_calls"                -> not Enum.empty?(state.players[context.seat].calls)
+      "no_calls"                 -> Enum.empty?(state.players[context.seat].calls)
+      "has_call_named"           -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name in opts end)
+      "has_no_call_named"        -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name not in opts end)
+      "won_by_call"              -> context.win_source == :call
+      "won_by_draw"              -> context.win_source == :draw
+      "won_by_discard"           -> context.win_source == :discard
+      "status"                   -> Enum.all?(opts, fn st -> st in state.players[context.seat].status end)
+      "not_status"               -> Enum.all?(opts, fn st -> st not in state.players[context.seat].status end)
+      _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
     end
@@ -639,8 +645,8 @@ defmodule RiichiAdvanced.GlobalState do
         if Enum.all?(state.players, fn {_seat, player} -> Enum.empty?(player.call_buttons) end) do
           run_deferred_actions()
         else
-          # otherwise, check if any AI needs notifying about their call buttons
-          notify_ai()
+          # otherwise, check if our AI needs notifying about their call buttons
+          notify_ai_call_buttons(seat)
         end
       end
     end
