@@ -586,8 +586,10 @@ defmodule RiichiAdvanced.GlobalState do
   end
 
   def adjudicate_buttons() do
-    state = get_state()
+    lock = Mutex.await(RiichiAdvanced.GlobalStateMutex, __MODULE__)
+    IO.puts("Lock obtained")
     superceded_buttons = get_superceded_buttons()
+    state = get_state()
     Enum.each(state.players, fn {seat, player} ->
       button_name = player.button_choice
       # only trigger buttons that aren't overridden
@@ -625,6 +627,8 @@ defmodule RiichiAdvanced.GlobalState do
         end
       end
     end)
+    Mutex.release(RiichiAdvanced.GlobalStateMutex, lock)
+    IO.puts("Lock released")
   end
 
   def press_button(seat, button_name) do

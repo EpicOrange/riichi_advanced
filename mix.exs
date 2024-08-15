@@ -52,6 +52,7 @@ defmodule RiichiAdvanced.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:debounce, "~> 1.0.0"},
+      {:mutex, "~> 2.0.0"},
     ]
   end
 
