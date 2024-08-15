@@ -91,21 +91,21 @@
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": ["kamicha_discarded", "call_available"],
+      "show_when": ["not_our_turn", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]],
       "precedence_over": []
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
-      "show_when": ["someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", "someone_else_discarded", "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "show_when": ["someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", "someone_else_discarded", "call_available"],
       "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"], ["draw"]],
       "precedence_over": ["chii", "pon"]
     },
@@ -113,7 +113,7 @@
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
       "show_when": ["our_turn", "have_draw", "self_call_available"],
-      "actions": [["big_text", "Kan"], ["self_call"], ["change_turn", "self"], ["draw"]],
+      "actions": [["big_text", "Kan"], ["self_call"], ["draw"]],
       "precedence_over": []
     },
     "kakan": {
@@ -121,13 +121,13 @@
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": ["our_turn", "have_draw", "can_upgrade_call"],
-      "actions": [["big_text", "Kan"], ["upgrade_call"], ["change_turn", "self"], ["draw"]],
+      "actions": [["big_text", "Kan"], ["upgrade_call"], ["draw"]],
       "precedence_over": []
     },
     "riichi": {
       "display_name": "Riichi",
       "show_when": ["our_turn", "have_draw", "not_in_riichi", {"name": "hand_matches", "opts": ["tenpai", "kokushi_tenpai"]}],
-      "actions": [["big_text", "Riichi"], ["riichi"], ["change_turn", "self"]],
+      "actions": [["big_text", "Riichi"], ["riichi"]],
       "precedence_over": []
     },
     "ron": {

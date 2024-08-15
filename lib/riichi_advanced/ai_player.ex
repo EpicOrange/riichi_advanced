@@ -15,7 +15,7 @@ defmodule RiichiAdvanced.AIPlayer do
     index = Enum.random(1..length(player.hand)) - 1
     tile = Enum.at(player.hand, index)
     IO.puts("#{state.seat}: It's my turn to play a tile! #{inspect(player.hand)} / chose: #{inspect(tile)}")
-    Process.sleep(2000)
+    Process.sleep(1500)
     RiichiAdvanced.GlobalState.run_actions([["play_tile", tile, index], ["advance_turn"]], %{seat: state.seat})
     {:noreply, state}
   end
@@ -23,9 +23,11 @@ defmodule RiichiAdvanced.AIPlayer do
   def handle_info({:buttons, %{player: player}}, state) do
     state = %{ state | player: player }
     # pick a random button
-    button_name = Enum.random(player.buttons)
+    # button_name = Enum.random(player.buttons)
+    # pick the first button
+    button_name = Enum.at(player.buttons, 0)
     IO.puts("#{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
-    Process.sleep(200)
+    Process.sleep(5000)
     RiichiAdvanced.GlobalState.press_button(state.seat, button_name)
     {:noreply, state}
   end
@@ -39,7 +41,7 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.random()
     call_choice = Enum.random(player.call_buttons[called_tile])
     IO.puts("#{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
-    Process.sleep(200)
+    Process.sleep(5000)
     RiichiAdvanced.GlobalState.run_actions([], %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile})
     {:noreply, state}
   end

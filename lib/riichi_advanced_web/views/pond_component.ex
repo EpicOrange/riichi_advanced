@@ -22,6 +22,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
       socket = assign(socket, :last_tile, assigns.played_tile)
       {:ok, socket}
     else
+      socket = assign(socket, :last_tile, nil)
       {:ok, socket}
     end
   end
