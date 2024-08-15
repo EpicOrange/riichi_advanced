@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {tile, index} = Enum.random(playable_hand ++ playable_draw)
     # pick the first playable tile
     # {tile, index} = Enum.at(playable_hand ++ playable_draw, 0)
-    # IO.puts("#{state.seat}: It's my turn to play a tile! #{inspect(player.hand)} / chose: #{inspect(tile)}")
+    IO.puts("#{state.seat}: It's my turn to play a tile! #{inspect(player.hand)} / chose: #{inspect(tile)}")
     Process.sleep(1500)
     RiichiAdvanced.GlobalState.run_actions([["play_tile", tile, index], ["advance_turn"]], %{seat: state.seat})
     {:noreply, state}
@@ -34,9 +34,9 @@ defmodule RiichiAdvanced.AIPlayer do
     button_name = Enum.random(player.buttons)
     # pick the first button
     # button_name = Enum.at(player.buttons, 0)
-    # IO.puts("#{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
+    IO.puts("#{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
-    RiichiAdvanced.GlobalState.press_button(state.seat, button_name)
+    RiichiAdvanced.GlobalState.run_actions([["press_button", button_name]], %{seat: state.seat})
     {:noreply, state}
   end
 
@@ -48,9 +48,9 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.filter(fn tile -> not Enum.empty?(player.call_buttons[tile]) end)
       |> Enum.random()
     call_choice = Enum.random(player.call_buttons[called_tile])
-    # IO.puts("#{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
+    IO.puts("#{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
     Process.sleep(500)
-    RiichiAdvanced.GlobalState.run_actions([], %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile})
+    RiichiAdvanced.GlobalState.run_deferred_actions(%{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile})
     {:noreply, state}
   end
 end

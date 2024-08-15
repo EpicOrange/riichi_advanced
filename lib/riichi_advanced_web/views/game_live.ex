@@ -22,6 +22,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :calls, Map.new(players, fn {seat, player} -> {seat, player.calls} end))
       socket = assign(socket, :draws, Map.new(players, fn {seat, player} -> {seat, player.draw} end))
       socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
+      socket = assign(socket, :auto_buttons, Map.new(players, fn {seat, player} -> {seat, player.auto_buttons} end))
       socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
       socket = assign(socket, :call_name, Map.new(players, fn {seat, player} -> {seat, player.call_name} end))
       socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, "riichi" in player.status} end))
@@ -43,6 +44,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :calls, empty_lists)
       socket = assign(socket, :draws, empty_lists)
       socket = assign(socket, :buttons, empty_lists)
+      socket = assign(socket, :auto_buttons, empty_lists)
       socket = assign(socket, :call_buttons, empty_maps)
       socket = assign(socket, :call_name, empty_strs)
       socket = assign(socket, :riichi, empty_bools)
@@ -102,6 +104,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     <div class="buttons">
       <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
     </div>
+    <div class="auto-buttons">
+      <%= for {name, checked} <- @auto_buttons[@seat] do %>
+        <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
+        <label for={"auto-button-" <> name}><%= RiichiAdvanced.GlobalState.get_auto_button_display_name(name) %></label>
+      <% end %>
+    </div>
     <div class="call-buttons-container">
       <%= for {called_tile, choices} <- @call_buttons[@seat] do %>
         <%= if not Enum.empty?(choices) do %>
@@ -125,13 +133,19 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
-    RiichiAdvanced.GlobalState.press_button(socket.assigns.seat, name)
+    RiichiAdvanced.GlobalState.run_actions([["press_button", name]], %{seat: socket.assigns.seat})
+    {:noreply, socket}
+  end
+
+  def handle_event("auto_button_toggled", %{"name" => name, "enabled" => enabled}, socket) do
+    enabled = enabled == "true"
+    RiichiAdvanced.GlobalState.toggle_auto_button(socket.assigns.seat, name, not enabled)
     {:noreply, socket}
   end
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Riichi.to_tile/1)
-    RiichiAdvanced.GlobalState.run_actions([], %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)})
+    RiichiAdvanced.GlobalState.run_deferred_actions(%{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)})
     {:noreply, socket}
   end
 
@@ -171,6 +185,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
     socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
     socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
+    socket = assign(socket, :auto_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.auto_buttons} end))
     socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
     socket = assign(socket, :call_name, Map.new(state.players, fn {seat, player} -> {seat, player.call_name} end))
     socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, "riichi" in player.status} end))

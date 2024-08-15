@@ -1,4 +1,4 @@
-body {
+html, body {
   box-sizing: border-box;
   background: black;
   font-family: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
@@ -6,28 +6,29 @@ body {
 }
 
 main {
-  max-width: calc(100vw - 8rem);
-  max-height: calc(100vh - 8rem);
+  max-width: 80vw;
+  max-height: 80vh;
   aspect-ratio: 1/1;
-  margin: 4rem auto;
+  margin: 10vh auto;
 
-  --tile-size: min(calc((100vw - 8rem) / 16), calc((100vh - 8rem) / 16));
+  --tile-size: min(calc(80vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
   --tile-front-side: #f0ece7;
   --tile-back: #f0974c;
   --tile-back-side: #f0974c;
   position: relative;
+  z-index: 1;
 }
 main::before {
   content: "";
   position: absolute;
-  top: -1rem;
-  left: -1rem;
+  top: calc(-0.5 * var(--tile-size));
+  left: calc(-0.5 * var(--tile-size));
   background: #0f6f2f;
   border-radius: 1rem;
-  width: calc(100% + 2rem);
-  height: calc(100% + 2rem);
-  z-index: -100;
+  width: calc(100% + var(--tile-size));
+  height: calc(100% + var(--tile-size));
+  z-index: -1;
 }
 
 /* hands */
@@ -354,7 +355,7 @@ div.tile.sideways + div.tile.sideways::before {
 }
 
 
-/* buttons and call choice buttons */
+/* buttons, auto buttons, and call choice buttons */
 div.call-buttons-container {
   display: flex;
   flex-direction: column-reverse;
@@ -391,6 +392,20 @@ div.buttons > button {
 div.call-buttons > button {
   padding-top: calc(0.25 * var(--tile-size));
 }
+div.auto-buttons {
+  position: absolute;
+  font-size: calc(0.5 * var(--tile-size));
+  bottom: calc(-1.25 * var(--tile-size));
+  left: 0;
+}
+div.auto-buttons > input { display: none; }
+div.auto-buttons > label {
+  background: gray;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+}
+div.auto-buttons > input:checked + label { background: var(--tile-back); }
+
 
 /* big text */
 @keyframes textFade {
