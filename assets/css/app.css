@@ -294,11 +294,18 @@ div.tile.inactive {
   opacity: 0.6;
 }
 /* tile animations */
+@keyframes tilePlayed {
+  80% {
+    width: var(--tile-width);
+  }
+  100% {
+    width: 0;
+  }
+}
 div.tile.removed {
   background: transparent;
   filter: none;
-  width: 0;
-  transition: width 0.2s ease;
+  animation: tilePlayed 1s ease forwards;
 }
 div.tile.removed ~ div.tile.draw {
   margin-left: 0;

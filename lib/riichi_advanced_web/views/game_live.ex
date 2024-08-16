@@ -149,10 +149,9 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:play_tile, tile, index}, socket) do
-    IO.inspect(socket.assigns)
+  def handle_info({:play_tile, _tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.turn do
-      GenServer.cast(RiichiAdvanced.GameState, {:run_actions, [["play_tile", tile, index], ["advance_turn"]], %{seat: socket.assigns.seat}})
+      GenServer.cast(RiichiAdvanced.GameState, {:play_tile, socket.assigns.seat, index})
     end
     {:noreply, socket}
   end

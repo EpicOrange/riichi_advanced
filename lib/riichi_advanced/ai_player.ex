@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.AIPlayer do
     # {tile, index} = Enum.at(playable_hand ++ playable_draw, 0)
     IO.puts("#{state.seat}: It's my turn to play a tile! #{inspect(player.hand)} / chose: #{inspect(tile)}")
     Process.sleep(1500)
-    GenServer.cast(RiichiAdvanced.GameState, {:run_actions, [["play_tile", tile, index], ["advance_turn"]], %{seat: state.seat}})
+    GenServer.cast(RiichiAdvanced.GameState, {:play_tile, state.seat, index})
     {:noreply, state}
   end
 
