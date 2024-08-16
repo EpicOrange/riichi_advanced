@@ -8,7 +8,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
 
-      [turn, players, seat, shimocha, toimen, kamicha] = RiichiAdvanced.GlobalState.new_player(socket)
+      [turn, players, seat, shimocha, toimen, kamicha] = GenServer.call(RiichiAdvanced.GameState, {:new_player, socket})
 
       socket = assign(socket, :loading, false)
       socket = assign(socket, :player_id, socket.id)
@@ -102,12 +102,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} riichi={@riichi} />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" winner={@winner}/>
     <div class="buttons">
-      <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= RiichiAdvanced.GlobalState.get_button_display_name(name) %></button>
+      <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(RiichiAdvanced.GameState, {:get_button_display_name, name}) %></button>
     </div>
     <div class="auto-buttons">
       <%= for {name, checked} <- @auto_buttons[@seat] do %>
         <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-        <label for={"auto-button-" <> name}><%= RiichiAdvanced.GlobalState.get_auto_button_display_name(name) %></label>
+        <label for={"auto-button-" <> name}><%= GenServer.call(RiichiAdvanced.GameState, {:get_auto_button_display_name, name}) %></label>
       <% end %>
     </div>
     <div class="call-buttons-container">
@@ -133,30 +133,31 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
-    RiichiAdvanced.GlobalState.run_actions([["press_button", name]], %{seat: socket.assigns.seat})
+    GenServer.cast(RiichiAdvanced.GameState, {:press_button, socket.assigns.seat, name})
     {:noreply, socket}
   end
 
   def handle_event("auto_button_toggled", %{"name" => name, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
-    RiichiAdvanced.GlobalState.toggle_auto_button(socket.assigns.seat, name, not enabled)
+    GenServer.cast(RiichiAdvanced.GameState, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
     {:noreply, socket}
   end
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Riichi.to_tile/1)
-    RiichiAdvanced.GlobalState.run_deferred_actions(%{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)})
+    GenServer.cast(RiichiAdvanced.GameState, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)}})
     {:noreply, socket}
   end
 
   def handle_info({:play_tile, tile, index}, socket) do
+    IO.inspect(socket.assigns)
     if socket.assigns.seat == socket.assigns.turn do
-      RiichiAdvanced.GlobalState.run_actions([["play_tile", tile, index], ["advance_turn"]], %{seat: socket.assigns.seat})
+      GenServer.cast(RiichiAdvanced.GameState, {:run_actions, [["play_tile", tile, index], ["advance_turn"]], %{seat: socket.assigns.seat}})
     end
     {:noreply, socket}
   end
   def handle_info({:reindex_hand, from, to}, socket) do
-    RiichiAdvanced.GlobalState.reindex_hand(socket.assigns.seat, from, to)
+    GenServer.cast(RiichiAdvanced.GameState, {:reindex_hand, socket.assigns.seat, from, to})
     {:noreply, socket}
   end
 

@@ -139,6 +139,7 @@
                     {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
                     "has_yaku",
                     "not_furiten",
+                    {"name": "not_status", "opts": ["just_reached"]},
                     "someone_else_discarded",
                     {"name": "discard_matches_hand", "opts": ["win"]}
                     ],
@@ -150,6 +151,7 @@
       "show_when": ["not_our_turn",
                     {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
                     "not_furiten",
+                    {"name": "not_status", "opts": ["just_reached"]},
                     [
                       {"name": "call_matches_hand", "opts": ["kakan", ["win"]]},
                       [
@@ -165,6 +167,7 @@
       "show_when": ["our_turn",
                     {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
                     "has_yaku",
+                    {"name": "not_status", "opts": ["just_reached"]},
                     {"name": "hand_matches_hand", "opts": ["win"]}],
       "actions": [["big_text", "Tsumo"], ["pause", 1000], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]

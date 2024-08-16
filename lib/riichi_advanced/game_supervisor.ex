@@ -9,54 +9,54 @@ defmodule RiichiAdvanced.GameSupervisor do
     children = [
       {Mutex, name: RiichiAdvanced.GlobalStateMutex},
       {RiichiAdvanced.AISupervisor, name: RiichiAdvanced.AISupervisor},
-      RiichiAdvanced.GlobalState,
+      RiichiAdvanced.GameState,
       RiichiAdvanced.ExitMonitor,
       RiichiAdvanced.ETSCache,
       %{
         id: PlayTileDebounceEast,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_state, [&Map.update!(&1, :play_tile_debounce, fn dbs -> Map.put(dbs, :east, false) end)]}, 100, [name: PlayTileDebounceEast]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :east}]}, 100, [name: PlayTileDebounceEast]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: PlayTileDebounceSouth,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_state, [&Map.update!(&1, :play_tile_debounce, fn dbs -> Map.put(dbs, :south, false) end)]}, 100, [name: PlayTileDebounceSouth]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :south}]}, 100, [name: PlayTileDebounceSouth]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: PlayTileDebounceWest,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_state, [&Map.update!(&1, :play_tile_debounce, fn dbs -> Map.put(dbs, :west, false) end)]}, 100, [name: PlayTileDebounceWest]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :west}]}, 100, [name: PlayTileDebounceWest]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: PlayTileDebounceNorth,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_state, [&Map.update!(&1, :play_tile_debounce, fn dbs -> Map.put(dbs, :north, false) end)]}, 100, [name: PlayTileDebounceNorth]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :north}]}, 100, [name: PlayTileDebounceNorth]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: BigTextDebounceEast,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_player, [:east, &Map.put(&1, :big_text, "")]}, 1500, [name: BigTextDebounceEast]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :east}]}, 1500, [name: BigTextDebounceEast]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: BigTextDebounceSouth,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_player, [:south, &Map.put(&1, :big_text, "")]}, 1500, [name: BigTextDebounceSouth]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_big_text, :south}]}, 1500, [name: BigTextDebounceSouth]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: BigTextDebounceWest,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_player, [:west, &Map.put(&1, :big_text, "")]}, 1500, [name: BigTextDebounceWest]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_big_text, :west}]}, 1500, [name: BigTextDebounceWest]]},
         type: :worker,
         restart: :transient
       },
       %{
         id: BigTextDebounceNorth,
-        start: {Debounce, :start_link, [{RiichiAdvanced.GlobalState, :update_player, [:north, &Map.put(&1, :big_text, "")]}, 1500, [name: BigTextDebounceNorth]]},
+        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_big_text, :north}]}, 1500, [name: BigTextDebounceNorth]]},
         type: :worker,
         restart: :transient
       },

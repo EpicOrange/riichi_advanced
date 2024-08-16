@@ -21,7 +21,7 @@ defmodule RiichiAdvancedWeb.CompassComponent do
   end
 
   def handle_event("set_turn", _assigns, socket) do
-    RiichiAdvanced.GlobalState.change_turn(socket.assigns.seat)
+    GenServer.cast(RiichiAdvanced.GameState, {:change_turn, socket.assigns.seat})
     {:noreply, socket}
   end
 

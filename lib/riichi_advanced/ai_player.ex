@@ -13,10 +13,10 @@ defmodule RiichiAdvanced.AIPlayer do
     state = %{ state | player: player }
     playable_hand = player.hand
       |> Enum.with_index()
-      |> Enum.filter(fn {tile, _i} -> RiichiAdvanced.GlobalState.is_playable(state.seat, tile, :hand) end)
+      |> Enum.filter(fn {tile, _i} -> GenServer.call(RiichiAdvanced.GameState, {:is_playable, state.seat, tile, :hand}) end)
     playable_draw = player.draw
       |> Enum.with_index()
-      |> Enum.filter(fn {tile, _i} -> RiichiAdvanced.GlobalState.is_playable(state.seat, tile, :draw) end)
+      |> Enum.filter(fn {tile, _i} -> GenServer.call(RiichiAdvanced.GameState, {:is_playable, state.seat, tile, :draw}) end)
 
     # pick a random tile
     {tile, index} = Enum.random(playable_hand ++ playable_draw)
@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.AIPlayer do
     # {tile, index} = Enum.at(playable_hand ++ playable_draw, 0)
     IO.puts("#{state.seat}: It's my turn to play a tile! #{inspect(player.hand)} / chose: #{inspect(tile)}")
     Process.sleep(1500)
-    RiichiAdvanced.GlobalState.run_actions([["play_tile", tile, index], ["advance_turn"]], %{seat: state.seat})
+    GenServer.cast(RiichiAdvanced.GameState, {:run_actions, [["play_tile", tile, index], ["advance_turn"]], %{seat: state.seat}})
     {:noreply, state}
   end
 
@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.AIPlayer do
     # button_name = Enum.at(player.buttons, 0)
     IO.puts("#{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
-    RiichiAdvanced.GlobalState.run_actions([["press_button", button_name]], %{seat: state.seat})
+    GenServer.cast(RiichiAdvanced.GameState, {:press_button, state.seat, button_name})
     {:noreply, state}
   end
 
@@ -50,7 +50,7 @@ defmodule RiichiAdvanced.AIPlayer do
     call_choice = Enum.random(player.call_buttons[called_tile])
     IO.puts("#{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
     Process.sleep(500)
-    RiichiAdvanced.GlobalState.run_deferred_actions(%{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile})
+    GenServer.cast(RiichiAdvanced.GameState, {:run_deferred_actions, %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile}})
     {:noreply, state}
   end
 end

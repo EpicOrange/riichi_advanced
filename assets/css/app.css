@@ -112,6 +112,7 @@ div.compass {
   top: calc(50% - (2.375 * var(--tile-size)));
   transform-origin: 50% 50%;
   user-select: none;
+  z-index: 2
 }
 div.compass.east {}
 div.compass.south { transform: rotate(90deg); }

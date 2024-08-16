@@ -16,7 +16,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
             <%= if removed do %>
               <div class={["tile", tile, "removed"]} data-id={i}></div>
             <% else %>
-              <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(@seat, tile, :hand) do %>
+              <%= if not @your_turn? || GenServer.call(RiichiAdvanced.GameState, {:is_playable, @seat, tile, :hand}) do %>
                 <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
               <% else %>
                 <div class={["tile", tile, "inactive"]} data-id={i}></div>
@@ -26,7 +26,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         </div>
         <div class="draws">
           <%= for {tile, i} <- prepare_draw(assigns) do %>
-            <%= if not @your_turn? || RiichiAdvanced.GlobalState.is_playable(@seat, tile, :draw) do %>
+            <%= if not @your_turn? || GenServer.call(RiichiAdvanced.GameState, {:is_playable, @seat, tile, :draw}) do %>
               <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
             <% else %>
               <div class={["tile", tile, "inactive"]}></div>
