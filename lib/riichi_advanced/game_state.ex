@@ -58,13 +58,15 @@ defmodule RiichiAdvanced.GameState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.insert_at(wall, 52, :"2p")
+    wall = List.insert_at(wall, 52, :"0p")
     # wall = List.insert_at(wall, 53, :"1z")
     hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"3p", :"4p"]),
-              :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
+              # :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :south => Riichi.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
+              :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"4p", :"5p"]),
+              :south => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"6p", :"7p"]),
               # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
-              :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
+              # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
     # hands = %{:east  => Enum.slice(wall, 0..12),
     #           :south => Enum.slice(wall, 13..25),
@@ -111,7 +113,7 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  defp is_playable(state, seat, tile, tile_source) do
+  defp is_playable?(state, seat, tile, tile_source) do
     Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
       not Riichi.tile_matches(tile_spec, %{tile: tile}) || check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})
     end)
@@ -119,7 +121,7 @@ defmodule RiichiAdvanced.GameState do
 
   defp play_tile(state, seat, tile, index) do
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
-    if is_playable(state, seat, tile, tile_source) && state.play_tile_debounce[seat] == false do
+    if is_playable?(state, seat, tile, tile_source) && state.play_tile_debounce[seat] == false do
       # assume we're skipping our button choices
       state = update_player(state, seat, &%Player{ &1 | buttons: %{}, call_buttons: %{}, call_name: "" })
       if no_buttons_remaining?(state) do
@@ -181,7 +183,7 @@ defmodule RiichiAdvanced.GameState do
       # # check if any tiles are playable for this next player
       # state = get_state()
       # if Map.has_key?(state.rules, "on_no_valid_tiles") do
-      #   if not Enum.any?(state.players[seat].hand ++ state.players[seat].draw, fn tile -> is_playable(seat, tile) end) do
+      #   if not Enum.any?(state.players[seat].hand ++ state.players[seat].draw, fn tile -> is_playable?(seat, tile) end) do
       #     schedule_actions(seat, state.rules["on_no_valid_tiles"]["actions"])
       #   end
       # end
@@ -289,7 +291,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  defp notify_ai(state) do
+  def notify_ai(state) do
     if state.initialized && state.winner == nil do
       # if there are any new buttons for any AI players, notify them
       # otherwise, just tell the current player it's their turn
@@ -699,7 +701,7 @@ defmodule RiichiAdvanced.GameState do
     {:reply, :ok, state}
   end
 
-  def handle_call({:is_playable, seat, tile, tile_source}, _from, state), do: {:reply, is_playable(state, seat, tile, tile_source), state}
+  def handle_call({:is_playable, seat, tile, tile_source}, _from, state), do: {:reply, is_playable?(state, seat, tile, tile_source), state}
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
   
@@ -747,7 +749,11 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:play_tile, seat, index}, state) do
     tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
-    state = if state.turn == seat && is_playable(state, seat, tile, tile_source) do
+    playable = is_playable?(state, seat, tile, tile_source)
+    if not playable do
+      IO.puts("#{seat} tried to play an unplayable tile: #{tile} from #{tile_source}")
+    end
+    state = if state.turn == seat && playable do
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = submit_actions(state, seat, "play_tile", actions)
       broadcast_state_change(state)
