@@ -212,7 +212,7 @@ defmodule Riichi do
   def not_needed_for_hand(hand, tile, hand_definitions) do
     Enum.any?(hand_definitions, fn hand_definition ->
       removed = remove_hand_definition(hand, hand_definition)
-      tile in Enum.concat(removed)
+      normalize_red_five(tile) in Enum.concat(removed)
     end)
   end
 end
