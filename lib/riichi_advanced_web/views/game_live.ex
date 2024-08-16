@@ -160,13 +160,6 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info(%{topic: "game:main", event: "played_tile", payload: %{"seat" => seat, "tile" => tile, "index" => index}}, socket) do
-    relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
-    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", played_tile: tile, played_tile_index: index)
-    send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
-    {:noreply, socket}
-  end
-
   def handle_info(%{topic: "game:main", event: "state_updated", payload: %{"state" => state}}, socket) do
     # animate new calls
     num_calls_before = Map.new(socket.assigns.calls, fn {seat, calls} -> {seat, length(calls)} end)
@@ -175,6 +168,16 @@ defmodule RiichiAdvancedWeb.GameLive do
       if num_calls_after[seat] > num_calls_before[seat] do
         relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
         send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", num_new_calls: num_calls_after[seat] - num_calls_before[seat])
+      end
+    end)
+
+    # animate played tiles
+    Enum.each(state.players, fn {seat, player} ->
+      if player.last_discard != nil do
+        {tile, index} = player.last_discard
+        relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
+        send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
+        send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
       end
     end)
 
@@ -191,6 +194,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, "riichi" in player.status} end))
     socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
 
+    {:noreply, socket}
+  end
+
+  def handle_info({:reset_anim, hand, seat}, socket) do
+    relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
+    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: hand, played_tile: nil, played_tile_index: nil)
     {:noreply, socket}
   end
 

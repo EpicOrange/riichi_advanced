@@ -295,7 +295,7 @@ div.tile.inactive {
 }
 /* tile animations */
 @keyframes tilePlayed {
-  80% {
+  67% {
     width: var(--tile-width);
   }
   100% {
@@ -305,7 +305,7 @@ div.tile.inactive {
 div.tile.removed {
   background: transparent;
   filter: none;
-  animation: tilePlayed 1s ease forwards;
+  animation: tilePlayed 0.75s ease forwards;
 }
 div.tile.removed ~ div.tile.draw {
   margin-left: 0;

@@ -2,7 +2,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
+    socket = assign(socket, :played_tile, nil)
     socket = assign(socket, :played_tile_index, nil)
+    socket = assign(socket, :animating_played_tile, false)
     socket = assign(socket, :num_new_calls, 0)
     {:ok, socket}
   end
@@ -72,7 +74,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     # map tiles to [{index, tile, is_last_discard}]
     assigns.hand
       |> Enum.with_index
-      |> Enum.map(fn {tile, i} -> {i, tile, i == assigns.played_tile_index} end)
+      |> Enum.map(fn {tile, i} -> {if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end, tile, i == assigns.played_tile_index} end)
   end
 
   def prepare_draw(assigns) do
@@ -85,13 +87,18 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assigns
              |> Map.drop([:flash])
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
-    if Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index < length(socket.assigns.hand) do
-      # Animate the last tile
-      socket = assign(socket, :hand, List.insert_at(socket.assigns.hand, assigns.played_tile_index, assigns.played_tile))
-      {:ok, socket}
-    else
-      socket = assign(socket, :played_tile_index, nil)
-      {:ok, socket}
-    end
+
+    # animate played tile by inserting an invisible tile at its index
+    # this gets undone after 750ms
+    socket = if Map.has_key?(socket.assigns, :played_tile_index) do
+      socket = if socket.assigns.played_tile_index != nil do
+        actual_hand = socket.assigns.hand
+        socket = assign(socket, :hand, List.insert_at(actual_hand, socket.assigns.played_tile_index, socket.assigns.played_tile))
+        :timer.apply_after(750, Kernel, :send, [self(), {:reset_anim, actual_hand, socket.assigns.seat}])
+        socket
+      else socket end
+      socket
+    else socket end
+    {:ok, socket}
   end
 end
