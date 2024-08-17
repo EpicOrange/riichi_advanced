@@ -8,7 +8,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
 
-      [turn, players, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(RiichiAdvanced.GameState, {:new_player, socket})
+      [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+      [turn, players, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:new_player, socket})
 
       socket = assign(socket, :loading, false)
       socket = assign(socket, :player_id, socket.id)
@@ -57,6 +58,8 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   # Render the template using the assigned state
   def render(assigns) do
+    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+    assigns = assign(assigns, :game_state, game_state)
     ~H"""
     <%= if not @spectator do %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
@@ -117,12 +120,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" winner={@winner}/>
     <%= if not @spectator do %>
       <div class="buttons">
-        <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(RiichiAdvanced.GameState, {:get_button_display_name, name}) %></button>
+        <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
       </div>
       <div class="auto-buttons">
         <%= for {name, checked} <- @auto_buttons[@seat] do %>
           <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-          <label for={"auto-button-" <> name}><%= GenServer.call(RiichiAdvanced.GameState, {:get_auto_button_display_name, name}) %></label>
+          <label for={"auto-button-" <> name}><%= GenServer.call(@game_state, {:get_auto_button_display_name, name}) %></label>
         <% end %>
       </div>
       <div class="call-buttons-container">
@@ -149,30 +152,35 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
-    GenServer.cast(RiichiAdvanced.GameState, {:press_button, socket.assigns.seat, name})
+    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+    GenServer.cast(game_state, {:press_button, socket.assigns.seat, name})
     {:noreply, socket}
   end
 
   def handle_event("auto_button_toggled", %{"name" => name, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
-    GenServer.cast(RiichiAdvanced.GameState, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
+    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+    GenServer.cast(game_state, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
     {:noreply, socket}
   end
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Riichi.to_tile/1)
-    GenServer.cast(RiichiAdvanced.GameState, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)}})
+    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+    GenServer.cast(game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)}})
     {:noreply, socket}
   end
 
   def handle_info({:play_tile, _tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.turn do
-      GenServer.cast(RiichiAdvanced.GameState, {:play_tile, socket.assigns.seat, index})
+    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+      GenServer.cast(game_state, {:play_tile, socket.assigns.seat, index})
     end
     {:noreply, socket}
   end
   def handle_info({:reindex_hand, from, to}, socket) do
-    GenServer.cast(RiichiAdvanced.GameState, {:reindex_hand, socket.assigns.seat, from, to})
+    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+    GenServer.cast(game_state, {:reindex_hand, socket.assigns.seat, from, to})
     {:noreply, socket}
   end
 

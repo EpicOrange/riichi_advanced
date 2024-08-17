@@ -20,30 +20,50 @@ end
 defmodule RiichiAdvanced.GameState do
   use GenServer
 
-  def start_link(_initial_data) do
+  def start_link(initial_data) do
+    IO.puts("Supervisor PID is #{inspect(self())}")
+    GenServer.start_link(__MODULE__, %{}, name: Keyword.get(initial_data, :name))
+  end
+
+  defp debounce_worker(seat, delay, message, id) do
+    [{debouncers, _}] = Registry.lookup(RiichiAdvanced.Registry, :debouncers)
+    DynamicSupervisor.start_child(debouncers, %{
+      id: id,
+      start: {Debounce, :start_link, [{GenServer, :cast, [self(), {message, seat}]}, delay]},
+      type: :worker,
+      restart: :transient
+    })
+  end
+
+  def init(state) do
+    IO.puts("Game state PID is #{inspect(self())}")
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
+    {:ok, play_tile_debouncer_east} = debounce_worker(:east, 100, :reset_play_tile_debounce, :play_tile_debouncer_east)
+    {:ok, play_tile_debouncer_south} = debounce_worker(:south, 100, :reset_play_tile_debounce, :play_tile_debouncer_south)
+    {:ok, play_tile_debouncer_west} = debounce_worker(:west, 100, :reset_play_tile_debounce, :play_tile_debouncer_west)
+    {:ok, play_tile_debouncer_north} = debounce_worker(:north, 100, :reset_play_tile_debounce, :play_tile_debouncer_north)
+    {:ok, big_text_debouncer_east} = debounce_worker(:east, 1500, :reset_big_text, :big_text_debouncer_east)
+    {:ok, big_text_debouncer_south} = debounce_worker(:south, 1500, :reset_big_text, :big_text_debouncer_south)
+    {:ok, big_text_debouncer_west} = debounce_worker(:west, 1500, :reset_big_text, :big_text_debouncer_west)
+    {:ok, big_text_debouncer_north} = debounce_worker(:north, 1500, :reset_big_text, :big_text_debouncer_north)
     play_tile_debouncers = %{
-      :east => PlayTileDebounceEast,
-      :south => PlayTileDebounceSouth,
-      :west => PlayTileDebounceWest,
-      :north => PlayTileDebounceNorth
+      :east => play_tile_debouncer_east,
+      :south => play_tile_debouncer_south,
+      :west => play_tile_debouncer_west,
+      :north => play_tile_debouncer_north
     }
     big_text_debouncers = %{
-      :east => BigTextDebounceEast,
-      :south => BigTextDebounceSouth,
-      :west => BigTextDebounceWest,
-      :north => BigTextDebounceNorth
+      :east => big_text_debouncer_east,
+      :south => big_text_debouncer_south,
+      :west => big_text_debouncer_west,
+      :north => big_text_debouncer_north
     }
-    GenServer.start_link(__MODULE__, %{
+    {:ok, Map.merge(state, %{
       initialized: false,
       play_tile_debounce: play_tile_debounce,
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers
-    }, name: __MODULE__)
-  end
-
-  def init(state) do
-    {:ok, state}
+    })}
   end
 
   def initialize_game(state) do
@@ -106,7 +126,8 @@ defmodule RiichiAdvanced.GameState do
   defp fill_empty_seats_with_ai(state) do
     for dir <- [:east, :south, :west, :north], state[dir] == nil, reduce: state do
       state ->
-        {:ok, ai_pid} = DynamicSupervisor.start_child(RiichiAdvanced.AISupervisor, {RiichiAdvanced.AIPlayer, %{seat: dir, player: state.players[dir]}})
+        [{ai_supervisor, _}] = Registry.lookup(RiichiAdvanced.Registry, :ai_supervisor)
+        {:ok, ai_pid} = DynamicSupervisor.start_child(ai_supervisor, {RiichiAdvanced.AIPlayer, %{seat: dir, player: state.players[dir]}})
         IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
         state = Map.put(state, dir, ai_pid)
         notify_ai(state)
@@ -383,7 +404,7 @@ defmodule RiichiAdvanced.GameState do
       "draw"               -> draw_tile(state, context.seat, Enum.at(opts, 0, 1))
       "discard_draw"       -> 
         # need to do this or else we might reenter adjudicate_actions
-        :timer.apply_after(100, GenServer, :cast, [RiichiAdvanced.GameState, {:play_tile, context.seat, length(state.players[context.seat].hand)}])
+        :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])
         state
       "reverse_turn_order" -> Map.update!(state, :reversed_turn_order, &not &1)
       "call"               -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
@@ -401,7 +422,7 @@ defmodule RiichiAdvanced.GameState do
       "sort_hand"          -> update_player(state, context.seat, fn player -> %Player{ player | hand: Riichi.sort_tiles(player.hand) } end)
       "press_button"       ->
         # need to do this or else we might reenter adjudicate_actions
-        :timer.apply_after(100, GenServer, :cast, [RiichiAdvanced.GameState, {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
+        :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
         state
       "when"               -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       _                    ->
@@ -411,7 +432,7 @@ defmodule RiichiAdvanced.GameState do
 
     if action == "pause" do
       # schedule an unpause after the given delay
-      :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [RiichiAdvanced.GameState, {:unpause, context}])
+      :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, context}])
       IO.puts("Stopping actions due to pause")
       {state, actions}
     else
@@ -576,7 +597,9 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def adjudicate_actions(state) do
-    lock = Mutex.await(RiichiAdvanced.GlobalStateMutex, __MODULE__)
+    [{mutex, _}] = Registry.lookup(RiichiAdvanced.Registry, :mutex)
+    IO.puts("Mutex: #{inspect(mutex)}")
+    lock = Mutex.await(mutex, __MODULE__)
     IO.puts("\nAdjudicating actions!")
     # clear last discard
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -631,7 +654,7 @@ defmodule RiichiAdvanced.GameState do
         state
     end
     # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-    Mutex.release(RiichiAdvanced.GlobalStateMutex, lock)
+    Mutex.release(mutex, lock)
     IO.puts("Done adjudicating actions!\n")
     state
   end
@@ -745,7 +768,7 @@ defmodule RiichiAdvanced.GameState do
     # and submitting actions during adjudicate_actions will reenter adjudicate_actions
     # which causes deadlock due to its mutex
     if enabled do
-      :timer.apply_after(100, GenServer, :cast, [RiichiAdvanced.GameState, {:trigger_auto_button, seat, auto_button_name}])
+      :timer.apply_after(100, GenServer, :cast, [self(), {:trigger_auto_button, seat, auto_button_name}])
       state
     else state end
   end
@@ -772,7 +795,8 @@ defmodule RiichiAdvanced.GameState do
         state = for dir <- [:east, :south, :west, :north], is_pid(state[dir]), reduce: state do
           state ->
             IO.puts("Stopping AI for #{dir}: #{inspect(state[dir])}")
-            DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[dir])
+            [{ai_supervisor, _}] = Registry.lookup(RiichiAdvanced.Registry, :ai_supervisor)
+            DynamicSupervisor.terminate_child(ai_supervisor, state[dir])
             Map.put(state, dir, nil)
         end
         state = initialize_game(state)
@@ -783,12 +807,14 @@ defmodule RiichiAdvanced.GameState do
       # if we're replacing an ai, shutdown the ai
       state = if is_pid(state[seat]) do
         IO.puts("Stopping AI for #{seat}: #{inspect(state[seat])}")
-        DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[seat])
+        [{ai_supervisor, _}] = Registry.lookup(RiichiAdvanced.Registry, :ai_supervisor)
+        DynamicSupervisor.terminate_child(ai_supervisor, state[seat])
         Map.put(state, seat, nil)
       else state end
 
       state = Map.put(state, seat, socket.id)
-      GenServer.call(RiichiAdvanced.ExitMonitor, {:new_player, socket.root_pid, seat})
+      [{exit_monitor, _}] = Registry.lookup(RiichiAdvanced.Registry, :exit_monitor)
+      GenServer.call(exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
 
       # for players with no seats, initialize an ai
@@ -812,6 +838,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
   
+
   # debugging only
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}

@@ -1,8 +1,9 @@
 defmodule RiichiAdvanced.ExitMonitor do
   use GenServer
 
-  def start_link(_initial_data) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+  def start_link(initial_data) do
+    IO.puts("ExitMonitor start_link: #{inspect(initial_data)}")
+    GenServer.start_link(__MODULE__, %{}, name: Keyword.get(initial_data, :name))
   end
 
   def init(init_arg) do
@@ -15,7 +16,10 @@ defmodule RiichiAdvanced.ExitMonitor do
   end
 
   def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
-    GenServer.call(RiichiAdvanced.GameState, {:delete_player, state[pid].seat})
+    x = Registry.lookup(RiichiAdvanced.Registry, :game_state)
+    IO.inspect(x)
+    [{game_state, _}] = x
+    GenServer.call(game_state, {:delete_player, state[pid].seat})
     {:noreply, Map.delete(state, pid)}
   end
 end
