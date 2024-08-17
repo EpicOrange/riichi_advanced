@@ -535,7 +535,8 @@ div.yaku > div.han-counter {
 div.yaku > div.han-counter::before,
 div.total-han-display::before,
 div.total-fu-display::before,
-div.total-score-display::before {
+div.total-score-display::before,
+div.total-score-name-display::before {
   background-image: url(/images/brush-bg.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -559,7 +560,7 @@ div.score-display {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-evenly;
-  row-gap: calc(0.25 * var(--tile-size));
+  row-gap: calc(0.125 * var(--tile-size));
   position: absolute;
   width: 100%;
   bottom: 0;
@@ -572,10 +573,12 @@ div.total-score-display {
   z-index: 1;
 }
 div.total-han-display, div.total-fu-display { font-size: calc(1.25 * var(--tile-size)); }
-div.total-score-display { font-size: calc(1.5 * var(--tile-size)); order: 1; }
+div.total-score-display { font-size: calc(2 * var(--tile-size)); order: 1; }
+div.total-score-name-display { font-size: calc(1.2 * var(--tile-size)); order: 1; }
 div.total-han-display::before,
 div.total-fu-display::before,
-div.total-score-display::before {
+div.total-score-display::before,
+div.total-score-name-display::before {
   position: absolute;
   content: "";
   width: 150%;
@@ -586,13 +589,28 @@ div.total-score-display::before {
 }
 div.total-fu-display::before {
   transform: rotate(180deg);
-  left: -30%;
-  bottom: -27.5%;
+  width: 160%;
+  left: -35%;
+  bottom: -35%;
 }
 div.total-score-display::before {
   width: 180%;
   height: 160%;
   left: -40%;
+}
+div.total-score-name-display {
+  transform: rotate(-20deg);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+}
+div.total-score-name-display::before {
+  transform: rotate(180deg);
+  width: 140%;
+  height: 120%;
+  left: -20%;
+  bottom: -15%;
 }
 
 

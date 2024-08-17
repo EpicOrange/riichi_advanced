@@ -252,10 +252,43 @@ defmodule RiichiAdvanced.GameState do
 
   defp win(state, seat, winning_tile, win_source) do
     yaku = get_yaku(state, seat, winning_tile, win_source)
+    han = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+    fu = 30
+    han_str = Integer.to_string(han)
+    fu_str = Integer.to_string(fu)
+    scoring_table = state.rules["score_calculation"]
+    # assume riichi scoring
+    {score, score_name} = case scoring_table["method"] do
+      "riichi" ->
+        oya_han_table = if win_source == :draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
+        ko_han_table = if win_source == :draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
+        oya_fu_table = Map.get(oya_han_table, han_str, oya_han_table["default"])
+        ko_fu_table = Map.get(ko_han_table, han_str, ko_han_table["default"])
+        score = if win_source == :draw do
+            if seat == :east do
+              3 * Map.get(oya_fu_table, fu_str, oya_fu_table["default"])
+            else
+              Map.get(oya_fu_table, fu_str, oya_fu_table["default"]) + 2 * Map.get(ko_fu_table, fu_str, ko_fu_table["default"]) 
+            end
+          else
+            if seat == :east do
+              Map.get(oya_fu_table, fu_str, oya_fu_table["default"])
+            else
+              Map.get(ko_fu_table, fu_str, ko_fu_table["default"]) 
+            end
+          end
+        score_name = Map.get(scoring_table["limit_hand_names"], han_str, scoring_table["limit_hand_names"]["default"])
+        {score, score_name}
+      _ -> {0, ""}
+    end
     # IO.puts("won by #{win_source}; yaku: #{inspect(yaku)}")
     Map.put(state, :winner, %{
       player: state.players[seat],
       yaku: yaku,
+      han: han,
+      fu: fu,
+      score: score,
+      score_name: score_name,
       winning_tile: winning_tile,
     })
   end

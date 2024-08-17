@@ -28,9 +28,10 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
           <% end %>
         </div>
         <div class="score-display">
-          <div class="total-han-display">14 Han</div>
-          <div class="total-fu-display">50 Fu</div>
-          <div class="total-score-display">48000</div>
+          <div class="total-han-display"><%= @winner.han %> Han</div>
+          <div class="total-fu-display"><%= @winner.fu %> Fu</div>
+          <div class="total-score-display"><%= @winner.score %></div>
+          <div class="total-score-name-display" :if={@winner.score_name != ""}><%= @winner.score_name %></div>
         </div>
       <% end %>
     </div>
