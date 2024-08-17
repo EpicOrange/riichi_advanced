@@ -58,16 +58,27 @@ defmodule RiichiAdvanced.GameState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.insert_at(wall, 52, :"0p")
-    # wall = List.insert_at(wall, 53, :"1z")
+    # wall = List.insert_at(wall, 52, :"5p")
+    # wall = List.insert_at(wall, 53, :"5p")
+    # wall = List.insert_at(wall, 54, :"5p")
+    # wall = List.insert_at(wall, 55, :"5p")
+    # wall = List.insert_at(wall, 56, :"5p")
+    wall = List.insert_at(wall, 57, :"5p")
+    wall = List.insert_at(wall, 58, :"5p")
+    wall = List.insert_at(wall, 59, :"5p")
+    wall = List.insert_at(wall, 60, :"5p")
+    wall = List.insert_at(wall, 61, :"5p")
     hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"3p", :"4p"]),
+              :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
+              :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
+              :north => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
               # :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :south => Riichi.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
-              :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"4p", :"5p"]),
-              :south => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"6p", :"7p"]),
+              # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"4p", :"5p"]),
+              # :south => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"6p", :"7p"]),
               # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
               # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
-              :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
+              # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
     # hands = %{:east  => Enum.slice(wall, 0..12),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
@@ -573,7 +584,7 @@ defmodule RiichiAdvanced.GameState do
         # only trigger choices that aren't superceded
         choice = player.choice
         actions = player.chosen_actions
-        state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+        state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, deferred_actions: [] } end)
         state = if choice != nil && not Enum.member?(superceded_choices, choice) do
           IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
           # check if a call action exists, if it's a call and multiple call choices are available
@@ -624,7 +635,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def submit_actions(state, seat, choice, actions) do
-    if state.players[seat].choice == nil do
+    if not state.paused && state.players[seat].choice == nil do
       IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
       IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
