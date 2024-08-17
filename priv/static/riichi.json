@@ -202,5 +202,6 @@
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
-  }
+  },
+  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status"]
 }

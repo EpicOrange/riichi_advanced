@@ -122,25 +122,21 @@ defmodule RiichiAdvanced.GameState do
   defp play_tile(state, seat, tile, index) do
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
     if is_playable?(state, seat, tile, tile_source) && state.play_tile_debounce[seat] == false do
-      # assume we're skipping our button choices
-      state = update_player(state, seat, &%Player{ &1 | buttons: %{}, call_buttons: %{}, call_name: "" })
-      if no_buttons_remaining?(state) do
-        state = temp_disable_play_tile(state, seat)
-        # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
-        state = update_player(state, seat, &%Player{ &1 |
-          hand: List.delete_at(&1.hand ++ &1.draw, index),
-          pond: &1.pond ++ [tile],
-          draw: [],
-          last_discard: {tile, index}
-        })
-        state = update_action(state, seat, :discard, %{tile: tile})
+      state = temp_disable_play_tile(state, seat)
+      # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
+      state = update_player(state, seat, &%Player{ &1 |
+        hand: List.delete_at(&1.hand ++ &1.draw, index),
+        pond: &1.pond ++ [tile],
+        draw: [],
+        last_discard: {tile, index}
+      })
+      state = update_action(state, seat, :discard, %{tile: tile})
 
-        # trigger play effects
-        if Map.has_key?(state.rules, "play_effects") do
-          for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches([tile_spec], %{tile: tile}), reduce: state do
-            state -> run_actions(state, actions, %{seat: seat})
-          end
-        else state end
+      # trigger play effects
+      if Map.has_key?(state.rules, "play_effects") do
+        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches([tile_spec], %{tile: tile}), reduce: state do
+          state -> run_actions(state, actions, %{seat: seat})
+        end
       else state end
     else state end
   end
@@ -169,6 +165,7 @@ defmodule RiichiAdvanced.GameState do
   defp change_turn(state, seat, via_action \\ false) do
     # get previous turn
     prev_turn = state.turn
+    IO.puts("Changing turn from #{prev_turn} to #{seat}")
 
     # change turn
     state = Map.put(state, :turn, seat)
@@ -221,6 +218,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     # since we interrupted the player we called from, cancel their remaining actions
+    IO.puts("Cancelling deferred actions for #{state.turn} since we called from them")
     state = update_player(state, state.turn, &%Player{ &1 | deferred_actions: [] })
     state
   end
@@ -266,15 +264,22 @@ defmodule RiichiAdvanced.GameState do
     if Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
-      new_buttons = Map.new([:east, :south, :west, :north], fn seat ->
-        buttons = state.rules["buttons"]
-          |> Enum.filter(fn {_name, button} ->
-               calls_spec = if Map.has_key?(button, "call") do button["call"] else [] end
-               upgrades = if Map.has_key?(button, "upgrades") do button["upgrades"] else [] end
-               check_cnf_condition(state, button["show_when"], %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades})
-             end)
-          |> Enum.map(fn {name, _button} -> name end)
-        {seat, if not Enum.empty?(buttons) do buttons ++ ["skip"] else buttons end}
+      new_buttons = Map.new(state.players, fn {seat, _player} ->
+        if false do
+          # don't regenerate buttons if we have already made a decision
+          # choices are reset to nil upon choice adjudication, so by pressing skip,
+          # we're declaring we ignore any buttons until the next round of choices is made
+          {seat, []}
+        else
+          buttons = state.rules["buttons"]
+            |> Enum.filter(fn {_name, button} ->
+                 calls_spec = if Map.has_key?(button, "call") do button["call"] else [] end
+                 upgrades = if Map.has_key?(button, "upgrades") do button["upgrades"] else [] end
+                 check_cnf_condition(state, button["show_when"], %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades})
+               end)
+            |> Enum.map(fn {name, _button} -> name end)
+          {seat, if not Enum.empty?(buttons) do buttons ++ ["skip"] else buttons end}
+        end
       end)
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_buttons)}")
       update_all_players(state, fn seat, player -> %Player{ player | buttons: new_buttons[seat] } end)
@@ -285,26 +290,28 @@ defmodule RiichiAdvanced.GameState do
     if state.winner == nil do
       call_choices = state.players[seat].call_buttons
       if is_pid(state[seat]) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
-        IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+        # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
         send(state[seat], {:call_buttons, %{player: state.players[seat]}})
       end
     end
   end
 
   def notify_ai(state) do
+    # IO.puts("Notifying ai")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
     if state.initialized && state.winner == nil do
       # if there are any new buttons for any AI players, notify them
       # otherwise, just tell the current player it's their turn
       if no_buttons_remaining?(state) do
         if is_pid(state[state.turn]) do
-          IO.puts("Notifying #{state.turn} AI that it's their turn")
+          # IO.puts("Notifying #{state.turn} AI that it's their turn")
           send(state[state.turn], {:your_turn, %{player: state.players[state.turn]}})
         end
       else
         Enum.each([:east, :south, :west, :north], fn seat ->
           has_buttons = not Enum.empty?(state.players[seat].buttons)
           if is_pid(state[seat]) && has_buttons do
-            IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
+            # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
             send(state[seat], {:buttons, %{player: state.players[seat]}})
           end
         end)
@@ -313,8 +320,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   # trigger auto buttons actions for players
-  defp trigger_auto_buttons(state) do
-    for seat <- [:east, :south, :west, :north],
+  defp trigger_auto_buttons(state, seats \\ [:east, :south, :west, :north]) do
+    for seat <- seats,
         not is_pid(state[seat]),
         {auto_button_name, enabled} <- state.players[seat].auto_buttons,
         reduce: state do
@@ -343,7 +350,10 @@ defmodule RiichiAdvanced.GameState do
       "big_text"           -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
       "pause"              -> Map.put(state, :paused, true)
       "sort_hand"          -> update_player(state, context.seat, fn player -> %Player{ player | hand: Riichi.sort_tiles(player.hand) } end)
-      "press_button"       -> press_button(state, context.seat, Enum.at(opts, 0, "skip"))
+      "press_button"       ->
+        # need to do this or else we might reenter adjudicate_actions
+        :timer.apply_after(100, GenServer, :cast, [RiichiAdvanced.GameState, {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
+        state
       "when"               -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       _                    ->
         IO.puts("Unhandled action #{action}")
@@ -353,11 +363,12 @@ defmodule RiichiAdvanced.GameState do
     if action == "pause" do
       # schedule an unpause after the given delay
       :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [RiichiAdvanced.GameState, {:unpause, context}])
+      IO.puts("Stopping actions due to pause")
       {state, actions}
     else
       # if our action updates state, then we need to recalculate buttons
       # this is so other players can react to certain actions
-      if action not in ["big_text", "pause"] do
+      if action not in state.rules["uninterruptible_actions"] do
         state = if state.winner != nil do
           # if there's a winner, never display buttons
           update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
@@ -365,10 +376,13 @@ defmodule RiichiAdvanced.GameState do
           recalculate_buttons(state)
         end
         buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
+        # IO.puts("buttons_before: #{inspect(buttons_before)}")
+        # IO.puts("buttons_after: #{inspect(buttons_after)}")
         if buttons_before == buttons_after || no_buttons_remaining?(state) do
           _run_actions(state, actions, context)
         else
           # if buttons changed, stop evaluating actions here
+          IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)}")
           {state, actions}
         end
       else
@@ -383,33 +397,37 @@ defmodule RiichiAdvanced.GameState do
 
   def run_actions(state, actions, context \\ %{}) do
     state = Map.update!(state, :actions_cv, & &1 + 1)
-    if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
-      # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
-    end
-    # IO.inspect(Process.info(self(), :current_stacktrace))
     state = if not state.paused and state.winner == nil do
-      # IO.puts("Running actions in context #{inspect(context)}: #{inspect(actions)}}")
+      if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
+        IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
+      end
+      # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
+      # IO.inspect(Process.info(self(), :current_stacktrace))
       {state, deferred_actions} = _run_actions(state, actions, context)
       # defer the remaining actions
       if not Enum.empty?(deferred_actions) do
-        # buttons = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
-        # IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons: #{inspect(buttons)} / #{inspect(deferred_actions)}")
+        IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
         schedule_actions(state, context.seat, deferred_actions)
       else state end
     else state end
     state = Map.update!(state, :actions_cv, & &1 - 1)
     if state.actions_cv == 0 do
       notify_ai(state)
-      trigger_auto_buttons(state)
+      # make our next decision for us (unless these actions were caused by auto buttons)
+      state = if not Map.has_key?(context, :auto) || not context.auto do
+        trigger_auto_buttons(state, [context.seat])
+      else state end
+      state
     else state end
   end
 
   defp run_deferred_actions(state, context) do
     actions = state.players[context.seat].deferred_actions
     if not Enum.empty?(actions) do
-      # IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
+      state = update_player(state, context.seat, &%Player{ &1 | deferred_actions: [] })
+      IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       state = run_actions(state, actions, context)
-      update_player(state, context.seat, &%Player{ &1 | deferred_actions: [] })
+      state
     else state end
   end
 
@@ -463,7 +481,7 @@ defmodule RiichiAdvanced.GameState do
           Riichi.can_call?(context.calls_spec, call_tiles, state.players[context.seat].hand ++ state.players[context.seat].draw)
         end)
       "has_draw"                 -> not Enum.empty?(state.players[context.seat].draw)
-      "furiten"                  -> true
+      "furiten"                  -> false
       "has_yaku"                 -> true
       "has_calls"                -> not Enum.empty?(state.players[context.seat].calls)
       "no_calls"                 -> Enum.empty?(state.players[context.seat].calls)
@@ -481,7 +499,7 @@ defmodule RiichiAdvanced.GameState do
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
     end
-    # IO.puts("#{inspect(context)}, #{inspect(cond_spec)} => #{result}")
+    # IO.puts("#{inspect(context)}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
     if negated do not result else result end
   end
 
@@ -508,27 +526,28 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def adjudicate_actions(state) do
-    # lock = Mutex.await(RiichiAdvanced.GlobalStateMutex, __MODULE__)
-    # IO.puts("Lock obtained")
-
+    lock = Mutex.await(RiichiAdvanced.GlobalStateMutex, __MODULE__)
+    IO.puts("\nAdjudicating actions!")
     # clear last discard
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     superceded_choices = get_superceded_choices(state)
-    for {seat, player} <- state.players, reduce: state do
+    state = for {seat, player} <- state.players, reduce: state do
       state ->
         # only trigger choices that aren't superceded
-        if player.choice != nil && not Enum.member?(superceded_choices, player.choice) do
-          actions = player.chosen_actions
-          # clear deferred actions since we won't be running them
-          state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [] } end)
-          IO.puts("Player #{seat} (choice: #{player.choice}) gets to run actions #{inspect(actions)}")
+        choice = player.choice
+        actions = player.chosen_actions
+        state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+        state = if choice != nil && not Enum.member?(superceded_choices, choice) do
+          IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
           # check if a call action exists, if it's a call and multiple call choices are available
           call_action_exists = ["call"] in actions || ["self_call"] in actions || ["upgrade_call"] in actions
           if not call_action_exists do
             # just run all button actions as normal
-            run_actions(state, actions, %{seat: seat})
+            state = run_actions(state, actions, %{seat: seat})
+            state
           else
-            button_name = player.choice
+            # call button choices logic
+            button_name = choice
             # if there is a call action, check if there are multiple call choices
             call_choices = if ["upgrade_call"] in actions do
                 state.players[seat].calls
@@ -546,21 +565,76 @@ defmodule RiichiAdvanced.GameState do
             if length(flattened_call_choices) == 1 do
               # if there's only one choice, automatically choose it
               {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
-              run_actions(state, actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
+              state = run_actions(state, actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
+              state
             else
               # otherwise, defer all actions and display call choices
-              update_player(state, seat, fn player -> %Player{ player | deferred_actions: actions, call_buttons: call_choices, call_name: button_name } end)
+              state = schedule_actions(state, seat, actions)
+              state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: button_name } end)
+              notify_ai_call_buttons(state, seat)
+              state
             end
           end
         else state end
+        state
+    end
+    # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+    Mutex.release(RiichiAdvanced.GlobalStateMutex, lock)
+    IO.puts("Done adjudicating actions!\n")
+    state
+  end
+
+  def submit_actions(state, seat, choice, actions) do
+    if state.players[seat].choice == nil do
+      IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
+      IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
+      state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
+
+      # for the current turn's player, if they just discarded and have no buttons, their choice is "skip"
+      # for other players who have no buttons and have not made a choice yet, their choice is "skip"
+      # also for other players who have made a choice, if their choice is superceded then set it to "skip"
+      superceded_choices = get_superceded_choices(state)
+      last_action = get_last_action(state)
+      just_discarded = last_action.action == :discard && last_action.seat == state.turn
+      state = for {seat, player} <- state.players, reduce: state do
+        state -> cond do
+          seat == state.turn && just_discarded && Enum.empty?(player.buttons) ->
+            IO.puts("Player #{seat} must skip due to having just discarded")
+            update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
+          seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) ->
+            IO.puts("Player #{seat} must skip due to having no buttons")
+            update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
+          seat != state.turn && player.choice != nil && Enum.member?(superceded_choices, player.choice) ->
+            IO.puts("Player #{seat} must skip due to having buttons superceded")
+            update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
+          true -> state
+        end
       end
-    # Mutex.release(RiichiAdvanced.GlobalStateMutex, lock)
-    # IO.puts("Lock released")
+
+      # check if nobody else needs to make choices
+      if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
+        # if every action is skip, we need to resume deferred actions for all players
+        # otherwise, adjudicate actions as normal
+        if Enum.all?(state.players, fn {_seat, player} -> player.choice == "skip" end) do
+          IO.puts("All choices are no-ops, running deferred actions")
+          state = for {seat, _player} <- state.players, reduce: state do
+            state ->
+              state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+              state = run_deferred_actions(state, %{seat: seat})
+              state
+          end
+          notify_ai(state)
+          state
+        else
+          adjudicate_actions(state)
+        end
+      else state end
+    else state end
   end
 
   def press_button(state, seat, button_name) do
     if Enum.member?(state.players[seat].buttons, button_name) do
-      # hide all buttons and mark button pressed
+      # hide all buttons
       state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else state.rules["buttons"][button_name]["actions"] end
       state = submit_actions(state, seat, button_name, actions)
@@ -573,9 +647,13 @@ defmodule RiichiAdvanced.GameState do
   defp get_superceded_choices(state) do
     Enum.flat_map(state.players, fn {_seat, player} -> 
       if player.choice != nil && player.choice != "skip" && player.choice != "play_tile" do
-        ["skip", "play_tile"] ++ state.rules["buttons"][player.choice]["precedence_over"]
+        if Map.has_key?(state.rules["buttons"], player.choice) && Map.has_key?(state.rules["buttons"][player.choice], "precedence_over") do
+          ["skip", "play_tile"] ++ state.rules["buttons"][player.choice]["precedence_over"]
+        else
+          ["skip", "play_tile"]
+        end
       else
-        []
+        ["skip"]
       end
     end)
   end
@@ -594,54 +672,26 @@ defmodule RiichiAdvanced.GameState do
   # for players with buttons, their buttons supercede playing a tile
   # buttons may also supercede other buttons
   # if a player only has buttons that are superceded by others' choices, then they have no choices
-  def no_choices_remaining?(state) do
-    superceded_choices = get_superceded_choices(state)
-    Enum.all?(state.players, fn {seat, player} ->
-      needs_choice = seat == state.turn || not Enum.all?(player.buttons, fn name -> Enum.member?(superceded_choices, name) end)
-      not needs_choice || player.chosen_actions != nil
-    end)
-  end
-
-  def submit_actions(state, seat, choice, actions) do
-    state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
-
-    # if nobody else needs to make choices, trigger actions on all buttons that aren't superceded by precedence
-    if no_choices_remaining?(state) do
-      state = adjudicate_actions(state)
-
-      # unmark all actions submitted
-      state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-
-      # if no call choices are pending, trigger everyone's deferred actions
-      if Enum.all?(state.players, fn {_seat, player} -> Enum.empty?(player.call_buttons) end) do
-        state = for dir <- [:east, :south, :west, :north], reduce: state do
-          state -> run_deferred_actions(state, %{seat: dir})
-        end
-        state
-      else
-        # otherwise, check if our AI needs notifying about their call buttons
-        notify_ai_call_buttons(state, seat)
-        state
-      end
-    else state end
-  end
+  # def no_choices_remaining?(state) do
+  #   superceded_choices = get_superceded_choices(state)
+  #   result = Enum.all?(state.players, fn {seat, player} ->
+  #     last_action = get_last_action(state)
+  #     needs_to_play_tile = seat == state.turn && not (last_action.action == :discard && last_action.seat == state.turn)
+  #     needs_to_press_button = not Enum.all?(player.buttons, fn name -> Enum.member?(superceded_choices, name) end)
+  #     needs_choice = needs_to_play_tile || needs_to_press_button
+  #     not needs_choice || player.chosen_actions != nil
+  #   end)
+  #   result
+  # end
 
   def trigger_auto_button(state, seat, auto_button_name, enabled) do
+    # we must apply this after _some_ delay
+    # this is because it's possible to call this during run_actions
+    # which is called by adjudicate_actions
+    # and submitting actions during adjudicate_actions will reenter adjudicate_actions
+    # which causes deadlock due to its mutex
     if enabled do
-      # temporarily save deferred actions so we don't trigger them
-      deferred_actions = state.players[seat].deferred_actions
-      state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [] } end)
-      # increment cv so we don't trigger notify_ai
-      state = Map.update!(state, :actions_cv, & &1 + 1)
-      state = run_actions(state, state.rules["auto_buttons"][auto_button_name]["actions"], %{seat: seat})
-      state = Map.update!(state, :actions_cv, & &1 - 1)
-      # restore deferred actions
-      state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: deferred_actions } end)
-
-      # now notify ai if needed (e.g. turn changed to an ai player, or buttons exist for ai players)
-      if is_pid(state[state.turn]) || Enum.any?(state.players, fn {seat, player} -> is_pid(state[seat]) && not Enum.empty?(player.buttons) end) do
-        notify_ai(state)
-      end
+      :timer.apply_after(100, GenServer, :cast, [RiichiAdvanced.GameState, {:trigger_auto_button, seat, auto_button_name}])
       state
     else state end
   end
@@ -720,6 +770,7 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
   def handle_cast({:unpause, context}, state) do
+    IO.puts("Unpausing with context #{inspect(context)}; deferred actions are #{inspect(state.players[context.seat].deferred_actions)}")
     state = Map.put(state, :paused, false)
     state = run_deferred_actions(state, context)
     broadcast_state_change(state)
@@ -754,6 +805,8 @@ defmodule RiichiAdvanced.GameState do
       IO.puts("#{seat} tried to play an unplayable tile: #{tile} from #{tile_source}")
     end
     state = if state.turn == seat && playable do
+      # assume we're skipping our button choices
+      state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = submit_actions(state, seat, "play_tile", actions)
       broadcast_state_change(state)
@@ -764,6 +817,12 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:press_button, seat, button_name}, state) do
     {:noreply, press_button(state, seat, button_name)}
+  end
+
+  def handle_cast({:trigger_auto_button, seat, auto_button_name}, state) do
+    state = run_actions(state, state.rules["auto_buttons"][auto_button_name]["actions"], %{seat: seat, auto: true})
+    broadcast_state_change(state)
+    {:noreply, state}
   end
 
   def handle_cast({:toggle_auto_button, seat, auto_button_name, enabled}, state) do

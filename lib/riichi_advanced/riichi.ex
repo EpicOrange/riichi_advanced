@@ -144,7 +144,7 @@ defmodule Riichi do
   end
 
   defp _remove_hand_definition(hand, hand_definition) do
-    Enum.reduce(hand_definition, [Riichi.normalize_red_fives(hand)], fn [groups, num], all_hands ->
+    Enum.reduce(hand_definition, [hand], fn [groups, num], all_hands ->
       Enum.reduce(1..num, all_hands, fn _, hands ->
         for hand <- hands, group <- groups do
           Riichi.remove_group(hand, group)
@@ -154,6 +154,7 @@ defmodule Riichi do
   end
 
   def remove_hand_definition(hand, hand_definition) do
+    hand = Riichi.normalize_red_fives(hand)
     case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, hand_definition}) do
       [] -> 
         result = _remove_hand_definition(hand, hand_definition)
@@ -170,11 +171,14 @@ defmodule Riichi do
   end
 
   def check_hand(hand, hand_definitions, key) do
+    hand = Riichi.normalize_red_fives(hand)
     case RiichiAdvanced.ETSCache.get({:check_hand, hand, key}) do
       [] -> 
         result = _check_hand(hand, hand_definitions)
         RiichiAdvanced.ETSCache.put({:check_hand, hand, key}, result)
-        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  key: #{inspect(key)}\n  result: #{inspect(result)}")
+        # if key == :win do
+        #   IO.puts("Results:\n  hand: #{inspect(hand)}\n  key: #{inspect(key)}\n  result: #{inspect(result)}")
+        # end
         result
       [result] -> result
     end
@@ -183,8 +187,8 @@ defmodule Riichi do
   def tile_matches(tile_specs, context) do
     Enum.any?(tile_specs, &case &1 do
       "any" -> true
-      "same" -> context.tile == context.tile2
-      "not_same" -> context.tile != context.tile2
+      "same" -> normalize_red_five(context.tile) == normalize_red_five(context.tile2)
+      "not_same" -> normalize_red_five(context.tile) != normalize_red_five(context.tile2)
       "manzu" -> is_manzu?(context.tile)
       "pinzu" -> is_pinzu?(context.tile)
       "souzu" -> is_souzu?(context.tile)
