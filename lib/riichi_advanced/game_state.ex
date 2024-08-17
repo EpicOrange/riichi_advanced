@@ -108,7 +108,9 @@ defmodule RiichiAdvanced.GameState do
       state ->
         {:ok, ai_pid} = DynamicSupervisor.start_child(RiichiAdvanced.AISupervisor, {RiichiAdvanced.AIPlayer, %{seat: dir, player: state.players[dir]}})
         IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
-        Map.put(state, dir, ai_pid)
+        state = Map.put(state, dir, ai_pid)
+        notify_ai(state)
+        state
     end
   end
 
@@ -755,44 +757,47 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_call({:new_player, socket}, _from, state) do
-    seat = cond do
-      state[:east] == nil  || is_pid(state[:east])  -> :east
-      state[:south] == nil || is_pid(state[:south]) -> :south
-      state[:west] == nil  || is_pid(state[:west])  -> :west
-      state[:north] == nil || is_pid(state[:north]) -> :north
-      true                                          -> :spectator
+    {seat, spectator} = cond do
+      state[:east] == nil  || is_pid(state[:east])  -> {:east, false}
+      state[:south] == nil || is_pid(state[:south]) -> {:south, false}
+      state[:west] == nil  || is_pid(state[:west])  -> {:west, false}
+      state[:north] == nil || is_pid(state[:north]) -> {:north, false}
+      true                                          -> {:east, true}
     end
 
-    # if we're joining as east, restart the game
-    state = if seat == :east do
-      # clear the AIs
-      state = for dir <- [:east, :south, :west, :north], is_pid(state[dir]), reduce: state do
-        state ->
-          IO.puts("Stopping AI for #{dir}: #{inspect(state[dir])}")
-          DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[dir])
-          Map.put(state, dir, nil)
-      end
-      state = initialize_game(state)
-      state = change_turn(state, :east)
+    state = if not spectator do
+      # if we're joining as east, restart the game
+      state = if seat == :east do
+        # clear the AIs
+        state = for dir <- [:east, :south, :west, :north], is_pid(state[dir]), reduce: state do
+          state ->
+            IO.puts("Stopping AI for #{dir}: #{inspect(state[dir])}")
+            DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[dir])
+            Map.put(state, dir, nil)
+        end
+        state = initialize_game(state)
+        state = change_turn(state, :east)
+        state
+      else state end
+
+      # if we're replacing an ai, shutdown the ai
+      state = if is_pid(state[seat]) do
+        IO.puts("Stopping AI for #{seat}: #{inspect(state[seat])}")
+        DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[seat])
+        Map.put(state, seat, nil)
+      else state end
+
+      state = Map.put(state, seat, socket.id)
+      GenServer.call(RiichiAdvanced.ExitMonitor, {:new_player, socket.root_pid, seat})
+      IO.puts("Player #{socket.id} joined as #{seat}")
+
+      # for players with no seats, initialize an ai
+      state = fill_empty_seats_with_ai(state)
+      broadcast_state_change(state)
       state
     else state end
 
-    # if we're replacing an ai, shutdown the ai
-    state = if is_pid(state[seat]) do
-      IO.puts("Stopping AI for #{seat}: #{inspect(state[seat])}")
-      DynamicSupervisor.terminate_child(RiichiAdvanced.AISupervisor, state[seat])
-      Map.put(state, seat, nil)
-    else state end
-
-    state = Map.put(state, seat, socket.id)
-    GenServer.call(RiichiAdvanced.ExitMonitor, {:new_player, socket.root_pid, seat})
-    IO.puts("Player #{socket.id} joined as #{seat}")
-
-    # for players with no seats, initialize an ai
-    state = fill_empty_seats_with_ai(state)
-
-    broadcast_state_change(state)
-    {:reply, [state.turn, state.players] ++ Utils.rotate_4([:east, :south, :west, :north], seat), state}
+    {:reply, [state.turn, state.players] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
   end
 
   def handle_call({:delete_player, seat}, _from, state) do

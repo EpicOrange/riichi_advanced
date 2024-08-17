@@ -8,7 +8,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
 
-      [turn, players, seat, shimocha, toimen, kamicha] = GenServer.call(RiichiAdvanced.GameState, {:new_player, socket})
+      [turn, players, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(RiichiAdvanced.GameState, {:new_player, socket})
 
       socket = assign(socket, :loading, false)
       socket = assign(socket, :player_id, socket.id)
@@ -17,6 +17,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :shimocha, shimocha)
       socket = assign(socket, :toimen, toimen)
       socket = assign(socket, :kamicha, kamicha)
+      socket = assign(socket, :spectator, spectator)
       socket = assign(socket, :hands, Map.new(players, fn {seat, player} -> {seat, player.hand} end))
       socket = assign(socket, :ponds, Map.new(players, fn {seat, player} -> {seat, player.pond} end))
       socket = assign(socket, :calls, Map.new(players, fn {seat, player} -> {seat, player.calls} end))
@@ -39,6 +40,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :shimocha, nil)
       socket = assign(socket, :toimen, nil)
       socket = assign(socket, :kamicha, nil)
+      socket = assign(socket, :spectator, false)
       socket = assign(socket, :hands, empty_lists)
       socket = assign(socket, :ponds, empty_lists)
       socket = assign(socket, :calls, empty_lists)
@@ -56,18 +58,30 @@ defmodule RiichiAdvancedWeb.GameLive do
   # Render the template using the assigned state
   def render(assigns) do
     ~H"""
-    <.live_component module={RiichiAdvancedWeb.HandComponent}
-      id="hand self"
-      your_hand?={true}
-      your_turn?={@seat == @turn}
-      seat={@seat}
-      hand={@hands[@seat]}
-      draw={@draws[@seat]}
-      calls={@calls[@seat]}
-      play_tile={&send(self(), {:play_tile, &1, &2})}
-      reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
-      riichi={@riichi[@seat]}
-      />
+    <%= if not @spectator do %>
+      <.live_component module={RiichiAdvancedWeb.HandComponent}
+        id="hand self"
+        your_hand?={true}
+        your_turn?={@seat == @turn}
+        seat={@seat}
+        hand={@hands[@seat]}
+        draw={@draws[@seat]}
+        calls={@calls[@seat]}
+        play_tile={&send(self(), {:play_tile, &1, &2})}
+        reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
+        riichi={@riichi[@seat]}
+        />
+    <% else %>
+      <.live_component module={RiichiAdvancedWeb.HandComponent}
+        id="hand self"
+        your_hand?={false}
+        seat={@seat}
+        hand={@hands[@seat]}
+        draw={@draws[@seat]}
+        calls={@calls[@seat]}
+        :if={@seat != nil}
+        />
+    <% end %>
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" pond={@ponds[@seat]} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
@@ -101,32 +115,34 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} riichi={@riichi} />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" winner={@winner}/>
-    <div class="buttons">
-      <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(RiichiAdvanced.GameState, {:get_button_display_name, name}) %></button>
-    </div>
-    <div class="auto-buttons">
-      <%= for {name, checked} <- @auto_buttons[@seat] do %>
-        <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-        <label for={"auto-button-" <> name}><%= GenServer.call(RiichiAdvanced.GameState, {:get_auto_button_display_name, name}) %></label>
-      <% end %>
-    </div>
-    <div class="call-buttons-container">
-      <%= for {called_tile, choices} <- @call_buttons[@seat] do %>
-        <%= if not Enum.empty?(choices) do %>
-          <div class="call-buttons">
-            <div class={["tile", called_tile]}></div>
-            <div class="call-button-separator"></div>
-            <%= for choice <- choices do %>
-              <button class="call-button" phx-click="call_button_clicked" phx-value-name={@call_name[@seat]} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
-              <%= for tile <- choice do %>
-                <div class={["tile", tile]}></div>
-              <% end %>
-              </button>
-            <% end %>
-          </div>
+    <%= if not @spectator do %>
+      <div class="buttons">
+        <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(RiichiAdvanced.GameState, {:get_button_display_name, name}) %></button>
+      </div>
+      <div class="auto-buttons">
+        <%= for {name, checked} <- @auto_buttons[@seat] do %>
+          <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
+          <label for={"auto-button-" <> name}><%= GenServer.call(RiichiAdvanced.GameState, {:get_auto_button_display_name, name}) %></label>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+      <div class="call-buttons-container">
+        <%= for {called_tile, choices} <- @call_buttons[@seat] do %>
+          <%= if not Enum.empty?(choices) do %>
+            <div class="call-buttons">
+              <div class={["tile", called_tile]}></div>
+              <div class="call-button-separator"></div>
+              <%= for choice <- choices do %>
+                <button class="call-button" phx-click="call_button_clicked" phx-value-name={@call_name[@seat]} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
+                <%= for tile <- choice do %>
+                  <div class={["tile", tile]}></div>
+                <% end %>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
     <div class={["big-text", Utils.get_relative_seat(@seat, seat)]} :for={{seat, text} <- @big_text} :if={text != ""}><%= text %></div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
     """
