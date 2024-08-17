@@ -192,7 +192,7 @@
       "actions": [
         ["when", [
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan"]}
+            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan", "riichi"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -203,5 +203,5 @@
       "enabled_at_start": false
     }
   },
-  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status"]
+  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when"]
 }

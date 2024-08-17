@@ -335,7 +335,10 @@ defmodule RiichiAdvanced.GameState do
     state = case action do
       "play_tile"          -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"               -> draw_tile(state, context.seat, Enum.at(opts, 0, 1))
-      "discard_draw"       -> run_actions(state, [["play_tile", Enum.at(state.players[context.seat].draw, 0), length(state.players[context.seat].hand)], ["advance_turn"]], context)
+      "discard_draw"       -> 
+        # need to do this or else we might reenter adjudicate_actions
+        :timer.apply_after(100, GenServer, :cast, [RiichiAdvanced.GameState, {:play_tile, context.seat, length(state.players[context.seat].hand)}])
+        state
       "reverse_turn_order" -> Map.update!(state, :reversed_turn_order, &not &1)
       "call"               -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
       "self_call"          -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
@@ -412,10 +415,11 @@ defmodule RiichiAdvanced.GameState do
     else state end
     state = Map.update!(state, :actions_cv, & &1 - 1)
     if state.actions_cv == 0 do
-      notify_ai(state)
+      # notify_ai(state)
       # make our next decision for us (unless these actions were caused by auto buttons)
       state = if not Map.has_key?(context, :auto) || not context.auto do
-        trigger_auto_buttons(state, [context.seat])
+        IO.puts("Triggering auto buttons")
+        trigger_auto_buttons(state)
       else state end
       state
     else state end
@@ -544,6 +548,7 @@ defmodule RiichiAdvanced.GameState do
           if not call_action_exists do
             # just run all button actions as normal
             state = run_actions(state, actions, %{seat: seat})
+            notify_ai(state)
             state
           else
             # call button choices logic
@@ -566,6 +571,7 @@ defmodule RiichiAdvanced.GameState do
               # if there's only one choice, automatically choose it
               {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
               state = run_actions(state, actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
+              notify_ai(state)
               state
             else
               # otherwise, defer all actions and display call choices
@@ -616,15 +622,17 @@ defmodule RiichiAdvanced.GameState do
         # if every action is skip, we need to resume deferred actions for all players
         # otherwise, adjudicate actions as normal
         if Enum.all?(state.players, fn {_seat, player} -> player.choice == "skip" end) do
-          IO.puts("All choices are no-ops, running deferred actions")
-          state = for {seat, _player} <- state.players, reduce: state do
-            state ->
-              state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-              state = run_deferred_actions(state, %{seat: seat})
-              state
-          end
-          notify_ai(state)
-          state
+          if not state.paused do
+            IO.puts("All choices are no-ops, running deferred actions")
+            state = for {seat, _player} <- state.players, reduce: state do
+              state ->
+                state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+                state = run_deferred_actions(state, %{seat: seat})
+                state
+            end
+            notify_ai(state)
+            state
+          else state end
         else
           adjudicate_actions(state)
         end
