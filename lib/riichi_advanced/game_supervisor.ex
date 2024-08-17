@@ -2,17 +2,16 @@ defmodule RiichiAdvanced.GameSupervisor do
   use Supervisor
 
   def start_link(opts \\ []) do
-    Supervisor.start_link(__MODULE__, :ok, opts)
+    Supervisor.start_link(__MODULE__, Keyword.get(opts, :session_id), opts)
   end
 
-  def init(:ok) do
+  def init(session_id) do
     children = [
-      {Registry, keys: :unique, name: RiichiAdvanced.Registry},
-      {Mutex, name: {:via, Registry, {RiichiAdvanced.Registry, :mutex}}},
-      {RiichiAdvanced.AISupervisor, name: {:via, Registry, {RiichiAdvanced.Registry, :ai_supervisor}}},
-      {RiichiAdvanced.Debouncers, name: {:via, Registry, {RiichiAdvanced.Registry, :debouncers}}},
-      {RiichiAdvanced.ExitMonitor, name: {:via, Registry, {RiichiAdvanced.Registry, :exit_monitor}}},
-      {RiichiAdvanced.GameState, name: {:via, Registry, {RiichiAdvanced.Registry, :game_state}}},
+      {Mutex, name: {:via, Registry, {:game_registry, "mutex-" <> session_id}}},
+      {RiichiAdvanced.AISupervisor, name: {:via, Registry, {:game_registry, "ai_supervisor-" <> session_id}}},
+      {RiichiAdvanced.Debouncers, name: {:via, Registry, {:game_registry, "debouncers-" <> session_id}}},
+      {RiichiAdvanced.ExitMonitor, name: {:via, Registry, {:game_registry, "exit_monitor-" <> session_id}}},
+      {RiichiAdvanced.GameState, name: {:via, Registry, {:game_registry, "game_state-" <> session_id}}, session_id: session_id},
       RiichiAdvanced.ETSCache,
     ]
     Supervisor.init(children, strategy: :one_for_one)

@@ -1,8 +1,8 @@
 defmodule RiichiAdvanced.AIPlayer do
   use GenServer
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, args, name: args[:name])
+  def start_link(init_state) do
+    GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
   end
 
   def init(state) do
@@ -11,13 +11,12 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info({:your_turn, %{player: player}}, state) do
     state = %{ state | player: player }
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
     playable_hand = player.hand
       |> Enum.with_index()
-      |> Enum.filter(fn {tile, _i} -> GenServer.call(game_state, {:is_playable, state.seat, tile, :hand}) end)
+      |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile, :hand}) end)
     playable_draw = player.draw
       |> Enum.with_index()
-      |> Enum.filter(fn {tile, _i} -> GenServer.call(game_state, {:is_playable, state.seat, tile, :draw}) end)
+      |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile, :draw}) end)
       |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
     playables = playable_hand ++ playable_draw
 
@@ -30,7 +29,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {tile, index} = Enum.at(playables, -1)
       IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
       Process.sleep(1500)
-      GenServer.cast(game_state, {:play_tile, state.seat, index})
+      GenServer.cast(state.game_state, {:play_tile, state.seat, index})
     end
     {:noreply, state}
   end
@@ -43,8 +42,7 @@ defmodule RiichiAdvanced.AIPlayer do
     button_name = Enum.at(player.buttons, 1)
     IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    GenServer.cast(game_state, {:press_button, state.seat, button_name})
+    GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
     {:noreply, state}
   end
 
@@ -58,8 +56,7 @@ defmodule RiichiAdvanced.AIPlayer do
     call_choice = Enum.random(player.call_buttons[called_tile])
     IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
     Process.sleep(500)
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    GenServer.cast(game_state, {:run_deferred_actions, %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile}})
+    GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile}})
     {:noreply, state}
   end
 end

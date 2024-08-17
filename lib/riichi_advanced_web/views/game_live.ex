@@ -1,15 +1,20 @@
 defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
-  # This function initializes the state
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+
+    # TODO check if a game exists,
+    # if not, start it
+    socket = assign(socket, :session_id, params["id"])
+    socket = assign(socket, :session_id, "ac734d3e45036ee0f35315ba668cabfce")
+    [{game_state, _}] = Registry.lookup(:game_registry, "game_state-" <> socket.assigns.session_id)
+    socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winner, nil)
     # liveviews mount twice
     if socket.root_pid != nil do
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:main")
-
-      [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-      [turn, players, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:new_player, socket})
+      # TODO use id in pubsub
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:" <> socket.assigns.session_id)
+      [turn, players, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(socket.assigns.game_state, {:new_player, socket})
 
       socket = assign(socket, :loading, false)
       socket = assign(socket, :player_id, socket.id)
@@ -56,14 +61,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  # Render the template using the assigned state
   def render(assigns) do
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    assigns = assign(assigns, :game_state, game_state)
     ~H"""
     <%= if not @spectator do %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id="hand self"
+        game_state={@game_state}
         your_hand?={true}
         your_turn?={@seat == @turn}
         seat={@seat}
@@ -77,6 +80,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <% else %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id="hand self"
+        game_state={@game_state}
         your_hand?={false}
         seat={@seat}
         hand={@hands[@seat]}
@@ -85,9 +89,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         :if={@seat != nil}
         />
     <% end %>
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" pond={@ponds[@seat]} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" game_state={@game_state} pond={@ponds[@seat]} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
+      game_state={@game_state}
       your_hand?={false}
       seat={@shimocha}
       hand={@hands[@shimocha]}
@@ -95,9 +100,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@calls[@shimocha]}
       :if={@shimocha != nil}
       />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" pond={@ponds[@shimocha]} :if={@shimocha != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} pond={@ponds[@shimocha]} :if={@shimocha != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand toimen"
+      game_state={@game_state}
       your_hand?={false}
       seat={@toimen}
       hand={@hands[@toimen]}
@@ -105,9 +111,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@calls[@toimen]}
       :if={@toimen != nil}
       />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" pond={@ponds[@toimen]} :if={@toimen != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} pond={@ponds[@toimen]} :if={@toimen != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand kamicha"
+      game_state={@game_state}
       your_hand?={false}
       seat={@kamicha}
       hand={@hands[@kamicha]}
@@ -115,9 +122,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@calls[@kamicha]}
       :if={@kamicha != nil}
       />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" pond={@ponds[@kamicha]} :if={@kamicha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" seat={@seat} turn={@turn} riichi={@riichi} />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" winner={@winner}/>
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} pond={@ponds[@kamicha]} :if={@kamicha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" game_state={@game_state} seat={@seat} turn={@turn} riichi={@riichi} />
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} winner={@winner}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -152,73 +159,71 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    GenServer.cast(game_state, {:press_button, socket.assigns.seat, name})
+    GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, name})
     {:noreply, socket}
   end
 
   def handle_event("auto_button_toggled", %{"name" => name, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    GenServer.cast(game_state, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
+    GenServer.cast(socket.assigns.game_state, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
     {:noreply, socket}
   end
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Riichi.to_tile/1)
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    GenServer.cast(game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)}})
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)}})
     {:noreply, socket}
   end
 
   def handle_info({:play_tile, _tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.turn do
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-      GenServer.cast(game_state, {:play_tile, socket.assigns.seat, index})
+      GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
     end
     {:noreply, socket}
   end
   def handle_info({:reindex_hand, from, to}, socket) do
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    GenServer.cast(game_state, {:reindex_hand, socket.assigns.seat, from, to})
+    GenServer.cast(socket.assigns.game_state, {:reindex_hand, socket.assigns.seat, from, to})
     {:noreply, socket}
   end
 
-  def handle_info(%{topic: "game:main", event: "state_updated", payload: %{"state" => state}}, socket) do
-    # animate new calls
-    num_calls_before = Map.new(socket.assigns.calls, fn {seat, calls} -> {seat, length(calls)} end)
-    num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
-    Enum.each(Map.keys(num_calls_before), fn seat ->
-      if num_calls_after[seat] > num_calls_before[seat] do
-        relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
-        send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", num_new_calls: num_calls_after[seat] - num_calls_before[seat])
-      end
-    end)
+  def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
+    if topic == ("game:" <> socket.assigns.session_id) do
+      # animate new calls
+      num_calls_before = Map.new(socket.assigns.calls, fn {seat, calls} -> {seat, length(calls)} end)
+      num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
+      Enum.each(Map.keys(num_calls_before), fn seat ->
+        if num_calls_after[seat] > num_calls_before[seat] do
+          relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
+          send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", num_new_calls: num_calls_after[seat] - num_calls_before[seat])
+        end
+      end)
 
-    # animate played tiles
-    Enum.each(state.players, fn {seat, player} ->
-      if player.last_discard != nil do
-        {tile, index} = player.last_discard
-        relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
-        send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
-        send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
-      end
-    end)
+      # animate played tiles
+      Enum.each(state.players, fn {seat, player} ->
+        if player.last_discard != nil do
+          {tile, index} = player.last_discard
+          relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
+          send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
+          send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
+        end
+      end)
 
-    socket = assign(socket, :turn, state.turn)
-    socket = assign(socket, :winner, state.winner)
-    socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
-    socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
-    socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
-    socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
-    socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
-    socket = assign(socket, :auto_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.auto_buttons} end))
-    socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
-    socket = assign(socket, :call_name, Map.new(state.players, fn {seat, player} -> {seat, player.call_name} end))
-    socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, "riichi" in player.status} end))
-    socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
-
-    {:noreply, socket}
+      socket = assign(socket, :turn, state.turn)
+      socket = assign(socket, :winner, state.winner)
+      socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
+      socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
+      socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
+      socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
+      socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
+      socket = assign(socket, :auto_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.auto_buttons} end))
+      socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
+      socket = assign(socket, :call_name, Map.new(state.players, fn {seat, player} -> {seat, player.call_name} end))
+      socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, "riichi" in player.status} end))
+      socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info({:reset_anim, hand, seat}, socket) do

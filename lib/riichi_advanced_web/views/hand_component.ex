@@ -10,8 +10,6 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def render(assigns) do
-    [{game_state, _}] = Registry.lookup(RiichiAdvanced.Registry, :game_state)
-    assigns = assign(assigns, :game_state, game_state)
     ~H"""
     <div class={@id}>
       <%= if @your_hand? do %>

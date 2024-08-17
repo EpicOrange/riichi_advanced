@@ -34,7 +34,10 @@ defmodule RiichiAdvancedWeb.Router do
     # get "/", GameController, :game
 
     # interactive
-    live "/", GameLive
+    live_session :default do
+      live "/", IndexLive
+      live "/game/:id", GameLive
+    end
   end
 
   # Other scopes may use custom stacks.
