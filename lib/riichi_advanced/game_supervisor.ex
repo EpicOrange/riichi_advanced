@@ -12,55 +12,24 @@ defmodule RiichiAdvanced.GameSupervisor do
       RiichiAdvanced.GameState,
       RiichiAdvanced.ExitMonitor,
       RiichiAdvanced.ETSCache,
-      %{
-        id: PlayTileDebounceEast,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :east}]}, 100, [name: PlayTileDebounceEast]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: PlayTileDebounceSouth,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :south}]}, 100, [name: PlayTileDebounceSouth]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: PlayTileDebounceWest,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :west}]}, 100, [name: PlayTileDebounceWest]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: PlayTileDebounceNorth,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :north}]}, 100, [name: PlayTileDebounceNorth]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: BigTextDebounceEast,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_play_tile_debounce, :east}]}, 1500, [name: BigTextDebounceEast]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: BigTextDebounceSouth,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_big_text, :south}]}, 1500, [name: BigTextDebounceSouth]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: BigTextDebounceWest,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_big_text, :west}]}, 1500, [name: BigTextDebounceWest]]},
-        type: :worker,
-        restart: :transient
-      },
-      %{
-        id: BigTextDebounceNorth,
-        start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {:reset_big_text, :north}]}, 1500, [name: BigTextDebounceNorth]]},
-        type: :worker,
-        restart: :transient
-      },
+      debounce_worker(:east, 100, :reset_play_tile_debounce, PlayTileDebounceEast),
+      debounce_worker(:south, 100, :reset_play_tile_debounce, PlayTileDebounceSouth),
+      debounce_worker(:west, 100, :reset_play_tile_debounce, PlayTileDebounceWest),
+      debounce_worker(:north, 100, :reset_play_tile_debounce, PlayTileDebounceNorth),
+      debounce_worker(:east, 1500, :reset_big_text, BigTextDebounceEast),
+      debounce_worker(:south, 1500, :reset_big_text, BigTextDebounceSouth),
+      debounce_worker(:west, 1500, :reset_big_text, BigTextDebounceWest),
+      debounce_worker(:north, 1500, :reset_big_text, BigTextDebounceNorth)
     ]
     Supervisor.init(children, strategy: :one_for_one)
+  end
+
+  defp debounce_worker(seat, delay, message, name) do
+    %{
+      id: name,
+      start: {Debounce, :start_link, [{GenServer, :cast, [RiichiAdvanced.GameState, {message, seat}]}, delay, [name: name]]},
+      type: :worker,
+      restart: :transient
+    }
   end
 end
