@@ -2,11 +2,15 @@ defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, _session, socket) do
-
-    # TODO check if a game exists,
-    # if not, start it
     socket = assign(socket, :session_id, params["id"])
-    socket = assign(socket, :session_id, "ac734d3e45036ee0f35315ba668cabfce")
+
+    # start a new game process, if it doesn't exist already
+    game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, name: {:via, Registry, {:game_registry, "game-" <> socket.assigns.session_id}}}
+    case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+      {:ok, _pid} -> IO.puts("Starting game session #{socket.assigns.session_id}")
+      {:error, {:already_started, _pid}} -> nil
+    end
+
     [{game_state, _}] = Registry.lookup(:game_registry, "game_state-" <> socket.assigns.session_id)
     socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winner, nil)

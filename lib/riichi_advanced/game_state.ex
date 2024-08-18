@@ -28,8 +28,7 @@ defmodule RiichiAdvanced.GameState do
       name: Keyword.get(init_data, :name))
   end
 
-  defp debounce_worker(session_id, seat, delay, message, id) do
-    [{debouncers, _}] = Registry.lookup(:game_registry, "debouncers-" <> session_id)
+  defp debounce_worker(debouncers, seat, delay, message, id) do
     DynamicSupervisor.start_child(debouncers, %{
       id: id,
       start: {Debounce, :start_link, [{GenServer, :cast, [self(), {message, seat}]}, delay]},
@@ -41,14 +40,15 @@ defmodule RiichiAdvanced.GameState do
   def init(state) do
     IO.puts("Game state PID is #{inspect(self())}")
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
-    {:ok, play_tile_debouncer_east} = debounce_worker(state.session_id, :east, 100, :reset_play_tile_debounce, :play_tile_debouncer_east)
-    {:ok, play_tile_debouncer_south} = debounce_worker(state.session_id, :south, 100, :reset_play_tile_debounce, :play_tile_debouncer_south)
-    {:ok, play_tile_debouncer_west} = debounce_worker(state.session_id, :west, 100, :reset_play_tile_debounce, :play_tile_debouncer_west)
-    {:ok, play_tile_debouncer_north} = debounce_worker(state.session_id, :north, 100, :reset_play_tile_debounce, :play_tile_debouncer_north)
-    {:ok, big_text_debouncer_east} = debounce_worker(state.session_id, :east, 1500, :reset_big_text, :big_text_debouncer_east)
-    {:ok, big_text_debouncer_south} = debounce_worker(state.session_id, :south, 1500, :reset_big_text, :big_text_debouncer_south)
-    {:ok, big_text_debouncer_west} = debounce_worker(state.session_id, :west, 1500, :reset_big_text, :big_text_debouncer_west)
-    {:ok, big_text_debouncer_north} = debounce_worker(state.session_id, :north, 1500, :reset_big_text, :big_text_debouncer_north)
+    [{debouncers, _}] = Registry.lookup(:game_registry, "debouncers-" <> state.session_id)
+    {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, :east, 100, :reset_play_tile_debounce, :play_tile_debouncer_east)
+    {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, :south, 100, :reset_play_tile_debounce, :play_tile_debouncer_south)
+    {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, :west, 100, :reset_play_tile_debounce, :play_tile_debouncer_west)
+    {:ok, play_tile_debouncer_north} = debounce_worker(debouncers, :north, 100, :reset_play_tile_debounce, :play_tile_debouncer_north)
+    {:ok, big_text_debouncer_east} = debounce_worker(debouncers, :east, 1500, :reset_big_text, :big_text_debouncer_east)
+    {:ok, big_text_debouncer_south} = debounce_worker(debouncers, :south, 1500, :reset_big_text, :big_text_debouncer_south)
+    {:ok, big_text_debouncer_west} = debounce_worker(debouncers, :west, 1500, :reset_big_text, :big_text_debouncer_west)
+    {:ok, big_text_debouncer_north} = debounce_worker(debouncers, :north, 1500, :reset_big_text, :big_text_debouncer_north)
     play_tile_debouncers = %{
       :east => play_tile_debouncer_east,
       :south => play_tile_debouncer_south,
@@ -61,8 +61,17 @@ defmodule RiichiAdvanced.GameState do
       :west => big_text_debouncer_west,
       :north => big_text_debouncer_north
     }
+    [{supervisor, _}] = Registry.lookup(:game_registry, "game-" <> state.session_id)
+    [{mutex, _}] = Registry.lookup(:game_registry, "mutex-" <> state.session_id)
+    [{ai_supervisor, _}] = Registry.lookup(:game_registry, "ai_supervisor-" <> state.session_id)
+    [{exit_monitor, _}] = Registry.lookup(:game_registry, "exit_monitor-" <> state.session_id)
+
     {:ok, Map.merge(state, %{
       initialized: false,
+      supervisor: supervisor,
+      mutex: mutex,
+      ai_supervisor: ai_supervisor,
+      exit_monitor: exit_monitor,
       play_tile_debounce: play_tile_debounce,
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers
@@ -129,8 +138,7 @@ defmodule RiichiAdvanced.GameState do
   defp fill_empty_seats_with_ai(state) do
     for dir <- [:east, :south, :west, :north], state[dir] == nil, reduce: state do
       state ->
-        [{ai_supervisor, _}] = Registry.lookup(:game_registry, "ai_supervisor-" <> state.session_id)
-        {:ok, ai_pid} = DynamicSupervisor.start_child(ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir]}})
+        {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir]}})
         IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
         state = Map.put(state, dir, ai_pid)
         notify_ai(state)
@@ -600,9 +608,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def adjudicate_actions(state) do
-    [{mutex, _}] = Registry.lookup(:game_registry, "mutex-" <> state.session_id)
-    IO.puts("Mutex: #{inspect(mutex)}")
-    lock = Mutex.await(mutex, __MODULE__)
+    lock = Mutex.await(state.mutex, __MODULE__)
     IO.puts("\nAdjudicating actions!")
     # clear last discard
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -657,7 +663,7 @@ defmodule RiichiAdvanced.GameState do
         state
     end
     # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-    Mutex.release(mutex, lock)
+    Mutex.release(state.mutex, lock)
     IO.puts("Done adjudicating actions!\n")
     state
   end
@@ -798,8 +804,7 @@ defmodule RiichiAdvanced.GameState do
         state = for dir <- [:east, :south, :west, :north], is_pid(state[dir]), reduce: state do
           state ->
             IO.puts("Stopping AI for #{dir}: #{inspect(state[dir])}")
-            [{ai_supervisor, _}] = Registry.lookup(:game_registry, "ai_supervisor-" <> state.session_id)
-            DynamicSupervisor.terminate_child(ai_supervisor, state[dir])
+            DynamicSupervisor.terminate_child(state.ai_supervisor, state[dir])
             Map.put(state, dir, nil)
         end
         state = initialize_game(state)
@@ -810,14 +815,12 @@ defmodule RiichiAdvanced.GameState do
       # if we're replacing an ai, shutdown the ai
       state = if is_pid(state[seat]) do
         IO.puts("Stopping AI for #{seat}: #{inspect(state[seat])}")
-        [{ai_supervisor, _}] = Registry.lookup(:game_registry, "ai_supervisor-" <> state.session_id)
-        DynamicSupervisor.terminate_child(ai_supervisor, state[seat])
+        DynamicSupervisor.terminate_child(state.ai_supervisor, state[seat])
         Map.put(state, seat, nil)
       else state end
 
       state = Map.put(state, seat, socket.id)
-      [{exit_monitor, _}] = Registry.lookup(:game_registry, "exit_monitor-" <> state.session_id)
-      GenServer.call(exit_monitor, {:new_player, socket.root_pid, seat})
+      GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
 
       # for players with no seats, initialize an ai
@@ -832,8 +835,16 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:delete_player, seat}, _from, state) do
     state = Map.put(state, seat, nil)
     IO.puts("#{seat} player exited")
-    state = fill_empty_seats_with_ai(state)
-    broadcast_state_change(state)
+    state = if Enum.all?([:east, :south, :west, :north], fn dir -> state[dir] == nil || is_pid(state[dir]) end) do
+      # all players have left, shutdown
+      IO.puts("Stopping game #{state.session_id}")
+      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      state
+    else
+      state = fill_empty_seats_with_ai(state)
+      broadcast_state_change(state)
+      state
+    end
     {:reply, :ok, state}
   end
 
