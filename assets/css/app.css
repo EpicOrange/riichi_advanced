@@ -613,4 +613,76 @@ div.total-score-name-display::before {
   bottom: -15%;
 }
 
+/* index screen */
+div.title {
+  text-align: center;
+  display: flex;
+  column-gap: calc(2 * var(--tile-size));
+  user-select: none;
+}
+div.title > div {
+  position: absolute;
+  z-index: 2;
+  display: inline-block;
+}
+div.title > div.title-riichi {
+  font-size: calc(3 * var(--tile-size));
+  transform: rotate(2deg);  
+  top: 0;
+  width: calc(10 * var(--tile-size));
+  left: calc(2 * var(--tile-size));
+}
+div.title > div.title-advanced {
+  font-size: calc(2 * var(--tile-size));
+  transform: rotate(-10deg);  
+  left: calc(4.5 * var(--tile-size));
+  top: calc(3 * var(--tile-size));
+}
+div.title > div.tile {
+  --tile-size: min(calc(80vw / 6), calc(80vh / 6));
+  top: calc(0.2 * var(--tile-size));
+}
+div.title > div.tile.\38 m {
+  transform: rotate(10deg);
+  left: calc(0.2 * var(--tile-size));
+}
+div.title > div.tile.\37 z {
+  transform: rotate(-10deg);
+  right: calc(0.2 * var(--tile-size));
+}
+div.title > div.title-riichi::before,
+div.title > div.title-advanced::before {
+  position: absolute;
+  content: "";
+  width: 150%;
+  height: 140%;
+  left: -25%;
+  bottom: -7.5%;
+  z-index: -1;
+}
+div.title > div.title-riichi::before {
+  background-image: url(/images/brush-bg.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+div.title > div.title-advanced::before {
+  background-image: url(/images/brush-bg2.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
 
+div.main-page > .enter-button {
+  position: absolute;
+  font-size: calc(3 * var(--tile-size));
+  width: calc(8 * var(--tile-size));
+  top: calc(50% + 1 * var(--tile-size));
+  left: calc(50% - 4 * var(--tile-size));
+  background: var(--tile-front);
+  text-decoration: none;
+  color: black;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(calc(var(--tile-size) / -4) calc(var(--tile-size) / -2) 0 var(--tile-front-side))
+          drop-shadow(calc(var(--tile-size) / -4) calc(var(--tile-size) / -2) 0 var(--tile-back-side));
+}
