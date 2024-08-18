@@ -18,26 +18,26 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       # TODO use id in pubsub
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:" <> socket.assigns.session_id)
-      [turn, players, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(socket.assigns.game_state, {:new_player, socket})
-
+      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(socket.assigns.game_state, {:new_player, socket})
       socket = assign(socket, :loading, false)
       socket = assign(socket, :player_id, socket.id)
-      socket = assign(socket, :turn, turn)
+      socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :seat, seat)
       socket = assign(socket, :shimocha, shimocha)
       socket = assign(socket, :toimen, toimen)
       socket = assign(socket, :kamicha, kamicha)
       socket = assign(socket, :spectator, spectator)
-      socket = assign(socket, :hands, Map.new(players, fn {seat, player} -> {seat, player.hand} end))
-      socket = assign(socket, :ponds, Map.new(players, fn {seat, player} -> {seat, player.pond} end))
-      socket = assign(socket, :calls, Map.new(players, fn {seat, player} -> {seat, player.calls} end))
-      socket = assign(socket, :draws, Map.new(players, fn {seat, player} -> {seat, player.draw} end))
-      socket = assign(socket, :buttons, Map.new(players, fn {seat, player} -> {seat, player.buttons} end))
-      socket = assign(socket, :auto_buttons, Map.new(players, fn {seat, player} -> {seat, player.auto_buttons} end))
-      socket = assign(socket, :call_buttons, Map.new(players, fn {seat, player} -> {seat, player.call_buttons} end))
-      socket = assign(socket, :call_name, Map.new(players, fn {seat, player} -> {seat, player.call_name} end))
-      socket = assign(socket, :riichi, Map.new(players, fn {seat, player} -> {seat, "riichi" in player.status} end))
-      socket = assign(socket, :big_text, Map.new(players, fn {seat, player} -> {seat, player.big_text} end))
+      socket = assign(socket, :revealed_tiles, Enum.map(state.revealed_tiles, fn tile_spec -> if is_binary(tile_spec) do state.reserved_tiles[tile_spec] else tile_spec end end))
+      socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
+      socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
+      socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
+      socket = assign(socket, :draws, Map.new(state.players, fn {seat, player} -> {seat, player.draw} end))
+      socket = assign(socket, :buttons, Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
+      socket = assign(socket, :auto_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.auto_buttons} end))
+      socket = assign(socket, :call_buttons, Map.new(state.players, fn {seat, player} -> {seat, player.call_buttons} end))
+      socket = assign(socket, :call_name, Map.new(state.players, fn {seat, player} -> {seat, player.call_name} end))
+      socket = assign(socket, :riichi, Map.new(state.players, fn {seat, player} -> {seat, "riichi" in player.status} end))
+      socket = assign(socket, :big_text, Map.new(state.players, fn {seat, player} -> {seat, player.big_text} end))
       {:ok, socket}
     else
       empty_bools = %{:east => false, :south => false, :west => false, :north => false}
@@ -51,6 +51,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :toimen, nil)
       socket = assign(socket, :kamicha, nil)
       socket = assign(socket, :spectator, false)
+      socket = assign(socket, :revealed_tiles, [])
       socket = assign(socket, :hands, empty_lists)
       socket = assign(socket, :ponds, empty_lists)
       socket = assign(socket, :calls, empty_lists)
@@ -157,6 +158,9 @@ defmodule RiichiAdvancedWeb.GameLive do
         <% end %>
       </div>
     <% end %>
+    <div class="revealed-tiles">
+      <div class={["tile", tile]} :for={tile <- @revealed_tiles}></div>
+    </div>
     <div class={["big-text", Utils.get_relative_seat(@seat, seat)]} :for={{seat, text} <- @big_text} :if={text != ""}><%= text %></div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
     """
@@ -214,6 +218,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winner, state.winner)
+      socket = assign(socket, :revealed_tiles, Enum.map(state.revealed_tiles, fn tile_spec -> if is_binary(tile_spec) do state.reserved_tiles[tile_spec] else tile_spec end end))
       socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
       socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
       socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))

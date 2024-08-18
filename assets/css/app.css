@@ -441,6 +441,16 @@ div.big-text.kamicha { left: calc(-50% + (3 * var(--tile-size))); top: calc(50% 
 div.big-text.toimen { top: 1rem; }
 div.big-text.shimocha { left: calc(50% - (3 * var(--tile-size))); top: calc(50% - (3 * var(--tile-size))); }
 
+/* revealed tiles */
+
+div.revealed-tiles {
+  display: flex;
+  position: absolute;
+  font-size: calc(0.5 * var(--tile-size));
+  top: calc(-1.5 * var(--tile-size));
+  left: 0;
+}
+
 /* win window */
 div.win-window {
   position: relative;

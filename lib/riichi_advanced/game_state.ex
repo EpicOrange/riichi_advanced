@@ -110,6 +110,7 @@ defmodule RiichiAdvanced.GameState do
     reserved_tile_names = rules["reserved_tiles"]
     {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
     reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
+    revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
     IO.inspect(reserved_tiles)
 
     # hands = %{:east  => Enum.slice(wall, 0..12),
@@ -128,6 +129,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:paused, false)
      |> Map.put(:winner, nil)
      |> Map.put(:actions_cv, 0) # condition variable
+     |> Map.put(:revealed_tiles, revealed_tiles)
      |> Map.put(:drawn_reserved_tiles, [])
      |> Map.put(:initialized, true)
      |> change_turn(:east)
@@ -198,18 +200,23 @@ defmodule RiichiAdvanced.GameState do
     l2 ++ [tile] ++ r2
   end
 
+  defp from_tile_name(state, tile_name) do
+    cond do
+      is_binary(tile_name) && Map.has_key?(state.reserved_tiles, tile_name) -> state.reserved_tiles[tile_name]
+      is_atom(tile_name) -> tile_name
+      true ->
+        IO.puts("Unknown tile name #{inspect(tile_name)}")
+        tile_name
+    end
+  end
+
   defp draw_tile(state, seat, num \\ 1, tile_spec \\ nil) do
     if num > 0 do
       {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index), state.wall_index + 1} end
-      {state, tile} = cond do
-        is_binary(tile_name) && Map.has_key?(state.reserved_tiles, tile_name) ->
-          state = Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
-          {state, state.reserved_tiles[tile_name]}
-        is_atom(tile_name) -> {state, tile_name}
-        true ->
-          IO.puts("Drawing unknown tile name #{inspect(tile_name)}")
-          {state, tile_name}
-      end
+      state = if is_binary(tile_name) && Map.has_key?(state.reserved_tiles, tile_name) do
+          Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
+        else state end
+      tile = from_tile_name(state, tile_name)
       state = update_player(state, seat, &%Player{ &1 |
         hand: &1.hand ++ &1.draw,
         draw: [tile]
@@ -232,8 +239,11 @@ defmodule RiichiAdvanced.GameState do
 
     if state.winner == nil do
       # run on turn change, unless this turn change was triggered by an action
-      state = if not via_action && seat != prev_turn && Map.has_key?(state.rules, "on_turn_change") do
-        run_actions(state, state.rules["on_turn_change"]["actions"], %{seat: seat})
+      state = if not via_action && prev_turn != nil && seat != prev_turn && Map.has_key?(state.rules, "before_turn_change") do
+        run_actions(state, state.rules["before_turn_change"]["actions"], %{seat: prev_turn})
+      else state end
+      state = if not via_action && seat != prev_turn && Map.has_key?(state.rules, "after_turn_change") do
+        run_actions(state, state.rules["after_turn_change"]["actions"], %{seat: seat})
       else state end
 
       # TODO figure out where in control flow to run this
@@ -438,11 +448,12 @@ defmodule RiichiAdvanced.GameState do
       "win_by_discard"     -> win(state, context.seat, get_last_action(state).tile, :discard)
       "win_by_call"        -> win(state, context.seat, get_last_action(state).called_tile, :call)
       "win_by_draw"        -> win(state, context.seat, state.players[context.seat].draw, :draw)
-      "set_status"         -> update_player(state, context.seat, fn player -> %Player{ player | status: player.status ++ opts } end)
-      "unset_status"       -> update_player(state, context.seat, fn player -> %Player{ player | status: player.status -- opts } end)
+      "set_status"         -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_status"       -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "big_text"           -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
       "pause"              -> Map.put(state, :paused, true)
       "sort_hand"          -> update_player(state, context.seat, fn player -> %Player{ player | hand: Riichi.sort_tiles(player.hand) } end)
+      "reveal_tile"        -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
       "press_button"       ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
@@ -591,6 +602,8 @@ defmodule RiichiAdvanced.GameState do
       "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in state.players[context.seat].buttons end)
       "tile_drawn"               -> Enum.all?(opts, fn tile -> tile in state.drawn_reserved_tiles end)
       "tile_not_drawn"           -> Enum.all?(opts, fn tile -> tile not in state.drawn_reserved_tiles end)
+      "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
+      "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
@@ -830,7 +843,7 @@ defmodule RiichiAdvanced.GameState do
       state
     else state end
 
-    {:reply, [state.turn, state.players] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
+    {:reply, [state] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
   end
 
   def handle_call({:delete_player, seat}, _from, state) do
