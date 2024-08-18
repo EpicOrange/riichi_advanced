@@ -76,7 +76,13 @@ defmodule RiichiAdvanced.GameState do
       big_text_debouncers: big_text_debouncers
     })
 
-    rules = Jason.decode!(File.read!(Application.app_dir(:riichi_advanced, "priv/static/riichi.json")))
+    rules = case Jason.decode(File.read!(Application.app_dir(:riichi_advanced, "priv/static/riichi.json"))) do
+      {:ok, rules} -> rules
+      {:error, err} ->
+        IO.puts("Failed to read rules!")
+        IO.inspect(err)
+        %{}
+    end
     state = Map.put(state, :rules, rules)
     # initialize auto buttons
     initial_auto_buttons = if Map.has_key?(rules, "auto_buttons") do
@@ -88,10 +94,10 @@ defmodule RiichiAdvanced.GameState do
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
     # wall = List.insert_at(wall, 52, :"5p")
-    # hands = %{:east  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"3p", :"4p"]),
-    #           :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
-    #           :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
-    #           :north => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
+    hands = %{:east  => Riichi.sort_tiles([:"1m", :"1m", :"1m", :"1m", :"5m", :"5m", :"5m", :"5m", :"9m", :"8p", :"8p", :"3p", :"4p"]),
+              :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
+              :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
+              :north => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
               # :south => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :south => Riichi.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
               # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"4p", :"5p"]),
@@ -99,12 +105,20 @@ defmodule RiichiAdvanced.GameState do
               # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
               # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
-    hands = %{:east  => Enum.slice(wall, 0..12),
-              :south => Enum.slice(wall, 13..25),
-              :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+
+    # reserve some tiles (dead wall)
+    reserved_tile_names = rules["reserved_tiles"]
+    {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
+    reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
+    IO.inspect(reserved_tiles)
+
+    # hands = %{:east  => Enum.slice(wall, 0..12),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
     state = state
      |> Map.put(:wall, wall)
+     |> Map.put(:reserved_tiles, reserved_tiles)
      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ hand: hands[seat], auto_buttons: initial_auto_buttons }} end))
      |> Map.put(:turn, :east)
      |> Map.put(:wall_index, 52)
@@ -114,6 +128,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:paused, false)
      |> Map.put(:winner, nil)
      |> Map.put(:actions_cv, 0) # condition variable
+     |> Map.put(:drawn_reserved_tiles, [])
      |> Map.put(:initialized, true)
      |> change_turn(:east)
 
@@ -183,18 +198,27 @@ defmodule RiichiAdvanced.GameState do
     l2 ++ [tile] ++ r2
   end
 
-  defp draw_tile(state, seat, num) do
+  defp draw_tile(state, seat, num \\ 1, tile_spec \\ nil) do
     if num > 0 do
-      tile = Enum.at(state.wall, state.wall_index)
+      {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index), state.wall_index + 1} end
+      {state, tile} = cond do
+        is_binary(tile_name) && Map.has_key?(state.reserved_tiles, tile_name) ->
+          state = Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
+          {state, state.reserved_tiles[tile_name]}
+        is_atom(tile_name) -> {state, tile_name}
+        true ->
+          IO.puts("Drawing unknown tile name #{inspect(tile_name)}")
+          {state, tile_name}
+      end
       state = update_player(state, seat, &%Player{ &1 |
         hand: &1.hand ++ &1.draw,
         draw: [tile]
       })
-      state = Map.update!(state, :wall_index, & &1 + 1)
+      state = Map.put(state, :wall_index, wall_index)
       state = update_action(state, seat, :draw, %{tile: tile})
 
       # IO.puts("wall index is now #{get_state().wall_index}")
-      draw_tile(state, seat, num - 1)
+      draw_tile(state, seat, num - 1, tile_spec)
     else state end
   end
 
@@ -400,8 +424,8 @@ defmodule RiichiAdvanced.GameState do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     state = case action do
       "play_tile"          -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
-      "draw"               -> draw_tile(state, context.seat, Enum.at(opts, 0, 1))
-      "discard_draw"       -> 
+      "draw"               -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil))
+      "discard_draw"       ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])
         state
@@ -432,7 +456,7 @@ defmodule RiichiAdvanced.GameState do
     if action == "pause" do
       # schedule an unpause after the given delay
       :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, context}])
-      IO.puts("Stopping actions due to pause")
+      # IO.puts("Stopping actions due to pause")
       {state, actions}
     else
       # if our action updates state, then we need to recalculate buttons
@@ -451,7 +475,7 @@ defmodule RiichiAdvanced.GameState do
           _run_actions(state, actions, context)
         else
           # if buttons changed, stop evaluating actions here
-          IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)}")
+          # IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)}")
           {state, actions}
         end
       else
@@ -565,6 +589,8 @@ defmodule RiichiAdvanced.GameState do
       "is_drawn_tile"            -> context.tile_source == :draw
       "buttons_include"          -> Enum.all?(opts, fn button_name -> button_name in state.players[context.seat].buttons end)
       "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in state.players[context.seat].buttons end)
+      "tile_drawn"               -> Enum.all?(opts, fn tile -> tile in state.drawn_reserved_tiles end)
+      "tile_not_drawn"           -> Enum.all?(opts, fn tile -> tile not in state.drawn_reserved_tiles end)
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
@@ -597,7 +623,7 @@ defmodule RiichiAdvanced.GameState do
 
   def adjudicate_actions(state) do
     lock = Mutex.await(state.mutex, __MODULE__)
-    # IO.puts("\nAdjudicating actions!")
+    IO.puts("\nAdjudicating actions!")
     # clear last discard
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     superceded_choices = get_superceded_choices(state)
@@ -608,7 +634,7 @@ defmodule RiichiAdvanced.GameState do
         actions = player.chosen_actions
         state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, deferred_actions: [] } end)
         state = if choice != nil && not Enum.member?(superceded_choices, choice) do
-          # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
+          IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
           # check if a call action exists, if it's a call and multiple call choices are available
           call_action_exists = ["call"] in actions || ["self_call"] in actions || ["upgrade_call"] in actions
           if not call_action_exists do
@@ -644,6 +670,7 @@ defmodule RiichiAdvanced.GameState do
               state = schedule_actions(state, seat, actions)
               state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: button_name } end)
               notify_ai_call_buttons(state, seat)
+              notify_ai(state)
               state
             end
           end
@@ -652,7 +679,7 @@ defmodule RiichiAdvanced.GameState do
     end
     # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
     Mutex.release(state.mutex, lock)
-    # IO.puts("Done adjudicating actions!\n")
+    IO.puts("Done adjudicating actions!\n")
     state
   end
 
