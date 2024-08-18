@@ -8,7 +8,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["win-window", @winner == nil && "inactive"]}>
+    <div class={["game-end-window", @winner == nil && "inactive"]}>
       <%= if @winner != nil && @winner.yaku != nil do %>
         <div class="hand winning-hand">
           <div class={["tile", tile]} :for={tile <- @winner.player.hand}></div>

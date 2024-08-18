@@ -209,7 +209,8 @@
                ]
   },
   "after_turn_change": {
-    "actions": [["draw"],
+    "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+                ["when", ["not_no_tiles_remaining"], [["draw"]]],
                 ["when", ["our_turn"], [["unset_status", "ippatsu"]]]
                ]
   },

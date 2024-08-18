@@ -197,7 +197,7 @@ div.compass > div.direction > div.wind-marker {
 div.compass > div.direction > div.wind-marker.highlighted {
   color: var(--tile-back);
 }
-div.compass > div.direction > div.score {
+div.compass > div.direction > div.score-counter {
   position: absolute;
   text-align: center;
   width: calc(1.25 * var(--tile-size));
@@ -210,7 +210,28 @@ div.compass > div.direction > div.score {
   border-radius: calc(0.25 * var(--tile-size));
 }
 
-
+div.compass > div.tiles-left {
+  position: absolute;
+  text-align: center;
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  font-size: calc(0.66 * var(--tile-size));
+  color: black;
+  left: calc(50% - (0.5 * var(--tile-size)));
+  top: calc(50% - (0.4 * var(--tile-size)));
+  z-index: 1;
+}
+div.compass > div.tiles-left::before {
+  position: absolute;
+  content: "";
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  background: #FFFFFFBF;
+  left: calc(50% - (0.5 * var(--tile-size)));
+  top: calc(50% - (0.6 * var(--tile-size)));
+  border-radius: 50%;
+  z-index: -1;
+}
 
 /* tiles */
 div.tile {
@@ -451,21 +472,21 @@ div.revealed-tiles {
   left: 0;
 }
 
-/* win window */
-div.win-window {
-  position: relative;
+/* win/draw windows */
+div.game-end-window {
+  position: absolute;
   width: 80%;
   height: 80%;
   left: 10%;
-  top: -20%;
+  top: 10%;
   z-index: 10;
   float: left;
   pointer-events: none;
   transition: opacity 0.5s ease;
   user-select: none;
 }
-div.win-window.inactive { opacity: 0; }
-div.win-window::before {
+div.game-end-window.inactive { opacity: 0; }
+div.game-end-window::before {
   position: absolute;
   content: "";
   width: 108%;
@@ -623,6 +644,32 @@ div.total-score-name-display::before {
   left: -20%;
   bottom: -15%;
 }
+
+/* draws */
+div.game-end-window > div.draw-reason {
+  position: relative;
+  font-size: calc(1.5 * var(--tile-size));
+  text-align: center;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+div.game-end-window > div.draw-reason::before {
+  position: absolute;
+  content: "";
+  background-image: url(/images/brush-bg2.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transform: rotate(181deg);
+  width: 120%;
+  height: 140%;
+  left: -5%;
+  bottom: -40%;
+  z-index: -1;
+}
+
 
 /* index screen */
 div.title {

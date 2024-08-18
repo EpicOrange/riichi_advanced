@@ -9,12 +9,13 @@ defmodule RiichiAdvancedWeb.CompassComponent do
     # <div class={["compass", @seat]} phx-click="set_turn" phx-target={@myself}>
     ~H"""
     <div class={["compass", @seat]}>
+      <div class="tiles-left"><%= @tiles_left %></div>
       <%= for {dir, symbol} <- [{:east, "東"}, {:south, "南"}, {:west, "西"}, {:north, "北"}] do %>
       <div class="score-box"></div>
       <div class={["direction", dir]}>
         <div class={["riichi-tray", @turn == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
         <div class={["wind-marker", @turn == dir && "highlighted"]}><%= symbol %></div>
-        <div class="score">25000</div>
+        <div class="score-counter">25000</div>
       </div>
       <% end %>
     </div>

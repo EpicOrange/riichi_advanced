@@ -14,12 +14,16 @@ defmodule RiichiAdvancedWeb.GameLive do
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, name: {:via, Registry, {:game_registry, "game-" <> socket.assigns.session_id}}}
     case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} -> IO.puts("Starting game session #{socket.assigns.session_id}")
+      {:error, {:shutdown, error}} ->
+        IO.puts("Error when starting game session #{socket.assigns.session_id}")
+        IO.inspect(error)
       {:error, {:already_started, _pid}} -> nil
     end
 
     [{game_state, _}] = Registry.lookup(:game_registry, "game_state-" <> socket.assigns.session_id)
     socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winner, nil)
+    socket = assign(socket, :draw, nil)
     # liveviews mount twice
     if socket.root_pid != nil do
       # TODO use id in pubsub
@@ -34,6 +38,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :kamicha, kamicha)
       socket = assign(socket, :spectator, spectator)
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
+      socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index)
       socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
       socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
       socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
@@ -58,6 +63,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :kamicha, nil)
       socket = assign(socket, :spectator, false)
       socket = assign(socket, :revealed_tiles, [])
+      socket = assign(socket, :tiles_left, 0)
       socket = assign(socket, :hands, empty_lists)
       socket = assign(socket, :ponds, empty_lists)
       socket = assign(socket, :calls, empty_lists)
@@ -134,8 +140,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} pond={@ponds[@kamicha]} :if={@kamicha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" game_state={@game_state} seat={@seat} turn={@turn} riichi={@riichi} />
+    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" game_state={@game_state} seat={@seat} turn={@turn} tiles_left={@tiles_left} riichi={@riichi} />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} winner={@winner}/>
+    <.live_component module={RiichiAdvancedWeb.DrawWindowComponent} id="draw-window" game_state={@game_state} draw={@draw}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @buttons[@seat]}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -224,7 +231,9 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winner, state.winner)
+      socket = assign(socket, :draw, state.draw)
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
+      socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index)
       socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
       socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
       socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
