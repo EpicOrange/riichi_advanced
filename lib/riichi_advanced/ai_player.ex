@@ -26,8 +26,8 @@ defmodule RiichiAdvanced.AIPlayer do
       # pick the first playable tile
       # {tile, index} = Enum.at(playables, 0)
       # pick the last playable tile (the draw)
-      {tile, index} = Enum.at(playables, -1)
-      IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
+      {_tile, index} = Enum.at(playables, -1)
+      # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
       Process.sleep(1500)
       GenServer.cast(state.game_state, {:play_tile, state.seat, index})
     end
@@ -40,7 +40,7 @@ defmodule RiichiAdvanced.AIPlayer do
     # button_name = Enum.random(player.buttons)
     # pick the first button
     button_name = Enum.at(player.buttons, 1)
-    IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
+    # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
     GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
     {:noreply, state}
@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.filter(fn tile -> not Enum.empty?(player.call_buttons[tile]) end)
       |> Enum.random()
     call_choice = Enum.random(player.call_buttons[called_tile])
-    IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
+    # IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
     Process.sleep(500)
     GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile}})
     {:noreply, state}
