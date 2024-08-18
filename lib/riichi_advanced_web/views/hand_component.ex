@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
+    socket = assign(socket, :your_hand?, false)
     socket = assign(socket, :played_tile, nil)
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
@@ -91,6 +92,16 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def update(assigns, socket) do
+    # randomize position of played tile (if tedashi)
+    no_played_tile_yet? = socket.assigns.played_tile_index == nil
+    assigns = if not socket.assigns.your_hand? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil do
+      if no_played_tile_yet? do
+        Map.put(assigns, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
+      else
+        Map.put(assigns, :played_tile_index, socket.assigns.played_tile_index)
+      end
+    else assigns end
+
     socket = assigns
              |> Map.drop([:flash])
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
@@ -99,14 +110,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
     # this gets undone after 750ms
     socket = if Map.has_key?(socket.assigns, :played_tile_index) do
       socket = if socket.assigns.played_tile_index != nil do
-        # randomize position of played tile (if tedashi)
-        socket = if not socket.assigns.your_hand? && socket.assigns.played_tile_index < length(socket.assigns.hand) do
-          assign(socket, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
-          else socket end
-
-        actual_hand = socket.assigns.hand
+        actual_hand = socket.assigns.hand ++ socket.assigns.draw
         socket = assign(socket, :hand, List.insert_at(actual_hand, socket.assigns.played_tile_index, socket.assigns.played_tile))
-        :timer.apply_after(750, Kernel, :send, [self(), {:reset_anim, actual_hand, socket.assigns.seat}])
+        :timer.apply_after(750, Kernel, :send, [self(), {:reset_anim, socket.assigns.seat}])
         socket
       else socket end
       socket

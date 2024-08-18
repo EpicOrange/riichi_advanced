@@ -253,9 +253,6 @@ defmodule RiichiAdvanced.GameState do
     state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [{call_name, call}] })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
-    # since we interrupted the player we called from, cancel their remaining actions
-    IO.puts("Cancelling deferred actions for #{state.turn} since we called from them")
-    state = update_player(state, state.turn, &%Player{ &1 | deferred_actions: [] })
     state
   end
 

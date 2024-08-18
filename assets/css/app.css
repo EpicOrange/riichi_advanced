@@ -96,9 +96,9 @@ div.pond {
   z-index: -1;
 }
 div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
-.pond > .tile:nth-child(n+7) { order: 1; }
-.pond > .tile:nth-child(n+13) { order: 2; }
-div.pond > div.tile:nth-child(n+7):not(:nth-child(n+19)) { filter: none; }
+.pond > .tile { order: 0; z-index: 2; }
+.pond > .tile:nth-child(n+7) { order: 1; z-index: 1; }
+.pond > .tile:nth-child(n+13) { order: 2; z-index: 0; }
 div.pond.shimocha { transform: rotate(270deg); }
 div.pond.toimen { transform: rotate(180deg); }
 div.pond.kamicha { transform: rotate(90deg); }
@@ -321,6 +321,7 @@ div.tile.removed ~ div.tile.draw {
 }
 div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
+  z-index: -1;
 }
 
 @keyframes slideLeft {
