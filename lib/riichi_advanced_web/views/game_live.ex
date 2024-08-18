@@ -1,6 +1,12 @@
 defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
+  defp to_revealed_tiles(state) do
+    revealed_tiles = Enum.map(state.revealed_tiles, fn tile_spec -> if is_binary(tile_spec) do state.reserved_tiles[tile_spec] else tile_spec end end)
+    revealed_tiles = revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
+    revealed_tiles
+  end
+
   def mount(params, _session, socket) do
     socket = assign(socket, :session_id, params["id"])
 
@@ -27,7 +33,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :toimen, toimen)
       socket = assign(socket, :kamicha, kamicha)
       socket = assign(socket, :spectator, spectator)
-      socket = assign(socket, :revealed_tiles, Enum.map(state.revealed_tiles, fn tile_spec -> if is_binary(tile_spec) do state.reserved_tiles[tile_spec] else tile_spec end end))
+      socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
       socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
       socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))
@@ -218,7 +224,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winner, state.winner)
-      socket = assign(socket, :revealed_tiles, Enum.map(state.revealed_tiles, fn tile_spec -> if is_binary(tile_spec) do state.reserved_tiles[tile_spec] else tile_spec end end))
+      socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :hands, Map.new(state.players, fn {seat, player} -> {seat, player.hand} end))
       socket = assign(socket, :ponds, Map.new(state.players, fn {seat, player} -> {seat, player.pond} end))
       socket = assign(socket, :calls, Map.new(state.players, fn {seat, player} -> {seat, player.calls} end))

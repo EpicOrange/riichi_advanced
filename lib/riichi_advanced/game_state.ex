@@ -111,6 +111,7 @@ defmodule RiichiAdvanced.GameState do
     {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
     reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
     revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
+    max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
     IO.inspect(reserved_tiles)
 
     # hands = %{:east  => Enum.slice(wall, 0..12),
@@ -130,6 +131,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:winner, nil)
      |> Map.put(:actions_cv, 0) # condition variable
      |> Map.put(:revealed_tiles, revealed_tiles)
+     |> Map.put(:max_revealed_tiles, max_revealed_tiles)
      |> Map.put(:drawn_reserved_tiles, [])
      |> Map.put(:initialized, true)
      |> change_turn(:east)
