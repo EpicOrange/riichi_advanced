@@ -6,8 +6,9 @@ defmodule RiichiAdvancedWeb.CompassComponent do
   end
 
   def render(assigns) do
+    # <div class={["compass", @seat]} phx-click="set_turn" phx-target={@myself}>
     ~H"""
-    <div class={["compass", @seat]} phx-click="set_turn" phx-target={@myself}>
+    <div class={["compass", @seat]}>
       <%= for {dir, symbol} <- [{:east, "東"}, {:south, "南"}, {:west, "西"}, {:north, "北"}] do %>
       <div class="score-box"></div>
       <div class={["direction", dir]}>
@@ -20,8 +21,8 @@ defmodule RiichiAdvancedWeb.CompassComponent do
     """
   end
 
-  def handle_event("set_turn", _assigns, socket) do
-    GenServer.cast(socket.assigns.game_state, {:change_turn, socket.assigns.seat})
-    {:noreply, socket}
-  end
+  # def handle_event("set_turn", _assigns, socket) do
+  #   GenServer.cast(socket.assigns.game_state, {:change_turn, socket.assigns.seat})
+  #   {:noreply, socket}
+  # end
 end
