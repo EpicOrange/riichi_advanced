@@ -266,6 +266,11 @@ defmodule Riichi do
     end
   end
 
+  def get_seat_wind(_kyoku, seat) do
+    # TODO offset by kyoku
+    seat
+  end
+
   defp calculate_call_fu({name, call}) do
     {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
     case name do

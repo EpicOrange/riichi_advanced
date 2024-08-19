@@ -14,7 +14,7 @@ defmodule RiichiAdvancedWeb.CompassComponent do
       <div class={["direction", dir]}>
         <div class={["riichi-tray", @turn == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
         <div class={["wind-marker", @turn == dir && "highlighted"]}><%= symbol %></div>
-        <div class="score-counter">25000</div>
+        <div class="score-counter"><%= @score[dir] %></div>
       </div>
       <% end %>
     </div>

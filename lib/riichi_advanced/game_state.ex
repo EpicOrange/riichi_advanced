@@ -4,6 +4,7 @@ defmodule Player do
     draw: [],
     pond: [],
     calls: [],
+    score: 0,
     buttons: [],
     auto_buttons: [],
     call_buttons: %{}, # TODO wrap this up as ":action_context"
@@ -86,6 +87,22 @@ defmodule RiichiAdvanced.GameState do
         %{}
     end
     state = Map.put(state, :rules, rules)
+
+    initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
+
+    state = state
+     |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ score: initial_score }} end))
+     |> Map.put(:kyoku, 0)
+     |> Map.put(:honba, 0)
+
+    state = initialize_new_round(state)
+
+    {:ok, state}
+  end
+
+  def initialize_new_round(state) do
+    rules = state.rules
+
     # initialize auto buttons
     initial_auto_buttons = if Map.has_key?(rules, "auto_buttons") do
         Enum.map(rules["auto_buttons"], fn {name, auto_button} -> {name, auto_button["enabled_at_start"]} end) |> Enum.reverse
@@ -150,14 +167,29 @@ defmodule RiichiAdvanced.GameState do
              |> Map.put(:max_revealed_tiles, 0)
              |> Map.put(:drawn_reserved_tiles, [])}
     end
+
     state = state
      |> Map.put(:wall, wall)
-     |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ hand: hands[seat], auto_buttons: initial_auto_buttons }} end))
+     |> Map.put(:players, Map.new(state.players, fn {seat, player} -> {seat, %Player{ player |
+          hand: hands[seat],
+          draw: [],
+          pond: [],
+          calls: [],
+          buttons: [],
+          auto_buttons: initial_auto_buttons,
+          call_buttons: %{},
+          call_name: "",
+          choice: nil,
+          chosen_actions: nil,
+          deferred_actions: [],
+          big_text: "",
+          status: [],
+          last_discard: nil,
+          ready: false
+        }} end))
      |> Map.put(:turn, :east)
      |> Map.put(:wall_index, 52)
      |> Map.put(:turn, nil)
-     |> Map.put(:kyoku, 0)
-     |> Map.put(:honba, 0)
      |> Map.put(:actions, [])
      |> Map.put(:last_action, %{seat: nil, action: nil})
      |> Map.put(:reversed_turn_order, false)
@@ -168,7 +200,23 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:game_active, true)
      |> change_turn(:east)
 
-    {:ok, state}
+    state
+  end
+
+  def finalize_round(state) do
+    state = if state.winner != nil do
+      state = update_player(state, state.winner.seat, &%Player{ &1 | score: &1.score + state.winner.score })
+      state = if Riichi.get_seat_wind(state.kyoku, state.winner.seat) == :east do
+        Map.update!(state, :kyoku, & &1 + 1)
+      else
+        Map.update!(state, :honba, & &1 + 1)
+      end
+      state
+    else
+      # TODO draw
+      state
+    end
+    state
   end
 
   def update_player(state, seat, fun), do: Map.update!(state, :players, &Map.update!(&1, seat, fun))
@@ -383,6 +431,8 @@ defmodule RiichiAdvanced.GameState do
 
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+
     :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
 
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
@@ -714,11 +764,12 @@ defmodule RiichiAdvanced.GameState do
             false
         end
       "seat_is"                  ->
+        seat_wind = Riichi.get_seat_wind(state.kyoku, context.seat)
         case Enum.at(opts, 0, "east") do
-          "east"  -> context.seat == :east
-          "south" -> context.seat == :south
-          "west"  -> context.seat == :west
-          "north" -> context.seat == :north
+          "east"  -> seat_wind == :east
+          "south" -> seat_wind == :south
+          "west"  -> seat_wind == :west
+          "north" -> seat_wind == :north
           _       ->
             IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
@@ -1097,7 +1148,10 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast(:tick_timer, state) do
     IO.puts("Ticking timer")
     if state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) do
-      IO.puts("Time's up!")
+      state = Map.put(state, :timer, 0)
+      state = finalize_round(state)
+      state = initialize_new_round(state)
+      broadcast_state_change(state)
       {:noreply, state}
     else
       :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])

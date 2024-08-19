@@ -121,9 +121,17 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} pond={@players[@kamicha].pond} riichi={"riichi" in @players[@kamicha].status} :if={@kamicha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CompassComponent} id="compass" game_state={@game_state} seat={@seat} turn={@turn} tiles_left={@tiles_left} riichi={Map.new(@players, fn {seat, player} -> {seat, "riichi" in player.status} end)} />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} winner={@winner} timer={@timer}/>
-    <.live_component module={RiichiAdvancedWeb.DrawWindowComponent} id="draw-window" game_state={@game_state} draw={@draw} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.CompassComponent}
+      id="compass"
+      game_state={@game_state}
+      seat={@seat}
+      turn={@turn}
+      tiles_left={@tiles_left}
+      riichi={Map.new(@players, fn {seat, player} -> {seat, "riichi" in player.status} end)}
+      score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
+      />
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winner={@winner} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.DrawWindowComponent} id="draw-window" game_state={@game_state} seat={@seat} draw={@draw} timer={@timer}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -228,7 +236,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_info({:reset_anim, seat}, socket) do
     relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
-    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: socket.assigns.hands[seat], played_tile: nil, played_tile_index: nil)
+    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: socket.assigns.players[seat].hand, played_tile: nil, played_tile_index: nil)
     {:noreply, socket}
   end
 

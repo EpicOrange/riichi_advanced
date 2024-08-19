@@ -34,10 +34,16 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
           <div class="total-score-display"><%= @winner.score %></div>
           <div class="total-score-name-display" :if={@winner.score_name != ""}><%= @winner.score_name %></div>
         </div>
-        <div class="timer"><%= @timer %></div>
+        <div class="timer" phx-click="ready_for_next_round" phx-target={@myself}><%= @timer %></div>
       <% end %>
     </div>
     """
+  end
+
+  def handle_event("ready_for_next_round", _assigns, socket) do
+    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
+    socket = assign(socket, :timer, 0)
+    {:noreply, socket}
   end
 
   def update(assigns, socket) do
