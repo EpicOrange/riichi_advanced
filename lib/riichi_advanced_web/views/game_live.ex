@@ -2,7 +2,10 @@ defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
   defp to_revealed_tiles(state) do
-    revealed_tiles = Enum.map(state.revealed_tiles, fn tile_spec -> if is_binary(tile_spec) do state.reserved_tiles[tile_spec] else tile_spec end end)
+    revealed_tiles = Enum.map(state.revealed_tiles, fn tile_spec ->
+      if Map.has_key?(state.reserved_tiles, tile_spec) do state.reserved_tiles[tile_spec] else Riichi.to_tile(tile_spec) end
+    end)
+    IO.inspect({state.revealed_tiles, revealed_tiles})
     revealed_tiles = revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
     revealed_tiles
   end
