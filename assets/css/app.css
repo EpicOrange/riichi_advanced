@@ -102,6 +102,7 @@ div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
 div.pond.shimocha { transform: rotate(270deg); }
 div.pond.toimen { transform: rotate(180deg); }
 div.pond.kamicha { transform: rotate(90deg); }
+div.pond > div.tile.sideways { transform: translateY(calc(-0.3125 * var(--tile-size))); }
 
 /* compass */
 div.compass {
@@ -336,9 +337,7 @@ div.tile.removed ~ div.tile.draw {
     transform: translateY(calc(2 * var(--tile-size)));
     opacity: 0;
   }
-  100% {
-    transform: translateY(0);
-  }
+  100% {}
 }
 div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
@@ -350,9 +349,7 @@ div.pond > div.tile.just-played:last-child {
     transform: translateX(calc(2 * var(--tile-size)));
     opacity: 0;
   }
-  100% {
-    transform: translateX(0);
-  }
+  100% {}
 }
 div.hand > div.draws > div.tile {
   animation: slideLeft 0.2s ease forwards;
@@ -363,9 +360,7 @@ div.hand > div.draws > div.tile {
     transform: translateX(calc(-6 * var(--tile-size)));
     opacity: 0;
   }
-  100% {
-    transform: translateX(0);
-  }
+  100% {}
 }
 div.hand > div.calls > div.call.just_called:last-child {
   animation: slideRight 0.4s ease forwards;
