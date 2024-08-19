@@ -112,23 +112,23 @@ defmodule RiichiAdvanced.GameState do
               # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
     # reserve some tiles (dead wall)
-    state = if Map.has_key?(rules, "reserved_tiles") do
+    {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
       reserved_tile_names = rules["reserved_tiles"]
       {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
       reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
       revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
       max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
-      state 
-       |> Map.put(:reserved_tiles, reserved_tiles)
-       |> Map.put(:revealed_tiles, revealed_tiles)
-       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
-       |> Map.put(:drawn_reserved_tiles, [])
+      {wall, state 
+             |> Map.put(:reserved_tiles, reserved_tiles)
+             |> Map.put(:revealed_tiles, revealed_tiles)
+             |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+             |> Map.put(:drawn_reserved_tiles, [])}
     else
-      state
-       |> Map.put(:reserved_tiles, [])
-       |> Map.put(:revealed_tiles, [])
-       |> Map.put(:max_revealed_tiles, 0)
-       |> Map.put(:drawn_reserved_tiles, [])
+      {wall, state
+             |> Map.put(:reserved_tiles, [])
+             |> Map.put(:revealed_tiles, [])
+             |> Map.put(:max_revealed_tiles, 0)
+             |> Map.put(:drawn_reserved_tiles, [])}
     end
 
     # hands = %{:east  => Enum.slice(wall, 0..12),
@@ -184,9 +184,14 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp is_playable?(state, seat, tile, tile_source) do
-    Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
-      not Riichi.tile_matches(tile_spec, %{tile: tile}) || check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})
-    end)
+    if Map.has_key?(state.rules, "play_restrictions") do
+      Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
+        # if Riichi.tile_matches(tile_spec, %{tile: tile}) do
+        #   IO.inspect({tile, cond_spec, check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})})
+        # end
+        not Riichi.tile_matches(tile_spec, %{tile: tile}) || check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})
+      end)
+    else true end
   end
 
   defp play_tile(state, seat, tile, index) do
@@ -268,14 +273,12 @@ defmodule RiichiAdvanced.GameState do
         run_actions(state, state.rules["after_turn_change"]["actions"], %{seat: seat})
       else state end
 
-      # TODO figure out where in control flow to run this
-      # # check if any tiles are playable for this next player
-      # state = get_state()
-      # if Map.has_key?(state.rules, "on_no_valid_tiles") do
-      #   if not Enum.any?(state.players[seat].hand ++ state.players[seat].draw, fn tile -> is_playable?(seat, tile) end) do
-      #     schedule_actions(seat, state.rules["on_no_valid_tiles"]["actions"])
-      #   end
-      # end
+      # check if any tiles are playable for this next player
+      state = if Map.has_key?(state.rules, "on_no_valid_tiles") &&
+          not Enum.any?(state.players[seat].hand, fn tile -> is_playable?(state, seat, tile, :hand) end) &&
+          not Enum.any?(state.players[seat].draw, fn tile -> is_playable?(state, seat, tile, :draw) end) do
+        run_actions(state, state.rules["on_no_valid_tiles"]["actions"], %{seat: seat})
+      else state end
 
       state
     else state end
@@ -522,7 +525,7 @@ defmodule RiichiAdvanced.GameState do
     else
       # if our action updates state, then we need to recalculate buttons
       # this is so other players can react to certain actions
-      if action not in state.rules["uninterruptible_actions"] do
+      if not Map.has_key?(state.rules, "uninterruptible_actions") || action not in state.rules["uninterruptible_actions"] do
         state = if state.winner != nil do
           # if there's a winner, never display buttons
           update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
@@ -628,8 +631,8 @@ defmodule RiichiAdvanced.GameState do
       "hand_matches_hand"        -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
       "discard_matches_hand"     -> last_action.action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
       "call_matches_hand"        -> last_action.action == :call && last_action.call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.called_tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
-      "last_discard_matches"     -> last_action.action == :discard && Riichi.tile_matches(opts, %{tile: context.tile, tile2: last_action.tile})
-      "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: context.tile, tile2: last_action.called_tile})
+      "last_discard_matches"     -> last_action.action == :discard && Riichi.tile_matches(opts, %{tile: last_action.tile, tile2: context.tile})
+      "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile})
       "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition")) end)
       "can_upgrade_call"         -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
@@ -690,6 +693,9 @@ defmodule RiichiAdvanced.GameState do
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
     end
+    # if Map.has_key?(context, :tile) do
+    #   IO.puts("#{context.tile}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
+    # end
     # IO.puts("#{inspect(context)}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
     if negated do not result else result end
   end
