@@ -94,6 +94,7 @@ defmodule RiichiAdvanced.GameState do
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
     wall = List.replace_at(wall, 52, :"1m") # first draw
+    wall = List.replace_at(wall, -15, :"1m") # last draw
     wall = List.replace_at(wall, -6, :"9m") # first dora
     wall = List.replace_at(wall, -8, :"9m") # second dora
     wall = List.replace_at(wall, -2, :"2m") # first kan draw

@@ -116,12 +116,12 @@
     {
       "display_name": "Haitei",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": ["no_tiles_remaining", "won_by_draw"]
     },
     {
       "display_name": "Houtei",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": ["no_tiles_remaining", "not_won_by_draw"]
     },
     {
       "display_name": "Pinfu",
