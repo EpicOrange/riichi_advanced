@@ -251,10 +251,10 @@
       "display_name": "Sanankou",
       "value": 2,
       "when": [[
-        {"name": "winning_hand_matches", "opts": [[[["koutsu", "ankan"], 3], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 1]]]},
+        {"name": "winning_hand_and_tile_matches", "opts": [[[["koutsu", "ankan"], 3], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 1]]]},
         [
           "won_by_draw",
-          {"name": "winning_hand_and_tile_matches", "opts": [[[["koutsu", "ankan"], 2], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 2]]]}
+          {"name": "winning_hand_matches", "opts": [[[["koutsu", "ankan"], 2], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 2]]]}
         ]
       ]]
     },
