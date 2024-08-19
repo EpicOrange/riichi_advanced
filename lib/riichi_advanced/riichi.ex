@@ -120,20 +120,25 @@ defmodule Riichi do
 
   def try_remove_all_tiles(hand, tiles) do
     removed = hand -- tiles
-    if length(removed) + length(tiles) == length(hand) do
-      [removed]
-    else
-      []
-    end
+    if length(removed) + length(tiles) == length(hand) do [removed] else [] end
+  end
+
+  def try_remove_all_tiles(hand, tiles, calls) do
+    removed = hand -- tiles
+    from_hand = if length(removed) + length(tiles) == length(hand) do [{removed, calls}] else [] end
+    matching_indices = calls |> Enum.map(&call_to_tiles/1) |> Enum.with_index() |> Enum.flat_map(fn {call, i} ->
+      case try_remove_all_tiles(call, tiles) do
+        [] -> []
+        _  -> [i]
+      end
+    end)
+    from_calls = Enum.map(matching_indices, fn i -> {hand, List.delete_at(calls, i)} end)
+    from_hand ++ from_calls |> Enum.uniq()
   end
 
   def try_remove_call(hand, calls, call_name) do
     ix = Enum.find_index(calls, fn {name, _call} -> name == call_name end)
-    if ix != nil do
-      [{hand, List.delete_at(calls, ix)}]
-    else
-      []
-    end
+    if ix != nil do [{hand, List.delete_at(calls, ix)}] else [] end
   end
 
   def remove_group(hand, calls, group) do
@@ -143,19 +148,13 @@ defmodule Riichi do
         if Enum.all?(group, fn tile -> to_tile(tile) != nil end) do
           # list of tiles
           tiles = Enum.map(group, fn tile -> to_tile(tile) end)
-          case try_remove_all_tiles(hand, tiles) do
-            [] -> []
-            [removed] -> [{removed, calls}]
-          end
+          try_remove_all_tiles(hand, tiles, calls)
         else
           # list of integers specifying a group of tiles
           hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
             tiles = Enum.map(group, fn tile_or_offset -> if to_tile(tile_or_offset) != nil do to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
             # IO.inspect(tiles)
-            case try_remove_all_tiles(hand, tiles) do
-              [] -> []
-              [removed] -> [{removed, calls}]
-            end
+            try_remove_all_tiles(hand, tiles, calls)
           end)
         end
       # tile
@@ -184,7 +183,7 @@ defmodule Riichi do
   end
 
   def remove_hand_definition(hand, calls, hand_definition) do
-    calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
+    # calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
     case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition}) do
       [] -> 
         result = _remove_hand_definition(hand, calls, hand_definition)

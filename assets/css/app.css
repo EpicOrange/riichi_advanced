@@ -43,6 +43,7 @@ div.hand {
   transform-style: preserve-3d;
   width: 100%;
 }
+div.hand, div.draws { z-index: 1; } /* so if they overlap with calls, the hand goes on top */
 div.tiles {
   padding-left: calc(2 * var(--tile-size));
 }
@@ -244,6 +245,7 @@ div.tile {
   background-size: auto calc(38 * var(--tile-size));
   background-position-x: 0;
   background-position-y: 0;
+  flex-shrink: 0;
 }
 div.tile:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
@@ -522,7 +524,7 @@ div.yaku:nth-child(n+10):nth-last-child(-n+9) { order: 1; }
 div.yaku,
 div.yaku > div.han-counter,
 div.yaku > div.yaku-text::before {
-  font-size: calc(0.75 * var(--tile-size));
+  font-size: calc(0.6 * var(--tile-size));
   height: 1.2em;
   padding-right: calc(0.5 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
@@ -545,7 +547,7 @@ div.yaku > div.yaku-text::before {
   content: "";
   z-index: -1;
   background: var(--tile-front);
-  width: 150%;
+  width: calc(100% + var(--tile-size));
   left: -10%;
   height: 110%;
   top: 0%;
@@ -576,9 +578,9 @@ div.yaku > div.han-counter::before {
   content: "";
   position: absolute;
   z-index: -1;
-  width: 125%;
+  width: calc(3 * var(--tile-size));
   height: 160%;
-  left: -27.5%;
+  left: calc(-0.66 * var(--tile-size));
   top: -37.5%;
 }
 

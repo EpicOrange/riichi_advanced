@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.GameState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.replace_at(wall, 52, :"8m") # first draw
+    wall = List.replace_at(wall, 52, :"5m") # first draw
     wall = List.replace_at(wall, 53, :"8m")
     wall = List.replace_at(wall, 54, :"8m")
     wall = List.replace_at(wall, 55, :"8m")
@@ -106,8 +106,11 @@ defmodule RiichiAdvanced.GameState do
     # wall = List.replace_at(wall, -15, :"1m") # last draw
     # wall = List.replace_at(wall, -6, :"9m") # first dora
     # wall = List.replace_at(wall, -8, :"9m") # second dora
-    # wall = List.replace_at(wall, -2, :"2m") # first kan draw
-    hands = %{:east  => Riichi.sort_tiles([:"5z", :"5z", :"5z", :"6z", :"6z", :"6z", :"7z", :"7z", :"0m", :"5m", :"5m", :"6m", :"7m"]),
+    wall = List.replace_at(wall, -2, :"2m") # first kan draw
+    wall = List.replace_at(wall, -1, :"3m") # second kan draw
+    wall = List.replace_at(wall, -4, :"4m") # third kan draw
+    wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
+    hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"5m", :"6m"]),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}
