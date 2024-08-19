@@ -13,7 +13,8 @@ defmodule Player do
     deferred_actions: [],
     big_text: "",
     status: [],
-    last_discard: nil
+    last_discard: nil,
+    ready: false
   ]
 end
 
@@ -162,6 +163,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:reversed_turn_order, false)
      |> Map.put(:winner, nil)
      |> Map.put(:draw, nil)
+     |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
      |> Map.put(:game_active, true)
      |> change_turn(:east)
@@ -380,6 +382,8 @@ defmodule RiichiAdvanced.GameState do
     else state end
 
     state = Map.put(state, :game_active, false)
+    state = Map.put(state, :timer, 10)
+    :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
 
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
@@ -1083,6 +1087,24 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast(:notify_ai, state) do
     notify_ai(state)
     {:noreply, state}
+  end
+
+  def handle_cast({:ready_for_next_round, seat}, state) do
+    state = update_player(state, seat, &%Player{ &1 | ready: true })
+    {:noreply, state}
+  end
+
+  def handle_cast(:tick_timer, state) do
+    IO.puts("Ticking timer")
+    if state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) do
+      IO.puts("Time's up!")
+      {:noreply, state}
+    else
+      :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+      state = Map.put(state, :timer, state.timer - 1)
+      broadcast_state_change(state)
+      {:noreply, state}
+    end
   end
 
 end

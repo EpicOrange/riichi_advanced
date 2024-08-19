@@ -478,11 +478,13 @@ div.game-end-window {
   top: 10%;
   z-index: 10;
   float: left;
-  pointer-events: none;
   transition: opacity 0.5s ease;
+}
+div.game-end-window.inactive {
+  opacity: 0;
+  pointer-events: none;
   user-select: none;
 }
-div.game-end-window.inactive { opacity: 0; }
 div.game-end-window::before {
   position: absolute;
   content: "";
@@ -494,6 +496,12 @@ div.game-end-window::before {
   background: black;
   opacity: 0.6;
   z-index: -1;
+}
+div.game-end-window > div.winning-hand,
+div.game-end-window > div.yakus,
+div.game-end-window > div.score-display {
+  pointer-events: none;
+  user-select: none;
 }
 div.winning-hand { justify-content: center; }
 /* yakus */
@@ -666,6 +674,21 @@ div.game-end-window > div.draw-reason::before {
   bottom: -40%;
   z-index: -1;
 }
+
+/* game end timer */
+
+div.game-end-window > div.timer {
+  position: absolute;
+  color: white;
+  text-align: center;
+  right: calc(-0.25 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
+  width: calc(1 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
+  cursor: pointer;
+}
+
+
 
 /* ruleset textbox */
 div.ruleset {

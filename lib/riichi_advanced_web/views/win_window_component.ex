@@ -3,6 +3,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
 
   def mount(socket) do
     socket = assign(socket, :winner, nil)
+    socket = assign(socket, :timer, 0)
     {:ok, socket}
   end
 
@@ -33,6 +34,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
           <div class="total-score-display"><%= @winner.score %></div>
           <div class="total-score-name-display" :if={@winner.score_name != ""}><%= @winner.score_name %></div>
         </div>
+        <div class="timer"><%= @timer %></div>
       <% end %>
     </div>
     """
