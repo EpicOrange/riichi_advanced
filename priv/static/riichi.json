@@ -225,7 +225,6 @@
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
-    "ankan": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
@@ -244,7 +243,7 @@
     "orphans_13": ["9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]
   },
   "tenpai_definition": [
-    [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
     [ [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 6] ]
   ],
@@ -253,7 +252,7 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
   "win_definition": [
-    [ [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
     [ [["pair"], 7] ],
     [ [["orphans_all"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
@@ -262,14 +261,12 @@
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "actual_tile_count": 3,
       "show_when": ["not_our_turn", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
-      "actual_tile_count": 3,
       "show_when": ["not_our_turn", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
@@ -277,7 +274,6 @@
     "daiminkan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "actual_tile_count": 3,
       "show_when": ["not_our_turn", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
         "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -295,7 +291,6 @@
     "ankan": {
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
-      "actual_tile_count": 3,
       "show_when": ["our_turn", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
         "actions": [["big_text", "Kan"], ["self_call"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -312,7 +307,6 @@
     "kakan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
-      "actual_tile_count": 3,
       "upgrades": "pon",
       "show_when": ["our_turn", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
         "actions": [["big_text", "Kan"], ["upgrade_call"],

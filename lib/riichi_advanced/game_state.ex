@@ -4,7 +4,6 @@ defmodule Player do
     draw: [],
     pond: [],
     calls: [],
-    called_tiles: [],
     buttons: [],
     auto_buttons: [],
     call_buttons: %{}, # TODO wrap this up as ":action_context"
@@ -97,7 +96,7 @@ defmodule RiichiAdvanced.GameState do
     wall = List.replace_at(wall, 52, :"1m") # first draw
     wall = List.replace_at(wall, -6, :"9m") # first dora
     wall = List.replace_at(wall, -8, :"9m") # second dora
-    wall = List.replace_at(wall, -2, :"2m") # first kan draw
+    wall = List.replace_at(wall, -2, :"3m") # first kan draw
     hands = %{:east  => Riichi.sort_tiles([:"1m", :"1m", :"1m", :"2m", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
               :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
@@ -295,8 +294,7 @@ defmodule RiichiAdvanced.GameState do
       :hand     -> update_player(state, seat, &%Player{ &1 | hand: (&1.hand ++ &1.draw) -- [called_tile], draw: [] })
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
-    called_tiles = Enum.take([called_tile] ++ call_choice, state.rules["buttons"][call_name]["actual_tile_count"])
-    state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [{call_name, call}], called_tiles: &1.called_tiles ++ called_tiles })
+    state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [{call_name, call}] })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state
@@ -623,12 +621,12 @@ defmodule RiichiAdvanced.GameState do
       "just_called"              -> last_action.action == :call
       "call_available"           -> last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
       "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
-      "hand_matches_hand"        -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].called_tiles ++ state.players[context.seat].draw, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
-      "discard_matches_hand"     -> last_action.action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].called_tiles ++ [last_action.tile], get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
-      "call_matches_hand"        -> last_action.action == :call && last_action.call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].called_tiles ++ [last_action.called_tile], get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
+      "hand_matches_hand"        -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
+      "discard_matches_hand"     -> last_action.action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
+      "call_matches_hand"        -> last_action.action == :call && last_action.call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.called_tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition"), String.to_atom(name)) end)
       "last_discard_matches"     -> last_action.action == :discard && Riichi.tile_matches(opts, %{tile: context.tile, tile2: last_action.tile})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: context.tile, tile2: last_action.called_tile})
-      "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].called_tiles ++ state.players[context.seat].draw, context.tile, get_hand_definition(state, name <> "_definition")) end)
+      "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition")) end)
       "can_upgrade_call"         -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.any?(fn {_name, call} ->
@@ -655,7 +653,7 @@ defmodule RiichiAdvanced.GameState do
       "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
       "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winner.winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
-      "no_tiles_remaining"       -> state.wall_index >= length(state.wall)
+      "no_tiles_remaining"       -> state.wall_index >= length(state.wall) - length(state.drawn_reserved_tiles)
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
@@ -999,10 +997,9 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  # clicking the compass will send this (debug use only)
-  def handle_cast({:change_turn, seat}, state) do
-    state = change_turn(state, seat)
-    broadcast_state_change(state)
+  # clicking the compass will send this
+  def handle_cast(:notify_ai, state) do
+    notify_ai(state)
     {:noreply, state}
   end
 
