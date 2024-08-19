@@ -240,4 +240,15 @@ defmodule Riichi do
       normalize_red_five(tile) in Enum.concat(Enum.map(removed, fn {hand, _calls} -> hand end))
     end)
   end
+
+  def call_to_tiles({_name, call}) do
+    if {:"1x", false} in call do
+      # TODO support more than just ankan
+      {red, _} = Enum.at(call, 1)
+      {nored, _} = Enum.at(call, 2)
+      [red, nored, nored, nored]
+    else
+      Enum.map(call, fn {tile, _sideways} -> tile end)
+    end
+  end
 end

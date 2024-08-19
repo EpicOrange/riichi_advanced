@@ -44,109 +44,450 @@
   ],
   "revealed_tiles": ["doraindicator_1"],
   "max_revealed_tiles": 5,
-  "yaku": {
-    "riichi": {
+  "set_definitions": {
+    "pair": [0, 0],
+    "shuntsu": [0, 1, 2],
+    "koutsu": [0, 0, 0],
+    "ryanmen/penchan": [0, 1],
+    "kanchan": [0, 2],
+    "ton": ["1z", "1z", "1z"],
+    "nan": ["2z", "2z", "2z"],
+    "shaa": ["3z", "3z", "3z"],
+    "pei": ["4z", "4z", "4z"],
+    "haku": ["5z", "5z", "5z"],
+    "hatsu": ["6z", "6z", "6z"],
+    "chun": ["7z", "7z", "7z"],
+    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_1": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z"],
+    "orphans_2": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","7z"],
+    "orphans_3": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","6z","7z"],
+    "orphans_4": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","5z","6z","7z"],
+    "orphans_5": ["1m","9m","1p","9p","1s","9s","1z","2z","4z","5z","6z","7z"],
+    "orphans_6": ["1m","9m","1p","9p","1s","9s","1z","3z","4z","5z","6z","7z"],
+    "orphans_7": ["1m","9m","1p","9p","1s","9s","2z","3z","4z","5z","6z","7z"],
+    "orphans_8": ["1m","9m","1p","9p","1s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_9": ["1m","9m","1p","9p","9s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_10": ["1m","9m","1p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_11": ["1m","9m","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_12": ["1m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_13": ["9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]
+  },
+  "tenpai_definition": [
+    [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
+    [ [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 6] ]
+  ],
+  "kokushi_tenpai_definition": [
+    [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
+  ],
+  "win_definition": [
+    [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ [["pair"], 7] ],
+    [ [["orphans_all"], 1],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
+  ],
+  "yaku": [
+    {
       "display_name": "Riichi",
       "value": 1,
       "when": [{"name": "status", "opts": ["riichi"]}]
     },
-    "menzentsumo": {
+    {
       "display_name": "Tsumo",
       "value": 1,
       "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
     },
-    "ippatsu": {
+    {
       "display_name": "Ippatsu",
       "value": 1,
       "when": [{"name": "status", "opts": ["ippatsu"]}]
+    },
+    {
+      "display_name": "Chankan",
+      "value": 1,
+      "when": ["won_by_call"]
+    },
+    {
+      "display_name": "Rinshan",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kan"]}]
+    },
+    {
+      "display_name": "Haitei",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Houtei",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Pinfu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Tanyao",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Iipeikou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "has_group", "opts": [[[["ton"], 1]]]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "has_group", "opts": [[[["nan"], 1]]]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "has_group", "opts": [[[["shaa"], 1]]]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "has_group", "opts": [[[["pei"], 1]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "has_group", "opts": [[[["ton"], 1]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "has_group", "opts": [[[["nan"], 1]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "has_group", "opts": [[[["shaa"], 1]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "has_group", "opts": [[[["pei"], 1]]]}]
+    },
+    {
+      "display_name": "Haku",
+      "value": 1,
+      "when": [{"name": "has_group", "opts": [[[["haku"], 1]]]}]
+    },
+    {
+      "display_name": "Hatsu",
+      "value": 1,
+      "when": [{"name": "has_group", "opts": [[[["hatsu"], 1]]]}]
+    },
+    {
+      "display_name": "Chun",
+      "value": 1,
+      "when": [{"name": "has_group", "opts": [[[["chun"], 1]]]}]
+    },
+    {
+      "display_name": "Double Riichi",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Seven Pairs",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Chanta",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Iitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Sanshoku",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Sanshoku Doukou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Sankantsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Toitoi",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Sanankou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Shousangen",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Honroutou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Ryanpeikou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Junchan",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Honitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Chinitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
     }
-  },
-  "extra_yaku": {
-    "dora_1_1": {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 1]}]},
-    "dora_1_2": {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 2]}]},
-    "dora_1_3": {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 3]}]},
-    "dora_1_4": {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 4]}]},
-    "dora_1_5": {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 5]}]},
-    "dora_1_6": {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 6]}]},
-    "dora_1_7": {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 7]}]},
-    "dora_1_8": {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 8]}]},
-    "dora_1_9": {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 9]}]},
-    "dora_1_10": {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 10]}]},
-    "dora_1_11": {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 11]}]},
-    "dora_1_12": {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 12]}]},
-    "dora_1_13": {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 13]}]},
-    "dora_1_14": {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 14]}]},
-    "dora_1_15": {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 15]}]},
-    "dora_1_16": {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 16]}]},
-    "dora_1_17": {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 17]}]},
-    "dora_2_1": {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 1]}]},
-    "dora_2_2": {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 2]}]},
-    "dora_2_3": {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 3]}]},
-    "dora_2_4": {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 4]}]},
-    "dora_2_5": {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 5]}]},
-    "dora_2_6": {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 6]}]},
-    "dora_2_7": {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 7]}]},
-    "dora_2_8": {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 8]}]},
-    "dora_2_9": {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 9]}]},
-    "dora_2_10": {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 10]}]},
-    "dora_2_11": {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 11]}]},
-    "dora_2_12": {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 12]}]},
-    "dora_2_13": {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 13]}]},
-    "dora_2_14": {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 14]}]},
-    "dora_2_15": {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 15]}]},
-    "dora_2_16": {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 16]}]},
-    "dora_2_17": {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 17]}]},
-    "dora_3_1": {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 1]}]},
-    "dora_3_2": {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 2]}]},
-    "dora_3_3": {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 3]}]},
-    "dora_3_4": {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 4]}]},
-    "dora_3_5": {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 5]}]},
-    "dora_3_6": {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 6]}]},
-    "dora_3_7": {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 7]}]},
-    "dora_3_8": {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 8]}]},
-    "dora_3_9": {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 9]}]},
-    "dora_3_10": {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 10]}]},
-    "dora_3_11": {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 11]}]},
-    "dora_3_12": {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 12]}]},
-    "dora_3_13": {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 13]}]},
-    "dora_3_14": {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 14]}]},
-    "dora_3_15": {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 15]}]},
-    "dora_3_16": {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 16]}]},
-    "dora_3_17": {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 17]}]},
-    "dora_4_1": {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 1]}]},
-    "dora_4_2": {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 2]}]},
-    "dora_4_3": {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 3]}]},
-    "dora_4_4": {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 4]}]},
-    "dora_4_5": {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 5]}]},
-    "dora_4_6": {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 6]}]},
-    "dora_4_7": {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 7]}]},
-    "dora_4_8": {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 8]}]},
-    "dora_4_9": {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 9]}]},
-    "dora_4_10": {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 10]}]},
-    "dora_4_11": {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 11]}]},
-    "dora_4_12": {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 12]}]},
-    "dora_4_13": {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 13]}]},
-    "dora_4_14": {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 14]}]},
-    "dora_4_15": {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 15]}]},
-    "dora_4_16": {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 16]}]},
-    "dora_4_17": {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 17]}]},
-    "dora_5_1": {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 1]}]},
-    "dora_5_2": {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 2]}]},
-    "dora_5_3": {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 3]}]},
-    "dora_5_4": {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 4]}]},
-    "dora_5_5": {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 5]}]},
-    "dora_5_6": {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 6]}]},
-    "dora_5_7": {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 7]}]},
-    "dora_5_8": {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 8]}]},
-    "dora_5_9": {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 9]}]},
-    "dora_5_10": {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 10]}]},
-    "dora_5_11": {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 11]}]},
-    "dora_5_12": {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 12]}]},
-    "dora_5_13": {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 13]}]},
-    "dora_5_14": {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 14]}]},
-    "dora_5_15": {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 15]}]},
-    "dora_5_16": {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 16]}]},
-    "dora_5_17": {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 17]}]}
+  ],
+  "yakuman": [
+    {
+      "display_name": "Renhou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Tenhou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Chiihou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Daisangen",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Suuankou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Suuankou Tanki",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Tsuuiisou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Ryuuiisou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Chinroutou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Chuurenpoutou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Junsei Chuurenpoutou",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Kokushi Musou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Kokushi Musou Juusan Menmachi",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Daisuushii",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Shousuushii",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    },
+    {
+      "display_name": "Suukantsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["unimplemented"]}]
+    }
+  ],
+  "extra_yaku": [
+    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 1]}]},
+    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 2]}]},
+    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 3]}]},
+    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 4]}]},
+    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 5]}]},
+    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 6]}]},
+    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 7]}]},
+    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 8]}]},
+    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 9]}]},
+    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 10]}]},
+    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 11]}]},
+    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 12]}]},
+    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 13]}]},
+    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 14]}]},
+    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 15]}]},
+    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 16]}]},
+    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 17]}]},
+    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 1]}]},
+    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 2]}]},
+    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 3]}]},
+    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 4]}]},
+    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 5]}]},
+    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 6]}]},
+    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 7]}]},
+    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 8]}]},
+    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 9]}]},
+    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 10]}]},
+    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 11]}]},
+    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 12]}]},
+    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 13]}]},
+    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 14]}]},
+    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 15]}]},
+    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 16]}]},
+    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 17]}]},
+    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 1]}]},
+    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 2]}]},
+    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 3]}]},
+    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 4]}]},
+    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 5]}]},
+    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 6]}]},
+    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 7]}]},
+    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 8]}]},
+    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 9]}]},
+    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 10]}]},
+    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 11]}]},
+    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 12]}]},
+    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 13]}]},
+    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 14]}]},
+    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 15]}]},
+    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 16]}]},
+    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 17]}]},
+    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 1]}]},
+    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 2]}]},
+    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 3]}]},
+    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 4]}]},
+    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 5]}]},
+    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 6]}]},
+    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 7]}]},
+    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 8]}]},
+    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 9]}]},
+    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 10]}]},
+    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 11]}]},
+    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 12]}]},
+    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 13]}]},
+    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 14]}]},
+    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 15]}]},
+    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 16]}]},
+    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 17]}]},
+    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 1]}]},
+    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 2]}]},
+    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 3]}]},
+    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 4]}]},
+    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 5]}]},
+    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 6]}]},
+    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 7]}]},
+    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 8]}]},
+    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 9]}]},
+    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 10]}]},
+    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 11]}]},
+    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 12]}]},
+    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 13]}]},
+    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 14]}]},
+    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 15]}]},
+    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 16]}]},
+    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 17]}]}
+  ],
+  "yaku_alt_names": {
+    "Riichi": "立直",
+    "Tsumo": "門前清自摸和",
+    "Ippatsu": "一発",
+    "Chankan": "槍槓",
+    "Rinshan": "嶺上開花",
+    "Haitei": "海底摸月",
+    "Houtei": "河底撈魚",
+    "Pinfu": "平和",
+    "Tanyao": "断幺九",
+    "Iipeikou": "一盃口",
+    "Seat Wind": "自風",
+    "Round Wind": "場風",
+    "Haku": "役牌 白",
+    "Hatsu": "役牌 發",
+    "Chun": "役牌 中",
+    "Double Riichi": "ダブル立直",
+    "Seven Pairs": "七対子",
+    "Chanta": "混全帯幺九",
+    "Iitsu": "一気通貫",
+    "Sanshoku": "三色同順",
+    "Sanshoku Doukou": "三色同刻",
+    "Sankantsu": "三槓子",
+    "Toitoi": "対々和",
+    "Sanankou": "三暗刻",
+    "Shousangen": "小三元",
+    "Honroutou": "混老頭",
+    "Ryanpeikou": "二盃口",
+    "Junchan": "純全帯幺九",
+    "Honitsu": "混一色",
+    "Chinitsu": "清一色",
+    "Renhou": "人和",
+    "Tenhou": "天和",
+    "Chiihou": "地和",
+    "Daisangen": "大三元",
+    "Suuankou": "四暗刻",
+    "Suuankou Tanki": "四暗刻単騎",
+    "Tsuuiisou": "字一色",
+    "Ryuuiisou": "緑一色",
+    "Chinroutou": "清老頭",
+    "Chuurenpoutou": "九蓮宝燈",
+    "Junsei Chuurenpoutou": "純正九蓮宝燈",
+    "Kokushi Musou": "国士無双",
+    "Kokushi Musou Juusan Menmachi": "国士無双十三面待ち",
+    "Daisuushii": "大四喜",
+    "Shousuushii": "小四喜",
+    "Suukantsu": "四槓子",
+    "Dora": "ドラ",
+    "Ura": "裏ドラ",
+    "Aka": "赤ドラ"
   },
   "score_calculation": {
     "method": "riichi",
@@ -221,42 +562,6 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]]
                ]
   },
-  "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
-    "orphans_1": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z"],
-    "orphans_2": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","7z"],
-    "orphans_3": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","6z","7z"],
-    "orphans_4": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","5z","6z","7z"],
-    "orphans_5": ["1m","9m","1p","9p","1s","9s","1z","2z","4z","5z","6z","7z"],
-    "orphans_6": ["1m","9m","1p","9p","1s","9s","1z","3z","4z","5z","6z","7z"],
-    "orphans_7": ["1m","9m","1p","9p","1s","9s","2z","3z","4z","5z","6z","7z"],
-    "orphans_8": ["1m","9m","1p","9p","1s","1z","2z","3z","4z","5z","6z","7z"],
-    "orphans_9": ["1m","9m","1p","9p","9s","1z","2z","3z","4z","5z","6z","7z"],
-    "orphans_10": ["1m","9m","1p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
-    "orphans_11": ["1m","9m","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
-    "orphans_12": ["1m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
-    "orphans_13": ["9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]
-  },
-  "tenpai_definition": [
-    [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
-    [ [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 6] ]
-  ],
-  "kokushi_tenpai_definition": [
-    [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
-  ],
-  "win_definition": [
-    [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
-    [ [["pair"], 7] ],
-    [ [["orphans_all"], 1],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
-  ],
   "buttons": {
     "chii": {
       "display_name": "Chii",

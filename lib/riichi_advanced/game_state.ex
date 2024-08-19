@@ -93,11 +93,11 @@ defmodule RiichiAdvanced.GameState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.replace_at(wall, 52, :"1m") # first draw
+    wall = List.replace_at(wall, 52, :"7z") # first draw
     wall = List.replace_at(wall, -6, :"9m") # first dora
     wall = List.replace_at(wall, -8, :"9m") # second dora
-    wall = List.replace_at(wall, -2, :"3m") # first kan draw
-    hands = %{:east  => Riichi.sort_tiles([:"1m", :"1m", :"1m", :"2m", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
+    wall = List.replace_at(wall, -2, :"2m") # first kan draw
+    hands = %{:east  => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"2m", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
               :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :north => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
@@ -128,6 +128,8 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:turn, :east)
      |> Map.put(:wall_index, 52)
      |> Map.put(:turn, nil)
+     |> Map.put(:kyoku, 0)
+     |> Map.put(:honba, 0)
      |> Map.put(:last_action, %{seat: nil, action: nil})
      |> Map.put(:reversed_turn_order, false)
      |> Map.put(:winner, nil)
@@ -321,14 +323,13 @@ defmodule RiichiAdvanced.GameState do
       winning_tile: winning_tile,
       win_source: win_source
     }
-    eligible_yaku = Map.merge(state.rules["yaku"], state.rules["extra_yaku"])
-      |> Enum.filter(fn {_id, %{"display_name" => _name, "value" => _value, "when" => cond_spec}} -> check_cnf_condition(state, cond_spec, context) end)
-      |> Enum.map(fn {_id, %{"display_name" => name, "value" => value, "when" => _cond_spec}} -> {name, value} end)
+    eligible_yaku = state.rules["yaku"] ++ state.rules["extra_yaku"]
+      |> Enum.filter(fn %{"display_name" => _name, "value" => _value, "when" => cond_spec} -> check_cnf_condition(state, cond_spec, context) end)
+      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, value} end)
     yaku_map = Enum.reduce(eligible_yaku, %{}, fn {name, value}, acc -> Map.update(acc, name, value, & &1 + value) end)
     eligible_yaku
       |> Enum.map(fn {name, _value} -> name end)
       |> Enum.uniq()
-      |> Enum.reverse()
       |> Enum.map(fn name -> {name, yaku_map[name]} end)
   end
 
@@ -340,16 +341,7 @@ defmodule RiichiAdvanced.GameState do
 
     state = Map.put(state, :game_active, false)
 
-    call_tiles = Enum.flat_map(state.players[seat].calls, fn {_name, call} ->
-      if {:"1x", false} in call do
-        # TODO support more than just ankan
-        {red, _} = Enum.at(call, 1)
-        {nored, _} = Enum.at(call, 2)
-        [red, nored, nored, nored]
-      else
-        Enum.map(call, fn {tile, _sideways} -> tile end)
-      end
-    end)
+    call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
     # add this to the state so yaku conditions can refer to the winner
     state = Map.put(state, :winner, %{
@@ -610,6 +602,8 @@ defmodule RiichiAdvanced.GameState do
     cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
     last_action = get_last_action(state)
     result = case cond_spec do
+      "true"                     -> true
+      "false"                    -> false
       "our_turn"                 -> state.turn == context.seat
       "our_turn_is_next"         -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
       "our_turn_is_not_next"     -> state.turn != if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
@@ -654,6 +648,32 @@ defmodule RiichiAdvanced.GameState do
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
       "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winner.winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
       "no_tiles_remaining"       -> state.wall_index >= length(state.wall) - length(state.drawn_reserved_tiles)
+      "has_group"                ->
+        hand_definition = translate_hand_definition(opts, state.rules["set_definitions"])
+        in_hand = Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, [], hand_definition, hand_definition)
+        in_calls = state.players[context.seat].calls |> Enum.map(&Riichi.call_to_tiles/1) |> Enum.any?(fn call -> Riichi.check_hand(call, [], hand_definition, hand_definition) end)
+        # IO.puts("#{inspect(hand_definition)}\n  in_hand: #{in_hand} / in_calls: #{in_calls}\n")
+        in_hand || in_calls
+      "round_wind_is"            ->
+        case Enum.at(opts, 0, "east") do
+          "east"  -> state.kyoku >= 0 && state.kyoku < 4
+          "south" -> state.kyoku >= 4 && state.kyoku < 8
+          "west"  -> state.kyoku >= 8 && state.kyoku < 12
+          "north" -> state.kyoku >= 12
+          _       ->
+            IO.puts("Unknown round wind #{inspect(Enum.at(opts, 0, "east"))}")
+            false
+        end
+      "seat_is"                  ->
+        case Enum.at(opts, 0, "east") do
+          "east"  -> context.seat == :east
+          "south" -> context.seat == :south
+          "west"  -> context.seat == :west
+          "north" -> context.seat == :north
+          _       ->
+            IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
+            false
+        end
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
