@@ -126,7 +126,7 @@
     {
       "display_name": "Pinfu",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]]
     },
     {
       "display_name": "Tanyao",

@@ -19,15 +19,17 @@ defmodule Riichi do
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
 
   def offset_tile(tile, n) do
-    if (n < 1 && n > -1) || n < -10 || n > 10 do
-      normalize_red_five(tile)
-    else
-      if n < 0 do
-        offset_tile(pred(tile), n+1)
+    if tile != nil do
+      if (n < 1 && n > -1) || n < -10 || n > 10 do
+        normalize_red_five(tile)
       else
-        offset_tile(succ(tile), n-1)
+        if n < 0 do
+          offset_tile(pred(tile), n+1)
+        else
+          offset_tile(succ(tile), n-1)
+        end
       end
-    end
+    else nil end
   end
 
   @to_tile %{"1m"=>:"1m", "2m"=>:"2m", "3m"=>:"3m", "4m"=>:"4m", "5m"=>:"5m", "6m"=>:"6m", "7m"=>:"7m", "8m"=>:"8m", "9m"=>:"9m", "0m"=>:"0m",
@@ -317,31 +319,30 @@ defmodule Riichi do
       :"7s" -> try_remove_all_tiles(starting_hand, [:"8s", :"9s"])
       _     -> []
     end
-    possible_kanchan_removed = case winning_tile do
-      :"2m" -> try_remove_all_tiles(starting_hand, [:"1m", :"3m"])
-      :"3m" -> try_remove_all_tiles(starting_hand, [:"2m", :"4m"])
-      :"4m" -> try_remove_all_tiles(starting_hand, [:"3m", :"5m"])
-      :"5m" -> try_remove_all_tiles(starting_hand, [:"4m", :"6m"])
-      :"6m" -> try_remove_all_tiles(starting_hand, [:"5m", :"7m"])
-      :"7m" -> try_remove_all_tiles(starting_hand, [:"6m", :"8m"])
-      :"8m" -> try_remove_all_tiles(starting_hand, [:"7m", :"9m"])
-      :"2p" -> try_remove_all_tiles(starting_hand, [:"1p", :"3p"])
-      :"3p" -> try_remove_all_tiles(starting_hand, [:"2p", :"4p"])
-      :"4p" -> try_remove_all_tiles(starting_hand, [:"3p", :"5p"])
-      :"5p" -> try_remove_all_tiles(starting_hand, [:"4p", :"6p"])
-      :"6p" -> try_remove_all_tiles(starting_hand, [:"5p", :"7p"])
-      :"7p" -> try_remove_all_tiles(starting_hand, [:"6p", :"8p"])
-      :"8p" -> try_remove_all_tiles(starting_hand, [:"7p", :"9p"])
-      :"2s" -> try_remove_all_tiles(starting_hand, [:"1s", :"3s"])
-      :"3s" -> try_remove_all_tiles(starting_hand, [:"2s", :"4s"])
-      :"4s" -> try_remove_all_tiles(starting_hand, [:"3s", :"5s"])
-      :"5s" -> try_remove_all_tiles(starting_hand, [:"4s", :"6s"])
-      :"6s" -> try_remove_all_tiles(starting_hand, [:"5s", :"7s"])
-      :"7s" -> try_remove_all_tiles(starting_hand, [:"6s", :"8s"])
-      :"8s" -> try_remove_all_tiles(starting_hand, [:"7s", :"9s"])
-      _     -> []
+    possible_penchan_removed = case possible_penchan_removed do
+      [] -> []
+      [removed] -> [{removed, fu + 2}]
     end
-    hands_fu = Enum.map(possible_penchan_removed ++ possible_kanchan_removed ++ [starting_hand], fn hand -> {hand, if hand == starting_hand do fu else fu + 2 end} end)
+    tanyao_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s"]
+    possible_kanchan_removed = if winning_tile in tanyao_tiles do
+      case try_remove_all_tiles(starting_hand, [pred(winning_tile), succ(winning_tile)]) do
+        [] -> []
+        [removed] -> [{removed, fu + 2}]
+      end
+    else [] end
+    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3) != nil do
+      case try_remove_all_tiles(starting_hand, [pred(pred(winning_tile)), pred(winning_tile)]) do
+        [] -> []
+        [removed] -> [{removed, fu}]
+      end
+    else [] end
+    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3) != nil do
+      case try_remove_all_tiles(starting_hand, [succ(winning_tile), succ(succ(winning_tile))]) do
+        [] -> []
+        [removed] -> [{removed, fu}]
+      end
+    else [] end
+    hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
 
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
@@ -389,16 +390,19 @@ defmodule Riichi do
       end
     end) |> Enum.max()
 
-    # round up to nearest 10
-    remainder = rem(fu, 10)
-    fu = if remainder == 0 do fu else fu - remainder + 10 end
+    IO.inspect(fu)
 
-    # open pinfu is 30, chiitoitsu is 25
+    # closed pinfu is 20 tsumo/30 ron, open pinfu is 30, chiitoitsu is 25
     num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
     cond do
-      fu == 20 && not Enum.empty?(calls) -> 30
-      num_pairs == 7                     -> 25
-      true                               -> fu
+      fu == 22 && win_source == :draw && Enum.empty?(calls) -> 20
+      fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30
+      fu == 20 && not Enum.empty?(calls)                    -> 30
+      num_pairs == 7                                        -> 25
+      true                                                  ->
+        # round up to nearest 10
+        remainder = rem(fu, 10)
+        if remainder == 0 do fu else fu - remainder + 10 end
     end
   end
 end

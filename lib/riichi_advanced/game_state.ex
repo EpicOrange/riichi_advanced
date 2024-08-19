@@ -93,11 +93,11 @@ defmodule RiichiAdvanced.GameState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.replace_at(wall, 52, :"7z") # first draw
+    wall = List.replace_at(wall, 52, :"1m") # first draw
     wall = List.replace_at(wall, -6, :"9m") # first dora
     wall = List.replace_at(wall, -8, :"9m") # second dora
     wall = List.replace_at(wall, -2, :"2m") # first kan draw
-    hands = %{:east  => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"1m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
+    hands = %{:east  => Riichi.sort_tiles([:"1p", :"2p", :"3p", :"2m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
               :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :north => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
@@ -317,11 +317,12 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  defp get_yaku(state, seat, winning_tile, win_source) do
+  defp get_yaku(state, seat, winning_tile, win_source, minipoints) do
     context = %{
       seat: seat,
       winning_tile: winning_tile,
-      win_source: win_source
+      win_source: win_source,
+      minipoints: minipoints
     }
     eligible_yaku = state.rules["yaku"] ++ state.rules["extra_yaku"]
       |> Enum.filter(fn %{"display_name" => _name, "value" => _value, "when" => cond_spec} -> check_cnf_condition(state, cond_spec, context) end)
@@ -348,16 +349,16 @@ defmodule RiichiAdvanced.GameState do
       seat: seat,
       player: state.players[seat],
       winning_tile: winning_tile,
-      winning_hand: winning_hand
+      winning_hand: winning_hand,
+      point_name: state.rules["point_name"]
     })
-
-    yaku = get_yaku(state, seat, winning_tile, win_source)
-    IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
-    points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
     scoring_table = state.rules["score_calculation"]
-    {state, score, score_name} = case scoring_table["method"] do
+    state = case scoring_table["method"] do
       "riichi" ->
         minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, seat, Riichi.get_round_wind(state.kyoku))
+        yaku = get_yaku(state, seat, winning_tile, win_source, minipoints)
+        IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
+        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         han = Integer.to_string(points)
         fu = Integer.to_string(minipoints)
         oya_han_table = if win_source == :draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
@@ -378,17 +379,16 @@ defmodule RiichiAdvanced.GameState do
             end
           end
         score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["default"])
-        state = Map.update!(state, :winner, &Map.put(&1, :minipoints, minipoints))
-        {state, score, score_name}
-      _ -> {state, 0, ""}
+        state = Map.update!(state, :winner, &Map.merge(&1, %{
+          yaku: yaku,
+          points: points,
+          score: score,
+          score_name: score_name,
+          minipoints: minipoints
+        }))
+        state
+      _ -> state
     end
-    state = Map.update!(state, :winner, fn winner -> Map.merge(winner, %{
-      yaku: yaku,
-      points: points,
-      point_name: state.rules["point_name"],
-      score: score,
-      score_name: score_name
-    }) end)
     state
   end
 
@@ -675,6 +675,7 @@ defmodule RiichiAdvanced.GameState do
             IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
         end
+      "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
