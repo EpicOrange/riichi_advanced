@@ -670,6 +670,30 @@ div.game-end-window > div.draw-reason::before {
   z-index: -1;
 }
 
+/* ruleset textbox */
+div.ruleset {
+  position: absolute;
+  top: calc(100% + (2 * var(--tile-size)) + 1.2em);
+  left: calc(50% - 50vw + var(--tile-size));
+  background: #0f6f2f;
+  width: calc(100vw - 2 * var(--tile-size));
+  height: 100%;
+}
+div.ruleset::before {
+  position: absolute;
+  content: "Ruleset:";
+  top: -1.2em;
+  color: white;
+}
+div.ruleset > textarea {
+  width: 100%;
+  height: 100%;
+  background: #3f3f3f;
+  color: white;
+}
+
+
+
 
 /* index screen */
 div.title {

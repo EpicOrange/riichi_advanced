@@ -15,7 +15,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="tile 8m"></div>
         <div class="tile 7z"></div>
       </div>
-      <.link href={~p"/game/#{@session_id}"} class="enter-button">Enter</.link>
+      <.link href={~p"/game/riichi/#{@session_id}"} class="enter-button">Enter</.link>
     </div>
     """
   end

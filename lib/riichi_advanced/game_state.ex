@@ -24,7 +24,8 @@ defmodule RiichiAdvanced.GameState do
     IO.puts("Supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
-      %{session_id: Keyword.get(init_data, :session_id)},
+      %{session_id: Keyword.get(init_data, :session_id),
+        ruleset_json: Keyword.get(init_data, :ruleset_json)},
       name: Keyword.get(init_data, :name))
   end
 
@@ -76,7 +77,7 @@ defmodule RiichiAdvanced.GameState do
       big_text_debouncers: big_text_debouncers
     })
 
-    rules = case Jason.decode(File.read!(Application.app_dir(:riichi_advanced, "priv/static/riichi.json"))) do
+    rules = case Jason.decode(state.ruleset_json) do
       {:ok, rules} -> rules
       {:error, err} ->
         IO.puts("Failed to read rules!")
@@ -111,12 +112,24 @@ defmodule RiichiAdvanced.GameState do
               # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
     # reserve some tiles (dead wall)
-    reserved_tile_names = rules["reserved_tiles"]
-    {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
-    reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
-    revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
-    max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
-    IO.inspect(reserved_tiles)
+    state = if Map.has_key?(rules, "reserved_tiles") do
+      reserved_tile_names = rules["reserved_tiles"]
+      {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
+      reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
+      revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
+      max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
+      state 
+       |> Map.put(:reserved_tiles, reserved_tiles)
+       |> Map.put(:revealed_tiles, revealed_tiles)
+       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+       |> Map.put(:drawn_reserved_tiles, [])
+    else
+      state
+       |> Map.put(:reserved_tiles, [])
+       |> Map.put(:revealed_tiles, [])
+       |> Map.put(:max_revealed_tiles, 0)
+       |> Map.put(:drawn_reserved_tiles, [])
+    end
 
     # hands = %{:east  => Enum.slice(wall, 0..12),
     #           :south => Enum.slice(wall, 13..25),
@@ -124,7 +137,6 @@ defmodule RiichiAdvanced.GameState do
     #           :north => Enum.slice(wall, 39..51)}
     state = state
      |> Map.put(:wall, wall)
-     |> Map.put(:reserved_tiles, reserved_tiles)
      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ hand: hands[seat], auto_buttons: initial_auto_buttons }} end))
      |> Map.put(:turn, :east)
      |> Map.put(:wall_index, 52)
@@ -136,9 +148,6 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:winner, nil)
      |> Map.put(:draw, nil)
      |> Map.put(:actions_cv, 0) # condition variable
-     |> Map.put(:revealed_tiles, revealed_tiles)
-     |> Map.put(:max_revealed_tiles, max_revealed_tiles)
-     |> Map.put(:drawn_reserved_tiles, [])
      |> Map.put(:game_active, true)
      |> change_turn(:east)
 
