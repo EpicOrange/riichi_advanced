@@ -50,6 +50,7 @@
     "koutsu": [0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
+    "iipeikou": [0, 0, 1, 1, 2, 2],
     "ton": ["1z", "1z", "1z"],
     "nan": ["2z", "2z", "2z"],
     "shaa": ["3z", "3z", "3z"],
@@ -57,6 +58,9 @@
     "haku": ["5z", "5z", "5z"],
     "hatsu": ["6z", "6z", "6z"],
     "chun": ["7z", "7z", "7z"],
+    "shousangen_1": ["5z", "5z", "5z", "6z", "6z", "6z", "7z", "7z"],
+    "shousangen_2": ["5z", "5z", "5z", "6z", "6z", "7z", "7z", "7z"],
+    "shousangen_3": ["5z", "5z", "6z", "6z", "6z", "7z", "7z", "7z"],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
     "orphans_1": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z"],
     "orphans_2": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","7z"],
@@ -91,7 +95,10 @@
     {
       "display_name": "Riichi",
       "value": 1,
-      "when": [{"name": "status", "opts": ["riichi"]}]
+      "when": [
+        {"name": "status", "opts": ["riichi"]},
+        {"name": "status_missing", "opts": ["double_riichi"]}
+      ]
     },
     {
       "display_name": "Tsumo",
@@ -131,12 +138,16 @@
     {
       "display_name": "Tanyao",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": [{"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}]
     },
     {
       "display_name": "Iipeikou",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": [
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "winning_hand_and_tile_matches", "opts": [[[["iipeikou"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 2], [["pair"], 1]]]},
+        {"name": "not_winning_hand_and_tile_matches", "opts": [[[["iipeikou"], 2], [["pair"], 1]]]}
+      ]
     },
     {
       "display_name": "Seat Wind",
@@ -195,13 +206,16 @@
     },
     {
       "display_name": "Double Riichi",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "value": 2,
+      "when": [{"name": "status", "opts": ["double_riichi"]}]
     },
     {
-      "display_name": "Seven Pairs",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "display_name": "Chiitoitsu",
+      "value": 2,
+      "when": [
+        {"name": "winning_hand_and_tile_matches", "opts": [[[["pair"], 7]]]},
+        {"name": "not_winning_hand_and_tile_matches", "opts": [[[["iipeikou"], 2], [["pair"], 1]]]}
+      ]
     },
     {
       "display_name": "Chanta",
@@ -230,28 +244,36 @@
     },
     {
       "display_name": "Toitoi",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "value": 2,
+      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4], [["pair"], 1]]]}]
     },
     {
       "display_name": "Sanankou",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "value": 2,
+      "when": [[
+        {"name": "winning_hand_matches", "opts": [[[["koutsu", "ankan"], 3], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 1]]]},
+        [
+          "won_by_draw",
+          {"name": "winning_hand_and_tile_matches", "opts": [[[["koutsu", "ankan"], 2], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 2]]]}
+        ]
+      ]]
     },
     {
       "display_name": "Shousangen",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "value": 2,
+      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["shousangen_1", "shousangen_2", "shousangen_3"], 1]]]}]
     },
     {
       "display_name": "Honroutou",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "value": 2,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]}]
     },
     {
       "display_name": "Ryanpeikou",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "value": 3,
+      "when": [
+        {"name": "winning_hand_and_tile_matches", "opts": [[[["iipeikou"], 2], [["pair"], 1]]]}
+      ]
     },
     {
       "display_name": "Junchan",
@@ -260,13 +282,55 @@
     },
     {
       "display_name": "Honitsu",
+      "value": 2,
+      "when": [
+        [
+          {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]},
+          {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
+          {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+        ],
+        {"name": "not_winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "not_winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "not_winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]
+    },
+    {
+      "display_name": "Honitsu",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": [
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]},
+          {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
+          {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+        ],
+        {"name": "not_winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "not_winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "not_winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]
+    },
+    {
+      "display_name": "Chinitsu",
+      "value": 5,
+      "when": [
+        [
+          {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+          {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+          {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+        ]
+      ]
     },
     {
       "display_name": "Chinitsu",
       "value": 1,
-      "when": [{"name": "status", "opts": ["unimplemented"]}]
+      "when": [
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+          {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+          {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+        ]
+      ]
     }
   ],
   "yakuman": [
@@ -356,87 +420,45 @@
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 2]}]},
     {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 3]}]},
     {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 4]}]},
-    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 5]}]},
-    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 6]}]},
-    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 7]}]},
-    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 8]}]},
-    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 9]}]},
-    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 10]}]},
-    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 11]}]},
-    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 12]}]},
-    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 13]}]},
-    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 14]}]},
-    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 15]}]},
-    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 16]}]},
-    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 17]}]},
     {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 1]}]},
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 2]}]},
     {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 3]}]},
     {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 4]}]},
-    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 5]}]},
-    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 6]}]},
-    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 7]}]},
-    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 8]}]},
-    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 9]}]},
-    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 10]}]},
-    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 11]}]},
-    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 12]}]},
-    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 13]}]},
-    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 14]}]},
-    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 15]}]},
-    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 16]}]},
-    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["doraindicator_2", 17]}]},
     {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 1]}]},
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 2]}]},
     {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 3]}]},
     {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 4]}]},
-    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 5]}]},
-    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 6]}]},
-    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 7]}]},
-    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 8]}]},
-    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 9]}]},
-    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 10]}]},
-    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 11]}]},
-    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 12]}]},
-    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 13]}]},
-    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 14]}]},
-    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 15]}]},
-    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 16]}]},
-    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["doraindicator_3", 17]}]},
     {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 1]}]},
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 2]}]},
     {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 3]}]},
     {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 4]}]},
-    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 5]}]},
-    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 6]}]},
-    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 7]}]},
-    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 8]}]},
-    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 9]}]},
-    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 10]}]},
-    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 11]}]},
-    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 12]}]},
-    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 13]}]},
-    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 14]}]},
-    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 15]}]},
-    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 16]}]},
-    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["doraindicator_4", 17]}]},
     {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 1]}]},
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 2]}]},
     {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 3]}]},
     {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 4]}]},
-    {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 5]}]},
-    {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 6]}]},
-    {"display_name": "Dora", "value": 7, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 7]}]},
-    {"display_name": "Dora", "value": 8, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 8]}]},
-    {"display_name": "Dora", "value": 9, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 9]}]},
-    {"display_name": "Dora", "value": 10, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 10]}]},
-    {"display_name": "Dora", "value": 11, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 11]}]},
-    {"display_name": "Dora", "value": 12, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 12]}]},
-    {"display_name": "Dora", "value": 13, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 13]}]},
-    {"display_name": "Dora", "value": 14, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 14]}]},
-    {"display_name": "Dora", "value": 15, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 15]}]},
-    {"display_name": "Dora", "value": 16, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 16]}]},
-    {"display_name": "Dora", "value": 17, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 17]}]}
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0m"], 1]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0p"], 1]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0s"], 1]]]}]},
+    {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 1]}]},
+    {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 2]}]},
+    {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 3]}]},
+    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 4]}]},
+    {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["uraindicator_2", 1]}]},
+    {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["uraindicator_2", 2]}]},
+    {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["uraindicator_2", 3]}]},
+    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_dora_count", "opts": ["uraindicator_2", 4]}]},
+    {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["uraindicator_3", 1]}]},
+    {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["uraindicator_3", 2]}]},
+    {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["uraindicator_3", 3]}]},
+    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_dora_count", "opts": ["uraindicator_3", 4]}]},
+    {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["uraindicator_4", 1]}]},
+    {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["uraindicator_4", 2]}]},
+    {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["uraindicator_4", 3]}]},
+    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_dora_count", "opts": ["uraindicator_4", 4]}]},
+    {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 1]}]},
+    {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 2]}]},
+    {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 3]}]},
+    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 4]}]}
   ],
   "yaku_alt_names": {
     "Riichi": "立直",
@@ -455,7 +477,7 @@
     "Hatsu": "役牌 發",
     "Chun": "役牌 中",
     "Double Riichi": "ダブル立直",
-    "Seven Pairs": "七対子",
+    "Chiitoitsu": "七対子",
     "Chanta": "混全帯幺九",
     "Iitsu": "一気通貫",
     "Sanshoku": "三色同順",
@@ -634,7 +656,11 @@
     "riichi": {
       "display_name": "Riichi",
       "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["riichi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}],
-      "actions": [["big_text", "Riichi"], ["set_status", "riichi", "just_reached", "ippatsu"]]
+      "actions": [
+        ["big_text", "Riichi"],
+        ["set_status", "riichi", "just_reached", "ippatsu"],
+        ["when", ["have_not_discarded_yet", "no_calls_yet"], [["set_status", "double_riichi"]]]
+      ]
     },
     "ron": {
       "display_name": "Ron",

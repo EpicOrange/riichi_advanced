@@ -174,7 +174,8 @@ defmodule Riichi do
   end
 
   defp _remove_hand_definition(hand, calls, hand_definition) do
-    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], all_hands ->
+    Enum.reduce(hand_definition, [{hand, calls}, {Riichi.normalize_red_fives(hand), calls}], fn [groups, num], all_hands ->
+      IO.inspect(all_hands)
       Enum.reduce(1..num, all_hands, fn _, hands ->
         for {hand, calls} <- hands, group <- groups do
           Riichi.remove_group(hand, calls, group)
@@ -184,7 +185,6 @@ defmodule Riichi do
   end
 
   def remove_hand_definition(hand, calls, hand_definition) do
-    hand = Riichi.normalize_red_fives(hand)
     calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
     case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition}) do
       [] -> 
@@ -201,15 +201,12 @@ defmodule Riichi do
     Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition)) end)
   end
 
-  def check_hand(hand, calls, hand_definitions, key) do
-    hand = Riichi.normalize_red_fives(hand)
-    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, key}) do
+  def check_hand(hand, calls, hand_definitions) do
+    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, hand_definitions}) do
       [] -> 
         result = _check_hand(hand, calls, hand_definitions)
-        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, key}, result)
-        # if key == :win do
-        #   IO.puts("Results:\n  hand: #{inspect(hand)}\n  key: #{inspect(key)}\n  result: #{inspect(result)}")
-        # end
+        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, hand_definitions}, result)
+        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  hand_definitions: #{inspect(hand_definitions)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
@@ -300,7 +297,7 @@ defmodule Riichi do
   def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind) do
     starting_hand = normalize_red_fives(starting_hand)
     winning_tile = normalize_red_five(winning_tile)
-
+    num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
     # initial fu
     fu = case win_source do
       :draw -> 22
@@ -347,21 +344,21 @@ defmodule Riichi do
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
-        Enum.flat_map(all_hands, fn {hand, fu} -> 
-          hand |> Enum.uniq() |> Enum.map(fn base_tile -> 
+        Enum.flat_map(all_hands, fn {hand, fu} ->
+          hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
             case try_remove_all_tiles(hand, [base_tile, base_tile, base_tile]) do
               [] -> [{hand, fu}]
               [removed] -> [{removed, fu + if base_tile in @terminal_honors do 8 else 4 end}]
             end
-          end) |> Enum.concat() |> Enum.uniq()
-        end)
+          end) |> Enum.uniq()
+        end) |> Enum.uniq()
     end
 
     # now remove all sequences (no increase in fu)
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
-        Enum.flat_map(all_hands, fn {hand, fu} -> 
-          hand |> Enum.uniq() |> Enum.filter(fn tile -> tile not in @terminal_honors end) |> Enum.flat_map(fn base_tile -> 
+        Enum.flat_map(all_hands, fn {hand, fu} ->
+          hand |> Enum.uniq() |> Enum.flat_map(fn base_tile -> 
             case try_remove_all_tiles(hand, [pred(base_tile), base_tile, succ(base_tile)]) do
               [] -> [{hand, fu}]
               [removed] -> [{removed, fu}]
@@ -374,7 +371,7 @@ defmodule Riichi do
     # - one tile remaining (tanki)
     # - one pair remaining (standard)
     # - two pairs remaining (shanpon)
-    fu = Enum.flat_map(hands_fu, fn {hand, fu} ->
+    fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
       cond do
         length(hand) == 1 && Enum.at(hand, 0) == winning_tile -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
@@ -388,17 +385,17 @@ defmodule Riichi do
           end
         true                                                  -> []
       end
-    end) |> Enum.max()
+    end)
+    fu = if Enum.empty?(fus) do 0 else Enum.max(fus) end
 
-    IO.inspect(fu)
+    # IO.inspect(fu)
 
     # closed pinfu is 20 tsumo/30 ron, open pinfu is 30, chiitoitsu is 25
-    num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
     cond do
       fu == 22 && win_source == :draw && Enum.empty?(calls) -> 20
       fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30
       fu == 20 && not Enum.empty?(calls)                    -> 30
-      num_pairs == 7                                        -> 25
+      Enum.empty?(fus) && num_pairs == 7                    -> 25
       true                                                  ->
         # round up to nearest 10
         remainder = rem(fu, 10)
