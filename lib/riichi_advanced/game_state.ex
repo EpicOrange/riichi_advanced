@@ -95,7 +95,14 @@ defmodule RiichiAdvanced.GameState do
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
     wall = List.replace_at(wall, 52, :"8m") # first draw
+    wall = List.replace_at(wall, 53, :"8m")
+    wall = List.replace_at(wall, 54, :"8m")
+    wall = List.replace_at(wall, 55, :"8m")
     wall = List.replace_at(wall, 56, :"8m") # second draw
+    wall = List.replace_at(wall, 57, :"8m")
+    wall = List.replace_at(wall, 58, :"8m")
+    wall = List.replace_at(wall, 59, :"8m")
+    wall = List.replace_at(wall, 60, :"8m")
     # wall = List.replace_at(wall, -15, :"1m") # last draw
     # wall = List.replace_at(wall, -6, :"9m") # first dora
     # wall = List.replace_at(wall, -8, :"9m") # second dora
@@ -514,6 +521,8 @@ defmodule RiichiAdvanced.GameState do
       "win_by_draw"        -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
       "set_status"         -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_status"       -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_status_all"     -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_status_all"   -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "big_text"           -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
       "pause"              -> Map.put(state, :game_active, false)
       "sort_hand"          -> update_player(state, context.seat, fn player -> %Player{ player | hand: Riichi.sort_tiles(player.hand) } end)
@@ -768,7 +777,7 @@ defmodule RiichiAdvanced.GameState do
           actions = player.chosen_actions
           state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, deferred_actions: [] } end)
           state = if choice != nil && not Enum.member?(superceded_choices, choice) do
-            IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
+            # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
             call_action_exists = ["call"] in actions || ["self_call"] in actions || ["upgrade_call"] in actions
             if not call_action_exists do

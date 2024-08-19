@@ -108,7 +108,7 @@
     {
       "display_name": "Ippatsu",
       "value": 1,
-      "when": [{"name": "status", "opts": ["ippatsu"]}]
+      "when": [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}]
     },
     {
       "display_name": "Chankan",
@@ -439,6 +439,15 @@
     {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0m"], 1]]]}]},
     {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0p"], 1]]]}]},
     {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0s"], 1]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0m"], 2]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0p"], 2]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0s"], 2]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0m"], 3]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0p"], 3]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0s"], 3]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0m"], 4]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0p"], 4]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["0s"], 4]]]}]},
     {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 1]}]},
     {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 2]}]},
     {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 3]}]},
@@ -564,7 +573,8 @@
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}]]]]
   ],
   "before_turn_change": {
-    "actions": [["unset_status", "just_reached"],
+    "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
+                ["unset_status", "just_reached", "call_made"],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -574,8 +584,7 @@
   },
   "after_turn_change": {
     "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-                ["when", ["not_no_tiles_remaining"], [["draw"]]],
-                ["when", ["our_turn"], [["unset_status", "ippatsu"]]]
+                ["when", ["not_no_tiles_remaining"], [["draw"]]]
                ]
   },
   "before_win": {
@@ -605,20 +614,20 @@
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "show_when": ["not_our_turn", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-      "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]]
+      "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
       "show_when": ["not_our_turn", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-      "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
+      "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "show_when": ["not_our_turn", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-        "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"],
+        "actions": [["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -635,7 +644,7 @@
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
       "show_when": ["our_turn", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
-        "actions": [["big_text", "Kan"], ["self_call"],
+        "actions": [["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -656,7 +665,7 @@
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": ["our_turn", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-        "actions": [["big_text", "Kan"], ["upgrade_call"],
+        "actions": [["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
