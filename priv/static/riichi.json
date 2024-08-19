@@ -489,6 +489,7 @@
     "Ura": "裏ドラ",
     "Aka": "赤ドラ"
   },
+  "point_name": "Han",
   "score_calculation": {
     "method": "riichi",
     "score_table_dealer": {

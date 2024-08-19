@@ -16,6 +16,7 @@ defmodule Riichi do
           :"5z"=>:"6z", :"6z"=>:"7z", :"7z"=>:"5z"
         }
   def dora(tile), do: @dora[tile]
+  @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
 
   def offset_tile(tile, n) do
     if (n < 1 && n > -1) || n < -10 || n > 10 do
@@ -115,10 +116,10 @@ defmodule Riichi do
 
   def can_call?(calls_spec, hand, called_tiles \\ []), do: Enum.any?(make_calls(calls_spec, hand, called_tiles), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
-  def try_remove_all_tiles(hand, calls, tiles) do
+  def try_remove_all_tiles(hand, tiles) do
     removed = hand -- tiles
     if length(removed) + length(tiles) == length(hand) do
-      [{removed, calls}]
+      [removed]
     else
       []
     end
@@ -136,16 +137,23 @@ defmodule Riichi do
   def remove_group(hand, calls, group) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     cond do
-      # list of integers specifying a group of tiles
       is_list(group) && not Enum.empty?(group) ->
         if Enum.all?(group, fn tile -> to_tile(tile) != nil end) do
+          # list of tiles
           tiles = Enum.map(group, fn tile -> to_tile(tile) end)
-          try_remove_all_tiles(hand, calls, tiles)
+          case try_remove_all_tiles(hand, tiles) do
+            [] -> []
+            [removed] -> [{removed, calls}]
+          end
         else
+          # list of integers specifying a group of tiles
           hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
             tiles = Enum.map(group, fn tile_or_offset -> if to_tile(tile_or_offset) != nil do to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
             # IO.inspect(tiles)
-            try_remove_all_tiles(hand, calls, tiles)
+            case try_remove_all_tiles(hand, tiles) do
+              [] -> []
+              [removed] -> [{removed, calls}]
+            end
           end)
         end
       # tile
@@ -249,6 +257,148 @@ defmodule Riichi do
       [red, nored, nored, nored]
     else
       Enum.map(call, fn {tile, _sideways} -> tile end)
+    end
+  end
+
+  def get_round_wind(kyoku) do
+    cond do
+      kyoku >= 0 && kyoku < 4 -> :east
+      kyoku >= 4 && kyoku < 8 -> :south
+      kyoku >= 8 && kyoku < 12 -> :west
+      kyoku >= 12 -> :north
+    end
+  end
+
+  defp calculate_call_fu({name, call}) do
+    {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
+    case name do
+      "chii"  -> 0
+      "pon"   -> if relevant_tile in @terminal_honors do 4 else 2 end
+      "ankan" -> if relevant_tile in @terminal_honors do 32 else 16 end
+      _       -> if relevant_tile in @terminal_honors do 16 else 8 end
+    end
+  end
+
+  defp calculate_pair_fu(tile, seat_wind, round_wind) do
+    fu = case tile do
+      :"1z" -> if :east in [seat_wind, round_wind] do 2 else 0 end
+      :"2z" -> if :south in [seat_wind, round_wind] do 2 else 0 end
+      :"3z" -> if :west in [seat_wind, round_wind] do 2 else 0 end
+      :"4z" -> if :north in [seat_wind, round_wind] do 2 else 0 end
+      :"5z" -> 2
+      :"6z" -> 2
+      :"7z" -> 2
+      _     -> 0
+    end
+    # double wind 4 fu
+    fu = if fu == 2 && tile in [:"1z", :"2z", :"3z", :"4z"] && seat_wind == round_wind do 4 else fu end
+    fu
+  end
+
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind) do
+    starting_hand = normalize_red_fives(starting_hand)
+    winning_tile = normalize_red_five(winning_tile)
+
+    # initial fu
+    fu = case win_source do
+      :draw -> 22
+      _     -> if Enum.all?(calls, fn {name, _call} -> name == "ankan" end) do 30 else 20 end
+    end
+
+    # add called triplets
+    fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
+
+    possible_penchan_removed = case winning_tile do
+      :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"])
+      :"7m" -> try_remove_all_tiles(starting_hand, [:"8m", :"9m"])
+      :"3p" -> try_remove_all_tiles(starting_hand, [:"1p", :"2p"])
+      :"7p" -> try_remove_all_tiles(starting_hand, [:"8p", :"9p"])
+      :"3s" -> try_remove_all_tiles(starting_hand, [:"1s", :"2s"])
+      :"7s" -> try_remove_all_tiles(starting_hand, [:"8s", :"9s"])
+      _     -> []
+    end
+    possible_kanchan_removed = case winning_tile do
+      :"2m" -> try_remove_all_tiles(starting_hand, [:"1m", :"3m"])
+      :"3m" -> try_remove_all_tiles(starting_hand, [:"2m", :"4m"])
+      :"4m" -> try_remove_all_tiles(starting_hand, [:"3m", :"5m"])
+      :"5m" -> try_remove_all_tiles(starting_hand, [:"4m", :"6m"])
+      :"6m" -> try_remove_all_tiles(starting_hand, [:"5m", :"7m"])
+      :"7m" -> try_remove_all_tiles(starting_hand, [:"6m", :"8m"])
+      :"8m" -> try_remove_all_tiles(starting_hand, [:"7m", :"9m"])
+      :"2p" -> try_remove_all_tiles(starting_hand, [:"1p", :"3p"])
+      :"3p" -> try_remove_all_tiles(starting_hand, [:"2p", :"4p"])
+      :"4p" -> try_remove_all_tiles(starting_hand, [:"3p", :"5p"])
+      :"5p" -> try_remove_all_tiles(starting_hand, [:"4p", :"6p"])
+      :"6p" -> try_remove_all_tiles(starting_hand, [:"5p", :"7p"])
+      :"7p" -> try_remove_all_tiles(starting_hand, [:"6p", :"8p"])
+      :"8p" -> try_remove_all_tiles(starting_hand, [:"7p", :"9p"])
+      :"2s" -> try_remove_all_tiles(starting_hand, [:"1s", :"3s"])
+      :"3s" -> try_remove_all_tiles(starting_hand, [:"2s", :"4s"])
+      :"4s" -> try_remove_all_tiles(starting_hand, [:"3s", :"5s"])
+      :"5s" -> try_remove_all_tiles(starting_hand, [:"4s", :"6s"])
+      :"6s" -> try_remove_all_tiles(starting_hand, [:"5s", :"7s"])
+      :"7s" -> try_remove_all_tiles(starting_hand, [:"6s", :"8s"])
+      :"8s" -> try_remove_all_tiles(starting_hand, [:"7s", :"9s"])
+      _     -> []
+    end
+    hands_fu = Enum.map(possible_penchan_removed ++ possible_kanchan_removed ++ [starting_hand], fn hand -> {hand, if hand == starting_hand do fu else fu + 2 end} end)
+
+    # from these hands, remove all triplets and add the according amount of closed triplet fu
+    hands_fu = for _ <- 1..4, reduce: hands_fu do
+      all_hands ->
+        Enum.flat_map(all_hands, fn {hand, fu} -> 
+          hand |> Enum.uniq() |> Enum.map(fn base_tile -> 
+            case try_remove_all_tiles(hand, [base_tile, base_tile, base_tile]) do
+              [] -> [{hand, fu}]
+              [removed] -> [{removed, fu + if base_tile in @terminal_honors do 8 else 4 end}]
+            end
+          end) |> Enum.concat() |> Enum.uniq()
+        end)
+    end
+
+    # now remove all sequences (no increase in fu)
+    hands_fu = for _ <- 1..4, reduce: hands_fu do
+      all_hands ->
+        Enum.flat_map(all_hands, fn {hand, fu} -> 
+          hand |> Enum.uniq() |> Enum.filter(fn tile -> tile not in @terminal_honors end) |> Enum.flat_map(fn base_tile -> 
+            case try_remove_all_tiles(hand, [pred(base_tile), base_tile, succ(base_tile)]) do
+              [] -> [{hand, fu}]
+              [removed] -> [{removed, fu}]
+            end
+          end)
+        end) |> Enum.uniq()
+    end
+
+    # only valid hands should either have:
+    # - one tile remaining (tanki)
+    # - one pair remaining (standard)
+    # - two pairs remaining (shanpon)
+    fu = Enum.flat_map(hands_fu, fn {hand, fu} ->
+      num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
+      cond do
+        length(hand) == 1 && Enum.at(hand, 0) == winning_tile -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
+        length(hand) == 2 && num_pairs == 1                   -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
+        length(hand) == 4 && num_pairs == 2                   ->
+          [tile1, tile2] = Enum.uniq(hand)
+          if tile1 == winning_tile do
+            [fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)]
+          else
+            [fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)]
+          end
+        true                                                  -> []
+      end
+    end) |> Enum.max()
+
+    # round up to nearest 10
+    remainder = rem(fu, 10)
+    fu = if remainder == 0 do fu else fu - remainder + 10 end
+
+    # open pinfu is 30, chiitoitsu is 25
+    num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
+    cond do
+      fu == 20 && not Enum.empty?(calls) -> 30
+      num_pairs == 7                     -> 25
+      true                               -> fu
     end
   end
 end

@@ -97,7 +97,7 @@ defmodule RiichiAdvanced.GameState do
     wall = List.replace_at(wall, -6, :"9m") # first dora
     wall = List.replace_at(wall, -8, :"9m") # second dora
     wall = List.replace_at(wall, -2, :"2m") # first kan draw
-    hands = %{:east  => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"2m", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
+    hands = %{:east  => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"1m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
               :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
               :north => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
@@ -353,39 +353,39 @@ defmodule RiichiAdvanced.GameState do
 
     yaku = get_yaku(state, seat, winning_tile, win_source)
     IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
-    han = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-    fu = 30
-    han_str = Integer.to_string(han)
-    fu_str = Integer.to_string(fu)
+    points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
     scoring_table = state.rules["score_calculation"]
-    # assume riichi scoring
-    {score, score_name} = case scoring_table["method"] do
+    {state, score, score_name} = case scoring_table["method"] do
       "riichi" ->
+        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, seat, Riichi.get_round_wind(state.kyoku))
+        han = Integer.to_string(points)
+        fu = Integer.to_string(minipoints)
         oya_han_table = if win_source == :draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
         ko_han_table = if win_source == :draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
-        oya_fu_table = Map.get(oya_han_table, han_str, oya_han_table["default"])
-        ko_fu_table = Map.get(ko_han_table, han_str, ko_han_table["default"])
+        oya_fu_table = Map.get(oya_han_table, han, oya_han_table["default"])
+        ko_fu_table = Map.get(ko_han_table, han, ko_han_table["default"])
         score = if win_source == :draw do
             if seat == :east do
-              3 * Map.get(oya_fu_table, fu_str, oya_fu_table["default"])
+              3 * Map.get(oya_fu_table, fu, oya_fu_table["default"])
             else
-              Map.get(oya_fu_table, fu_str, oya_fu_table["default"]) + 2 * Map.get(ko_fu_table, fu_str, ko_fu_table["default"]) 
+              Map.get(oya_fu_table, fu, oya_fu_table["default"]) + 2 * Map.get(ko_fu_table, fu, ko_fu_table["default"]) 
             end
           else
             if seat == :east do
-              Map.get(oya_fu_table, fu_str, oya_fu_table["default"])
+              Map.get(oya_fu_table, fu, oya_fu_table["default"])
             else
-              Map.get(ko_fu_table, fu_str, ko_fu_table["default"]) 
+              Map.get(ko_fu_table, fu, ko_fu_table["default"]) 
             end
           end
-        score_name = Map.get(scoring_table["limit_hand_names"], han_str, scoring_table["limit_hand_names"]["default"])
-        {score, score_name}
-      _ -> {0, ""}
+        score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["default"])
+        state = Map.update!(state, :winner, &Map.put(&1, :minipoints, minipoints))
+        {state, score, score_name}
+      _ -> {state, 0, ""}
     end
     state = Map.update!(state, :winner, fn winner -> Map.merge(winner, %{
       yaku: yaku,
-      han: han,
-      fu: fu,
+      points: points,
+      point_name: state.rules["point_name"],
       score: score,
       score_name: score_name
     }) end)
@@ -482,7 +482,7 @@ defmodule RiichiAdvanced.GameState do
       "change_turn"        -> change_turn(state, Utils.get_seat(context.seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
       "win_by_discard"     -> win(state, context.seat, get_last_action(state).tile, :discard)
       "win_by_call"        -> win(state, context.seat, get_last_action(state).called_tile, :call)
-      "win_by_draw"        -> win(state, context.seat, state.players[context.seat].draw, :draw)
+      "win_by_draw"        -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
       "set_status"         -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_status"       -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "big_text"           -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
@@ -655,11 +655,12 @@ defmodule RiichiAdvanced.GameState do
         # IO.puts("#{inspect(hand_definition)}\n  in_hand: #{in_hand} / in_calls: #{in_calls}\n")
         in_hand || in_calls
       "round_wind_is"            ->
+        round_wind = Riichi.get_round_wind(state.kyoku)
         case Enum.at(opts, 0, "east") do
-          "east"  -> state.kyoku >= 0 && state.kyoku < 4
-          "south" -> state.kyoku >= 4 && state.kyoku < 8
-          "west"  -> state.kyoku >= 8 && state.kyoku < 12
-          "north" -> state.kyoku >= 12
+          "east"  -> round_wind == :east
+          "south" -> round_wind == :south
+          "west"  -> round_wind == :west
+          "north" -> round_wind == :north
           _       ->
             IO.puts("Unknown round wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
