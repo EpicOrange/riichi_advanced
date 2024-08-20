@@ -46,4 +46,13 @@ defmodule Utils do
     end
   end
 
+  def get_wind_name(wind) do
+    case wind do
+      :east  -> "東"
+      :south -> "南"
+      :west  -> "西"
+      :north -> "北"
+    end
+  end
+
 end

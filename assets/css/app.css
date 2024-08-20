@@ -291,6 +291,37 @@ div.centerpiece > div.honba-counter::after {
 }
 
 
+/* corner info */
+div.corner-info {
+  position: absolute;
+  text-align: center;
+  background: #0000000F;
+  color: #FFFFFF3F;
+  border-radius: calc(0.25 * var(--tile-size));
+  transform-origin: calc(-2.5 * var(--tile-size)) calc(-2.5 * var(--tile-size));
+  width: calc(3 * var(--tile-size));
+  height: calc(3 * var(--tile-size));
+  left: calc(50% + 2.5 * var(--tile-size));
+  top: calc(50% + 2.5 * var(--tile-size));
+  z-index: -1;
+}
+div.corner-info.shimocha { transform: rotate(270deg); }
+div.corner-info.toimen { transform: rotate(180deg); }
+div.corner-info.kamicha { transform: rotate(90deg); }
+div.corner-info > div.round-marker {
+  position: absolute;
+  border-radius: calc(0.25 * var(--tile-size));
+  font-size: calc(0.55 * var(--tile-size));
+  background: var(--tile-back);
+  color: var(--tile-front);
+  filter: drop-shadow(0 calc(var(--tile-size) / -16) 0 var(--tile-back-side))
+          drop-shadow(0 calc(var(--tile-size) / -16) 0 var(--tile-front-side));
+  width: calc(1.5 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
+  right: calc(-1 * var(--tile-size));
+  bottom: calc(-0.125 * var(--tile-size));
+}
+
 /* tiles */
 div.tile {
   --tile-width: calc(0.75 * var(--tile-size));

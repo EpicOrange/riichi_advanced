@@ -94,6 +94,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         />
     <% end %>
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" game_state={@game_state} pond={@players[@seat].pond} riichi={"riichi" in @players[@seat].status} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info self" game_state={@game_state} seat={@seat} player={@players[@seat]} kyoku={@kyoku} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
       game_state={@game_state}
@@ -105,6 +106,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@shimocha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} pond={@players[@shimocha].pond} riichi={"riichi" in @players[@shimocha].status} :if={@shimocha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info shimocha" game_state={@game_state} seat={@shimocha} player={@players[@shimocha]} kyoku={@kyoku} :if={@shimocha != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand toimen"
       game_state={@game_state}
@@ -116,6 +118,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@toimen != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} pond={@players[@toimen].pond} riichi={"riichi" in @players[@toimen].status} :if={@toimen != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info toimen" game_state={@game_state} seat={@toimen} player={@players[@toimen]} kyoku={@kyoku} :if={@toimen != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand kamicha"
       game_state={@game_state}
@@ -127,6 +130,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} pond={@players[@kamicha].pond} riichi={"riichi" in @players[@kamicha].status} :if={@kamicha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info kamicha" game_state={@game_state} seat={@kamicha} player={@players[@kamicha]} kyoku={@kyoku} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent}
       id="compass"
       game_state={@game_state}

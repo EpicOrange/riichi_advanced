@@ -12,6 +12,7 @@ defmodule Player do
     choice: nil,
     chosen_actions: nil,
     deferred_actions: [],
+    nickname: "",
     big_text: "",
     status: [],
     last_discard: nil,
