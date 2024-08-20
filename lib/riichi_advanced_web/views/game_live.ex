@@ -25,7 +25,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
     [{game_state, _}] = Registry.lookup(:game_registry, "game_state-" <> socket.assigns.session_id)
     socket = assign(socket, :game_state, game_state)
-    socket = assign(socket, :winner, nil)
+    socket = assign(socket, :winners, %{})
     socket = assign(socket, :draw, nil)
     socket = assign(socket, :timer, 0)
     # liveviews mount twice
@@ -143,7 +143,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       riichi={Map.new(@players, fn {seat, player} -> {seat, "riichi" in player.status} end)}
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
       />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winner={@winner} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
     <.live_component module={RiichiAdvancedWeb.DrawWindowComponent} id="draw-window" game_state={@game_state} seat={@seat} draw={@draw} timer={@timer}/>
     <%= if not @spectator do %>
       <div class="buttons">
@@ -236,7 +236,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       socket = assign(socket, :players, state.players)
       socket = assign(socket, :turn, state.turn)
-      socket = assign(socket, :winner, state.winner)
+      socket = assign(socket, :winners, state.winners)
       socket = assign(socket, :draw, state.draw)
       socket = assign(socket, :kyoku, state.kyoku)
       socket = assign(socket, :honba, state.honba)

@@ -7,8 +7,8 @@ defmodule Player do
     score: 0,
     buttons: [],
     auto_buttons: [],
-    call_buttons: %{}, # TODO wrap this up as ":action_context"
-    call_name: "", # TODO wrap this up as ":action_context"
+    call_buttons: %{},
+    call_name: "",
     choice: nil,
     chosen_actions: nil,
     deferred_actions: [],
@@ -193,9 +193,8 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:wall_index, 52)
      |> Map.put(:turn, nil)
      |> Map.put(:actions, [])
-     |> Map.put(:last_action, %{seat: nil, action: nil})
      |> Map.put(:reversed_turn_order, false)
-     |> Map.put(:winner, nil)
+     |> Map.put(:winners, %{})
      |> Map.put(:draw, nil)
      |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
@@ -207,21 +206,33 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def adjudicate_win_scoring(state) do
+    # TODO point adjudication goes here
+    # riichi sticks, honba, pao, multiple ron
+    for {seat, winner} <- state.winners, reduce: state do
+      state ->
+        state = update_player(state, seat, &%Player{ &1 | score: &1.score + winner.score })
+        state
+    end
+  end
+
+  def adjudicate_draw_scoring(state) do
+    # TODO draw
+    state
+  end
+
   def finalize_round(state) do
-    state = if state.winner != nil do
+    state = if not Enum.empty?(state.winners) do
+      state = adjudicate_win_scoring(state)
 
-      # TODO point adjudication goes here
-      # riichi sticks, honba, pao, multiple ron
-      state = update_player(state, state.winner.seat, &%Player{ &1 | score: &1.score + state.winner.score })
-
-      state = if Riichi.get_east_player_seat(state.kyoku) == state.winner.seat do
+      state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
         Map.update!(state, :honba, & &1 + 1)
       else
         Map.update!(state, :kyoku, & &1 + 1)
       end
       state
     else
-      # TODO draw
+      state = adjudicate_draw_scoring(state)
       state
     end
     state
@@ -446,13 +457,14 @@ defmodule RiichiAdvanced.GameState do
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
     # add this to the state so yaku conditions can refer to the winner
-    state = Map.put(state, :winner, %{
+    winner = %{
       seat: seat,
       player: state.players[seat],
       winning_tile: winning_tile,
       winning_hand: winning_hand,
       point_name: state.rules["point_name"]
-    })
+    }
+    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     scoring_table = state.rules["score_calculation"]
     state = case scoring_table["method"] do
       "riichi" ->
@@ -498,7 +510,7 @@ defmodule RiichiAdvanced.GameState do
           end
         end
         score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["default"])
-        state = Map.update!(state, :winner, &Map.merge(&1, %{
+        winner = Map.merge(winner, %{
           yaku: yaku,
           yakuman: yakuman,
           points: points,
@@ -506,9 +518,12 @@ defmodule RiichiAdvanced.GameState do
           score: score,
           score_name: score_name,
           minipoints: minipoints
-        }))
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
-      _ -> state
+      _ ->
+        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        state
     end
     state
   end
@@ -636,7 +651,7 @@ defmodule RiichiAdvanced.GameState do
       # if our action updates state, then we need to recalculate buttons
       # this is so other players can react to certain actions
       if not Map.has_key?(state.rules, "uninterruptible_actions") || action not in state.rules["uninterruptible_actions"] do
-        state = if state.winner != nil do
+        state = if not Enum.empty?(state.winners) do
           # if there's a winner, never display buttons
           update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
         else
@@ -664,7 +679,7 @@ defmodule RiichiAdvanced.GameState do
 
   defp run_actions(state, actions, context \\ %{}) do
     state = Map.update!(state, :actions_cv, & &1 + 1)
-    state = if state.game_active and state.winner == nil do
+    state = if state.game_active and Enum.empty?(state.winners) do
       # if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
       #   IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
       # end
@@ -803,20 +818,20 @@ defmodule RiichiAdvanced.GameState do
             IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
         end
-      "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winner.winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
+      "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winners[context.seat].winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       "winning_hand_matches"     -> 
         hand_definition = translate_hand_definition(opts, state.rules["set_definitions"])
         Riichi.check_hand(state.players[context.seat].hand, state.players[context.seat].calls, hand_definition)
       "winning_hand_and_tile_matches" -> 
         hand_definition = translate_hand_definition(opts, state.rules["set_definitions"])
-        Riichi.check_hand(state.players[context.seat].hand ++ [state.winner.winning_tile], state.players[context.seat].calls, hand_definition)
+        Riichi.check_hand(state.players[context.seat].hand ++ [state.winners[context.seat].winning_tile], state.players[context.seat].calls, hand_definition)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Riichi.to_tile/1)
         Enum.all?(state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), fn tile -> tile in tiles end) 
       "winning_hand_and_tile_consists_of" ->
         tiles = Enum.map(opts, &Riichi.to_tile/1)
-        Enum.all?(state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1) ++ [state.winner.winning_tile], fn tile -> tile in tiles end) 
+        Enum.all?(state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1) ++ [state.winners[context.seat].winning_tile], fn tile -> tile in tiles end) 
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
