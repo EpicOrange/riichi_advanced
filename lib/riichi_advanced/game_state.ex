@@ -16,6 +16,7 @@ defmodule Player do
     big_text: "",
     status: [],
     riichi_stick: false,
+    hand_revealed: false,
     last_discard: nil, # for animation purposes only
     ready: false
   ]
@@ -189,6 +190,7 @@ defmodule RiichiAdvanced.GameState do
           big_text: "",
           status: [],
           riichi_stick: false,
+          hand_revealed: false,
           last_discard: nil,
           ready: false
         }} end))
@@ -757,6 +759,7 @@ defmodule RiichiAdvanced.GameState do
       "reveal_tile"           -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
       "add_score"             -> update_player(state, context.seat, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
       "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + 1) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true })
+      "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "ryuukyoku"             -> exhaustive_draw(state)
       "discard_draw"          ->
         # need to do this or else we might reenter adjudicate_actions

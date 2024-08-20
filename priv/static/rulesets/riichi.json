@@ -1032,7 +1032,7 @@
                      {"name": "discard_matches_hand", "opts": ["win"]},
                      "has_yaku_with_discard"
                    ],
-      "actions": [["big_text", "Ron"], ["pause", 1000], ["win_by_discard"]],
+      "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     },
     "chankan": {
@@ -1049,7 +1049,7 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Ron"], ["pause", 1000], ["win_by_call"]],
+      "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     },
     "tsumo": {
@@ -1060,7 +1060,7 @@
                      {"name": "hand_matches_hand", "opts": ["win"]},
                      "has_yaku_with_hand"
                    ],
-      "actions": [["big_text", "Tsumo"], ["pause", 1000], ["win_by_draw"]],
+      "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "ankan", "kakan"]
     }
   },
@@ -1094,7 +1094,7 @@
       "enabled_at_start": false
     }
   },
-  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when", "add_score", "put_down_riichi_stick"],
+  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when", "add_score", "put_down_riichi_stick", "reveal_hand"],
   "initial_score": 25000,
   "max_rounds": 0
 }

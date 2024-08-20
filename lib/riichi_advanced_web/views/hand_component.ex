@@ -3,6 +3,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def mount(socket) do
     socket = assign(socket, :your_hand?, false)
+    socket = assign(socket, :revealed?, false)
     socket = assign(socket, :played_tile, nil)
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
@@ -72,7 +73,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def hide_tiles(tiles, assigns) do
-    if assigns.your_hand? do tiles else Enum.map(tiles, fn _tile -> :"1x" end) end
+    if assigns.revealed? do tiles else Enum.map(tiles, fn _tile -> :"1x" end) end
   end
 
   def prepare_hand(assigns) do
@@ -94,7 +95,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def update(assigns, socket) do
     # randomize position of played tile (if tedashi)
     no_played_tile_yet? = socket.assigns.played_tile_index == nil
-    assigns = if not socket.assigns.your_hand? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil do
+    assigns = if not socket.assigns.revealed? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil do
       if no_played_tile_yet? do
         Map.put(assigns, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
       else

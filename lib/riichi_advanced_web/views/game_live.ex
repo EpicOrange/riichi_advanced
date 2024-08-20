@@ -73,6 +73,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id="hand self"
         game_state={@game_state}
+        revealed?={true}
         your_hand?={true}
         your_turn?={@seat == @turn}
         seat={@seat}
@@ -86,6 +87,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id="hand self"
         game_state={@game_state}
+        revealed?={@players[@seat].hand_revealed}
         your_hand?={false}
         seat={@seat}
         hand={@players[@seat].hand}
@@ -99,6 +101,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
       game_state={@game_state}
+      revealed?={@players[@shimocha].hand_revealed}
       your_hand?={false}
       seat={@shimocha}
       hand={@players[@shimocha].hand}
@@ -111,6 +114,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand toimen"
       game_state={@game_state}
+      revealed?={@players[@toimen].hand_revealed}
       your_hand?={false}
       seat={@toimen}
       hand={@players[@toimen].hand}
@@ -123,7 +127,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand kamicha"
       game_state={@game_state}
-      your_hand?={false}
+      revealed?={@players[@kamicha].hand_revealed}
       seat={@kamicha}
       hand={@players[@kamicha].hand}
       draw={@players[@kamicha].draw}
