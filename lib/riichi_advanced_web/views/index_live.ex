@@ -2,7 +2,6 @@ defmodule RiichiAdvancedWeb.IndexLive do
   use RiichiAdvancedWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, :session_id, "asdf")
     {:ok, socket}
   end
 
@@ -15,8 +14,30 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="tile 8m"></div>
         <div class="tile 7z"></div>
       </div>
-      <.link href={~p"/game/riichi/#{@session_id}"} class="enter-button">Enter</.link>
+      <form phx-submit="redirect">
+        Ruleset:
+        <select name="ruleset" id="ruleset">
+          <option value="riichi" selected>Riichi</option>
+          <option value="hk">Hong Kong</option>
+          <option value="sichuan">Sichuan Bloody</option>
+        </select>
+        <br/>
+        Room:
+        <input type="text" name="session_id" placeholder="Room ID (required)" value="main" />
+        <br/>
+        Name:
+        <input type="text" name="nickname" placeholder="Nickname (optional)" />
+        <br/>
+        <button type="submit" class="enter-button">Enter</button>
+      </form>
     </div>
     """
+  end
+
+  def handle_event("redirect", %{"ruleset" => ruleset, "session_id" => session_id, "nickname" => nickname}, socket) do
+    socket = if session_id != "" do
+      push_redirect(socket, to: ~p"/game/#{ruleset}/#{session_id}/#{nickname}")
+    else socket end
+    {:noreply, socket}
   end
 end

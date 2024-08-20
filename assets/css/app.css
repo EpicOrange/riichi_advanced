@@ -861,7 +861,7 @@ div.ruleset > textarea {
 
 
 
-/* index screen */
+/* index/title screen */
 div.title {
   text-align: center;
   display: flex;
@@ -921,16 +921,15 @@ div.title > div.title-advanced::before {
   z-index: -1;
 }
 
-div.main-page > .enter-button {
+div.main-page > form {
   position: absolute;
-  font-size: calc(3 * var(--tile-size));
-  width: calc(8 * var(--tile-size));
-  top: calc(50% + 1 * var(--tile-size));
-  left: calc(50% - 4 * var(--tile-size));
-  background: var(--tile-front);
-  text-decoration: none;
-  color: black;
+  width: calc(100% - 3 * var(--tile-size));
+  top: calc(50% - 1 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(calc(var(--tile-size) / -4) calc(var(--tile-size) / -2) 0 var(--tile-front-side))
-          drop-shadow(calc(var(--tile-size) / -4) calc(var(--tile-size) / -2) 0 var(--tile-back-side));
+  background: #FFFFFF3F;
+}
+div.main-page > form, div.main-page > form * {
+  font-size: calc(0.75 * var(--tile-size));
 }
