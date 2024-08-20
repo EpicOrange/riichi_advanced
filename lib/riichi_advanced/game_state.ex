@@ -524,7 +524,7 @@ defmodule RiichiAdvanced.GameState do
     scoring_table = state.rules["score_calculation"]
     state = case scoring_table["method"] do
       "riichi" ->
-        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, seat, Riichi.get_round_wind(state.kyoku))
+        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku))
         yaku = get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
         yakuman = get_yaku(state, state.rules["yakuman"], seat, winning_tile, win_source, minipoints)
         IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
@@ -838,7 +838,16 @@ defmodule RiichiAdvanced.GameState do
         end)
       "has_draw"                 -> not Enum.empty?(state.players[context.seat].draw)
       "furiten"                  -> false
-      "has_yaku"                 -> true
+      "has_yaku_with_hand"       -> if not Enum.empty?(state.players[context.seat].draw) do
+          winning_tile = Enum.at(state.players[context.seat].draw, 0)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku))
+          Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(get_yaku(state, [yaku], context.seat, winning_tile, :draw, minipoints)) end)
+        else false end
+      "has_yaku_with_discard"    -> if last_action.action == :discard do
+          winning_tile = last_action.tile
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku))
+          Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
+        else false end
       "has_calls"                -> not Enum.empty?(state.players[context.seat].calls)
       "no_calls"                 -> Enum.empty?(state.players[context.seat].calls)
       "has_call_named"           -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name in opts end)
