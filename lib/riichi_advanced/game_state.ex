@@ -16,7 +16,7 @@ defmodule Player do
     big_text: "",
     status: [],
     riichi_stick: false,
-    last_discard: nil,
+    last_discard: nil, # for animation purposes only
     ready: false
   ]
 end
@@ -29,6 +29,7 @@ defmodule RiichiAdvanced.GameState do
     GenServer.start_link(
       __MODULE__,
       %{session_id: Keyword.get(init_data, :session_id),
+        ruleset: Keyword.get(init_data, :ruleset),
         ruleset_json: Keyword.get(init_data, :ruleset_json)},
       name: Keyword.get(init_data, :name))
   end
@@ -1124,7 +1125,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state) do
-    RiichiAdvancedWeb.Endpoint.broadcast("game:" <> state.session_id, "state_updated", %{"state" => state})
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
   end
 
   def handle_call({:new_player, socket}, _from, state) do

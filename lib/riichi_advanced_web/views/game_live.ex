@@ -11,10 +11,11 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def mount(params, _session, socket) do
     socket = assign(socket, :session_id, params["id"])
+    socket = assign(socket, :ruleset, params["ruleset"])
     socket = assign(socket, :ruleset_json, File.read!(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")))
 
     # start a new game process, if it doesn't exist already
-    game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, "game-" <> socket.assigns.session_id}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, "game-" <> socket.assigns.session_id}}}
     case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} -> IO.puts("Starting game session #{socket.assigns.session_id}")
       {:error, {:shutdown, error}} ->
@@ -31,7 +32,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     # liveviews mount twice
     if socket.root_pid != nil do
       # TODO use id in pubsub
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "game:" <> socket.assigns.session_id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
       [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(socket.assigns.game_state, {:new_player, socket})
       socket = assign(socket, :loading, false)
       socket = assign(socket, :players, state.players)
@@ -213,7 +214,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
-    if topic == ("game:" <> socket.assigns.session_id) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) do
       # animate new calls
       num_calls_before = Map.new(socket.assigns.players, fn {seat, player} -> {seat, length(player.calls)} end)
       num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
