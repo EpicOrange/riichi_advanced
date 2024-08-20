@@ -36,7 +36,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def handle_event("redirect", %{"ruleset" => ruleset, "session_id" => session_id, "nickname" => nickname}, socket) do
     socket = if session_id != "" do
-      push_redirect(socket, to: ~p"/game/#{ruleset}/#{session_id}/#{nickname}")
+      push_navigate(socket, to: ~p"/game/#{ruleset}/#{session_id}/#{nickname}")
     else socket end
     {:noreply, socket}
   end

@@ -304,6 +304,9 @@ div.corner-info {
   height: calc(3 * var(--tile-size));
   left: calc(50% + 2.5 * var(--tile-size));
   top: calc(50% + 2.5 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
+  padding-top: calc(1.5 * var(--tile-size) - 0.75em);
+  box-sizing: border-box;
   z-index: -1;
   user-select: none;
 }

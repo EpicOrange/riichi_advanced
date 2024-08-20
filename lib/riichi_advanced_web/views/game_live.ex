@@ -12,6 +12,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   def mount(params, _session, socket) do
     socket = assign(socket, :session_id, params["id"])
     socket = assign(socket, :ruleset, params["ruleset"])
+    socket = assign(socket, :nickname, params["nickname"])
     socket = assign(socket, :ruleset_json, File.read!(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")))
 
     # start a new game process, if it doesn't exist already

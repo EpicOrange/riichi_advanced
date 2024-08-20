@@ -36,6 +36,7 @@ defmodule RiichiAdvancedWeb.Router do
     # interactive
     live_session :default do
       live "/", IndexLive
+      live "/game/:ruleset/:id", GameLive
       live "/game/:ruleset/:id/:nickname", GameLive
     end
   end

@@ -1266,6 +1266,7 @@ defmodule RiichiAdvanced.GameState do
       else state end
 
       state = Map.put(state, seat, socket.id)
+      state = update_player(state, seat, &%Player{ &1 | nickname: socket.assigns.nickname })
       GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
 
