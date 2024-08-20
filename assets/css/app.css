@@ -25,7 +25,7 @@ main::before {
   top: calc(-0.5 * var(--tile-size));
   left: calc(-0.5 * var(--tile-size));
   background: #0f6f2f;
-  border-radius: 1rem;
+  border-radius: calc(0.25 * var(--tile-size));
   width: calc(100% + var(--tile-size));
   height: calc(100% + var(--tile-size));
   z-index: -1;
@@ -262,7 +262,7 @@ div.centerpiece > div.riichi-stick-counter::after {
   width: calc(0.05 * var(--tile-size));
   height: calc(0.05 * var(--tile-size));
   border-radius: 50%;
-  left: calc(50% - (0.5 * var(--tile-size)));
+  left: calc(50% - (0.475 * var(--tile-size)));
   bottom: calc(50% - (0.025 * var(--tile-size)));
   background: red;
   z-index: 1;
@@ -284,7 +284,7 @@ div.centerpiece > div.honba-counter::after {
   width: calc(0.05 * var(--tile-size));
   height: calc(0.05 * var(--tile-size));
   left: calc(50% - (0.35 * var(--tile-size)));
-  bottom: 50%;
+  bottom: calc(50% + (0.025 * var(--tile-size)));
   color: #182890;
   transform: rotate(90deg);
   z-index: 1;
@@ -495,8 +495,10 @@ div.call-buttons > div.call-button-separator {
 }
 div.buttons > button,
 div.call-buttons > button {
-  border: 1px solid var(--tile-back);
-  border-radius: 4px;
+  font-size: calc(0.35 * var(--tile-size));
+  padding: 0 calc(0.1 * var(--tile-size));
+  border: calc(0.0625 * var(--tile-size)) solid var(--tile-back);
+  border-radius: calc(0.125 * var(--tile-size));
   background: var(--tile-back);
   cursor: pointer;
 }
@@ -536,14 +538,14 @@ div.big-text {
   text-align: center;
   color: white;
   font-size: calc(4 * var(--tile-size));
-  text-shadow: black 0.1rem 0.1rem;
+  text-shadow: black calc(0.1 * var(--tile-size)) calc(0.1 * var(--tile-size));
   z-index: 50;
   animation: textFade 1.5s ease forwards;
   pointer-events: none;
 }
-div.big-text.self { bottom: 1rem; }
+div.big-text.self { bottom: 0; }
 div.big-text.kamicha { left: calc(-50% + (3 * var(--tile-size))); top: calc(50% - (3 * var(--tile-size))); }
-div.big-text.toimen { top: 1rem; }
+div.big-text.toimen { top: 0; }
 div.big-text.shimocha { left: calc(50% - (3 * var(--tile-size))); top: calc(50% - (3 * var(--tile-size))); }
 
 /* revealed tiles */
@@ -579,7 +581,7 @@ div.game-end-window::before {
   height: 108%;
   top: -4%;
   left: -4%;
-  border-radius: 1rem;
+  border-radius: calc(0.25 * var(--tile-size));
   background: black;
   opacity: 0.6;
   z-index: -1;
