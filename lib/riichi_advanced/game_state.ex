@@ -207,34 +207,82 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def adjudicate_win_scoring(state) do
-    # TODO point adjudication goes here
-    # riichi sticks, honba, pao, multiple ron
-    for {seat, winner} <- state.winners, reduce: state do
-      state ->
-        state = update_player(state, seat, &%Player{ &1 | score: &1.score + winner.score })
+    scoring_table = state.rules["score_calculation"]
+    case scoring_table["method"] do
+      "riichi" ->
+        for {{seat, winner}, i} <- Enum.with_index(state.winners), reduce: state do
+          state ->
+            riichi_payment = if i == 0 do scoring_table["riichi_value"] * state.riichi_sticks else 0 end
+            honba_payment = scoring_table["honba_value"] * state.honba
+            is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
+            direct_hit = winner.payer != nil
+            # TODO pao logic
+            # if winner.pao_seat != nil do
+            # end
+            state = if direct_hit do
+              state
+               |> update_player(seat, &%Player{ &1 | score: &1.score + winner.score + honba_payment * 3 + riichi_payment })
+               |> update_player(winner.payer, &%Player{ &1 | score: &1.score - winner.score - honba_payment * 3 })
+            else
+              state = update_player(state, seat, &%Player{ &1 | score: &1.score + riichi_payment })
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(winner.score, is_dealer)
+              for payer <- [:east, :south, :west, :north] -- [seat], reduce: state do
+                state ->
+                  payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
+                  state
+                    |> update_player(seat, &%Player{ &1 | score: &1.score + payment + honba_payment })
+                    |> update_player(payer, &%Player{ &1 | score: &1.score - payment - honba_payment })
+              end
+            end
+            state
+        end
+      _ ->
+        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         state
     end
   end
 
   def adjudicate_draw_scoring(state) do
-    # TODO draw
+    # TODO draw scoring
+    scoring_table = state.rules["score_calculation"]
+    state = case scoring_table["method"] do
+      "riichi" ->
+        state
+      _ ->
+        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        state
+    end
     state
   end
 
   def finalize_round(state) do
     state = if not Enum.empty?(state.winners) do
       state = adjudicate_win_scoring(state)
-
       state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
-        Map.update!(state, :honba, & &1 + 1)
+        state
+          |> Map.update!(:honba, & &1 + 1)
+          |> Map.put(:riichi_sticks, 0)
       else
-        Map.update!(state, :kyoku, & &1 + 1)
+        state
+          |> Map.update!(:kyoku, & &1 + 1)
+          |> Map.put(:honba, 0)
+          |> Map.put(:riichi_sticks, 0)
       end
       state
     else
       state = adjudicate_draw_scoring(state)
+
+      # TODO increase or reset honba based on who's tenpai
       state
     end
+    state = if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
+      finalize_game(state)
+    else state end
+    state
+  end
+
+  def finalize_game(state) do
+    # TODO
     state
   end
 
@@ -510,6 +558,12 @@ defmodule RiichiAdvanced.GameState do
           end
         end
         score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["default"])
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        pao_seat = nil # TODO pao
         winner = Map.merge(winner, %{
           yaku: yaku,
           yakuman: yakuman,
@@ -517,7 +571,9 @@ defmodule RiichiAdvanced.GameState do
           yakuman_mult: yakuman_mult,
           score: score,
           score_name: score_name,
-          minipoints: minipoints
+          minipoints: minipoints,
+          payer: payer,
+          pao_seat: pao_seat
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
@@ -677,7 +733,7 @@ defmodule RiichiAdvanced.GameState do
     _run_actions(state, actions, context)
   end
 
-  defp run_actions(state, actions, context \\ %{}) do
+  defp run_actions(state, actions, context) do
     state = Map.update!(state, :actions_cv, & &1 + 1)
     state = if state.game_active and Enum.empty?(state.winners) do
       # if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do

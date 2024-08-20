@@ -775,7 +775,6 @@
     {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 3]}]},
     {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 4]}]}
   ],
-  "pao_eligible": ["Daisangen", "Daisuushii"],
   "yaku_alt_names": {
     "Riichi": "立直",
     "Tsumo": "門前清自摸和",
@@ -872,7 +871,10 @@
       "11": "Sanbaiman",
       "12": "Sanbaiman",
       "default": "Yakuman"
-    }
+    },
+    "pao_eligible": ["Daisangen", "Daisuushii"],
+    "riichi_value": 1000,
+    "honba_value": 100
   },
   "play_restrictions": [
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
@@ -1064,5 +1066,6 @@
     }
   },
   "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when"],
-  "initial_score": 25000
+  "initial_score": 25000,
+  "max_rounds": 8
 }
