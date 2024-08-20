@@ -55,4 +55,8 @@ defmodule Utils do
     end
   end
 
+  def to_registry_name(name, ruleset, session_id) do
+    name <> "-" <> ruleset <> "-" <> session_id
+  end
+
 end

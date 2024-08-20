@@ -15,7 +15,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :ruleset_json, File.read!(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")))
 
     # start a new game process, if it doesn't exist already
-    game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, "game-" <> socket.assigns.session_id}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
     case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} -> IO.puts("Starting game session #{socket.assigns.session_id}")
       {:error, {:shutdown, error}} ->
@@ -24,7 +24,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       {:error, {:already_started, _pid}} -> nil
     end
 
-    [{game_state, _}] = Registry.lookup(:game_registry, "game_state-" <> socket.assigns.session_id)
+    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
     socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winners, %{})
     socket = assign(socket, :delta_scores, nil)

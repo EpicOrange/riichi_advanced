@@ -55,7 +55,7 @@ defmodule RiichiAdvanced.GameState do
   def init(state) do
     IO.puts("Game state PID is #{inspect(self())}")
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
-    [{debouncers, _}] = Registry.lookup(:game_registry, "debouncers-" <> state.session_id)
+    [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id))
     {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_east, :east)
     {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_south, :south)
     {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_west, :west)
@@ -77,10 +77,10 @@ defmodule RiichiAdvanced.GameState do
       :west => big_text_debouncer_west,
       :north => big_text_debouncer_north
     }
-    [{supervisor, _}] = Registry.lookup(:game_registry, "game-" <> state.session_id)
-    [{mutex, _}] = Registry.lookup(:game_registry, "mutex-" <> state.session_id)
-    [{ai_supervisor, _}] = Registry.lookup(:game_registry, "ai_supervisor-" <> state.session_id)
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, "exit_monitor-" <> state.session_id)
+    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
+    [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
+    [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
+    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
     state = Map.merge(state, %{
       game_active: false,
       supervisor: supervisor,
