@@ -300,6 +300,9 @@ defmodule RiichiAdvanced.GameState do
           4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
         end
 
+        # reveal hand for those players that are tenpai
+        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] } end)
+
         # update kyoku and honba
         state = if tenpai[Riichi.get_east_player_seat(state.kyoku)] do
           state
