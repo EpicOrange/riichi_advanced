@@ -185,6 +185,9 @@ defmodule RiichiAdvancedWeb.GameLive do
     </div>
     <div class={["big-text", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @players} :if={player.big_text != ""}><%= player.big_text %></div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
+    <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @players}>
+      <div class="status-text" :for={status <- player.status}><%= status %></div>
+    </div>
     <div class="ruleset">
       <textarea><%= @ruleset_json %></textarea>
     </div>

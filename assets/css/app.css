@@ -554,6 +554,27 @@ div.big-text.kamicha { left: calc(-50% + (3 * var(--tile-size))); top: calc(50% 
 div.big-text.toimen { top: 0; }
 div.big-text.shimocha { left: calc(50% - (3 * var(--tile-size))); top: calc(50% - (3 * var(--tile-size))); }
 
+/* status lines */
+
+div.status-line {
+  position: absolute;
+  white-space: nowrap;
+  font-size: calc(0.25 * var(--tile-size));
+  background: #0000001F;
+  width: calc(100% + var(--tile-size));
+  left: calc(-0.5 * var(--tile-size));
+  bottom: calc(-0.5 * var(--tile-size));
+  transform-origin: 50% calc(-8.125 * var(--tile-size));
+}
+div.status-line.kamicha { transform: rotate(90deg);}
+div.status-line.toimen { transform: rotate(180deg);}
+div.status-line.shimocha { transform: rotate(270deg);}
+div.status-line > div.status-text {
+  display: inline;
+  color: white;
+  margin-left: calc(0.5 * var(--tile-size));
+}
+
 /* revealed tiles */
 
 div.revealed-tiles {
