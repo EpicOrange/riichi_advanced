@@ -35,7 +35,15 @@ defmodule RiichiAdvanced.GameState do
       name: Keyword.get(init_data, :name))
   end
 
-  defp debounce_worker(debouncers, seat, delay, message, id) do
+  defp debounce_worker(debouncers, delay, message, id) do
+    DynamicSupervisor.start_child(debouncers, %{
+      id: id,
+      start: {Debounce, :start_link, [{GenServer, :cast, [self(), message]}, delay]},
+      type: :worker,
+      restart: :transient
+    })
+  end
+  defp debounce_worker(debouncers, delay, message, id, seat) do
     DynamicSupervisor.start_child(debouncers, %{
       id: id,
       start: {Debounce, :start_link, [{GenServer, :cast, [self(), {message, seat}]}, delay]},
@@ -48,14 +56,15 @@ defmodule RiichiAdvanced.GameState do
     IO.puts("Game state PID is #{inspect(self())}")
     play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
     [{debouncers, _}] = Registry.lookup(:game_registry, "debouncers-" <> state.session_id)
-    {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, :east, 100, :reset_play_tile_debounce, :play_tile_debouncer_east)
-    {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, :south, 100, :reset_play_tile_debounce, :play_tile_debouncer_south)
-    {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, :west, 100, :reset_play_tile_debounce, :play_tile_debouncer_west)
-    {:ok, play_tile_debouncer_north} = debounce_worker(debouncers, :north, 100, :reset_play_tile_debounce, :play_tile_debouncer_north)
-    {:ok, big_text_debouncer_east} = debounce_worker(debouncers, :east, 1500, :reset_big_text, :big_text_debouncer_east)
-    {:ok, big_text_debouncer_south} = debounce_worker(debouncers, :south, 1500, :reset_big_text, :big_text_debouncer_south)
-    {:ok, big_text_debouncer_west} = debounce_worker(debouncers, :west, 1500, :reset_big_text, :big_text_debouncer_west)
-    {:ok, big_text_debouncer_north} = debounce_worker(debouncers, :north, 1500, :reset_big_text, :big_text_debouncer_north)
+    {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_east, :east)
+    {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_south, :south)
+    {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_west, :west)
+    {:ok, play_tile_debouncer_north} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_north, :north)
+    {:ok, big_text_debouncer_east} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_east, :east)
+    {:ok, big_text_debouncer_south} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_south, :south)
+    {:ok, big_text_debouncer_west} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_west, :west)
+    {:ok, big_text_debouncer_north} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_north, :north)
+    {:ok, timer_debouncer} = debounce_worker(debouncers, 1000, :tick_timer, :timer_debouncer)
     play_tile_debouncers = %{
       :east => play_tile_debouncer_east,
       :south => play_tile_debouncer_south,
@@ -80,7 +89,8 @@ defmodule RiichiAdvanced.GameState do
       exit_monitor: exit_monitor,
       play_tile_debounce: play_tile_debounce,
       play_tile_debouncers: play_tile_debouncers,
-      big_text_debouncers: big_text_debouncers
+      big_text_debouncers: big_text_debouncers,
+      timer_debouncer: timer_debouncer
     })
 
     rules = case Jason.decode(state.ruleset_json) do
@@ -323,7 +333,7 @@ defmodule RiichiAdvanced.GameState do
         # reset timer
         state = Map.put(state, :timer, 10)
         state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
-        :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+        Debounce.apply(state.timer_debouncer)
 
         state
       state.delta_scores != nil ->
@@ -564,7 +574,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
-    :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+    Debounce.apply(state.timer_debouncer)
 
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
@@ -657,7 +667,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
-    :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+    Debounce.apply(state.timer_debouncer)
 
     {state, delta_scores} = adjudicate_draw_scoring(state)
 
@@ -1336,7 +1346,7 @@ defmodule RiichiAdvanced.GameState do
       broadcast_state_change(state)
       {:noreply, state}
     else
-      :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+      Debounce.apply(state.timer_debouncer)
       state = Map.put(state, :timer, state.timer - 1)
       broadcast_state_change(state)
       {:noreply, state}
