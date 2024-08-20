@@ -50,16 +50,10 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             <div class="total-score-name-display">Yakuman</div>
           <% end %>
         </div>
-        <div class="timer" phx-click="ready_for_next_round" phx-target={@myself}><%= @timer %></div>
+        <div class="timer" phx-click="ready_for_next_round"><%= @timer %></div>
       <% end %>
     </div>
     """
-  end
-
-  def handle_event("ready_for_next_round", _assigns, socket) do
-    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
-    socket = assign(socket, :timer, 0)
-    {:noreply, socket}
   end
 
   def update(assigns, socket) do

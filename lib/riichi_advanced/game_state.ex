@@ -198,7 +198,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:actions, [])
      |> Map.put(:reversed_turn_order, false)
      |> Map.put(:winners, %{})
-     |> Map.put(:draw, nil)
+     |> Map.put(:delta_scores, nil)
      |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
      |> Map.put(:game_active, true)
@@ -217,9 +217,10 @@ defmodule RiichiAdvanced.GameState do
 
   def adjudicate_win_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    case scoring_table["method"] do
+    {state, delta_scores} = case scoring_table["method"] do
       "riichi" ->
-        for {{seat, winner}, i} <- Enum.with_index(state.winners), reduce: state do
+        scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
+        state = for {{seat, winner}, i} <- Enum.with_index(state.winners), reduce: state do
           state ->
             riichi_payment = if i == 0 do scoring_table["riichi_value"] * state.riichi_sticks else 0 end
             honba_payment = scoring_table["honba_value"] * state.honba
@@ -245,53 +246,102 @@ defmodule RiichiAdvanced.GameState do
             end
             state
         end
+        delta_scores = Map.new(state.players, fn {seat, player} -> {seat, player.score - scores_before[seat]} end)
+        IO.inspect(delta_scores)
+
+        # update kyoku and honba
+        state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
+          state
+            |> Map.update!(:honba, & &1 + 1)
+            |> Map.put(:riichi_sticks, 0)
+        else
+          state
+            |> Map.update!(:kyoku, & &1 + 1)
+            |> Map.put(:honba, 0)
+            |> Map.put(:riichi_sticks, 0)
+        end
+
+        {state, delta_scores}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
-        state
+        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+        state = Map.update!(state, :kyoku, & &1 + 1)
+        {state, delta_scores}
     end
+    {state, delta_scores}
   end
 
   def adjudicate_draw_scoring(state) do
-    # TODO draw scoring
     scoring_table = state.rules["score_calculation"]
-    state = case scoring_table["method"] do
+    {state, delta_scores} = case scoring_table["method"] do
       "riichi" ->
-        state
+        tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
+        num_tenpai = tenpai |> Map.values() |> Enum.count(& &1)
+        delta_scores = case num_tenpai do
+          0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+          1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3000 else -1000 end} end)
+          2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
+          3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
+          4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+        end
+
+        # update kyoku and honba
+        state = if tenpai[Riichi.get_east_player_seat(state.kyoku)] do
+          state
+            |> Map.update!(:honba, & &1 + 1)
+        else
+          state
+            |> Map.update!(:kyoku, & &1 + 1)
+            |> Map.put(:honba, & &1 + 1)
+        end
+
+        {state, delta_scores}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
-        state
+        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+        state = Map.update!(state, :kyoku, & &1 + 1)
+        {state, delta_scores}
     end
-    state
+    {state, delta_scores}
   end
 
-  def finalize_round(state) do
-    state = if not Enum.empty?(state.winners) do
-      state = adjudicate_win_scoring(state)
-      state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
-        state
-          |> Map.update!(:honba, & &1 + 1)
-          |> Map.put(:riichi_sticks, 0)
-      else
-        state
-          |> Map.update!(:kyoku, & &1 + 1)
-          |> Map.put(:honba, 0)
-          |> Map.put(:riichi_sticks, 0)
-      end
-      state
-    else
-      state = adjudicate_draw_scoring(state)
+  def timer_finished(state) do
+    cond do
+      state.delta_scores == nil && not Enum.empty?(state.winners) ->
+        # if we're out of winners, show the score exchange screen
+        state = if map_size(state.winners) <= 1 do
+          {state, delta_scores} = adjudicate_win_scoring(state)
+          state = Map.put(state, :delta_scores, delta_scores)
+          state = Map.put(state, :winners, %{})
+          state
+        else 
+          # show the next winner
+          state = Map.put(state, :winners, Map.new(Enum.drop(state.winners, 1)))
+          state
+        end
 
-      # TODO increase or reset honba based on who's tenpai
-      state
+        # reset timer
+        state = Map.put(state, :timer, 10)
+        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+        :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+
+        state
+      state.delta_scores != nil ->
+        state = if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
+          finalize_game(state)
+        else
+          initialize_new_round(state)
+        end
+        state
+      true ->
+        IO.puts("timer_finished() called; unsure what the timer was for")
+        state
     end
-    state = if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
-      finalize_game(state)
-    else state end
-    state
   end
 
   def finalize_game(state) do
     # TODO
+    IO.puts("Game concluded")
     state
   end
 
@@ -514,7 +564,6 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
-
     :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
 
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
@@ -599,10 +648,20 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  defp draw(state, reason) do
-    IO.puts("Drawing!")
+  defp exhaustive_draw(state) do
+    # run before_exhaustive_draw actions
+    state = if Map.has_key?(state.rules, "before_exhaustive_draw") do
+      run_actions(state, state.rules["before_exhaustive_draw"]["actions"], %{seat: state.turn})
+    else state end
+
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :draw, %{reason: reason})
+    state = Map.put(state, :timer, 10)
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+    :timer.apply_after(1000, GenServer, :cast, [self(), :tick_timer])
+
+    {state, delta_scores} = adjudicate_draw_scoring(state)
+
+    state = Map.put(state, :delta_scores, delta_scores)
     state
   end
 
@@ -700,7 +759,7 @@ defmodule RiichiAdvanced.GameState do
       "reveal_tile"           -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
       "add_score"             -> update_player(state, context.seat, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
       "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + 1) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true })
-      "ryuukyoku"             -> draw(state, :ryuukyoku)
+      "ryuukyoku"             -> exhaustive_draw(state)
       "discard_draw"          ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])
@@ -1274,8 +1333,7 @@ defmodule RiichiAdvanced.GameState do
     IO.puts("Ticking timer")
     if state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) do
       state = Map.put(state, :timer, 0)
-      state = finalize_round(state)
-      state = initialize_new_round(state)
+      state = timer_finished(state)
       broadcast_state_change(state)
       {:noreply, state}
     else

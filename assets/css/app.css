@@ -543,6 +543,7 @@ div.big-text {
   text-shadow: black calc(0.1 * var(--tile-size)) calc(0.1 * var(--tile-size));
   z-index: 50;
   animation: textFade 1.5s ease forwards;
+  user-select: none;
   pointer-events: none;
 }
 div.big-text.self { bottom: 0; }
@@ -742,29 +743,48 @@ div.total-score-name-display::before {
 }
 
 /* draws */
-div.game-end-window > div.draw-reason {
-  position: relative;
-  font-size: calc(1.5 * var(--tile-size));
-  text-align: center;
-  width: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
+div.game-end-window > div.delta-score {
+  line-height: 1;
+  position: absolute;
+  font-size: calc(1 * var(--tile-size));
+  text-align: right;
+  z-index: 2;
+  user-select: none;
   z-index: 2;
 }
-div.game-end-window > div.draw-reason::before {
+div.game-end-window > div.delta-score.self { bottom: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
+div.game-end-window > div.delta-score.kamicha { left: calc(0.25 * var(--tile-size)); top: calc(-50% + 11 * var(--tile-size)); }
+div.game-end-window > div.delta-score.toimen { top: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
+div.game-end-window > div.delta-score.shimocha { right: calc(0.25 * var(--tile-size)); top: calc(-50% + 11 * var(--tile-size)); }
+div.game-end-window > div.delta-score > div.hline::before {
+  position: absolute;
+  content: "";
+  background: black;
+  width: 100%;
+  right: 0;
+  height: calc(0.0625 * var(--tile-size));
+}
+div.game-end-window > div.delta-score::before {
   position: absolute;
   content: "";
   background-image: url(/images/brush-bg2.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  transform: rotate(181deg);
-  width: 120%;
-  height: 140%;
-  left: -5%;
-  bottom: -40%;
+  transform-origin: 50% calc(50% + var(--tile-size));
+  width: calc(8 * var(--tile-size));
+  height: calc(8 * var(--tile-size));
+  left: calc(50% - 4 * var(--tile-size));
+  bottom: calc(50% - 3 * var(--tile-size));
   z-index: -1;
 }
+div.game-end-window > div.delta-score.self::before { transform: rotate(0deg); }
+div.game-end-window > div.delta-score.kamicha::before { transform: rotate(90deg); }
+div.game-end-window > div.delta-score.toimen::before { transform: rotate(180deg); }
+div.game-end-window > div.delta-score.shimocha::before { transform: rotate(270deg); }
+div.game-end-window > div.delta-score > div.initial { color: gray; }
+div.game-end-window > div.delta-score > div.change.positive { color: green; }
+div.game-end-window > div.delta-score > div.change.negative { color: red; }
+div.game-end-window > div.delta-score > div.result { transform: translateY(calc(0.125 * var(--tile-size))); }
 
 /* game end timer */
 
@@ -772,6 +792,7 @@ div.game-end-window > div.timer {
   position: absolute;
   color: white;
   text-align: center;
+  font-size: calc(0.5 * var(--tile-size));
   right: calc(-0.25 * var(--tile-size));
   bottom: calc(-0.25 * var(--tile-size));
   width: calc(1 * var(--tile-size));

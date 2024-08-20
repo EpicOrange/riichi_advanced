@@ -884,12 +884,13 @@
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
                 ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
-                ["unset_status", "just_reached", "call_made"],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "kan", "ankan"]
+                ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi_eligible"],
+                ["when", [{"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["set_status", "tenpai"]]],
+                ["when", [{"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["unset_status", "tenpai"]]]
                ]
   },
   "after_turn_change": {
@@ -904,7 +905,9 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi_eligible"]
+                ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi_eligible"],
+                ["when", [{"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["set_status", "tenpai"]]],
+                ["when", [{"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["unset_status", "tenpai"]]]
                ]
   },
   "after_call": {
@@ -939,7 +942,9 @@
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
                ]
   },
-  "before_draw": {},
+  "before_exhaustive_draw": {
+    "actions": []
+  },
   "buttons": {
     "chii": {
       "display_name": "Chii",

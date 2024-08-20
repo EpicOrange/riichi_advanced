@@ -27,7 +27,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     [{game_state, _}] = Registry.lookup(:game_registry, "game_state-" <> socket.assigns.session_id)
     socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winners, %{})
-    socket = assign(socket, :draw, nil)
+    socket = assign(socket, :delta_scores, nil)
     socket = assign(socket, :timer, 0)
     # liveviews mount twice
     if socket.root_pid != nil do
@@ -145,7 +145,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
       />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
-    <.live_component module={RiichiAdvancedWeb.DrawWindowComponent} id="draw-window" game_state={@game_state} seat={@seat} draw={@draw} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} delta_scores={@delta_scores} timer={@timer}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -202,6 +202,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
+  def handle_event("ready_for_next_round", _assigns, socket) do
+    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
+    socket = assign(socket, :timer, 0)
+    {:noreply, socket}
+  end
+
   def handle_info({:play_tile, _tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.turn do
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
@@ -238,7 +244,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :players, state.players)
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winners, state.winners)
-      socket = assign(socket, :draw, state.draw)
+      socket = assign(socket, :delta_scores, state.delta_scores)
       socket = assign(socket, :kyoku, state.kyoku)
       socket = assign(socket, :honba, state.honba)
       socket = assign(socket, :riichi_sticks, state.riichi_sticks)
