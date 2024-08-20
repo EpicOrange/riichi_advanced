@@ -7,8 +7,8 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["game-end-window", @delta_scores == nil && "inactive"]}>
-      <%= if @delta_scores != nil do %>
+    <div class={["game-end-window", (not Enum.empty?(@winners) || @delta_scores == nil) && "inactive"]}>
+      <%= if Enum.empty?(@winners) && @delta_scores != nil do %>
         <div class="delta-score self">
           <div class="initial"><%= @players[@seat].score - @delta_scores[@seat] %></div>
           <div class={["change", if @delta_scores[@seat] >= 0 do "positive" else "negative" end]}>

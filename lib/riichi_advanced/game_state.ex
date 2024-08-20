@@ -133,9 +133,9 @@ defmodule RiichiAdvanced.GameState do
     wall = List.replace_at(wall, -4, :"4m") # third kan draw
     wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
     hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-              :south => Enum.slice(wall, 13..25),
-              :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+              :south => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+              :west  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+              :north => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"])}
     # hands = %{:east  => Riichi.sort_tiles([:"1p", :"2p", :"3p", :"2m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
     #           :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
     #           :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
@@ -307,18 +307,16 @@ defmodule RiichiAdvanced.GameState do
 
   def timer_finished(state) do
     cond do
-      state.delta_scores == nil && not Enum.empty?(state.winners) ->
-        # if we're out of winners, show the score exchange screen
-        state = if map_size(state.winners) <= 1 do
+      not Enum.empty?(state.winners) ->
+        # calculate delta scores if not yet calculated
+        state = if state.delta_scores == nil do
           {state, delta_scores} = adjudicate_win_scoring(state)
           state = Map.put(state, :delta_scores, delta_scores)
-          state = Map.put(state, :winners, %{})
           state
-        else 
-          # show the next winner
-          state = Map.put(state, :winners, Map.new(Enum.drop(state.winners, 1)))
-          state
-        end
+        else state end
+
+        # show the next winner
+        state = Map.put(state, :winners, Map.new(Enum.drop(state.winners, 1)))
 
         # reset timer
         state = Map.put(state, :timer, 10)
@@ -811,18 +809,16 @@ defmodule RiichiAdvanced.GameState do
 
   defp run_actions(state, actions, context) do
     state = Map.update!(state, :actions_cv, & &1 + 1)
-    state = if state.game_active and Enum.empty?(state.winners) do
-      # if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
-      #   IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
-      # end
-      # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
-      # IO.inspect(Process.info(self(), :current_stacktrace))
-      {state, deferred_actions} = _run_actions(state, actions, context)
-      # defer the remaining actions
-      if not Enum.empty?(deferred_actions) do
-        # IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
-        schedule_actions(state, context.seat, deferred_actions)
-      else state end
+    # if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
+    #   IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
+    # end
+    # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
+    {state, deferred_actions} = _run_actions(state, actions, context)
+    # defer the remaining actions
+    if not Enum.empty?(deferred_actions) do
+      # IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
+      schedule_actions(state, context.seat, deferred_actions)
     else state end
     state = Map.update!(state, :actions_cv, & &1 - 1)
     if state.actions_cv == 0 do

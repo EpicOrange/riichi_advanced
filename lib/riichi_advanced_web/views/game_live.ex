@@ -145,7 +145,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
       />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
-    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} delta_scores={@delta_scores} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} timer={@timer}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
