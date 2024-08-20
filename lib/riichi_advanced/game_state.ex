@@ -3,6 +3,7 @@ defmodule Player do
     hand: [],
     draw: [],
     pond: [],
+    discards: [],
     calls: [],
     score: 0,
     buttons: [],
@@ -144,8 +145,8 @@ defmodule RiichiAdvanced.GameState do
     # wall = List.replace_at(wall, -4, :"4m") # third kan draw
     # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
     # hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-    #           :south => Enum.slice(wall, 13..25),
-    #           :west  => Enum.slice(wall, 26..38),
+    #           :south => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"]),
+    #           :west  => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"]),
     #           :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"])}
     # hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
     #           :south => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
@@ -162,6 +163,7 @@ defmodule RiichiAdvanced.GameState do
               # :west  => Riichi.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
               # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
+
     starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 13 end
     hands = %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
               :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
@@ -194,6 +196,7 @@ defmodule RiichiAdvanced.GameState do
           hand: hands[seat],
           draw: [],
           pond: [],
+          discards: [],
           calls: [],
           buttons: [],
           auto_buttons: initial_auto_buttons,
@@ -442,6 +445,7 @@ defmodule RiichiAdvanced.GameState do
       state = update_player(state, seat, &%Player{ &1 |
         hand: List.delete_at(&1.hand ++ &1.draw, index),
         pond: &1.pond ++ [tile],
+        discards: &1.discards ++ [tile],
         draw: [],
         last_discard: {tile, index}
       })
@@ -821,6 +825,10 @@ defmodule RiichiAdvanced.GameState do
         :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
         state
       "when"                  -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
+      "when_anyone"           ->
+        for dir <- [:east, :south, :west, :north], check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
+          state -> run_actions(state, Enum.at(opts, 1, []), %{seat: dir})
+        end
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
@@ -943,8 +951,9 @@ defmodule RiichiAdvanced.GameState do
       "call_available"           -> last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
       "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
       "hand_matches_hand"        -> Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
-      "discard_matches_hand"     -> last_action.action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
-      "call_matches_hand"        -> last_action.action == :call && last_action.call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.called_tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
+      "hand_matches_any_discard" -> Enum.any?(opts, fn name -> Enum.any?(state.players[context.seat].discards, fn discard -> Riichi.check_hand(state.players[context.seat].hand ++ [discard], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end) end)
+      "discard_matches_hand"     -> last_discard_action != nil && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_discard_action.tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
+      "call_matches_hand"        -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_call_action.called_tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
       "last_discard_matches"     -> Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action})
       "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition")) end)
