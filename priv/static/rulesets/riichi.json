@@ -607,17 +607,17 @@
     {
       "display_name": "Renhou",
       "value": 1,
-      "when": ["have_not_discarded_yet", {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
     },
     {
       "display_name": "Tenhou",
       "value": 1,
-      "when": ["have_not_discarded_yet", {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
     },
     {
       "display_name": "Chiihou",
       "value": 1,
-      "when": ["have_not_discarded_yet", {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
     },
     {
       "display_name": "Daisangen",
@@ -900,16 +900,22 @@
   "before_call": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
                 ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
-                ["unset_status", "just_reached", "call_made"],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "kan", "ankan"]
+                ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi_eligible"]
                ]
   },
   "after_call": {
     "actions": []
+  },
+  "play_effects": [
+    ["any", [["unset_status", "discards_empty"]]],
+    ["tanyaohai", [["unset_status", "nagashi_eligible"]]]
+  ],
+  "after_start": {
+    "actions": [["set_status_all", "discards_empty", "nagashi_eligible"]]
   },
   "before_win": {
     "actions": [["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -933,6 +939,7 @@
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
                ]
   },
+  "before_draw": {},
   "buttons": {
     "chii": {
       "display_name": "Chii",
@@ -1007,7 +1014,7 @@
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
-        ["when", ["have_not_discarded_yet", "no_calls_yet"], [["set_status", "double_riichi"]]]
+        ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
       ]
     },
     "ron": {

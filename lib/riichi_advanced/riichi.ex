@@ -65,6 +65,9 @@ defmodule Riichi do
   def is_pinzu?(tile), do: tile in [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"0p"]
   def is_souzu?(tile), do: tile in [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"0s"]
   def is_jihai?(tile), do: tile in [:"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
+  def is_terminal?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s"]
+  def is_yaochuuhai?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
+  def is_tanyaohai?(tile), do: tile not in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
   def is_num?(tile, num) do
     tile in case num do
       1 -> [:"1m", :"1p", :"1s"]
@@ -219,6 +222,9 @@ defmodule Riichi do
       "pinzu" -> is_pinzu?(context.tile)
       "souzu" -> is_souzu?(context.tile)
       "jihai" -> is_jihai?(context.tile)
+      "terminal" -> is_terminal?(context.tile)
+      "yaochuuhai" -> is_yaochuuhai?(context.tile)
+      "tanyaohai" -> is_tanyaohai?(context.tile)
       "1" -> is_num?(context.tile, 1)
       "2" -> is_num?(context.tile, 2)
       "3" -> is_num?(context.tile, 3)

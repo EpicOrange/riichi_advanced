@@ -203,6 +203,12 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:game_active, true)
     
     state = change_turn(state, Riichi.get_east_player_seat(state.kyoku))
+
+    # run after_start actions
+    state = if Map.has_key?(state.rules, "after_start") do
+      run_actions(state, state.rules["after_start"]["actions"], %{seat: state.turn})
+    else state end
+
     notify_ai(state)
 
     state
@@ -819,7 +825,6 @@ defmodule RiichiAdvanced.GameState do
       "no_discards_yet"          -> last_discard_action == nil
       "kamicha_discarded"        -> last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
       "someone_else_discarded"   -> last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
-      "have_not_discarded_yet"   -> state.players[context.seat].last_discard == nil
       "no_calls_yet"             -> last_call_action == nil
       "just_called"              -> last_action.action == :call
       "call_available"           -> last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
