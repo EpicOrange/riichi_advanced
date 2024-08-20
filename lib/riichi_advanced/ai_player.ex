@@ -37,9 +37,9 @@ defmodule RiichiAdvanced.AIPlayer do
   def handle_info({:buttons, %{player: player}}, state) do
     state = %{ state | player: player }
     # pick a random button
-    # button_name = Enum.random(player.buttons)
+    button_name = Enum.random(player.buttons)
     # pick the first button
-    button_name = Enum.at(player.buttons, 0)
+    # button_name = Enum.at(player.buttons, 0)
     # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
     GenServer.cast(state.game_state, {:press_button, state.seat, button_name})

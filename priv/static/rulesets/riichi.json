@@ -883,6 +883,7 @@
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
+                ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
                 ["unset_status", "just_reached", "call_made"],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
@@ -895,6 +896,20 @@
     "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
                 ["when", ["not_no_tiles_remaining"], [["draw"]]]
                ]
+  },
+  "before_call": {
+    "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
+                ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+                ["unset_status", "just_reached", "call_made"],
+                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
+                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
+                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
+                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
+                ["unset_status", "kan", "ankan"]
+               ]
+  },
+  "after_call": {
+    "actions": []
   },
   "before_win": {
     "actions": [["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -1065,7 +1080,7 @@
       "enabled_at_start": false
     }
   },
-  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when"],
+  "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when", "add_score", "put_down_riichi_stick"],
   "initial_score": 25000,
-  "max_rounds": 8
+  "max_rounds": 0
 }

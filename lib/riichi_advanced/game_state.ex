@@ -15,6 +15,7 @@ defmodule Player do
     nickname: "",
     big_text: "",
     status: [],
+    riichi_stick: false,
     last_discard: nil,
     ready: false
   ]
@@ -186,6 +187,7 @@ defmodule RiichiAdvanced.GameState do
           deferred_actions: [],
           big_text: "",
           status: [],
+          riichi_stick: false,
           last_discard: nil,
           ready: false
         }} end))
@@ -435,6 +437,9 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp trigger_call(state, seat, call_name, call_choice, called_tile, call_source) do
+    state = if Map.has_key?(state.rules, "before_call") do
+      run_actions(state, state.rules["before_call"]["actions"], %{seat: state.turn})
+    else state end
     tiles = Enum.map(call_choice, fn t -> {t, false} end)
     call = case Utils.get_relative_seat(seat, state.turn) do
       :kamicha -> [{called_tile, true} | tiles]
@@ -456,6 +461,9 @@ defmodule RiichiAdvanced.GameState do
     state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [{call_name, call}] })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
+    state = if Map.has_key?(state.rules, "after_call") do
+      run_actions(state, state.rules["after_call"]["actions"], %{seat: seat})
+    else state end
     state
   end
 
@@ -664,36 +672,38 @@ defmodule RiichiAdvanced.GameState do
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     state = case action do
-      "play_tile"          -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
-      "draw"               -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil))
-      "reverse_turn_order" -> Map.update!(state, :reversed_turn_order, &not &1)
-      "call"               -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
-      "self_call"          -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
-      "upgrade_call"       -> upgrade_call(state, context.seat, context.call_name, context.call_choice, context.called_tile)
-      "advance_turn"       -> advance_turn(state)
-      "change_turn"        -> change_turn(state, Utils.get_seat(context.seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
-      "win_by_discard"     -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
-      "win_by_call"        -> win(state, context.seat, get_last_action(state).called_tile, :call)
-      "win_by_draw"        -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
-      "set_status"         -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_status"       -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_status_all"     -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_status_all"   -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "big_text"           -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
-      "pause"              -> Map.put(state, :game_active, false)
-      "sort_hand"          -> update_player(state, context.seat, fn player -> %Player{ player | hand: Riichi.sort_tiles(player.hand) } end)
-      "reveal_tile"        -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
-      "ryuukyoku"          -> draw(state, :ryuukyoku)
-      "discard_draw"       ->
+      "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
+      "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil))
+      "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
+      "call"                  -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
+      "self_call"             -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
+      "upgrade_call"          -> upgrade_call(state, context.seat, context.call_name, context.call_choice, context.called_tile)
+      "advance_turn"          -> advance_turn(state)
+      "change_turn"           -> change_turn(state, Utils.get_seat(context.seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
+      "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
+      "win_by_call"           -> win(state, context.seat, get_last_action(state).called_tile, :call)
+      "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
+      "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_status_all"      -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "big_text"              -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
+      "pause"                 -> Map.put(state, :game_active, false)
+      "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Riichi.sort_tiles(player.hand) } end)
+      "reveal_tile"           -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
+      "add_score"             -> update_player(state, context.seat, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
+      "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + 1) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true })
+      "ryuukyoku"             -> draw(state, :ryuukyoku)
+      "discard_draw"          ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])
         state
-      "press_button"       ->
+      "press_button"          ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
         state
-      "when"               -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
-      _                    ->
+      "when"                  -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
+      _                       ->
         IO.puts("Unhandled action #{action}")
         state
     end
