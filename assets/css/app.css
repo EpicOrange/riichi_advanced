@@ -675,7 +675,7 @@ div.yaku > div.han-counter::before {
   content: "";
   position: absolute;
   z-index: -1;
-  width: calc(3 * var(--tile-size));
+  width: calc(100% + 0.5 * var(--tile-size));
   height: 160%;
   left: calc(-0.66 * var(--tile-size));
   top: -37.5%;

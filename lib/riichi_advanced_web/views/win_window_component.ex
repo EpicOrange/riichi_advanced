@@ -21,18 +21,33 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
           <div class={["tile", "winning-tile", @winner.winning_tile]}></div>
         </div>
         <div class="yakus">
-          <%= for {name, points} <- @winner.yaku do %>
-            <div class="yaku">
-              <div class="yaku-text"><%= name %></div>
-              <div class="han-counter"><%= points %> <%= @winner.point_name %></div>
-            </div>
+          <%= if Enum.empty?(@winner.yakuman) do %>
+            <%= for {name, points} <- @winner.yaku do %>
+              <div class="yaku">
+                <div class="yaku-text"><%= name %></div>
+                <div class="han-counter"><%= points %> <%= @winner.point_name %></div>
+              </div>
+            <% end %>
+          <% else %>
+            <%= for {name, points} <- @winner.yakuman do %>
+              <div class="yaku">
+                <div class="yaku-text"><%= name %></div>
+                <div class="han-counter"><%= points %> ★</div>
+              </div>
+            <% end %>
           <% end %>
         </div>
         <div class="score-display">
-          <div class="total-han-display"><%= @winner.points %> <%= @winner.point_name %></div>
-          <div class="total-fu-display" :if={Map.has_key?(@winner, :minipoints)}><%= @winner.minipoints %> Fu</div>
-          <div class="total-score-display"><%= @winner.score %></div>
-          <div class="total-score-name-display" :if={@winner.score_name != ""}><%= @winner.score_name %></div>
+          <%= if Enum.empty?(@winner.yakuman) do %>
+            <div class="total-han-display"><%= @winner.points %> <%= @winner.point_name %></div>
+            <div class="total-fu-display" :if={Map.has_key?(@winner, :minipoints)}><%= @winner.minipoints %> Fu</div>
+            <div class="total-score-display"><%= @winner.score %></div>
+            <div class="total-score-name-display" :if={@winner.score_name != ""}><%= @winner.score_name %></div>
+          <% else %>
+            <div class="total-han-display"><%= @winner.yakuman_mult %> ★</div>
+            <div class="total-score-display"><%= @winner.score %></div>
+            <div class="total-score-name-display">Yakuman</div>
+          <% end %>
         </div>
         <div class="timer" phx-click="ready_for_next_round" phx-target={@myself}><%= @timer %></div>
       <% end %>
