@@ -127,26 +127,30 @@ defmodule RiichiAdvanced.GameState do
 
     wall = Enum.map(rules["wall"], &Riichi.to_tile(&1))
     wall = Enum.shuffle(wall)
-    wall = List.replace_at(wall, 52, :"6m") # first draw
-    wall = List.replace_at(wall, 53, :"8m")
-    wall = List.replace_at(wall, 54, :"8m")
-    wall = List.replace_at(wall, 55, :"8m")
-    wall = List.replace_at(wall, 56, :"8m") # second draw
-    wall = List.replace_at(wall, 57, :"8m")
-    wall = List.replace_at(wall, 58, :"8m")
-    wall = List.replace_at(wall, 59, :"8m")
-    wall = List.replace_at(wall, 60, :"8m")
+    # wall = List.replace_at(wall, 52, :"6m") # first draw
+    # wall = List.replace_at(wall, 53, :"8m")
+    # wall = List.replace_at(wall, 54, :"8m")
+    # wall = List.replace_at(wall, 55, :"8m")
+    # wall = List.replace_at(wall, 56, :"8m") # second draw
+    # wall = List.replace_at(wall, 57, :"8m")
+    # wall = List.replace_at(wall, 58, :"8m")
+    # wall = List.replace_at(wall, 59, :"8m")
+    # wall = List.replace_at(wall, 60, :"8m")
     # wall = List.replace_at(wall, -15, :"1m") # last draw
     # wall = List.replace_at(wall, -6, :"9m") # first dora
     # wall = List.replace_at(wall, -8, :"9m") # second dora
-    wall = List.replace_at(wall, -2, :"2m") # first kan draw
-    wall = List.replace_at(wall, -1, :"3m") # second kan draw
-    wall = List.replace_at(wall, -4, :"4m") # third kan draw
-    wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
+    # wall = List.replace_at(wall, -2, :"2m") # first kan draw
+    # wall = List.replace_at(wall, -1, :"3m") # second kan draw
+    # wall = List.replace_at(wall, -4, :"4m") # third kan draw
+    # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
     hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-              :south => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-              :west  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-              :north => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"])}
+              :south => Enum.slice(wall, 13..25),
+              :west  => Enum.slice(wall, 26..38),
+              :north => Enum.slice(wall, 39..51)}
+    # hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+    #           :south => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+    #           :west  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+    #           :north => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"])}
     # hands = %{:east  => Riichi.sort_tiles([:"1p", :"2p", :"3p", :"2m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
     #           :south => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
     #           :west  => Riichi.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
@@ -259,7 +263,6 @@ defmodule RiichiAdvanced.GameState do
             state
         end
         delta_scores = Map.new(state.players, fn {seat, player} -> {seat, player.score - scores_before[seat]} end)
-        IO.inspect(delta_scores)
 
         # update kyoku and honba
         state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
@@ -304,7 +307,7 @@ defmodule RiichiAdvanced.GameState do
         else
           state
             |> Map.update!(:kyoku, & &1 + 1)
-            |> Map.put(:honba, & &1 + 1)
+            |> Map.update!(:honba, & &1 + 1)
         end
 
         {state, delta_scores}
@@ -571,6 +574,7 @@ defmodule RiichiAdvanced.GameState do
       run_actions(state, state.rules["before_win"]["actions"], %{seat: seat})
     else state end
 
+    state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
@@ -602,15 +606,16 @@ defmodule RiichiAdvanced.GameState do
         ko_han_table = if win_source == :draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
         oya_fu_table = Map.get(oya_han_table, han, oya_han_table["default"])
         ko_fu_table = Map.get(ko_han_table, han, ko_han_table["default"])
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
         score = if yakuman_mult == 0 do
           if win_source == :draw do
-            if seat == :east do
+            if is_dealer do
               3 * Map.get(oya_fu_table, fu, oya_fu_table["default"])
             else
               Map.get(oya_fu_table, fu, oya_fu_table["default"]) + 2 * Map.get(ko_fu_table, fu, ko_fu_table["default"])
             end
           else
-            if seat == :east do
+            if is_dealer do
               Map.get(oya_fu_table, fu, oya_fu_table["default"])
             else
               Map.get(ko_fu_table, fu, ko_fu_table["default"])
@@ -618,13 +623,13 @@ defmodule RiichiAdvanced.GameState do
           end
         else
           if win_source == :draw do
-            if seat == :east do
+            if is_dealer do
               yakuman_mult * 3 * oya_fu_table["default"]
             else
               yakuman_mult * oya_fu_table["default"] + 2 * ko_fu_table["default"]
             end
           else
-            if seat == :east do
+            if is_dealer do
               yakuman_mult * oya_fu_table["default"]
             else
               yakuman_mult * ko_fu_table["default"]
@@ -664,6 +669,7 @@ defmodule RiichiAdvanced.GameState do
       run_actions(state, state.rules["before_exhaustive_draw"]["actions"], %{seat: state.turn})
     else state end
 
+    state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
@@ -829,20 +835,23 @@ defmodule RiichiAdvanced.GameState do
     # IO.inspect(Process.info(self(), :current_stacktrace))
     {state, deferred_actions} = _run_actions(state, actions, context)
     # defer the remaining actions
-    if not Enum.empty?(deferred_actions) do
+    state = if not Enum.empty?(deferred_actions) do
       # IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
-      schedule_actions(state, context.seat, deferred_actions)
+      state = schedule_actions(state, context.seat, deferred_actions)
+      state
     else state end
     state = Map.update!(state, :actions_cv, & &1 - 1)
-    if state.actions_cv == 0 do
+    state = if state.actions_cv == 0 do
       # notify_ai(state)
       # make our next decision for us (unless these actions were caused by auto buttons)
       state = if not Map.has_key?(context, :auto) || not context.auto do
         # IO.puts("Triggering auto buttons")
-        trigger_auto_buttons(state)
+        state = trigger_auto_buttons(state)
+        state
       else state end
       state
     else state end
+    state
   end
 
   defp run_deferred_actions(state, context) do
@@ -939,6 +948,14 @@ defmodule RiichiAdvanced.GameState do
       "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
       "no_tiles_remaining"       -> state.wall_index >= length(state.wall) - length(state.drawn_reserved_tiles)
+      "next_draw_possible"       ->
+        draws_left = length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
+        case Utils.get_relative_seat(context.seat, state.turn) do
+          :shimocha -> draws_left > 3
+          :toimen   -> draws_left > 2
+          :kamicha  -> draws_left > 1
+          :self     -> draws_left > 4
+        end
       "has_group"                ->
         hand_definition = translate_hand_definition(opts, state.rules["set_definitions"])
         in_hand = Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, [], hand_definition)
@@ -1329,7 +1346,9 @@ defmodule RiichiAdvanced.GameState do
 
   # clicking the compass will send this
   def handle_cast(:notify_ai, state) do
+    state = recalculate_buttons(state)
     notify_ai(state)
+    broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1339,7 +1358,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:tick_timer, state) do
-    IO.puts("Ticking timer")
     if state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) do
       state = Map.put(state, :timer, 0)
       state = timer_finished(state)
