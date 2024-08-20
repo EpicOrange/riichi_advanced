@@ -879,7 +879,7 @@
   "play_restrictions": [
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}]]]]
+    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
@@ -1096,5 +1096,5 @@
   },
   "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when", "add_score", "put_down_riichi_stick", "reveal_hand"],
   "initial_score": 25000,
-  "max_rounds": 8
+  "max_rounds": 0
 }

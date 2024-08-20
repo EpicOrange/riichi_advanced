@@ -146,7 +146,7 @@ defmodule RiichiAdvanced.GameState do
     hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+              :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"])}
     # hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
     #           :south => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
     #           :west  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
@@ -945,7 +945,7 @@ defmodule RiichiAdvanced.GameState do
       "discard_matches_hand"     -> last_action.action == :discard && Enum.any?(opts, fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
       "call_matches_hand"        -> last_action.action == :call && last_action.call_name == Enum.at(opts, 0, "kakan") && Enum.any?(Enum.at(opts, 1, []), fn name -> Riichi.check_hand(state.players[context.seat].hand ++ [last_action.called_tile], state.players[context.seat].calls, get_hand_definition(state, name <> "_definition")) end)
       "last_discard_matches"     -> Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
-      "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile})
+      "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action})
       "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition")) end)
       "can_upgrade_call"         -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
@@ -1133,7 +1133,7 @@ defmodule RiichiAdvanced.GameState do
     if state.game_active && state.players[seat].choice == nil do
       # IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
       # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
-      state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
+      state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions, deferred_actions: [] })
 
       # for the current turn's player, if they just discarded and have no buttons, their choice is "skip"
       # for other players who have no buttons and have not made a choice yet, their choice is "skip"
@@ -1143,10 +1143,10 @@ defmodule RiichiAdvanced.GameState do
       just_discarded = last_action != nil && last_action.action == :discard && last_action.seat == state.turn
       state = for {seat, player} <- state.players, reduce: state do
         state -> cond do
-          seat == state.turn && just_discarded && Enum.empty?(player.buttons) ->
+          seat == state.turn && just_discarded && Enum.empty?(player.buttons) && Enum.empty?(player.call_buttons) ->
             # IO.puts("Player #{seat} must skip due to having just discarded")
             update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-          seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) ->
+          seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) && Enum.empty?(player.call_buttons) ->
             # IO.puts("Player #{seat} must skip due to having no buttons")
             update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
           seat != state.turn && player.choice != nil && Enum.member?(superceded_choices, player.choice) ->

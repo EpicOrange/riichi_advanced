@@ -234,6 +234,17 @@ defmodule Riichi do
       "7" -> is_num?(context.tile, 7)
       "8" -> is_num?(context.tile, 8)
       "9" -> is_num?(context.tile, 9)
+      "not_kuikae" ->
+        tiles_called = normalize_red_fives(context.call.other_tiles)
+        case tiles_called do
+          [tile1, tile2] ->
+            cond do
+              succ(tile1) == tile2 && context.tile == pred(tile1) -> context.tile2 != succ(tile2)
+              succ(tile1) == tile2 && context.tile == succ(tile2) -> context.tile2 != pred(tile1)
+              true -> true
+            end
+          _ -> true
+        end
       _   ->
         # "1m", "2z" are also specs
         if to_tile(&1) != nil do
