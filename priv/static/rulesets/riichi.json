@@ -58,6 +58,9 @@
     "haku": ["5z", "5z", "5z"],
     "hatsu": ["6z", "6z", "6z"],
     "chun": ["7z", "7z", "7z"],
+    "haku_pair": ["5z", "5z"],
+    "hatsu_pair": ["6z", "6z"],
+    "chun_pair": ["7z", "7z"],
     "junchan_1": ["1m","1m","1m"],
     "junchan_2": ["1p","1p","1p"],
     "junchan_3": ["1s","1s","1s"],
@@ -83,10 +86,6 @@
     "chanta_pair_5": ["5z","5z"],
     "chanta_pair_6": ["6z","6z"],
     "chanta_pair_7": ["7z","7z"],
-    "shousangen_1": ["5z", "5z", "5z", "6z", "6z", "6z", "7z", "7z"],
-    "shousangen_2": ["5z", "5z", "5z", "6z", "6z", "7z", "7z", "7z"],
-    "shousangen_3": ["5z", "5z", "6z", "6z", "6z", "7z", "7z", "7z"],
-    "daisangen": ["5z", "5z", "5z", "6z", "6z", "6z", "7z", "7z", "7z"],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
     "orphans_1": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z"],
     "orphans_2": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","7z"],
@@ -515,7 +514,7 @@
     {
       "display_name": "Shousangen",
       "value": 2,
-      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["shousangen_1", "shousangen_2", "shousangen_3"], 1]]]}]
+      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1]]]}]
     },
     {
       "display_name": "Honroutou",
@@ -525,9 +524,7 @@
     {
       "display_name": "Ryanpeikou",
       "value": 3,
-      "when": [
-        {"name": "winning_hand_and_tile_matches", "opts": [[[["iipeikou"], 2], [["pair"], 1]]]}
-      ]
+      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["iipeikou"], 2], [["pair"], 1]]]}]
     },
     {
       "display_name": "Junchan",
@@ -622,7 +619,7 @@
     {
       "display_name": "Daisangen",
       "value": 1,
-      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["daisangen"], 1]]]}]
+      "when": [{"name": "winning_hand_and_tile_matches", "opts": [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]}]
     },
     {
       "display_name": "Suuankou",
@@ -933,7 +930,9 @@
                     ]
                   ]],
                   [["set_status", "furiten"]]
-                ]
+                ],
+                ["when", [{"name": "last_call_matches", "opts": [[[["haku", "hatsu", "chun"], 1]]]}, {"name": "calls_match", "opts": [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]}], [["set_callee_status", "pao"]]],
+                ["when", [{"name": "last_call_matches", "opts": [[[["ton", "nan", "shaa", "pei"], 1]]]}, {"name": "calls_match", "opts": [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]}], [["set_callee_status", "pao"]]]
                ]
   },
   "play_effects": [
