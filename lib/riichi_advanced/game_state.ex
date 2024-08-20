@@ -215,6 +215,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:reversed_turn_order, false)
      |> Map.put(:winners, %{})
      |> Map.put(:delta_scores, nil)
+     |> Map.put(:delta_scores_reason, nil)
      |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
      |> Map.put(:game_active, true)
@@ -233,7 +234,7 @@ defmodule RiichiAdvanced.GameState do
 
   def adjudicate_win_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    {state, delta_scores} = case scoring_table["method"] do
+    {state, delta_scores, delta_scores_reason} = case scoring_table["method"] do
       "riichi" ->
         scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
         state = for {{seat, winner}, i} <- Enum.with_index(state.winners), reduce: state do
@@ -276,30 +277,53 @@ defmodule RiichiAdvanced.GameState do
             |> Map.put(:riichi_sticks, 0)
         end
 
-        {state, delta_scores}
+        delta_scores_reason = cond do
+          map_size(state.winners) == 1 -> "Ron"
+          map_size(state.winners) == 2 -> "Double Ron"
+          map_size(state.winners) == 3 -> "Triple Ron"
+        end
+
+        {state, delta_scores, delta_scores_reason}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
-        {state, delta_scores}
+        {state, delta_scores, ""}
     end
-    {state, delta_scores}
+    {state, delta_scores, delta_scores_reason}
   end
 
   def adjudicate_draw_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    {state, delta_scores} = case scoring_table["method"] do
+    {state, delta_scores, delta_scores_reason} = case scoring_table["method"] do
       "riichi" ->
         tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
+        nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end)
         num_tenpai = tenpai |> Map.values() |> Enum.count(& &1)
-        delta_scores = case num_tenpai do
-          0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-          1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3000 else -1000 end} end)
-          2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
-          3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
-          4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+        num_nagashi = nagashi |> Map.values() |> Enum.count(& &1)
+        {state, delta_scores} = if num_nagashi > 0 do
+          scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
+          state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- [:east, :south, :west, :north] -- [seat], reduce: state do
+            state ->
+              oya_payment = 4000
+              ko_payment = if Riichi.get_east_player_seat(state.kyoku) == seat do 4000 else 2000 end
+              payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
+              state
+                |> update_player(seat, &%Player{ &1 | score: &1.score + payment })
+                |> update_player(payer, &%Player{ &1 | score: &1.score - payment })
+          end
+          delta_scores = Map.new(state.players, fn {seat, player} -> {seat, player.score - scores_before[seat]} end)
+          {state, delta_scores}
+        else
+          delta_scores = case num_tenpai do
+            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3000 else -1000 end} end)
+            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
+            3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
+            4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+          end
+          {state, delta_scores}
         end
-
         # reveal hand for those players that are tenpai
         state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] } end)
 
@@ -313,14 +337,19 @@ defmodule RiichiAdvanced.GameState do
             |> Map.update!(:honba, & &1 + 1)
         end
 
-        {state, delta_scores}
+        delta_scores_reason = cond do
+          num_nagashi == 0 -> "Ryuukyoku"
+          num_nagashi > 0  -> "Nagashi Mangan"
+        end
+
+        {state, delta_scores, delta_scores_reason}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
-        {state, delta_scores}
+        {state, delta_scores, ""}
     end
-    {state, delta_scores}
+    {state, delta_scores, delta_scores_reason}
   end
 
   def timer_finished(state) do
@@ -328,8 +357,9 @@ defmodule RiichiAdvanced.GameState do
       not Enum.empty?(state.winners) ->
         # calculate delta scores if not yet calculated
         state = if state.delta_scores == nil do
-          {state, delta_scores} = adjudicate_win_scoring(state)
+          {state, delta_scores, delta_scores_reason} = adjudicate_win_scoring(state)
           state = Map.put(state, :delta_scores, delta_scores)
+          state = Map.put(state, :delta_scores_reason, delta_scores_reason)
           state
         else state end
 
@@ -678,9 +708,10 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
     Debounce.apply(state.timer_debouncer)
 
-    {state, delta_scores} = adjudicate_draw_scoring(state)
+    {state, delta_scores, delta_scores_reason} = adjudicate_draw_scoring(state)
 
     state = Map.put(state, :delta_scores, delta_scores)
+    state = Map.put(state, :delta_scores_reason, delta_scores_reason)
     state
   end
 

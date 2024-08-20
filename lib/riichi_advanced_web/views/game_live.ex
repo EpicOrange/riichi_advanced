@@ -28,6 +28,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winners, %{})
     socket = assign(socket, :delta_scores, nil)
+    socket = assign(socket, :delta_scores_reason, nil)
     socket = assign(socket, :timer, 0)
     # liveviews mount twice
     if socket.root_pid != nil do
@@ -149,7 +150,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
       />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
-    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -249,6 +250,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winners, state.winners)
       socket = assign(socket, :delta_scores, state.delta_scores)
+      socket = assign(socket, :delta_scores_reason, state.delta_scores_reason)
       socket = assign(socket, :kyoku, state.kyoku)
       socket = assign(socket, :honba, state.honba)
       socket = assign(socket, :riichi_sticks, state.riichi_sticks)
