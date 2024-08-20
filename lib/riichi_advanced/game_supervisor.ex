@@ -10,11 +10,11 @@ defmodule RiichiAdvanced.GameSupervisor do
     ruleset = Keyword.get(opts, :ruleset)
     ruleset_json = Keyword.get(opts, :ruleset_json)
     children = [
-      {Mutex, name: {:via, Registry, {:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id)}}},
-      {RiichiAdvanced.AISupervisor, name: {:via, Registry, {:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id)}}},
-      {RiichiAdvanced.Debouncers, name: {:via, Registry, {:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id)}}},
-      {RiichiAdvanced.ExitMonitor, name: {:via, Registry, {:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id)}}},
-      {RiichiAdvanced.GameState, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.session_id)}}, session_id: session_id, ruleset: ruleset, ruleset_json: ruleset_json}
+      {Mutex, name: {:via, Registry, {:game_registry, Utils.to_registry_name("mutex", ruleset, session_id)}}},
+      {RiichiAdvanced.AISupervisor, name: {:via, Registry, {:game_registry, Utils.to_registry_name("ai_supervisor", ruleset, session_id)}}},
+      {RiichiAdvanced.Debouncers, name: {:via, Registry, {:game_registry, Utils.to_registry_name("debouncers", ruleset, session_id)}}},
+      {RiichiAdvanced.ExitMonitor, name: {:via, Registry, {:game_registry, Utils.to_registry_name("exit_monitor", ruleset, session_id)}}},
+      {RiichiAdvanced.GameState, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game_state", ruleset, session_id)}}, session_id: session_id, ruleset: ruleset, ruleset_json: ruleset_json}
     ]
     Supervisor.init(children, strategy: :one_for_one)
   end
