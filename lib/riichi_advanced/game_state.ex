@@ -94,6 +94,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ score: initial_score }} end))
      |> Map.put(:kyoku, 0)
      |> Map.put(:honba, 0)
+     |> Map.put(:riichi_sticks, 0)
 
     state = initialize_new_round(state)
 
@@ -198,18 +199,24 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
      |> Map.put(:game_active, true)
-     |> change_turn(:east)
+    
+    state = change_turn(state, Riichi.get_east_player_seat(state.kyoku))
+    notify_ai(state)
 
     state
   end
 
   def finalize_round(state) do
     state = if state.winner != nil do
+
+      # TODO point adjudication goes here
+      # riichi sticks, honba, pao, multiple ron
       state = update_player(state, state.winner.seat, &%Player{ &1 | score: &1.score + state.winner.score })
-      state = if Riichi.get_seat_wind(state.kyoku, state.winner.seat) == :east do
-        Map.update!(state, :kyoku, & &1 + 1)
-      else
+
+      state = if Riichi.get_east_player_seat(state.kyoku) == state.winner.seat do
         Map.update!(state, :honba, & &1 + 1)
+      else
+        Map.update!(state, :kyoku, & &1 + 1)
       end
       state
     else

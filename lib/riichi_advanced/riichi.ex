@@ -266,9 +266,16 @@ defmodule Riichi do
     end
   end
 
-  def get_seat_wind(_kyoku, seat) do
-    # TODO offset by kyoku
-    seat
+  def get_seat_wind(kyoku, seat) do
+    Utils.prev_turn(seat, rem(kyoku, 4))
+  end
+
+  def get_player_from_seat_wind(kyoku, wind) do
+    Utils.next_turn(wind, rem(kyoku, 4))
+  end
+
+  def get_east_player_seat(kyoku) do
+    Utils.next_turn(:east, rem(kyoku, 4))
   end
 
   defp calculate_call_fu({name, call}) do

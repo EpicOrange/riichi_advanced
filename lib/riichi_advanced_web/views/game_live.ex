@@ -44,6 +44,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :spectator, spectator)
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
+      socket = assign(socket, :kyoku, state.kyoku)
+      socket = assign(socket, :honba, state.honba)
+      socket = assign(socket, :riichi_sticks, state.riichi_sticks)
       {:ok, socket}
     else
       socket = assign(socket, :loading, true)
@@ -56,6 +59,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :spectator, false)
       socket = assign(socket, :revealed_tiles, [])
       socket = assign(socket, :tiles_left, 0)
+      socket = assign(socket, :kyoku, 0)
+      socket = assign(socket, :honba, 0)
+      socket = assign(socket, :riichi_sticks, 0)
       {:ok, socket}
     end
   end
@@ -127,6 +133,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       seat={@seat}
       turn={@turn}
       tiles_left={@tiles_left}
+      kyoku={@kyoku}
+      honba={@honba}
+      riichi_sticks={@riichi_sticks}
       riichi={Map.new(@players, fn {seat, player} -> {seat, "riichi" in player.status} end)}
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
       />
@@ -225,6 +234,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winner, state.winner)
       socket = assign(socket, :draw, state.draw)
+      socket = assign(socket, :kyoku, state.kyoku)
+      socket = assign(socket, :honba, state.honba)
+      socket = assign(socket, :riichi_sticks, state.riichi_sticks)
       socket = assign(socket, :timer, state.timer)
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))

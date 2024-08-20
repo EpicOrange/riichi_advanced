@@ -7,7 +7,7 @@ defmodule Utils do
       seat == :west  -> :north
       seat == :north -> :east
     end
-    if iterations <= 1 do next else next_turn(next, iterations - 1) end
+    if iterations <= 0 do seat else next_turn(next, iterations - 1) end
   end
   def prev_turn(seat, iterations \\ 1) do
     prev = cond do
@@ -16,7 +16,7 @@ defmodule Utils do
       seat == :west  -> :south
       seat == :north -> :west
     end
-    if iterations <= 1 do prev else prev_turn(prev, iterations - 1) end
+    if iterations <= 0 do seat else prev_turn(prev, iterations - 1) end
   end
   
   def get_seat(seat, direction) do

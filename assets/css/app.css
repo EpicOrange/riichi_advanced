@@ -212,28 +212,84 @@ div.compass > div.direction > div.score-counter {
   border-radius: calc(0.25 * var(--tile-size));
 }
 
-div.compass > div.tiles-left {
-  position: absolute;
+div.compass > div.centerpiece {
+  position: relative;
   text-align: center;
   width: calc(1 * var(--tile-size));
   height: calc(1 * var(--tile-size));
-  font-size: calc(0.66 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
   color: black;
   left: calc(50% - (0.5 * var(--tile-size)));
-  top: calc(50% - (0.4 * var(--tile-size)));
+  top: calc(50% - (0.5 * var(--tile-size)));
   z-index: 1;
+  margin-top: 10px
+  transform-origin: 50% 50%;
 }
-div.compass > div.tiles-left::before {
+div.compass.south > div.centerpiece { transform: rotate(-90deg); }
+div.compass.west > div.centerpiece { transform: rotate(-180deg); }
+div.compass.north > div.centerpiece { transform: rotate(-270deg); }
+div.compass > div.centerpiece::before {
   position: absolute;
   content: "";
-  width: calc(1 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
-  background: #FFFFFFBF;
-  left: calc(50% - (0.5 * var(--tile-size)));
-  top: calc(50% - (0.6 * var(--tile-size)));
-  border-radius: 50%;
+  width: calc(1.05 * var(--tile-size));
+  height: calc(1.05 * var(--tile-size));
+  background: #FFFFFF7F;
+  left: calc(50% - (0.525 * var(--tile-size)));
+  top: calc(50% - (0.525 * var(--tile-size)));
   z-index: -1;
 }
+div.centerpiece > div.riichi-stick-counter,
+div.centerpiece > div.honba-counter {
+  position: absolute;
+  font-size: calc(0.25 * var(--tile-size));
+  right: calc(0.075 * var(--tile-size));
+}
+div.centerpiece > div.riichi-stick-counter { bottom: calc(0.2 * var(--tile-size)); }
+div.centerpiece > div.honba-counter { bottom: calc(-0.05 * var(--tile-size)); }
+div.centerpiece > div.riichi-stick-counter::before {
+  content: "";
+  position: absolute;
+  width: calc(0.6 * var(--tile-size));
+  height: calc(0.1 * var(--tile-size));
+  border-radius: calc(0.0625 * var(--tile-size));
+  left: calc(50% - (0.75 * var(--tile-size)));
+  bottom: calc(50% - (0.05 * var(--tile-size)));
+  background: white;
+}
+div.centerpiece > div.riichi-stick-counter::after {
+  content: "";
+  position: absolute;
+  width: calc(0.05 * var(--tile-size));
+  height: calc(0.05 * var(--tile-size));
+  border-radius: 50%;
+  left: calc(50% - (0.5 * var(--tile-size)));
+  bottom: calc(50% - (0.025 * var(--tile-size)));
+  background: red;
+  z-index: 1;
+}
+div.centerpiece > div.honba-counter::before {
+  content: "";
+  position: absolute;
+  width: calc(0.6 * var(--tile-size));
+  height: calc(0.1 * var(--tile-size));
+  border-radius: calc(0.0625 * var(--tile-size));
+  left: calc(50% - (0.75 * var(--tile-size)));
+  bottom: calc(50% - (0.05 * var(--tile-size)));
+  background: white;
+}
+div.centerpiece > div.honba-counter::after {
+  content: "⣿";
+  font-size: calc(0.2 * var(--tile-size));
+  position: absolute;
+  width: calc(0.05 * var(--tile-size));
+  height: calc(0.05 * var(--tile-size));
+  left: calc(50% - (0.35 * var(--tile-size)));
+  bottom: 50%;
+  color: #182890;
+  transform: rotate(90deg);
+  z-index: 1;
+}
+
 
 /* tiles */
 div.tile {
