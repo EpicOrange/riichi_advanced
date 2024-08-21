@@ -3,13 +3,14 @@ html, body {
   background: black;
   font-family: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
   font-weight: normal;
+  overflow-x: hidden;
 }
 
 main {
   max-width: 80vw;
   max-height: 80vh;
   aspect-ratio: 1/1;
-  margin: 10vh auto;
+  margin: 10vh 10vw;
 
   --tile-size: min(calc(80vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
@@ -88,7 +89,7 @@ div.pond {
   align-items: flex-start;
   position: absolute;
   transform-style: preserve-3d;
-  width: 100%;
+  width: calc(100% - 5 * var(--tile-size));
   height: calc(3 * var(--tile-size));
   transform-origin: calc(2.375 * var(--tile-size)) calc(-2.625 * var(--tile-size));
   overflow: visible;
@@ -1136,7 +1137,7 @@ div.scoreboard + a.goto-index-button:active {
 /* ruleset textbox */
 div.ruleset {
   position: absolute;
-  top: calc(100% + (4 * var(--tile-size)) + 1.2em);
+  top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
   left: calc(50% - 50vw + var(--tile-size));
   background: #0f6f2f;
   width: calc(100vw - 2 * var(--tile-size));
