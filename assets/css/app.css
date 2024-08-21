@@ -90,8 +90,6 @@ div.pond {
   transform-style: preserve-3d;
   width: 100%;
   height: calc(3 * var(--tile-size));
-  left: calc(50% - (2.375 * var(--tile-size)));
-  top: calc(50% + (2.625 * var(--tile-size)));
   transform-origin: calc(2.375 * var(--tile-size)) calc(-2.625 * var(--tile-size));
   overflow: visible;
   z-index: -1;
@@ -100,9 +98,27 @@ div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
 .pond > .tile { order: 0; z-index: 2; }
 .pond > .tile:nth-child(n+7) { order: 1; z-index: 1; }
 .pond > .tile:nth-child(n+13) { order: 2; z-index: 0; }
-div.pond.shimocha { transform: rotate(270deg); }
-div.pond.toimen { transform: rotate(180deg); }
-div.pond.kamicha { transform: rotate(90deg); }
+div.pond.self {
+  left: calc(50% - (2.375 * var(--tile-size)));
+  top: calc(50% + (2.125 * var(--tile-size)));
+  z-index: 3; /* above compass */
+}
+div.pond.shimocha {
+  transform: rotate(270deg);
+  left: calc(50% - (2.625 * var(--tile-size)));
+  top: calc(50% + (2.375 * var(--tile-size)));
+}
+div.pond.toimen {
+  transform: rotate(180deg);
+  left: calc(50% - (2.375 * var(--tile-size)));
+  top: calc(50% + (2.625 * var(--tile-size)));
+  z-index: 1; /* below compass */
+}
+div.pond.kamicha {
+  transform: rotate(90deg);
+  left: calc(50% - (2.125 * var(--tile-size)));
+  top: calc(50% + (2.375 * var(--tile-size)));
+}
 div.pond > div.tile.sideways { transform: translateY(calc(-0.3125 * var(--tile-size))); }
 
 /* compass */
@@ -111,10 +127,10 @@ div.compass {
   width: calc(4.75 * var(--tile-size));
   height: calc(4.75 * var(--tile-size));
   left: calc(50% - (2.375 * var(--tile-size)));
-  top: calc(50% - (2.375 * var(--tile-size)));
+  top: calc(50% - (2.625 * var(--tile-size)));
   transform-origin: 50% 50%;
   user-select: none;
-  z-index: 2
+  z-index: 2;
 }
 div.compass.east {}
 div.compass.south { transform: rotate(90deg); }
@@ -132,6 +148,7 @@ div.compass::before {
   background: gray;
   border-radius: calc(0.25 * var(--tile-size));
   z-index: -2;
+  filter: drop-shadow(0 calc(var(--tile-size) / 4) 0 #3F3F3F);
 }
 div.compass > div.score-box {
   position: absolute;
@@ -319,8 +336,8 @@ div.corner-info > div.round-marker {
   font-size: calc(0.55 * var(--tile-size));
   background: var(--tile-back);
   color: var(--tile-front);
-  filter: drop-shadow(0 calc(var(--tile-size) / -16) 0 var(--tile-back-side))
-          drop-shadow(0 calc(var(--tile-size) / -16) 0 var(--tile-front-side));
+  filter: drop-shadow(0 calc(var(--tile-size) / 16) 0 var(--tile-back-side))
+          drop-shadow(0 calc(var(--tile-size) / 16) 0 var(--tile-front-side));
   width: calc(1.5 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
   right: calc(-1 * var(--tile-size));
@@ -338,20 +355,6 @@ div.tile {
   background-position-x: 0;
   background-position-y: 0;
   flex-shrink: 0;
-}
-div.tile:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
-}
-div.tile.sideways:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
-}
-div.tile.sideways {
-  width: var(--tile-height);
-  /* get rid of residual pixels from filter */
-  clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%);
-  transform: translateX(-0.75%) scaleX(calc(100% / 0.985));
 }
 div.tile.sideways + div.tile.sideways { width: 0; clip-path: none; }
 div.tile.sideways + div.tile.sideways::before {
@@ -402,13 +405,90 @@ div.tile.\35 z { background-position-y: calc(-34 * var(--tile-size)); }
 div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size)); }
 div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size)); }
 div.tile.\31 x { background-position-y: calc(-37 * var(--tile-size)); }
+div.tile.inactive {
+  opacity: 0.6;
+}
+/* tile 3d */
+div.tile:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
+}
+div.tile.sideways:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
+}
+div.tile.sideways {
+  width: var(--tile-height);
+  /* get rid of residual pixels from filter */
+  clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%);
+  transform: translateX(-0.75%) scaleX(calc(100% / 0.985));
+}
+div.pond.self div.tile:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side));
+}
+div.shimocha div.tile:not(.flat) {
+  filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
+          drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side));
+}
+div.kamicha div.tile:not(.flat) {
+  filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
+          drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side));
+}
+/* shimocha's tiles need to overlap in the reverse order */
+div.shimocha div.tile:nth-child(2) { z-index: -1; }
+div.shimocha div.tile:nth-child(3) { z-index: -2; }
+div.shimocha div.tile:nth-child(4) { z-index: -3; }
+div.shimocha div.tile:nth-child(5) { z-index: -4; }
+div.shimocha div.tile:nth-child(6) { z-index: -5; }
+div.shimocha div.tile:nth-child(7) { z-index: -6; }
+div.shimocha div.tile:nth-child(8) { z-index: -7; }
+div.shimocha div.tile:nth-child(9) { z-index: -8; }
+div.shimocha div.tile:nth-child(10) { z-index: -9; }
+div.shimocha div.tile:nth-child(11) { z-index: -10; }
+div.shimocha div.tile:nth-child(12) { z-index: -11; }
+div.shimocha div.tile:nth-child(13) { z-index: -12; }
+div.shimocha div.tile:nth-child(14) { z-index: -13; }
+div.shimocha div.tile:nth-child(15) { z-index: -14; }
+div.shimocha div.tile:nth-child(16) { z-index: -15; }
+div.shimocha div.tile:nth-child(17) { z-index: -16; }
+div.shimocha div.tile:nth-child(18) { z-index: -17; }
+div.shimocha div.tile:nth-child(19) { z-index: -18; }
+div.shimocha div.tile:nth-child(20) { z-index: -19; }
+div.shimocha div.tile:nth-child(21) { z-index: -20; }
+div.shimocha div.tile:nth-child(22) { z-index: -21; }
+div.shimocha div.tile:nth-child(23) { z-index: -22; }
+div.shimocha div.tile:nth-child(24) { z-index: -23; }
+div.shimocha div.tile:nth-child(25) { z-index: -24; }
+div.shimocha div.tile:nth-child(26) { z-index: -25; }
+div.shimocha div.tile:nth-child(27) { z-index: -26; }
+div.shimocha div.tile:nth-child(28) { z-index: -27; }
+div.shimocha div.tile:nth-child(29) { z-index: -28; }
+div.shimocha div.tile:nth-child(30) { z-index: -29; }
+/* all 3d effects should have reversed color for upside down tiles */
 div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side));
 }
-div.tile.inactive {
-  opacity: 0.6;
+div.tile.\31 x.sideways:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-back-side))
+          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side));
 }
+div.pond.self div.tile.\31 x:not(.flat) {
+  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
+          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side));
+}
+div.shimocha div.tile.\31 x:not(.flat) {
+  filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
+          drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side));
+}
+div.kamicha div.tile.\31 x:not(.flat) {
+  filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
+          drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side));
+}
+
+
+
 /* tile animations */
 @keyframes tilePlayed {
   67% {
@@ -435,7 +515,6 @@ div.tile.removed ~ div.tile.draw {
 }
 div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
-  z-index: -1;
 }
 
 @keyframes slideLeft {
