@@ -133,14 +133,7 @@ div.compass {
   user-select: none;
   z-index: 2;
 }
-div.compass.east {}
-div.compass.south { transform: rotate(90deg); }
-div.compass.west { transform: rotate(180deg); }
-div.compass.north { transform: rotate(270deg); }
-div.compass.east > div.score-box { border-style: ridge; }
-div.compass.south > div.score-box { border-style: ridge; }
-div.compass.west > div.score-box { border-style: groove; }
-div.compass.north > div.score-box { border-style: groove; }
+div.compass > div.score-box { border-style: ridge; }
 div.compass::before {
   position: absolute;
   content: "";
@@ -169,10 +162,22 @@ div.compass > div.direction {
   top: 50%;
   transform-origin: 50% 0%;
 }
-div.compass > div.direction.east {}
-div.compass > div.direction.south { transform: rotate(270deg); }
-div.compass > div.direction.west { transform: rotate(180deg); }
-div.compass > div.direction.north { transform: rotate(90deg); }
+div.compass.east > div.direction.east {transform: rotate(0deg); }
+div.compass.east > div.direction.south { transform: rotate(270deg); }
+div.compass.east > div.direction.west { transform: rotate(180deg); }
+div.compass.east > div.direction.north { transform: rotate(90deg); }
+div.compass.south > div.direction.east { transform: rotate(90deg); }
+div.compass.south > div.direction.south { transform: rotate(0deg); }
+div.compass.south > div.direction.west { transform: rotate(270deg); }
+div.compass.south > div.direction.north { transform: rotate(180deg); }
+div.compass.west > div.direction.east { transform: rotate(180deg); }
+div.compass.west > div.direction.south { transform: rotate(90deg); }
+div.compass.west > div.direction.west { transform: rotate(0deg); }
+div.compass.west > div.direction.north { transform: rotate(270deg); }
+div.compass.north > div.direction.east { transform: rotate(270deg); }
+div.compass.north > div.direction.south { transform: rotate(180deg); }
+div.compass.north > div.direction.west { transform: rotate(90deg); }
+div.compass.north > div.direction.north { transform: rotate(0deg); }
 div.compass > div.direction > div.riichi-tray {
   position: absolute;
   width: calc(2.25 * var(--tile-size));
@@ -248,9 +253,6 @@ div.compass > div.centerpiece {
   margin-top: 10px;
   transform-origin: 50% 50%;
 }
-div.compass.south > div.centerpiece { transform: rotate(-90deg); }
-div.compass.west > div.centerpiece { transform: rotate(-180deg); }
-div.compass.north > div.centerpiece { transform: rotate(-270deg); }
 div.compass > div.centerpiece::before {
   position: absolute;
   content: "";
