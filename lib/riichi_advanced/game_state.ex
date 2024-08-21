@@ -592,6 +592,10 @@ defmodule RiichiAdvanced.GameState do
         {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir]}})
         IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
         state = Map.put(state, dir, ai_pid)
+
+        # mark the ai as having clicked the timer, if one exists
+        state = update_player(state, dir, fn player -> %Player{ player | ready: true } end)
+        
         notify_ai(state)
         state
     end
