@@ -50,6 +50,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :kyoku, state.kyoku)
       socket = assign(socket, :honba, state.honba)
       socket = assign(socket, :riichi_sticks, state.riichi_sticks)
+      socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       {:ok, socket}
     else
       socket = assign(socket, :loading, true)
@@ -65,6 +66,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :kyoku, 0)
       socket = assign(socket, :honba, 0)
       socket = assign(socket, :riichi_sticks, 0)
+      socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
       {:ok, socket}
     end
   end
@@ -149,6 +151,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       riichi_sticks={@riichi_sticks}
       riichi={Map.new(@players, fn {seat, player} -> {seat, player.riichi_stick} end)}
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
+      is_bot={@is_bot}
       />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
     <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer}/>
@@ -263,6 +266,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :timer, state.timer)
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
+      socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       {:noreply, socket}
     else
       {:noreply, socket}

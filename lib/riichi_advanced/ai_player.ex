@@ -22,11 +22,11 @@ defmodule RiichiAdvanced.AIPlayer do
 
     if not Enum.empty?(playables) do
       # pick a random tile
-      {_tile, index} = Enum.random(playables)
+      # {_tile, index} = Enum.random(playables)
       # pick the first playable tile
       # {_tile, index} = Enum.at(playables, 0)
       # pick the last playable tile (the draw)
-      # {_tile, index} = Enum.at(playables, -1)
+      {_tile, index} = Enum.at(playables, -1)
       # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
       Process.sleep(1200)
       GenServer.cast(state.game_state, {:play_tile, state.seat, index})
@@ -37,11 +37,11 @@ defmodule RiichiAdvanced.AIPlayer do
   def handle_info({:buttons, %{player: player}}, state) do
     state = %{ state | player: player }
     # pick a random button
-    button_name = Enum.random(player.buttons)
+    # button_name = Enum.random(player.buttons)
     # pick the first button
     # button_name = Enum.at(player.buttons, 0)
     # pick the last button
-    # button_name = Enum.at(player.buttons, -1)
+    button_name = Enum.at(player.buttons, -1)
     # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
     GenServer.cast(state.game_state, {:press_button, state.seat, button_name})

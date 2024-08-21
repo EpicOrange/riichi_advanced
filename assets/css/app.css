@@ -213,7 +213,11 @@ div.compass > div.direction > div.wind-marker {
   bottom: calc(0.125 * var(--tile-size));
   right: calc(-0.0625 * var(--tile-size));
 }
-div.compass > div.direction > div.wind-marker.highlighted {
+div.compass > div.direction > div.wind-marker.bot {
+  color: #FF7F7F;
+}
+div.compass > div.direction > div.wind-marker.highlighted,
+div.compass > div.direction > div.wind-marker.highlighted.bot {
   color: var(--tile-back);
 }
 div.compass > div.direction > div.score-counter {
