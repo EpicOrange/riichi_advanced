@@ -511,6 +511,9 @@ defmodule RiichiAdvanced.GameState do
           end
         end
 
+        # apply delta scores
+        state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
+
         state = if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
           finalize_game(state)
         else
