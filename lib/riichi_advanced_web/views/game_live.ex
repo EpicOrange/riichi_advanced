@@ -56,6 +56,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :riichi_sticks, state.riichi_sticks)
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
+      socket = assign(socket, :game_ended, state.game_ended)
       {:ok, socket}
     else
       socket = assign(socket, :loading, true)
@@ -73,6 +74,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :riichi_sticks, 0)
       socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
       socket = assign(socket, :error, nil)
+      socket = assign(socket, :game_ended, false)
       {:ok, socket}
     end
   end
@@ -162,6 +164,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
     <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer}/>
     <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@players} error={@error}/>
+    <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@players} game_ended={@game_ended}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -283,6 +286,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
+      socket = assign(socket, :game_ended, state.game_ended)
       {:noreply, socket}
     else
       {:noreply, socket}

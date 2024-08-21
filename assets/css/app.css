@@ -1045,6 +1045,94 @@ div.game-end-window.error-window::before {
   background: red;
 }
 
+/* game concluded window */
+div.scoreboard {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--tile-size);
+  margin-top: var(--tile-size);
+  margin-bottom: var(--tile-size);
+  width: 100%;
+  height: calc(100 - 1 * var(--tile-size));
+}
+div.placement > div.placement-place,
+div.placement > div.placement-name {
+  font-size: calc(0.6 * var(--tile-size));
+  white-space: nowrap;
+  height: 1.2em;
+}
+div.placement > div.placement-name::before {
+  filter: drop-shadow(calc(var(--tile-size) / -8) calc(var(--tile-size) / -16) 0 var(--tile-front-side))
+          drop-shadow(calc(var(--tile-size) / -8) calc(var(--tile-size) / -16) 0 var(--tile-back-side));
+}
+div.placement { display: flex; user-select: none; }
+div.placement:nth-child(1) { margin-left: calc(0 * var(--tile-size)); }
+div.placement:nth-child(2) { margin-left: calc(0.5 * var(--tile-size)); }
+div.placement:nth-child(3) { margin-left: calc(1 * var(--tile-size)); }
+div.placement:nth-child(4) { margin-left: calc(1.5 * var(--tile-size)); }
+div.placement > div.placement-name {
+  display: flex;
+  position: relative;
+  font-size: calc(1 * var(--tile-size));
+  padding-left: calc(1.75 * var(--tile-size));
+  z-index: 1;
+}
+div.placement > div.placement-name::before {
+  position: absolute;
+  content: "";
+  z-index: -1;
+  background: var(--tile-front);
+  width: calc(100% + var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  left: -10%;
+  height: 110%;
+  top: 0%;
+  transform: rotate(2deg);
+}
+div.placement > div.placement-place {
+  display: inline-block;
+  position: relative;
+  font-size: calc(1 * var(--tile-size));
+  transform: translateX(var(--tile-size)) rotate(-20deg);
+  z-index: 2;
+}
+div.placement > div.placement-place::before {
+  position: absolute;
+  content: "";
+  background-image: url(/images/brush-bg.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  left: -40%;
+  top: -30%;
+  width: 180%;
+  height: 140%;
+  z-index: -1;
+}
+div.placement span.placement-score {
+  margin-left: calc(0.5 * var(--tile-size));
+}
+div.scoreboard + a.goto-index-button {
+  position: absolute;
+  width: 100%;
+  height: calc(1 * var(--tile-size));
+  bottom: calc(0.25 * var(--tile-size));
+  background: var(--tile-front);
+  font-size: calc(0.75 * var(--tile-size));
+  text-align: center;
+  text-decoration: none;
+  color: black;
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+}
+div.scoreboard + a.goto-index-button:active {
+  bottom: 0;
+  filter: none;
+}
+
+
 /* ruleset textbox */
 div.ruleset {
   position: absolute;

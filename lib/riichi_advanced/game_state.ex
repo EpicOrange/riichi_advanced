@@ -13,7 +13,7 @@ defmodule Player do
     choice: nil,
     chosen_actions: nil,
     deferred_actions: [],
-    nickname: "",
+    nickname: nil,
     big_text: "",
     status: [],
     riichi_stick: false,
@@ -92,6 +92,7 @@ defmodule RiichiAdvanced.GameState do
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers,
       timer_debouncer: timer_debouncer,
+      game_ended: false,
       error: nil,
     })
 
@@ -127,7 +128,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:wall_index, 0)
      |> Map.put(:actions, [])
      |> Map.put(:reversed_turn_order, false)
-     |> Map.put(:game_result, nil)
+     |> Map.put(:round_result, nil)
      |> Map.put(:winners, %{})
      |> Map.put(:delta_scores, nil)
      |> Map.put(:delta_scores_reason, nil)
@@ -183,7 +184,7 @@ defmodule RiichiAdvanced.GameState do
     else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
       wall = Enum.shuffle(wall)
-      # wall = List.replace_at(wall, 52, :"6m") # first draw
+      wall = List.replace_at(wall, 52, :"6m") # first draw
       # wall = List.replace_at(wall, 53, :"8m")
       # wall = List.replace_at(wall, 54, :"8m")
       # wall = List.replace_at(wall, 55, :"8m")
@@ -207,10 +208,10 @@ defmodule RiichiAdvanced.GameState do
       #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m"]),
       #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
       #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
-      # hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :south => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :west  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :north => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"])}
+      hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+                :south => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+                :west  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+                :north => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"])}
       # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"2m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
       #           :south => Utils.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
       #           :west  => Utils.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
@@ -224,12 +225,12 @@ defmodule RiichiAdvanced.GameState do
                 # :north => Utils.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
       starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
-      hands = if starting_tiles > 0 do
-        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
-      else Map.new([:east, :south, :west, :north], &{&1, []}) end
+      # hands = if starting_tiles > 0 do
+      #   %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+      #     :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+      #     :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+      #     :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+      # else Map.new([:east, :south, :west, :north], &{&1, []}) end
 
       # reserve some tiles (dead wall)
       {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
@@ -540,7 +541,7 @@ defmodule RiichiAdvanced.GameState do
         state
       state.delta_scores != nil -> # finished seeing the score exchange screen
         # update kyoku and honba
-        state = if state.game_result == :win do
+        state = if state.round_result == :win do
           if state.dealer_continuation do
             state
               |> Map.update!(:honba, & &1 + 1)
@@ -580,6 +581,8 @@ defmodule RiichiAdvanced.GameState do
   def finalize_game(state) do
     # TODO
     IO.puts("Game concluded")
+    state = Map.put(state, :delta_scores, nil)
+    state = Map.put(state, :game_ended, true)
     state
   end
 
@@ -779,7 +782,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp win(state, seat, winning_tile, win_source) do
-    state = Map.put(state, :game_result, :win)
+    state = Map.put(state, :round_result, :win)
 
     # run before_win actions
     state = if Map.has_key?(state.rules, "before_win") do
@@ -847,7 +850,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp exhaustive_draw(state) do
-    state = Map.put(state, :game_result, :draw)
+    state = Map.put(state, :round_result, :draw)
 
     # run before_exhaustive_draw actions
     state = if Map.has_key?(state.rules, "before_exhaustive_draw") do
@@ -1462,7 +1465,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:delete_player, seat}, _from, state) do
     state = Map.put(state, seat, nil)
-    state = update_player(state, seat, &%Player{ &1 | nickname: "" })
+    state = update_player(state, seat, &%Player{ &1 | nickname: nil })
     IO.puts("Player #{seat} exited")
     state = if Enum.all?([:east, :south, :west, :north], fn dir -> state[dir] == nil || is_pid(state[dir]) end) do
       # all players have left, shutdown
