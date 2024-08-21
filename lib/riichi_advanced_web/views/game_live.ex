@@ -3,7 +3,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   defp to_revealed_tiles(state) do
     revealed_tiles = Enum.map(state.revealed_tiles, fn tile_spec ->
-      if Map.has_key?(state.reserved_tiles, tile_spec) do state.reserved_tiles[tile_spec] else Riichi.to_tile(tile_spec) end
+      if Map.has_key?(state.reserved_tiles, tile_spec) do state.reserved_tiles[tile_spec] else Utils.to_tile(tile_spec) end
     end)
     revealed_tiles = revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
     revealed_tiles
@@ -84,7 +84,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         hand={@players[@seat].hand}
         draw={@players[@seat].draw}
         calls={@players[@seat].calls}
-        play_tile={&send(self(), {:play_tile, &1, &2})}
+        play_tile={&send(self(), {:play_tile, &1})}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
         />
     <% else %>
@@ -211,8 +211,8 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
-    call_choice = Enum.map(String.split(choice, ","), &Riichi.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Riichi.to_tile(called_tile)}})
+    call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Utils.to_tile(called_tile)}})
     {:noreply, socket}
   end
 
@@ -222,7 +222,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:play_tile, _tile, index}, socket) do
+  def handle_info({:play_tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.turn do
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
     end

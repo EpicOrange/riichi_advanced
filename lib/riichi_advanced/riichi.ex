@@ -32,16 +32,6 @@ defmodule Riichi do
     else nil end
   end
 
-  @to_tile %{"1m"=>:"1m", "2m"=>:"2m", "3m"=>:"3m", "4m"=>:"4m", "5m"=>:"5m", "6m"=>:"6m", "7m"=>:"7m", "8m"=>:"8m", "9m"=>:"9m", "0m"=>:"0m",
-             "1p"=>:"1p", "2p"=>:"2p", "3p"=>:"3p", "4p"=>:"4p", "5p"=>:"5p", "6p"=>:"6p", "7p"=>:"7p", "8p"=>:"8p", "9p"=>:"9p", "0p"=>:"0p",
-             "1s"=>:"1s", "2s"=>:"2s", "3s"=>:"3s", "4s"=>:"4s", "5s"=>:"5s", "6s"=>:"6s", "7s"=>:"7s", "8s"=>:"8s", "9s"=>:"9s", "0s"=>:"0s",
-             "1z"=>:"1z", "2z"=>:"2z", "3z"=>:"3z", "4z"=>:"4z", "5z"=>:"5z", "6z"=>:"6z", "7z"=>:"7z", "1x"=>:"1x",
-             :"1m"=>:"1m", :"2m"=>:"2m", :"3m"=>:"3m", :"4m"=>:"4m", :"5m"=>:"5m", :"6m"=>:"6m", :"7m"=>:"7m", :"8m"=>:"8m", :"9m"=>:"9m", :"0m"=>:"0m",
-             :"1p"=>:"1p", :"2p"=>:"2p", :"3p"=>:"3p", :"4p"=>:"4p", :"5p"=>:"5p", :"6p"=>:"6p", :"7p"=>:"7p", :"8p"=>:"8p", :"9p"=>:"9p", :"0p"=>:"0p",
-             :"1s"=>:"1s", :"2s"=>:"2s", :"3s"=>:"3s", :"4s"=>:"4s", :"5s"=>:"5s", :"6s"=>:"6s", :"7s"=>:"7s", :"8s"=>:"8s", :"9s"=>:"9s", :"0s"=>:"0s",
-             :"1z"=>:"1z", :"2z"=>:"2z", :"3z"=>:"3z", :"4z"=>:"4z", :"5z"=>:"5z", :"6z"=>:"6z", :"7z"=>:"7z", :"1x"=>:"1x"}
-  def to_tile(tile_str), do: @to_tile[tile_str]
-
   def to_red(tile) do
     case tile do
       :"5m" -> :"0m"
@@ -82,16 +72,6 @@ defmodule Riichi do
     end
   end
 
-  def sort_tiles(tiles) do
-    Enum.sort_by(tiles, &case &1 do
-      :"1m" -> 0; :"2m" -> 1; :"3m" -> 2; :"4m" -> 3; :"0m" -> 4; :"5m" -> 5; :"6m" -> 6; :"7m" -> 7; :"8m" -> 8; :"9m" -> 9;
-      :"1p" -> 10; :"2p" -> 11; :"3p" -> 12; :"4p" -> 13; :"0p" -> 14; :"5p" -> 15; :"6p" -> 16; :"7p" -> 17; :"8p" -> 18; :"9p" -> 19;
-      :"1s" -> 20; :"2s" -> 21; :"3s" -> 22; :"4s" -> 23; :"0s" -> 24; :"5s" -> 25; :"6s" -> 26; :"7s" -> 27; :"8s" -> 28; :"9s" -> 29;
-      :"1z" -> 30; :"2z" -> 31; :"3z" -> 32; :"4z" -> 33; :"5z" -> 34; :"6z" -> 35; :"7z" -> 36;
-      :"1x" -> 37;
-    end)
-  end
-
   # return all possible calls of each tile in called_tiles, given hand
   # includes returning multiple choices for red fives
   # if called_tiles is an empty list, then we choose from our hand
@@ -112,7 +92,7 @@ defmodule Riichi do
         # take the cartesian product of tile choices to get all choice sets
         result = choices
                |> Enum.reduce([[]], fn cs, accs -> for choice <- cs, acc <- accs, do: acc ++ [choice] end)
-               |> Enum.map(fn tiles -> sort_tiles(tiles) end)
+               |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end)
                |> Enum.uniq()
         result
       end)}
@@ -148,22 +128,22 @@ defmodule Riichi do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     cond do
       is_list(group) && not Enum.empty?(group) ->
-        if Enum.all?(group, fn tile -> to_tile(tile) != nil end) do
+        if Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) do
           # list of tiles
-          tiles = Enum.map(group, fn tile -> to_tile(tile) end)
+          tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
           try_remove_all_tiles(hand, tiles, calls)
         else
           # list of integers specifying a group of tiles
           hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-            tiles = Enum.map(group, fn tile_or_offset -> if to_tile(tile_or_offset) != nil do to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
+            tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
             # IO.inspect(tiles)
             try_remove_all_tiles(hand, tiles, calls)
           end)
         end
       # tile
-      to_tile(group) != nil -> 
-        if Enum.member?(hand, to_tile(group)) do
-          [{List.delete(hand, to_tile(group)), calls}]
+      Utils.to_tile(group) != nil -> 
+        if Enum.member?(hand, Utils.to_tile(group)) do
+          [{List.delete(hand, Utils.to_tile(group)), calls}]
         else
           []
         end
@@ -247,8 +227,8 @@ defmodule Riichi do
         end
       _   ->
         # "1m", "2z" are also specs
-        if to_tile(&1) != nil do
-          context.tile == to_tile(&1)
+        if Utils.to_tile(&1) != nil do
+          context.tile == Utils.to_tile(&1)
         else
           IO.puts("Unhandled tile spec #{inspect(&1)}")
           true

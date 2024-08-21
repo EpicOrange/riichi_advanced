@@ -31,7 +31,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <div class="draws">
           <%= for {tile, i} <- prepare_draw(assigns) do %>
             <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :draw}) do %>
-              <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
+              <div phx-click="play_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
             <% else %>
               <div class={["tile", tile, "inactive"]}></div>
             <% end %>
@@ -60,10 +60,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
     """
   end
 
-  def handle_event("play_tile", %{"tile" => tile, "index" => index}, socket) do
+  def handle_event("play_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    tile = Riichi.to_tile(tile)
-    socket.assigns.play_tile.(tile, ix)
+    socket.assigns.play_tile.(ix)
     {:noreply, socket}
   end
 
