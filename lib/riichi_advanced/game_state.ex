@@ -154,7 +154,7 @@ defmodule RiichiAdvanced.GameState do
 
   def show_error(state, message) do
     state = Map.update!(state, :error, fn err -> if err == nil do message else err <> "\n\n" <> message end end)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     state
   end
 
@@ -1370,7 +1370,7 @@ defmodule RiichiAdvanced.GameState do
       state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else state.rules["buttons"][button_name]["actions"] end
       state = submit_actions(state, seat, button_name, actions)
-      broadcast_state_change(state)
+      state = broadcast_state_change(state)
       state
     else state end
   end
@@ -1429,7 +1429,11 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state) do
+    # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
+    # reset anim
+    state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+    state
   end
 
   def handle_call({:new_player, socket}, _from, state) do
@@ -1456,7 +1460,7 @@ defmodule RiichiAdvanced.GameState do
 
       # for players with no seats, initialize an ai
       state = fill_empty_seats_with_ai(state)
-      broadcast_state_change(state)
+      state = broadcast_state_change(state)
       state
     else state end
 
@@ -1474,7 +1478,7 @@ defmodule RiichiAdvanced.GameState do
       state
     else
       state = fill_empty_seats_with_ai(state)
-      broadcast_state_change(state)
+      state = broadcast_state_change(state)
       state
     end
     {:reply, :ok, state}
@@ -1496,14 +1500,14 @@ defmodule RiichiAdvanced.GameState do
   end
   def handle_cast({:reset_big_text, seat}, state) do
     state = update_player(state, seat, &Map.put(&1, :big_text, ""))
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
   def handle_cast({:unpause, actions, context}, state) do
     IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
     state = Map.put(state, :game_active, true)
     state = run_actions(state, actions, context)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1511,19 +1515,19 @@ defmodule RiichiAdvanced.GameState do
     state = temp_disable_play_tile(state, seat)
     # IO.puts("#{seat} moved tile from #{from} to #{to}")
     state = update_player(state, seat, &%Player{ &1 | :hand => _reindex_hand(&1.hand, from, to) })
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:run_actions, actions, context}, state) do 
     state = run_actions(state, actions, context)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:run_deferred_actions, context}, state) do 
     state = run_deferred_actions(state, context)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1540,7 +1544,7 @@ defmodule RiichiAdvanced.GameState do
       state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = submit_actions(state, seat, "play_tile", actions)
-      broadcast_state_change(state)
+      state = broadcast_state_change(state)
       state
     else state end
     {:noreply, state}
@@ -1552,7 +1556,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:trigger_auto_button, seat, auto_button_name}, state) do
     state = run_actions(state, state.rules["auto_buttons"][auto_button_name]["actions"], %{seat: seat, auto: true})
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1562,7 +1566,7 @@ defmodule RiichiAdvanced.GameState do
       if auto_button_name == name do {name, enabled} else {name, on} end
     end) } end)
     state = trigger_auto_button(state, seat, auto_button_name, enabled)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1570,7 +1574,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast(:notify_ai, state) do
     state = recalculate_buttons(state)
     notify_ai(state)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1581,7 +1585,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast(:dismiss_error, state) do
     state = Map.put(state, :error, nil)
-    broadcast_state_change(state)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1589,12 +1593,12 @@ defmodule RiichiAdvanced.GameState do
     if state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) do
       state = Map.put(state, :timer, 0)
       state = timer_finished(state)
-      broadcast_state_change(state)
+      state = broadcast_state_change(state)
       {:noreply, state}
     else
       Debounce.apply(state.timer_debouncer)
       state = Map.put(state, :timer, state.timer - 1)
-      broadcast_state_change(state)
+      state = broadcast_state_change(state)
       {:noreply, state}
     end
   end

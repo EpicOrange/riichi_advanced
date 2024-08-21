@@ -582,7 +582,7 @@ div.tile.removed ~ div.tile.draw {
   }
   100% {}
 }
-div.pond > div.tile.just-played:last-child {
+div.pond.just-played > div.tile:last-child {
   animation: slideUp 0.2s ease forwards;
 }
 

@@ -35,6 +35,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :delta_scores, nil)
     socket = assign(socket, :delta_scores_reason, nil)
     socket = assign(socket, :timer, 0)
+    socket = assign(socket, :last_turn, nil)
     # liveviews mount twice
     if socket.root_pid != nil do
       # TODO use id in pubsub
@@ -108,7 +109,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         :if={@seat != nil}
         />
     <% end %>
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" game_state={@game_state} pond={@players[@seat].pond} riichi={@players[@seat].riichi_stick} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" game_state={@game_state} seat={@seat} last_turn={@last_turn} pond={@players[@seat].pond} riichi={@players[@seat].riichi_stick} />
     <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info self" game_state={@game_state} seat={@seat} player={@players[@seat]} kyoku={@kyoku} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
@@ -121,7 +122,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@players[@shimocha].calls}
       :if={@shimocha != nil}
       />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} pond={@players[@shimocha].pond} riichi={@players[@shimocha].riichi_stick} :if={@shimocha != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} seat={@shimocha} last_turn={@last_turn} pond={@players[@shimocha].pond} riichi={@players[@shimocha].riichi_stick} :if={@shimocha != nil} />
     <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info shimocha" game_state={@game_state} seat={@shimocha} player={@players[@shimocha]} kyoku={@kyoku} :if={@shimocha != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand toimen"
@@ -134,7 +135,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@players[@toimen].calls}
       :if={@toimen != nil}
       />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} pond={@players[@toimen].pond} riichi={@players[@toimen].riichi_stick} :if={@toimen != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} seat={@toimen} last_turn={@last_turn} pond={@players[@toimen].pond} riichi={@players[@toimen].riichi_stick} :if={@toimen != nil} />
     <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info toimen" game_state={@game_state} seat={@toimen} player={@players[@toimen]} kyoku={@kyoku} :if={@toimen != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand kamicha"
@@ -146,7 +147,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={@players[@kamicha].calls}
       :if={@kamicha != nil}
       />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} pond={@players[@kamicha].pond} riichi={@players[@kamicha].riichi_stick} :if={@kamicha != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} seat={@kamicha} last_turn={@last_turn} pond={@players[@kamicha].pond} riichi={@players[@kamicha].riichi_stick} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info kamicha" game_state={@game_state} seat={@kamicha} player={@players[@kamicha]} kyoku={@kyoku} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent}
       id="compass"
@@ -270,10 +271,12 @@ defmodule RiichiAdvancedWeb.GameLive do
           relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
           send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
           send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
+          IO.puts("Updated played tile")
         end
       end)
 
       socket = assign(socket, :players, state.players)
+      socket = assign(socket, :last_turn, if state.turn != socket.assigns.turn do socket.assigns.turn else socket.assigns.last_turn end)
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winners, state.winners)
       socket = assign(socket, :delta_scores, state.delta_scores)

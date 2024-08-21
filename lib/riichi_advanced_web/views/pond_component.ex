@@ -4,14 +4,13 @@ defmodule RiichiAdvancedWeb.PondComponent do
   def mount(socket) do
     socket = assign(socket, :pond, [])
     socket = assign(socket, :riichi_index, nil)
-    socket = assign(socket, :last_tile, nil)
     {:ok, socket}
   end
 
   def render(assigns) do
     ~H"""
-    <div class={@id}>
-      <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", tile, tile == @last_tile && "just-played", i == @riichi_index && "sideways"]}></div>
+    <div class={[@id, @seat == @last_turn && "just-played"]}>
+      <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", tile, i == @riichi_index && "sideways"]}></div>
     </div>
     """
   end
@@ -25,8 +24,6 @@ defmodule RiichiAdvancedWeb.PondComponent do
     socket = assigns
              |> Map.drop([:flash])
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
-
-    socket = assign(socket, :last_tile, if Map.has_key?(assigns, :played_tile) do assigns.played_tile else nil end)
     {:ok, socket}
   end
 end
