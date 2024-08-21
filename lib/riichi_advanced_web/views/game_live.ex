@@ -51,6 +51,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :honba, state.honba)
       socket = assign(socket, :riichi_sticks, state.riichi_sticks)
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
+      socket = assign(socket, :error, state.error)
       {:ok, socket}
     else
       socket = assign(socket, :loading, true)
@@ -67,6 +68,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :honba, 0)
       socket = assign(socket, :riichi_sticks, 0)
       socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
+      socket = assign(socket, :error, nil)
       {:ok, socket}
     end
   end
@@ -155,6 +157,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
     <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@players} error={@error}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -275,6 +278,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
+      socket = assign(socket, :error, state.error)
       {:noreply, socket}
     else
       {:noreply, socket}

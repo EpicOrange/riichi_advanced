@@ -1005,6 +1005,45 @@ div.game-end-window > div.timer {
   cursor: pointer;
 }
 
+/* error box */
+div.game-end-window.error-window {
+  color: white;
+}
+div.game-end-window.error-window > h1 {
+  text-align: center;
+}
+div.game-end-window.error-window > textarea.error {
+  position: absolute;
+  background: #3f3f3f;
+  color: white;
+  width: 100%;
+  height: calc(100% - 4 * var(--tile-size));
+  top: calc(2 * var(--tile-size));
+  left: 0;
+  white-space: pre;
+}
+div.game-end-window.error-window > button.dismiss-error {
+  position: absolute;
+  width: 100%;
+  height: calc(1 * var(--tile-size));
+  bottom: calc(0.25 * var(--tile-size));
+  background: var(--tile-front);
+  text-decoration: none;
+  color: black;
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+}
+div.game-end-window.error-window > button.dismiss-error:active {
+  bottom: 0;
+  filter: none;
+}
+div.game-end-window.error-window::before {
+  background: red;
+}
+
 /* ruleset textbox */
 div.ruleset {
   position: absolute;

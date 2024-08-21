@@ -110,6 +110,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:kyoku, 0)
      |> Map.put(:honba, 0)
      |> Map.put(:riichi_sticks, 0)
+     |> Map.put(:error, nil)
 
     state = initialize_new_round(state)
 
@@ -1069,7 +1070,6 @@ defmodule RiichiAdvanced.GameState do
       "no_calls_yet"             -> last_call_action == nil
       "kamicha_discarded"        -> last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
       "someone_else_discarded"   -> last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
-      "no_calls_yet"             -> last_call_action == nil
       "just_called"              -> last_action.action == :call
       "call_available"           -> last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
       "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
@@ -1225,7 +1225,7 @@ defmodule RiichiAdvanced.GameState do
           state = if choice != nil && not Enum.member?(superceded_choices, choice) do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
-            call_action_exists = Enum.any?(actions, fn [action | opts] -> action in ["call", "self_call", "upgrade_call", "flower"] end)
+            call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower"] end)
             if not call_action_exists do
               # just run all button actions as normal
               state = run_actions(state, actions, %{seat: seat})
@@ -1235,9 +1235,9 @@ defmodule RiichiAdvanced.GameState do
               # call button choices logic
               button_name = choice
               # if there is a call action, check if there are multiple call choices
-              is_call = Enum.any?(actions, fn [action | opts] -> action == "call" end)
-              is_upgrade = Enum.any?(actions, fn [action | opts] -> action == "upgrade_call" end)
-              is_flower = Enum.any?(actions, fn [action | opts] -> action == "flower" end)
+              is_call = Enum.any?(actions, fn [action | _opts] -> action == "call" end)
+              is_upgrade = Enum.any?(actions, fn [action | _opts] -> action == "upgrade_call" end)
+              is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
               call_choices = cond do
                 is_upgrade ->
                   state.players[seat].calls
@@ -1249,9 +1249,7 @@ defmodule RiichiAdvanced.GameState do
                     |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
                 is_flower ->
                   flowers = Enum.flat_map(actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
-                  IO.inspect(flowers)
                   flowers_in_hand = Enum.filter(state.players[seat].hand ++ state.players[seat].draw, fn tile -> tile in flowers end)
-                  IO.inspect(flowers_in_hand)
                   %{nil => Enum.map(flowers_in_hand, fn tile -> [tile] end)}
                 true ->
                   callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
@@ -1545,6 +1543,12 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:ready_for_next_round, seat}, state) do
     state = update_player(state, seat, &%Player{ &1 | ready: true })
+    {:noreply, state}
+  end
+
+  def handle_cast(:dismiss_error, state) do
+    state = Map.put(state, :error, nil)
+    broadcast_state_change(state)
     {:noreply, state}
   end
 
