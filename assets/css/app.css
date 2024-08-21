@@ -465,6 +465,38 @@ div.shimocha div.tile:nth-child(27) { z-index: -26; }
 div.shimocha div.tile:nth-child(28) { z-index: -27; }
 div.shimocha div.tile:nth-child(29) { z-index: -28; }
 div.shimocha div.tile:nth-child(30) { z-index: -29; }
+/* self's tiles need to overlap in the forward order */
+div.self div.tile:nth-child(1) { z-index: 0; }
+div.self div.tile:nth-child(2) { z-index: 1; }
+div.self div.tile:nth-child(3) { z-index: 2; }
+div.self div.tile:nth-child(4) { z-index: 3; }
+div.self div.tile:nth-child(5) { z-index: 4; }
+div.self div.tile:nth-child(6) { z-index: 5; }
+div.self div.tile:nth-child(7) { z-index: 6; }
+div.self div.tile:nth-child(8) { z-index: 7; }
+div.self div.tile:nth-child(9) { z-index: 8; }
+div.self div.tile:nth-child(10) { z-index: 9; }
+div.self div.tile:nth-child(11) { z-index: 10; }
+div.self div.tile:nth-child(12) { z-index: 11; }
+div.self div.tile:nth-child(13) { z-index: 12; }
+div.self div.tile:nth-child(14) { z-index: 13; }
+div.self div.tile:nth-child(15) { z-index: 14; }
+div.self div.tile:nth-child(16) { z-index: 15; }
+div.self div.tile:nth-child(17) { z-index: 16; }
+div.self div.tile:nth-child(18) { z-index: 17; }
+div.self div.tile:nth-child(19) { z-index: 18; }
+div.self div.tile:nth-child(20) { z-index: 19; }
+div.self div.tile:nth-child(21) { z-index: 20; }
+div.self div.tile:nth-child(22) { z-index: 21; }
+div.self div.tile:nth-child(23) { z-index: 22; }
+div.self div.tile:nth-child(24) { z-index: 23; }
+div.self div.tile:nth-child(25) { z-index: 24; }
+div.self div.tile:nth-child(26) { z-index: 25; }
+div.self div.tile:nth-child(27) { z-index: 26; }
+div.self div.tile:nth-child(28) { z-index: 27; }
+div.self div.tile:nth-child(29) { z-index: 28; }
+div.self div.tile:nth-child(30) { z-index: 29; }
+
 /* all 3d effects should have reversed color for upside down tiles */
 div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
