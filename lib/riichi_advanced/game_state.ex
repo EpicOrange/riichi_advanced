@@ -221,9 +221,11 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:turn, nil)
      |> Map.put(:actions, [])
      |> Map.put(:reversed_turn_order, false)
+     |> Map.put(:game_result, nil)
      |> Map.put(:winners, %{})
      |> Map.put(:delta_scores, nil)
      |> Map.put(:delta_scores_reason, nil)
+     |> Map.put(:dealer_continuation, false)
      |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
      |> Map.put(:game_active, true)
@@ -390,21 +392,9 @@ defmodule RiichiAdvanced.GameState do
   
   def adjudicate_win_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    {state, delta_scores, delta_scores_reason} = case scoring_table["method"] do
+    {state, delta_scores, delta_scores_reason, dealer_continuation} = case scoring_table["method"] do
       "riichi" ->
         delta_scores = calculate_delta_scores(state)
-
-        # update kyoku and honba
-        state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
-          state
-            |> Map.update!(:honba, & &1 + 1)
-            |> Map.put(:riichi_sticks, 0)
-        else
-          state
-            |> Map.update!(:kyoku, & &1 + 1)
-            |> Map.put(:honba, 0)
-            |> Map.put(:riichi_sticks, 0)
-        end
 
         {_seat, some_winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
@@ -414,19 +404,20 @@ defmodule RiichiAdvanced.GameState do
           map_size(state.winners) == 3 -> "Triple Ron"
         end
 
-        {state, delta_scores, delta_scores_reason}
+        dealer_continuation = Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku))
+        {state, delta_scores, delta_scores_reason, dealer_continuation}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
-        {state, delta_scores, ""}
+        {state, delta_scores, "", false}
     end
-    {state, delta_scores, delta_scores_reason}
+    {state, delta_scores, delta_scores_reason, dealer_continuation}
   end
 
   def adjudicate_draw_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    {state, delta_scores, delta_scores_reason} = case scoring_table["method"] do
+    {state, delta_scores, delta_scores_reason, dealer_continuation} = case scoring_table["method"] do
       "riichi" ->
         tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
         nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end)
@@ -458,39 +449,32 @@ defmodule RiichiAdvanced.GameState do
         # reveal hand for those players that are tenpai
         state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] } end)
 
-        # update kyoku and honba
-        state = if tenpai[Riichi.get_east_player_seat(state.kyoku)] do
-          state
-            |> Map.update!(:honba, & &1 + 1)
-        else
-          state
-            |> Map.update!(:kyoku, & &1 + 1)
-            |> Map.update!(:honba, & &1 + 1)
-        end
-
         delta_scores_reason = cond do
           num_nagashi == 0 -> "Ryuukyoku"
           num_nagashi > 0  -> "Nagashi Mangan"
         end
 
-        {state, delta_scores, delta_scores_reason}
+        dealer_continuation = tenpai[Riichi.get_east_player_seat(state.kyoku)]
+
+        {state, delta_scores, delta_scores_reason, dealer_continuation}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
-        {state, delta_scores, ""}
+        {state, delta_scores, "", false}
     end
-    {state, delta_scores, delta_scores_reason}
+    {state, delta_scores, delta_scores_reason, dealer_continuation}
   end
 
   def timer_finished(state) do
     cond do
-      not Enum.empty?(state.winners) ->
+      not Enum.empty?(state.winners) -> # finished seeing the winner screen
         # calculate delta scores if not yet calculated
         state = if state.delta_scores == nil do
-          {state, delta_scores, delta_scores_reason} = adjudicate_win_scoring(state)
+          {state, delta_scores, delta_scores_reason, dealer_continuation} = adjudicate_win_scoring(state)
           state = Map.put(state, :delta_scores, delta_scores)
           state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+          state = Map.put(state, :dealer_continuation, dealer_continuation)
           state
         else state end
 
@@ -503,7 +487,30 @@ defmodule RiichiAdvanced.GameState do
         Debounce.apply(state.timer_debouncer)
 
         state
-      state.delta_scores != nil ->
+      state.delta_scores != nil -> # finished seeing the score exchange screen
+        # update kyoku and honba
+        state = if state.game_result == :win do
+          if state.dealer_continuation do
+            state
+              |> Map.update!(:honba, & &1 + 1)
+              |> Map.put(:riichi_sticks, 0)
+          else
+            state
+              |> Map.update!(:kyoku, & &1 + 1)
+              |> Map.put(:honba, 0)
+              |> Map.put(:riichi_sticks, 0)
+          end
+        else
+          if state.dealer_continuation do
+            state
+              |> Map.update!(:honba, & &1 + 1)
+          else
+            state
+              |> Map.update!(:kyoku, & &1 + 1)
+              |> Map.update!(:honba, & &1 + 1)
+          end
+        end
+
         state = if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
           finalize_game(state)
         else
@@ -735,6 +742,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp win(state, seat, winning_tile, win_source) do
+    state = Map.put(state, :game_result, :win)
+
     # run before_win actions
     state = if Map.has_key?(state.rules, "before_win") do
       run_actions(state, state.rules["before_win"]["actions"], %{seat: seat})
@@ -801,6 +810,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp exhaustive_draw(state) do
+    state = Map.put(state, :game_result, :draw)
+
     # run before_exhaustive_draw actions
     state = if Map.has_key?(state.rules, "before_exhaustive_draw") do
       run_actions(state, state.rules["before_exhaustive_draw"]["actions"], %{seat: state.turn})
@@ -812,10 +823,11 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
     Debounce.apply(state.timer_debouncer)
 
-    {state, delta_scores, delta_scores_reason} = adjudicate_draw_scoring(state)
+    {state, delta_scores, delta_scores_reason, dealer_continuation} = adjudicate_draw_scoring(state)
 
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+    state = Map.put(state, :dealer_continuation, dealer_continuation)
     state
   end
 
