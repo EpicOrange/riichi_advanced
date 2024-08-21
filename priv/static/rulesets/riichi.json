@@ -140,6 +140,9 @@
     [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
+  "false_tenpai_definition": [
+    [ [["pair"], 5], [["koutsu"], 1] ]
+  ],
   "win_definition": [
     [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
     [ [["pair"], 7] ],
@@ -937,8 +940,14 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
                 ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi"],
-                ["when", [{"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["unset_status", "tenpai"]]]
+                ["when", [
+                  {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
+                  {"name": "not_hand_matches_hand", "opts": ["false_tenpai"]}
+                ], [["set_status", "tenpai"]]],
+                ["when", [[
+                  {"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
+                  {"name": "hand_matches_hand", "opts": ["false_tenpai"]},
+                ]], [["unset_status", "tenpai"]]]
                ]
   },
   "after_call": {
