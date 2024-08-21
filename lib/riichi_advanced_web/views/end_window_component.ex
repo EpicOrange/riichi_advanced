@@ -12,7 +12,7 @@ defmodule RiichiAdvancedWeb.EndWindowComponent do
         <div class="scoreboard">
           <%= for {{name, score}, place} <- @players
                 |> Enum.map(fn {seat, player} -> {if player.nickname == nil do Atom.to_string(seat) else player.nickname end, player.score} end)
-                |> Enum.sort_by(fn {name, score} -> -score end)
+                |> Enum.sort_by(fn {_name, score} -> -score end)
                 |> Enum.zip(["1st", "2nd", "3rd", "4th"]) do %>
             <div class="placement">
               <div class="placement-place"><%= place %></div>
