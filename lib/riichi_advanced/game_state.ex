@@ -144,10 +144,14 @@ defmodule RiichiAdvanced.GameState do
     # wall = List.replace_at(wall, -1, :"3m") # second kan draw
     # wall = List.replace_at(wall, -4, :"4m") # third kan draw
     # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
-    # hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-    #           :south => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"]),
-    #           :west  => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"]),
-    #           :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"9m"])}
+    hands = %{:east  => Riichi.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"1m", :"1m", :"1m", :"1z", :"1z", :"2z", :"2z"]),
+              :south => Riichi.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
+              :west  => Riichi.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
+              :north => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
+    # hands = %{:east  => Riichi.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
+    #           :south => Riichi.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m"]),
+    #           :west  => Riichi.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
+    #           :north => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
     # hands = %{:east  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
     #           :south => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
     #           :west  => Riichi.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
@@ -164,11 +168,11 @@ defmodule RiichiAdvanced.GameState do
               # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
-    starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 13 end
-    hands = %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-              :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-              :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-              :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+    # starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 13 end
+    # hands = %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+    #           :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+    #           :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+    #           :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
 
     # reserve some tiles (dead wall)
     {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
@@ -236,38 +240,159 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def score_yaku(state, seat, yaku, yakuman, is_self_draw, minipoints) do
+    scoring_table = state.rules["score_calculation"]
+    case scoring_table["method"] do
+      "riichi" ->
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
+        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        yakuman_mult = Enum.reduce(yakuman, 0, fn {_name, value}, acc -> acc + value end)
+        han = Integer.to_string(points)
+        fu = Integer.to_string(minipoints)
+
+        oya_han_table = if is_self_draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
+        ko_han_table = if is_self_draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
+        oya_fu_table = if yakuman_mult > 0 do oya_han_table["max"] else Map.get(oya_han_table, han, oya_han_table["max"]) end
+        ko_fu_table = if yakuman_mult > 0 do ko_han_table["max"] else Map.get(ko_han_table, han, ko_han_table["max"]) end
+
+        IO.inspect({han, yakuman_mult, is_self_draw, is_dealer})
+        score = if yakuman_mult == 0 do
+          if is_self_draw do
+            if is_dealer do
+              3 * Map.get(oya_fu_table, fu, oya_fu_table["max"])
+            else
+              Map.get(oya_fu_table, fu, oya_fu_table["max"]) + 2 * Map.get(ko_fu_table, fu, ko_fu_table["max"])
+            end
+          else
+            if is_dealer do
+              Map.get(oya_fu_table, fu, oya_fu_table["max"])
+            else
+              Map.get(ko_fu_table, fu, ko_fu_table["max"])
+            end
+          end
+        else
+          if is_self_draw do
+            if is_dealer do
+              yakuman_mult * 3 * oya_fu_table["max"]
+            else
+              yakuman_mult * oya_fu_table["max"] + 2 * ko_fu_table["max"]
+            end
+          else
+            if is_dealer do
+              yakuman_mult * oya_fu_table["max"]
+            else
+              yakuman_mult * ko_fu_table["max"]
+            end
+          end
+        end
+        {score, points, yakuman_mult}
+      _ ->
+        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        {0, 0, 0}
+    end
+  end
+  def calculate_delta_scores_for_single_winner(state, winner, collect_sticks) do
+    scoring_table = state.rules["score_calculation"]
+    delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+    case scoring_table["method"] do
+      "riichi" ->
+        {pao_yakuman, non_pao_yakuman} = Enum.split_with(winner.yakuman, fn {name, _value} -> name == "Daisangen" || name == "Daisuushii" end)
+        if winner.pao_seat != nil && length(pao_yakuman) > 0 && length(non_pao_yakuman) > 0 do
+          # split the calculation if both pao and non-pao yakuman exist
+          {basic_score_pao, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, winner.win_source == :draw, winner.minipoints)
+          {basic_score_non_pao, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, winner.win_source == :draw, winner.minipoints)
+          delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yakuman: pao_yakuman }, collect_sticks)
+          delta_scores_non_pao = calculate_delta_scores_for_single_winner(state,%{ winner | score: basic_score_non_pao, yakuman: non_pao_yakuman }, collect_sticks)
+          delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
+          delta_scores
+        else
+          {riichi_payment, honba_payment} = if collect_sticks do
+            riichi_payment = scoring_table["riichi_value"] * state.riichi_sticks
+            honba_payment = scoring_table["honba_value"] * state.honba
+            {riichi_payment, honba_payment}
+          else
+            {0, 0}
+          end
+
+          # calculate some parameters that change if pao exists
+          {delta_scores, basic_score, payer, direct_hit} =
+            # due to the way we handle mixed pao-and-not-pao yakuman earlier,
+            # we're guaranteed either all of the yakuman are pao, or none of them are
+            if winner.pao_seat != nil && length(pao_yakuman) > 0 do
+              # if pao, then payer becomes the pao seat,
+              # and a ron payment is split in half
+              if winner.payer != nil do # ron
+                # the deal-in player is not responsible for honba payments,
+                # so we take care of their share of payment right here
+                basic_score = trunc(winner.score / 2)
+                delta_scores = Map.put(delta_scores, winner.payer, -basic_score)
+                delta_scores = Map.put(delta_scores, winner.seat, basic_score)
+                {delta_scores, basic_score, winner.pao_seat, true}
+              else
+                {delta_scores, winner.score, winner.pao_seat, true}
+              end
+            else
+              {delta_scores, winner.score, winner.payer, winner.payer != nil}
+            end
+
+          if direct_hit do
+            # either ron, or tsumo pao, or remaining ron pao payment
+            delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
+            delta_scores
+          else
+            # first give the winner their riichi sticks
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + riichi_payment)
+            # reverse-calculate the ko and oya parts of the total points
+            is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+            {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer)
+            # have each payer pay their allotted share
+            for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
+              delta_scores ->
+                payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
+                delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
+                delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + honba_payment)
+                delta_scores
+            end
+          end
+        end
+      _ ->
+        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        delta_scores
+    end
+  end
+
+  def calculate_delta_scores(state) do
+    # determine the closest winner (the one who receives riichi sticks and honba)
+    {_seat, some_winner} = Enum.at(state.winners, 0)
+    payer = some_winner.payer
+    closest_winner = if payer == nil do some_winner.seat else
+      next_seat_1 = if state.reversed_turn_order do Utils.next_turn(payer) else Utils.prev_turn(payer) end
+      next_seat_2 = if state.reversed_turn_order do Utils.next_turn(next_seat_1) else Utils.prev_turn(next_seat_1) end
+      next_seat_3 = if state.reversed_turn_order do Utils.next_turn(next_seat_2) else Utils.prev_turn(next_seat_2) end
+      next_seat_4 = if state.reversed_turn_order do Utils.next_turn(next_seat_3) else Utils.prev_turn(next_seat_3) end
+      cond do
+        Map.has_key?(state.winners, next_seat_1) -> next_seat_1
+        Map.has_key?(state.winners, next_seat_2) -> next_seat_2
+        Map.has_key?(state.winners, next_seat_3) -> next_seat_3
+        Map.has_key?(state.winners, next_seat_4) -> next_seat_4
+      end
+    end
+
+    # sum the individual delta scores for each winner
+    for {seat, winner} <- state.winners, reduce: Map.new(state.players, fn {seat, _player} -> {seat, 0} end) do
+      delta_scores_acc ->
+        delta_scores = calculate_delta_scores_for_single_winner(state, winner, seat == closest_winner)
+        delta_scores_acc = Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + delta_scores[seat]} end)
+        delta_scores_acc
+    end
+  end
+  
   def adjudicate_win_scoring(state) do
     scoring_table = state.rules["score_calculation"]
     {state, delta_scores, delta_scores_reason} = case scoring_table["method"] do
       "riichi" ->
-        scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
-        state = for {{seat, winner}, i} <- Enum.with_index(state.winners), reduce: state do
-          state ->
-            riichi_payment = if i == 0 do scoring_table["riichi_value"] * state.riichi_sticks else 0 end
-            honba_payment = scoring_table["honba_value"] * state.honba
-            is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
-            direct_hit = winner.payer != nil
-            # TODO pao logic
-            # if winner.pao_seat != nil do
-            # end
-            state = if direct_hit do
-              state
-               |> update_player(seat, &%Player{ &1 | score: &1.score + winner.score + honba_payment * 3 + riichi_payment })
-               |> update_player(winner.payer, &%Player{ &1 | score: &1.score - winner.score - honba_payment * 3 })
-            else
-              state = update_player(state, seat, &%Player{ &1 | score: &1.score + riichi_payment })
-              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(winner.score, is_dealer)
-              for payer <- [:east, :south, :west, :north] -- [seat], reduce: state do
-                state ->
-                  payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
-                  state
-                    |> update_player(seat, &%Player{ &1 | score: &1.score + payment + honba_payment })
-                    |> update_player(payer, &%Player{ &1 | score: &1.score - payment - honba_payment })
-              end
-            end
-            state
-        end
-        delta_scores = Map.new(state.players, fn {seat, player} -> {seat, player.score - scores_before[seat]} end)
+        delta_scores = calculate_delta_scores(state)
 
         # update kyoku and honba
         state = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do
@@ -281,7 +406,9 @@ defmodule RiichiAdvanced.GameState do
             |> Map.put(:riichi_sticks, 0)
         end
 
+        {_seat, some_winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
+          some_winner.pao_seat != nil  -> "Sekinin Barai"
           map_size(state.winners) == 1 -> "Ron"
           map_size(state.winners) == 2 -> "Double Ron"
           map_size(state.winners) == 3 -> "Triple Ron"
@@ -625,8 +752,9 @@ defmodule RiichiAdvanced.GameState do
     winner = %{
       seat: seat,
       player: state.players[seat],
-      winning_tile: winning_tile,
       winning_hand: winning_hand,
+      winning_tile: winning_tile,
+      win_source: win_source,
       point_name: state.rules["point_name"]
     }
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
@@ -636,52 +764,22 @@ defmodule RiichiAdvanced.GameState do
         minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku))
         yaku = get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
         yakuman = get_yaku(state, state.rules["yakuman"], seat, winning_tile, win_source, minipoints)
+        {score, points, yakuman_mult} = score_yaku(state, seat, yaku, yakuman, win_source == :draw, minipoints)
         IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
-        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        yakuman_mult = Enum.reduce(yakuman, 0, fn {_name, value}, acc -> acc + value end)
         han = Integer.to_string(points)
-        fu = Integer.to_string(minipoints)
-        oya_han_table = if win_source == :draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
-        ko_han_table = if win_source == :draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
-        oya_fu_table = Map.get(oya_han_table, han, oya_han_table["default"])
-        ko_fu_table = Map.get(ko_han_table, han, ko_han_table["default"])
-        is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
-        score = if yakuman_mult == 0 do
-          if win_source == :draw do
-            if is_dealer do
-              3 * Map.get(oya_fu_table, fu, oya_fu_table["default"])
-            else
-              Map.get(oya_fu_table, fu, oya_fu_table["default"]) + 2 * Map.get(ko_fu_table, fu, ko_fu_table["default"])
-            end
-          else
-            if is_dealer do
-              Map.get(oya_fu_table, fu, oya_fu_table["default"])
-            else
-              Map.get(ko_fu_table, fu, ko_fu_table["default"])
-            end
-          end
-        else
-          if win_source == :draw do
-            if is_dealer do
-              yakuman_mult * 3 * oya_fu_table["default"]
-            else
-              yakuman_mult * oya_fu_table["default"] + 2 * ko_fu_table["default"]
-            end
-          else
-            if is_dealer do
-              yakuman_mult * oya_fu_table["default"]
-            else
-              yakuman_mult * ko_fu_table["default"]
-            end
-          end
-        end
-        score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["default"])
+        score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"])
         payer = case win_source do
           :draw    -> nil
           :discard -> get_last_discard_action(state).seat
           :call    -> get_last_call_action(state).seat
         end
-        pao_seat = nil # TODO pao
+        pao_seat = cond do
+          "pao" in state.players[:east].status -> :east
+          "pao" in state.players[:south].status -> :south
+          "pao" in state.players[:west].status -> :west
+          "pao" in state.players[:north].status -> :north
+          true -> nil
+        end
         winner = Map.merge(winner, %{
           yaku: yaku,
           yakuman: yakuman,
