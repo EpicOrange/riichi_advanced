@@ -576,8 +576,7 @@ defmodule RiichiAdvanced.GameState do
 
   defp play_tile(state, seat, tile, index) do
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
-    if is_playable?(state, seat, tile, tile_source) && state.play_tile_debounce[seat] == false do
-      state = temp_disable_play_tile(state, seat)
+    if is_playable?(state, seat, tile, tile_source) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       state = update_player(state, seat, &%Player{ &1 |
         hand: List.delete_at(&1.hand ++ &1.draw, index),
@@ -1484,7 +1483,8 @@ defmodule RiichiAdvanced.GameState do
     if not playable do
       IO.puts("#{seat} tried to play an unplayable tile: #{tile} from #{tile_source}")
     end
-    state = if state.turn == seat && playable do
+    state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
+      state = temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
       state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
