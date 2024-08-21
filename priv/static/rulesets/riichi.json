@@ -1002,12 +1002,14 @@
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
@@ -1015,6 +1017,7 @@
     "daiminkan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
         "actions": [["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -1032,6 +1035,7 @@
     "ankan": {
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
+      "call_style": {"self": ["1x", 0, 1, "1x"]},
       "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
         "actions": [["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
                     ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],

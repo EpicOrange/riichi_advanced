@@ -201,6 +201,10 @@ defmodule RiichiAdvanced.GameState do
       # wall = List.replace_at(wall, -1, :"3m") # second kan draw
       # wall = List.replace_at(wall, -4, :"4m") # third kan draw
       # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
+      # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"5z", :"6z", :"7z", :"1z", :"1z", :"2z", :"2z"]),
+      #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
+      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
+      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
       # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"1m", :"1m", :"1m", :"1z", :"1z", :"2z", :"2z"]),
       #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
       #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
@@ -720,20 +724,26 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp trigger_call(state, seat, call_name, call_choice, called_tile, call_source) do
-    tiles = Enum.map(call_choice, fn t -> {t, false} end)
+    call_style = if Map.has_key?(state.rules["buttons"][call_name], "call_style") do
+        state.rules["buttons"][call_name]["call_style"]
+      else Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end) end
+
+    # style the call
+    # tiles = Enum.map(call_choice, fn t -> {t, false} end)
     call = if called_tile != nil do
-      case Utils.get_relative_seat(seat, state.turn) do
-        :kamicha -> [{called_tile, true} | tiles]
-        :toimen ->
-          [first | rest] = tiles
-          [first, {called_tile, true} | rest]
-        :shimocha -> tiles ++ [{called_tile, true}]
-        :self -> 
-          # TODO support more than just ankan
-          red = Riichi.to_red(called_tile)
-          nored = Riichi.normalize_red_five(called_tile)
-          [{:"1x", false}, {if red in call_choice do red else called_tile end, false}, {nored, false}, {:"1x", false}]
-      end
+      style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
+      tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
+      tiles = Utils.sort_tiles(tiles)
+      for style_spec <- style, reduce: [] do
+        acc ->
+          tile = case style_spec do
+            "call"                 -> {called_tile, false}
+            "call_sideways"        -> {called_tile, true}
+            ix when is_integer(ix) -> {Enum.at(tiles, ix), false}
+            tile                   -> {Utils.to_tile(tile), false}
+          end
+          [tile | acc]
+      end |> Enum.reverse()
     else
       Enum.map(call_choice, fn tile -> {tile, false} end)
     end
