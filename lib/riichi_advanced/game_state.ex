@@ -1415,7 +1415,8 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:delete_player, seat}, _from, state) do
     state = Map.put(state, seat, nil)
-    IO.puts("#{seat} player exited")
+    state = update_player(state, seat, &%Player{ &1 | nickname: "" })
+    IO.puts("Player #{seat} exited")
     state = if Enum.all?([:east, :south, :west, :north], fn dir -> state[dir] == nil || is_pid(state[dir]) end) do
       # all players have left, shutdown
       IO.puts("Stopping game #{state.session_id}")
