@@ -75,6 +75,7 @@ defmodule Riichi do
   # return all possible calls of each tile in called_tiles, given hand
   # includes returning multiple choices for red fives
   # if called_tiles is an empty list, then we choose from our hand
+  # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
   def make_calls(calls_spec, hand, called_tiles \\ []) do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)

@@ -169,8 +169,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         <%= for {called_tile, choices} <- @players[@seat].call_buttons do %>
           <%= if not Enum.empty?(choices) do %>
             <div class="call-buttons">
-              <div class={["tile", called_tile]}></div>
-              <div class="call-button-separator"></div>
+              <%= if called_tile != nil do %>
+                <div class={["tile", called_tile]}></div>
+                <div class="call-button-separator"></div>
+              <% end %>
               <%= for choice <- choices do %>
                 <button class="call-button" phx-click="call_button_clicked" phx-value-name={@players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
                 <%= for tile <- choice do %>
@@ -207,6 +209,12 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_event("auto_button_toggled", %{"name" => name, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
     GenServer.cast(socket.assigns.game_state, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
+    {:noreply, socket}
+  end
+
+  def handle_event("call_button_clicked", %{"name" => call_name, "choice" => choice}, socket) do
+    call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: nil}})
     {:noreply, socket}
   end
 
