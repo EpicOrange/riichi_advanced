@@ -144,10 +144,10 @@ defmodule RiichiAdvanced.GameState do
     # wall = List.replace_at(wall, -1, :"3m") # second kan draw
     # wall = List.replace_at(wall, -4, :"4m") # third kan draw
     # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
-    hands = %{:east  => Riichi.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"1m", :"1m", :"1m", :"1z", :"1z", :"2z", :"2z"]),
-              :south => Riichi.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
-              :west  => Riichi.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
-              :north => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
+    # hands = %{:east  => Riichi.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"1m", :"1m", :"1m", :"1z", :"1z", :"2z", :"2z"]),
+    #           :south => Riichi.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
+    #           :west  => Riichi.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
+    #           :north => Riichi.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
     # hands = %{:east  => Riichi.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
     #           :south => Riichi.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m"]),
     #           :west  => Riichi.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
@@ -168,11 +168,11 @@ defmodule RiichiAdvanced.GameState do
               # :west  => Riichi.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
               # :north => Riichi.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
-    # starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 13 end
-    # hands = %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-    #           :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-    #           :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-    #           :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+    starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 13 end
+    hands = %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+              :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+              :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+              :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
 
     # reserve some tiles (dead wall)
     {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
