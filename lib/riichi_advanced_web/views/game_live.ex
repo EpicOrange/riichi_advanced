@@ -191,7 +191,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       </div>
     <% end %>
     <div class="ruleset">
-      <textarea><%= @ruleset_json %></textarea>
+      <textarea readonly><%= @ruleset_json %></textarea>
     </div>
     """
   end
