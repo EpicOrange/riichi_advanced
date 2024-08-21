@@ -13,7 +13,11 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :session_id, params["id"])
     socket = assign(socket, :ruleset, params["ruleset"])
     socket = assign(socket, :nickname, params["nickname"])
-    socket = assign(socket, :ruleset_json, File.read!(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")))
+    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")) do
+      {:ok, ruleset_json} -> ruleset_json
+      {:error, _err}      -> nil
+    end
+    socket = assign(socket, :ruleset_json, ruleset_json)
 
     # start a new game process, if it doesn't exist already
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}

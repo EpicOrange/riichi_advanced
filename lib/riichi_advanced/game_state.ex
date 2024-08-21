@@ -91,16 +91,24 @@ defmodule RiichiAdvanced.GameState do
       play_tile_debounce: play_tile_debounce,
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers,
-      timer_debouncer: timer_debouncer
+      timer_debouncer: timer_debouncer,
+      error: nil,
     })
 
-    rules = case Jason.decode(state.ruleset_json) do
-      {:ok, rules} -> rules
-      {:error, err} ->
-        IO.puts("Failed to read rules!")
-        IO.inspect(err)
-        %{}
+    {state, rules} = try do
+      case Jason.decode(state.ruleset_json) do
+        {:ok, rules} -> {state, rules}
+        {:error, err} ->
+          state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+          # state = show_error(state, inspect(err))
+          {state, %{}}
+      end
+    rescue
+      ArgumentError -> 
+        state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
+        {state, %{}}
     end
+
     state = Map.put(state, :rules, rules)
 
     initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
@@ -130,8 +138,6 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:revealed_tiles, [])
      |> Map.put(:max_revealed_tiles, 0)
      |> Map.put(:drawn_reserved_tiles, [])
-     |> Map.put(:error, nil)
-     |> Map.put(:game_active, false)
     state = initialize_new_round(state)
 
     {:ok, state}
@@ -146,7 +152,7 @@ defmodule RiichiAdvanced.GameState do
   def update_action(state, seat, action, opts \\ %{}), do: Map.update!(state, :actions, &[opts |> Map.put(:seat, seat) |> Map.put(:action, action) | &1])
 
   def show_error(state, message) do
-    state = Map.put(state, :error, message)
+    state = Map.update!(state, :error, fn err -> if err == nil do message else err <> "\n\n" <> message end end)
     broadcast_state_change(state)
     state
   end
@@ -166,14 +172,15 @@ defmodule RiichiAdvanced.GameState do
   def initialize_new_round(state) do
     rules = state.rules
 
-    # initialize auto buttons
-    initial_auto_buttons = if Map.has_key?(rules, "auto_buttons") do
-        Enum.map(rules["auto_buttons"], fn {name, auto_button} -> {name, auto_button["enabled_at_start"]} end) |> Enum.reverse
-      else
-        []
-      end
+    if not Map.has_key?(rules, "wall") do
+      show_error(state, """
+      Expected rules file to have key \"wall\".
 
-    if Map.has_key?(rules, "wall") do
+      This should be an array listing out all the tiles contained in the
+      wall. Each tile is a string, like "3m". See the documentation for
+      more info.
+      """)
+    else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
       wall = Enum.shuffle(wall)
       # wall = List.replace_at(wall, 52, :"6m") # first draw
@@ -216,11 +223,13 @@ defmodule RiichiAdvanced.GameState do
                 # :west  => Utils.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
                 # :north => Utils.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
-      starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 13 end
-      hands = %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-                :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-                :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-                :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+      starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
+      hands = if starting_tiles > 0 do
+        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+      else Map.new([:east, :south, :west, :north], &{&1, []}) end
 
       # reserve some tiles (dead wall)
       {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
@@ -237,6 +246,13 @@ defmodule RiichiAdvanced.GameState do
       else
         {wall, state}
       end
+
+      # initialize auto buttons
+      initial_auto_buttons = if Map.has_key?(rules, "auto_buttons") do
+          Enum.map(rules["auto_buttons"], fn {name, auto_button} -> {name, auto_button["enabled_at_start"]} end) |> Enum.reverse
+        else
+          []
+        end
 
       state = state
        |> Map.put(:wall, wall)
@@ -260,9 +276,9 @@ defmodule RiichiAdvanced.GameState do
             last_discard: nil,
             ready: false
           }} end))
-       |> Map.put(:turn, :east)
        |> Map.put(:wall_index, starting_tiles*4)
        |> Map.put(:game_active, true)
+       |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
       state = change_turn(state, Riichi.get_east_player_seat(state.kyoku))
 
@@ -274,8 +290,6 @@ defmodule RiichiAdvanced.GameState do
       notify_ai(state)
 
       state
-    else
-      state = show_error(state, "Expected the rules file to have key \"wall\"")
     end
   end
 

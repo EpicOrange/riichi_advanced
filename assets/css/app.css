@@ -1011,6 +1011,7 @@ div.game-end-window.error-window {
 }
 div.game-end-window.error-window > h1 {
   text-align: center;
+  user-select: none;
 }
 div.game-end-window.error-window > textarea.error {
   position: absolute;
