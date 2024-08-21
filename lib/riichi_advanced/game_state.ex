@@ -83,6 +83,7 @@ defmodule RiichiAdvanced.GameState do
     [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
     state = Map.merge(state, %{
+      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       game_active: false,
       supervisor: supervisor,
       mutex: mutex,
@@ -761,7 +762,10 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.find_index(fn call_tiles -> Enum.sort(call_tiles) == Enum.sort(call_choice) end)
     # upgrade that call
     {_name, call} = Enum.at(state.players[seat].calls, index)
-    upgraded_call = {call_name, List.insert_at(call, 1, {called_tile, true})}
+
+    # find the index of the sideways tile
+    sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
+    upgraded_call = {call_name, List.insert_at(call, sideways_index, {called_tile, true})}
     state = update_player(state, seat, &%Player{ &1 | hand: (&1.hand ++ &1.draw) -- [called_tile], draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })

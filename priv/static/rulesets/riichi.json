@@ -946,7 +946,7 @@
                 ], [["set_status", "tenpai"]]],
                 ["when", [[
                   {"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
-                  {"name": "hand_matches_hand", "opts": ["false_tenpai"]},
+                  {"name": "hand_matches_hand", "opts": ["false_tenpai"]}
                 ]], [["unset_status", "tenpai"]]]
                ]
   },

@@ -270,8 +270,6 @@ defmodule RiichiAdvancedWeb.GameLive do
           {tile, index} = player.last_discard
           relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
           send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
-          send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", played_tile: tile)
-          IO.puts("Updated played tile")
         end
       end)
 

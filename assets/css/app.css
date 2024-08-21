@@ -44,7 +44,9 @@ div.hand {
   transform-style: preserve-3d;
   width: 100%;
 }
-div.hand, div.draws { z-index: 1; } /* so if they overlap with calls, the hand goes on top */
+div.self { z-index: 1; } /* your stuff goes above other people's stuff */
+div.hand, div.draws { z-index: 2; } /* so if they overlap with calls, the hand goes on top */
+div.hand.self, div.draws.self { z-index: 3; } /* your stuff goes above other people's stuff */
 div.tiles {
   padding-left: calc(2 * var(--tile-size));
 }
@@ -219,12 +221,12 @@ div.compass > div.direction > div.wind-marker {
   bottom: calc(0.125 * var(--tile-size));
   right: calc(-0.0625 * var(--tile-size));
 }
-div.compass > div.direction > div.wind-marker.bot {
-  color: #FF7F7F;
-}
-div.compass > div.direction > div.wind-marker.highlighted,
-div.compass > div.direction > div.wind-marker.highlighted.bot {
+div.compass > div.direction > div.wind-marker.highlighted {
   color: var(--tile-back);
+}
+div.compass > div.direction > div.wind-marker.bot,
+div.compass > div.direction > div.wind-marker.highlighted.bot {
+  color: #FF7F7F;
 }
 div.compass > div.direction > div.score-counter {
   position: absolute;
@@ -584,7 +586,7 @@ div.tile.removed ~ div.tile.draw {
   }
   100% {}
 }
-div.pond.just-played > div.tile:last-child {
+div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
 }
 
