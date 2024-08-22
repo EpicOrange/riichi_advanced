@@ -832,6 +832,15 @@ defmodule RiichiAdvanced.GameState do
       point_name: state.rules["point_name"]
     }
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+    state = if Map.has_key?(state.rules, "score_calculation") do
+        if Map.has_key?(state.rules["score_calculation"], "method") do
+          state
+        else
+          show_error(state, "\"score_calculation\" object lacks \"method\" key!")
+        end
+      else
+        show_error(state, "\"score_calculation\" key is missing from rules!")
+      end
     scoring_table = state.rules["score_calculation"]
     state = case scoring_table["method"] do
       "riichi" ->
@@ -867,8 +876,12 @@ defmodule RiichiAdvanced.GameState do
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
+      "hk" ->
+        # TODO 
+
+        state
       _ ->
-        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")
         state
     end
     state
