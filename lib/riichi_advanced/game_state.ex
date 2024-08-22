@@ -297,6 +297,8 @@ defmodule RiichiAdvanced.GameState do
         run_actions(state, state.rules["after_start"]["actions"], %{seat: state.turn})
       else state end
 
+      state = recalculate_buttons(state)
+
       notify_ai(state)
 
       state
@@ -527,7 +529,7 @@ defmodule RiichiAdvanced.GameState do
     {state, delta_scores, delta_scores_reason, dealer_continuation}
   end
 
-  def timer_finished(state) do
+  defp timer_finished(state) do
     cond do
       not Enum.empty?(state.winners) -> # finished seeing the winner screen
         # calculate delta scores if not yet calculated
@@ -1021,7 +1023,7 @@ defmodule RiichiAdvanced.GameState do
     else
       # if our action updates state, then we need to recalculate buttons
       # this is so other players can react to certain actions
-      if not Map.has_key?(state.rules, "uninterruptible_actions") || action not in state.rules["uninterruptible_actions"] do
+      if Map.has_key?(state.rules, "interruptible_actions") && action in state.rules["interruptible_actions"] do
         state = if not Enum.empty?(state.winners) do
           # if there's a winner, never display buttons
           update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
