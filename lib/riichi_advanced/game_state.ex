@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.GameState do
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers,
       timer_debouncer: timer_debouncer,
-      game_ended: false,
+      visible_screen: nil,
       error: nil,
     })
 
@@ -131,6 +131,7 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:reversed_turn_order, false)
      |> Map.put(:round_result, nil)
      |> Map.put(:winners, %{})
+     |> Map.put(:winner_index, 0)
      |> Map.put(:delta_scores, nil)
      |> Map.put(:delta_scores_reason, nil)
      |> Map.put(:dealer_continuation, false)
@@ -185,6 +186,15 @@ defmodule RiichiAdvanced.GameState do
     else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
       wall = Enum.shuffle(wall)
+      starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
+      hands = if starting_tiles > 0 do
+        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+      else Map.new([:east, :south, :west, :north], &{&1, []}) end
+
+      # debug use only
       # wall = List.replace_at(wall, 52, :"3p") # first draw
       # wall = List.replace_at(wall, 53, :"3p")
       # wall = List.replace_at(wall, 54, :"3p")
@@ -237,14 +247,6 @@ defmodule RiichiAdvanced.GameState do
                 # :west  => Utils.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
                 # :north => Utils.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
-      starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
-      hands = if starting_tiles > 0 do
-        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
-      else Map.new([:east, :south, :west, :north], &{&1, []}) end
-
       # reserve some tiles (dead wall)
       {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
         reserved_tile_names = rules["reserved_tiles"]
@@ -291,6 +293,11 @@ defmodule RiichiAdvanced.GameState do
             ready: false
           }} end))
        |> Map.put(:wall_index, starting_tiles*4)
+       |> Map.put(:winners, %{})
+       |> Map.put(:winner_index, 0)
+       |> Map.put(:delta_scores, nil)
+       |> Map.put(:delta_scores_reason, nil)
+       |> Map.put(:dealer_continuation, false)
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
@@ -570,18 +577,9 @@ defmodule RiichiAdvanced.GameState do
 
   defp timer_finished(state) do
     cond do
-      not Enum.empty?(state.winners) -> # finished seeing the winner screen
-        # calculate delta scores if not yet calculated
-        state = if state.delta_scores == nil do
-          {state, delta_scores, delta_scores_reason, dealer_continuation} = adjudicate_win_scoring(state)
-          state = Map.put(state, :delta_scores, delta_scores)
-          state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-          state = Map.put(state, :dealer_continuation, dealer_continuation)
-          state
-        else state end
-
+      state.visible_screen == :winner && state.winner_index + 1 < map_size(state.winners) -> # need to see next winner screen
         # show the next winner
-        state = Map.put(state, :winners, Map.new(Enum.drop(state.winners, 1)))
+        state = Map.update!(state, :winner_index, & &1 + 1)
 
         # reset timer
         state = Map.put(state, :timer, 10)
@@ -589,39 +587,59 @@ defmodule RiichiAdvanced.GameState do
         Debounce.apply(state.timer_debouncer)
 
         state
-      state.delta_scores != nil -> # finished seeing the score exchange screen
+      state.visible_screen == :winner -> # need to see score exchange screen
+        # calculate delta scores
+        {state, delta_scores, delta_scores_reason, dealer_continuation} = adjudicate_win_scoring(state)
+        state = Map.put(state, :delta_scores, delta_scores)
+        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+        state = Map.put(state, :dealer_continuation, dealer_continuation)
+
+        # reset timer
+        state = Map.put(state, :timer, 10)
+        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+        Debounce.apply(state.timer_debouncer)
+        state = Map.put(state, :visible_screen, :scores)
+        
+        state
+      state.visible_screen == :scores -> # finished seeing the score exchange screen
         # update kyoku and honba
-        state = if state.round_result == :win do
-          if state.dealer_continuation do
+        state = case state.round_result do
+          :win when state.dealer_continuation ->
             state
               |> Map.update!(:honba, & &1 + 1)
               |> Map.put(:riichi_sticks, 0)
-          else
+              |> Map.put(:visible_screen, nil)
+          :win ->
             state
               |> Map.update!(:kyoku, & &1 + 1)
               |> Map.put(:honba, 0)
               |> Map.put(:riichi_sticks, 0)
-          end
-        else
-          if state.dealer_continuation do
+              |> Map.put(:visible_screen, nil)
+          :draw when state.dealer_continuation ->
             state
               |> Map.update!(:honba, & &1 + 1)
-          else
+              |> Map.put(:visible_screen, nil)
+          :draw ->
             state
               |> Map.update!(:kyoku, & &1 + 1)
               |> Map.update!(:honba, & &1 + 1)
+              |> Map.put(:visible_screen, nil)
+          :continue ->
+            state
           end
-        end
 
         # apply delta scores
         state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
         state = Map.put(state, :delta_scores, nil)
 
-        state = if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
-          finalize_game(state)
-        else
-          initialize_new_round(state)
-        end
+        # finish or initialize new round if needed
+        state = if state.round_result != :continue do
+          if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
+            finalize_game(state)
+          else
+            initialize_new_round(state)
+          end
+        else state end
         state
       true ->
         IO.puts("timer_finished() called; unsure what the timer was for")
@@ -632,7 +650,7 @@ defmodule RiichiAdvanced.GameState do
   def finalize_game(state) do
     # TODO
     IO.puts("Game concluded")
-    state = Map.put(state, :game_ended, true)
+    state = Map.put(state, :visible_screen, :game_end)
     state
   end
 
@@ -856,6 +874,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
+    state = Map.put(state, :visible_screen, :winner)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
     Debounce.apply(state.timer_debouncer)
 
@@ -954,6 +973,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
+    state = Map.put(state, :visible_screen, :scores)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
     Debounce.apply(state.timer_debouncer)
 

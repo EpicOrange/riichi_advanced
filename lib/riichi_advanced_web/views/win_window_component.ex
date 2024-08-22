@@ -2,7 +2,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
-    socket = assign(socket, :winners, [])
+    socket = assign(socket, :winners, %{})
     socket = assign(socket, :winner, nil)
     socket = assign(socket, :timer, 0)
     {:ok, socket}
@@ -10,7 +10,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["game-end-window", @winner == nil && "inactive"]}>
+    <div class={["game-end-window", @visible_screen != :winner && "inactive"]}>
       <%= if @winner != nil && Map.has_key?(@winner, :yaku) && @winner.yaku != nil do %>
         <div class="hand winning-hand">
           <div class={["tile", tile]} :for={tile <- @winner.player.hand}></div>
@@ -60,9 +60,10 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
     socket = assigns
              |> Map.drop([:flash])
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
+
     socket = if Map.has_key?(assigns, :winners) do
       if not Enum.empty?(assigns.winners) do
-        {_seat, winner} = Enum.at(assigns.winners, 0)
+        {_seat, winner} = Enum.at(assigns.winners, assigns.winner_index)
         socket = assign(socket, :winner, winner)
         socket
       else

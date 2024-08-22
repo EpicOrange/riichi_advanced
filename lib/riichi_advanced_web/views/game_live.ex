@@ -32,6 +32,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
     socket = assign(socket, :game_state, game_state)
     socket = assign(socket, :winners, %{})
+    socket = assign(socket, :winner_index, 0)
     socket = assign(socket, :delta_scores, nil)
     socket = assign(socket, :delta_scores_reason, nil)
     socket = assign(socket, :timer, 0)
@@ -57,8 +58,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :riichi_sticks, state.riichi_sticks)
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
-      socket = assign(socket, :game_ended, state.game_ended)
-      # only assign these once
+      socket = assign(socket, :visible_screen, state.visible_screen)
+      # only need to assign these once
       socket = assign(socket, :display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       socket = assign(socket, :display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       {:ok, socket}
@@ -78,7 +79,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :riichi_sticks, 0)
       socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
       socket = assign(socket, :error, nil)
-      socket = assign(socket, :game_ended, false)
+      socket = assign(socket, :visible_screen, nil)
       socket = assign(socket, :display_riichi_sticks, false)
       socket = assign(socket, :display_honba, false)
       {:ok, socket}
@@ -174,10 +175,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       display_honba={@display_honba}
       is_bot={@is_bot}
       />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>
-    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer}/>
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} winner_index={@winner_index} timer={@timer} visible_screen={@visible_screen}/>
+    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer} visible_screen={@visible_screen}/>
     <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@players} error={@error}/>
-    <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@players} game_ended={@game_ended}/>
+    <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@players} visible_screen={@visible_screen}/>
     <%= if not @spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
@@ -297,6 +298,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :last_turn, if state.turn != socket.assigns.turn do socket.assigns.turn else socket.assigns.last_turn end)
       socket = assign(socket, :turn, state.turn)
       socket = assign(socket, :winners, state.winners)
+      socket = assign(socket, :winner_index, state.winner_index)
       socket = assign(socket, :delta_scores, state.delta_scores)
       socket = assign(socket, :delta_scores_reason, state.delta_scores_reason)
       socket = assign(socket, :kyoku, state.kyoku)
@@ -307,7 +309,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
-      socket = assign(socket, :game_ended, state.game_ended)
+      socket = assign(socket, :visible_screen, state.visible_screen)
       {:noreply, socket}
     else
       {:noreply, socket}

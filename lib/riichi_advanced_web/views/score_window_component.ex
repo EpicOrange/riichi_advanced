@@ -14,8 +14,8 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       |> Map.new()
     assigns = Map.put(assigns, :placements, placements)
     ~H"""
-    <div class={["game-end-window", (not Enum.empty?(@winners) || @delta_scores == nil) && "inactive"]}>
-      <%= if Enum.empty?(@winners) && @delta_scores != nil do %>
+    <div class={["game-end-window", @visible_screen != :scores && "inactive"]}>
+      <%= if @delta_scores != nil do %>
         <div class="delta-score-reason"><%= @delta_scores_reason %></div>
         <div class="delta-score self">
           <%= if @delta_scores[@seat] != 0 do %>
