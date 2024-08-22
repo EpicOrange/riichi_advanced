@@ -1303,12 +1303,6 @@ defmodule RiichiAdvanced.GameState do
           :kamicha  -> draws_left >= 1
           :self     -> draws_left >= 4
         end
-      "has_group"                ->
-        hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
-        in_hand = Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, [], hand_definition)
-        in_calls = state.players[context.seat].calls |> Enum.map(&Riichi.call_to_tiles/1) |> Enum.any?(fn call -> Riichi.check_hand(call, [], hand_definition) end)
-        # IO.puts("#{inspect(hand_definition)}\n  in_hand: #{in_hand} / in_calls: #{in_calls}\n")
-        in_hand || in_calls
       "round_wind_is"            ->
         round_wind = Riichi.get_round_wind(state.kyoku)
         case Enum.at(opts, 0, "east") do

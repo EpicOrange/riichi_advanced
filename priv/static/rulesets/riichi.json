@@ -71,6 +71,7 @@
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
+    "quad": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
     "iipeikou": [0, 0, 1, 1, 2, 2],
@@ -210,57 +211,57 @@
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "has_group", "opts": [[[["ton"], 1]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "has_group", "opts": [[[["nan"], 1]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "has_group", "opts": [[[["shaa"], 1]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "has_group", "opts": [[[["pei"], 1]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "has_group", "opts": [[[["ton"], 1]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "has_group", "opts": [[[["nan"], 1]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "has_group", "opts": [[[["shaa"], 1]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "has_group", "opts": [[[["pei"], 1]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
     },
     {
       "display_name": "Haku",
       "value": 1,
-      "when": [{"name": "has_group", "opts": [[[["haku"], 1]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
     },
     {
       "display_name": "Hatsu",
       "value": 1,
-      "when": [{"name": "has_group", "opts": [[[["hatsu"], 1]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}]
     },
     {
       "display_name": "Chun",
       "value": 1,
-      "when": [{"name": "has_group", "opts": [[[["chun"], 1]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
     },
     {
       "display_name": "Double Riichi",
@@ -272,6 +273,7 @@
       "value": 2,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pair"], 7]]]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["quad"], 1]]]]},
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["iipeikou"], 2], [["pair"], 1]]]]}
       ]
     },
@@ -703,17 +705,18 @@
       "value": 1,
       "when": [
         "not_no_discards_yet",
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]}
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]},
+        {"name": "not_match", "opts": [["hand"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]}
       ]
     },
     {
       "display_name": "Junsei Chuurenpoutou",
       "value": 2,
       "when": [[
-        {"name": "match", "opts": [["hand", "calls"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]},
+        {"name": "match", "opts": [["hand"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]},
         [
           "no_discards_yet",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]}
+          {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]}
         ]
       ]]
     },
@@ -722,17 +725,18 @@
       "value": 1,
       "when": [
         "not_no_discards_yet",
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["orphans_all"], 1]]]]}
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]},
+        {"name": "not_match", "opts": [["hand"], [[[["orphans_all"], 1]]]]}
       ]
     },
     {
       "display_name": "Kokushi Musou Juusan Menmachi",
       "value": 2,
       "when": [[
-        {"name": "match", "opts": [["hand", "calls"], [[[["orphans_all"], 1]]]]},
+        {"name": "match", "opts": [["hand"], [[[["orphans_all"], 1]]]]},
         [
           "no_discards_yet",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["orphans_all"], 1]]]]}
+          {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}
         ]
       ]]
     },
@@ -752,7 +756,7 @@
     {
       "display_name": "Suukantsu",
       "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
     }
   ],
   "extra_yaku": [
