@@ -637,6 +637,7 @@ div.buttons, div.call-buttons-container {
   bottom: calc(1.5 * var(--tile-size));
   right: calc(1.5 * var(--tile-size));
   align-items: flex-end;
+  z-index: 10;
 }
 div.buttons, div.call-buttons {
   align-items: center;
