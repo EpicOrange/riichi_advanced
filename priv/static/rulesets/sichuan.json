@@ -26,10 +26,6 @@
            "7s", "7s", "7s", "7s",
            "8s", "8s", "8s", "8s",
            "9s", "9s", "9s", "9s"],
-  "reserved_tiles": [
-    "kandraw_3", "kandraw_4",
-    "kandraw_1", "kandraw_2"
-  ],
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
@@ -160,20 +156,12 @@
       "display_name": "Under The Sea",
       "value": 1,
       "when": ["no_tiles_remaining"]
-    },
-    {
-      "display_name": "Self-Pick",
-      "value": 1,
-      "when": ["won_by_draw"]
     }
   ],
   "point_name": "Fan",
   "score_calculation": {
     "method": "sichuan",
-    "score_table_nondealer": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 16, "6": 16, "7": 32, "8": 32, "9": 32, "max": 64},
-    "score_table_nondealer_draw": {"1": 4, "2": 8, "3": 16, "4": 32, "5": 32, "6": 32, "7": 64, "8": 64, "9": 64, "max": 128},
-    "score_table_dealer": {"0": 2, "1": 4, "2": 8, "3": 16, "4": 32, "5": 32, "6": 32, "7": 64, "8": 64, "9": 64, "max": 128},
-    "score_table_dealer_draw": {"1": 8, "2": 16, "3": 32, "4": 64, "5": 64, "6": 64, "7": 128, "8": 128, "9": 128, "max": 256}
+    "score_table": {"0": 1, "1": 2, "2": 4, "max": 8}
   },
   "play_restrictions": [
     [["any"], [{"name": "not_status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
@@ -267,39 +255,21 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
-      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
-                  ["set_status", "kan"],
-                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-                  ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
-                 ],
+      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"], ["set_status", "kan"], ["draw"]],
       "precedence_over": ["pon"]
     },
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
       "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
-        "actions": [["big_text", "Kong"], ["self_call"],
-                    ["set_status", "kan"],
-                    ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-                    ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-                    ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-                    ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
-                   ]
+      "actions": [["big_text", "Kong"], ["self_call"], ["set_status", "kan"], ["draw"]]
     },
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-        "actions": [["big_text", "Kong"], ["upgrade_call"],
-                    ["set_status", "kan"],
-                    ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-                    ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-                    ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-                    ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
-                   ]
+      "actions": [["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"], ["draw"]]
     },
     "ron": {
       "display_name": "Hu",

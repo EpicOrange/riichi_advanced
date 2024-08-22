@@ -376,6 +376,14 @@ defmodule RiichiAdvanced.GameState do
         score = payment * if is_self_draw do 3 else 4 end
 
         {score, points, 0}
+      "sichuan" ->
+        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        fan = Integer.to_string(points)
+
+        fan_table = scoring_table["score_table"]
+        score = Map.get(fan_table, fan, fan_table["max"])
+        score = if is_self_draw do 3 * (score + 1) else score end
+        {score, points, 0}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         {0, 0, 0}
@@ -459,6 +467,20 @@ defmodule RiichiAdvanced.GameState do
             delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
             delta_scores
         end
+      "sichuan" ->
+        if winner.payer != nil do
+            delta_scores = Map.update!(delta_scores, winner.payer, & &1 - winner.score)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
+            delta_scores
+        else
+          # have each payer pay their allotted share
+          for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
+            delta_scores ->
+              delta_scores = Map.update!(delta_scores, payer, & &1 - winner.score)
+              delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
+              delta_scores
+          end
+        end
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores
@@ -515,6 +537,10 @@ defmodule RiichiAdvanced.GameState do
           map_size(state.winners) == 3 -> "Triple Hu"
         end
         {state, delta_scores, delta_scores_reason, false}
+      "sichuan" ->
+        delta_scores = calculate_delta_scores(state)
+        delta_scores_reason = "Hu"
+        {state, delta_scores, delta_scores_reason, false}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
@@ -566,6 +592,24 @@ defmodule RiichiAdvanced.GameState do
         dealer_continuation = tenpai[Riichi.get_east_player_seat(state.kyoku)]
 
         {state, delta_scores, delta_scores_reason, dealer_continuation}
+      "hk" ->
+        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+        delta_scores_reason = "Draw"
+        {state, delta_scores, delta_scores_reason, false}
+      "sichuan" ->
+        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+        delta_scores_reason = "Draw"
+
+        # TODO
+        # - if there are less than 3 winners, we need to do a payment
+        # - for each 
+        # - 
+        # - new dealer (dealer_continuation) is based on the first winner (no change if no winner)
+        #   + first winner is next dealer
+        #   + if first winner is on a multiple hu, the discarder is the next dealer
+        #   + so we need to modify dealer_continuation, as well as make winners ordered
+        #   
+        {state, delta_scores, delta_scores_reason, false}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
@@ -1182,7 +1226,7 @@ defmodule RiichiAdvanced.GameState do
     update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions })
   end
 
-  def get_hand_definition(state, name) do
+  defp get_hand_definition(state, name) do
     # TODO deprecated
     if Map.has_key?(state.rules, "set_definitions") do
       translate_hand_definition(state.rules[name], state.rules["set_definitions"])
