@@ -1178,6 +1178,8 @@
     }
   },
   "uninterruptible_actions": ["big_text", "pause", "sort_hand", "unset_status", "when", "add_score", "put_down_riichi_stick", "reveal_hand"],
+  "display_riichi_sticks": true,
+  "display_honba": true,
   "initial_score": 25000,
   "starting_tiles": 13,
   "max_rounds": 8

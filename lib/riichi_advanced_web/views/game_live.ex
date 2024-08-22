@@ -58,6 +58,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
       socket = assign(socket, :game_ended, state.game_ended)
+      # only assign these once
+      socket = assign(socket, :display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
+      socket = assign(socket, :display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       {:ok, socket}
     else
       socket = assign(socket, :loading, true)
@@ -76,6 +79,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
       socket = assign(socket, :error, nil)
       socket = assign(socket, :game_ended, false)
+      socket = assign(socket, :display_riichi_sticks, false)
+      socket = assign(socket, :display_honba, false)
       {:ok, socket}
     end
   end
@@ -160,6 +165,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       riichi_sticks={@riichi_sticks}
       riichi={Map.new(@players, fn {seat, player} -> {seat, player.riichi_stick} end)}
       score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
+      display_riichi_sticks={@display_riichi_sticks}
+      display_honba={@display_honba}
       is_bot={@is_bot}
       />
     <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} timer={@timer}/>

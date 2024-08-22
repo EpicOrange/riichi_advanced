@@ -10,8 +10,8 @@ defmodule RiichiAdvancedWeb.CompassComponent do
     <div class={["compass", Riichi.get_seat_wind(@kyoku, @seat)]} phx-click="notify_ai" phx-target={@myself}>
       <div class="centerpiece">
         <div class="tiles-left"><%= @tiles_left %></div>
-        <div class="riichi-stick-counter"><%= @riichi_sticks %></div>
-        <div class="honba-counter"><%= @honba %></div>
+        <div class="riichi-stick-counter" :if={@display_riichi_sticks}><%= @riichi_sticks %></div>
+        <div class="honba-counter" :if={@display_honba}><%= @honba %></div>
       </div>
       <%= for {dir, symbol} <- [{:east, "東"}, {:south, "南"}, {:west, "西"}, {:north, "北"}] do %>
         <div class="score-box"></div>
