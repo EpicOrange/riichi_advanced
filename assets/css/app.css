@@ -8,11 +8,11 @@ html, body {
 
 main {
   max-width: 90vw;
-  max-height: 90vh;
+  max-height: 80vh;
   aspect-ratio: 1/1;
-  margin: 5vh 5vw;
+  margin: 10vh auto;
 
-  --tile-size: min(calc(90vw / 16), calc(90vh / 16));
+  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
   --tile-front-side: #f0ece7;
   --tile-back: #f0974c;
@@ -1189,7 +1189,7 @@ div.title > div.title-advanced {
   top: calc(3 * var(--tile-size));
 }
 div.title > div.tile {
-  --tile-size: min(calc(90vw / 6), calc(90vh / 6));
+  --tile-size: min(calc(90vw / 6), calc(80vh / 6));
   top: calc(0.2 * var(--tile-size));
 }
 div.title > div.tile.\38 m {
