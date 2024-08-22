@@ -1022,7 +1022,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def notify_ai(state) do
+  defp notify_ai(state) do
     # IO.puts("Notifying ai")
     # IO.inspect(Process.info(self(), :current_stacktrace))
     if state.game_active do
@@ -1308,6 +1308,7 @@ defmodule RiichiAdvanced.GameState do
       "won_by_discard"           -> context.win_source == :discard
       "status"                   -> Enum.all?(opts, fn st -> st in state.players[context.seat].status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in state.players[context.seat].status end)
+      "discarder_status"         -> last_action.action == :discard && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
       "is_drawn_tile"            -> context.tile_source == :draw
       "buttons_include"          -> Enum.all?(opts, fn button_name -> button_name in state.players[context.seat].buttons end)
       "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in state.players[context.seat].buttons end)
@@ -1355,6 +1356,7 @@ defmodule RiichiAdvanced.GameState do
               "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
               "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
               "calls" -> [{hand, calls ++ state.players[context.seat].calls}]
+              "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), calls}]
               "last_call" -> [{hand, calls ++ [context.call]}]
               "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
               "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
@@ -1427,7 +1429,6 @@ defmodule RiichiAdvanced.GameState do
             if not call_action_exists do
               # just run all button actions as normal
               state = run_actions(state, actions, %{seat: seat})
-              notify_ai(state)
               state
             else
               # call button choices logic
@@ -1458,20 +1459,21 @@ defmodule RiichiAdvanced.GameState do
                 # if there's only one choice, automatically choose it
                 {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
                 state = run_actions(state, actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
-                notify_ai(state)
                 state
               else
                 # otherwise, defer all actions and display call choices
                 state = schedule_actions(state, seat, actions)
                 state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: button_name } end)
                 notify_ai_call_buttons(state, seat)
-                notify_ai(state)
                 state
               end
             end
           else state end
           state
       end
+      # done with all choices
+      state = recalculate_buttons(state)
+      notify_ai(state)
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
