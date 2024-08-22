@@ -8,6 +8,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
     socket = assign(socket, :num_new_calls, 0)
+    socket = assign(socket, :status, [])
     {:ok, socket}
   end
 

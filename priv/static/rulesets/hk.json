@@ -88,9 +88,6 @@
     [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
-  "false_tenpai_definition": [
-    [ [["pair"], 5], [["koutsu"], 1] ]
-  ],
   "win_definition": [
     [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
     [ [["pair"], 7] ],

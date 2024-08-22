@@ -983,7 +983,8 @@ defmodule RiichiAdvanced.GameState do
                  check_cnf_condition(state, button["show_when"], %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades})
                end)
             |> Enum.map(fn {name, _button} -> name end)
-          {seat, if not Enum.empty?(buttons) do buttons ++ ["skip"] else buttons end}
+          unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
+          {seat, if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end}
         end
       end)
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_buttons)}")
@@ -1252,10 +1253,10 @@ defmodule RiichiAdvanced.GameState do
       "no_discards_yet"          -> last_discard_action == nil
       "no_calls_yet"             -> last_call_action == nil
       "last_call_is"             -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
-      "kamicha_discarded"        -> last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
-      "someone_else_discarded"   -> last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
-      "just_called"              -> last_action.action == :call
-      "call_available"           -> last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
+      "kamicha_discarded"        -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
+      "someone_else_discarded"   -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
+      "just_called"              -> last_action != nil && last_action.action == :call
+      "call_available"           -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
       "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
       "can_upgrade_call"         -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
@@ -1685,6 +1686,8 @@ defmodule RiichiAdvanced.GameState do
     state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
       state = temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
+      # TODO ensure no unskippable button exists
+      _unskippable_button_exists = Enum.any?(state.players[seat].buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
       state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = submit_actions(state, seat, "play_tile", actions)

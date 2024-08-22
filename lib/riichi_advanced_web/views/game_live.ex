@@ -98,6 +98,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         hand={@players[@seat].hand}
         draw={@players[@seat].draw}
         calls={@players[@seat].calls}
+        status={@players[@seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
         />
@@ -111,6 +112,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         hand={@players[@seat].hand}
         draw={@players[@seat].draw}
         calls={@players[@seat].calls}
+        status={@players[@seat].status}
         :if={@seat != nil}
         />
     <% end %>
@@ -125,6 +127,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       hand={@players[@shimocha].hand}
       draw={@players[@shimocha].draw}
       calls={@players[@shimocha].calls}
+      status={@players[@shimocha].status}
       :if={@shimocha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} seat={@shimocha} last_turn={@last_turn} pond={@players[@shimocha].pond} riichi={@players[@shimocha].riichi_stick} :if={@shimocha != nil} />
@@ -138,6 +141,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       hand={@players[@toimen].hand}
       draw={@players[@toimen].draw}
       calls={@players[@toimen].calls}
+      status={@players[@toimen].status}
       :if={@toimen != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} seat={@toimen} last_turn={@last_turn} pond={@players[@toimen].pond} riichi={@players[@toimen].riichi_stick} :if={@toimen != nil} />
@@ -150,6 +154,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       hand={@players[@kamicha].hand}
       draw={@players[@kamicha].draw}
       calls={@players[@kamicha].calls}
+      status={@players[@kamicha].status}
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} seat={@kamicha} last_turn={@last_turn} pond={@players[@kamicha].pond} riichi={@players[@kamicha].riichi_stick} :if={@kamicha != nil} />
