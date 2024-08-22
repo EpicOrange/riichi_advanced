@@ -185,15 +185,15 @@ defmodule RiichiAdvanced.GameState do
     else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
       wall = Enum.shuffle(wall)
-      # wall = List.replace_at(wall, 52, :"1m") # first draw
-      # wall = List.replace_at(wall, 53, :"8m")
-      # wall = List.replace_at(wall, 54, :"8m")
-      # wall = List.replace_at(wall, 55, :"8m")
-      # wall = List.replace_at(wall, 56, :"8m") # second draw
-      # wall = List.replace_at(wall, 57, :"8m")
-      # wall = List.replace_at(wall, 58, :"8m")
-      # wall = List.replace_at(wall, 59, :"8m")
-      # wall = List.replace_at(wall, 60, :"8m")
+      # wall = List.replace_at(wall, 52, :"3p") # first draw
+      # wall = List.replace_at(wall, 53, :"3p")
+      # wall = List.replace_at(wall, 54, :"3p")
+      # wall = List.replace_at(wall, 55, :"3p")
+      # wall = List.replace_at(wall, 56, :"3p") # second draw
+      # wall = List.replace_at(wall, 57, :"3p")
+      # wall = List.replace_at(wall, 58, :"3p")
+      # wall = List.replace_at(wall, 59, :"3p")
+      # wall = List.replace_at(wall, 60, :"3p")
       # wall = List.replace_at(wall, -15, :"1m") # last draw
       # wall = List.replace_at(wall, -6, :"9m") # first dora
       # wall = List.replace_at(wall, -8, :"9m") # second dora
@@ -201,6 +201,10 @@ defmodule RiichiAdvanced.GameState do
       # wall = List.replace_at(wall, -1, :"3m") # second kan draw
       # wall = List.replace_at(wall, -4, :"4m") # third kan draw
       # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
+      # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"2p", :"2p", :"4p", :"5p", :"3s", :"4s", :"5s", :"8s", :"8s"]),
+      #           :south => Enum.slice(wall, 13..25),
+      #           :west  => Enum.slice(wall, 26..38),
+      #           :north => Enum.slice(wall, 39..51)}
       # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"6z"]),
       #           :south => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"6z"]),
       #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
@@ -305,7 +309,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def score_yaku(state, seat, yaku, yakuman, is_self_draw, minipoints) do
+  def score_yaku(state, seat, yaku, yakuman, is_self_draw, minipoints \\ 0) do
     scoring_table = state.rules["score_calculation"]
     case scoring_table["method"] do
       "riichi" ->
@@ -351,8 +355,22 @@ defmodule RiichiAdvanced.GameState do
           end
         end
         {score, points, yakuman_mult}
+      "hk" ->
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
+        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        fan = Integer.to_string(points)
+
+        dealer_fan_table = if is_self_draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
+        nondealer_fan_table = if is_self_draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
+        dealer_payment = Map.get(dealer_fan_table, fan, dealer_fan_table["max"])
+        nondealer_payment = Map.get(nondealer_fan_table, fan, nondealer_fan_table["max"])
+        payment = if is_dealer do dealer_payment else nondealer_payment end
+
+        score = payment * if is_self_draw do 3 else 4 end
+
+        {score, points, 0}
       _ ->
-        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         {0, 0, 0}
     end
   end
@@ -411,18 +429,31 @@ defmodule RiichiAdvanced.GameState do
             # reverse-calculate the ko and oya parts of the total points
             is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
             {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer)
+            dealer_seat = Riichi.get_east_player_seat(state.kyoku)
             # have each payer pay their allotted share
             for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
               delta_scores ->
-                payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
+                payment = if payer == dealer_seat do oya_payment else ko_payment end
                 delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
                 delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + honba_payment)
                 delta_scores
             end
           end
         end
+      "hk" ->
+        self_pick = winner.payer == nil
+        basic_score = trunc(winner.score / if self_pick do 3 else 4 end)
+        payer_seat = winner.payer
+        # have each payer pay their allotted share
+        for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
+          delta_scores ->
+            payment = if payer == payer_seat do 2 * basic_score else basic_score end
+            delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
+            delta_scores
+        end
       _ ->
-        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores
     end
   end
@@ -469,8 +500,16 @@ defmodule RiichiAdvanced.GameState do
 
         dealer_continuation = Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku))
         {state, delta_scores, delta_scores_reason, dealer_continuation}
+      "hk" ->
+        delta_scores = calculate_delta_scores(state)
+        delta_scores_reason = cond do
+          map_size(state.winners) == 1 -> "Hu"
+          map_size(state.winners) == 2 -> "Double Hu"
+          map_size(state.winners) == 3 -> "Triple Hu"
+        end
+        {state, delta_scores, delta_scores_reason, false}
       _ ->
-        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
         {state, delta_scores, "", false}
@@ -789,7 +828,7 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints) do
+  defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints \\ 0) do
     context = %{
       seat: seat,
       winning_tile: winning_tile,
@@ -877,8 +916,25 @@ defmodule RiichiAdvanced.GameState do
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
       "hk" ->
-        # TODO 
-
+        yaku = get_yaku(state, state.rules["yaku"], seat, winning_tile, win_source)
+        {score, points, _} = score_yaku(state, seat, yaku, [], win_source == :draw)
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        winner = Map.merge(winner, %{
+          yaku: yaku,
+          yakuman: [],
+          points: points,
+          yakuman_mult: 0,
+          score: score,
+          score_name: "",
+          minipoints: 0,
+          payer: payer,
+          pao_seat: nil
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
       _ ->
         state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")

@@ -100,7 +100,11 @@
   ],
   "point_name": "Fan",
   "score_calculation": {
-    "method": "hk"
+    "method": "hk",
+    "score_table_nondealer": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 16, "6": 16, "7": 32, "8": 32, "9": 32, "max": 64},
+    "score_table_nondealer_draw": {"1": 4, "2": 8, "3": 16, "4": 32, "5": 32, "6": 32, "7": 64, "8": 64, "9": 64, "max": 128},
+    "score_table_dealer": {"0": 2, "1": 4, "2": 8, "3": 16, "4": 32, "5": 32, "6": 32, "7": 64, "8": 64, "9": 64, "max": 128},
+    "score_table_dealer_draw": {"1": 8, "2": 16, "3": 32, "4": 64, "5": 64, "6": 64, "7": 128, "8": 128, "9": 128, "max": 256}
   },
   "after_turn_change": {
     "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
@@ -212,7 +216,7 @@
     }
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
-  "initial_score": 25000,
+  "initial_score": 100,
   "starting_tiles": 13,
   "max_rounds": 0
 }
