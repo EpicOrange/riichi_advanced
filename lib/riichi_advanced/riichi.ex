@@ -194,6 +194,11 @@ defmodule Riichi do
     end
   end
 
+  def match_hand(hand, calls, match_definitions) do
+    # TODO replace check_hand
+    check_hand(hand, calls, match_definitions)
+  end
+
   def tile_matches(tile_specs, context) do
     Enum.any?(tile_specs, &case &1 do
       "any" -> true

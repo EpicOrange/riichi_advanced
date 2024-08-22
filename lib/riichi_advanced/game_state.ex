@@ -1085,7 +1085,17 @@ defmodule RiichiAdvanced.GameState do
     update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions })
   end
 
+  def get_hand_definition(state, name) do
+    # TODO deprecated
+    if Map.has_key?(state.rules, "set_definitions") do
+      translate_hand_definition(state.rules[name], state.rules["set_definitions"])
+    else
+      state.rules[name]
+    end
+  end
+
   defp translate_hand_definition(hand_definitions, set_definitions) do
+    # TODO deprecated
     for hand_def <- hand_definitions do
       for [groups, num] <- hand_def do
         translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
@@ -1094,12 +1104,58 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def get_hand_definition(state, name) do
-    if Map.has_key?(state.rules, "set_definitions") do
-      translate_hand_definition(state.rules[name], state.rules["set_definitions"])
-    else
-      state.rules[name]
+
+
+  defp translate_sets_in_match_definitions(match_definitions, set_definitions) do
+    for match_definition <- match_definitions do
+      for [groups, num] <- match_definition do
+        translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
+        [translated_groups, num]
+      end
     end
+  end
+
+  # match_definitions is a list of match definitions, each of which is itself
+  # a two-element list [groups, num] representing num times groups.
+  # 
+  # A list of match definitions succeeds when at least one match definition does,
+  # and a match definition succeeds when each of its groups match some part of
+  # the hand / calls in a non-overlapping manner.
+  # 
+  # A group is a list of tile sets. A group matches when any set matches.
+  # 
+  # Named match definitions can be defined as a key "mydef_definition" at the top level.
+  # They expand to a list of match definitions that all get added to the list of
+  # match definitions they appear in.
+  # Named sets can be found in the key "set_definitions".
+  # This function simply swaps out all names for their respective definitions.
+  # 
+  # Example of a list of match definitions representing a winning hand:
+  # [
+  #   [[["shuntsu", "koutsu"], 4], [["pair"], 1]],
+  #   [[["pair"], 7]],
+  #   "kokushi_musou" // defined top-level as "kokushi_musou_definition"
+  # ]
+  def translate_match_definitions(state, match_definitions) do
+    set_definitions = if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end
+    for match_definition <- match_definitions, reduce: [] do
+      acc ->
+        translated = cond do
+          is_binary(match_definition) ->
+            name = match_definition <> "_definition"
+            if Map.has_key?(state.rules, name) do
+              translate_sets_in_match_definitions(state.rules[name], set_definitions)
+            else
+              GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
+              []
+            end
+          is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
+          true                        ->
+            GenServer.cast(self(), {:show_error, "#{inspect(match_definition)} is not a valid match definition."})
+            []
+        end
+        [translated | acc]
+    end |> Enum.reverse() |> Enum.concat()
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
@@ -1205,9 +1261,18 @@ defmodule RiichiAdvanced.GameState do
       "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winners[context.seat].winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       "hand_matches"             -> 
-        hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
-        Riichi.check_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, [], hand_definition)
-      "winning_hand_matches"     -> 
+        # TODO this should supercede all of the below, and also "hand_matches_hand" etc.
+        {hand, calls} = for item <- Enum.at(opts, 0, []), reduce: {[], []} do
+          {hand, calls} ->
+            case item do
+              "hand" -> {hand ++ state.players[context.seat].hand, calls}
+              "draw" -> {hand ++ state.players[context.seat].draw, calls}
+              "calls" -> {hand, calls ++ state.players[context.seat].calls}
+            end
+        end
+        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        Riichi.match_hand(hand, calls, match_definitions)
+      "winning_hand_matches"     ->
         hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
         Riichi.check_hand(state.players[context.seat].hand, state.players[context.seat].calls, hand_definition)
       "winning_hand_and_tile_matches" -> 
@@ -1619,6 +1684,11 @@ defmodule RiichiAdvanced.GameState do
       state = broadcast_state_change(state)
       {:noreply, state}
     end
+  end
+
+  def handle_cast({:show_error, message}, state) do
+    state = show_error(state, message)
+    {:noreply, state}
   end
 
 end
