@@ -1260,7 +1260,7 @@ defmodule RiichiAdvanced.GameState do
         end
       "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winners[context.seat].winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
-      "hand_matches"             -> 
+      "match"                    -> 
         # TODO this should supercede all of the below, and also "hand_matches_hand" etc.
         {hand, calls} = for item <- Enum.at(opts, 0, []), reduce: {[], []} do
           {hand, calls} ->
@@ -1268,23 +1268,14 @@ defmodule RiichiAdvanced.GameState do
               "hand" -> {hand ++ state.players[context.seat].hand, calls}
               "draw" -> {hand ++ state.players[context.seat].draw, calls}
               "calls" -> {hand, calls ++ state.players[context.seat].calls}
+              "last_call" -> {hand, calls ++ [context.call]}
+              "winning_tile" ->
+                winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
+                {hand ++ [winning_tile], calls}
             end
         end
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
         Riichi.match_hand(hand, calls, match_definitions)
-      "winning_hand_matches"     ->
-        hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
-        Riichi.check_hand(state.players[context.seat].hand, state.players[context.seat].calls, hand_definition)
-      "winning_hand_and_tile_matches" -> 
-        hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
-        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Riichi.check_hand(state.players[context.seat].hand ++ [winning_tile], state.players[context.seat].calls, hand_definition)
-      "calls_match" -> 
-        hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
-        Riichi.check_hand([], state.players[context.seat].calls, hand_definition)
-      "last_call_matches" -> 
-        hand_definition = translate_hand_definition(opts, if Map.has_key?(state.rules, "set_definitions") do state.rules["set_definitions"] else %{} end)
-        Riichi.check_hand([], [context.call], hand_definition)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
         Enum.all?(state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), fn tile -> tile in tiles end) 
