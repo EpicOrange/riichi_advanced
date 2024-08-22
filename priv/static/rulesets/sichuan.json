@@ -122,19 +122,40 @@
     "void_manzu": {
       "display_name": "No Craks",
       "show_when": [{"name": "status", "opts": ["game_start"]}],
-      "actions": [["big_text", "No Craks"], ["set_status", "void_manzu"], ["unset_status", "game_start"]],
+      "actions": [
+        ["big_text", "No Craks"], ["set_status", "void_manzu"], ["unset_status", "game_start"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
+        ["reveal_tile", "1m"]
+      ],
       "unskippable": true
     },
     "void_pinzu": {
       "display_name": "No Dots",
       "show_when": [{"name": "status", "opts": ["game_start"]}],
-      "actions": [["big_text", "No Dots"], ["set_status", "void_pinzu"], ["unset_status", "game_start"]],
+      "actions": [
+        ["big_text", "No Dots"], ["set_status", "void_pinzu"], ["unset_status", "game_start"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
+        ["reveal_tile", "1p"]
+      ],
       "unskippable": true
     },
     "void_souzu": {
       "display_name": "No Bams",
       "show_when": [{"name": "status", "opts": ["game_start"]}],
-      "actions": [["big_text", "No Bams"], ["set_status", "void_souzu"], ["unset_status", "game_start"]],
+      "actions": [
+        ["big_text", "No Bams"], ["set_status", "void_souzu"], ["unset_status", "game_start"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
+        ["reveal_tile", "1s"]
+      ],
       "unskippable": true
     },
     "pon": {
@@ -223,6 +244,13 @@
                    ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+    }
+  },
+  "auto_buttons": {
+    "auto_sort": {
+      "display_name": "A",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
     }
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],

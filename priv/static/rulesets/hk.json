@@ -375,10 +375,7 @@
     "score_table_dealer_draw": {"1": 8, "2": 16, "3": 32, "4": 64, "5": 64, "6": 64, "7": 128, "8": 128, "9": 128, "max": 256}
   },
   "before_turn_change": {
-    "actions": [["unset_status", "call_made", "kan", "double_kan", "first_turn"],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
-               ]
+    "actions": [["unset_status", "call_made", "kan", "double_kan", "first_turn"]]
   },
   "after_turn_change": {
     "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
