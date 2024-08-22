@@ -528,18 +528,21 @@
     {
       "display_name": "Sanankou",
       "value": 2,
-      "when": [[
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 3], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 1]]]]},
+      "when": [
+        {"name": "not_match", "opts": [["calls"], [[[["pon"], 2]]]]},
         [
-          "won_by_draw",
-          {"name": "match", "opts": [["hand", "calls"],
-            [[[["koutsu", "ankan"], 2],
-              [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1],
-              [["pair"], 2]
-            ]]
-          ]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 3], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1], [["pair"], 1]]]]},
+          [
+            "won_by_draw",
+            {"name": "match", "opts": [["hand", "calls"],
+              [[[["koutsu", "ankan"], 2],
+                [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1],
+                [["pair"], 2]
+              ]]
+            ]}
+          ]
         ]
-      ]]
+      ]
     },
     {
       "display_name": "Shousangen",
@@ -657,6 +660,7 @@
       "when": [
         "won_by_draw",
         "not_no_discards_yet",
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         {"name": "match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 3], [["pair"], 2]]]]},
         {"name": "not_match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 4]]]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 4], [["pair"], 1]]]]}
@@ -665,16 +669,19 @@
     {
       "display_name": "Suuankou Tanki",
       "value": 2,
-      "when": [[
+      "when": [
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         [
-          {"name": "match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 4]]]]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 4], [["pair"], 1]]]]}
-        ],
-        [
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 4], [["pair"], 1]]]]}
+          [
+            {"name": "match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 4]]]]},
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 4], [["pair"], 1]]]]}
+          ],
+          [
+            "no_discards_yet",
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 4], [["pair"], 1]]]]}
+          ]
         ]
-      ]]
+      ]
     },
     {
       "display_name": "Tsuuiisou",

@@ -185,7 +185,7 @@ defmodule RiichiAdvanced.GameState do
     else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
       wall = Enum.shuffle(wall)
-      wall = List.replace_at(wall, 52, :"6m") # first draw
+      # wall = List.replace_at(wall, 52, :"1m") # first draw
       # wall = List.replace_at(wall, 53, :"8m")
       # wall = List.replace_at(wall, 54, :"8m")
       # wall = List.replace_at(wall, 55, :"8m")
@@ -197,14 +197,18 @@ defmodule RiichiAdvanced.GameState do
       # wall = List.replace_at(wall, -15, :"1m") # last draw
       # wall = List.replace_at(wall, -6, :"9m") # first dora
       # wall = List.replace_at(wall, -8, :"9m") # second dora
-      # wall = List.replace_at(wall, -2, :"2m") # first kan draw
+      # wall = List.replace_at(wall, -2, :"2z") # first kan draw
       # wall = List.replace_at(wall, -1, :"3m") # second kan draw
       # wall = List.replace_at(wall, -4, :"4m") # third kan draw
       # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
-      hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"5z", :"6z", :"7z", :"1z", :"1z", :"2z", :"2z"]),
-                :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
-                :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
-                :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
+      # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"6z"]),
+      #           :south => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"6z"]),
+      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
+      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
+      # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"5z", :"6z", :"7z", :"1z", :"1z", :"2z", :"2z"]),
+      #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
+      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
+      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
       # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"1m", :"1m", :"1m", :"1z", :"1z", :"2z", :"2z"]),
       #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
       #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
@@ -230,12 +234,12 @@ defmodule RiichiAdvanced.GameState do
                 # :north => Utils.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
 
       starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
-      # hands = if starting_tiles > 0 do
-      #   %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-      #     :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-      #     :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-      #     :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
-      # else Map.new([:east, :south, :west, :north], &{&1, []}) end
+      hands = if starting_tiles > 0 do
+        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+      else Map.new([:east, :south, :west, :north], &{&1, []}) end
 
       # reserve some tiles (dead wall)
       {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
@@ -775,6 +779,7 @@ defmodule RiichiAdvanced.GameState do
 
     # find the index of the sideways tile
     sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
+    sideways_index = if sideways_index == nil do -1 else sideways_index end
     upgraded_call = {call_name, List.insert_at(call, sideways_index, {called_tile, true})}
     state = update_player(state, seat, &%Player{ &1 | hand: (&1.hand ++ &1.draw) -- [called_tile], draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
@@ -1390,19 +1395,19 @@ defmodule RiichiAdvanced.GameState do
 
   def submit_actions(state, seat, choice, actions) do
     if state.game_active && state.players[seat].choice == nil do
-      # IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
+      IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
       # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions, deferred_actions: [] })
 
-      # for the current turn's player, if they just discarded and have no buttons, their choice is "skip"
+      # for the current turn's player, if they just acted (have deferred actions) and have no buttons, their choice is "skip"
       # for other players who have no buttons and have not made a choice yet, their choice is "skip"
       # also for other players who have made a choice, if their choice is superceded then set it to "skip"
       superceded_choices = get_superceded_choices(state)
       last_action = get_last_action(state)
-      just_discarded = last_action != nil && last_action.action == :discard && last_action.seat == state.turn
+      turn_just_acted = last_action != nil && not Enum.empty?(state.players[state.turn].deferred_actions) && last_action.seat == state.turn
       state = for {seat, player} <- state.players, reduce: state do
         state -> cond do
-          seat == state.turn && just_discarded && Enum.empty?(player.buttons) && Enum.empty?(player.call_buttons) ->
+          seat == state.turn && turn_just_acted && Enum.empty?(player.buttons) && Enum.empty?(player.call_buttons) ->
             # IO.puts("Player #{seat} must skip due to having just discarded")
             update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
           seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) && Enum.empty?(player.call_buttons) ->
