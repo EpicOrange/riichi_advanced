@@ -1206,7 +1206,7 @@ defmodule RiichiAdvanced.GameState do
           minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku))
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
-      "last_discard_matches"     -> Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
+      "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action})
       "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition")) end)
       "has_calls"                -> not Enum.empty?(state.players[context.seat].calls)

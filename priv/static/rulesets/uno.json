@@ -63,5 +63,13 @@
   "on_no_valid_tiles": {
     "actions": [["draw"]],
     "recurse": true
-  }
+  },
+  "auto_buttons": {
+    "auto_sort": {
+      "display_name": "A",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    }
+  },
+  "starting_tiles": 7
 }
