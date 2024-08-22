@@ -916,9 +916,9 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
                 ["unset_status", "just_reached", "call_made", "kan", "ankan"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
-                ["when", [{"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}], [["unset_status", "tenpai"]]],
-                ["when", [{"name": "hand_matches_any_discard", "opts": ["win"]}], [["set_status", "furiten"]]]
+                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
+                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]]
                ]
   },
   "after_turn_change": {
@@ -926,11 +926,15 @@
                 ["when", ["not_no_tiles_remaining"], [["draw"]]],
                 ["when_anyone",
                   [[
-                    {"name": "discard_matches_hand", "opts": ["win"]},
-                    {"name": "call_matches_hand", "opts": ["kakan", ["win"]]},
+                    {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
                     [
-                      {"name": "hand_matches_hand", "opts": ["kokushi_tenpai"]},
-                      {"name": "call_matches_hand", "opts": ["ankan", ["win"]]}
+                      {"name": "last_call_is", "opts": ["kakan"]},
+                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+                    ],
+                    [
+                      {"name": "last_call_is", "opts": ["ankan"]},
+                      {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
                     ]
                   ]],
                   [["set_status", "furiten"]]
@@ -946,23 +950,27 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
                 ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi"],
                 ["when", [
-                  {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
-                  {"name": "not_hand_matches_hand", "opts": ["false_tenpai"]}
+                  {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+                  {"name": "not_match", "opts": [["hand", "calls", "draw"], ["false_tenpai"]]}
                 ], [["set_status", "tenpai"]]],
                 ["when", [[
-                  {"name": "not_hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
-                  {"name": "hand_matches_hand", "opts": ["false_tenpai"]}
+                  {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+                  {"name": "match", "opts": [["hand", "calls", "draw"], ["false_tenpai"]]}
                 ]], [["unset_status", "tenpai"]]]
                ]
   },
   "after_call": {
     "actions": [["when_anyone",
                   [[
-                    {"name": "discard_matches_hand", "opts": ["win"]},
-                    {"name": "call_matches_hand", "opts": ["kakan", ["win"]]},
+                    {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
                     [
-                      {"name": "hand_matches_hand", "opts": ["kokushi_tenpai"]},
-                      {"name": "call_matches_hand", "opts": ["ankan", ["win"]]}
+                      {"name": "last_call_is", "opts": ["kakan"]},
+                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+                    ],
+                    [
+                      {"name": "last_call_is", "opts": ["ankan"]},
+                      {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
                     ]
                   ]],
                   [["set_status", "furiten"]]
@@ -1077,7 +1085,7 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]}],
+      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
@@ -1088,11 +1096,11 @@
       "display_name": "Ron",
       "show_when": [
                      "not_our_turn",
-                     {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
+                     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "not_status", "opts": ["furiten"]},
                      {"name": "not_status", "opts": ["just_reached"]},
                      "someone_else_discarded",
-                     {"name": "discard_matches_hand", "opts": ["win"]},
+                     {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
                      "has_yaku_with_discard"
                    ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
@@ -1102,14 +1110,18 @@
       "display_name": "Ron",
       "show_when": [
                      "not_our_turn",
-                     {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
+                     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "not_status", "opts": ["furiten"]},
                      {"name": "not_status", "opts": ["just_reached"]},
                      [
-                       {"name": "call_matches_hand", "opts": ["kakan", ["win"]]},
                        [
-                         {"name": "hand_matches_hand", "opts": ["kokushi_tenpai"]},
-                         {"name": "call_matches_hand", "opts": ["ankan", ["win"]]}
+                         {"name": "last_call_is", "opts": ["kakan"]},
+                         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+                       ],
+                       [
+                         {"name": "last_call_is", "opts": ["ankan"]},
+                         {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+                         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
                        ]
                      ]
                    ],
@@ -1119,9 +1131,9 @@
     "tsumo": {
       "display_name": "Tsumo",
       "show_when": ["our_turn",
-                     {"name": "hand_matches_hand", "opts": ["tenpai", "kokushi_tenpai"]},
+                     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "not_status", "opts": ["just_reached"]},
-                     {"name": "hand_matches_hand", "opts": ["win"]},
+                     {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
                      "has_yaku_with_hand"
                    ],
       "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
