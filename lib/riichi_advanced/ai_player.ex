@@ -42,6 +42,15 @@ defmodule RiichiAdvanced.AIPlayer do
     # button_name = Enum.at(player.buttons, 0)
     # pick the last button
     button_name = Enum.at(player.buttons, -1)
+
+    # but always pick Ron, Tsumo, Hu, Zimo
+    button_name = cond do
+      "ron" in player.buttons -> "ron"
+      "tsumo" in player.buttons -> "tsumo"
+      "hu" in player.buttons -> "hu"
+      "zimo" in player.buttons -> "zimo"
+      true -> button_name
+    end
     # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
     GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
