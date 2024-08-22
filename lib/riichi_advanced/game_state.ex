@@ -1460,7 +1460,7 @@ defmodule RiichiAdvanced.GameState do
 
   def submit_actions(state, seat, choice, actions) do
     if state.game_active && state.players[seat].choice == nil do
-      IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
+      # IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
       # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions, deferred_actions: [] })
 

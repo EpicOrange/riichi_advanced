@@ -135,7 +135,8 @@ defmodule Riichi do
           try_remove_all_tiles(hand, tiles, calls)
         else
           # list of integers specifying a group of tiles
-          hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+          all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
+          all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
             tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
             # IO.inspect(tiles)
             try_remove_all_tiles(hand, tiles, calls)
