@@ -211,7 +211,15 @@ defmodule RiichiAdvancedWeb.GameLive do
     <div class="revealed-tiles">
       <div class={["tile", tile]} :for={tile <- @revealed_tiles}></div>
     </div>
-    <div class={["big-text", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @players} :if={player.big_text != ""}><%= player.big_text %></div>
+    <.live_component module={RiichiAdvancedWeb.BigTextComponent}
+      id={"big-text-#{Utils.get_relative_seat(@seat, seat)}"}
+      game_state={@game_state}
+      seat={seat}
+      relative_seat={Utils.get_relative_seat(@seat, seat)}
+      big_text={player.big_text}
+      :for={{seat, player} <- @players}
+      :if={player.big_text != ""}
+      />
     <div class={["big-text"]} :if={@loading}>Loading...</div>
     <%= if false do %>
       <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @players}>

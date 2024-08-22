@@ -695,7 +695,8 @@ div.big-text {
   width: 100%;
   text-align: center;
   color: white;
-  font-size: calc(4 * var(--tile-size));
+  white-space: nowrap;
+  font-size: calc(40 * var(--tile-size) / (8 + var(--big-text-length)));
   text-shadow: black calc(0.1 * var(--tile-size)) calc(0.1 * var(--tile-size));
   z-index: 50;
   animation: textFade 1.5s ease forwards;
