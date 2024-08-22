@@ -1707,7 +1707,7 @@ defmodule RiichiAdvanced.GameState do
       state = temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
       # TODO ensure no unskippable button exists
-      _unskippable_button_exists = Enum.any?(state.players[seat].buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
+      # _unskippable_button_exists = Enum.any?(state.players[seat].buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
       state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = submit_actions(state, seat, "play_tile", actions)

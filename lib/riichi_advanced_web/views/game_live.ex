@@ -257,7 +257,9 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("ready_for_next_round", _assigns, socket) do
-    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
+    if socket.assigns.seat != :spectator do
+      GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
+    end
     socket = assign(socket, :timer, 0)
     {:noreply, socket}
   end
