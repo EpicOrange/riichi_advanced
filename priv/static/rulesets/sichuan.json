@@ -253,14 +253,44 @@
       "display_name": "Pong",
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available",
+                     [
+                       [
+                         {"name": "status", "opts": ["void_manzu"]},
+                         {"name": "not_match", "opts": [["last_discard"], [[[[["1m"]], 1]], [[[["2m"]], 1]], [[[["3m"]], 1]], [[[["4m"]], 1]], [[[["5m"]], 1]], [[[["6m"]], 1]], [[[["7m"]], 1]], [[[["8m"]], 1]], [[[["9m"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_pinzu"]},
+                         {"name": "not_match", "opts": [["last_discard"], [[[[["1p"]], 1]], [[[["2p"]], 1]], [[[["3p"]], 1]], [[[["4p"]], 1]], [[[["5p"]], 1]], [[[["6p"]], 1]], [[[["7p"]], 1]], [[[["8p"]], 1]], [[[["9p"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_souzu"]},
+                         {"name": "not_match", "opts": [["last_discard"], [[[[["1s"]], 1]], [[[["2s"]], 1]], [[[["3s"]], 1]], [[[["4s"]], 1]], [[[["5s"]], 1]], [[[["6s"]], 1]], [[[["7s"]], 1]], [[[["8s"]], 1]], [[[["9s"]], 1]]]]}
+                       ]
+                     ]
+                   ],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
-      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available",
+                     [
+                       [
+                         {"name": "status", "opts": ["void_manzu"]},
+                         {"name": "not_match", "opts": [["last_discard"], [[[[["1m"]], 1]], [[[["2m"]], 1]], [[[["3m"]], 1]], [[[["4m"]], 1]], [[[["5m"]], 1]], [[[["6m"]], 1]], [[[["7m"]], 1]], [[[["8m"]], 1]], [[[["9m"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_pinzu"]},
+                         {"name": "not_match", "opts": [["last_discard"], [[[[["1p"]], 1]], [[[["2p"]], 1]], [[[["3p"]], 1]], [[[["4p"]], 1]], [[[["5p"]], 1]], [[[["6p"]], 1]], [[[["7p"]], 1]], [[[["8p"]], 1]], [[[["9p"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_souzu"]},
+                         {"name": "not_match", "opts": [["last_discard"], [[[[["1s"]], 1]], [[[["2s"]], 1]], [[[["3s"]], 1]], [[[["4s"]], 1]], [[[["5s"]], 1]], [[[["6s"]], 1]], [[[["7s"]], 1]], [[[["8s"]], 1]], [[[["9s"]], 1]]]]}
+                       ]
+                     ]
+                   ],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"], ["set_status", "kan"], ["add_score", 2], ["add_score", -2, "last_discarder"], ["draw"]],
       "precedence_over": ["pon"]
     },
@@ -268,7 +298,22 @@
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
       "call_style": {"self": ["1x", 0, 1, "1x"]},
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["game_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["game_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available",
+                     [
+                       [
+                         {"name": "status", "opts": ["void_manzu"]},
+                         {"name": "not_match", "opts": [["hand", "draw"], [[[[["1m"]], 1]], [[[["2m"]], 1]], [[[["3m"]], 1]], [[[["4m"]], 1]], [[[["5m"]], 1]], [[[["6m"]], 1]], [[[["7m"]], 1]], [[[["8m"]], 1]], [[[["9m"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_pinzu"]},
+                         {"name": "not_match", "opts": [["hand", "draw"], [[[[["1p"]], 1]], [[[["2p"]], 1]], [[[["3p"]], 1]], [[[["4p"]], 1]], [[[["5p"]], 1]], [[[["6p"]], 1]], [[[["7p"]], 1]], [[[["8p"]], 1]], [[[["9p"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_souzu"]},
+                         {"name": "not_match", "opts": [["hand", "draw"], [[[[["1s"]], 1]], [[[["2s"]], 1]], [[[["3s"]], 1]], [[[["4s"]], 1]], [[[["5s"]], 1]], [[[["6s"]], 1]], [[[["7s"]], 1]], [[[["8s"]], 1]], [[[["9s"]], 1]]]]}
+                       ]
+                     ]
+                   ],
       "actions": [
         ["big_text", "Kong"], ["self_call"], ["set_status", "kan"],
         ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["add_score", -2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
@@ -281,7 +326,7 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
         ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["add_score", -1, "shimocha"], ["big_text", "  -1  ", "shimocha"]]],
