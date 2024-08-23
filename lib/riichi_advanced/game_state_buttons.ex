@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
   import RiichiAdvanced.GameState
 
   def recalculate_buttons(state) do
-    if Map.has_key?(state.rules, "buttons") do
+    if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
       new_buttons = Map.new(state.players, fn {seat, _player} ->

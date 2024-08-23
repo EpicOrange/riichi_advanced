@@ -137,10 +137,10 @@ defmodule RiichiAdvanced.GameState do
      |> Map.put(:winner_index, 0)
      |> Map.put(:delta_scores, nil)
      |> Map.put(:delta_scores_reason, nil)
-     |> Map.put(:dealer_continuation, false)
+     |> Map.put(:next_dealer, nil)
      |> Map.put(:timer, 0)
      |> Map.put(:actions_cv, 0) # condition variable
-     |> Map.put(:reserved_tiles, [])
+     |> Map.put(:reserved_tiles, %{})
      |> Map.put(:revealed_tiles, [])
      |> Map.put(:max_revealed_tiles, 0)
      |> Map.put(:drawn_reserved_tiles, [])
@@ -188,7 +188,7 @@ defmodule RiichiAdvanced.GameState do
       else Map.new([:east, :south, :west, :north], &{&1, []}) end
 
       # debug use only
-      # wall = List.replace_at(wall, 52, :"3p") # first draw
+      wall = List.replace_at(wall, 52, :"1p") # first draw
       # wall = List.replace_at(wall, 53, :"3p")
       # wall = List.replace_at(wall, 54, :"3p")
       # wall = List.replace_at(wall, 55, :"3p")
@@ -204,6 +204,10 @@ defmodule RiichiAdvanced.GameState do
       # wall = List.replace_at(wall, -1, :"3m") # second kan draw
       # wall = List.replace_at(wall, -4, :"4m") # third kan draw
       # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
+      hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+                :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+                :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+                :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
       # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"2p", :"2p", :"4p", :"5p", :"3s", :"4s", :"5s", :"8s", :"8s"]),
       #           :south => Enum.slice(wall, 13..25),
       #           :west  => Enum.slice(wall, 26..38),
@@ -290,7 +294,7 @@ defmodule RiichiAdvanced.GameState do
        |> Map.put(:winner_index, 0)
        |> Map.put(:delta_scores, nil)
        |> Map.put(:delta_scores_reason, nil)
-       |> Map.put(:dealer_continuation, false)
+       |> Map.put(:next_dealer, nil)
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
@@ -390,16 +394,31 @@ defmodule RiichiAdvanced.GameState do
         end
         winner = Map.merge(winner, %{
           yaku: yaku,
-          yakuman: [],
           points: points,
-          yakuman_mult: 0,
           score: score,
-          score_name: "",
-          minipoints: 0,
-          payer: payer,
-          pao_seat: nil
+          payer: payer
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+        state
+      "sichuan" ->
+        # add a winner
+        yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, winning_tile, win_source)
+        {score, points, _} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        winner = Map.merge(winner, %{
+          yaku: yaku,
+          points: points,
+          score: score,
+          payer: payer
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+
+        # only end the round once there are three winners; otherwise, continue
+        state = Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
         state
       _ ->
         state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")
@@ -424,11 +443,11 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
     Debounce.apply(state.timer_debouncer)
 
-    {state, delta_scores, delta_scores_reason, dealer_continuation} = Scoring.adjudicate_draw_scoring(state)
+    {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
 
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-    state = Map.put(state, :dealer_continuation, dealer_continuation)
+    state = Map.put(state, :next_dealer, next_dealer)
     state
   end
 
@@ -448,10 +467,11 @@ defmodule RiichiAdvanced.GameState do
         state = Map.put(state, :visible_screen, :scores)
 
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
-        {state, delta_scores, delta_scores_reason, dealer_continuation} = Scoring.adjudicate_win_scoring(state)
+        {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_win_scoring(state)
         state = Map.put(state, :delta_scores, delta_scores)
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-        state = Map.put(state, :dealer_continuation, dealer_continuation)
+        # only populate next_dealer the first time we call Scoring.adjudicate_win_scoring
+        state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
         
         # reset timer
         state = Map.put(state, :timer, 10)
@@ -462,7 +482,7 @@ defmodule RiichiAdvanced.GameState do
       state.visible_screen == :scores -> # finished seeing the score exchange screen
         # update kyoku and honba
         state = case state.round_result do
-          :win when state.dealer_continuation ->
+          :win when state.next_dealer == :self ->
             state
               |> Map.update!(:honba, & &1 + 1)
               |> Map.put(:riichi_sticks, 0)
@@ -473,7 +493,7 @@ defmodule RiichiAdvanced.GameState do
               |> Map.put(:honba, 0)
               |> Map.put(:riichi_sticks, 0)
               |> Map.put(:visible_screen, nil)
-          :draw when state.dealer_continuation ->
+          :draw when state.next_dealer == :self ->
             state
               |> Map.update!(:honba, & &1 + 1)
               |> Map.put(:visible_screen, nil)
@@ -490,14 +510,25 @@ defmodule RiichiAdvanced.GameState do
         state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
         state = Map.put(state, :delta_scores, nil)
 
-        # finish or initialize new round if needed
+        # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
           if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
             finalize_game(state)
           else
             initialize_new_round(state)
           end
-        else state end
+        else 
+          state = Map.put(state, :visible_screen, nil)
+          state = Map.put(state, :game_active, true)
+
+          # trigger before_continue actions
+          state = if Map.has_key?(state.rules, "before_continue") do
+            Actions.run_actions(state, state.rules["before_continue"]["actions"], %{seat: state.turn})
+          else state end
+
+          notify_ai(state)
+          state
+        end
         state
       true ->
         IO.puts("timer_finished() called; unsure what the timer was for")

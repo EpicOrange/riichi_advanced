@@ -237,7 +237,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         self_pick = winner.payer == nil
         basic_score = trunc(winner.score / if self_pick do 3 else 4 end)
         payer_seat = winner.payer
-        # have each payer pay their allotted share
         for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
           delta_scores ->
             payment = if payer == payer_seat do 2 * basic_score else basic_score end
@@ -251,11 +250,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
             delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
             delta_scores
         else
-          # have each payer pay their allotted share
+          payment = trunc(winner.score / 3)
           for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
             delta_scores ->
-              delta_scores = Map.update!(delta_scores, payer, & &1 - winner.score)
-              delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
+              delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
+              delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
               delta_scores
           end
         end
@@ -282,8 +281,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end
     end
 
-    # sum the individual delta scores for each winner
-    for {seat, winner} <- state.winners, reduce: Map.new(state.players, fn {seat, _player} -> {seat, 0} end) do
+    # sum the individual delta scores for each winner, skipping winners already marked as processed
+    for {seat, winner} <- state.winners, not Map.has_key?(winner, :processed), reduce: Map.new(state.players, fn {seat, _player} -> {seat, 0} end) do
       delta_scores_acc ->
         delta_scores = calculate_delta_scores_for_single_winner(state, winner, seat == closest_winner)
         delta_scores_acc = Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + delta_scores[seat]} end)
@@ -293,44 +292,69 @@ defmodule RiichiAdvanced.GameState.Scoring do
   
   def adjudicate_win_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    {state, delta_scores, delta_scores_reason, dealer_continuation} = case scoring_table["method"] do
+    {state, delta_scores, delta_scores_reason, next_dealer} = case scoring_table["method"] do
       "riichi" ->
         delta_scores = calculate_delta_scores(state)
 
         {_seat, some_winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
           some_winner.pao_seat != nil  -> "Sekinin Barai"
-          map_size(state.winners) == 1 -> "Ron"
+          map_size(state.winners) == 1 ->
+            {_seat, winner} = Enum.at(state.winners, 0)
+            if winner.payer == nil do "Tsumo" else "Ron" end
           map_size(state.winners) == 2 -> "Double Ron"
           map_size(state.winners) == 3 -> "Triple Ron"
         end
 
-        dealer_continuation = Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku))
-        {state, delta_scores, delta_scores_reason, dealer_continuation}
+        next_dealer = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do :self else :shimocha end
+        {state, delta_scores, delta_scores_reason, next_dealer}
       "hk" ->
         delta_scores = calculate_delta_scores(state)
         delta_scores_reason = cond do
-          map_size(state.winners) == 1 -> "Hu"
+          map_size(state.winners) == 1 ->
+            {_seat, winner} = Enum.at(state.winners, 0)
+            if winner.payer == nil do "Zimo" else "Hu" end
           map_size(state.winners) == 2 -> "Double Hu"
           map_size(state.winners) == 3 -> "Triple Hu"
         end
-        {state, delta_scores, delta_scores_reason, false}
+        {state, delta_scores, delta_scores_reason, :shimocha}
       "sichuan" ->
+        # this will be called after every hu/double hu/triple hu
+        # this function will calculate the next dealer every time,
+        # but only the first result will be used
+
         delta_scores = calculate_delta_scores(state)
-        delta_scores_reason = "Hu"
-        {state, delta_scores, delta_scores_reason, false}
+        winners = Enum.filter(state.winners, fn {seat, winner} -> not Map.has_key?(winner, :processed) end)
+        delta_scores_reason = cond do
+          length(winners) == 1 ->
+            {_seat, winner} = Enum.at(state.winners, 0)
+            if winner.payer == nil do "Zimo" else "Hu" end
+          length(winners) == 2 -> "Double Hu"
+          length(winners) == 3 -> "Triple Hu"
+        end
+
+        # the first winner becomes the next dealer
+        # if there are multiple first winners, the payer becomes the next dealer
+        current_dealer = Riichi.get_east_player_seat(state.kyoku)
+        {last_winner_seat, last_winner} = Enum.at(state.winners, map_size(state.winners)-1)
+        new_dealer = if length(winners) >= 2 do last_winner.payer else last_winner_seat end
+
+        # mark all winners as processed
+        state = Map.update!(state, :winners, &Map.new(&1, fn {seat, winner} -> {seat, Map.put(winner, :processed, true)} end))
+
+        {state, delta_scores, delta_scores_reason, Utils.get_relative_seat(current_dealer, new_dealer)}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
         {state, delta_scores, "", false}
     end
-    {state, delta_scores, delta_scores_reason, dealer_continuation}
+    {state, delta_scores, delta_scores_reason, next_dealer}
   end
 
   def adjudicate_draw_scoring(state) do
     scoring_table = state.rules["score_calculation"]
-    {state, delta_scores, delta_scores_reason, dealer_continuation} = case scoring_table["method"] do
+    {state, delta_scores, delta_scores_reason, next_dealer} = case scoring_table["method"] do
       "riichi" ->
         tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
         nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end)
@@ -367,9 +391,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
           num_nagashi > 0  -> "Nagashi Mangan"
         end
 
-        dealer_continuation = tenpai[Riichi.get_east_player_seat(state.kyoku)]
+        next_dealer = if tenpai[Riichi.get_east_player_seat(state.kyoku)] do :self else :shimocha end
 
-        {state, delta_scores, delta_scores_reason, dealer_continuation}
+        {state, delta_scores, delta_scores_reason, next_dealer}
       "hk" ->
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         delta_scores_reason = "Draw"
@@ -382,19 +406,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # - if there are less than 3 winners, we need to do a payment
         # - for each 
         # - 
-        # - new dealer (dealer_continuation) is based on the first winner (no change if no winner)
+        # - new dealer (next_dealer) is based on the first winner (no change if no winner)
         #   + first winner is next dealer
         #   + if first winner is on a multiple hu, the discarder is the next dealer
-        #   + so we need to modify dealer_continuation, as well as make winners ordered
+        #   + so we need to make winners ordered
         #   
-        {state, delta_scores, delta_scores_reason, false}
+        {state, delta_scores, delta_scores_reason, nil}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
         {state, delta_scores, "", false}
     end
-    {state, delta_scores, delta_scores_reason, dealer_continuation}
+    {state, delta_scores, delta_scores_reason, next_dealer}
   end
 
 end

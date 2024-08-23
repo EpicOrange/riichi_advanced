@@ -473,7 +473,8 @@
     },
     "tsumo": {
       "display_name": "Zimo",
-      "show_when": ["our_turn",
+      "show_when": [
+                     "our_turn",
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
                    ],
