@@ -41,15 +41,18 @@ defmodule RiichiAdvanced.AIPlayer do
     # pick the first button
     # button_name = Enum.at(player.buttons, 0)
     # pick the last button
-    button_name = Enum.at(player.buttons, -1)
+    # button_name = Enum.at(player.buttons, -1)
 
-    # but always pick Ron, Tsumo, Hu, Zimo
+    # pick these (in order of precedence)
     button_name = cond do
       "ron" in player.buttons -> "ron"
       "tsumo" in player.buttons -> "tsumo"
       "hu" in player.buttons -> "hu"
       "zimo" in player.buttons -> "zimo"
-      true -> button_name
+      "riichi" in player.buttons -> "riichi"
+      "flower" in player.buttons -> "flower"
+      "skip" in player.buttons -> "skip"
+      true -> Enum.random(player.buttons)
     end
     # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
     Process.sleep(500)
