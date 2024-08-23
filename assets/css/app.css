@@ -265,6 +265,9 @@ div.compass > div.centerpiece::before {
   top: calc(50% - (0.55 * var(--tile-size)));
   z-index: -1;
 }
+div.compass > div.centerpiece > div.tiles-left:last-child {
+  transform: translateY(calc(0.2 * var(--tile-size)));
+}
 div.centerpiece > div.riichi-stick-counter,
 div.centerpiece > div.honba-counter {
   position: absolute;
