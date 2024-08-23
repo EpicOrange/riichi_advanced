@@ -912,7 +912,9 @@ defmodule RiichiAdvanced.GameState do
   defp parse_test_spec(rules, test_spec) do
     name = test_spec["name"]
     hand = if Map.has_key?(test_spec, "hand") do Enum.map(test_spec["hand"], &Utils.to_tile/1) else [] end
-    calls = if Map.has_key?(test_spec, "calls") do Enum.map(test_spec["calls"], fn [call_name, call_tiles] -> {call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)} end ) else [] end
+    calls = if Map.has_key?(test_spec, "calls") do Enum.map(test_spec["calls"], fn [call_name, call_tiles] -> {call_name, Enum.map(call_tiles, fn tile -> {Utils.to_tile(tile), false} end)} end ) else [] end
+    status = test_spec["status"]
+    conditions = if Map.has_key?(test_spec, "conditions") do test_spec["conditions"] else [] end
     winning_tile = if Map.has_key?(test_spec, "winning_tile") do Utils.to_tile(test_spec["winning_tile"]) else
         GenServer.cast(self(), {:show_error, "Could not find key \"winning_tile\" in test spec:\n#{inspect(test_spec)}"})
       end
@@ -943,26 +945,35 @@ defmodule RiichiAdvanced.GameState do
           end)
       end
     expected_yaku = case test_spec["expected_yaku"] do
-        nil        -> GenServer.cast(self(), {:show_error, "Could not find key \"expected_yaku\" in test spec:\n#{inspect(test_spec)}"})
+        nil           -> GenServer.cast(self(), {:show_error, "Could not find key \"expected_yaku\" in test spec:\n#{inspect(test_spec)}"})
         expected_yaku -> Enum.map(expected_yaku, fn [name, value] -> {name, value} end)
       end
 
-    {name, hand, calls, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku}
+    {name, hand, calls, status, conditions, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku}
   end
-  
+
   defp run_yaku_tests(state) do
-    if Map.has_key?(state.rules, "yaku_tests") do
+    if Map.has_key?(state.rules, "yaku_tests") && state.rules["run_yaku_tests"] do
       for test_spec <- state.rules["yaku_tests"] do
-        {name, hand, calls, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku} = parse_test_spec(state.rules, test_spec)
+        {name, hand, calls, status, conditions, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku} = parse_test_spec(state.rules, test_spec)
 
         # setup a state where a given player has the given hand, calls, and tiles
         minipoints = if state.rules["score_calculation"]["method"] == "riichi" do
             Riichi.calculate_fu(hand, calls, winning_tile, win_source, Riichi.get_seat_wind(kyoku, seat), Riichi.get_round_wind(kyoku))
           else 0 end
-        yaku = state
-          |> update_player(seat, &%Player{ &1 | hand: hand, calls: calls })
+        state = state
+          |> update_player(seat, &%Player{ &1 | hand: hand, calls: calls, status: if status == nil do &1.status else status end })
           |> Map.put(:kyoku, kyoku)
-          |> get_yaku(yaku_list, seat, winning_tile, win_source, minipoints)
+        state = for condition <- conditions, reduce: state do
+          state -> case condition do
+            "make_discards_exist" -> update_action(state, seat, :discard, %{tile: :"1x"}) 
+            "no_draws_remaining"  -> Map.put(state, :wall_index, length(state.wall))
+            _ ->
+              GenServer.cast(self(), {:show_error, "Unknown test condition #{inspect(condition)} in yaku test #{name}"})
+              state
+          end
+        end
+        yaku = get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints)
         # IO.puts("Got yaku: #{inspect(yaku)}")
         # IO.puts("Expected yaku: #{inspect(expected_yaku)}")
         if yaku != expected_yaku do
@@ -1481,11 +1492,13 @@ defmodule RiichiAdvanced.GameState do
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions) end)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
-        Enum.all?(state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), fn tile -> tile in tiles end) 
+        winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)
+        Enum.all?(winning_hand, fn tile -> tile in tiles end)
       "winning_hand_and_tile_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
+        winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1) ++ [winning_tile], fn tile -> tile in tiles end) 
+        Enum.all?(winning_hand ++ [winning_tile], fn tile -> tile in tiles end)
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
