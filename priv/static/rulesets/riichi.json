@@ -1189,5 +1189,29 @@
   "display_honba": true,
   "initial_score": 25000,
   "starting_tiles": 13,
-  "max_rounds": 8
+  "max_rounds": 8,
+  "yaku_tests": [
+    {
+      "name": "chuurenpoutou",
+      "hand": ["1m", "1m", "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "9m", "9m"],
+      "calls": [],
+      "winning_tile": "5m",
+      "win_source": "discard",
+      "round": 0,
+      "seat": "east",
+      "yaku_lists": ["yakuman"],
+      "expected_yaku": [["Chuurenpoutou", 1]]
+    },
+    {
+      "name": "tanyao_sanshoku",
+      "hand": ["2m", "3m", "4m", "2s", "3s", "4s", "2p", "3p", "4p", "7m"],
+      "calls": [["pon", ["5m", "5m", "5m"]]],
+      "winning_tile": "7m",
+      "win_source": "discard",
+      "round": 0,
+      "seat": "east",
+      "yaku_lists": ["yaku"],
+      "expected_yaku": [["Tanyao", 1], ["Sanshoku", 1]]
+    }
+  ]
 }

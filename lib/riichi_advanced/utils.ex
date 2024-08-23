@@ -43,6 +43,7 @@ defmodule Utils do
   end
 
   def next_turn(seat, iterations \\ 1) do
+    iterations = rem(iterations, 4)
     next = cond do
       seat == :east  -> :south
       seat == :south -> :west
@@ -52,6 +53,7 @@ defmodule Utils do
     if iterations <= 0 do seat else next_turn(next, iterations - 1) end
   end
   def prev_turn(seat, iterations \\ 1) do
+    iterations = rem(iterations, 4)
     prev = cond do
       seat == :east  -> :north
       seat == :south -> :east
