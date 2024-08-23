@@ -717,6 +717,7 @@ defmodule RiichiAdvanced.GameState do
       "last_call_is"             -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
       "kamicha_discarded"        -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
       "someone_else_discarded"   -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
+      "just_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
       "just_called"              -> last_action != nil && last_action.action == :call
       "call_available"           -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
       "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)

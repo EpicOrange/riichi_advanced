@@ -483,7 +483,7 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]]
     }
   },
