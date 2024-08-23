@@ -252,28 +252,43 @@
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
-      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"], ["set_status", "kan"], ["draw"]],
+      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"], ["set_status", "kan"], ["add_score", 2], ["add_score", -2, "last_discarder"], ["draw"]],
       "precedence_over": ["pon"]
     },
     "ankan": {
-      "display_name": "Self Kong",
+      "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"self": ["1x", 0, 1, "1x"]},
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["game_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
-      "actions": [["big_text", "Kong"], ["self_call"], ["set_status", "kan"], ["draw"]]
+      "actions": [
+        ["big_text", "Kong"], ["self_call"], ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["add_score", -2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["add_score", -2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["add_score", -2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+        ["draw"]
+      ]
     },
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-      "actions": [["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"], ["draw"]]
+      "actions": [
+        ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["add_score", -1, "shimocha"], ["big_text", "  -1  ", "shimocha"]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["add_score", -1, "toimen"], ["big_text", "  -1  ", "toimen"]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["add_score", -1, "kamicha"], ["big_text", "  -1  ", "kamicha"]]],
+        ["draw"]
+      ]
     },
     "ron": {
       "display_name": "Hu",

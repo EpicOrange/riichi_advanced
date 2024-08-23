@@ -189,11 +189,30 @@ defmodule RiichiAdvanced.GameState.Actions do
       "unset_callee_status"   -> update_player(state, context.callee, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "set_caller_status"     -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_caller_status"   -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "big_text"              -> temp_display_big_text(state, context.seat, Enum.at(opts, 0, ""))
+      "big_text"              ->
+        seat = case Enum.at(opts, 1) do
+          "shimocha" -> Utils.get_seat(context.seat, :shimocha)
+          "toimen" -> Utils.get_seat(context.seat, :toimen)
+          "kamicha" -> Utils.get_seat(context.seat, :kamicha)
+          _ -> context.seat
+        end
+        temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
       "pause"                 -> Map.put(state, :game_active, false)
       "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       "reveal_tile"           -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
-      "add_score"             -> update_player(state, context.seat, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
+      "add_score"             ->
+        recipients = case Enum.at(opts, 1) do
+          "shimocha" -> [Utils.get_seat(context.seat, :shimocha)]
+          "toimen" -> [Utils.get_seat(context.seat, :toimen)]
+          "kamicha" -> [Utils.get_seat(context.seat, :kamicha)]
+          "last_discarder" -> [get_last_discard_action(state).seat]
+          "all" -> [:east, :south, :west, :north]
+          "others" -> [:east, :south, :west, :north] -- [context.seat]
+          _ -> [context.seat]
+        end
+        for recipient <- recipients, reduce: state do
+          state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
+        end
       "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + 1) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true })
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "ryuukyoku"             -> exhaustive_draw(state)

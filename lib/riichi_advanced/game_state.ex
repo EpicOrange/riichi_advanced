@@ -257,7 +257,11 @@ defmodule RiichiAdvanced.GameState do
                |> Map.put(:max_revealed_tiles, max_revealed_tiles)
                |> Map.put(:drawn_reserved_tiles, [])}
       else
-        {wall, state}
+        {wall, state
+               |> Map.put(:reserved_tiles, %{})
+               |> Map.put(:revealed_tiles, [])
+               |> Map.put(:max_revealed_tiles, 0)
+               |> Map.put(:drawn_reserved_tiles, [])}
       end
 
       # initialize auto buttons
@@ -743,6 +747,9 @@ defmodule RiichiAdvanced.GameState do
       "status"                   -> Enum.all?(opts, fn st -> st in state.players[context.seat].status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in state.players[context.seat].status end)
       "discarder_status"         -> last_action.action == :discard && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
+      "shimocha_status"          -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :shimocha)].status end)
+      "toimen_status"            -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :toimen)].status end)
+      "kamicha_status"           -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :kamicha)].status end)
       "is_drawn_tile"            -> context.tile_source == :draw
       "buttons_include"          -> Enum.all?(opts, fn button_name -> button_name in state.players[context.seat].buttons end)
       "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in state.players[context.seat].buttons end)
