@@ -164,12 +164,12 @@ defmodule RiichiAdvancedWeb.CoreComponents do
       <.flash
         id="server-error"
         kind={:error}
-        title={gettext("Something went wrong!")}
+        title={gettext("Attempting to reconnect!")}
         phx-disconnected={show(".phx-server-error #server-error")}
         phx-connected={hide("#server-error")}
         hidden
       >
-        <%= gettext("Hang in there while we get back on track") %>
+        <%= gettext("Either we just stopped the server to upgrade, or the game worker crashed and is restarting") %>
         <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
       </.flash>
     </div>
