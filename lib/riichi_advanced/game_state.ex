@@ -188,11 +188,11 @@ defmodule RiichiAdvanced.GameState do
       else Map.new([:east, :south, :west, :north], &{&1, []}) end
 
       # debug use only
-      wall = List.replace_at(wall, 52, :"1p") # first draw
-      # wall = List.replace_at(wall, 53, :"3p")
+      # wall = List.replace_at(wall, 52, :"1p") # first draw
+      # wall = List.replace_at(wall, 53, :"4p")
       # wall = List.replace_at(wall, 54, :"3p")
       # wall = List.replace_at(wall, 55, :"3p")
-      # wall = List.replace_at(wall, 56, :"3p") # second draw
+      # wall = List.replace_at(wall, 56, :"1p") # second draw
       # wall = List.replace_at(wall, 57, :"3p")
       # wall = List.replace_at(wall, 58, :"3p")
       # wall = List.replace_at(wall, 59, :"3p")
@@ -204,10 +204,14 @@ defmodule RiichiAdvanced.GameState do
       # wall = List.replace_at(wall, -1, :"3m") # second kan draw
       # wall = List.replace_at(wall, -4, :"4m") # third kan draw
       # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
-      hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-                :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-                :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-                :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
+      # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+      #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+      #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+      #           :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
+      # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+      #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+      #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+      #           :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
       # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"2p", :"2p", :"4p", :"5p", :"3s", :"4s", :"5s", :"8s", :"8s"]),
       #           :south => Enum.slice(wall, 13..25),
       #           :west  => Enum.slice(wall, 26..38),

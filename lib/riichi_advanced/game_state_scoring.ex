@@ -324,7 +324,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # but only the first result will be used
 
         delta_scores = calculate_delta_scores(state)
-        winners = Enum.filter(state.winners, fn {seat, winner} -> not Map.has_key?(winner, :processed) end)
+        winners = Enum.filter(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end)
         delta_scores_reason = cond do
           length(winners) == 1 ->
             {_seat, winner} = Enum.at(state.winners, 0)
