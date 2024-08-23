@@ -95,7 +95,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def update(assigns, socket) do
     # randomize position of played tile (if tedashi)
     no_played_tile_yet? = socket.assigns.played_tile_index == nil
-    assigns = if not socket.assigns.revealed? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil do
+    assigns = if not socket.assigns.revealed? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil && assigns.played_tile_index < length(socket.assigns.hand) do
       if no_played_tile_yet? do
         Map.put(assigns, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
       else
