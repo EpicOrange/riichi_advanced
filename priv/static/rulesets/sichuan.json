@@ -194,7 +194,9 @@
     "actions": [["set_status_all", "game_start"]]
   },
   "before_turn_change": {
-    "actions": [["unset_status", "kan", "first_turn"]]
+    "actions": [["unset_status", "kan", "first_turn"],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
+                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]]
   },
   "after_turn_change": {
     "actions": [

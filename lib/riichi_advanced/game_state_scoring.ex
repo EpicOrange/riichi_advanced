@@ -245,18 +245,23 @@ defmodule RiichiAdvanced.GameState.Scoring do
             delta_scores
         end
       "sichuan" ->
-        if winner.payer != nil do
-            delta_scores = Map.update!(delta_scores, winner.payer, & &1 - winner.score)
-            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
-            delta_scores
-        else
-          payment = trunc(winner.score / 3)
-          for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
-            delta_scores ->
-              delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
-              delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
-              delta_scores
-          end
+        # two cases: for a normal win, use winner.payer. for draws, use winner.payers
+        payers = if Map.has_key?(winner, :payer) do [winner.payer] else winner.payers end
+        for payer <- payers, reduce: delta_scores do
+          delta_scores ->
+            if payer != nil do
+                delta_scores = Map.update!(delta_scores, payer, & &1 - winner.score)
+                delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
+                delta_scores
+            else
+              payment = trunc(winner.score / 3)
+              for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
+                delta_scores ->
+                  delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
+                  delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
+                  delta_scores
+              end
+            end
         end
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
@@ -265,22 +270,26 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   defp calculate_delta_scores(state) do
-    # determine the closest winner (the one who receives riichi sticks and honba)
-    {_seat, some_winner} = Enum.at(state.winners, 0)
-    payer = some_winner.payer
-    closest_winner = if payer == nil do some_winner.seat else
-      next_seat_1 = if state.reversed_turn_order do Utils.next_turn(payer) else Utils.prev_turn(payer) end
-      next_seat_2 = if state.reversed_turn_order do Utils.next_turn(next_seat_1) else Utils.prev_turn(next_seat_1) end
-      next_seat_3 = if state.reversed_turn_order do Utils.next_turn(next_seat_2) else Utils.prev_turn(next_seat_2) end
-      next_seat_4 = if state.reversed_turn_order do Utils.next_turn(next_seat_3) else Utils.prev_turn(next_seat_3) end
-      cond do
-        Map.has_key?(state.winners, next_seat_1) -> next_seat_1
-        Map.has_key?(state.winners, next_seat_2) -> next_seat_2
-        Map.has_key?(state.winners, next_seat_3) -> next_seat_3
-        Map.has_key?(state.winners, next_seat_4) -> next_seat_4
-      end
+    scoring_table = state.rules["score_calculation"]
+    closest_winner = case scoring_table["method"] do
+      "riichi" ->
+        # determine the closest winner (the one who receives riichi sticks and honba)
+        {_seat, some_winner} = Enum.at(state.winners, 0)
+        payer = some_winner.payer
+        closest_winner = if payer == nil do some_winner.seat else
+          next_seat_1 = if state.reversed_turn_order do Utils.next_turn(payer) else Utils.prev_turn(payer) end
+          next_seat_2 = if state.reversed_turn_order do Utils.next_turn(next_seat_1) else Utils.prev_turn(next_seat_1) end
+          next_seat_3 = if state.reversed_turn_order do Utils.next_turn(next_seat_2) else Utils.prev_turn(next_seat_2) end
+          next_seat_4 = if state.reversed_turn_order do Utils.next_turn(next_seat_3) else Utils.prev_turn(next_seat_3) end
+          cond do
+            Map.has_key?(state.winners, next_seat_1) -> next_seat_1
+            Map.has_key?(state.winners, next_seat_2) -> next_seat_2
+            Map.has_key?(state.winners, next_seat_3) -> next_seat_3
+            Map.has_key?(state.winners, next_seat_4) -> next_seat_4
+          end
+        end
+      _ -> nil
     end
-
     # sum the individual delta scores for each winner, skipping winners already marked as processed
     for {seat, winner} <- state.winners, not Map.has_key?(winner, :processed), reduce: Map.new(state.players, fn {seat, _player} -> {seat, 0} end) do
       delta_scores_acc ->
@@ -310,13 +319,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {state, delta_scores, delta_scores_reason, next_dealer}
       "hk" ->
         delta_scores = calculate_delta_scores(state)
+        {_seat, winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
-          map_size(state.winners) == 1 ->
-            {_seat, winner} = Enum.at(state.winners, 0)
-            if winner.payer == nil do "Zimo" else "Hu" end
-          map_size(state.winners) == 2 -> "Double Hu"
-          map_size(state.winners) == 3 -> "Triple Hu"
-        end
+            winner.payer == nil          -> "Zimo"
+            map_size(state.winners) == 1 -> "Hu"
+            map_size(state.winners) == 2 -> "Double Hu"
+            map_size(state.winners) == 3 -> "Triple Hu"
+          end
         {state, delta_scores, delta_scores_reason, :shimocha}
       "sichuan" ->
         # this will be called after every hu/double hu/triple hu
@@ -325,29 +334,34 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         delta_scores = calculate_delta_scores(state)
         winners = Enum.filter(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end)
+        {_seat, winner} = Enum.at(state.winners, -1)
+        has_payer = Map.has_key?(winner, :payer)
         delta_scores_reason = cond do
-          length(winners) == 1 ->
-            {_seat, winner} = Enum.at(state.winners, 0)
-            if winner.payer == nil do "Zimo" else "Hu" end
-          length(winners) == 2 -> "Double Hu"
-          length(winners) == 3 -> "Triple Hu"
-        end
+            not has_payer        -> "Draw"
+            winner.payer == nil  -> "Zimo"
+            length(winners) == 1 -> "Hu"
+            length(winners) == 2 -> "Double Hu"
+            length(winners) == 3 -> "Triple Hu"
+          end
 
         # the first winner becomes the next dealer
         # if there are multiple first winners, the payer becomes the next dealer
-        current_dealer = Riichi.get_east_player_seat(state.kyoku)
         {last_winner_seat, last_winner} = Enum.at(state.winners, map_size(state.winners)-1)
-        new_dealer = if length(winners) >= 2 do last_winner.payer else last_winner_seat end
+        next_dealer = if Map.has_key?(last_winner, :payer) do
+          current_dealer = Riichi.get_east_player_seat(state.kyoku)
+          new_dealer = if length(winners) >= 2 do last_winner.payer else last_winner_seat end
+          Utils.get_relative_seat(current_dealer, new_dealer)
+        else nil end # otherwise this winner is from a draw, ignore
 
         # mark all winners as processed
         state = Map.update!(state, :winners, &Map.new(&1, fn {seat, winner} -> {seat, Map.put(winner, :processed, true)} end))
 
-        {state, delta_scores, delta_scores_reason, Utils.get_relative_seat(current_dealer, new_dealer)}
+        {state, delta_scores, delta_scores_reason, next_dealer}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
-        {state, delta_scores, "", false}
+        {state, delta_scores, "", :shimocha}
     end
     {state, delta_scores, delta_scores_reason, next_dealer}
   end
@@ -383,8 +397,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           end
           {state, delta_scores}
         end
-        # reveal hand for those players that are tenpai
-        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] } end)
+        # reveal hand for those players that are tenpai or nagashi
+        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] || nagashi[seat] } end)
 
         delta_scores_reason = cond do
           num_nagashi == 0 -> "Ryuukyoku"
@@ -402,16 +416,51 @@ defmodule RiichiAdvanced.GameState.Scoring do
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         delta_scores_reason = "Draw"
 
-        # TODO
-        # - if there are less than 3 winners, we need to do a payment
-        # - for each 
-        # - 
-        # - new dealer (next_dealer) is based on the first winner (no change if no winner)
-        #   + first winner is next dealer
-        #   + if first winner is on a multiple hu, the discarder is the next dealer
-        #   + so we need to make winners ordered
-        #   
-        {state, delta_scores, delta_scores_reason, nil}
+        # declare tenpai players as winners, as if they won from non-tenpai people
+        tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
+        payers = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
+        # do this so under the sea isn't scored
+        state = Map.put(state, :wall_index, 0)
+        # for each tenpai player, find the highest point hand they could get
+        state = for {seat, tenpai?} <- tenpai, tenpai?, reduce: state do
+          state ->
+            possible_tiles = state.players[seat].hand ++ state.players[seat].draw
+              |> Enum.flat_map(fn tile -> [Riichi.pred(tile), tile, Riichi.succ(tile)] -- [nil] end)
+            {winning_tile, best_yaku} = for winning_tile <- possible_tiles do
+              possible_yaku = get_yaku(state, state.rules["yaku"], seat, winning_tile, :discard)
+              if Enum.empty?(possible_yaku) do
+                # shouldn't be possible, but handle it
+                {winning_tile, 0}
+              else
+                {winning_tile, possible_yaku}
+              end
+            end |> Enum.max_by(fn {winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
+            {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
+            call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
+            winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
+            winner = %{
+              seat: seat,
+              player: state.players[seat],
+              winning_hand: winning_hand,
+              winning_tile: winning_tile,
+              win_source: :discard,
+              point_name: state.rules["point_name"],
+              yaku: best_yaku,
+              points: points,
+              score: score,
+              payers: payers
+            }
+            state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+            state
+        end
+        state = Map.put(state, :visible_screen, :winner)
+        state = Map.put(state, :round_result, :draw)
+
+        # reveal hand for those players that are tenpai
+        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] } end)
+        
+        next_dealer = if state.next_dealer != nil do state.next_dealer else :shimocha end
+        {state, delta_scores, delta_scores_reason, next_dealer}
       _ ->
         IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
