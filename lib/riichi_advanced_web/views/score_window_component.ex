@@ -7,7 +7,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def render(assigns) do
     placements = assigns.players
-      |> Enum.map(fn {seat, player} -> {seat, player.score} end)
+      |> Enum.map(fn {seat, player} -> {seat, if assigns.delta_scores != nil do player.score + assigns.delta_scores[seat] else player.score end} end)
       |> Enum.sort_by(fn {_seat, score} -> -score end)
       |> Enum.zip(["1st", "2nd", "3rd", "4th"])
       |> Enum.map(fn {{seat, _score}, place} -> {seat, place} end)
