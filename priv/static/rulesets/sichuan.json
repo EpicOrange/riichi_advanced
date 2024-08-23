@@ -252,36 +252,51 @@
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"], ["set_status", "kan"], ["draw"]],
       "precedence_over": ["pon"]
     },
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["game_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["game_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [["big_text", "Kong"], ["self_call"], ["set_status", "kan"], ["draw"]]
     },
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"], ["draw"]]
     },
     "ron": {
       "display_name": "Hu",
       "show_when": [
                      "not_our_turn",
+                     {"name": "not_status", "opts": ["won"]}, 
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      "someone_else_discarded",
-                     {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+                     {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+                     [
+                       [
+                         {"name": "status", "opts": ["void_manzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1m"]], 1]], [[[["2m"]], 1]], [[[["3m"]], 1]], [[[["4m"]], 1]], [[[["5m"]], 1]], [[[["6m"]], 1]], [[[["7m"]], 1]], [[[["8m"]], 1]], [[[["9m"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_pinzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1p"]], 1]], [[[["2p"]], 1]], [[[["3p"]], 1]], [[[["4p"]], 1]], [[[["5p"]], 1]], [[[["6p"]], 1]], [[[["7p"]], 1]], [[[["8p"]], 1]], [[[["9p"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_souzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1s"]], 1]], [[[["2s"]], 1]], [[[["3s"]], 1]], [[[["4s"]], 1]], [[[["5s"]], 1]], [[[["6s"]], 1]], [[[["7s"]], 1]], [[[["8s"]], 1]], [[[["9s"]], 1]]]]}
+                       ]
+                     ]
                    ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -290,6 +305,7 @@
       "display_name": "Hu",
       "show_when": [
                      "not_our_turn",
+                     {"name": "not_status", "opts": ["won"]}, 
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      [
                        [
@@ -301,6 +317,20 @@
                          {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
                          {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
                        ]
+                     ],
+                     [
+                       [
+                         {"name": "status", "opts": ["void_manzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1m"]], 1]], [[[["2m"]], 1]], [[[["3m"]], 1]], [[[["4m"]], 1]], [[[["5m"]], 1]], [[[["6m"]], 1]], [[[["7m"]], 1]], [[[["8m"]], 1]], [[[["9m"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_pinzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1p"]], 1]], [[[["2p"]], 1]], [[[["3p"]], 1]], [[[["4p"]], 1]], [[[["5p"]], 1]], [[[["6p"]], 1]], [[[["7p"]], 1]], [[[["8p"]], 1]], [[[["9p"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_souzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1s"]], 1]], [[[["2s"]], 1]], [[[["3s"]], 1]], [[[["4s"]], 1]], [[[["5s"]], 1]], [[[["6s"]], 1]], [[[["7s"]], 1]], [[[["8s"]], 1]], [[[["9s"]], 1]]]]}
+                       ]
                      ]
                    ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["set_status", "won"], ["reveal_hand"], ["win_by_call"]],
@@ -310,9 +340,24 @@
       "display_name": "Zimo",
       "show_when": [
                      "our_turn",
+                     {"name": "not_status", "opts": ["won"]}, 
                      {"name": "not_status", "opts": ["game_start"]}, 
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-                     {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
+                     {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+                     [
+                       [
+                         {"name": "status", "opts": ["void_manzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1m"]], 1]], [[[["2m"]], 1]], [[[["3m"]], 1]], [[[["4m"]], 1]], [[[["5m"]], 1]], [[[["6m"]], 1]], [[[["7m"]], 1]], [[[["8m"]], 1]], [[[["9m"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_pinzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1p"]], 1]], [[[["2p"]], 1]], [[[["3p"]], 1]], [[[["4p"]], 1]], [[[["5p"]], 1]], [[[["6p"]], 1]], [[[["7p"]], 1]], [[[["8p"]], 1]], [[[["9p"]], 1]]]]}
+                       ],
+                       [
+                         {"name": "status", "opts": ["void_souzu"]},
+                         {"name": "not_match", "opts": [["hand", "calls"], [[[[["1s"]], 1]], [[[["2s"]], 1]], [[[["3s"]], 1]], [[[["4s"]], 1]], [[[["5s"]], 1]], [[[["6s"]], 1]], [[[["7s"]], 1]], [[[["8s"]], 1]], [[[["9s"]], 1]]]]}
+                       ]
+                     ]
                    ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["set_status", "won"], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -328,5 +373,5 @@
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "max_rounds": 0
+  "max_rounds": 4
 }
