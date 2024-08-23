@@ -313,7 +313,7 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["set_status", "won"], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
