@@ -276,7 +276,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # determine the closest winner (the one who receives riichi sticks and honba)
         {_seat, some_winner} = Enum.at(state.winners, 0)
         payer = some_winner.payer
-        closest_winner = if payer == nil do some_winner.seat else
+        if payer == nil do some_winner.seat else
           next_seat_1 = if state.reversed_turn_order do Utils.next_turn(payer) else Utils.prev_turn(payer) end
           next_seat_2 = if state.reversed_turn_order do Utils.next_turn(next_seat_1) else Utils.prev_turn(next_seat_1) end
           next_seat_3 = if state.reversed_turn_order do Utils.next_turn(next_seat_2) else Utils.prev_turn(next_seat_2) end
@@ -434,7 +434,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               else
                 {winning_tile, possible_yaku}
               end
-            end |> Enum.max_by(fn {winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
+            end |> Enum.max_by(fn {_winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
             {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
             call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
             winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
