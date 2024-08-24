@@ -45,7 +45,12 @@ defmodule RiichiAdvanced.GameState.Saki do
       saki_deck: Enum.shuffle(state.rules["saki_deck"]),
       saki_deck_index: 0,
       all_drafted: false,
-      picking_discards: nil
+      picking_discards: nil,
+      marking_player: nil,
+      # for example marking = [["hand", ["1m","2m"...."9m"], ["discards", "same_suit_as_marked_hand"]]
+      # not_marked is always a condition
+      marking: [],
+      marked_objects: %{}
     })
 
     state
@@ -59,7 +64,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def check_if_all_drafted(state) do
-    all_drafted = Enum.all?(state.players, fn {seat, player} ->
+    all_drafted = Enum.all?(state.players, fn {_seat, player} ->
       Enum.any?(player.status, fn status -> status in @supported_cards end)
     end)
     if all_drafted do
@@ -73,13 +78,16 @@ defmodule RiichiAdvanced.GameState.Saki do
     Enum.filter(statuses, fn status -> status in @supported_cards end)
   end
 
+  def put_saki_state(state, key, value), do: Map.update!(state, :saki, &Map.put(&1, key, value))
+  def update_saki_state(state, key, fun), do: Map.update!(state, :saki, &Map.update!(&1, key, fun))
+
   def setup_pick_discards(state, seat) do
-    state = Map.update!(state, :saki, &Map.put(&1, :picking_discards, seat))
+    state = put_saki_state(state, :picking_discards, seat)
     state
   end
 
   def reset_pick_discards(state) do
-    state = Map.update!(state, :saki, &Map.put(&1, :picking_discards, nil))
+    state = put_saki_state(state, :picking_discards, nil)
     state
   end
 end
