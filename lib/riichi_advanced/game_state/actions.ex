@@ -249,7 +249,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = if hand_index < hand_length do
           update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, discard_tile) })
         else
-          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_length + hand_index, discard_tile) })
+          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, discard_tile) })
         end
         state
       _                       ->
@@ -270,7 +270,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           # if there's a winner, never display buttons
           update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
         else
-          Buttons.recalculate_buttons(state)
+          state = Buttons.recalculate_buttons(state)
+          notify_ai(state)
+          state
         end
         buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
         # IO.puts("buttons_before: #{inspect(buttons_before)}")
