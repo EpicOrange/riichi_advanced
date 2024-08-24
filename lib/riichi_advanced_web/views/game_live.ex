@@ -44,7 +44,8 @@ defmodule RiichiAdvancedWeb.GameLive do
           nil
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started game session #{socket.assigns.session_id}")
-          nil
+          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
+          game_state
       end
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
