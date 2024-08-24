@@ -61,7 +61,8 @@ defmodule RiichiAdvanced.GameState.Saki do
       #     restrictions: ["same_suit_as_marked_hand"]
       #   },
       # }
-      marked_objects: %{}
+      marked_objects: %{},
+      discarding_facedown: nil
     })
 
     state

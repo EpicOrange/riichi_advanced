@@ -20,6 +20,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
     if is_playable?(state, seat, tile, tile_source) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
+
+      {state, tile} = if Map.has_key?(state, :saki) && state.saki.discarding_facedown == seat do
+        tile = :"1x"
+        state = put_in(state.saki.discarding_facedown, nil)
+        {state, tile}
+      else {state, tile} end
+
       state = update_player(state, seat, &%Player{ &1 |
         hand: List.delete_at(&1.hand ++ &1.draw, index),
         pond: &1.pond ++ [tile],
@@ -274,6 +281,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
         state
+      "set_discard_facedown"            -> put_in(state.saki.discarding_facedown, context.seat)
       _                       ->
         IO.puts("Unhandled action #{action}")
         state

@@ -1093,6 +1093,11 @@
       ],
       "actions": [["big_text", "Choe Myeonghwa: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_last_discard"], ["advance_turn"]]
     },
+    "haramura_nodoka": {
+      "display_name": "Discard facedown",
+      "show_when": [{"name": "status_missing", "opts": ["round_start", "haramura-nodoka_exhausted"]}, {"name": "status", "opts": ["haramura-nodoka"]}, "not_just_discarded"],
+      "actions": [["big_text", "Haramura Nodoka: discard!"], ["set_status", "haramura-nodoka_exhausted"], ["set_discard_facedown"]]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
