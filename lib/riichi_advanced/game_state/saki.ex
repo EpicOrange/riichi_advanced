@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.GameState.Saki do
+  alias RiichiAdvanced.GameState.Buttons, as: Buttons
   import RiichiAdvanced.GameState
 
   @supported_cards [
@@ -80,6 +81,8 @@ defmodule RiichiAdvanced.GameState.Saki do
     if all_drafted do
       state = Map.update!(state, :saki, &Map.put(&1, :all_drafted, true))
       state = Map.put(state, :game_active, true)
+      state = Buttons.recalculate_buttons(state)
+      notify_ai(state)
       state
     else state end
   end

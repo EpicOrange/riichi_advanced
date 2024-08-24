@@ -1300,7 +1300,7 @@ div.saki-card.ezaki-hitomi, div.saki-card.ezaki-hitomi:hover::before { backgroun
 div.saki-card.fukuji-mihoko, div.saki-card.fukuji-mihoko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
 div.saki-card.hanada-kirame, div.saki-card.hanada-kirame:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
 div.saki-card.hao-huiyu, div.saki-card.hao-huiyu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.hanamura-nodoka, div.saki-card.hanamura-nodoka:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.haramura-nodoka, div.saki-card.haramura-nodoka:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
 div.saki-card.hirose-sumire, div.saki-card.hirose-sumire:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
 div.saki-card.ikeda-kana, div.saki-card.ikeda-kana:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
 div.saki-card.inoue-jun, div.saki-card.inoue-jun:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
