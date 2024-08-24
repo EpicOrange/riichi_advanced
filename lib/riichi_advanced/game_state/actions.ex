@@ -237,9 +237,20 @@ defmodule RiichiAdvanced.GameState.Actions do
         for dir <- [:east, :south, :west, :north], check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
           state -> run_actions(state, Enum.at(opts, 1, []), %{seat: dir})
         end
-      "pick_and_hide_discard" ->
-        state = update_player(state, context.discard_pile, &%Player{ &1 | pond: List.replace_at(&1.pond, context.discard_index, :"1x") })
-        state = Saki.reset_pick_discards(state)
+      "swap_hand_tile_with_same_suit_discard" ->
+        {hand_tile, hand_seat, hand_index} = Enum.at(context.marked_objects.hand.marked, 0)
+        {discard_tile, discard_seat, discard_index} = Enum.at(context.marked_objects.discard.marked, 0)
+
+        # replace pond tile with hand tile
+        state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, hand_tile) })
+
+        # replace hand tile with pond tile
+        hand_length = length(state.players[hand_seat].hand)
+        state = if hand_index < hand_length do
+          update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, discard_tile) })
+        else
+          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_length + hand_index, discard_tile) })
+        end
         state
       _                       ->
         IO.puts("Unhandled action #{action}")
@@ -355,7 +366,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
             call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end)
-            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in ["pick_and_hide_discard"] end)
+            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in ["swap_hand_tile_with_same_suit_discard"] end)
             cond do
               call_action_exists ->
                 # call button choices logic
@@ -405,7 +416,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                   state
                 end
               picking_discards ->
-                state = Saki.setup_pick_discards(state, seat)
+                state = Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
                 state = schedule_actions(state, seat, actions)
                 state
               true ->
@@ -428,8 +439,8 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
-    picking_discard = Map.has_key?(state, :saki) && state.saki.picking_discards == seat
-    not no_call_buttons || picking_discard
+    marking = Map.has_key?(state, :saki) && Saki.needs_marking(state)
+    not no_call_buttons || marking
   end
 
   def submit_actions(state, seat, choice, actions) do

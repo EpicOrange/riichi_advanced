@@ -55,6 +55,7 @@ defmodule Riichi do
   def is_pinzu?(tile), do: tile in [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"0p"]
   def is_souzu?(tile), do: tile in [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"0s"]
   def is_jihai?(tile), do: tile in [:"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
+  def is_suited?(tile), do: is_manzu?(tile) || is_pinzu?(tile) || is_souzu?(tile)
   def is_terminal?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s"]
   def is_yaochuuhai?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
   def is_tanyaohai?(tile), do: tile not in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
@@ -69,6 +70,15 @@ defmodule Riichi do
       7 -> [:"7m", :"7p", :"7s"]
       8 -> [:"8m", :"8p", :"8s"]
       9 -> [:"9m", :"9p", :"9s"]
+    end
+  end
+  def same_suit?(tile, tile2) do
+    cond do
+      is_manzu?(tile) -> is_manzu?(tile2)
+      is_pinzu?(tile) -> is_pinzu?(tile2)
+      is_souzu?(tile) -> is_souzu?(tile2)
+      is_jihai?(tile) -> is_jihai?(tile2)
+      true            -> false
     end
   end
 

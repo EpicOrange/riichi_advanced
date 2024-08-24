@@ -871,7 +871,11 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:is_playable, seat, tile, tile_source}, _from, state), do: {:reply, is_playable?(state, seat, tile, tile_source), state}
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
-  
+
+  # saki calls
+  def handle_call(:needs_marking, _from, state), do: {:reply, Saki.needs_marking(state), state}
+  def handle_call({:is_marked, seat, index, tile_source}, _from, state), do: {:reply, Saki.is_marked(state, seat, index, tile_source), state}
+  def handle_call({:can_mark, seat, index, tile_source}, _from, state), do: {:reply, Saki.can_mark(state, seat, index, tile_source), state}
 
   # debugging only
   def handle_call(:get_state, _from, state) do
@@ -992,6 +996,19 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:show_error, message}, state) do
     state = show_error(state, message)
+    {:noreply, state}
+  end
+
+  # saki calls
+  def handle_cast({:mark_tile, seat, index, tile_source}, state) do
+    state = Saki.mark_tile(state, seat, index, tile_source)
+    # TODO check if all marked, if so, resume deferred actions for the marking player
+    state = if not Saki.needs_marking(state) do
+      state = Actions.run_deferred_actions(state, %{seat: state.saki.marking_player, marked_objects: state.saki.marked_objects})
+      state = Saki.reset_marking(state)
+      state
+    else state end
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 

@@ -5,15 +5,25 @@ defmodule RiichiAdvancedWeb.PondComponent do
     socket = assign(socket, :pond, [])
     socket = assign(socket, :length, 0)
     socket = assign(socket, :riichi_index, nil)
-    socket = assign(socket, :picking_discards, false)
+    socket = assign(socket, :marking, false)
     {:ok, socket}
   end
 
   def render(assigns) do
     ~H"""
-    <div class={[@id, @picking_discards && "picking-discards"]}>
-      <%= if @picking_discards do %>
-        <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", tile, "clickable", i + 1 >= @length && "just-played", i == @riichi_index && "sideways"]} phx-click="pick_discard" phx-target={@myself} phx-value-index={i}></div>
+    <div class={@id}>
+      <%= if @marking do %>
+        <%= for {tile, i} <- prepare_pond(@pond, @saki) do %>
+          <%= if GenServer.call(@game_state, {:can_mark, @seat, i, :discard}) do %>
+            <div class={["tile", tile, "markable", i + 1 >= @length && "just-played", i == @riichi_index && "sideways"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+          <% else %>
+            <%= if GenServer.call(@game_state, {:is_marked, @seat, i, :discard}) do %>
+              <div class={["tile", tile, "marked", i + 1 >= @length && "just-played", i == @riichi_index && "sideways"]}></div>
+            <% else %>
+              <div class={["tile", tile, i + 1 >= @length && "just-played", i == @riichi_index && "sideways"]}></div>
+            <% end %>
+          <% end %>
+        <% end %>
       <% else %>
         <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", tile, i + 1 >= @length && "just-played", i == @riichi_index && "sideways"]}></div>
       <% end %>
@@ -21,10 +31,14 @@ defmodule RiichiAdvancedWeb.PondComponent do
     """
   end
 
-  def handle_event("pick_discard", %{"index" => index}, socket) do
+  def prepare_pond(pond, _saki) do
+    # need to pass in the saki arg, so the pond updates when saki updates
+    Enum.with_index(pond)
+  end
+
+  def handle_event("mark_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    context = %{seat: socket.assigns.saki.picking_discards, discard_pile: socket.assigns.seat, discard_index: ix}
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, context})
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.seat, ix, :discard})
     {:noreply, socket}
   end
 
@@ -39,7 +53,8 @@ defmodule RiichiAdvancedWeb.PondComponent do
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     socket = assign(socket, :length, max(length(socket.assigns.pond), socket.assigns.length))
-    socket = assign(socket, :picking_discards, socket.assigns.saki != nil && Map.has_key?(socket.assigns.saki, :all_drafted) && socket.assigns.saki.picking_discards == socket.assigns.viewer)
+
+    socket = assign(socket, :marking, socket.assigns.saki != nil && GenServer.call(socket.assigns.game_state, :needs_marking))
 
     {:ok, socket}
   end

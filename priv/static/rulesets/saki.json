@@ -1045,10 +1045,10 @@
       "actions": [["draft_saki_card", 4], ["unset_status", "round_start"]],
       "unskippable": true
     },
-    "pick_discards": {
-      "display_name": "Pick a discard",
+    "swap_hand_tile_with_same_suit_discard": {
+      "display_name": "Swap a discard with same suit in hand",
       "show_when": [{"name": "status_missing", "opts": ["round_start"]}],
-      "actions": [["pick_and_hide_discard"]]
+      "actions": [["swap_hand_tile_with_same_suit_discard"]]
     },
     "chii": {
       "display_name": "Chii",
