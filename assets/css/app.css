@@ -612,7 +612,7 @@ div.pond > div.tile.just-played:last-child {
   }
   100% {}
 }
-div.hand > div.draws > div.tile {
+div.hand.just-drew > div.draws > div.tile {
   animation: slideLeft 0.2s ease forwards;
 }
 
@@ -623,7 +623,7 @@ div.hand > div.draws > div.tile {
   }
   100% {}
 }
-div.hand > div.calls > div.call.just_called:last-child {
+div.hand.just-called > div.calls > div.call:last-child {
   animation: slideRight 0.4s ease forwards;
 }
 

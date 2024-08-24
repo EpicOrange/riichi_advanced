@@ -8,6 +8,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
     socket = assign(socket, :just_called, false)
+    socket = assign(socket, :just_drew, false)
     socket = assign(socket, :status, [])
     socket = assign(socket, :calls, [])
     socket = assign(socket, :marking, false)
@@ -16,7 +17,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={@id}>
+    <div class={[@id, @just_called && "just-called", @just_drew && "just-drew"]}>
       <%= if @your_hand? do %>
         <%= if @marking do %>
           <div class="tiles">
@@ -88,7 +89,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <% end %>
       <div class="calls">
           <%= for {{_name, call}, i} <- Enum.with_index(@calls) do %>
-            <div class={["call", @just_called && i == length(@calls) - 1 && "just_called"]}>
+            <div class="call">
               <div class={["tile", tile, sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>

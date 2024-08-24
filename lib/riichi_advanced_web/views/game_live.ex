@@ -289,6 +289,18 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
+  def handle_info({:reset_draw_anim, seat}, socket) do
+    relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
+    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", just_drew: false)
+    {:noreply, socket}
+  end
+
+  def handle_info({:reset_discard_anim, seat}, socket) do
+    relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
+    send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", just_discarded: false)
+    {:noreply, socket}
+  end
+
   def handle_info(data, socket) do
     IO.puts("unhandled handle_info data:")
     IO.inspect(data)
