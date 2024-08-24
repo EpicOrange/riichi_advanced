@@ -69,47 +69,48 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <%= for {seat, player} <- @state.players do %>
-      <.live_component module={RiichiAdvancedWeb.HandComponent}
-        id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
-        game_state={@game_state}
-        revealed?={@viewer == seat || player.hand_revealed}
-        your_hand?={@viewer == seat}
-        your_turn?={@seat == @state.turn}
-        seat={seat}
-        viewer={@viewer}
-        hand={player.hand}
-        draw={player.draw}
-        calls={player.calls}
-        status={player.status}
-        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
-        play_tile={&send(self(), {:play_tile, &1})}
-        reindex_hand={&send(self(), {:reindex_hand, &1, &2})} />
-      <.live_component module={RiichiAdvancedWeb.PondComponent}
-        id={"pond #{Utils.get_relative_seat(@seat, seat)}"}
-        game_state={@game_state}
-        seat={seat}
-        viewer={@viewer}
-        pond={player.pond}
-        riichi={player.riichi_stick}
-        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end} />
-      <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
-        id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
-        game_state={@game_state}
-        seat={seat}
-        viewer={@viewer}
-        player={player}
-        kyoku={@state.kyoku}
-        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end} />
-      <.live_component module={RiichiAdvancedWeb.BigTextComponent}
-        id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
-        game_state={@game_state}
-        seat={seat}
-        relative_seat={Utils.get_relative_seat(@seat, seat)}
-        big_text={player.big_text}
-        :if={player.big_text != ""}
-        />
-    <% end %>
+    <.live_component module={RiichiAdvancedWeb.HandComponent}
+      id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
+      game_state={@game_state}
+      revealed?={@viewer == seat || player.hand_revealed}
+      your_hand?={@viewer == seat}
+      your_turn?={@seat == @state.turn}
+      seat={seat}
+      viewer={@viewer}
+      hand={player.hand}
+      draw={player.draw}
+      calls={player.calls}
+      status={player.status}
+      saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+      play_tile={&send(self(), {:play_tile, &1})}
+      reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
+      :for={{seat, player} <- @state.players} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent}
+      id={"pond #{Utils.get_relative_seat(@seat, seat)}"}
+      game_state={@game_state}
+      seat={seat}
+      viewer={@viewer}
+      pond={player.pond}
+      riichi={player.riichi_stick}
+      saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+      :for={{seat, player} <- @state.players} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
+      id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
+      game_state={@game_state}
+      seat={seat}
+      viewer={@viewer}
+      player={player}
+      kyoku={@state.kyoku}
+      saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+      :for={{seat, player} <- @state.players} />
+    <.live_component module={RiichiAdvancedWeb.BigTextComponent}
+      id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
+      game_state={@game_state}
+      seat={seat}
+      relative_seat={Utils.get_relative_seat(@seat, seat)}
+      big_text={player.big_text}
+      :if={player.big_text != ""}
+      :for={{seat, player} <- @state.players} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent}
       id="compass"
       game_state={@game_state}
@@ -173,7 +174,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class={["tile", tile]} :for={tile <- to_revealed_tiles(@state)}></div>
     </div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
-    <%= if false do %>
+    <%= if RiichiAdvanced.GameState.Debug.debug() do %>
       <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
         <div class="status-text" :for={status <- player.status}><%= status %></div>
       </div>

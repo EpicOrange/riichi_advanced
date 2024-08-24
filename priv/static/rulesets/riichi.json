@@ -1165,12 +1165,12 @@
     }
   },
   "auto_buttons": {
-    "auto_sort": {
+    "1_auto_sort": {
       "display_name": "A",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
     },
-    "auto_ron": {
+    "2_auto_ron": {
       "display_name": "R",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
@@ -1178,7 +1178,7 @@
       ],
       "enabled_at_start": false
     },
-    "auto_no_call": {
+    "3_auto_no_call": {
       "display_name": "C",
       "actions": [
         ["when", [
@@ -1188,7 +1188,7 @@
       ],
       "enabled_at_start": false
     },
-    "auto_discard": {
+    "4_auto_discard": {
       "display_name": "D",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false

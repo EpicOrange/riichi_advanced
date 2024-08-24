@@ -53,6 +53,7 @@ defmodule RiichiAdvanced.MixProject do
       {:bandit, "~> 1.5"},
       {:debounce, "~> 1.0.0"},
       {:mutex, "~> 2.0.0"},
+      {:accessible, "~> 0.3.0"},
     ]
   end
 

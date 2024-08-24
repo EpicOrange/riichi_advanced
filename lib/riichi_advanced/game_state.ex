@@ -23,6 +23,7 @@ defmodule Player do
     last_discard: nil, # for animation purposes only
     ready: false
   ]
+  use Accessible
 end
 
 defmodule Game do
@@ -76,11 +77,13 @@ defmodule Game do
     max_revealed_tiles: 0,
     drawn_reserved_tiles: []
   ]
+  use Accessible
 end
 
 defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   use GenServer
@@ -95,7 +98,8 @@ defmodule RiichiAdvanced.GameState do
       name: Keyword.get(init_data, :name))
   end
 
-  defp debounce_worker(debouncers, delay, message, id) do
+  defp debounce_worker(debouncers, delay, id, message, seat \\ nil) do
+    message = if seat == nil do message else {message, seat} end
     DynamicSupervisor.start_child(debouncers, %{
       id: id,
       start: {Debounce, :start_link, [{GenServer, :cast, [self(), message]}, delay]},
@@ -103,28 +107,27 @@ defmodule RiichiAdvanced.GameState do
       restart: :transient
     })
   end
-  defp debounce_worker(debouncers, delay, message, id, seat) do
-    DynamicSupervisor.start_child(debouncers, %{
-      id: id,
-      start: {Debounce, :start_link, [{GenServer, :cast, [self(), {message, seat}]}, delay]},
-      type: :worker,
-      restart: :transient
-    })
-  end
 
   def init(state) do
     IO.puts("Game state PID is #{inspect(self())}")
-    play_tile_debounce = %{:east => false, :south => false, :west => false, :north => false}
+
+    # lookup pids of the other processes we'll be using
     [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id))
-    {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_east, :east)
-    {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_south, :south)
-    {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_west, :west)
-    {:ok, play_tile_debouncer_north} = debounce_worker(debouncers, 100, :reset_play_tile_debounce, :play_tile_debouncer_north, :north)
-    {:ok, big_text_debouncer_east} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_east, :east)
-    {:ok, big_text_debouncer_south} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_south, :south)
-    {:ok, big_text_debouncer_west} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_west, :west)
-    {:ok, big_text_debouncer_north} = debounce_worker(debouncers, 1500, :reset_big_text, :big_text_debouncer_north, :north)
-    {:ok, timer_debouncer} = debounce_worker(debouncers, 1000, :tick_timer, :timer_debouncer)
+    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
+    [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
+    [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
+    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
+
+    # initilize all debouncers
+    {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :play_tile_debouncer_east, :reset_play_tile_debounce, :east)
+    {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, 100, :play_tile_debouncer_south, :reset_play_tile_debounce, :south)
+    {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, 100, :play_tile_debouncer_west, :reset_play_tile_debounce, :west)
+    {:ok, play_tile_debouncer_north} = debounce_worker(debouncers, 100, :play_tile_debouncer_north, :reset_play_tile_debounce, :north)
+    {:ok, big_text_debouncer_east} = debounce_worker(debouncers, 1500, :big_text_debouncer_east, :reset_big_text, :east)
+    {:ok, big_text_debouncer_south} = debounce_worker(debouncers, 1500, :big_text_debouncer_south, :reset_big_text, :south)
+    {:ok, big_text_debouncer_west} = debounce_worker(debouncers, 1500, :big_text_debouncer_west, :reset_big_text, :west)
+    {:ok, big_text_debouncer_north} = debounce_worker(debouncers, 1500, :big_text_debouncer_north, :reset_big_text, :north)
+    {:ok, timer_debouncer} = debounce_worker(debouncers, 1000, :timer_debouncer, :tick_timer)
     play_tile_debouncers = %{
       :east => play_tile_debouncer_east,
       :south => play_tile_debouncer_south,
@@ -137,10 +140,8 @@ defmodule RiichiAdvanced.GameState do
       :west => big_text_debouncer_west,
       :north => big_text_debouncer_north
     }
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
-    [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
-    [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
+
+    # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
       ruleset: state.ruleset,
       session_id: state.session_id,
@@ -149,12 +150,13 @@ defmodule RiichiAdvanced.GameState do
       mutex: mutex,
       ai_supervisor: ai_supervisor,
       exit_monitor: exit_monitor,
-      play_tile_debounce: play_tile_debounce,
+      play_tile_debounce: %{:east => false, :south => false, :west => false, :north => false},
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers,
-      timer_debouncer: timer_debouncer,
+      timer_debouncer: timer_debouncer
     })
 
+    # decode the passed-in rules json
     {state, rules} = try do
       case Jason.decode(state.ruleset_json) do
         {:ok, rules} -> {state, rules}
@@ -168,13 +170,11 @@ defmodule RiichiAdvanced.GameState do
         state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
         {state, %{}}
     end
-
     state = Map.put(state, :rules, rules)
 
     initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
 
-    state = state
-     |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ score: initial_score }} end))
+    state = update_players(state, &%Player{ &1 | score: initial_score })
     state = initialize_new_round(state)
 
     Scoring.run_yaku_tests(state)
@@ -183,6 +183,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def update_player(state, seat, fun), do: Map.update!(state, :players, &Map.update!(&1, seat, fun))
+  def update_players(state, fun), do: Map.update!(state, :players, &Map.new(&1, fn {seat, player} -> {seat, fun.(player)} end))
+  def update_players_by_seat(state, fun), do: Map.update!(state, :players, &Map.new(&1, fn {seat, player} -> {seat, fun.(seat, player)} end))
   def update_all_players(state, fun), do: Map.update!(state, :players, &Map.new(&1, fn {seat, player} -> {seat, fun.(seat, player)} end))
   
   def get_last_action(state), do: Enum.at(state.actions, 0)
@@ -210,6 +212,8 @@ defmodule RiichiAdvanced.GameState do
     else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
       wall = Enum.shuffle(wall)
+      wall = if Debug.debug() do Debug.set_wall(wall) else wall end
+
       starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
       hands = if starting_tiles > 0 do
         %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
@@ -217,67 +221,7 @@ defmodule RiichiAdvanced.GameState do
           :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
           :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
       else Map.new([:east, :south, :west, :north], &{&1, []}) end
-
-      # debug use only
-      # wall = List.replace_at(wall, 52, :"1p") # first draw
-      # wall = List.replace_at(wall, 53, :"4p")
-      # wall = List.replace_at(wall, 54, :"3p")
-      # wall = List.replace_at(wall, 55, :"3p")
-      # wall = List.replace_at(wall, 56, :"1p") # second draw
-      # wall = List.replace_at(wall, 57, :"3p")
-      # wall = List.replace_at(wall, 58, :"3p")
-      # wall = List.replace_at(wall, 59, :"3p")
-      # wall = List.replace_at(wall, 60, :"3p")
-      # wall = List.replace_at(wall, -15, :"1m") # last draw
-      # wall = List.replace_at(wall, -6, :"9m") # first dora
-      # wall = List.replace_at(wall, -8, :"9m") # second dora
-      # wall = List.replace_at(wall, -2, :"2z") # first kan draw
-      # wall = List.replace_at(wall, -1, :"3m") # second kan draw
-      # wall = List.replace_at(wall, -4, :"4m") # third kan draw
-      # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
-      # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-      #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-      #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-      #           :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
-      # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-      #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-      #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-      #           :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
-      # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2m", :"2m", :"2m", :"4m", :"5m", :"3p", :"4p", :"5p", :"8p", :"8p"]),
-      #           :south => Enum.slice(wall, 13..25),
-      #           :west  => Enum.slice(wall, 26..38),
-      #           :north => Enum.slice(wall, 39..51)}
-      # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"6z"]),
-      #           :south => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"6z"]),
-      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
-      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
-      # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"5z", :"6z", :"7z", :"1z", :"1z", :"2z", :"2z"]),
-      #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
-      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
-      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
-      # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"1m", :"1m", :"1m", :"1z", :"1z", :"2z", :"2z"]),
-      #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"1z", :"1z", :"1z", :"1z", :"1z", :"1z"]),
-      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
-      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
-      # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :south => Utils.sort_tiles([:"5z", :"5z", :"5z", :"5z", :"5z", :"5z", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m", :"6m"]),
-      #           :west  => Utils.sort_tiles([:"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z", :"6z"]),
-      #           :north => Utils.sort_tiles([:"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z", :"7z"])}
-      # hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :south => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :west  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"]),
-      #           :north => Utils.sort_tiles([:"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"5m", :"5m", :"6m", :"6m"])}
-      # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"2m", :"3m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4s", :"5s", :"6s"]),
-      #           :south => Utils.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
-      #           :west  => Utils.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"]),
-      #           :north => Utils.sort_tiles([:"1m", :"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"6s", :"9s", :"1z", :"2z", :"3z", :"4z"])}
-                # :south => Utils.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
-                # :south => Utils.sort_tiles([:"1m", :"2m", :"3p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
-                # :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"4p", :"5p"]),
-                # :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"8p", :"8p", :"6p", :"7p"]),
-                # :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"0s", :"5s", :"5s", :"5s", :"5s", :"1z", :"1z", :"1z", :"1z"]),
-                # :west  => Utils.sort_tiles([:"1z", :"1z", :"6z", :"7z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"5z"]),
-                # :north => Utils.sort_tiles([:"1m", :"2m", :"2m", :"5m", :"5m", :"7m", :"7m", :"9m", :"9m", :"1z", :"1z", :"2z", :"3z"])}
+      hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
 
       # reserve some tiles (dead wall)
       {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
@@ -300,27 +244,22 @@ defmodule RiichiAdvanced.GameState do
       end
 
       # initialize auto buttons
-      initial_auto_buttons = if Map.has_key?(rules, "auto_buttons") do
-          Enum.map(rules["auto_buttons"], fn {name, auto_button} -> {name, auto_button["enabled_at_start"]} end) |> Enum.reverse
-        else
-          []
-        end
+      initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
+        {name, auto_button["enabled_at_start"]}
+      end
 
       state = state
        |> Map.put(:wall, wall)
-       |> Map.put(:players, Map.new(state.players, fn {seat, player} -> {seat, Map.merge(player, %Player{
-            hand: hands[seat],
-            auto_buttons: initial_auto_buttons,
-            nickname: player.nickname,
-            score: player.score,
-          })} end))
        |> Map.put(:wall_index, starting_tiles*4)
+       |> update_all_players(&%Player{ &2 | hand: hands[&1] })
+       |> update_players(&%Player{ &1 | auto_buttons: initial_auto_buttons })
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
       # initialize saki if needed
       state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
       
+      # start the game
       state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku))
 
       # run after_start actions

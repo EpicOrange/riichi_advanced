@@ -1,6 +1,8 @@
 defmodule RiichiAdvanced.AIPlayer do
   use GenServer
 
+  @ai_speed 10
+
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
   end
@@ -28,7 +30,7 @@ defmodule RiichiAdvanced.AIPlayer do
       # pick the last playable tile (the draw)
       {_tile, index} = Enum.at(playables, -1)
       # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
-      Process.sleep(1200)
+      Process.sleep(trunc(1200 / @ai_speed))
       GenServer.cast(state.game_state, {:play_tile, state.seat, index})
     end
     {:noreply, state}
@@ -55,7 +57,7 @@ defmodule RiichiAdvanced.AIPlayer do
       true -> Enum.random(player.buttons)
     end
     # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
-    Process.sleep(500)
+    Process.sleep(trunc(500 / @ai_speed))
     GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
     {:noreply, state}
   end
@@ -70,12 +72,12 @@ defmodule RiichiAdvanced.AIPlayer do
     if called_tile != "saki" do
       call_choice = Enum.random(player.call_buttons[called_tile])
       # IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
-      Process.sleep(500)
+      Process.sleep(trunc(500 / @ai_speed))
       GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile}})
     else
       [choice] = Enum.random(player.call_buttons["saki"])
       IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
-      Process.sleep(500)
+      Process.sleep(trunc(500 / @ai_speed))
       GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, choice: choice}})
     end
     {:noreply, state}
