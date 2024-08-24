@@ -2,72 +2,67 @@ defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
   defp to_revealed_tiles(state) do
-    revealed_tiles = for tile_spec <- state.revealed_tiles do
-      if Map.has_key?(state.reserved_tiles, tile_spec) do
-        state.reserved_tiles[tile_spec]
-      else
-        Utils.to_tile(tile_spec)
-      end
-    end
-    if state.max_revealed_tiles > 0 do
-      revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
-    else
-      revealed_tiles
-    end
+    revealed_tiles = for tile_spec <- state.revealed_tiles, do: Map.get(state.reserved_tiles, tile_spec, Utils.to_tile(tile_spec))
+    revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
   end
 
   def mount(params, _session, socket) do
-    socket = assign(socket, :session_id, params["id"])
-    socket = assign(socket, :ruleset, params["ruleset"])
-    socket = assign(socket, :nickname, params["nickname"])
+    # read in the ruleset
     ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")) do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      -> nil
     end
-    socket = assign(socket, :ruleset_json, ruleset_json)
 
-    # start a new game process, if it doesn't exist already
-    game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
-    case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-      {:ok, _pid} -> IO.puts("Starting game session #{socket.assigns.session_id}")
-      {:error, {:shutdown, error}} ->
-        IO.puts("Error when starting game session #{socket.assigns.session_id}")
-        IO.inspect(error)
-      {:error, {:already_started, _pid}} -> nil
-    end
+    socket = socket
+    |> assign(:session_id, params["id"])
+    |> assign(:ruleset, params["ruleset"])
+    |> assign(:ruleset_json, ruleset_json)
+    |> assign(:nickname, params["nickname"])
+    |> assign(:game_state, nil)
+    |> assign(:state, %Game{})
+    |> assign(:seat, :east)
+    |> assign(:shimocha, nil)
+    |> assign(:toimen, nil)
+    |> assign(:kamicha, nil)
+    |> assign(:viewer, :spectator)
+    |> assign(:display_riichi_sticks, false)
+    |> assign(:display_honba, false)
+    |> assign(:loading, true)
 
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
-    socket = assign(socket, :game_state, game_state)
-    socket = assign(socket, :last_turn, nil)
-    # liveviews mount twice
+    # liveviews mount twice; we only want to init a new player on the second mount
     if socket.root_pid != nil do
-      # TODO use id in pubsub
+      # start a new game process, if it doesn't exist already
+      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+        {:ok, _pid} ->
+          IO.puts("Starting game session #{socket.assigns.session_id}")
+          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
+          game_state
+        {:error, {:shutdown, error}} ->
+          IO.puts("Error when starting game session #{socket.assigns.session_id}")
+          IO.inspect(error)
+          nil
+        {:error, {:already_started, _pid}} ->
+          IO.puts("Already started game session #{socket.assigns.session_id}")
+          nil
+      end
+      # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
-      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(socket.assigns.game_state, {:new_player, socket})
-      socket = assign(socket, :loading, false)
-      socket = assign(socket, :state, state)
-      socket = assign(socket, :seat, seat)
-      socket = assign(socket, :shimocha, shimocha)
-      socket = assign(socket, :toimen, toimen)
-      socket = assign(socket, :kamicha, kamicha)
-      socket = assign(socket, :spectator, spectator)
-      socket = assign(socket, :viewer, if spectator do :spectator else seat end)
-      # only need to assign these once
-      socket = assign(socket, :display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
-      socket = assign(socket, :display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
+      # init a new player and get the current state
+      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:new_player, socket})
+      socket = socket
+      |> assign(:game_state, game_state)
+      |> assign(:state, state)
+      |> assign(:seat, seat)
+      |> assign(:shimocha, shimocha)
+      |> assign(:toimen, toimen)
+      |> assign(:kamicha, kamicha)
+      |> assign(:viewer, if spectator do :spectator else seat end)
+      |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
+      |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
+      |> assign(:loading, false)
       {:ok, socket}
     else
-      socket = assign(socket, :loading, true)
-      socket = assign(socket, :state, %Game{})
-      socket = assign(socket, :seat, :east)
-      socket = assign(socket, :shimocha, nil)
-      socket = assign(socket, :toimen, nil)
-      socket = assign(socket, :kamicha, nil)
-      socket = assign(socket, :spectator, false)
-      socket = assign(socket, :viewer, :spectator)
-
-      socket = assign(socket, :display_riichi_sticks, false)
-      socket = assign(socket, :display_honba, false)
       {:ok, socket}
     end
   end
@@ -95,7 +90,6 @@ defmodule RiichiAdvancedWeb.GameLive do
         game_state={@game_state}
         seat={seat}
         viewer={@viewer}
-        last_turn={@last_turn}
         pond={player.pond}
         riichi={player.riichi_stick}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end} />
@@ -135,7 +129,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen}/>
     <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
     <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
-    <%= if not @spectator do %>
+    <%= if @viewer != :spectator do %>
       <div class="buttons">
         <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
       </div>
@@ -176,7 +170,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       </div>
     <% end %>
     <div class="revealed-tiles">
-      <div class={["tile", tile]} :for={tile <- @state.revealed_tiles}></div>
+      <div class={["tile", tile]} :for={tile <- to_revealed_tiles(@state)}></div>
     </div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
     <%= if false do %>
@@ -259,8 +253,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
-      socket = assign(socket, :last_turn, if state.turn != socket.assigns.state.turn do socket.assigns.state.turn else socket.assigns.last_turn end)
-      socket = assign(socket, :turn, state.turn)
       {:noreply, socket}
     else
       {:noreply, socket}
