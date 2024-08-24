@@ -7,7 +7,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
-      new_buttons = Map.new(state.players, fn {seat, player} ->
+      new_buttons = Map.new(state.players, fn {seat, _player} ->
         if Actions.performing_intermediate_action?(state, seat) do
           # don't regenerate buttons if we're performing an intermediate action
           {seat, []}
