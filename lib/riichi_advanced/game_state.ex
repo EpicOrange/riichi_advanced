@@ -875,7 +875,6 @@ defmodule RiichiAdvanced.GameState do
 
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
-    IO.inspect(state)
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
     # reset anim
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)

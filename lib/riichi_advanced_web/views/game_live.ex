@@ -2,9 +2,13 @@ defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
   defp to_revealed_tiles(state) do
-    revealed_tiles = Enum.map(state.revealed_tiles, fn tile_spec ->
-      if Map.has_key?(state.reserved_tiles, tile_spec) do state.reserved_tiles[tile_spec] else Utils.to_tile(tile_spec) end
-    end)
+    revealed_tiles = for tile_spec <- state.revealed_tiles do
+      if Map.has_key?(state.reserved_tiles, tile_spec) do
+        state.reserved_tiles[tile_spec]
+      else
+        Utils.to_tile(tile_spec)
+      end
+    end
     if state.max_revealed_tiles > 0 do
       revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
     else
@@ -34,11 +38,6 @@ defmodule RiichiAdvancedWeb.GameLive do
 
     [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
     socket = assign(socket, :game_state, game_state)
-    socket = assign(socket, :winners, %{})
-    socket = assign(socket, :winner_index, 0)
-    socket = assign(socket, :delta_scores, nil)
-    socket = assign(socket, :delta_scores_reason, nil)
-    socket = assign(socket, :timer, 0)
     socket = assign(socket, :last_turn, nil)
     # liveviews mount twice
     if socket.root_pid != nil do
@@ -46,47 +45,26 @@ defmodule RiichiAdvancedWeb.GameLive do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
       [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(socket.assigns.game_state, {:new_player, socket})
       socket = assign(socket, :loading, false)
-      socket = assign(socket, :players, state.players)
-      socket = assign(socket, :player_id, socket.id)
-      socket = assign(socket, :turn, state.turn)
+      socket = assign(socket, :state, state)
       socket = assign(socket, :seat, seat)
       socket = assign(socket, :shimocha, shimocha)
       socket = assign(socket, :toimen, toimen)
       socket = assign(socket, :kamicha, kamicha)
       socket = assign(socket, :spectator, spectator)
       socket = assign(socket, :viewer, if spectator do :spectator else seat end)
-      socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
-      socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
-      socket = assign(socket, :kyoku, state.kyoku)
-      socket = assign(socket, :honba, state.honba)
-      socket = assign(socket, :riichi_sticks, state.riichi_sticks)
-      socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(state, seat))} end))
-      socket = assign(socket, :error, state.error)
-      socket = assign(socket, :visible_screen, state.visible_screen)
-      socket = assign(socket, :saki, if Map.has_key?(state, :saki) do state.saki else nil end)
       # only need to assign these once
       socket = assign(socket, :display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       socket = assign(socket, :display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       {:ok, socket}
     else
       socket = assign(socket, :loading, true)
-      socket = assign(socket, :players, %{:east => %Player{}, :south => %Player{}, :west => %Player{}, :north => %Player{}})
+      socket = assign(socket, :state, %Game{})
       socket = assign(socket, :seat, :east)
-      socket = assign(socket, :turn, :east)
       socket = assign(socket, :shimocha, nil)
       socket = assign(socket, :toimen, nil)
       socket = assign(socket, :kamicha, nil)
-      socket = assign(socket, :viewer, :spectator)
       socket = assign(socket, :spectator, false)
-      socket = assign(socket, :revealed_tiles, [])
-      socket = assign(socket, :tiles_left, 0)
-      socket = assign(socket, :kyoku, 0)
-      socket = assign(socket, :honba, 0)
-      socket = assign(socket, :riichi_sticks, 0)
-      socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
-      socket = assign(socket, :error, nil)
-      socket = assign(socket, :visible_screen, nil)
-      socket = assign(socket, :saki, nil)
+      socket = assign(socket, :viewer, :spectator)
 
       socket = assign(socket, :display_riichi_sticks, false)
       socket = assign(socket, :display_honba, false)
@@ -96,20 +74,20 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <%= for {seat, player} <- @players do %>
+    <%= for {seat, player} <- @state.players do %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
         revealed?={@viewer == seat || player.hand_revealed}
         your_hand?={@viewer == seat}
-        your_turn?={@seat == @turn}
+        your_turn?={@seat == @state.turn}
         seat={seat}
         viewer={@viewer}
         hand={player.hand}
         draw={player.draw}
         calls={player.calls}
         status={player.status}
-        saki={@saki}
+        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         play_tile={&send(self(), {:play_tile, &1})}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})} />
       <.live_component module={RiichiAdvancedWeb.PondComponent}
@@ -120,15 +98,15 @@ defmodule RiichiAdvancedWeb.GameLive do
         last_turn={@last_turn}
         pond={player.pond}
         riichi={player.riichi_stick}
-        saki={@saki} />
+        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end} />
       <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
         id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
         seat={seat}
         viewer={@viewer}
         player={player}
-        kyoku={@kyoku}
-        saki={@saki} />
+        kyoku={@state.kyoku}
+        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
@@ -143,32 +121,32 @@ defmodule RiichiAdvancedWeb.GameLive do
       game_state={@game_state}
       seat={@seat}
       viewer={@viewer}
-      turn={@turn}
-      tiles_left={@tiles_left}
-      kyoku={@kyoku}
-      honba={@honba}
-      riichi_sticks={@riichi_sticks}
-      riichi={Map.new(@players, fn {seat, player} -> {seat, player.riichi_stick} end)}
-      score={Map.new(@players, fn {seat, player} -> {seat, player.score} end)}
+      turn={@state.turn}
+      tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
+      kyoku={@state.kyoku}
+      honba={@state.honba}
+      riichi_sticks={@state.riichi_sticks}
+      riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
+      score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
       display_riichi_sticks={@display_riichi_sticks}
       display_honba={@display_honba}
-      is_bot={@is_bot} />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@winners} winner_index={@winner_index} timer={@timer} visible_screen={@visible_screen}/>
-    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@players} winners={@winners} delta_scores={@delta_scores} delta_scores_reason={@delta_scores_reason} timer={@timer} visible_screen={@visible_screen}/>
-    <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@players} error={@error}/>
-    <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@players} visible_screen={@visible_screen}/>
+      is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
+    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@state.winners} winner_index={@state.winner_index} timer={@state.timer} visible_screen={@state.visible_screen}/>
+    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen}/>
+    <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
+    <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
     <%= if not @spectator do %>
       <div class="buttons">
-        <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+        <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
       </div>
       <div class="auto-buttons">
-        <%= for {name, checked} <- @players[@seat].auto_buttons do %>
+        <%= for {name, checked} <- @state.players[@seat].auto_buttons do %>
           <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
           <label for={"auto-button-" <> name}><%= GenServer.call(@game_state, {:get_auto_button_display_name, name}) %></label>
         <% end %>
       </div>
       <div class="call-buttons-container">
-        <%= for {called_tile, choices} <- @players[@seat].call_buttons do %>
+        <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
           <%= if not Enum.empty?(choices) do %>
             <div class="call-buttons">
               <%= if called_tile != "saki" do %>
@@ -177,7 +155,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                   <div class="call-button-separator"></div>
                 <% end %>
                 <%= for choice <- choices do %>
-                  <button class="call-button" phx-click="call_button_clicked" phx-value-name={@players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
+                  <button class="call-button" phx-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
                   <%= for tile <- choice do %>
                     <div class={["tile", tile]}></div>
                   <% end %>
@@ -198,11 +176,11 @@ defmodule RiichiAdvancedWeb.GameLive do
       </div>
     <% end %>
     <div class="revealed-tiles">
-      <div class={["tile", tile]} :for={tile <- @revealed_tiles}></div>
+      <div class={["tile", tile]} :for={tile <- @state.revealed_tiles}></div>
     </div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
     <%= if false do %>
-      <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @players}>
+      <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
         <div class="status-text" :for={status <- player.status}><%= status %></div>
       </div>
     <% end %>
@@ -249,7 +227,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:play_tile, index}, socket) do
-    if socket.assigns.seat == socket.assigns.turn do
+    if socket.assigns.seat == socket.assigns.state.turn do
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
     end
     {:noreply, socket}
@@ -262,7 +240,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) do
       # animate new calls
-      num_calls_before = Map.new(socket.assigns.players, fn {seat, player} -> {seat, length(player.calls)} end)
+      num_calls_before = Map.new(socket.assigns.state.players, fn {seat, player} -> {seat, length(player.calls)} end)
       num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
       Enum.each(Map.keys(num_calls_before), fn seat ->
         if num_calls_after[seat] > num_calls_before[seat] do
@@ -280,23 +258,9 @@ defmodule RiichiAdvancedWeb.GameLive do
         end
       end)
 
-      socket = assign(socket, :players, state.players)
-      socket = assign(socket, :last_turn, if state.turn != socket.assigns.turn do socket.assigns.turn else socket.assigns.last_turn end)
+      socket = assign(socket, :state, state)
+      socket = assign(socket, :last_turn, if state.turn != socket.assigns.state.turn do socket.assigns.state.turn else socket.assigns.last_turn end)
       socket = assign(socket, :turn, state.turn)
-      socket = assign(socket, :winners, state.winners)
-      socket = assign(socket, :winner_index, state.winner_index)
-      socket = assign(socket, :delta_scores, state.delta_scores)
-      socket = assign(socket, :delta_scores_reason, state.delta_scores_reason)
-      socket = assign(socket, :kyoku, state.kyoku)
-      socket = assign(socket, :honba, state.honba)
-      socket = assign(socket, :riichi_sticks, state.riichi_sticks)
-      socket = assign(socket, :timer, state.timer)
-      socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
-      socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
-      socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(state, seat))} end))
-      socket = assign(socket, :error, state.error)
-      socket = assign(socket, :visible_screen, state.visible_screen)
-      socket = assign(socket, :saki, if Map.has_key?(state, :saki) do state.saki else nil end)
       {:noreply, socket}
     else
       {:noreply, socket}
@@ -305,7 +269,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_info({:reset_anim, seat}, socket) do
     relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
-    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: socket.assigns.players[seat].hand, played_tile: nil, played_tile_index: nil)
+    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: socket.assigns.state.players[seat].hand, played_tile: nil, played_tile_index: nil)
     {:noreply, socket}
   end
 
