@@ -119,10 +119,9 @@ defmodule RiichiAdvanced.GameState.Saki do
   def can_mark(state, seat, index, source) do
     tile = get_tile(state, seat, index, source)
     mark_info = state.saki.marked_objects[source]
-    marked_enough = length(mark_info.marked) >= mark_info.needed
+    marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
     already_marked = is_marked(state, seat, index, source)
-    IO.inspect({"can_mark", seat, index, source, marked_enough, already_marked})
-    not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
+    mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
         "match_suit" ->
           case source do
@@ -153,8 +152,8 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   def is_marked(state, seat, index, source) do
     case source do
-      :hand    -> Enum.any?(state.saki.marked_objects.hand.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :discard -> Enum.any?(state.saki.marked_objects.discard.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :hand    -> Map.has_key?(state.saki.marked_objects, :hand) && Enum.any?(state.saki.marked_objects.hand.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :discard -> Map.has_key?(state.saki.marked_objects, :discard) && Enum.any?(state.saki.marked_objects.discard.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
       _        ->
         GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
         false

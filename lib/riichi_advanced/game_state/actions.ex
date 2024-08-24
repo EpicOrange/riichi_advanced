@@ -251,6 +251,28 @@ defmodule RiichiAdvanced.GameState.Actions do
         else
           update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, discard_tile) })
         end
+
+        state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
+        state
+      "swap_hand_tile_with_last_discard" ->
+        {hand_tile, hand_seat, hand_index} = Enum.at(context.marked_objects.hand.marked, 0)
+        last_discard_action = get_last_discard_action(state)
+        discard_tile = last_discard_action.tile
+        discard_seat = last_discard_action.seat
+        discard_index = length(state.players[discard_seat].pond) - 1
+
+        # replace pond tile with hand tile
+        state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, hand_tile) })
+
+        # replace hand tile with pond tile
+        hand_length = length(state.players[hand_seat].hand)
+        state = if hand_index < hand_length do
+          update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, discard_tile) })
+        else
+          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, discard_tile) })
+        end
+        
+        state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
         state
       _                       ->
         IO.puts("Unhandled action #{action}")
@@ -323,7 +345,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def run_deferred_actions(state, context) do
     actions = state.players[context.seat].deferred_actions
     if state.game_active && not Enum.empty?(actions) do
-      state = update_player(state, context.seat, &%Player{ &1 | deferred_actions: [] })
+      state = update_player(state, context.seat, &%Player{ &1 | choice: nil, chosen_actions: nil, deferred_actions: [] })
       # IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       state = run_actions(state, actions, context)
       notify_ai(state)
@@ -367,7 +389,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
             call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end)
-            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in ["swap_hand_tile_with_same_suit_discard"] end)
+            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in ["swap_hand_tile_with_same_suit_discard", "swap_hand_tile_with_last_discard"] end)
             cond do
               call_action_exists ->
                 # call button choices logic
@@ -417,7 +439,10 @@ defmodule RiichiAdvanced.GameState.Actions do
                   state
                 end
               picking_discards ->
-                state = Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
+                state = cond do
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end) -> Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)      -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
+                end
                 state = schedule_actions(state, seat, actions)
                 state
               true ->
@@ -430,12 +455,18 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # done with all choices
       state = Buttons.recalculate_buttons(state)
-      notify_ai(state)
+      if not performing_intermediate_action?(state) do
+        notify_ai(state)
+      end
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
       state
     else state end
+  end
+
+  def performing_intermediate_action?(state) do
+    Enum.any?([:east, :south, :west, :north], fn seat -> performing_intermediate_action?(state, seat) end)
   end
 
   def performing_intermediate_action?(state, seat) do

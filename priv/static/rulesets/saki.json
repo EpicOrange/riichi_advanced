@@ -1072,10 +1072,37 @@
       "actions": [["draft_saki_card", 4], ["unset_status", "round_start"]],
       "unskippable": true
     },
-    "swap_hand_tile_with_same_suit_discard": {
+    "atarashi_ako": {
       "display_name": "Swap a discard with same suit in hand",
       "show_when": [{"name": "status_missing", "opts": ["round_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [["big_text", "Atarashi Ako: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_same_suit_discard"]]
+    },
+    "choe_myeonghwa": {
+      "display_name": "Swap last discard with tile in hand",
+      "show_when": [
+        {"name": "status_missing", "opts": ["round_start"]},
+        "someone_else_discarded",
+        [
+          [
+            {"name": "seat_is", "opts": ["east"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["1z"]], 1]]]]}
+          ],
+          [
+            {"name": "seat_is", "opts": ["south"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["2z"]], 1]]]]}
+          ],
+          [
+            {"name": "seat_is", "opts": ["west"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["3z"]], 1]]]]}
+          ],
+          [
+            {"name": "seat_is", "opts": ["north"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["4z"]], 1]]]]}
+          ]
+        ],
+        {"name": "status", "opts": ["choe-myeonghwa"]}
+      ],
+      "actions": [["big_text", "Choe Myeonghwa: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_last_discard"], ["advance_turn"]]
     },
     "chii": {
       "display_name": "Chii",
@@ -1211,12 +1238,12 @@
     }
   },
   "auto_buttons": {
-    "auto_sort": {
+    "1_auto_sort": {
       "display_name": "A",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
     },
-    "auto_ron": {
+    "2_auto_ron": {
       "display_name": "R",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
@@ -1224,17 +1251,17 @@
       ],
       "enabled_at_start": false
     },
-    "auto_no_call": {
+    "3_auto_no_call": {
       "display_name": "C",
       "actions": [
         ["when", [
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan", "riichi"]}
+            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan", "riichi", "atarashi_ako", "choe_myeonghwa"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
     },
-    "auto_discard": {
+    "4_auto_discard": {
       "display_name": "D",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
