@@ -1,11 +1,14 @@
 defmodule Player do
   defstruct [
+    # persistent
+    score: 0,
+    nickname: nil,
+    # working
     hand: [],
     draw: [],
     pond: [],
     discards: [],
     calls: [],
-    score: 0,
     buttons: [],
     auto_buttons: [],
     call_buttons: %{},
@@ -13,13 +16,65 @@ defmodule Player do
     choice: nil,
     chosen_actions: nil,
     deferred_actions: [],
-    nickname: nil,
     big_text: "",
     status: [],
     riichi_stick: false,
     hand_revealed: false,
     last_discard: nil, # for animation purposes only
     ready: false
+  ]
+end
+
+defmodule Game do
+  defstruct [
+    # params
+    ruleset: nil,
+    session_id: nil,
+    ruleset_json: nil,
+    # pids
+    supervisor: nil,
+    mutex: nil,
+    ai_supervisor: nil,
+    exit_monitor: nil,
+    play_tile_debounce: nil,
+    play_tile_debouncers: nil,
+    big_text_debouncers: nil,
+    timer_debouncer: nil,
+    east: nil,
+    south: nil,
+    west: nil,
+    north: nil,
+
+    # control variables
+    game_active: false,
+    visible_screen: nil,
+    error: nil,
+    round_result: nil,
+    winners: %{},
+    winner_index: 0,
+    delta_scores: nil,
+    delta_scores_reason: nil,
+    next_dealer: nil,
+    timer: 0,
+    actions_cv: 0, # condition variable
+
+    # persistent game state (not reset on new round)
+    players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
+    rules: %{},
+    wall: [],
+    kyoku: 0,
+    honba: 0,
+
+    # working game state (reset on new round)
+    riichi_sticks: 0,
+    turn: :east,
+    wall_index: 0,
+    actions: [],
+    reversed_turn_order: false,
+    reserved_tiles: %{},
+    revealed_tiles: [],
+    max_revealed_tiles: 0,
+    drawn_reserved_tiles: []
   ]
 end
 
@@ -86,9 +141,10 @@ defmodule RiichiAdvanced.GameState do
     [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
     [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
-    state = Map.merge(state, %{
-      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
-      game_active: false,
+    state = Map.merge(state, %Game{
+      ruleset: state.ruleset,
+      session_id: state.session_id,
+      ruleset_json: state.ruleset_json,
       supervisor: supervisor,
       mutex: mutex,
       ai_supervisor: ai_supervisor,
@@ -97,8 +153,6 @@ defmodule RiichiAdvanced.GameState do
       play_tile_debouncers: play_tile_debouncers,
       big_text_debouncers: big_text_debouncers,
       timer_debouncer: timer_debouncer,
-      visible_screen: nil,
-      error: nil,
     })
 
     {state, rules} = try do
@@ -121,30 +175,6 @@ defmodule RiichiAdvanced.GameState do
 
     state = state
      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{ score: initial_score }} end))
-     |> Map.put(:east, nil)
-     |> Map.put(:south, nil)
-     |> Map.put(:west, nil)
-     |> Map.put(:north, nil)
-     |> Map.put(:kyoku, 0)
-     |> Map.put(:honba, 0)
-     |> Map.put(:riichi_sticks, 0)
-     |> Map.put(:wall, [])
-     |> Map.put(:turn, :east)
-     |> Map.put(:wall_index, 0)
-     |> Map.put(:actions, [])
-     |> Map.put(:reversed_turn_order, false)
-     |> Map.put(:round_result, nil)
-     |> Map.put(:winners, %{})
-     |> Map.put(:winner_index, 0)
-     |> Map.put(:delta_scores, nil)
-     |> Map.put(:delta_scores_reason, nil)
-     |> Map.put(:next_dealer, nil)
-     |> Map.put(:timer, 0)
-     |> Map.put(:actions_cv, 0) # condition variable
-     |> Map.put(:reserved_tiles, %{})
-     |> Map.put(:revealed_tiles, [])
-     |> Map.put(:max_revealed_tiles, 0)
-     |> Map.put(:drawn_reserved_tiles, [])
     state = initialize_new_round(state)
 
     Scoring.run_yaku_tests(state)
@@ -278,32 +308,13 @@ defmodule RiichiAdvanced.GameState do
 
       state = state
        |> Map.put(:wall, wall)
-       |> Map.put(:players, Map.new(state.players, fn {seat, player} -> {seat, %Player{ player |
+       |> Map.put(:players, Map.new(state.players, fn {seat, player} -> {seat, Map.merge(player, %Player{
             hand: hands[seat],
-            draw: [],
-            pond: [],
-            discards: [],
-            calls: [],
-            buttons: [],
             auto_buttons: initial_auto_buttons,
-            call_buttons: %{},
-            call_name: "",
-            choice: nil,
-            chosen_actions: nil,
-            deferred_actions: [],
-            big_text: "",
-            status: [],
-            riichi_stick: false,
-            hand_revealed: false,
-            last_discard: nil,
-            ready: false
-          }} end))
+            nickname: player.nickname,
+            score: player.score,
+          })} end))
        |> Map.put(:wall_index, starting_tiles*4)
-       |> Map.put(:winners, %{})
-       |> Map.put(:winner_index, 0)
-       |> Map.put(:delta_scores, nil)
-       |> Map.put(:delta_scores_reason, nil)
-       |> Map.put(:next_dealer, nil)
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
@@ -337,7 +348,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = Map.put(state, :visible_screen, :winner)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
 
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
@@ -452,7 +463,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = Map.put(state, :visible_screen, :scores)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
 
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
@@ -471,7 +482,7 @@ defmodule RiichiAdvanced.GameState do
 
         # reset timer
         state = Map.put(state, :timer, 10)
-        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         Debounce.apply(state.timer_debouncer)
 
         state
@@ -487,7 +498,7 @@ defmodule RiichiAdvanced.GameState do
         
         # reset timer
         state = Map.put(state, :timer, 10)
-        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(state[seat]) } end)
+        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         Debounce.apply(state.timer_debouncer)
         
         state
@@ -556,7 +567,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp fill_empty_seats_with_ai(state) do
-    for dir <- [:east, :south, :west, :north], state[dir] == nil, reduce: state do
+    for dir <- [:east, :south, :west, :north], Map.get(state, dir) == nil, reduce: state do
       state ->
         {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir]}})
         IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -600,9 +611,9 @@ defmodule RiichiAdvanced.GameState do
   def notify_ai_call_buttons(state, seat) do
     if state.game_active do
       call_choices = state.players[seat].call_buttons
-      if is_pid(state[seat]) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
+      if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
         # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
-        send(state[seat], {:call_buttons, %{player: state.players[seat]}})
+        send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
       end
     end
   end
@@ -614,16 +625,16 @@ defmodule RiichiAdvanced.GameState do
       # if there are any new buttons for any AI players, notify them
       # otherwise, just tell the current player it's their turn
       if Buttons.no_buttons_remaining?(state) do
-        if is_pid(state[state.turn]) do
+        if is_pid(Map.get(state, state.turn)) do
           # IO.puts("Notifying #{state.turn} AI that it's their turn")
-          send(state[state.turn], {:your_turn, %{player: state.players[state.turn]}})
+          send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn]}})
         end
       else
         Enum.each([:east, :south, :west, :north], fn seat ->
           has_buttons = not Enum.empty?(state.players[seat].buttons)
-          if is_pid(state[seat]) && has_buttons do
+          if is_pid(Map.get(state, seat)) && has_buttons do
             # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-            send(state[seat], {:buttons, %{player: state.players[seat]}})
+            send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
           end
         end)
       end
@@ -864,6 +875,7 @@ defmodule RiichiAdvanced.GameState do
 
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
+    IO.inspect(state)
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
     # reset anim
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -872,18 +884,18 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
-      state[:east] == nil  || is_pid(state[:east])  -> {:east, false}
-      state[:south] == nil || is_pid(state[:south]) -> {:south, false}
-      state[:west] == nil  || is_pid(state[:west])  -> {:west, false}
-      state[:north] == nil || is_pid(state[:north]) -> {:north, false}
+      Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
+      Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
+      Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
+      Map.get(state, :north) == nil || is_pid(Map.get(state, :north)) -> {:north, false}
       true                                          -> {:east, true}
     end
 
     state = if not spectator do
       # if we're replacing an ai, shutdown the ai
-      state = if is_pid(state[seat]) do
-        IO.puts("Stopping AI for #{seat}: #{inspect(state[seat])}")
-        DynamicSupervisor.terminate_child(state.ai_supervisor, state[seat])
+      state = if is_pid(Map.get(state, seat)) do
+        IO.puts("Stopping AI for #{seat}: #{inspect(Map.get(state, seat))}")
+        DynamicSupervisor.terminate_child(state.ai_supervisor, Map.get(state, seat))
         Map.put(state, seat, nil)
       else state end
 
@@ -905,7 +917,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, seat, nil)
     state = update_player(state, seat, &%Player{ &1 | nickname: nil })
     IO.puts("Player #{seat} exited")
-    state = if Enum.all?([:east, :south, :west, :north], fn dir -> state[dir] == nil || is_pid(state[dir]) end) do
+    state = if Enum.all?([:east, :south, :west, :north], fn dir -> Map.get(state, dir) == nil || is_pid(Map.get(state, dir)) end) do
       # all players have left, shutdown
       IO.puts("Stopping game #{state.session_id}")
       DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
