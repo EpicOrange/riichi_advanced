@@ -270,9 +270,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # if there's a winner, never display buttons
           update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
         else
-          state = Buttons.recalculate_buttons(state)
-          notify_ai(state)
-          state
+          Buttons.recalculate_buttons(state)
         end
         buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
         # IO.puts("buttons_before: #{inspect(buttons_before)}")
@@ -328,6 +326,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       state = update_player(state, context.seat, &%Player{ &1 | deferred_actions: [] })
       # IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       state = run_actions(state, actions, context)
+      notify_ai(state)
       state
     else state end
   end

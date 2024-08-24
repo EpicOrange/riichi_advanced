@@ -251,8 +251,26 @@ defmodule RiichiAdvanced.GameState do
       state = state
        |> Map.put(:wall, wall)
        |> Map.put(:wall_index, starting_tiles*4)
-       |> update_all_players(&%Player{ &2 | hand: hands[&1] })
-       |> update_players(&%Player{ &1 | auto_buttons: initial_auto_buttons })
+       |> update_all_players(&%Player{ &2 |
+            hand: hands[&1],
+            draw: [],
+            pond: [],
+            discards: [],
+            calls: [],
+            buttons: [],
+            auto_buttons: initial_auto_buttons,
+            call_buttons: %{},
+            call_name: "",
+            choice: nil,
+            chosen_actions: nil,
+            deferred_actions: [],
+            big_text: "",
+            status: [],
+            riichi_stick: false,
+            hand_revealed: false,
+            last_discard: nil, # for animation purposes only
+            ready: false
+          })
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
@@ -1014,7 +1032,6 @@ defmodule RiichiAdvanced.GameState do
   # saki calls
   def handle_cast({:mark_tile, seat, index, tile_source}, state) do
     state = Saki.mark_tile(state, seat, index, tile_source)
-    # TODO check if all marked, if so, resume deferred actions for the marking player
     state = if not Saki.needs_marking(state) do
       state = Actions.run_deferred_actions(state, %{seat: state.saki.marking_player, marked_objects: state.saki.marked_objects})
       state = Saki.reset_marking(state)
