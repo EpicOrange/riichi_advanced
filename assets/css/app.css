@@ -381,11 +381,11 @@ div.tile.sideways + div.tile.sideways::before {
   background: inherit;
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
 }
-div.tile.clickable {
+div.tile.markable {
   cursor: pointer;
   --border-width: calc(0.05 * var(--tile-size));
 }
-div.tile.clickable:hover {
+div.tile.markable:hover, div.tile.marked {
   --border-width: calc(0.1 * var(--tile-size));
 }
 div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }

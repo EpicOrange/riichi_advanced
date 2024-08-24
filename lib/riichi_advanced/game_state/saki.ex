@@ -171,6 +171,10 @@ defmodule RiichiAdvanced.GameState.Saki do
     end
   end
 
+  def clear_marked_objects(state) do
+    update_in(state.saki.marked_objects, &Map.new(&1, fn {source, mark_info} -> {source, Map.put(mark_info, :marked, [])} end))
+  end
+
   def reset_marking(state) do
     state = put_in(state.saki.marking_player, nil)
     state = put_in(state.saki.marked_objects, %{})

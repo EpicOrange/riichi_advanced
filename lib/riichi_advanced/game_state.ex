@@ -961,6 +961,18 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  # def handle_cast(:cancel_call_buttons, state) do
+  #   state = update_all_players(state, fn seat, player -> %Player{ player | call_buttons: [] } end)
+
+  #   # go back to button clicking phase
+  #   state = Buttons.recalculate_buttons(state)
+  #   state = update_all_players(state, fn seat, player -> %Player{ player | deferred_actions: [] } end)
+  #   notify_ai(state)
+
+  #   state = broadcast_state_change(state)
+  #   {:noreply, state}
+  # end
+
   # clicking the compass will send this
   def handle_cast(:notify_ai, state) do
     state = Buttons.recalculate_buttons(state)
@@ -1012,4 +1024,21 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast(:clear_marked_objects, state) do
+    state = Saki.clear_marked_objects(state)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:reset_marking, state) do
+    state = Saki.reset_marking(state)
+
+    # go back to button clicking phase
+    state = Buttons.recalculate_buttons(state)
+    state = update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [] } end)
+    notify_ai(state)
+
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
 end

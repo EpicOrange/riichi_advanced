@@ -61,6 +61,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       |> assign(:loading, false)
+      |> assign(:marking, state.saki != nil && GenServer.call(game_state, :needs_marking))
       {:ok, socket}
     else
       {:ok, socket}
@@ -132,7 +133,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
     <%= if @viewer != :spectator do %>
       <div class="buttons">
-        <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+        <%= if @marking do %>
+          <button class="button" phx-click="clear_marked_objects">Clear</button>
+          <button class="button" phx-click="cancel_marked_objects">Cancel</button>
+        <% else %>
+          <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+        <% end %>
       </div>
       <div class="auto-buttons">
         <%= for {name, checked} <- @state.players[@seat].auto_buttons do %>
@@ -213,6 +219,16 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
+  def handle_event("clear_marked_objects", _assigns, socket) do
+    GenServer.cast(socket.assigns.game_state, :clear_marked_objects)
+    {:noreply, socket}
+  end
+
+  def handle_event("cancel_marked_objects", _assigns, socket) do
+    GenServer.cast(socket.assigns.game_state, :reset_marking)
+    {:noreply, socket}
+  end
+
   def handle_event("ready_for_next_round", _assigns, socket) do
     if socket.assigns.seat != :spectator do
       GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
@@ -254,6 +270,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
+      socket = assign(socket, :marking, state.saki != nil && GenServer.call(socket.assigns.game_state, :needs_marking))
       {:noreply, socket}
     else
       {:noreply, socket}
