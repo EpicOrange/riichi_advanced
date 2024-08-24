@@ -7,8 +7,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :played_tile, nil)
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
-    socket = assign(socket, :num_new_calls, 0)
+    socket = assign(socket, :just_called, false)
     socket = assign(socket, :status, [])
+    socket = assign(socket, :calls, [])
     socket = assign(socket, :marking, false)
     {:ok, socket}
   end
@@ -87,7 +88,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <% end %>
       <div class="calls">
           <%= for {{_name, call}, i} <- Enum.with_index(@calls) do %>
-            <div class={["call", (i >= length(@calls) - @num_new_calls) && "just_called"]}>
+            <div class={["call", @just_called && i == length(@calls) - 1 && "just_called"]}>
               <div class={["tile", tile, sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>
@@ -144,6 +145,13 @@ defmodule RiichiAdvancedWeb.HandComponent do
       end
     else assigns end
 
+    # animate incoming calls
+    socket = if Map.has_key?(assigns, :calls) && length(assigns.calls) > length(socket.assigns.calls) do
+      socket = assign(socket, :just_called, true)
+      :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, socket.assigns.seat}])
+      socket
+    else socket end
+
     socket = assigns
              |> Map.drop([:flash])
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
@@ -154,7 +162,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       socket = if socket.assigns.played_tile_index != nil do
         actual_hand = socket.assigns.hand ++ socket.assigns.draw
         socket = assign(socket, :hand, List.insert_at(actual_hand, socket.assigns.played_tile_index, socket.assigns.played_tile))
-        :timer.apply_after(750, Kernel, :send, [self(), {:reset_anim, socket.assigns.seat}])
+        :timer.apply_after(750, Kernel, :send, [self(), {:reset_hand_anim, socket.assigns.seat}])
         socket
       else socket end
       socket
