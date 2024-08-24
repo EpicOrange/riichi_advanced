@@ -361,6 +361,8 @@ div.corner-info > div.round-marker {
 div.tile {
   --tile-width: calc(0.75 * var(--tile-size));
   --tile-height: calc(1 * var(--tile-size));
+  --border-width: 0px;
+  border: var(--border-width) solid var(--tile-back);
   width: var(--tile-width);
   height: var(--tile-height);
   background: url("/images/tiles.png") no-repeat;
@@ -368,6 +370,7 @@ div.tile {
   background-position-x: 0;
   background-position-y: 0;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 div.tile.sideways + div.tile.sideways { width: 0; clip-path: none; }
 div.tile.sideways + div.tile.sideways::before {
@@ -378,78 +381,86 @@ div.tile.sideways + div.tile.sideways::before {
   background: inherit;
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
 }
-div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size)); }
-div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size)); }
-div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size)); }
-div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size)); }
-div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size)); }
-div.tile.\33 m { background-position-y: calc(-3 * var(--tile-size)); }
-div.tile.\34 m { background-position-y: calc(-4 * var(--tile-size)); }
-div.tile.\35 m { background-position-y: calc(-5 * var(--tile-size)); }
-div.tile.\36 m { background-position-y: calc(-6 * var(--tile-size)); }
-div.tile.\37 m { background-position-y: calc(-7 * var(--tile-size)); }
-div.tile.\38 m { background-position-y: calc(-8 * var(--tile-size)); }
-div.tile.\39 m { background-position-y: calc(-9 * var(--tile-size)); }
-div.tile.\30 p { background-position-y: calc(-10 * var(--tile-size)); }
-div.tile.\31 p { background-position-y: calc(-11 * var(--tile-size)); }
-div.tile.\32 p { background-position-y: calc(-12 * var(--tile-size)); }
-div.tile.\33 p { background-position-y: calc(-13 * var(--tile-size)); }
-div.tile.\34 p { background-position-y: calc(-14 * var(--tile-size)); }
-div.tile.\35 p { background-position-y: calc(-15 * var(--tile-size)); }
-div.tile.\36 p { background-position-y: calc(-16 * var(--tile-size)); }
-div.tile.\37 p { background-position-y: calc(-17 * var(--tile-size)); }
-div.tile.\38 p { background-position-y: calc(-18 * var(--tile-size)); }
-div.tile.\39 p { background-position-y: calc(-19 * var(--tile-size)); }
-div.tile.\30 s { background-position-y: calc(-20 * var(--tile-size)); }
-div.tile.\31 s { background-position-y: calc(-21 * var(--tile-size)); }
-div.tile.\32 s { background-position-y: calc(-22 * var(--tile-size)); }
-div.tile.\33 s { background-position-y: calc(-23 * var(--tile-size)); }
-div.tile.\34 s { background-position-y: calc(-24 * var(--tile-size)); }
-div.tile.\35 s { background-position-y: calc(-25 * var(--tile-size)); }
-div.tile.\36 s { background-position-y: calc(-26 * var(--tile-size)); }
-div.tile.\37 s { background-position-y: calc(-27 * var(--tile-size)); }
-div.tile.\38 s { background-position-y: calc(-28 * var(--tile-size)); }
-div.tile.\39 s { background-position-y: calc(-29 * var(--tile-size)); }
-div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size)); }
-div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size)); }
-div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size)); }
-div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size)); }
-div.tile.\35 z { background-position-y: calc(-34 * var(--tile-size)); }
-div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size)); }
-div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size)); }
-div.tile.\31 x { background-position-y: calc(-37 * var(--tile-size)); }
-div.tile.\30 z { background-position-y: calc(-38 * var(--tile-size)); }
-div.tile.\31 f { background-position-y: calc(-39 * var(--tile-size)); }
-div.tile.\32 f { background-position-y: calc(-40 * var(--tile-size)); }
-div.tile.\33 f { background-position-y: calc(-41 * var(--tile-size)); }
-div.tile.\34 f { background-position-y: calc(-42 * var(--tile-size)); }
-div.tile.\31 g { background-position-y: calc(-43 * var(--tile-size)); }
-div.tile.\32 g { background-position-y: calc(-44 * var(--tile-size)); }
-div.tile.\33 g { background-position-y: calc(-45 * var(--tile-size)); }
-div.tile.\34 g { background-position-y: calc(-46 * var(--tile-size)); }
-div.tile.\31 a { background-position-y: calc(-47 * var(--tile-size)); }
-div.tile.\32 a { background-position-y: calc(-48 * var(--tile-size)); }
-div.tile.\33 a { background-position-y: calc(-49 * var(--tile-size)); }
-div.tile.\34 a { background-position-y: calc(-50 * var(--tile-size)); }
-div.tile.\31 y { background-position-y: calc(-51 * var(--tile-size)); }
-div.tile.\32 y { background-position-y: calc(-52 * var(--tile-size)); }
-div.tile.\31 j { background-position-y: calc(-53 * var(--tile-size)); }
-div.tile.\32 j { background-position-y: calc(-54 * var(--tile-size)); }
-div.tile.\33 j { background-position-y: calc(-55 * var(--tile-size)); }
-div.tile.\34 j { background-position-y: calc(-56 * var(--tile-size)); }
-div.tile.\35 j { background-position-y: calc(-57 * var(--tile-size)); }
-div.tile.\36 j { background-position-y: calc(-58 * var(--tile-size)); }
-div.tile.\37 j { background-position-y: calc(-59 * var(--tile-size)); }
-div.tile.\38 j { background-position-y: calc(-60 * var(--tile-size)); }
-div.tile.\39 j { background-position-y: calc(-61 * var(--tile-size)); }
-div.tile.\31 k { background-position-y: calc(-62 * var(--tile-size)); }
-div.tile.\32 k { background-position-y: calc(-63 * var(--tile-size)); }
-div.tile.\33 k { background-position-y: calc(-64 * var(--tile-size)); }
-div.tile.\34 k { background-position-y: calc(-65 * var(--tile-size)); }
-div.tile.\31 q { background-position-y: calc(-66 * var(--tile-size)); }
-div.tile.\32 q { background-position-y: calc(-67 * var(--tile-size)); }
-div.tile.\33 q { background-position-y: calc(-68 * var(--tile-size)); }
-div.tile.\34 q { background-position-y: calc(-69 * var(--tile-size)); }
+div.tile.clickable {
+  cursor: pointer;
+  --border-width: calc(0.05 * var(--tile-size));
+}
+div.tile.clickable:hover {
+  --border-width: calc(0.1 * var(--tile-size));
+}
+div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }
+div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
+div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
+div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 m { background-position-y: calc(-3 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 m { background-position-y: calc(-4 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 m { background-position-y: calc(-5 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 m { background-position-y: calc(-6 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 m { background-position-y: calc(-7 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 m { background-position-y: calc(-8 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 m { background-position-y: calc(-9 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 p { background-position-y: calc(-10 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 p { background-position-y: calc(-11 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 p { background-position-y: calc(-12 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 p { background-position-y: calc(-13 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 p { background-position-y: calc(-14 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 p { background-position-y: calc(-15 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 p { background-position-y: calc(-16 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 p { background-position-y: calc(-17 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 p { background-position-y: calc(-18 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 p { background-position-y: calc(-19 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 s { background-position-y: calc(-20 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 s { background-position-y: calc(-21 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 s { background-position-y: calc(-22 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 s { background-position-y: calc(-23 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 s { background-position-y: calc(-24 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 s { background-position-y: calc(-25 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 s { background-position-y: calc(-26 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 s { background-position-y: calc(-27 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 s { background-position-y: calc(-28 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 s { background-position-y: calc(-29 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 z { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 x { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 z { background-position-y: calc(-38 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 f { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 f { background-position-y: calc(-40 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 f { background-position-y: calc(-41 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 f { background-position-y: calc(-42 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 g { background-position-y: calc(-43 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 g { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 g { background-position-y: calc(-45 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 g { background-position-y: calc(-46 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 a { background-position-y: calc(-47 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 a { background-position-y: calc(-48 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 a { background-position-y: calc(-49 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 a { background-position-y: calc(-50 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 y { background-position-y: calc(-51 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 y { background-position-y: calc(-52 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 j { background-position-y: calc(-53 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 j { background-position-y: calc(-54 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 j { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 j { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 j { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 j { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 j { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 k { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 k { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 k { background-position-y: calc(-64 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 k { background-position-y: calc(-65 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 q { background-position-y: calc(-66 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 q { background-position-y: calc(-67 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 q { background-position-y: calc(-68 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 q { background-position-y: calc(-69 * var(--tile-size) - var(--border-width)); }
 div.tile.inactive {
   opacity: 0.6;
 }

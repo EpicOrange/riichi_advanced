@@ -1045,6 +1045,11 @@
       "actions": [["draft_saki_card", 4], ["unset_status", "round_start"]],
       "unskippable": true
     },
+    "pick_discards": {
+      "display_name": "Pick a discard",
+      "show_when": [{"name": "status_missing", "opts": ["round_start"]}],
+      "actions": [["pick_and_hide_discard"]]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],

@@ -8,8 +8,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
       new_buttons = Map.new(state.players, fn {seat, player} ->
-        if not Enum.empty?(player.call_buttons) do
-          # don't regenerate buttons if we have call buttons
+        if Actions.performing_intermediate_action?(state, seat) do
+          # don't regenerate buttons if we're performing an intermediate action
           {seat, []}
         else
           buttons = state.rules["buttons"]

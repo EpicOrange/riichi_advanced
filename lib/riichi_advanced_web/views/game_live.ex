@@ -54,6 +54,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :toimen, toimen)
       socket = assign(socket, :kamicha, kamicha)
       socket = assign(socket, :spectator, spectator)
+      socket = assign(socket, :viewer, if spectator do :spectator else seat end)
       socket = assign(socket, :revealed_tiles, to_revealed_tiles(state))
       socket = assign(socket, :tiles_left, length(state.wall) - state.wall_index - length(state.drawn_reserved_tiles))
       socket = assign(socket, :kyoku, state.kyoku)
@@ -75,6 +76,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :shimocha, nil)
       socket = assign(socket, :toimen, nil)
       socket = assign(socket, :kamicha, nil)
+      socket = assign(socket, :viewer, :spectator)
       socket = assign(socket, :spectator, false)
       socket = assign(socket, :revealed_tiles, [])
       socket = assign(socket, :tiles_left, 0)
@@ -102,13 +104,14 @@ defmodule RiichiAdvancedWeb.GameLive do
         your_hand?={true}
         your_turn?={@seat == @turn}
         seat={@seat}
+        viewer={@viewer}
         hand={@players[@seat].hand}
         draw={@players[@seat].draw}
         calls={@players[@seat].calls}
         status={@players[@seat].status}
+        saki={@saki}
         play_tile={&send(self(), {:play_tile, &1})}
-        reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
-        />
+        reindex_hand={&send(self(), {:reindex_hand, &1, &2})} />
     <% else %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id="hand self"
@@ -116,60 +119,131 @@ defmodule RiichiAdvancedWeb.GameLive do
         revealed?={@players[@seat].hand_revealed}
         your_hand?={false}
         seat={@seat}
+        viewer={@viewer}
         hand={@players[@seat].hand}
         draw={@players[@seat].draw}
         calls={@players[@seat].calls}
         status={@players[@seat].status}
-        :if={@seat != nil}
-        />
+        saki={@saki}
+        :if={@seat != nil} />
     <% end %>
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" game_state={@game_state} seat={@seat} last_turn={@last_turn} pond={@players[@seat].pond} riichi={@players[@seat].riichi_stick} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info self" game_state={@game_state} seat={@seat} player={@players[@seat]} kyoku={@kyoku} saki={@saki} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent}
+      id="pond self"
+      game_state={@game_state}
+      seat={@seat}
+      viewer={@viewer}
+      last_turn={@last_turn}
+      pond={@players[@seat].pond}
+      riichi={@players[@seat].riichi_stick}
+      saki={@saki} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
+      id="corner-info self"
+      game_state={@game_state}
+      seat={@seat}
+      viewer={@viewer}
+      player={@players[@seat]}
+      kyoku={@kyoku}
+      saki={@saki} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
       game_state={@game_state}
       revealed?={@players[@shimocha].hand_revealed}
       your_hand?={false}
       seat={@shimocha}
+      viewer={@viewer}
       hand={@players[@shimocha].hand}
       draw={@players[@shimocha].draw}
       calls={@players[@shimocha].calls}
       status={@players[@shimocha].status}
-      :if={@shimocha != nil}
-      />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} seat={@shimocha} last_turn={@last_turn} pond={@players[@shimocha].pond} riichi={@players[@shimocha].riichi_stick} :if={@shimocha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info shimocha" game_state={@game_state} seat={@shimocha} player={@players[@shimocha]} kyoku={@kyoku} saki={@saki} :if={@shimocha != nil} />
+      saki={@saki}
+      :if={@shimocha != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent}
+      id="pond shimocha"
+      game_state={@game_state}
+      seat={@shimocha}
+      viewer={@viewer}
+      last_turn={@last_turn}
+      pond={@players[@shimocha].pond}
+      riichi={@players[@shimocha].riichi_stick}
+      saki={@saki} 
+      :if={@shimocha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
+      id="corner-info shimocha"
+      game_state={@game_state}
+      seat={@shimocha}
+      viewer={@viewer}
+      player={@players[@shimocha]}
+      kyoku={@kyoku}
+      saki={@saki}
+      :if={@shimocha != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand toimen"
       game_state={@game_state}
       revealed?={@players[@toimen].hand_revealed}
       your_hand?={false}
       seat={@toimen}
+      viewer={@viewer}
       hand={@players[@toimen].hand}
       draw={@players[@toimen].draw}
       calls={@players[@toimen].calls}
       status={@players[@toimen].status}
-      :if={@toimen != nil}
-      />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} seat={@toimen} last_turn={@last_turn} pond={@players[@toimen].pond} riichi={@players[@toimen].riichi_stick} :if={@toimen != nil} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info toimen" game_state={@game_state} seat={@toimen} player={@players[@toimen]} kyoku={@kyoku} saki={@saki} :if={@toimen != nil} />
+      saki={@saki}
+      :if={@toimen != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent}
+      id="pond toimen"
+      game_state={@game_state}
+      seat={@toimen}
+      viewer={@viewer}
+      last_turn={@last_turn}
+      pond={@players[@toimen].pond}
+      riichi={@players[@toimen].riichi_stick}
+      saki={@saki}
+      :if={@toimen != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
+      id="corner-info toimen"
+      game_state={@game_state}
+      seat={@toimen}
+      viewer={@viewer}
+      player={@players[@toimen]}
+      kyoku={@kyoku}
+      saki={@saki}
+      :if={@toimen != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand kamicha"
       game_state={@game_state}
       revealed?={@players[@kamicha].hand_revealed}
       seat={@kamicha}
+      viewer={@viewer}
       hand={@players[@kamicha].hand}
       draw={@players[@kamicha].draw}
       calls={@players[@kamicha].calls}
       status={@players[@kamicha].status}
-      :if={@kamicha != nil}
-      />
-    <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} seat={@kamicha} last_turn={@last_turn} pond={@players[@kamicha].pond} riichi={@players[@kamicha].riichi_stick} :if={@kamicha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info kamicha" game_state={@game_state} seat={@kamicha} player={@players[@kamicha]} kyoku={@kyoku} saki={@saki} :if={@kamicha != nil} />
+      saki={@saki}
+      :if={@kamicha != nil} />
+    <.live_component module={RiichiAdvancedWeb.PondComponent}
+      id="pond kamicha"
+      game_state={@game_state}
+      seat={@kamicha}
+      viewer={@viewer}
+      last_turn={@last_turn}
+      pond={@players[@kamicha].pond}
+      riichi={@players[@kamicha].riichi_stick}
+      saki={@saki}
+      :if={@kamicha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
+      id="corner-info kamicha"
+      game_state={@game_state}
+      seat={@kamicha}
+      viewer={@viewer}
+      player={@players[@kamicha]}
+      kyoku={@kyoku}
+      saki={@saki}
+      :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent}
       id="compass"
       game_state={@game_state}
       seat={@seat}
+      viewer={@viewer}
       turn={@turn}
       tiles_left={@tiles_left}
       kyoku={@kyoku}

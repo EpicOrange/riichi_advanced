@@ -44,13 +44,14 @@ defmodule RiichiAdvanced.GameState.Saki do
     state = Map.put(state, :saki, %{
       saki_deck: Enum.shuffle(state.rules["saki_deck"]),
       saki_deck_index: 0,
-      all_drafted: false
+      all_drafted: false,
+      picking_discards: nil
     })
 
     state
   end
 
-  def draft_saki_cards(state, num) do
+  def draw_saki_cards(state, num) do
     ix = state.saki.saki_deck_index
     cards = Enum.slice(state.saki.saki_deck, ix..ix+num-1)
     state = Map.update!(state, :saki, &Map.put(&1, :saki_deck_index, ix + num))
@@ -70,5 +71,15 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   def filter_cards(statuses) do
     Enum.filter(statuses, fn status -> status in @supported_cards end)
+  end
+
+  def setup_pick_discards(state, seat) do
+    state = Map.update!(state, :saki, &Map.put(&1, :picking_discards, seat))
+    state
+  end
+
+  def reset_pick_discards(state) do
+    state = Map.update!(state, :saki, &Map.put(&1, :picking_discards, nil))
+    state
   end
 end
