@@ -2,33 +2,6 @@
   "enable_saki_cards": true,
   "saki_deck": [
     "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
-    "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
     "ikeda-kana",
@@ -1098,6 +1071,22 @@
           [
             {"name": "seat_is", "opts": ["north"]},
             {"name": "match", "opts": [["last_discard"], [[[[["4z"]], 1]]]]}
+          ],
+          [
+            {"name": "round_wind_is", "opts": ["east"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["1z"]], 1]]]]}
+          ],
+          [
+            {"name": "round_wind_is", "opts": ["south"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["2z"]], 1]]]]}
+          ],
+          [
+            {"name": "round_wind_is", "opts": ["west"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["3z"]], 1]]]]}
+          ],
+          [
+            {"name": "round_wind_is", "opts": ["north"]},
+            {"name": "match", "opts": [["last_discard"], [[[[["4z"]], 1]]]]}
           ]
         ],
         {"name": "status", "opts": ["choe-myeonghwa"]}
@@ -1196,7 +1185,43 @@
                      {"name": "not_status", "opts": ["just_reached"]},
                      "someone_else_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-                     "has_yaku_with_discard"
+                     "has_yaku_with_discard",
+                     [
+                        {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
+                        [
+                          {"name": "seat_is", "opts": ["east"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["2z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["3z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["4z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["south"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["3z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["4z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["1z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["west"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["4z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["1z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["2z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["north"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["1z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["2z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_discard"], [[[[["3z"]], 1]]]]}]
+                          ]
+                        ],
+                        "has_yakuman_with_discard"
+                     ]
                    ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -1218,6 +1243,42 @@
                          {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
                          {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
                        ]
+                     ],
+                     [
+                        {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
+                        [
+                          {"name": "seat_is", "opts": ["east"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["2z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["3z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["4z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["south"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["3z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["4z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["1z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["west"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["4z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["1z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["2z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["north"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["1z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["2z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], [[[[["3z"]], 1]]]]}]
+                          ]
+                        ],
+                        "has_yakuman_with_call"
                      ]
                    ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
@@ -1231,7 +1292,43 @@
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "not_status", "opts": ["just_reached"]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-                     "has_yaku_with_hand"
+                     "has_yaku_with_hand",
+                     [
+                        {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
+                        [
+                          {"name": "seat_is", "opts": ["east"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["2z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["3z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["4z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["south"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["3z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["4z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["1z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["west"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["4z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["1z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["2z"]], 1]]]]}]
+                          ]
+                        ],
+                        [
+                          {"name": "seat_is", "opts": ["north"]},
+                          [
+                            [{"name": "shimocha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["1z"]], 1]]]]}],
+                            [{"name": "toimen_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["2z"]], 1]]]]}],
+                            [{"name": "kamicha_status", "opts": ["choe-myeonghwa"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], [[[[["3z"]], 1]]]]}]
+                          ]
+                        ],
+                        "has_yakuman_with_hand"
+                     ]
                    ],
       "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
