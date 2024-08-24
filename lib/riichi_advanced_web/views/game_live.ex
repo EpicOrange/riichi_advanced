@@ -62,6 +62,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
       socket = assign(socket, :visible_screen, state.visible_screen)
+      socket = assign(socket, :saki, if Map.has_key?(state, :saki) do state.saki else nil end)
       # only need to assign these once
       socket = assign(socket, :display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       socket = assign(socket, :display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
@@ -83,6 +84,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :is_bot, %{:east => false, :south => false, :west => false, :north => false})
       socket = assign(socket, :error, nil)
       socket = assign(socket, :visible_screen, nil)
+      socket = assign(socket, :saki, nil)
+
       socket = assign(socket, :display_riichi_sticks, false)
       socket = assign(socket, :display_honba, false)
       {:ok, socket}
@@ -121,7 +124,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         />
     <% end %>
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond self" game_state={@game_state} seat={@seat} last_turn={@last_turn} pond={@players[@seat].pond} riichi={@players[@seat].riichi_stick} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info self" game_state={@game_state} seat={@seat} player={@players[@seat]} kyoku={@kyoku} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info self" game_state={@game_state} seat={@seat} player={@players[@seat]} kyoku={@kyoku} saki={@saki} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand shimocha"
       game_state={@game_state}
@@ -135,7 +138,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@shimocha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond shimocha" game_state={@game_state} seat={@shimocha} last_turn={@last_turn} pond={@players[@shimocha].pond} riichi={@players[@shimocha].riichi_stick} :if={@shimocha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info shimocha" game_state={@game_state} seat={@shimocha} player={@players[@shimocha]} kyoku={@kyoku} :if={@shimocha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info shimocha" game_state={@game_state} seat={@shimocha} player={@players[@shimocha]} kyoku={@kyoku} saki={@saki} :if={@shimocha != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand toimen"
       game_state={@game_state}
@@ -149,7 +152,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@toimen != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond toimen" game_state={@game_state} seat={@toimen} last_turn={@last_turn} pond={@players[@toimen].pond} riichi={@players[@toimen].riichi_stick} :if={@toimen != nil} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info toimen" game_state={@game_state} seat={@toimen} player={@players[@toimen]} kyoku={@kyoku} :if={@toimen != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info toimen" game_state={@game_state} seat={@toimen} player={@players[@toimen]} kyoku={@kyoku} saki={@saki} :if={@toimen != nil} />
     <.live_component module={RiichiAdvancedWeb.HandComponent}
       id="hand kamicha"
       game_state={@game_state}
@@ -162,7 +165,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       :if={@kamicha != nil}
       />
     <.live_component module={RiichiAdvancedWeb.PondComponent} id="pond kamicha" game_state={@game_state} seat={@kamicha} last_turn={@last_turn} pond={@players[@kamicha].pond} riichi={@players[@kamicha].riichi_stick} :if={@kamicha != nil} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info kamicha" game_state={@game_state} seat={@kamicha} player={@players[@kamicha]} kyoku={@kyoku} :if={@kamicha != nil} />
+    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent} id="corner-info kamicha" game_state={@game_state} seat={@kamicha} player={@players[@kamicha]} kyoku={@kyoku} saki={@saki} :if={@kamicha != nil} />
     <.live_component module={RiichiAdvancedWeb.CompassComponent}
       id="compass"
       game_state={@game_state}
@@ -196,16 +199,26 @@ defmodule RiichiAdvancedWeb.GameLive do
         <%= for {called_tile, choices} <- @players[@seat].call_buttons do %>
           <%= if not Enum.empty?(choices) do %>
             <div class="call-buttons">
-              <%= if called_tile != nil do %>
-                <div class={["tile", called_tile]}></div>
-                <div class="call-button-separator"></div>
-              <% end %>
-              <%= for choice <- choices do %>
-                <button class="call-button" phx-click="call_button_clicked" phx-value-name={@players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
-                <%= for tile <- choice do %>
-                  <div class={["tile", tile]}></div>
+              <%= if called_tile != "saki" do %>
+                <%= if called_tile != nil do %>
+                  <div class={["tile", called_tile]}></div>
+                  <div class="call-button-separator"></div>
                 <% end %>
-                </button>
+                <%= for choice <- choices do %>
+                  <button class="call-button" phx-click="call_button_clicked" phx-value-name={@players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
+                  <%= for tile <- choice do %>
+                    <div class={["tile", tile]}></div>
+                  <% end %>
+                  </button>
+                <% end %>
+              <% else %>
+                <%= for choice <- choices do %>
+                  <button class="call-button" phx-click="saki_card_clicked" phx-value-choice={choice}>
+                  <%= for tile <- choice do %>
+                    <div class={["saki-card", tile]}></div>
+                  <% end %>
+                  </button>
+                <% end %>
               <% end %>
             </div>
           <% end %>
@@ -256,6 +269,11 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
     GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Utils.to_tile(called_tile)}})
+    {:noreply, socket}
+  end
+
+  def handle_event("saki_card_clicked", %{"choice" => choice}, socket) do
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, choice: choice}})
     {:noreply, socket}
   end
 
@@ -315,6 +333,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = assign(socket, :is_bot, Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(state[seat])} end))
       socket = assign(socket, :error, state.error)
       socket = assign(socket, :visible_screen, state.visible_screen)
+      socket = assign(socket, :saki, if Map.has_key?(state, :saki) do state.saki else nil end)
       {:noreply, socket}
     else
       {:noreply, socket}

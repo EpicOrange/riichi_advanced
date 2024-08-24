@@ -26,6 +26,7 @@ end
 defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   use GenServer
 
@@ -212,7 +213,7 @@ defmodule RiichiAdvanced.GameState do
       #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
       #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
       #           :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
-      # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2p", :"2p", :"2p", :"4p", :"5p", :"3s", :"4s", :"5s", :"8s", :"8s"]),
+      # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"2m", :"2m", :"2m", :"4m", :"5m", :"3p", :"4p", :"5p", :"8p", :"8p"]),
       #           :south => Enum.slice(wall, 13..25),
       #           :west  => Enum.slice(wall, 26..38),
       #           :north => Enum.slice(wall, 39..51)}
@@ -305,6 +306,9 @@ defmodule RiichiAdvanced.GameState do
        |> Map.put(:next_dealer, nil)
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
+      
+      # initialize saki if needed
+      state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
       
       state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku))
 
@@ -824,6 +828,7 @@ defmodule RiichiAdvanced.GameState do
         winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
         Enum.all?(winning_hand ++ [winning_tile], fn tile -> tile in tiles end)
+      "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && state.saki.all_drafted
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

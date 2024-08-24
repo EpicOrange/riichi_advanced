@@ -7,11 +7,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
-      new_buttons = Map.new(state.players, fn {seat, _player} ->
-        if false do
-          # don't regenerate buttons if we have already made a decision
-          # choices are reset to nil upon choice adjudication, so by pressing skip,
-          # we're declaring we ignore any buttons until the next round of choices is made
+      new_buttons = Map.new(state.players, fn {seat, player} ->
+        if not Enum.empty?(player.call_buttons) do
+          # don't regenerate buttons if we have call buttons
           {seat, []}
         else
           buttons = state.rules["buttons"]

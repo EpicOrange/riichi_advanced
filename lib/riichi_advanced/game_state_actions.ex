@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Saki, as: Saki
   import RiichiAdvanced.GameState
 
   def temp_disable_play_tile(state, seat) do
@@ -147,7 +148,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  def upgrade_call(state, seat, call_name, call_choice, called_tile) do
+  defp upgrade_call(state, seat, call_name, call_choice, called_tile) do
     # find the index of the call whose tiles match call_choice
     index = state.players[seat].calls
       |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
@@ -165,6 +166,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  defp draft_saki_card(state, seat, choice) do
+    IO.puts("Chose #{choice}!")
+    state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
+    state = Saki.check_if_all_drafted(state)
+    state
+  end
+
   defp _run_actions(state, [], _context), do: {state, []}
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -176,6 +184,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "self_call"             -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
       "upgrade_call"          -> upgrade_call(state, context.seat, context.call_name, context.call_choice, context.called_tile)
       "flower"                -> trigger_call(state, context.seat, context.call_name, context.call_choice, nil, :hand)
+      "draft_saki_card"       -> draft_saki_card(state, context.seat, context.choice)
       "advance_turn"          -> advance_turn(state)
       "change_turn"           -> change_turn(state, Utils.get_seat(context.seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
       "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
@@ -342,7 +351,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = if choice != nil && not Enum.member?(superceded_choices, choice) do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
-            call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower"] end)
+            call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end)
             if not call_action_exists do
               # just run all button actions as normal
               state = run_actions(state, actions, %{seat: seat})
@@ -354,22 +363,32 @@ defmodule RiichiAdvanced.GameState.Actions do
               is_call = Enum.any?(actions, fn [action | _opts] -> action == "call" end)
               is_upgrade = Enum.any?(actions, fn [action | _opts] -> action == "upgrade_call" end)
               is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
-              call_choices = cond do
+              is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
+              {state, call_choices} = cond do
                 is_upgrade ->
-                  state.players[seat].calls
+                  call_choices = state.players[seat].calls
                     |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
                     |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
                     |> Enum.map(fn call_tiles ->
                        Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, state.players[seat].hand ++ state.players[seat].draw)
                     end)
                     |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
+                  {state, call_choices}
                 is_flower ->
                   flowers = Enum.flat_map(actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
                   flowers_in_hand = Enum.filter(state.players[seat].hand ++ state.players[seat].draw, fn tile -> tile in flowers end)
-                  %{nil => Enum.map(flowers_in_hand, fn tile -> [tile] end)}
+                  call_choices = %{nil => Enum.map(flowers_in_hand, fn tile -> [tile] end)}
+                  {state, call_choices}
+                is_saki_card ->
+                  # TODO use Enum.drop_while instead to get num
+                  [num] = Enum.flat_map(actions, fn [action | opts] -> if action == "draft_saki_card" do [Enum.at(opts, 0, 4)] else [] end end)
+                  {state, cards} = Saki.draft_saki_cards(state, num)
+                  call_choices = %{"saki" => Enum.map(cards, fn card -> [card] end)}
+                  {state, call_choices}
                 true ->
                   callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-                  Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, callable_tiles)
+                  call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, callable_tiles)
+                  {state, call_choices}
               end
               flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
               if length(flattened_call_choices) == 1 do

@@ -191,7 +191,7 @@
     ]]]
   ],
   "after_start": {
-    "actions": [["set_status_all", "game_start"]]
+    "actions": [["set_status_all", "round_start"]]
   },
   "before_turn_change": {
     "actions": [["unset_status", "kan", "first_turn"],
@@ -211,9 +211,9 @@
   "buttons": {
     "void_manzu": {
       "display_name": "No Craks",
-      "show_when": ["our_turn", {"name": "status", "opts": ["game_start"]}],
+      "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
       "actions": [
-        ["big_text", "No Craks"], ["set_status", "void_manzu"], ["unset_status", "game_start"],
+        ["big_text", "No Craks"], ["set_status", "void_manzu"], ["unset_status", "round_start"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
@@ -225,9 +225,9 @@
     },
     "void_pinzu": {
       "display_name": "No Dots",
-      "show_when": ["our_turn", {"name": "status", "opts": ["game_start"]}],
+      "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
       "actions": [
-        ["big_text", "No Dots"], ["set_status", "void_pinzu"], ["unset_status", "game_start"],
+        ["big_text", "No Dots"], ["set_status", "void_pinzu"], ["unset_status", "round_start"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
@@ -239,9 +239,9 @@
     },
     "void_souzu": {
       "display_name": "No Bams",
-      "show_when": ["our_turn", {"name": "status", "opts": ["game_start"]}],
+      "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
       "actions": [
-        ["big_text", "No Bams"], ["set_status", "void_souzu"], ["unset_status", "game_start"],
+        ["big_text", "No Bams"], ["set_status", "void_souzu"], ["unset_status", "round_start"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
@@ -300,7 +300,7 @@
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
       "call_style": {"self": ["1x", 0, 1, "1x"]},
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["game_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available",
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available",
                      [
                        [
                          {"name": "status", "opts": ["void_manzu"]},
@@ -403,7 +403,7 @@
       "show_when": [
                      "our_turn",
                      {"name": "not_status", "opts": ["won"]}, 
-                     {"name": "not_status", "opts": ["game_start"]}, 
+                     {"name": "not_status", "opts": ["round_start"]}, 
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
                      [
