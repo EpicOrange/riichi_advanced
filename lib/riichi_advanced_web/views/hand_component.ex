@@ -11,6 +11,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :just_drew, false)
     socket = assign(socket, :status, [])
     socket = assign(socket, :calls, [])
+    socket = assign(socket, :draw, [])
     socket = assign(socket, :marking, false)
     {:ok, socket}
   end
@@ -149,7 +150,14 @@ defmodule RiichiAdvancedWeb.HandComponent do
     # animate incoming calls
     socket = if Map.has_key?(assigns, :calls) && length(assigns.calls) > length(socket.assigns.calls) do
       socket = assign(socket, :just_called, true)
-      :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, socket.assigns.seat}])
+      :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, assigns.seat}])
+      socket
+    else socket end
+
+    # animate incoming draws
+    socket = if Map.has_key?(assigns, :draw) && length(assigns.draw) > length(socket.assigns.draw) do
+      socket = assign(socket, :just_drew, true)
+      :timer.apply_after(750, Kernel, :send, [self(), {:reset_draw_anim, assigns.seat}])
       socket
     else socket end
 
