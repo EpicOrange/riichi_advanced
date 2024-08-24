@@ -180,7 +180,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class={["tile", tile]} :for={tile <- to_revealed_tiles(@state)}></div>
     </div>
     <div class={["big-text"]} :if={@loading}>Loading...</div>
-    <%= if RiichiAdvanced.GameState.Debug.debug() do %>
+    <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
       <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
         <div class="status-text" :for={status <- player.status}><%= status %></div>
       </div>

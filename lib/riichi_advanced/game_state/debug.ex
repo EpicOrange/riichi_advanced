@@ -1,9 +1,14 @@
 
 defmodule RiichiAdvanced.GameState.Debug do
   @debug true
+  @debug_status false
 
   def debug do
     @debug
+  end
+
+  def debug_status do
+    @debug && @debug_status
   end
 
   def set_wall(wall) do
