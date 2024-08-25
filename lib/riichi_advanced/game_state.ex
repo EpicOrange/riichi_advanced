@@ -820,7 +820,15 @@ defmodule RiichiAdvanced.GameState do
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
         Enum.all?(winning_hand ++ [winning_tile], fn tile -> tile in tiles end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && state.saki.all_drafted
-      "has_existing_yaku"        -> Enum.all?(opts, fn name -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end) end)
+      "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
+          [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)
+          name          -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end)
+        end end)
+      "placement"               ->
+        placements = state.players
+        |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)
+        |> Enum.map(fn {seat, _player} -> seat end)
+        Enum.at(placements, Enum.at(opts, 0, 1) - 1) == context.seat
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

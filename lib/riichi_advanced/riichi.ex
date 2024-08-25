@@ -292,6 +292,15 @@ defmodule Riichi do
     Utils.next_turn(:east, rem(kyoku, 4))
   end
 
+  def get_seat_scoring_offset(kyoku, seat) do
+    case get_seat_wind(kyoku, seat) do
+      :east  -> 3
+      :south -> 2
+      :west  -> 1
+      :north -> 0
+    end
+  end
+
   defp calculate_call_fu({name, call}) do
     {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
     case name do
@@ -438,4 +447,5 @@ defmodule Riichi do
     oya_payment = score - num_ko_payers * ko_payment
     {ko_payment, oya_payment}
   end
+
 end

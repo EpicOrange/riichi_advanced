@@ -653,6 +653,11 @@
           {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
         ]
       ]
+    },
+    {
+      "display_name": "Inazuma Riichi",
+      "value": 5,
+      "when": [{"name": "status", "opts": ["inazuma_riichi"]}]
     }
   ],
   "yakuman": [
@@ -838,6 +843,96 @@
       "display_name": "Pinfu",
       "value": 1,
       "when": [{"name": "status", "opts": ["haramura-nodoka"]}, {"name": "has_existing_yaku", "opts": ["Pinfu"]}]
+    },
+    {
+      "display_name": "Riichi",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Riichi", 1]]}]
+    },
+    {
+      "display_name": "Tsumo",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Tsumo", 1]]}]
+    },
+    {
+      "display_name": "Ippatsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Ippatsu", 1]]}]
+    },
+    {
+      "display_name": "Chankan",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Chankan", 1]]}]
+    },
+    {
+      "display_name": "Rinshan",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Rinshan", 1]]}]
+    },
+    {
+      "display_name": "Haitei",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Haitei", 1]]}]
+    },
+    {
+      "display_name": "Houtei",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Houtei", 1]]}]
+    },
+    {
+      "display_name": "Pinfu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Pinfu", 1]]}]
+    },
+    {
+      "display_name": "Tanyao",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Tanyao", 1]]}]
+    },
+    {
+      "display_name": "Iipeikou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Iipeikou", 1]]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Seat Wind", 1]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Round Wind", 1]]}]
+    },
+    {
+      "display_name": "Haku",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Haku", 1]]}]
+    },
+    {
+      "display_name": "Hatsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Hatsu", 1]]}]
+    },
+    {
+      "display_name": "Chun",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Chun", 1]]}]
+    },
+    {
+      "display_name": "Chanta",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Chanta", 1]]}]
+    },
+    {
+      "display_name": "Iitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Iitsu", 1]]}]
+    },
+    {
+      "display_name": "Sanshoku",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Sanshoku", 1]]}]
     }
   ],
   "yaku_alt_names": {
@@ -948,7 +1043,8 @@
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
-                ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+                ["when", [{"name": "status", "opts": ["just_reached"]}, {"name": "status_missing", "opts": ["inazuma_riichi"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+                ["when", [{"name": "status", "opts": ["just_reached", "inazuma_riichi"]}], [["add_score", -5000], ["put_down_riichi_stick"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -1110,6 +1206,14 @@
       "show_when": [{"name": "status_missing", "opts": ["round_start", "haramura-nodoka_exhausted"]}, {"name": "status", "opts": ["haramura-nodoka"]}, "not_just_discarded"],
       "actions": [["big_text", "Haramura Nodoka: discard!"], ["set_status", "haramura-nodoka_exhausted"], ["set_discard_facedown"]]
     },
+    "ikeda_kana": {
+      "display_name": "Inazuma Riichi",
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "status", "opts": ["ikeda-kana"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
+      "actions": [
+        ["big_text", "Inazuma Riichi"],
+        ["set_status", "inazuma_riichi", "just_reached", "ippatsu"]
+      ]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -1186,7 +1290,7 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, "has_draw", {"name": "status_missing", "opts": ["riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
