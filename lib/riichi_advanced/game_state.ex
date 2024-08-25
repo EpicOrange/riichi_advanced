@@ -840,6 +840,12 @@ defmodule RiichiAdvanced.GameState do
         |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)
         |> Enum.map(fn {seat, _player} -> seat end)
         Enum.at(placements, Enum.at(opts, 0, 1) - 1) == context.seat
+      "last_discard_matches_existing" -> 
+        if last_discard_action != nil do
+          tile = Riichi.normalize_red_five(last_discard_action.tile)
+          discards = state.players[last_discard_action.seat].discards |> Riichi.normalize_red_fives() |> Enum.drop(-1)
+          tile in discards
+        else false end
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
