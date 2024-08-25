@@ -948,6 +948,86 @@
       "display_name": "Double Riichi",
       "value": 2,
       "when": [{"name": "status", "opts": ["jindai-komaki"]}, {"name": "has_existing_yaku", "opts": ["Double Riichi"]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 1]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 2]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 3]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 4]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 5]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 6]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 7]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 8]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 9]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 10]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 11]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 12]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 13]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 14]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 15]]]]}]
+    },
+    {
+      "display_name": "Chiitoitsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 16]]]]}]
     }
   ],
   "yaku_alt_names": {

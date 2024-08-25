@@ -670,6 +670,29 @@ defmodule RiichiAdvanced.GameState do
     end |> Enum.reverse() |> Enum.concat()
   end
 
+  def get_hand_calls_spec(state, context, hand_calls_spec) do
+    last_call_action = get_last_call_action(state)
+    last_discard_action = get_last_discard_action(state)
+    hand_calls = for item <- hand_calls_spec, reduce: [{[], []}] do
+      hand_calls -> for {hand, calls} <- hand_calls do
+        case item do
+          "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
+          "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
+          "pond" -> [{hand ++ state.players[context.seat].pond, calls}]
+          "calls" -> [{hand, calls ++ state.players[context.seat].calls}]
+          "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), calls}]
+          "last_call" -> [{hand, calls ++ [context.call]}]
+          "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
+          "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
+          "winning_tile" ->
+            winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
+            [{hand ++ [winning_tile], calls}]
+          "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
+        end
+      end |> Enum.concat()
+    end
+  end
+
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
     negated = String.starts_with?(cond_spec, "not_")
     cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
@@ -791,25 +814,13 @@ defmodule RiichiAdvanced.GameState do
       "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(state.winners[context.seat].winning_hand), fn tile -> tile == Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       "match"                    -> 
-        hand_calls = for item <- Enum.at(opts, 0, []), reduce: [{[], []}] do
-          hand_calls -> for {hand, calls} <- hand_calls do
-            case item do
-              "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
-              "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
-              "calls" -> [{hand, calls ++ state.players[context.seat].calls}]
-              "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), calls}]
-              "last_call" -> [{hand, calls ++ [context.call]}]
-              "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
-              "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
-              "winning_tile" ->
-                winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-                [{hand ++ [winning_tile], calls}]
-              "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
-            end
-          end |> Enum.concat()
-        end
+        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions) end)
+      "match_simple"         -> 
+        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
+        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_simple(hand, calls, match_definitions) end)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)

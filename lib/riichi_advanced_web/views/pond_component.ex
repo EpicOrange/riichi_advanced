@@ -51,7 +51,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
     # animate incoming discards
     socket = if Map.has_key?(assigns, :pond) && length(assigns.pond) > length(socket.assigns.pond) do
       socket = assign(socket, :just_discarded, true)
-      :timer.apply_after(750, Kernel, :send, [self(), {:reset_discard_anim, socket.assigns.seat}])
+      :timer.apply_after(750, Kernel, :send, [self(), {:reset_discard_anim, assigns.seat}])
       socket
     else socket end
 

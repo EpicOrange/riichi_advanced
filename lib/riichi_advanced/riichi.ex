@@ -189,6 +189,19 @@ defmodule Riichi do
     end
   end
 
+  defp remove_hand_definition_simple(hand, calls, hand_definition) do
+    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
+      Enum.reduce(1..num, hand_calls, fn _, hand_calls ->
+        case hand_calls do
+          [{hand, calls}] -> for group <- groups do
+            Riichi.remove_group(hand, calls, group)
+          end |> Enum.concat() |> Enum.take(1)
+          _ -> []
+        end
+      end)
+    end)
+  end
+
   # check if hand contains all groups in each definition in hand_definitions
   defp _check_hand(hand, calls, hand_definitions) do
     Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition)) end)
@@ -208,6 +221,15 @@ defmodule Riichi do
   def match_hand(hand, calls, match_definitions) do
     # TODO replace check_hand
     check_hand(hand, calls, match_definitions)
+  end
+
+  def match_hand_simple(hand, calls, match_definitions) do
+    Enum.any?(match_definitions, fn match_definition ->
+      removed = remove_hand_definition_simple(hand, calls, match_definition)
+      removed2 = remove_hand_definition_simple(normalize_red_fives(hand), calls, match_definition)
+      IO.inspect(removed ++ removed2)
+      not Enum.empty?(removed ++ removed2)
+    end)
   end
 
   def tile_matches(tile_specs, context) do
