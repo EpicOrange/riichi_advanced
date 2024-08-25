@@ -1043,7 +1043,7 @@
       "display_name": "Pon",
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
@@ -1051,7 +1051,7 @@
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [
         ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -1122,7 +1122,7 @@
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "not_status", "opts": ["furiten"]},
                      {"name": "not_status", "opts": ["just_reached"]},
-                     "someone_else_discarded",
+                     "someone_else_just_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
                      "has_yaku_with_discard"
                    ],

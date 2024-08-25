@@ -1083,6 +1083,26 @@
       "display_name": "Matano Seiko",
       "value": 1,
       "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 9]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 11]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 13]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 14]]]]}]
     }
   ],
   "yaku_alt_names": {
@@ -1317,7 +1337,7 @@
       "display_name": "Swap last discard with tile in hand",
       "show_when": [
         {"name": "status_missing", "opts": ["round_start"]},
-        "someone_else_discarded",
+        "someone_else_just_discarded",
         [
           [
             {"name": "seat_is", "opts": ["east"]},
@@ -1363,7 +1383,7 @@
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "status", "opts": ["ikeda-kana"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, {"name": "status", "opts": ["ikeda-kana"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
       "actions": [
         ["big_text", "Inazuma Riichi"],
         ["set_status", "inazuma_riichi", "just_reached", "ippatsu"]
@@ -1387,7 +1407,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
         {"name": "status", "opts": ["mase-yuuko"]},
-        "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
@@ -1404,12 +1424,22 @@
         ["set_aside_discard_matching_called_tile"]
       ]
     },
+    "matsumi_yuu": {
+      "display_name": "Pon discarded red dragon",
+      "show_when": ["not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match_simple", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match_simple", "opts": [["all_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
+      "actions": [
+        ["big_text", "Matsumi Yuu: pon!"],
+        ["pon_discarded_red_dragon"],
+        ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"]
+      ],
+      "precedence_over": ["choe_myeonghwa", "chii", "mase_yuuko", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
-        "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
@@ -1423,7 +1453,7 @@
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
-        "not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
@@ -1438,7 +1468,7 @@
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
-        "not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
@@ -1464,7 +1494,7 @@
       "call": [[0, 0, 0]],
       "call_style": {"self": ["1x", 0, 1, "1x"]},
       "show_when": [
-        "our_turn", {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
+        "our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
@@ -1492,7 +1522,7 @@
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -1509,7 +1539,7 @@
     "riichi": {
       "display_name": "Riichi",
       "show_when": [
-        "our_turn", {"name": "not_status", "opts": ["round_start"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        "our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
@@ -1525,9 +1555,9 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "not_status", "opts": ["furiten"]},
-        {"name": "not_status", "opts": ["just_reached"]},
-        "someone_else_discarded",
+        {"name": "status_missing", "opts": ["furiten", "just_reached", "tried_to_ron"]},
+        "someone_else_just_discarded",
+        "last_discard_exists",
         [
           {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
           [
@@ -1577,7 +1607,7 @@
           "not_last_discard_matches_existing"
         ]
       ],
-      "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "actions": [["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
@@ -1649,7 +1679,7 @@
            "has_yakuman_with_call"
         ]
       ],
-      "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+      "actions": [["big_text", "Ron"], ["pause", 1000], ["about_to_ron"], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -1741,7 +1771,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard"],
+  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard", "about_to_ron"],
   "display_riichi_sticks": true,
   "display_honba": true,
   "initial_score": 30000,

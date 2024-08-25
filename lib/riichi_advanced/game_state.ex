@@ -685,6 +685,7 @@ defmodule RiichiAdvanced.GameState do
             winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
             [{hand ++ [winning_tile], calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
+          "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
         end
       end |> Enum.concat()
     end
@@ -697,24 +698,24 @@ defmodule RiichiAdvanced.GameState do
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)
     result = case cond_spec do
-      "true"                     -> true
-      "false"                    -> false
-      "our_turn"                 -> state.turn == context.seat
-      "our_turn_is_next"         -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
-      "our_turn_is_not_next"     -> state.turn != if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
-      "our_turn_is_prev"         -> state.turn == if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
-      "our_turn_is_not_prev"     -> state.turn != if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
-      "game_start"               -> last_action == nil
-      "no_discards_yet"          -> last_discard_action == nil
-      "no_calls_yet"             -> last_call_action == nil
-      "last_call_is"             -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
-      "kamicha_discarded"        -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
-      "someone_else_discarded"   -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
-      "just_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
-      "just_called"              -> last_action != nil && last_action.action == :call
-      "call_available"           -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile], context.call_wraps)
-      "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
-      "can_upgrade_call"         -> state.players[context.seat].calls
+      "true"                        -> true
+      "false"                       -> false
+      "our_turn"                    -> state.turn == context.seat
+      "our_turn_is_next"            -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
+      "our_turn_is_not_next"        -> state.turn != if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
+      "our_turn_is_prev"            -> state.turn == if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
+      "our_turn_is_not_prev"        -> state.turn != if state.reversed_turn_order do Utils.prev_turn(context.seat) else Utils.next_turn(context.seat) end
+      "game_start"                  -> last_action == nil
+      "no_discards_yet"             -> last_discard_action == nil
+      "no_calls_yet"                -> last_call_action == nil
+      "last_call_is"                -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
+      "kamicha_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
+      "someone_else_just_discarded" -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
+      "just_discarded"              -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
+      "just_called"                 -> last_action != nil && last_action.action == :call
+      "call_available"              -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile], context.call_wraps)
+      "self_call_available"         -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
+      "can_upgrade_call"            -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.any?(fn {_name, call} ->
           call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
@@ -848,7 +849,10 @@ defmodule RiichiAdvanced.GameState do
           tile in discards
         else false end
       "called_tile_matches_any_discard" -> last_call_action != nil && Riichi.normalize_red_five(last_call_action.called_tile) in Riichi.normalize_red_fives(Enum.flat_map(state.players, fn {_seat, player} -> player.pond end))
-      _                          ->
+      "last_discard_exists" -> 
+        IO.inspect(Enum.at(state.players[last_discard_action.seat].pond, -1))
+        last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
+      _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
     end
@@ -965,6 +969,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :game_active, true)
     state = Actions.run_actions(state, actions, context)
     state = broadcast_state_change(state)
+    notify_ai(state)
     {:noreply, state}
   end
 

@@ -406,7 +406,6 @@ defmodule Riichi do
       end
     else [] end
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
-    IO.inspect(hands_fu)
 
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
