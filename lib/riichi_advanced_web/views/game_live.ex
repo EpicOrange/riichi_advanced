@@ -275,7 +275,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
-      socket = assign(socket, :marking, state.saki != nil && GenServer.call(socket.assigns.game_state, {:needs_marking?, socket.assigns.seat}))
+      socket = assign(socket, :marking, Map.has_key?(state, :saki) && GenServer.call(socket.assigns.game_state, {:needs_marking?, socket.assigns.seat}))
       {:noreply, socket}
     else
       {:noreply, socket}

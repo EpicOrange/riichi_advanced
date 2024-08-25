@@ -157,13 +157,13 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
   "shousuushii_definition": [
-    [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]]],
-    [[[["ton"], 1], [["nan"], 1], [["shaa_pair"], 1], [["pei"], 1]]],
-    [[[["ton"], 1], [["nan_pair"], 1], [["shaa"], 1], [["pei"], 1]]],
-    [[[["ton_pair"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]
+    [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]],
+    [[["ton"], 1], [["nan"], 1], [["shaa_pair"], 1], [["pei"], 1]],
+    [[["ton"], 1], [["nan_pair"], 1], [["shaa"], 1], [["pei"], 1]],
+    [[["ton_pair"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
   ],
   "daisuushii_definition": [
-    [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]
+    [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
   ],
   "yaku": [
     {
@@ -1302,7 +1302,8 @@
   },
   "after_saki_start": {
     "actions": [
-      ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["reveal_hand"], ["set_status", "double_score"]]]
+      ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["reveal_hand"], ["set_status", "double_score"]]],
+      ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_status", "wrapping_fu_calculation"]]]
     ]
   },
   "before_win": {

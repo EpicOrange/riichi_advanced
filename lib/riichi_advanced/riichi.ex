@@ -360,7 +360,7 @@ defmodule Riichi do
     fu
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind) do
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, wraps \\ false) do
     starting_hand = normalize_red_fives(starting_hand)
     winning_tile = normalize_red_five(winning_tile)
     num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
@@ -388,19 +388,19 @@ defmodule Riichi do
     end
     tanyao_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s"]
     possible_kanchan_removed = if winning_tile in tanyao_tiles do
-      case try_remove_all_tiles(starting_hand, [pred_wraps(winning_tile), succ_wraps(winning_tile)]) do
+      case try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps), offset_tile(winning_tile, 1, wraps)]) do
         [] -> []
         [removed] -> [{removed, fu + 2}]
       end
     else [] end
-    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, true) != nil do
-      case try_remove_all_tiles(starting_hand, [pred_wraps(pred_wraps(winning_tile)), pred_wraps(winning_tile)]) do
+    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, wraps) != nil do
+      case try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, wraps), offset_tile(winning_tile, -1, wraps)]) do
         [] -> []
         [removed] -> [{removed, fu}]
       end
     else [] end
-    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, true) != nil do
-      case try_remove_all_tiles(starting_hand, [succ_wraps(winning_tile), succ_wraps(succ_wraps(winning_tile))]) do
+    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, wraps) != nil do
+      case try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, wraps), offset_tile(winning_tile, 2, wraps)]) do
         [] -> []
         [removed] -> [{removed, fu}]
       end
@@ -425,7 +425,7 @@ defmodule Riichi do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
           hand |> Enum.uniq() |> Enum.flat_map(fn base_tile -> 
-            case try_remove_all_tiles(hand, [pred_wraps(base_tile), base_tile, succ_wraps(base_tile)]) do
+            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps), base_tile, offset_tile(base_tile, 1, wraps)]) do
               [] -> [{hand, fu}]
               [removed] -> [{removed, fu}]
             end
