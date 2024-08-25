@@ -156,6 +156,15 @@
     [ [["orphans_all"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
   ],
+  "shousuushii_definition": [
+    [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]]],
+    [[[["ton"], 1], [["nan"], 1], [["shaa_pair"], 1], [["pei"], 1]]],
+    [[[["ton"], 1], [["nan_pair"], 1], [["shaa"], 1], [["pei"], 1]]],
+    [[[["ton_pair"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]
+  ],
+  "daisuushii_definition": [
+    [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]
+  ],
   "yaku": [
     {
       "display_name": "Riichi",
@@ -763,14 +772,14 @@
     {
       "display_name": "Daisuushii",
       "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton", "nan", "shaa", "pei"], 4]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}]
     },
     {
       "display_name": "Shousuushii",
       "value": 1,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["ton", "nan", "shaa", "pei"], 4]]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}
       ]
     },
     {
