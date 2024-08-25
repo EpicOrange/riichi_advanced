@@ -1365,7 +1365,7 @@
       ],
       "unskippable": true
     },
-    "chii": {
+    "mase_yuuko": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_wraps": true,

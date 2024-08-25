@@ -9,6 +9,7 @@ defmodule Riichi do
           :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"0p"=>:"6p",
           :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"0s"=>:"6s"}
   def succ(tile), do: @succ[tile]
+
   @dora %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"9m"=>:"1m", :"0m"=>:"6m",
           :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"9p"=>:"1p", :"0p"=>:"6p",
           :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"9s"=>:"1s", :"0s"=>:"6s",
@@ -16,17 +17,28 @@ defmodule Riichi do
           :"5z"=>:"6z", :"6z"=>:"7z", :"7z"=>:"5z"
         }
   def dora(tile), do: @dora[tile]
+
+  @pred_wraps %{:"1m"=>:"9m", :"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m", :"0m"=>:"4m",
+                :"1p"=>:"9p", :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
+                :"1s"=>:"9s", :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s"}
+  def pred_wraps(tile), do: @pred_wraps[tile]
+
+  @succ_wraps %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"9m"=>:"1m", :"0m"=>:"6m",
+                :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"9p"=>:"1p", :"0p"=>:"6p",
+                :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"9s"=>:"1s", :"0s"=>:"6s"}
+  def succ_wraps(tile), do: @succ_wraps[tile]
+
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
 
-  def offset_tile(tile, n) do
+  def offset_tile(tile, n, wraps \\ false) do
     if tile != nil do
       if (n < 1 && n > -1) || n < -10 || n > 10 do
         normalize_red_five(tile)
       else
         if n < 0 do
-          offset_tile(pred(tile), n+1)
+          offset_tile(if wraps do pred_wraps(tile) else pred(tile) end, n+1)
         else
-          offset_tile(succ(tile), n-1)
+          offset_tile(if wraps do succ_wraps(tile) else succ(tile) end, n-1)
         end
       end
     else nil end
@@ -86,14 +98,14 @@ defmodule Riichi do
   # includes returning multiple choices for red fives
   # if called_tiles is an empty list, then we choose from our hand
   # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
-  def make_calls(calls_spec, hand, called_tiles \\ []) do
+  def make_calls(calls_spec, hand, called_tiles \\ [], wraps \\ false) do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     call_choices = if from_hand do hand else called_tiles end
     Map.new(call_choices, fn tile ->
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
-        other_tiles = Enum.map(call_spec, &offset_tile(tile, &1))
+        other_tiles = Enum.map(call_spec, &offset_tile(tile, &1, wraps))
         {_, choices} = Enum.reduce(other_tiles, {hand, []}, fn t, {remaining_hand, tiles} ->
           exists = Enum.member?(remaining_hand, t)
           red_exists = Enum.member?(remaining_hand, to_red(t))
@@ -110,7 +122,7 @@ defmodule Riichi do
     end)
   end
 
-  def can_call?(calls_spec, hand, called_tiles \\ []), do: Enum.any?(make_calls(calls_spec, hand, called_tiles), fn {_tile, choices} -> not Enum.empty?(choices) end)
+  def can_call?(calls_spec, hand, called_tiles \\ [], wraps \\ false), do: Enum.any?(make_calls(calls_spec, hand, called_tiles, wraps), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
   def try_remove_all_tiles(hand, tiles) do
     removed = hand -- tiles

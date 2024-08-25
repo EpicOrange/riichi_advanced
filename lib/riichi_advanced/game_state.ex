@@ -725,7 +725,7 @@ defmodule RiichiAdvanced.GameState do
       "someone_else_discarded"   -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
       "just_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
       "just_called"              -> last_action != nil && last_action.action == :call
-      "call_available"           -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile])
+      "call_available"           -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile], context.call_wraps)
       "self_call_available"      -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw)
       "can_upgrade_call"         -> state.players[context.seat].calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
