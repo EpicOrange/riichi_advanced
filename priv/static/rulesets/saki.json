@@ -1028,6 +1028,46 @@
       "display_name": "Chiitoitsu",
       "value": 1,
       "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match_simple", "opts": [["pond"], [[[["pair"], 16]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 1]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 2]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 3]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 4]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 5]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 6]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 7]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 8]]]]}]
     }
   ],
   "yaku_alt_names": {
@@ -1328,13 +1368,29 @@
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_wraps": true,
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "show_when": [
+        {"name": "status", "opts": ["mase-yuuko"]},
+        "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        [
+          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
+          "not_last_discard_matches_existing"
+        ]
+      ],
+      "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"]]
+    },
+    "chii": {
+      "display_name": "Chii",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
         "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
-        ]
+        ],
+        {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"]]
     },
@@ -1347,7 +1403,8 @@
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
-        ]
+        ],
+        {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
@@ -1361,7 +1418,8 @@
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
-        ]
+        ],
+        {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
         ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
@@ -1386,7 +1444,8 @@
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
-        ]
+        ],
+        {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
         ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"],
