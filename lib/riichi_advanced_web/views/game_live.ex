@@ -28,6 +28,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:display_riichi_sticks, false)
     |> assign(:display_honba, false)
     |> assign(:loading, true)
+    |> assign(:marking, false)
 
     # liveviews mount twice; we only want to init a new player on the second mount
     if socket.root_pid != nil do
@@ -62,7 +63,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       |> assign(:loading, false)
-      |> assign(:marking, Map.has_key?(state, :saki) && state.saki != nil && GenServer.call(game_state, :needs_marking))
+      |> assign(:marking, Map.has_key?(state, :saki) && state.saki != nil && GenServer.call(game_state, {:needs_marking?, seat}))
       {:ok, socket}
     else
       {:ok, socket}
@@ -84,6 +85,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       calls={player.calls}
       status={player.status}
       saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+      marking={@marking}
       play_tile={&send(self(), {:play_tile, &1})}
       reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
       :for={{seat, player} <- @state.players} />
@@ -95,6 +97,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       pond={player.pond}
       riichi={player.riichi_stick}
       saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+      marking={@marking}
       :for={{seat, player} <- @state.players} />
     <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
       id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
@@ -271,7 +274,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
-      socket = assign(socket, :marking, state.saki != nil && GenServer.call(socket.assigns.game_state, :needs_marking))
+      socket = assign(socket, :marking, state.saki != nil && GenServer.call(socket.assigns.game_state, {:needs_marking?, socket.assigns.seat}))
       {:noreply, socket}
     else
       {:noreply, socket}

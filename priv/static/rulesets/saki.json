@@ -1314,6 +1314,17 @@
         ["set_status", "inazuma_riichi", "just_reached", "ippatsu"]
       ]
     },
+    "kataoka_yuuki": {
+      "display_name": "Choose 4 tiles to place at the end of the live wall",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "kataoka-yuuki_exhausted"]}, {"name": "status", "opts": ["kataoka-yuuki"]}, {"name": "round_wind_is", "opts": ["east"]}],
+      "actions": [
+        ["big_text", "Kataoka Yuuki: swap!"],
+        ["set_status", "kataoka-yuuki_exhausted"],
+        ["place_4_tiles_at_end_of_live_wall"],
+        ["draw", 4]
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -1370,7 +1381,13 @@
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
       "call_style": {"self": ["1x", 0, 1, "1x"]},
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [
+        "our_turn", {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "not_status", "opts": ["kataoka-yuuki"]},
+          {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
+        ]
+      ],
       "actions": [
         ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
@@ -1408,7 +1425,13 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["round_start"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
+      "show_when": [
+        "our_turn", {"name": "not_status", "opts": ["round_start"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        [
+          {"name": "not_status", "opts": ["kataoka-yuuki"]},
+          {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
+        ]
+      ],
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
@@ -1571,6 +1594,10 @@
              ]
            ],
            "has_yakuman_with_hand"
+        ],
+        [
+          {"name": "not_status", "opts": ["kataoka-yuuki"]},
+          {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
         ]
       ],
       "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],

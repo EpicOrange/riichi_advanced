@@ -59,8 +59,6 @@ defmodule RiichiAdvancedWeb.PondComponent do
              |> Map.drop([:flash])
              |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
-    socket = assign(socket, :marking, socket.assigns.saki != nil && GenServer.call(socket.assigns.game_state, :needs_marking))
-
     {:ok, socket}
   end
 end

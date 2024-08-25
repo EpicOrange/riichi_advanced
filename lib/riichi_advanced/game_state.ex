@@ -540,7 +540,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def is_playable?(state, seat, tile, tile_source) do
-    if Map.has_key?(state.rules, "play_restrictions") do
+    have_unskippable_button = Enum.any?(state.players[seat].buttons, fn button_name -> state.rules["buttons"][button_name] != nil && Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
+    not have_unskippable_button && if Map.has_key?(state.rules, "play_restrictions") do
       Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
         # if Riichi.tile_matches(tile_spec, %{tile: tile}) do
         #   IO.inspect({tile, cond_spec, check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})})
@@ -572,6 +573,15 @@ defmodule RiichiAdvanced.GameState do
       if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
         # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
         send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
+      end
+    end
+  end
+
+  def notify_ai_marking(state, seat) do
+    if state.game_active do
+      if is_pid(Map.get(state, seat)) && Map.has_key?(state, :saki) && Saki.needs_marking?(state, seat) do
+        # IO.puts("Notifying #{seat} AI about marking")
+        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], marked_objects: state.saki.marked_objects}})
       end
     end
   end
@@ -673,7 +683,7 @@ defmodule RiichiAdvanced.GameState do
   def get_hand_calls_spec(state, context, hand_calls_spec) do
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)
-    hand_calls = for item <- hand_calls_spec, reduce: [{[], []}] do
+    for item <- hand_calls_spec, reduce: [{[], []}] do
       hand_calls -> for {hand, calls} <- hand_calls do
         case item do
           "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
@@ -940,7 +950,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
 
   # saki calls
-  def handle_call(:needs_marking, _from, state), do: {:reply, Saki.needs_marking(state), state}
+  def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Saki.needs_marking?(state, seat), state}
   def handle_call({:is_marked, seat, index, tile_source}, _from, state), do: {:reply, Saki.is_marked(state, seat, index, tile_source), state}
   def handle_call({:can_mark, seat, index, tile_source}, _from, state), do: {:reply, Saki.can_mark(state, seat, index, tile_source), state}
 
@@ -996,8 +1006,6 @@ defmodule RiichiAdvanced.GameState do
     state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
-      # TODO ensure no unskippable button exists
-      # _unskippable_button_exists = Enum.any?(state.players[seat].buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
       state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = Actions.submit_actions(state, seat, "play_tile", actions)
@@ -1081,7 +1089,7 @@ defmodule RiichiAdvanced.GameState do
   # saki calls
   def handle_cast({:mark_tile, seat, index, tile_source}, state) do
     state = Saki.mark_tile(state, seat, index, tile_source)
-    state = if not Saki.needs_marking(state) do
+    state = if not Saki.needs_marking?(state, seat) do
       state = Actions.run_deferred_actions(state, %{seat: state.saki.marking_player, marked_objects: state.saki.marked_objects})
       state = Saki.reset_marking(state)
       state

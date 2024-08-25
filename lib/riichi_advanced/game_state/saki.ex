@@ -113,8 +113,8 @@ defmodule RiichiAdvanced.GameState.Saki do
     state
   end
 
-  def needs_marking(state) do
-    Enum.any?(state.saki.marked_objects, fn {_source, mark_info} -> length(mark_info.marked) < mark_info.needed end)
+  def needs_marking?(state, seat) do
+    state.saki.marking_player == seat && Enum.any?(state.saki.marked_objects, fn {_source, mark_info} -> length(mark_info.marked) < mark_info.needed end)
   end
 
   defp get_tile(state, seat, index, source) do

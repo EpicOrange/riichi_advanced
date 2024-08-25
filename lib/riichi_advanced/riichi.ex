@@ -227,7 +227,6 @@ defmodule Riichi do
     Enum.any?(match_definitions, fn match_definition ->
       removed = remove_hand_definition_simple(hand, calls, match_definition)
       removed2 = remove_hand_definition_simple(normalize_red_fives(hand), calls, match_definition)
-      IO.inspect(removed ++ removed2)
       not Enum.empty?(removed ++ removed2)
     end)
   end

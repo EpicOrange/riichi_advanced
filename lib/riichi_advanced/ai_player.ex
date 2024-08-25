@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.AIPlayer do
   use GenServer
 
-  @ai_speed 10
+  @ai_speed 2
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
@@ -76,9 +76,32 @@ defmodule RiichiAdvanced.AIPlayer do
       GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, call_name: player.call_name, call_choice: call_choice, called_tile: called_tile}})
     else
       [choice] = Enum.random(player.call_buttons["saki"])
-      IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
+      # IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
       Process.sleep(trunc(500 / @ai_speed))
       GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, choice: choice}})
+    end
+    {:noreply, state}
+  end
+
+  def handle_info({:mark_tiles, %{player: player, marked_objects: marked_objects}}, state) do
+    state = %{ state | player: player }
+    # for each source, generate all possible choices and pick n of them
+    Process.sleep(trunc(500 / @ai_speed))
+    if Map.has_key?(marked_objects, :hand) do
+      player.hand ++ player.draw
+      |> Enum.with_index()
+      |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, i, :hand}) end)
+      |> Enum.shuffle()
+      |> Enum.take(marked_objects.hand.needed)
+      |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, i, :hand}) end)
+    end
+    if Map.has_key?(marked_objects, :discard) do
+      player.pond
+      |> Enum.with_index()
+      |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, i, :discard}) end)
+      |> Enum.shuffle()
+      |> Enum.take(marked_objects.discard.needed)
+      |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, i, :discard}) end)
     end
     {:noreply, state}
   end

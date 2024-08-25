@@ -177,8 +177,6 @@ defmodule RiichiAdvancedWeb.HandComponent do
       socket
     else socket end
 
-    socket = assign(socket, :marking, socket.assigns.saki != nil && GenServer.call(socket.assigns.game_state, :needs_marking))
-
     {:ok, socket}
   end
 end

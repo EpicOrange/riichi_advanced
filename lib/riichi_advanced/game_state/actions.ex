@@ -282,6 +282,28 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
         state
       "set_discard_facedown"            -> put_in(state.saki.discarding_facedown, context.seat)
+      "place_4_tiles_at_end_of_live_wall" ->
+        {hand_tile1, hand_seat, hand_index1} = Enum.at(context.marked_objects.hand.marked, 0)
+        {hand_tile2, _, hand_index2} = Enum.at(context.marked_objects.hand.marked, 1)
+        {hand_tile3, _, hand_index3} = Enum.at(context.marked_objects.hand.marked, 2)
+        {hand_tile4, _, hand_index4} = Enum.at(context.marked_objects.hand.marked, 3)
+        hand_length = length(state.players[hand_seat].hand)
+        # remove specified tiles from hand
+        state = for ix <- Enum.sort([-hand_index1, -hand_index2, -hand_index3, -hand_index4]), reduce: state do
+          state ->
+            ix = -ix
+            if ix < hand_length do
+              update_player(state, hand_seat, &%Player{ &1 | hand: List.delete_at(&1.hand, ix) })
+            else
+              update_player(state, hand_seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
+            end
+        end
+        # place them at the end of the live wall
+        dead_wall_length = if Map.has_key?(state.rules, "reserved_tiles") do length(state.rules["reserved_tiles"]) else 0 end
+        state = for tile <- [hand_tile1, hand_tile2, hand_tile3, hand_tile4], reduce: state do
+          state -> Map.update!(state, :wall, fn wall -> List.insert_at(wall, -dead_wall_length-1, tile) end)
+        end
+        state
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
@@ -397,7 +419,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
             call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end)
-            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in ["swap_hand_tile_with_same_suit_discard", "swap_hand_tile_with_last_discard"] end)
+            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in ["swap_hand_tile_with_same_suit_discard", "swap_hand_tile_with_last_discard", "place_4_tiles_at_end_of_live_wall"] end)
             cond do
               call_action_exists ->
                 # call button choices logic
@@ -450,8 +472,10 @@ defmodule RiichiAdvanced.GameState.Actions do
                 state = cond do
                   Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end) -> Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
                   Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)      -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)     -> Saki.setup_marking(state, seat, [{"hand", 4, []}])
                 end
                 state = schedule_actions(state, seat, actions)
+                notify_ai_marking(state, seat)
                 state
               true ->
                 # just run all button actions as normal
@@ -479,7 +503,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
-    marking = Map.has_key?(state, :saki) && Saki.needs_marking(state)
+    marking = Map.has_key?(state, :saki) && Saki.needs_marking?(state, seat)
     not no_call_buttons || marking
   end
 
