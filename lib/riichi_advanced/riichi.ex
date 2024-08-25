@@ -36,9 +36,9 @@ defmodule Riichi do
         normalize_red_five(tile)
       else
         if n < 0 do
-          offset_tile(if wraps do pred_wraps(tile) else pred(tile) end, n+1)
+          offset_tile(if wraps do pred_wraps(tile) else pred(tile) end, n+1, wraps)
         else
-          offset_tile(if wraps do succ_wraps(tile) else succ(tile) end, n-1)
+          offset_tile(if wraps do succ_wraps(tile) else succ(tile) end, n-1, wraps)
         end
       end
     else nil end
@@ -147,7 +147,7 @@ defmodule Riichi do
     if ix != nil do [{hand, List.delete_at(calls, ix)}] else [] end
   end
 
-  def remove_group(hand, calls, group) do
+  def remove_group(hand, calls, group, wrapping \\ false) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     cond do
       is_list(group) && not Enum.empty?(group) ->
@@ -159,8 +159,7 @@ defmodule Riichi do
           # list of integers specifying a group of tiles
           all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
           all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-            tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset) end end)
-            # IO.inspect(tiles)
+            tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping) end end)
             try_remove_all_tiles(hand, tiles, calls)
           end)
         end
@@ -179,60 +178,61 @@ defmodule Riichi do
     end
   end
 
-  defp _remove_hand_definition(hand, calls, hand_definition) do
-    Enum.reduce(hand_definition, [{hand, calls}, {Riichi.normalize_red_fives(hand), calls}], fn [groups, num], all_hands ->
+  defp _remove_hand_definition(hand, calls, hand_definition, wrapping) do
+    Enum.reduce(hand_definition, [{hand, calls}, {normalize_red_fives(hand), calls}], fn [groups, num], all_hands ->
       Enum.reduce(1..num, all_hands, fn _, hands ->
         for {hand, calls} <- hands, group <- groups do
-          Riichi.remove_group(hand, calls, group)
+          remove_group(hand, calls, group, wrapping)
         end |> Enum.concat()
       end) |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
     end)
   end
 
-  def remove_hand_definition(hand, calls, hand_definition) do
+  def remove_hand_definition(hand, calls, hand_definition, wrapping \\ false) do
     # calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
-    case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition}) do
+    case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition, wrapping}) do
       [] -> 
-        result = _remove_hand_definition(hand, calls, hand_definition)
-        RiichiAdvanced.ETSCache.put({:remove_hand_definition, hand, calls, hand_definition}, result)
+        result = _remove_hand_definition(hand, calls, hand_definition, wrapping)
+        RiichiAdvanced.ETSCache.put({:remove_hand_definition, hand, calls, hand_definition, wrapping}, result)
         # IO.puts("Results:\n  hand: #{inspect(hand)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
   end
 
-  defp remove_hand_definition_simple(hand, calls, hand_definition) do
-    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
-      Enum.reduce(1..num, hand_calls, fn _, hand_calls ->
-        case hand_calls do
-          [{hand, calls}] -> for group <- groups do
-            Riichi.remove_group(hand, calls, group)
-          end |> Enum.concat() |> Enum.take(1)
-          _ -> []
-        end
-      end)
-    end)
-  end
-
   # check if hand contains all groups in each definition in hand_definitions
-  defp _check_hand(hand, calls, hand_definitions) do
-    Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition)) end)
+  defp _check_hand(hand, calls, hand_definitions, wrapping) do
+    Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition, wrapping)) end)
   end
 
-  def check_hand(hand, calls, hand_definitions) do
-    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, hand_definitions}) do
+  def check_hand(hand, calls, hand_definitions, wrapping \\ false) do
+    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, hand_definitions, wrapping}) do
       [] -> 
-        result = _check_hand(hand, calls, hand_definitions)
-        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, hand_definitions}, result)
+        result = _check_hand(hand, calls, hand_definitions, wrapping)
+        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, hand_definitions, wrapping}, result)
         # IO.puts("Results:\n  hand: #{inspect(hand)}\n  hand_definitions: #{inspect(hand_definitions)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
   end
 
-  def match_hand(hand, calls, match_definitions) do
+  def match_hand(hand, calls, match_definitions, wrapping \\ false) do
     # TODO replace check_hand
-    check_hand(hand, calls, match_definitions)
+    check_hand(hand, calls, match_definitions, wrapping)
+  end
+
+  # only keeps one version of the hand (assumes groups don't overlap)
+  defp remove_hand_definition_simple(hand, calls, hand_definition) do
+    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
+      Enum.reduce(1..num, hand_calls, fn _, hand_calls ->
+        case hand_calls do
+          [{hand, calls}] -> for group <- groups do
+            remove_group(hand, calls, group)
+          end |> Enum.concat() |> Enum.take(1)
+          [] -> []
+        end
+      end)
+    end)
   end
 
   def match_hand_simple(hand, calls, match_definitions) do
@@ -388,24 +388,25 @@ defmodule Riichi do
     end
     tanyao_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s"]
     possible_kanchan_removed = if winning_tile in tanyao_tiles do
-      case try_remove_all_tiles(starting_hand, [pred(winning_tile), succ(winning_tile)]) do
+      case try_remove_all_tiles(starting_hand, [pred_wraps(winning_tile), succ_wraps(winning_tile)]) do
         [] -> []
         [removed] -> [{removed, fu + 2}]
       end
     else [] end
-    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3) != nil do
-      case try_remove_all_tiles(starting_hand, [pred(pred(winning_tile)), pred(winning_tile)]) do
+    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, true) != nil do
+      case try_remove_all_tiles(starting_hand, [pred_wraps(pred_wraps(winning_tile)), pred_wraps(winning_tile)]) do
         [] -> []
         [removed] -> [{removed, fu}]
       end
     else [] end
-    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3) != nil do
-      case try_remove_all_tiles(starting_hand, [succ(winning_tile), succ(succ(winning_tile))]) do
+    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, true) != nil do
+      case try_remove_all_tiles(starting_hand, [succ_wraps(winning_tile), succ_wraps(succ_wraps(winning_tile))]) do
         [] -> []
         [removed] -> [{removed, fu}]
       end
     else [] end
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
+    IO.inspect(hands_fu)
 
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
@@ -425,7 +426,7 @@ defmodule Riichi do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
           hand |> Enum.uniq() |> Enum.flat_map(fn base_tile -> 
-            case try_remove_all_tiles(hand, [pred(base_tile), base_tile, succ(base_tile)]) do
+            case try_remove_all_tiles(hand, [pred_wraps(base_tile), base_tile, succ_wraps(base_tile)]) do
               [] -> [{hand, fu}]
               [removed] -> [{removed, fu}]
             end

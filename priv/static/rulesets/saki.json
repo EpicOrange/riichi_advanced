@@ -1501,11 +1501,16 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["furiten"]},
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_discarded",
-        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+        [
+          {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+          [
+            {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "match_wrapping", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+          ]
+        ],
         "has_yaku_with_discard",
         [
           {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
@@ -1555,18 +1560,32 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["furiten"]},
         {"name": "not_status", "opts": ["just_reached"]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+            [
+              {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
+              [
+                {"name": "status", "opts": ["mase-yuuko"]},
+                {"name": "match_wrapping", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ]
+            ]
           ],
           [
             {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+            [
+              [
+                {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
+                {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ],
+              [
+                {"name": "status", "opts": ["mase-yuuko"]},
+                {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
+                {"name": "match_wrapping", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ]
+            ]
           ]
         ],
         [
@@ -1614,9 +1633,14 @@
       "show_when": [
         "our_turn",
         {"name": "not_status", "opts": ["round_start"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+        [
+          {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+          [
+            {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["win"]]}
+          ]
+        ],
         "has_yaku_with_hand",
         [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
