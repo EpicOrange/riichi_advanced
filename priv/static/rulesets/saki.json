@@ -933,6 +933,21 @@
       "display_name": "Sanshoku",
       "value": 1,
       "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Sanshoku", 1]]}]
+    },
+    {
+      "display_name": "Riichi",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["jindai-komaki"]}, {"name": "has_existing_yaku", "opts": ["Riichi"]}]
+    },
+    {
+      "display_name": "Ippatsu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["jindai-komaki"]}, {"name": "has_existing_yaku", "opts": ["Ippatsu"]}]
+    },
+    {
+      "display_name": "Double Riichi",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["jindai-komaki"]}, {"name": "has_existing_yaku", "opts": ["Double Riichi"]}]
     }
   ],
   "yaku_alt_names": {
@@ -1120,6 +1135,11 @@
   ],
   "after_start": {
     "actions": [["set_status_all", "round_start", "discards_empty", "nagashi"]]
+  },
+  "after_saki_start": {
+    "actions": [
+      ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["reveal_hand"], ["set_status", "double_score"]]]
+    ]
   },
   "before_win": {
     "actions": [["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],

@@ -110,7 +110,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         oya_fu_table = if yakuman_mult > 0 do oya_han_table["max"] else Map.get(oya_han_table, han, oya_han_table["max"]) end
         ko_fu_table = if yakuman_mult > 0 do ko_han_table["max"] else Map.get(ko_han_table, han, ko_han_table["max"]) end
 
-        IO.inspect({han, yakuman_mult, is_self_draw, is_dealer})
         score = if yakuman_mult == 0 do
           if is_self_draw do
             if is_dealer do
@@ -140,6 +139,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
             end
           end
         end
+
+        score = if "double_score" in state.players[seat].status do score * 2 else score end
+
         {score, points, yakuman_mult}
       "hk" ->
         is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat

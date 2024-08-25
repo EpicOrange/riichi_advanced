@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.GameState.Saki do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   import RiichiAdvanced.GameState
 
@@ -82,6 +83,12 @@ defmodule RiichiAdvanced.GameState.Saki do
     if all_drafted do
       state = Map.update!(state, :saki, &Map.put(&1, :all_drafted, true))
       state = Map.put(state, :game_active, true)
+
+      # run after_saki_tart actions
+      state = if Map.has_key?(state.rules, "after_saki_start") do
+        Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: state.turn})
+      else state end
+
       state = Buttons.recalculate_buttons(state)
       notify_ai(state)
       state
