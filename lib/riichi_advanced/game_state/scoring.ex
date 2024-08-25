@@ -2,16 +2,18 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   import RiichiAdvanced.GameState
 
-  def get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints \\ 0) do
+  def get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints \\ 0, existing_yaku \\ []) do
     context = %{
       seat: seat,
       winning_tile: winning_tile,
       win_source: win_source,
-      minipoints: minipoints
+      minipoints: minipoints,
+      existing_yaku: existing_yaku
     }
     eligible_yaku = yaku_list
       |> Enum.filter(fn %{"display_name" => _name, "value" => _value, "when" => cond_spec} -> check_cnf_condition(state, cond_spec, context) end)
       |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, value} end)
+    eligible_yaku = existing_yaku ++ eligible_yaku
     yaku_map = Enum.reduce(eligible_yaku, %{}, fn {name, value}, acc -> Map.update(acc, name, value, & &1 + value) end)
     eligible_yaku
       |> Enum.map(fn {name, _value} -> name end)

@@ -334,6 +334,7 @@ defmodule RiichiAdvanced.GameState do
       "riichi" ->
         minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku))
         yaku = Scoring.get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
+        yaku = Scoring.get_yaku(state, state.rules["meta_yaku"], seat, winning_tile, win_source, minipoints, yaku)
         yakuman = Scoring.get_yaku(state, state.rules["yakuman"], seat, winning_tile, win_source, minipoints)
         {score, points, yakuman_mult} = Scoring.score_yaku(state, seat, yaku, yakuman, win_source == :draw, minipoints)
         IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
@@ -819,6 +820,7 @@ defmodule RiichiAdvanced.GameState do
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
         Enum.all?(winning_hand ++ [winning_tile], fn tile -> tile in tiles end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && state.saki.all_drafted
+      "has_existing_yaku"        -> Enum.all?(opts, fn name -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end) end)
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

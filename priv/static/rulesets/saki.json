@@ -828,6 +828,18 @@
     {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 3]}]},
     {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 4]}]}
   ],
+  "meta_yaku": [
+    {
+      "display_name": "Tanyao",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["haramura-nodoka"]}, {"name": "has_existing_yaku", "opts": ["Tanyao"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
+    },
+    {
+      "display_name": "Pinfu",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["haramura-nodoka"]}, {"name": "has_existing_yaku", "opts": ["Pinfu"]}]
+    }
+  ],
   "yaku_alt_names": {
     "Riichi": "立直",
     "Tsumo": "門前清自摸和",
