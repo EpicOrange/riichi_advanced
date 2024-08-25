@@ -83,6 +83,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       hand={player.hand}
       draw={player.draw}
       calls={player.calls}
+      aside={player.aside}
       status={player.status}
       saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
       marking={@marking}

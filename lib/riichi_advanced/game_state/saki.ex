@@ -134,7 +134,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     already_marked = is_marked(state, seat, index, source)
     mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
-        "match_suit" ->
+        "match_suit"        ->
           case source do
             :hand    ->
               case state.saki.marked_objects.discard.marked do
@@ -154,7 +154,8 @@ defmodule RiichiAdvanced.GameState.Saki do
               GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
               true
           end
-        _            ->
+        "match_called_tile" -> Riichi.normalize_red_five(tile) == Riichi.normalize_red_five(get_last_call_action(state).called_tile)
+        _                   ->
           GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
           true
       end

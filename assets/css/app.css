@@ -461,6 +461,7 @@ div.tile.\31 q { background-position-y: calc(-66 * var(--tile-size) - var(--bord
 div.tile.\32 q { background-position-y: calc(-67 * var(--tile-size) - var(--border-width)); }
 div.tile.\33 q { background-position-y: calc(-68 * var(--tile-size) - var(--border-width)); }
 div.tile.\34 q { background-position-y: calc(-69 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.inactive {
   opacity: 0.6;
 }

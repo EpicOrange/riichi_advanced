@@ -1068,6 +1068,21 @@
       "display_name": "Mase Yuuko",
       "value": 1,
       "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match_simple", "opts": [["pond"], [[[["koutsu"], 8]]]]}]
+    },
+    {
+      "display_name": "Matano Seiko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 2]]]]}]
+    },
+    {
+      "display_name": "Matano Seiko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 3]]]]}]
+    },
+    {
+      "display_name": "Matano Seiko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
     }
   ],
   "yaku_alt_names": {
@@ -1184,7 +1199,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_called", "call_made", "kan", "ankan"],
+                ["unset_status", "just_reached", "just_called", "call_made", "kan", "ankan", "pon"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
@@ -1218,7 +1233,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi"],
+                ["unset_status", "just_reached", "call_made", "kan", "ankan", "nagashi", "pon"],
                 ["when", [
                   {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                   {"name": "not_match", "opts": [["hand", "calls", "draw"], ["false_tenpai"]]}
@@ -1380,6 +1395,15 @@
       ],
       "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"]]
     },
+    "matano_seiko": {
+      "display_name": "Set aside 4th tile from discards",
+      "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
+      "actions": [
+        ["big_text", "Matano Seiko: set aside!"],
+        ["unset_status", "pon"],
+        ["set_aside_discard_matching_called_tile"]
+      ]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -1406,7 +1430,7 @@
         ],
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
-      "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"]],
+      "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {

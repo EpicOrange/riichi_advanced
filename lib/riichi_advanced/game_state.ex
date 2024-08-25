@@ -9,6 +9,7 @@ defmodule Player do
     pond: [],
     discards: [],
     calls: [],
+    aside: [],
     buttons: [],
     auto_buttons: [],
     call_buttons: %{},
@@ -251,25 +252,11 @@ defmodule RiichiAdvanced.GameState do
       state = state
        |> Map.put(:wall, wall)
        |> Map.put(:wall_index, starting_tiles*4)
-       |> update_all_players(&%Player{ &2 |
+       |> update_all_players(&%Player{
+            score: &2.score,
+            nickname: &2.nickname,
             hand: hands[&1],
-            draw: [],
-            pond: [],
-            discards: [],
-            calls: [],
-            buttons: [],
-            auto_buttons: initial_auto_buttons,
-            call_buttons: %{},
-            call_name: "",
-            choice: nil,
-            chosen_actions: nil,
-            deferred_actions: [],
-            big_text: "",
-            status: [],
-            riichi_stick: false,
-            hand_revealed: false,
-            last_discard: nil, # for animation purposes only
-            ready: false
+            auto_buttons: initial_auto_buttons
           })
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
@@ -860,6 +847,7 @@ defmodule RiichiAdvanced.GameState do
           discards = state.players[last_discard_action.seat].discards |> Riichi.normalize_red_fives() |> Enum.drop(-1)
           tile in discards
         else false end
+      "called_tile_matches_any_discard" -> last_call_action != nil && Riichi.normalize_red_five(last_call_action.called_tile) in Riichi.normalize_red_fives(Enum.flat_map(state.players, fn {_seat, player} -> player.pond end))
       _                          ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

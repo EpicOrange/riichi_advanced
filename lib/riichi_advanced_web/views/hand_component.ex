@@ -11,6 +11,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :just_drew, false)
     socket = assign(socket, :status, [])
     socket = assign(socket, :calls, [])
+    socket = assign(socket, :aside, [])
     socket = assign(socket, :draw, [])
     socket = assign(socket, :marking, false)
     {:ok, socket}
@@ -92,6 +93,15 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <%= for {_name, call} <- @calls do %>
             <div class="call">
               <div class={["tile", tile, sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+            </div>
+          <% end %>
+          <%= for tile <- @aside do %>
+            <div class="call">
+              <%= if @your_hand? do %>
+                <div class={["tile", tile]}></div>
+              <% else %>
+                <div class={["tile", "1x"]}></div>
+              <% end %>
             </div>
           <% end %>
       </div>
