@@ -193,6 +193,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  defp translate_tile_alias(state, context, tile_alias) do
+    case tile_alias do
+      "draw" -> Enum.at(state.players[context.seat].draw, 0, :"1x")
+      _      -> Utils.to_tile(tile_alias)
+    end
+  end
+
   defp _run_actions(state, [], _context), do: {state, []}
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -351,6 +358,14 @@ defmodule RiichiAdvanced.GameState.Actions do
 
         state
       "about_to_ron"          -> state # no-op
+      "set_tile_alias"        ->
+        from_tiles = Enum.at(opts, 0, []) |> Enum.map(&translate_tile_alias(state, context, &1))
+        to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
+        aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
+          aliases -> Map.update(aliases, to, from_tiles, fn from -> from ++ from_tiles end)
+        end
+        state = update_player(state, context.seat, &%Player{ &1 | tile_aliases: aliases })
+        state
       _                       ->
         IO.puts("Unhandled action #{action}")
         state

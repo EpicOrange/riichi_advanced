@@ -14,6 +14,7 @@ defmodule Player do
     auto_buttons: [],
     call_buttons: %{},
     call_name: "",
+    tile_aliases: %{},
     choice: nil,
     chosen_actions: nil,
     deferred_actions: [],
@@ -824,15 +825,18 @@ defmodule RiichiAdvanced.GameState do
       "match"                    -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions) end)
+        tile_aliases = state.players[context.seat].tile_aliases
+        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases) end)
       "match_simple"         -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_simple(hand, calls, match_definitions) end)
+        tile_aliases = state.players[context.seat].tile_aliases
+        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_simple(hand, calls, match_definitions, tile_aliases) end)
       "match_wrapping"       -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, true) end)
+        tile_aliases = state.players[context.seat].tile_aliases
+        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, true) end)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)
@@ -860,7 +864,6 @@ defmodule RiichiAdvanced.GameState do
         else false end
       "called_tile_matches_any_discard" -> last_call_action != nil && Riichi.normalize_red_five(last_call_action.called_tile) in Riichi.normalize_red_fives(Enum.flat_map(state.players, fn {_seat, player} -> player.pond end))
       "last_discard_exists" -> 
-        IO.inspect(Enum.at(state.players[last_discard_action.seat].pond, -1))
         last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
