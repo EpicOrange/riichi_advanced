@@ -528,4 +528,11 @@ defmodule Riichi do
     {ko_payment, oya_payment}
   end
 
+  def count_ukeire(waits, hand, visible_ponds, visible_calls, winning_tile) do
+    all_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &call_to_tiles/1) -- [winning_tile]
+    waits
+    |> Enum.map(fn wait -> 4 - Enum.count(all_tiles, fn tile -> normalize_red_five(tile) == normalize_red_five(wait) end) end)
+    |> Enum.sum()
+  end
+
 end

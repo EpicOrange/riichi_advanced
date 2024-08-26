@@ -297,7 +297,7 @@ defmodule RiichiAdvanced.GameState do
 
     # run before_win actions
     state = if Map.has_key?(state.rules, "before_win") do
-      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat})
+      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: winning_tile, win_source: win_source})
     else state end
 
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -938,10 +938,30 @@ defmodule RiichiAdvanced.GameState do
         calls = state.players[context.seat].calls
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
         length(waits) >= number
+      "wait_count_at_most" ->
+        number = Enum.at(opts, 0, 1)
+        win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        tile_aliases = state.players[context.seat].tile_aliases
+        hand = state.players[context.seat].hand
+        calls = state.players[context.seat].calls
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
+        length(waits) <= number
       "tagged"              ->
         tag = Enum.at(opts, 0, "missing_tag")
         tagged_tile = state.tags[tag]
         Riichi.normalize_red_five(context.tile) == Riichi.normalize_red_five(tagged_tile)
+      "has_hell_pair_wait" ->
+        hand = state.players[context.seat].hand
+        calls = state.players[context.seat].calls
+        pair_wait_definitions = translate_match_definitions(state, opts)
+        tile_aliases = state.players[context.seat].tile_aliases
+        pair_waits = Enum.flat_map(pair_wait_definitions, fn definition -> Riichi.remove_hand_definition(hand, calls, definition, tile_aliases, false) end)
+        |> Enum.flat_map(fn {hand, _calls} -> hand end)
+        visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
+        visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
+        ukeire = Riichi.count_ukeire(pair_waits, hand, visible_ponds, visible_calls, context.winning_tile)
+        # IO.puts("Pair waits: #{inspect(pair_waits)}, ukeire: #{inspect(ukeire)}")
+        ukeire == 1
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

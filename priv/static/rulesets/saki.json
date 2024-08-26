@@ -143,6 +143,10 @@
     [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
     [ [["pair"], 6] ]
   ],
+  "pair_wait_definition": [
+    [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ [["pair"], 6] ]
+  ],
   "senoo_kaori_tenpai_definition": [
     [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", ["1z", "2z"], ["2z", "3z"], ["3z", "4z"], ["1z", "3z"], ["2z", "4z"], ["5z", "6z"], ["6z", "7z"], ["5z", "7z"]], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan", ["1z", "2z", "3z"], ["2z", "3z", "4z"], ["5z", "6z", "7z"]], 3] ],
     [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan", ["1z", "2z", "3z"], ["2z", "3z", "4z"], ["5z", "6z", "7z"]], 4] ],
@@ -1163,6 +1167,11 @@
       "display_name": "No Yaku",
       "value": 1,
       "when": [{"name": "status", "opts": ["senoo-kaori"]}, "has_no_yaku"]
+    },
+    {
+      "display_name": "Single Wait",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}]
     }
   ],
   "yaku_alt_names": {
@@ -1388,7 +1397,8 @@
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_2"]}], [["reveal_tile", "1x"]]],
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_3"]}], [["reveal_tile", "1x"]]],
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_4"]}], [["reveal_tile", "1x"]]],
-                ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
+                ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]],
+                ["when", [{"name": "status", "opts": ["takei-hisa"]}, {"name": "has_hell_pair_wait", "opts": ["pair_wait"]}], [["set_status", "double_score"]]]
                ]
   },
   "before_exhaustive_draw": {
