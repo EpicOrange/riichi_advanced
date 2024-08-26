@@ -321,7 +321,7 @@ defmodule RiichiAdvanced.GameState do
     state = case scoring_table["method"] do
       "riichi" ->
         wraps = "wrapping_fu_calculation" in state.players[seat].status
-        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), wraps)
+        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
         yaku = Scoring.get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
         yaku = if Map.has_key?(state.rules, "meta_yaku") do
           Scoring.get_yaku(state, state.rules["meta_yaku"], seat, winning_tile, win_source, minipoints, yaku)
@@ -731,37 +731,37 @@ defmodule RiichiAdvanced.GameState do
       "has_yaku_with_hand"       -> if not Enum.empty?(state.players[context.seat].draw) do
           winning_tile = Enum.at(state.players[context.seat].draw, 0)
           wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), wraps)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :draw, minipoints)) end)
         else false end
       "has_yaku_with_discard"    -> if last_action.action == :discard do
           winning_tile = last_action.tile
           wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), wraps)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "has_yaku_with_call"       -> if last_action.action == :call do
           winning_tile = last_action.tile
           wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), wraps)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "has_yakuman_with_hand"    -> if not Enum.empty?(state.players[context.seat].draw) do
           winning_tile = Enum.at(state.players[context.seat].draw, 0)
           wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), wraps)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
           Enum.any?(state.rules["yakuman"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :draw, minipoints)) end)
         else false end
       "has_yakuman_with_discard" -> if last_action.action == :discard do
           winning_tile = last_action.tile
           wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), wraps)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
           Enum.any?(state.rules["yakuman"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "has_yakuman_with_call"    -> if last_action.action == :call do
           winning_tile = last_action.tile
           wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), wraps)
+          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
           Enum.any?(state.rules["yakuman"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})

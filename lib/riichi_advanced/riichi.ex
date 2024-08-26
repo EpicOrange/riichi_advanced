@@ -155,6 +155,14 @@ defmodule Riichi do
     if ix != nil do [{hand, List.delete_at(calls, ix)}] else [] end
   end
 
+  def add_tile_aliases(tiles, tile_aliases) do
+    Enum.flat_map(tiles, fn tile ->
+      [tile] ++ Enum.flat_map(tile_aliases, fn {from, to_tiles} ->
+        if tile in to_tiles do [from] else [] end
+      end)
+    end)
+  end
+
   def remove_group(hand, calls, group, tile_aliases \\ %{}, wrapping \\ false) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     cond do
@@ -166,9 +174,7 @@ defmodule Riichi do
         else
           # list of integers specifying a group of tiles
           all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
-          |> Enum.flat_map(fn tile ->
-            [tile] ++ Enum.flat_map(tile_aliases, fn {from, to_tiles} -> if tile in to_tiles do [from] else [] end end)
-          end)
+          |> add_tile_aliases(tile_aliases)
           all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
             tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping) end end)
             remove_from_hand_calls(hand, tiles, calls, tile_aliases)
@@ -371,7 +377,7 @@ defmodule Riichi do
     fu
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, wraps \\ false) do
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, tile_aliases \\ %{}, wraps \\ false) do
     starting_hand = normalize_red_fives(starting_hand)
     winning_tile = normalize_red_five(winning_tile)
     num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
@@ -384,37 +390,29 @@ defmodule Riichi do
     # add called triplets
     fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
 
-    possible_penchan_removed = case winning_tile do
-      :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"])
-      :"7m" -> try_remove_all_tiles(starting_hand, [:"8m", :"9m"])
-      :"3p" -> try_remove_all_tiles(starting_hand, [:"1p", :"2p"])
-      :"7p" -> try_remove_all_tiles(starting_hand, [:"8p", :"9p"])
-      :"3s" -> try_remove_all_tiles(starting_hand, [:"1s", :"2s"])
-      :"7s" -> try_remove_all_tiles(starting_hand, [:"8s", :"9s"])
-      _     -> []
-    end
-    possible_penchan_removed = case possible_penchan_removed do
-      [] -> []
-      [removed] -> [{removed, fu + 2}]
-    end
+    possible_penchan_removed = if not wraps do
+      case winning_tile do
+        :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"], tile_aliases)
+        :"7m" -> try_remove_all_tiles(starting_hand, [:"8m", :"9m"], tile_aliases)
+        :"3p" -> try_remove_all_tiles(starting_hand, [:"1p", :"2p"], tile_aliases)
+        :"7p" -> try_remove_all_tiles(starting_hand, [:"8p", :"9p"], tile_aliases)
+        :"3s" -> try_remove_all_tiles(starting_hand, [:"1s", :"2s"], tile_aliases)
+        :"7s" -> try_remove_all_tiles(starting_hand, [:"8s", :"9s"], tile_aliases)
+        _     -> []
+      end |> Enum.map(fn hand -> {hand, fu+2} end)
+    else [] end
     tanyao_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s"]
     possible_kanchan_removed = if winning_tile in tanyao_tiles do
-      case try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps), offset_tile(winning_tile, 1, wraps)]) do
-        [] -> []
-        [removed] -> [{removed, fu + 2}]
-      end
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps), offset_tile(winning_tile, 1, wraps)], tile_aliases)
+      |> Enum.map(fn hand -> {hand, fu+2} end)
     else [] end
     possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, wraps) != nil do
-      case try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, wraps), offset_tile(winning_tile, -1, wraps)]) do
-        [] -> []
-        [removed] -> [{removed, fu}]
-      end
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, wraps), offset_tile(winning_tile, -1, wraps)], tile_aliases)
+      |> Enum.map(fn hand -> {hand, fu} end)
     else [] end
     possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, wraps) != nil do
-      case try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, wraps), offset_tile(winning_tile, 2, wraps)]) do
-        [] -> []
-        [removed] -> [{removed, fu}]
-      end
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, wraps), offset_tile(winning_tile, 2, wraps)], tile_aliases)
+      |> Enum.map(fn hand -> {hand, fu} end)
     else [] end
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
 
@@ -422,10 +420,10 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-            case try_remove_all_tiles(hand, [base_tile, base_tile, base_tile]) do
+          hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile ->
+            case try_remove_all_tiles(hand, [base_tile, base_tile, base_tile], tile_aliases) do
               [] -> [{hand, fu}]
-              [removed] -> [{removed, fu + if base_tile in @terminal_honors do 8 else 4 end}]
+              removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 8 else 4 end} end)
             end
           end) |> Enum.uniq()
         end) |> Enum.uniq()
@@ -435,14 +433,16 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> Enum.flat_map(fn base_tile -> 
-            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps), base_tile, offset_tile(base_tile, 1, wraps)]) do
+          hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
+            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps), base_tile, offset_tile(base_tile, 1, wraps)], tile_aliases) do
               [] -> [{hand, fu}]
-              [removed] -> [{removed, fu}]
+              removed -> Enum.map(removed, fn hand -> {hand, fu} end)
             end
           end)
         end) |> Enum.uniq()
     end
+
+    IO.inspect(hands_fu)
 
     # only valid hands should either have:
     # - one tile remaining (tanki)
