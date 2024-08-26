@@ -21,7 +21,8 @@ defmodule Lobby do
 
     # state
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
-    players: %{}
+    players: %{},
+    shuffle: false
   ]
   use Accessible
 end
@@ -117,6 +118,16 @@ defmodule RiichiAdvanced.LobbyState do
     {:noreply, state}
   end
 
+  def handle_cast({:toggle_shuffle_seats, enabled}, state) do
+    state = Map.put(state, :shuffle, enabled)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
 
+  def handle_cast({:get_up, socket_id}, state) do
+    state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
 
 end

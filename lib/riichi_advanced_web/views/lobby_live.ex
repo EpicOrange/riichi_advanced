@@ -6,6 +6,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:session_id, params["id"])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, params["nickname"])
+    |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:state, %Lobby{})
     if socket.root_pid != nil do
@@ -53,24 +54,43 @@ defmodule RiichiAdvancedWeb.LobbyLive do
             <div class="player-slot-name"><%= player.nickname %></div>
           <% else %>
             <div class="player-slot-name">Empty</div>
-            <button class="player-slot-join" phx-click="sit" phx-value-seat={seat}>Sit</button>
+            <button class="sit-button" phx-click="sit" phx-value-seat={seat}>Sit</button>
           <% end %>
         </div>
       <% end %>
-      <div class="start-game">
-        <button class="start-game-button" phx-click="start_game">
-          Start game
-          <%= if nil in Map.values(@state.seats) do %>
-          (with AI)
-          <% end %>
-        </button>
-      </div>
+      <footer>
+        <input id="shuffle-seats" type="checkbox" class="shuffle-seats" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
+        <label for="shuffle-seats">Shuffle seats on start?</label>
+        <br/>
+        <%= if Enum.any?(@state.seats, fn {seat, player} -> player != nil && player.id == @id end) do %>
+          <button class="get-up-button" phx-click="get_up">Get up</button>
+        <% end %>
+        <%= if not Enum.all?(@state.seats, fn {seat, player} -> player == nil end) do %>
+          <button class="start-game-button" phx-click="start_game">
+            Start game
+            <%= if nil in Map.values(@state.seats) do %>
+            (with AI)
+            <% end %>
+          </button>
+        <% end %>
+      </footer>
     </div>
     """
   end
 
   def handle_event("sit", %{"seat" => seat}, socket) do
     GenServer.cast(socket.assigns.lobby_state, {:sit, socket.id, seat})
+    {:noreply, socket}
+  end
+
+  def handle_event("get_up", _assigns, socket) do
+    GenServer.cast(socket.assigns.lobby_state, {:get_up, socket.id})
+    {:noreply, socket}
+  end
+
+  def handle_event("shuffle_seats_toggled", %{"enabled" => enabled}, socket) do
+    enabled = enabled == "true"
+    GenServer.cast(socket.assigns.lobby_state, {:toggle_shuffle_seats, not enabled})
     {:noreply, socket}
   end
 
@@ -81,7 +101,6 @@ defmodule RiichiAdvancedWeb.LobbyLive do
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> "-lobby:" <> socket.assigns.session_id) do
-      IO.inspect(state)
       socket = assign(socket, :state, state)
       {:noreply, socket}
     else

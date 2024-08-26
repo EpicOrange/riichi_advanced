@@ -1366,12 +1366,32 @@ div.main-page > form, div.main-page > form * {
 
 
 /* lobby screen */
+div.lobby, div.lobby > footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.25 * var(--tile-size));
+}
 div.lobby > header {
+  display: flex;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: calc(0.5 * var(--tile-size));
   font-weight: 800;
+}
+div.lobby button {
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+}
+div.lobby button:active {
+  filter: none;
+  transform: translateY(calc(var(--tile-size) / 4));
+  z-index: 1;
 }
 div.lobby > div.player-slot {
   display: flex;
@@ -1381,12 +1401,21 @@ div.lobby > div.player-slot > div.player-slot-name {
   width: 80%;
   font-size: calc(1.5 * var(--tile-size));
 }
-div.lobby > div.player-slot > button.player-slot-join {
+div.lobby > div.player-slot > button.sit-button {
   width: calc(2 * var(--tile-size));
   font-size: calc(1.5 * var(--tile-size));
   flex-shrink: 0;
 }
-div.lobby > div.start-game { text-align: center; }
-div.lobby > div.start-game > button.start-game-button {
-  font-size: calc(1.5 * var(--tile-size));
+div.lobby > footer { text-align: center; }
+div.lobby > footer > button.get-up-button,
+div.lobby > footer > button.start-game-button {
+  font-size: calc(0.75 * var(--tile-size));
 }
+div.lobby > footer > input { display: none; }
+div.lobby > footer > label {
+  font-size: calc(0.5 * var(--tile-size));
+  background: gray;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+}
+div.lobby > footer > input:checked + label { background: var(--tile-back); }
