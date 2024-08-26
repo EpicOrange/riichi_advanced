@@ -20,12 +20,8 @@ defmodule RiichiAdvanced.GameState.Actions do
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
     if is_playable?(state, seat, tile, tile_source) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
-
-      {state, tile} = if Map.has_key?(state, :saki) && state.saki.discarding_facedown == seat do
-        tile = :"1x"
-        state = put_in(state.saki.discarding_facedown, nil)
-        {state, tile}
-      else {state, tile} end
+      
+      tile = if "discard_facedown" in state.players[seat].status do :"1x" else tile end
 
       state = update_player(state, seat, &%Player{ &1 |
         hand: List.delete_at(&1.hand ++ &1.draw, index),
@@ -316,7 +312,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
         state
-      "set_discard_facedown"            -> put_in(state.saki.discarding_facedown, context.seat)
       "place_4_tiles_at_end_of_live_wall" ->
         {hand_tile1, hand_seat, hand_index1} = Enum.at(context.marked_objects.hand.marked, 0)
         {hand_tile2, _, hand_index2} = Enum.at(context.marked_objects.hand.marked, 1)

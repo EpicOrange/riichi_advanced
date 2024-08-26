@@ -63,7 +63,6 @@ defmodule RiichiAdvanced.GameState.Saki do
       #   },
       # }
       marked_objects: %{},
-      discarding_facedown: nil,
       just_finished_second_row_discards: false,
       already_finished_second_row_discards: false
     })

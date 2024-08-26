@@ -1132,6 +1132,21 @@
       "display_name": "Three-Sided Wait",
       "value": 1,
       "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "wait_count_at_least", "opts": [3, ["win"]]}]
+    },
+    {
+      "display_name": "Tsumo",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "has_existing_yaku", "opts": ["Tsumo"]}]
+    },
+    {
+      "display_name": "Iipeikou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "has_existing_yaku", "opts": ["Iipeikou"]}]
+    },
+    {
+      "display_name": "Ryanpeikou",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "has_existing_yaku", "opts": ["Ryanpeikou"]}]
     }
   ],
   "yaku_alt_names": {
@@ -1249,7 +1264,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_called", "call_made", "kan", "pon"],
+                ["unset_status", "just_reached", "just_called", "call_made", "kan", "pon", "discard_facedown"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
@@ -1417,8 +1432,8 @@
     },
     "haramura_nodoka": {
       "display_name": "Discard facedown",
-      "show_when": [{"name": "status_missing", "opts": ["round_start", "haramura-nodoka_exhausted"]}, {"name": "status", "opts": ["haramura-nodoka"]}, "not_just_discarded"],
-      "actions": [["big_text", "Haramura Nodoka: discard!"], ["set_status", "haramura-nodoka_exhausted"], ["set_discard_facedown"]]
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "haramura-nodoka_exhausted", "discard_facedown"]}, {"name": "status", "opts": ["haramura-nodoka"]}, "not_just_discarded"],
+      "actions": [["big_text", "Haramura Nodoka: discard!"], ["set_status", "haramura-nodoka_exhausted", "discard_facedown"]]
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
@@ -1496,6 +1511,11 @@
         ["set_status", "nanpo-kazue_exhausted2"],
         ["draw_and_place_2_tiles_at_end_of_dead_wall"]
       ]
+    },
+    "sawamura_tomoki": {
+      "display_name": "Discard facedown",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "discard_facedown"]}, {"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "others_status", "opts": ["ippatsu"]}, "not_just_discarded"],
+      "actions": [["big_text", "Sawamura Tomoki: discard!"], ["set_status", "discard_facedown"]]
     },
     "chii": {
       "display_name": "Chii",
