@@ -576,8 +576,9 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
+    made_choice = state.players[seat].choice != nil
     marking = Map.has_key?(state, :saki) && Saki.needs_marking?(state, seat)
-    not no_call_buttons || marking
+    not no_call_buttons || made_choice || marking
   end
 
   def submit_actions(state, seat, choice, actions) do

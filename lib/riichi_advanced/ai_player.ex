@@ -9,7 +9,11 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def init(state) do
     state = Map.put(state, :initialized, false)
-    :timer.apply_after(5000, Kernel, :send, [self(), :initialize])
+    if RiichiAdvanced.GameState.Debug.debug() do
+      :timer.apply_after(100, Kernel, :send, [self(), :initialize])
+    else
+      :timer.apply_after(5000, Kernel, :send, [self(), :initialize])
+    end
     {:ok, state}
   end
 
