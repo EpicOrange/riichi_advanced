@@ -29,6 +29,12 @@ defmodule Riichi do
   def succ_wraps(tile), do: @succ_wraps[tile]
 
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
+  @all_tiles [
+    :"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m",
+    :"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p",
+    :"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s",
+    :"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"
+  ]
 
   def offset_tile(tile, n, wraps \\ false) do
     if tile != nil do
@@ -236,6 +242,10 @@ defmodule Riichi do
   def match_hand(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false) do
     # TODO replace check_hand
     check_hand(hand, calls, match_definitions, tile_aliases, wrapping)
+  end
+
+  def get_waits(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false) do
+    Enum.filter(@all_tiles, fn tile -> match_hand(hand ++ [tile], calls, match_definitions, tile_aliases, wrapping) end)
   end
 
   # only keeps one version of the hand (assumes groups don't overlap)

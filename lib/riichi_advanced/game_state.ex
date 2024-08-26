@@ -239,7 +239,6 @@ defmodule RiichiAdvanced.GameState do
         reserved_tiles = Enum.zip(reserved_tile_names, dead_wall)
         revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
         max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
-        IO.inspect(reserved_tiles)
         state 
         |> Map.put(:wall, wall)
         |> Map.put(:dead_wall, dead_wall)
@@ -891,9 +890,43 @@ defmodule RiichiAdvanced.GameState do
           tile in discards
         else false end
       "called_tile_matches_any_discard" -> last_call_action != nil && Riichi.normalize_red_five(last_call_action.called_tile) in Riichi.normalize_red_fives(Enum.flat_map(state.players, fn {_seat, player} -> player.pond end))
-      "last_discard_exists" -> 
+      "last_discard_exists" ->
         last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
       "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards
+      "call_would_change_waits" ->
+        win_definitions = translate_match_definitions(state, opts)
+        tile_aliases = state.players[context.seat].tile_aliases
+        hand = state.players[context.seat].hand
+        draw = state.players[context.seat].draw
+        calls = state.players[context.seat].calls
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
+        IO.inspect(Riichi.make_calls(context.calls_spec, hand ++ draw))
+        Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw), fn {called_tile, call_choices} ->
+          Enum.all?(call_choices, fn call_choice ->
+            call_tiles = [called_tile | call_choice]
+            call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
+            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases, false)
+            IO.puts("call: #{inspect(call)}")
+            IO.puts("waits: #{inspect(waits)}")
+            IO.puts("waits after call: #{inspect(waits_after_call)}")
+            Enum.sort(waits) != Enum.sort(waits_after_call)
+          end)
+        end)
+        # %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades, call_wraps: call_wraps})
+      "call_changes_waits" ->
+        win_definitions = translate_match_definitions(state, opts)
+        tile_aliases = state.players[context.seat].tile_aliases
+        hand = state.players[context.seat].hand
+        draw = state.players[context.seat].draw
+        calls = state.players[context.seat].calls
+        call_tiles = [context.called_tile | context.call_choice]
+        call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
+        waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases, false)
+        IO.puts("call: #{inspect(call)}")
+        IO.puts("waits: #{inspect(waits)}")
+        IO.puts("waits after call: #{inspect(waits_after_call)}")
+        Enum.sort(waits) != Enum.sort(waits_after_call)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

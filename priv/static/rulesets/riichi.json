@@ -1079,7 +1079,17 @@
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
       "call_style": {"self": ["1x", 0, 1, "1x"]},
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "call_conditions": [[
+        {"name": "not_status", "opts": ["riichi"]},
+        {"name": "not_call_changes_waits", "opts": ["win"]}
+      ]],
+      "show_when": [
+        "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "not_status", "opts": ["riichi"]},
+          {"name": "not_call_would_change_waits", "opts": ["win"]}
+        ]
+      ],
       "actions": [
         ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],

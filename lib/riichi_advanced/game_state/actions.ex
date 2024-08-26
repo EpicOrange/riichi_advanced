@@ -561,6 +561,13 @@ defmodule RiichiAdvanced.GameState.Actions do
                     call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, callable_tiles, wraps)
                     {state, call_choices}
                 end
+                # filter call_choices
+                call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
+                  conditions = state.rules["buttons"][button_name]["call_conditions"]
+                  for {called_tile, choices} <- call_choices do
+                    {called_tile, Enum.filter(choices, fn call_choice -> check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
+                  end |> Map.new()
+                else call_choices end
                 flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
                 if length(flattened_call_choices) == 1 do
                   # if there's only one choice, automatically choose it
