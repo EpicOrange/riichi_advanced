@@ -962,6 +962,7 @@ defmodule RiichiAdvanced.GameState do
         ukeire = Riichi.count_ukeire(pair_waits, hand, visible_ponds, visible_calls, context.winning_tile)
         # IO.puts("Pair waits: #{inspect(pair_waits)}, ukeire: #{inspect(ukeire)}")
         ukeire == 1
+      "third_row_discard"   -> length(state.players[context.seat].pond) >= 12
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
