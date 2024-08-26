@@ -11,6 +11,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:session_id, params["id"])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, params["nickname"])
+    |> assign(:seat_param, params["seat"])
     |> assign(:game_state, nil)
     |> assign(:state, %Game{})
     |> assign(:seat, :east)

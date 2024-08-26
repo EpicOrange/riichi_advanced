@@ -22,7 +22,8 @@ defmodule Lobby do
     # state
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     players: %{},
-    shuffle: false
+    shuffle: false,
+    started: false
   ]
   use Accessible
 end
@@ -126,6 +127,30 @@ defmodule RiichiAdvanced.LobbyState do
 
   def handle_cast({:get_up, socket_id}, state) do
     state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:start_game, state) do
+    game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
+    state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+      {:ok, _pid} ->
+        IO.puts("Starting game session #{state.session_id}")
+        # shuffle seats
+        state = if state.shuffle do
+          Map.update!(state, :seats, fn seats -> Map.keys(seats) |> Enum.zip(Map.values(seats) |> Enum.shuffle()) |> Map.new() end)
+        else state end
+        IO.inspect(state.seats)
+        state = Map.put(state, :started, true)
+        state
+      {:error, {:shutdown, error}} ->
+        IO.puts("Error when starting game session #{state.session_id}")
+        IO.inspect(error)
+        state
+      {:error, {:already_started, _pid}} ->
+        IO.puts("Already started game session #{state.session_id}")
+        state
+    end
     state = broadcast_state_change(state)
     {:noreply, state}
   end

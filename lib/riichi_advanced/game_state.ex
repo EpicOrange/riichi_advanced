@@ -922,6 +922,10 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
       Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
       Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
       Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
@@ -1073,6 +1077,7 @@ defmodule RiichiAdvanced.GameState do
   # end
 
   # clicking the compass will send this
+  # ai also sends this once they initialize
   def handle_cast(:notify_ai, state) do
     state = Buttons.recalculate_buttons(state)
     notify_ai(state)

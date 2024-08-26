@@ -45,7 +45,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       <header>
         <h1>Lobby</h1>
         <div class="variant">Variant:&nbsp; <%= @ruleset %></div>
-        <div class="session">Session ID:&nbsp; <%= @session_id %></div>
+        <div class="session">Room:&nbsp; <%= @session_id %></div>
       </header>
       <%= for {seat, player} <- @state.seats do %>
         <div class="player-slot">
@@ -62,10 +62,10 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <input id="shuffle-seats" type="checkbox" class="shuffle-seats" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
         <label for="shuffle-seats">Shuffle seats on start?</label>
         <br/>
-        <%= if Enum.any?(@state.seats, fn {seat, player} -> player != nil && player.id == @id end) do %>
+        <%= if Enum.any?(@state.seats, fn {_seat, player} -> player != nil && player.id == @id end) do %>
           <button class="get-up-button" phx-click="get_up">Get up</button>
         <% end %>
-        <%= if not Enum.all?(@state.seats, fn {seat, player} -> player == nil end) do %>
+        <%= if not Enum.all?(@state.seats, fn {_seat, player} -> player == nil end) do %>
           <button class="start-game-button" phx-click="start_game">
             Start game
             <%= if nil in Map.values(@state.seats) do %>
@@ -95,13 +95,23 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_event("start_game", _assigns, socket) do
-    # TODO spin up a game instance
+    GenServer.cast(socket.assigns.lobby_state, :start_game)
     {:noreply, socket}
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> "-lobby:" <> socket.assigns.session_id) do
       socket = assign(socket, :state, state)
+      socket = if state.started do
+        seat = cond do
+          get_in(state.seats.east.id)  == socket.id -> :east
+          get_in(state.seats.south.id) == socket.id -> :south
+          get_in(state.seats.west.id)  == socket.id -> :west
+          get_in(state.seats.north.id) == socket.id -> :north
+          true                              -> :spectator
+        end
+        push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
+      else socket end
       {:noreply, socket}
     else
       {:noreply, socket}

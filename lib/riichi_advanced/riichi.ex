@@ -442,7 +442,7 @@ defmodule Riichi do
         end) |> Enum.uniq()
     end
 
-    IO.inspect(hands_fu)
+    # IO.inspect(hands_fu)
 
     # only valid hands should either have:
     # - one tile remaining (tanki)
