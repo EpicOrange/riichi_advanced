@@ -95,8 +95,7 @@ defmodule RiichiAdvanced.GameState do
     GenServer.start_link(
       __MODULE__,
       %{session_id: Keyword.get(init_data, :session_id),
-        ruleset: Keyword.get(init_data, :ruleset),
-        ruleset_json: Keyword.get(init_data, :ruleset_json)},
+        ruleset: Keyword.get(init_data, :ruleset)},
       name: Keyword.get(init_data, :name))
   end
 
@@ -143,11 +142,17 @@ defmodule RiichiAdvanced.GameState do
       :north => big_text_debouncer_north
     }
 
+    # read in the ruleset
+    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
+      {:ok, ruleset_json} -> ruleset_json
+      {:error, _err}      -> nil
+    end
+
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
       ruleset: state.ruleset,
       session_id: state.session_id,
-      ruleset_json: state.ruleset_json,
+      ruleset_json: ruleset_json,
       supervisor: supervisor,
       mutex: mutex,
       ai_supervisor: ai_supervisor,
@@ -158,9 +163,9 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    # decode the passed-in rules json
+    # decode the rules json
     {state, rules} = try do
-      case Jason.decode(state.ruleset_json) do
+      case Jason.decode(ruleset_json) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")

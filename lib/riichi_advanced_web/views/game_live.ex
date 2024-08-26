@@ -7,16 +7,9 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def mount(params, _session, socket) do
-    # read in the ruleset
-    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{params["ruleset"] <> ".json"}")) do
-      {:ok, ruleset_json} -> ruleset_json
-      {:error, _err}      -> nil
-    end
-
     socket = socket
     |> assign(:session_id, params["id"])
     |> assign(:ruleset, params["ruleset"])
-    |> assign(:ruleset_json, ruleset_json)
     |> assign(:nickname, params["nickname"])
     |> assign(:game_state, nil)
     |> assign(:state, %Game{})
@@ -33,7 +26,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     # liveviews mount twice; we only want to init a new player on the second mount
     if socket.root_pid != nil do
       # start a new game process, if it doesn't exist already
-      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, ruleset_json: socket.assigns.ruleset_json, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.session_id}")
@@ -191,7 +184,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       </div>
     <% end %>
     <div class="ruleset">
-      <textarea readonly><%= @ruleset_json %></textarea>
+      <textarea readonly><%= @state.ruleset_json %></textarea>
     </div>
     """
   end
