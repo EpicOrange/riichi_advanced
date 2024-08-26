@@ -1364,8 +1364,16 @@
   "play_effects": [
     ["any", [["unset_status", "discards_empty"]]],
     ["tanyaohai", [["unset_status", "nagashi"]]],
-    ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [["set_status", "extra_turn"], ["change_turn", "kamicha"]]]]],
-    ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [["set_status", "extra_turn"], ["change_turn", "kamicha"]]]]]
+    ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+      ["set_status", "extra_turn"],
+      ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+      ["change_turn", "kamicha"]
+    ]]]],
+    ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+      ["set_status", "extra_turn"],
+      ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+      ["change_turn", "kamicha"]
+    ]]]]
   ],
   "after_start": {
     "actions": [["set_status_all", "round_start", "discards_empty", "nagashi"]]
