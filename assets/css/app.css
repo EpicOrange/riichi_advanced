@@ -1188,6 +1188,9 @@ div.ruleset > textarea {
 
 
 
+div.saki-cards {
+  display: flex;
+}
 div.saki-card {
   position: relative;
   --card-width: calc(0.89 * var(--tile-size));

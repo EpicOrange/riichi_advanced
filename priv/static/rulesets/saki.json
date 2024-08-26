@@ -10,7 +10,6 @@
     "kataoka-yuuki",
     "mase-yuuko",
     "matano-seiko",
-    "matsumi-kuro",
     "matsumi-yuu",
     "miyanaga-saki",
     "miyanaga-teru",
@@ -22,10 +21,7 @@
     "takakamo-shizuno",
     "takei-hisa",
     "takimi-haru",
-    "toyouko-mokmoko",
     "toyouko-momoko",
-    "usuzawa-sae",
-    "usuzumi-hatsumi",
     "yumeno-maho"
   ],
   "wall": ["1m", "1m", "1m", "1m",
@@ -1586,6 +1582,12 @@
       "display_name": "Discard facedown",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "discard_facedown"]}, {"name": "status", "opts": ["takimi-haru", "chii"]}, "not_just_discarded"],
       "actions": [["big_text", "Takimi Haru: discard!"], ["set_status", "discard_facedown"]]
+    },
+    "yumeno_maho": {
+      "display_name": "Draft Character Card",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "yumeno-maho_exhausted"]}, {"name": "status", "opts": ["yumeno-maho"]}],
+      "actions": [["set_status", "yumeno-maho_exhausted"], ["draft_saki_card", 2]],
+      "unskippable": true
     },
     "chii": {
       "display_name": "Chii",
