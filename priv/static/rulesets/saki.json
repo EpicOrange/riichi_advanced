@@ -1172,6 +1172,11 @@
       "display_name": "Single Wait",
       "value": 2,
       "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}]
+    },
+    {
+      "display_name": "Takimi Haru",
+      "value": 1,
+      "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}]
     }
   ],
   "yaku_alt_names": {
@@ -1290,7 +1295,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_called", "call_made", "kan", "ankan", "pon", "discard_facedown"],
+                ["unset_status", "just_reached", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
@@ -1325,7 +1330,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "call_made", "kan", "nagashi", "pon"],
+                ["unset_status", "just_reached", "call_made", "chii", "pon", "kan", "nagashi"],
                 ["when", [
                   {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                   {"name": "not_match", "opts": [["hand", "calls", "draw"], ["false_tenpai"]]}
@@ -1358,7 +1363,9 @@
   },
   "play_effects": [
     ["any", [["unset_status", "discards_empty"]]],
-    ["tanyaohai", [["unset_status", "nagashi"]]]
+    ["tanyaohai", [["unset_status", "nagashi"]]],
+    ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [["set_status", "extra_turn"], ["change_turn", "kamicha"]]]]],
+    ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [["set_status", "extra_turn"], ["change_turn", "kamicha"]]]]]
   ],
   "after_start": {
     "actions": [["set_status_all", "round_start", "discards_empty", "nagashi"]]
@@ -1563,6 +1570,11 @@
         ["tag_drawn_tile", "no_discard"]
       ]
     },
+    "takimi_haru": {
+      "display_name": "Discard facedown",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "discard_facedown"]}, {"name": "status", "opts": ["takimi-haru", "chii"]}, "not_just_discarded"],
+      "actions": [["big_text", "Takimi Haru: discard!"], ["set_status", "discard_facedown"]]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -1577,7 +1589,8 @@
       ],
       "actions": [
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["set_status", "chii"]
       ]
     },
     "pon": {
