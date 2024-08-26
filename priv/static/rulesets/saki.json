@@ -1237,7 +1237,8 @@
   "play_restrictions": [
     [["any"], ["all_saki_cards_drafted"]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_wraps", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]]
   ],
   "before_turn_change": {
@@ -1622,7 +1623,14 @@
     "riichi": {
       "display_name": "Riichi",
       "show_when": [
-        "our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        "our_turn", {"name": "not_status", "opts": ["round_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+          [
+            {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
+          ]
+        ],
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}

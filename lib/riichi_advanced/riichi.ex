@@ -313,9 +313,9 @@ defmodule Riichi do
     end)
   end
 
-  def not_needed_for_hand(hand, calls, tile, hand_definitions) do
+  def not_needed_for_hand(hand, calls, tile, hand_definitions, tile_aliases \\ %{}, wraps \\ false) do
     Enum.any?(hand_definitions, fn hand_definition ->
-      removed = remove_hand_definition(hand, calls, hand_definition)
+      removed = remove_hand_definition(hand, calls, hand_definition, tile_aliases, wraps)
       normalize_red_five(tile) in Enum.concat(Enum.map(removed, fn {hand, _calls} -> hand end))
     end)
   end
