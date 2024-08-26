@@ -1181,82 +1181,6 @@ div.ruleset > textarea {
 
 
 
-/* index/title screen */
-div.title {
-  text-align: center;
-  display: flex;
-  column-gap: calc(2 * var(--tile-size));
-  user-select: none;
-}
-div.title > div {
-  position: absolute;
-  z-index: 2;
-  display: inline-block;
-}
-div.title > div.title-riichi {
-  font-size: calc(3 * var(--tile-size));
-  transform: rotate(2deg);  
-  top: 0;
-  width: calc(10 * var(--tile-size));
-  left: calc(2 * var(--tile-size));
-}
-div.title > div.title-advanced {
-  font-size: calc(2 * var(--tile-size));
-  transform: rotate(-10deg);  
-  left: calc(4.5 * var(--tile-size));
-  top: calc(3 * var(--tile-size));
-}
-div.title > div.tile {
-  --tile-size: min(calc(90vw / 6), calc(80vh / 6));
-  top: calc(0.2 * var(--tile-size));
-}
-div.title > div.tile.\38 m {
-  transform: rotate(10deg);
-  left: calc(0.2 * var(--tile-size));
-}
-div.title > div.tile.\37 z {
-  transform: rotate(-10deg);
-  right: calc(0.2 * var(--tile-size));
-}
-div.title > div.title-riichi::before,
-div.title > div.title-advanced::before {
-  position: absolute;
-  content: "";
-  width: 150%;
-  height: 140%;
-  left: -25%;
-  bottom: -7.5%;
-  z-index: -1;
-}
-div.title > div.title-riichi::before {
-  background-image: url(/images/brush-bg.svg);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  z-index: -1;
-}
-div.title > div.title-advanced::before {
-  background-image: url(/images/brush-bg2.svg);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  z-index: -1;
-}
-
-div.main-page > form {
-  position: absolute;
-  width: calc(100% - 3 * var(--tile-size));
-  top: calc(50% - 1 * var(--tile-size));
-  left: calc(1 * var(--tile-size));
-  padding: calc(0.5 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  background: #FFFFFF3F;
-}
-div.main-page > form, div.main-page > form * {
-  font-size: calc(0.75 * var(--tile-size));
-}
-
-
-
-
 
 
 
@@ -1347,3 +1271,122 @@ div.saki-card.yumeno-maho, div.saki-card.yumeno-maho:hover::before { background-
 div.shimocha div.saki-card:hover::before { transform: rotate(90deg) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size)));; }
 div.toimen div.saki-card:hover::before { transform: rotate(180deg) translateY(calc(5 * var(--tile-size))); }
 div.kamicha div.saki-card:hover::before { transform: rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size))); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* index/title screen */
+div.title {
+  text-align: center;
+  display: flex;
+  column-gap: calc(2 * var(--tile-size));
+  user-select: none;
+}
+div.title > div {
+  position: absolute;
+  z-index: 2;
+  display: inline-block;
+}
+div.title > div.title-riichi {
+  font-size: calc(3 * var(--tile-size));
+  transform: rotate(2deg);  
+  top: 0;
+  width: calc(10 * var(--tile-size));
+  left: calc(2 * var(--tile-size));
+}
+div.title > div.title-advanced {
+  font-size: calc(2 * var(--tile-size));
+  transform: rotate(-10deg);  
+  left: calc(4.5 * var(--tile-size));
+  top: calc(3 * var(--tile-size));
+}
+div.title > div.tile {
+  --tile-size: min(calc(90vw / 6), calc(80vh / 6));
+  top: calc(0.2 * var(--tile-size));
+}
+div.title > div.tile.\38 m {
+  transform: rotate(10deg);
+  left: calc(0.2 * var(--tile-size));
+}
+div.title > div.tile.\37 z {
+  transform: rotate(-10deg);
+  right: calc(0.2 * var(--tile-size));
+}
+div.title > div.title-riichi::before,
+div.title > div.title-advanced::before {
+  position: absolute;
+  content: "";
+  width: 150%;
+  height: 140%;
+  left: -25%;
+  bottom: -7.5%;
+  z-index: -1;
+}
+div.title > div.title-riichi::before {
+  background-image: url(/images/brush-bg.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+div.title > div.title-advanced::before {
+  background-image: url(/images/brush-bg2.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+div.main-page > form {
+  position: absolute;
+  width: calc(100% - 3 * var(--tile-size));
+  top: calc(50% - 1 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  background: #FFFFFF3F;
+}
+div.main-page > form, div.main-page > form * {
+  font-size: calc(0.75 * var(--tile-size));
+}
+
+
+
+
+
+
+
+
+/* lobby screen */
+div.lobby > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: calc(0.5 * var(--tile-size));
+  font-weight: 800;
+}
+div.lobby > div.player-slot {
+  display: flex;
+  font-size: calc(1.5 * var(--tile-size));
+}
+div.lobby > div.player-slot > div.player-slot-name {
+  width: 80%;
+  font-size: calc(1.5 * var(--tile-size));
+}
+div.lobby > div.player-slot > button.player-slot-join {
+  width: calc(2 * var(--tile-size));
+  font-size: calc(1.5 * var(--tile-size));
+  flex-shrink: 0;
+}
+div.lobby > div.start-game { text-align: center; }
+div.lobby > div.start-game > button.start-game-button {
+  font-size: calc(1.5 * var(--tile-size));
+}

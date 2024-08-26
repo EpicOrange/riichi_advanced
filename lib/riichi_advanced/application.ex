@@ -13,6 +13,7 @@ defmodule RiichiAdvanced.Application do
       {Registry, keys: :unique, name: :game_registry},
       RiichiAdvanced.ETSCache,
       {RiichiAdvanced.GameSessionSupervisor, name: RiichiAdvanced.GameSessionSupervisor},
+      {RiichiAdvanced.LobbySessionSupervisor, name: RiichiAdvanced.LobbySessionSupervisor},
       {DNSCluster, query: Application.get_env(:riichi_advanced, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: RiichiAdvanced.PubSub},
       # Start the Finch HTTP client for sending emails
