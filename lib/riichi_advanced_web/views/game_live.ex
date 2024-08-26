@@ -69,128 +69,155 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <.live_component module={RiichiAdvancedWeb.HandComponent}
-      id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
-      game_state={@game_state}
-      revealed?={@viewer == seat || player.hand_revealed}
-      your_hand?={@viewer == seat}
-      your_turn?={@seat == @state.turn}
-      seat={seat}
-      viewer={@viewer}
-      hand={player.hand}
-      draw={player.draw}
-      calls={player.calls}
-      aside={player.aside}
-      status={player.status}
-      saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
-      marking={@marking}
-      play_tile={&send(self(), {:play_tile, &1})}
-      reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
-      :for={{seat, player} <- @state.players} />
-    <.live_component module={RiichiAdvancedWeb.PondComponent}
-      id={"pond #{Utils.get_relative_seat(@seat, seat)}"}
-      game_state={@game_state}
-      seat={seat}
-      viewer={@viewer}
-      pond={player.pond}
-      riichi={"riichi" in player.status}
-      saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
-      marking={@marking}
-      :for={{seat, player} <- @state.players} />
-    <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
-      id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
-      game_state={@game_state}
-      seat={seat}
-      viewer={@viewer}
-      player={player}
-      kyoku={@state.kyoku}
-      saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
-      :for={{seat, player} <- @state.players} />
-    <.live_component module={RiichiAdvancedWeb.BigTextComponent}
-      id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
-      game_state={@game_state}
-      seat={seat}
-      relative_seat={Utils.get_relative_seat(@seat, seat)}
-      big_text={player.big_text}
-      :if={player.big_text != ""}
-      :for={{seat, player} <- @state.players} />
-    <.live_component module={RiichiAdvancedWeb.CompassComponent}
-      id="compass"
-      game_state={@game_state}
-      seat={@seat}
-      viewer={@viewer}
-      turn={@state.turn}
-      tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
-      kyoku={@state.kyoku}
-      honba={@state.honba}
-      riichi_sticks={@state.riichi_sticks}
-      riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
-      score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
-      display_riichi_sticks={@display_riichi_sticks}
-      display_honba={@display_honba}
-      is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
-    <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@state.winners} winner_index={@state.winner_index} timer={@state.timer} visible_screen={@state.visible_screen}/>
-    <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen}/>
-    <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
-    <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
-    <%= if @viewer != :spectator do %>
-      <div class="buttons">
-        <%= if @marking do %>
-          <button class="button" phx-click="clear_marked_objects">Clear</button>
-          <button class="button" phx-click="cancel_marked_objects">Cancel</button>
-        <% else %>
-          <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
-        <% end %>
-      </div>
-      <div class="auto-buttons">
-        <%= for {name, checked} <- @state.players[@seat].auto_buttons do %>
-          <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-          <label for={"auto-button-" <> name}><%= GenServer.call(@game_state, {:get_auto_button_display_name, name}) %></label>
-        <% end %>
-      </div>
-      <div class="call-buttons-container">
-        <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
-          <%= if not Enum.empty?(choices) do %>
-            <div class="call-buttons">
-              <%= if called_tile != "saki" do %>
-                <%= if called_tile != nil do %>
-                  <div class={["tile", called_tile]}></div>
-                  <div class="call-button-separator"></div>
-                <% end %>
-                <%= for choice <- choices do %>
-                  <button class="call-button" phx-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
-                  <%= for tile <- choice do %>
-                    <div class={["tile", tile]}></div>
-                  <% end %>
-                  </button>
-                <% end %>
-              <% else %>
-                <%= for choice <- choices do %>
-                  <button class="call-button" phx-click="saki_card_clicked" phx-value-choice={choice}>
-                  <%= for tile <- choice do %>
-                    <div class={["saki-card", tile]}></div>
-                  <% end %>
-                  </button>
-                <% end %>
-              <% end %>
-            </div>
+    <div id="container" class="container" phx-hook="ClickListener">
+      <.live_component module={RiichiAdvancedWeb.HandComponent}
+        id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
+        game_state={@game_state}
+        revealed?={@viewer == seat || player.hand_revealed}
+        your_hand?={@viewer == seat}
+        your_turn?={@seat == @state.turn}
+        seat={seat}
+        viewer={@viewer}
+        hand={player.hand}
+        draw={player.draw}
+        calls={player.calls}
+        aside={player.aside}
+        status={player.status}
+        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+        marking={@marking}
+        play_tile={&send(self(), {:play_tile, &1})}
+        reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
+        :for={{seat, player} <- @state.players} />
+      <.live_component module={RiichiAdvancedWeb.PondComponent}
+        id={"pond #{Utils.get_relative_seat(@seat, seat)}"}
+        game_state={@game_state}
+        seat={seat}
+        viewer={@viewer}
+        pond={player.pond}
+        riichi={"riichi" in player.status}
+        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+        marking={@marking}
+        :for={{seat, player} <- @state.players} />
+      <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
+        id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
+        game_state={@game_state}
+        seat={seat}
+        viewer={@viewer}
+        player={player}
+        kyoku={@state.kyoku}
+        saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
+        :for={{seat, player} <- @state.players} />
+      <.live_component module={RiichiAdvancedWeb.BigTextComponent}
+        id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
+        game_state={@game_state}
+        seat={seat}
+        relative_seat={Utils.get_relative_seat(@seat, seat)}
+        big_text={player.big_text}
+        :if={player.big_text != ""}
+        :for={{seat, player} <- @state.players} />
+      <.live_component module={RiichiAdvancedWeb.CompassComponent}
+        id="compass"
+        game_state={@game_state}
+        seat={@seat}
+        viewer={@viewer}
+        turn={@state.turn}
+        tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
+        kyoku={@state.kyoku}
+        honba={@state.honba}
+        riichi_sticks={@state.riichi_sticks}
+        riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
+        score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
+        display_riichi_sticks={@display_riichi_sticks}
+        display_honba={@display_honba}
+        is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
+      <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@state.winners} winner_index={@state.winner_index} timer={@state.timer} visible_screen={@state.visible_screen}/>
+      <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen}/>
+      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
+      <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
+      <%= if @viewer != :spectator do %>
+        <div class="buttons">
+          <%= if @marking do %>
+            <button class="button" phx-click="clear_marked_objects">Clear</button>
+            <button class="button" phx-click="cancel_marked_objects">Cancel</button>
+          <% else %>
+            <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
           <% end %>
-        <% end %>
+        </div>
+        <div class="auto-buttons">
+          <%= for {name, checked} <- @state.players[@seat].auto_buttons do %>
+            <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
+            <label for={"auto-button-" <> name}><%= GenServer.call(@game_state, {:get_auto_button_display_name, name}) %></label>
+          <% end %>
+        </div>
+        <div class="call-buttons-container">
+          <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
+            <%= if not Enum.empty?(choices) do %>
+              <div class="call-buttons">
+                <%= if called_tile != "saki" do %>
+                  <%= if called_tile != nil do %>
+                    <div class={["tile", called_tile]}></div>
+                    <div class="call-button-separator"></div>
+                  <% end %>
+                  <%= for choice <- choices do %>
+                    <button class="call-button" phx-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
+                    <%= for tile <- choice do %>
+                      <div class={["tile", tile]}></div>
+                    <% end %>
+                    </button>
+                  <% end %>
+                <% else %>
+                  <%= for choice <- choices do %>
+                    <button class="call-button" phx-click="saki_card_clicked" phx-value-choice={choice}>
+                    <%= for tile <- choice do %>
+                      <div class={["saki-card", tile]}></div>
+                    <% end %>
+                    </button>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="revealed-tiles">
+        <div class={["tile", tile]} :for={tile <- to_revealed_tiles(@state)}></div>
       </div>
-    <% end %>
-    <div class="revealed-tiles">
-      <div class={["tile", tile]} :for={tile <- to_revealed_tiles(@state)}></div>
-    </div>
-    <div class={["big-text"]} :if={@loading}>Loading...</div>
-    <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
-      <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
-        <div class="status-text" :for={status <- player.status}><%= status %></div>
+      <div class={["big-text"]} :if={@loading}>Loading...</div>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
+        <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
+          <div class="status-text" :for={status <- player.status}><%= status %></div>
+        </div>
+      <% end %>
+      <div class="ruleset">
+        <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
-    <% end %>
-    <div class="ruleset">
-      <textarea readonly><%= @state.ruleset_json %></textarea>
     </div>
     """
+  end
+
+  def skip_or_discard_draw(socket) do
+    # if draw, discard it
+    # otherwise, if buttons, skip
+    player = socket.assigns.state.players[socket.assigns.seat]
+    if socket.assigns.seat == socket.assigns.state.turn && not Enum.empty?(player.draw) do
+      index = length(player.hand)
+      GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
+    else
+      IO.inspect(player.buttons)
+      if "skip" in player.buttons do
+        GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+      end
+    end
+  end
+
+  def handle_event("double_clicked", _assigns, socket) do
+    skip_or_discard_draw(socket)
+    {:noreply, socket}
+  end
+
+  def handle_event("right_clicked", _assigns, socket) do
+    skip_or_discard_draw(socket)
+    {:noreply, socket}
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do

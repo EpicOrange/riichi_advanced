@@ -20,7 +20,7 @@ let Hooks = {}
 // sortable.js
 import Sortable from "sortablejs";
 Hooks.Sortable = {
-  mounted(){
+  mounted() {
     let sorter = new Sortable(this.el, {
       animation: 150,
       delay: 100,
@@ -32,6 +32,19 @@ Hooks.Sortable = {
         this.pushEventTo(this.el, "reposition", params)
       }
     })
+  }
+}
+
+Hooks.ClickListener = {
+  mounted() {
+    this.el.addEventListener('dblclick', e => {
+      e.preventDefault();
+      this.pushEvent("double_clicked");
+    });
+    this.el.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      this.pushEvent("right_clicked");
+    });
   }
 }
 
