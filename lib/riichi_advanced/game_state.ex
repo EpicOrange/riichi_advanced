@@ -906,9 +906,9 @@ defmodule RiichiAdvanced.GameState do
             call_tiles = [called_tile | call_choice]
             call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
             waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases, false)
-            IO.puts("call: #{inspect(call)}")
-            IO.puts("waits: #{inspect(waits)}")
-            IO.puts("waits after call: #{inspect(waits_after_call)}")
+            # IO.puts("call: #{inspect(call)}")
+            # IO.puts("waits: #{inspect(waits)}")
+            # IO.puts("waits after call: #{inspect(waits_after_call)}")
             Enum.sort(waits) != Enum.sort(waits_after_call)
           end)
         end)
@@ -923,10 +923,18 @@ defmodule RiichiAdvanced.GameState do
         call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
         waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases, false)
-        IO.puts("call: #{inspect(call)}")
-        IO.puts("waits: #{inspect(waits)}")
-        IO.puts("waits after call: #{inspect(waits_after_call)}")
+        # IO.puts("call: #{inspect(call)}")
+        # IO.puts("waits: #{inspect(waits)}")
+        # IO.puts("waits after call: #{inspect(waits_after_call)}")
         Enum.sort(waits) != Enum.sort(waits_after_call)
+      "wait_count_at_least" ->
+        number = Enum.at(opts, 0, 1)
+        win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        tile_aliases = state.players[context.seat].tile_aliases
+        hand = state.players[context.seat].hand
+        calls = state.players[context.seat].calls
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
+        length(waits) >= number
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
