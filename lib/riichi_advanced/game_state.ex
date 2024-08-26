@@ -879,6 +879,7 @@ defmodule RiichiAdvanced.GameState do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)
           name          -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end)
         end end)
+      "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
       "placement"               ->
         placements = state.players
         |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)

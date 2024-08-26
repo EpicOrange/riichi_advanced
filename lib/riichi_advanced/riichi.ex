@@ -426,6 +426,23 @@ defmodule Riichi do
     else [] end
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
 
+    # the following are for Senoo Kaori (should not affect normal hands)
+    sk_one_sided_removed = case winning_tile do
+      :"2z" -> try_remove_all_tiles(starting_hand, [:"3z", :"4z"], tile_aliases) ++ try_remove_all_tiles(starting_hand, [:"1z", :"3z"], tile_aliases)
+      :"3z" -> try_remove_all_tiles(starting_hand, [:"1z", :"2z"], tile_aliases) ++ try_remove_all_tiles(starting_hand, [:"2z", :"4z"], tile_aliases)
+      :"5z" -> try_remove_all_tiles(starting_hand, [:"6z", :"7z"], tile_aliases)
+      :"6z" -> try_remove_all_tiles(starting_hand, [:"5z", :"7z"], tile_aliases)
+      :"7z" -> try_remove_all_tiles(starting_hand, [:"5z", :"6z"], tile_aliases)
+      _     -> []
+    end |> Enum.map(fn hand -> {hand, fu+2} end)
+    sk_two_sided_removed = case winning_tile do
+      :"1z" -> try_remove_all_tiles(starting_hand, [:"2z", :"3z"], tile_aliases)
+      :"4z" -> try_remove_all_tiles(starting_hand, [:"2z", :"3z"], tile_aliases)
+      _     -> []
+    end |> Enum.map(fn hand -> {hand, fu} end)
+
+    hands_fu = hands_fu ++ sk_one_sided_removed ++ sk_two_sided_removed
+
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
@@ -443,12 +460,20 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
+          normal = hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
             case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps), base_tile, offset_tile(base_tile, 1, wraps)], tile_aliases) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu} end)
             end
           end)
+
+          # the following are for Senoo Kaori (should not affect normal hands)
+          sk = try_remove_all_tiles(hand, [:"1z", :"2z", :"3z"], tile_aliases)
+            ++ try_remove_all_tiles(hand, [:"2z", :"3z", :"4z"], tile_aliases)
+            ++ try_remove_all_tiles(hand, [:"5z", :"6z", :"7z"], tile_aliases)
+            |> Enum.map(fn hand -> {hand, fu} end)
+
+          normal ++ sk
         end) |> Enum.uniq()
     end
 

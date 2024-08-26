@@ -143,6 +143,11 @@
     [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
     [ [["pair"], 6] ]
   ],
+  "senoo_kaori_tenpai_definition": [
+    [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", ["1z", "2z"], ["2z", "3z"], ["3z", "4z"], ["1z", "3z"], ["2z", "4z"], ["5z", "6z"], ["6z", "7z"], ["5z", "7z"]], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan", ["1z", "2z", "3z"], ["2z", "3z", "4z"], ["5z", "6z", "7z"]], 3] ],
+    [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan", ["1z", "2z", "3z"], ["2z", "3z", "4z"], ["5z", "6z", "7z"]], 4] ],
+    [ [["pair"], 6] ]
+  ],
   "kokushi_tenpai_definition": [
     [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
@@ -152,6 +157,12 @@
   ],
   "win_definition": [
     [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ [["pair"], 7] ],
+    [ [["orphans_all"], 1],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
+  ],
+  "senoo_kaori_win_definition": [
+    [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan", ["1z", "2z", "3z"], ["2z", "3z", "4z"], ["5z", "6z", "7z"]], 4] ],
     [ [["pair"], 7] ],
     [ [["orphans_all"], 1],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1] ]
@@ -1147,6 +1158,11 @@
       "display_name": "Ryanpeikou",
       "value": 2,
       "when": [{"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "has_existing_yaku", "opts": ["Ryanpeikou"]}]
+    },
+    {
+      "display_name": "No Yaku",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["senoo-kaori"]}, "has_no_yaku"]
     }
   ],
   "yaku_alt_names": {
@@ -1649,6 +1665,10 @@
           [
             {"name": "status", "opts": ["mase-yuuko"]},
             {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
+          ],
+          [
+            {"name": "status", "opts": ["senoo-kaori"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["senoo_kaori_tenpai"]]}
           ]
         ],
         [
@@ -1679,9 +1699,16 @@
           [
             {"name": "status", "opts": ["mase-yuuko"]},
             {"name": "match_wrapping", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+          ],
+          [
+            {"name": "status", "opts": ["senoo-kaori"]},
+            {"name": "match", "opts": [["hand", "calls", "last_discard"], ["senoo_kaori_win"]]}
           ]
         ],
-        "has_yaku_with_discard",
+        [
+          "has_yaku_with_discard",
+          {"name": "status", "opts": ["senoo-kaori"]}
+        ],
         [
           {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
           [
@@ -1740,6 +1767,10 @@
               [
                 {"name": "status", "opts": ["mase-yuuko"]},
                 {"name": "match_wrapping", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ],
+              [
+                {"name": "status", "opts": ["senoo-kaori"]},
+                {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["senoo_kaori_win"]]}
               ]
             ]
           ],
@@ -1814,7 +1845,11 @@
             {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["win"]]},
             "has_yaku_with_hand"
           ],
-          {"name": "status", "opts": ["miyanaga-saki", "kan"]}
+          {"name": "status", "opts": ["miyanaga-saki", "kan"]},
+          [
+            {"name": "status", "opts": ["senoo-kaori"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["senoo_kaori_win"]]}
+          ]
         ],
         [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
