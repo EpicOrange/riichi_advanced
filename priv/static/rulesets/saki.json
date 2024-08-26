@@ -1270,7 +1270,8 @@
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_wraps", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]]
+    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
+    [["any"], [{"name": "not_tagged", "opts": ["no_discard"]}]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
@@ -1284,12 +1285,12 @@
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]]
+                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["untag", "no_discard"]
                ]
   },
   "after_turn_change": {
     "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-                ["when", ["not_no_tiles_remaining"], [["draw"]]],
                 ["when_anyone",
                   [[
                     {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
@@ -1304,7 +1305,8 @@
                     ]
                   ]],
                   [["set_status", "furiten"]]
-                ]
+                ],
+                ["when", ["not_no_tiles_remaining"], [["set_status", "about_to_draw"], ["about_to_draw"], ["unset_status", "about_to_draw"], ["draw"]]]
                ]
   },
   "before_call": {
@@ -1532,6 +1534,17 @@
       "display_name": "Discard facedown",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "discard_facedown"]}, {"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "others_status", "opts": ["ippatsu"]}, "not_just_discarded"],
       "actions": [["big_text", "Sawamura Tomoki: discard!"], ["set_status", "discard_facedown"]]
+    },
+    "shibuya_takami": {
+      "display_name": "Set aside a discard as next draw",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}],
+      "actions": [
+        ["big_text", "Shibuya Takami: draw!"],
+        ["unset_status", "about_to_draw"],
+        ["set_aside_own_discard"],
+        ["draw"],
+        ["tag_drawn_tile", "no_discard"]
+      ]
     },
     "chii": {
       "display_name": "Chii",
@@ -1939,7 +1952,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard", "about_to_ron"],
+  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard", "about_to_draw", "about_to_ron"],
   "display_riichi_sticks": true,
   "display_honba": true,
   "initial_score": 30000,

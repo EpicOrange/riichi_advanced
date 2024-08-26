@@ -157,6 +157,7 @@ defmodule RiichiAdvanced.GameState.Saki do
           end
         "match_called_tile" -> Riichi.normalize_red_five(tile) == Riichi.normalize_red_five(get_last_call_action(state).called_tile)
         "7z"                -> tile == :"7z"
+        "self"              -> seat == state.saki.marking_player
         _                   ->
           GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
           true

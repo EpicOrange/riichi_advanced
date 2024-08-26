@@ -35,12 +35,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       # check if it completes second row discards
       state = if Map.has_key?(state, :saki) do
         if length(state.players[seat].pond) == 1 && not state.saki.already_finished_second_row_discards do
-          IO.puts("Set true")
           state = put_in(state.saki.just_finished_second_row_discards, true)
           state = put_in(state.saki.already_finished_second_row_discards, true)
           state
         else
-          IO.puts("Set false")
           state = put_in(state.saki.just_finished_second_row_discards, false)
           state
         end
@@ -343,6 +341,17 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_player(state, context.seat, &%Player{ &1 | aside: &1.aside ++ [discard_tile] })
 
         state
+      "set_aside_own_discard" ->
+        # TODO this is the same action as above
+        {discard_tile, discard_seat, discard_index} = Enum.at(context.marked_objects.discard.marked, 0)
+
+        # replace pond tile with blank
+        state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, :"2x") })
+
+        # set discard_tile aside
+        state = update_player(state, context.seat, &%Player{ &1 | aside: &1.aside ++ [discard_tile] })
+
+        state
       "pon_discarded_red_dragon" ->
         {called_tile, discard_seat, discard_index} = Enum.at(context.marked_objects.discard.marked, 0)
 
@@ -365,6 +374,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
 
         state
+      "about_to_draw"         -> state # no-op
       "about_to_ron"          -> state # no-op
       "set_tile_alias"        ->
         from_tiles = Enum.at(opts, 0, []) |> Enum.map(&translate_tile_alias(state, context, &1))
@@ -393,6 +403,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = for tile <- [hand_tile1, hand_tile2], reduce: state do
           state -> Map.update!(state, :dead_wall, fn dead_wall -> List.insert_at(dead_wall, -1, tile) end)
         end
+        state
+      "tag_drawn_tile"        ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        state = put_in(state.tags[tag], Enum.at(state.players[context.seat].draw, 0, :"1x"))
+        state
+      "untag"                 ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        {_, state} = pop_in(state.tags[tag])
         state
       _                       ->
         IO.puts("Unhandled action #{action}")
@@ -518,7 +536,8 @@ defmodule RiichiAdvanced.GameState.Actions do
               "place_4_tiles_at_end_of_live_wall",
               "set_aside_discard_matching_called_tile",
               "pon_discarded_red_dragon",
-              "draw_and_place_2_tiles_at_end_of_dead_wall"
+              "draw_and_place_2_tiles_at_end_of_dead_wall",
+              "set_aside_own_discard"
             ] end)
             cond do
               call_action_exists ->
@@ -587,6 +606,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                     state = draw_tile(state, seat, 2)
                     state = Saki.setup_marking(state, seat, [{"hand", 2, []}])
                     state
+                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_own_discard" end)                      -> Saki.setup_marking(state, seat, [{"discard", 1, ["self"]}])
                 end
                 state = schedule_actions(state, seat, actions)
                 notify_ai_marking(state, seat)

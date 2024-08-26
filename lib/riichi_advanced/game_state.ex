@@ -67,6 +67,7 @@ defmodule Game do
     wall: [],
     kyoku: 0,
     honba: 0,
+    tags: %{},
 
     # working game state (reset on new round)
     riichi_sticks: 0,
@@ -937,6 +938,10 @@ defmodule RiichiAdvanced.GameState do
         calls = state.players[context.seat].calls
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
         length(waits) >= number
+      "tagged"              ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        tagged_tile = state.tags[tag]
+        Riichi.normalize_red_five(context.tile) == Riichi.normalize_red_five(tagged_tile)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
