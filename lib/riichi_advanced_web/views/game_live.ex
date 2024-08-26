@@ -93,7 +93,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       seat={seat}
       viewer={@viewer}
       pond={player.pond}
-      riichi={player.riichi_stick}
+      riichi={"riichi" in player.status}
       saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
       marking={@marking}
       :for={{seat, player} <- @state.players} />
@@ -227,7 +227,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("cancel_marked_objects", _assigns, socket) do
-    GenServer.cast(socket.assigns.game_state, :reset_marking)
+    GenServer.cast(socket.assigns.game_state, {:reset_marking, socket.assigns.seat})
     {:noreply, socket}
   end
 

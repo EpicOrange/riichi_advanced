@@ -36,6 +36,20 @@ defmodule RiichiAdvanced.GameState.Actions do
       })
       state = update_action(state, seat, :discard, %{tile: tile})
 
+      # check if it completes second row discards
+      state = if Map.has_key?(state, :saki) do
+        if length(state.players[seat].pond) == 1 && not state.saki.already_finished_second_row_discards do
+          IO.puts("Set true")
+          state = put_in(state.saki.just_finished_second_row_discards, true)
+          state = put_in(state.saki.already_finished_second_row_discards, true)
+          state
+        else
+          IO.puts("Set false")
+          state = put_in(state.saki.just_finished_second_row_discards, false)
+          state
+        end
+      else state end
+
       # trigger play effects
       if Map.has_key?(state.rules, "play_effects") do
         for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches([tile_spec], %{tile: tile}), reduce: state do
@@ -45,7 +59,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     else state end
   end
 
-  def draw_tile(state, seat, num, tile_spec) do
+  def draw_tile(state, seat, num, tile_spec \\ nil) do
     if num > 0 do
       case state.players[seat].aside do
         [] ->
@@ -366,6 +380,25 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_player(state, context.seat, &%Player{ &1 | tile_aliases: aliases })
         state
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
+      "draw_and_place_2_tiles_at_end_of_dead_wall" ->
+        {hand_tile1, hand_seat, hand_index1} = Enum.at(context.marked_objects.hand.marked, 0)
+        {hand_tile2, _, hand_index2} = Enum.at(context.marked_objects.hand.marked, 1)
+        hand_length = length(state.players[hand_seat].hand)
+        # remove specified tiles from hand
+        state = for ix <- Enum.sort([-hand_index1, -hand_index2]), reduce: state do
+          state ->
+            ix = -ix
+            if ix < hand_length do
+              update_player(state, hand_seat, &%Player{ &1 | hand: List.delete_at(&1.hand, ix) })
+            else
+              update_player(state, hand_seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
+            end
+        end
+        # place them at the end of the dead wall
+        state = for tile <- [hand_tile1, hand_tile2], reduce: state do
+          state -> Map.update!(state, :dead_wall, fn dead_wall -> List.insert_at(dead_wall, -1, tile) end)
+        end
+        state
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
@@ -476,7 +509,10 @@ defmodule RiichiAdvanced.GameState.Actions do
           # only trigger choices that aren't superceded
           choice = player.choice
           actions = player.chosen_actions
-          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, deferred_actions: [] } end)
+          # don't clear deferred actions here
+          # for example, someone might play a tile and have advance_turn interrupted by their own button
+          # if they choose to skip, we still want to advance turn
+          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
           state = if choice != nil && not Enum.member?(superceded_choices, choice) do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
@@ -486,7 +522,8 @@ defmodule RiichiAdvanced.GameState.Actions do
               "swap_hand_tile_with_last_discard",
               "place_4_tiles_at_end_of_live_wall",
               "set_aside_discard_matching_called_tile",
-              "pon_discarded_red_dragon"
+              "pon_discarded_red_dragon",
+              "draw_and_place_2_tiles_at_end_of_dead_wall"
             ] end)
             cond do
               call_action_exists ->
@@ -539,11 +576,15 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
               picking_discards ->
                 state = cond do
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)  -> Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)       -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)      -> Saki.setup_marking(state, seat, [{"hand", 4, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_discard_matching_called_tile" end) -> Saki.setup_marking(state, seat, [{"discard", 1, ["match_called_tile"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "pon_discarded_red_dragon" end)               -> Saki.setup_marking(state, seat, [{"discard", 1, ["7z"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)      -> Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)           -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)          -> Saki.setup_marking(state, seat, [{"hand", 4, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_discard_matching_called_tile" end)     -> Saki.setup_marking(state, seat, [{"discard", 1, ["match_called_tile"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "pon_discarded_red_dragon" end)                   -> Saki.setup_marking(state, seat, [{"discard", 1, ["7z"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "draw_and_place_2_tiles_at_end_of_dead_wall" end) ->
+                    state = draw_tile(state, seat, 2)
+                    state = Saki.setup_marking(state, seat, [{"hand", 2, []}])
+                    state
                 end
                 state = schedule_actions(state, seat, actions)
                 notify_ai_marking(state, seat)
@@ -575,15 +616,15 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
-    made_choice = state.players[seat].choice != nil
+    made_choice = state.players[seat].choice != nil && state.players[seat].choice != "skip"
     marking = Map.has_key?(state, :saki) && Saki.needs_marking?(state, seat)
     not no_call_buttons || made_choice || marking
   end
 
   def submit_actions(state, seat, choice, actions) do
     if state.game_active && state.players[seat].choice == nil do
-      # IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
-      # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
+      IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
+      IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
       state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
 

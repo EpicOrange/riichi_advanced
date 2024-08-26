@@ -1457,6 +1457,25 @@
       ],
       "precedence_over": ["choe_myeonghwa", "chii", "mase_yuuko", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
+    "nanpo_kazue_nonskippable": {
+      "display_name": "Choose 2 tiles to place at the end of the dead wall",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["round_start", "nanpo-kazue_exhausted"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}],
+      "actions": [
+        ["big_text", "Nanpo Kazue: mulligan!"],
+        ["set_status", "nanpo-kazue_exhausted"],
+        ["draw_and_place_2_tiles_at_end_of_dead_wall"]
+      ],
+      "unskippable": true
+    },
+    "nanpo_kazue_skippable": {
+      "display_name": "Choose 2 tiles to place at the end of the dead wall",
+      "show_when": [{"name": "status_missing", "opts": ["round_start", "nanpo-kazue_exhausted2"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
+      "actions": [
+        ["big_text", "Nanpo Kazue: mulligan!"],
+        ["set_status", "nanpo-kazue_exhausted2"],
+        ["draw_and_place_2_tiles_at_end_of_dead_wall"]
+      ]
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -1529,6 +1548,10 @@
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
         ],
+        [
+          {"name": "not_status", "opts": ["nanpo-kazue"]},
+          {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
+        ],
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -1575,6 +1598,10 @@
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
+        ],
+        [
+          {"name": "not_status", "opts": ["nanpo-kazue"]},
+          {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
         ]
       ],
       "actions": [
@@ -1772,6 +1799,10 @@
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
+        ],
+        [
+          {"name": "not_status", "opts": ["nanpo-kazue"]},
+          {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
         ]
       ],
       "actions": [

@@ -893,6 +893,7 @@ defmodule RiichiAdvanced.GameState do
       "called_tile_matches_any_discard" -> last_call_action != nil && Riichi.normalize_red_five(last_call_action.called_tile) in Riichi.normalize_red_fives(Enum.flat_map(state.players, fn {_seat, player} -> player.pond end))
       "last_discard_exists" -> 
         last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
+      "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
@@ -990,6 +991,16 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
 
+  # the AI calls these to figure out if it's allowed to play
+  # (this is since they operate on a delay, so state may have changed between when they were
+  # notified and when they decide to act)
+  def handle_call({:can_discard, seat}, _from, state) do
+    our_turn = seat == state.turn
+    last_discard_action = get_last_discard_action(state)
+    turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
+    {:reply, our_turn && not turn_just_discarded, state}
+  end
+
   # saki calls
   def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Saki.needs_marking?(state, seat), state}
   def handle_call({:is_marked, seat, index, tile_source}, _from, state), do: {:reply, Saki.is_marked(state, seat, index, tile_source), state}
@@ -1078,12 +1089,12 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  # def handle_cast(:cancel_call_buttons, state) do
+  # def handle_cast({:cancel_call_buttons, seat}, state) do
   #   state = update_all_players(state, fn seat, player -> %Player{ player | call_buttons: [] } end)
 
   #   # go back to button clicking phase
   #   state = Buttons.recalculate_buttons(state)
-  #   state = update_all_players(state, fn seat, player -> %Player{ player | deferred_actions: [] } end)
+  #   state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [] } end)
   #   notify_ai(state)
 
   #   state = broadcast_state_change(state)
@@ -1135,6 +1146,16 @@ defmodule RiichiAdvanced.GameState do
     state = if not Saki.needs_marking?(state, seat) do
       state = Actions.run_deferred_actions(state, %{seat: state.saki.marking_player, marked_objects: state.saki.marked_objects})
       state = Saki.reset_marking(state)
+
+      # if we're still going, run deferred actions for everyone and then notify ai
+      state = if state.game_active do
+        state = for {seat, _player} <- state.players, reduce: state do
+          state -> Actions.run_deferred_actions(state, %{seat: seat})
+        end
+        notify_ai(state)
+        state
+      else state end
+
       state
     else state end
     state = broadcast_state_change(state)
@@ -1147,12 +1168,12 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  def handle_cast(:reset_marking, state) do
+  def handle_cast({:reset_marking, seat}, state) do
     state = Saki.reset_marking(state)
 
     # go back to button clicking phase
     state = Buttons.recalculate_buttons(state)
-    state = update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [] } end)
+    state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [] } end)
     notify_ai(state)
 
     state = broadcast_state_change(state)

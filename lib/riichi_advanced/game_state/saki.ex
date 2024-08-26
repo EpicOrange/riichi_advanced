@@ -63,7 +63,9 @@ defmodule RiichiAdvanced.GameState.Saki do
       #   },
       # }
       marked_objects: %{},
-      discarding_facedown: nil
+      discarding_facedown: nil,
+      just_finished_second_row_discards: false,
+      already_finished_second_row_discards: false
     })
 
     state
@@ -84,7 +86,7 @@ defmodule RiichiAdvanced.GameState.Saki do
       state = Map.update!(state, :saki, &Map.put(&1, :all_drafted, true))
       state = Map.put(state, :game_active, true)
 
-      # run after_saki_tart actions
+      # run after_saki_start actions
       state = if Map.has_key?(state.rules, "after_saki_start") do
         Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: state.turn})
       else state end

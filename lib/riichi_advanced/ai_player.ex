@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info({:your_turn, %{player: player}}, state) do
-    if state.initialized do
+    if state.initialized && GenServer.call(state.game_state, {:can_discard, state.seat}) do
       state = %{ state | player: player }
       playable_hand = player.hand
         |> Enum.with_index()
