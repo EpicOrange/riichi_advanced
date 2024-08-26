@@ -54,6 +54,7 @@ defmodule RiichiAdvanced.MixProject do
       {:debounce, "~> 1.0.0"},
       {:mutex, "~> 2.0.0"},
       {:accessible, "~> 0.3.0"},
+      {:hackney, "~> 1.9"},
     ]
   end
 
