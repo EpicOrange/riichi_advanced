@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             IO.puts("Tried to draw a nil tile!")
             state
           else
-            state = if is_binary(tile_name) && Map.has_key?(state.reserved_tiles, tile_name) do
+            state = if is_binary(tile_name) && List.keymember?(state.reserved_tiles, tile_name, 0) do
                 Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
               else state end
             tile = from_tile_name(state, tile_name)
@@ -320,9 +320,8 @@ defmodule RiichiAdvanced.GameState.Actions do
             end
         end
         # place them at the end of the live wall
-        dead_wall_length = if Map.has_key?(state.rules, "reserved_tiles") do length(state.rules["reserved_tiles"]) else 0 end
         state = for tile <- [hand_tile1, hand_tile2, hand_tile3, hand_tile4], reduce: state do
-          state -> Map.update!(state, :wall, fn wall -> List.insert_at(wall, -dead_wall_length-1, tile) end)
+          state -> Map.update!(state, :wall, fn wall -> List.insert_at(wall, -1, tile) end)
         end
         state
       "set_aside_discard_matching_called_tile" ->

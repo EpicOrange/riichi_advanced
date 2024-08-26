@@ -73,8 +73,9 @@ defmodule Game do
     turn: :east,
     wall_index: 0,
     actions: [],
+    dead_wall: [],
     reversed_turn_order: false,
-    reserved_tiles: %{},
+    reserved_tiles: [],
     revealed_tiles: [],
     max_revealed_tiles: 0,
     drawn_reserved_tiles: []
@@ -232,23 +233,28 @@ defmodule RiichiAdvanced.GameState do
       hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
 
       # reserve some tiles (dead wall)
-      {wall, state} = if Map.has_key?(rules, "reserved_tiles") do
+      state = if Map.has_key?(rules, "reserved_tiles") do
         reserved_tile_names = rules["reserved_tiles"]
-        {wall, reserved_tiles} = Enum.split(wall, -length(reserved_tile_names))
-        reserved_tiles = Enum.zip(reserved_tile_names, reserved_tiles) |> Map.new()
+        {wall, dead_wall} = Enum.split(wall, -length(reserved_tile_names))
+        reserved_tiles = Enum.zip(reserved_tile_names, dead_wall)
         revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
         max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
-        {wall, state 
-               |> Map.put(:reserved_tiles, reserved_tiles)
-               |> Map.put(:revealed_tiles, revealed_tiles)
-               |> Map.put(:max_revealed_tiles, max_revealed_tiles)
-               |> Map.put(:drawn_reserved_tiles, [])}
+        IO.inspect(reserved_tiles)
+        state 
+        |> Map.put(:wall, wall)
+        |> Map.put(:dead_wall, dead_wall)
+        |> Map.put(:reserved_tiles, reserved_tiles)
+        |> Map.put(:revealed_tiles, revealed_tiles)
+        |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+        |> Map.put(:drawn_reserved_tiles, [])
       else
-        {wall, state
-               |> Map.put(:reserved_tiles, %{})
-               |> Map.put(:revealed_tiles, [])
-               |> Map.put(:max_revealed_tiles, 0)
-               |> Map.put(:drawn_reserved_tiles, [])}
+        state
+        |> Map.put(:wall, wall)
+        |> Map.put(:dead_wall, [])
+        |> Map.put(:reserved_tiles, [])
+        |> Map.put(:revealed_tiles, [])
+        |> Map.put(:max_revealed_tiles, 0)
+        |> Map.put(:drawn_reserved_tiles, [])
       end
 
       # initialize auto buttons
@@ -257,7 +263,6 @@ defmodule RiichiAdvanced.GameState do
       end
 
       state = state
-       |> Map.put(:wall, wall)
        |> Map.put(:wall_index, starting_tiles*4)
        |> update_all_players(&%Player{
             score: &2.score,
@@ -564,7 +569,16 @@ defmodule RiichiAdvanced.GameState do
 
   def from_tile_name(state, tile_name) do
     cond do
-      is_binary(tile_name) && Map.has_key?(state.reserved_tiles, tile_name) -> state.reserved_tiles[tile_name]
+      is_binary(tile_name) && List.keymember?(state.reserved_tiles, tile_name, 0) ->
+        if String.ends_with?(tile_name, "_lazy") do
+          # draw from dead wall, which might change over the course of the game
+          reverse_ix = Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end) - length(state.reserved_tiles)
+          IO.inspect({tile_name, Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end), length(state.reserved_tiles)})
+          Enum.at(state.dead_wall, reverse_ix)
+        else
+          {_, tile} = List.keyfind(state.reserved_tiles, tile_name, 0)
+          tile
+        end
       is_atom(tile_name) -> tile_name
       true ->
         IO.puts("Unknown tile name #{inspect(tile_name)}")

@@ -2,7 +2,10 @@ defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
   defp to_revealed_tiles(state) do
-    revealed_tiles = for tile_spec <- state.revealed_tiles, do: Map.get(state.reserved_tiles, tile_spec, Utils.to_tile(tile_spec))
+    revealed_tiles = for tile_spec <- state.revealed_tiles do
+      {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, Utils.to_tile(tile_spec))
+      tile
+    end
     revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
   end
 
