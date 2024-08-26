@@ -195,7 +195,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp translate_tile_alias(state, context, tile_alias) do
     case tile_alias do
-      "draw" -> Enum.at(state.players[context.seat].draw, 0, :"1x")
+      "draw" -> :draw
       _      -> Utils.to_tile(tile_alias)
     end
   end
@@ -557,10 +557,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           state
       end
       # done with all choices
-      if not performing_intermediate_action?(state) do
+      state = if not performing_intermediate_action?(state) do
         state = Buttons.recalculate_buttons(state)
         notify_ai(state)
-      end
+        state
+      else state end
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")

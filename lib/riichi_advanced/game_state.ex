@@ -323,6 +323,14 @@ defmodule RiichiAdvanced.GameState do
         wraps = "wrapping_fu_calculation" in state.players[seat].status
         minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
         yaku = Scoring.get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
+        {minipoints, yaku} = if Map.has_key?(state, :saki) && win_source == :draw && :draw in Enum.concat(Map.values(state.players[seat].tile_aliases)) do
+          # if :draw maps to some other tiles, use :draw instead as our winning tile to calculate fu/yaku
+          winning_tile = :draw
+          minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+          state2 = update_player(state, seat, &%Player{ &1 | draw: [:draw] })
+          yaku = Scoring.get_yaku(state2, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
+          {minipoints, yaku}
+        else {minipoints, yaku} end
         yaku = if Map.has_key?(state.rules, "meta_yaku") do
           Scoring.get_yaku(state, state.rules["meta_yaku"], seat, winning_tile, win_source, minipoints, yaku)
         else yaku end

@@ -1700,14 +1700,17 @@
         {"name": "not_status", "opts": ["round_start"]},
         {"name": "not_status", "opts": ["just_reached"]},
         [
-          {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+          [
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+            "has_yaku_with_hand"
+          ],
           [
             {"name": "status", "opts": ["mase-yuuko"]},
-            {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["win"]]}
+            {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["win"]]},
+            "has_yaku_with_hand"
           ],
-          {"name": "status", "opts": ["miyanaga-saki", "kan"]},
+          {"name": "status", "opts": ["miyanaga-saki", "kan"]}
         ],
-        "has_yaku_with_hand",
         [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
            [
@@ -1749,7 +1752,16 @@
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
         ]
       ],
-      "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
+      "actions": [
+        ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"],
+        ["when", [{"name": "status", "opts": ["miyanaga-saki", "kan"]}], [
+          ["set_tile_alias", ["draw"], [
+            "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+            "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+            "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+            "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+        ["win_by_draw"]
+      ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     }
   },
