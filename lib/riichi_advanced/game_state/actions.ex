@@ -366,6 +366,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         state = update_player(state, context.seat, &%Player{ &1 | tile_aliases: aliases })
         state
+      "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
