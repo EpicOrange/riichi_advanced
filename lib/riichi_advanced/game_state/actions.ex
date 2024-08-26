@@ -193,7 +193,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  defp translate_tile_alias(state, context, tile_alias) do
+  defp translate_tile_alias(_state, _context, tile_alias) do
     case tile_alias do
       "draw" -> :draw
       _      -> Utils.to_tile(tile_alias)

@@ -9,13 +9,13 @@ defmodule RiichiAdvanced.ExitMonitor do
     {:ok, init_arg}
   end
 
-  def handle_call({:new_player, pid, seat}, {from_pid, _tag}, state) do
-    state = Map.put(state, pid, %{game_state: from_pid, seat: seat, monitor_ref: Process.monitor(pid)})
+  def handle_call({:new_player, pid, identifier}, {from_pid, _tag}, state) do
+    state = Map.put(state, pid, %{from: from_pid, identifier: identifier, monitor_ref: Process.monitor(pid)})
     {:reply, :ok, state}
   end
 
   def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
-    GenServer.call(state[pid].game_state, {:delete_player, state[pid].seat})
+    GenServer.call(state[pid].from, {:delete_player, state[pid].identifier})
     {:noreply, Map.delete(state, pid)}
   end
 end
