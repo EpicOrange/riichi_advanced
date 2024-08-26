@@ -963,6 +963,8 @@ defmodule RiichiAdvanced.GameState do
         # IO.puts("Pair waits: #{inspect(pair_waits)}, ukeire: #{inspect(ukeire)}")
         ukeire == 1
       "third_row_discard"   -> length(state.players[context.seat].pond) >= 12
+      "tiles_in_hand"       -> length(state.players[context.seat].hand ++ state.players[context.seat].draw) == Enum.at(opts, 0, 0)
+      "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

@@ -64,6 +64,19 @@
     "actions": [["draw"]],
     "recurse": true
   },
+  "buttons": {
+    "uno": {
+      "display_name": "Uno",
+      "show_when": [{"name": "anyone", "opts": [{"name": "tiles_in_hand", "opts": [1]}, {"name": "not_status", "opts": ["uno"]}]}],
+      "actions": [
+        ["big_text", "Uno!"],
+        ["when", [{"name": "tiles_in_hand", "opts": [1]}], [["set_status", "uno"]]],
+        ["when_anyone", [{"name": "tiles_in_hand", "opts": [1]}, {"name": "not_status", "opts": ["uno"]}], [["draw", 2]]]
+      ],
+      "precedence_over": ["uno"],
+      "unskippable": true
+    }
+  },
   "auto_buttons": {
     "auto_sort": {
       "display_name": "A",

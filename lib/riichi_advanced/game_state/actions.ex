@@ -496,9 +496,9 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   # return all choices that have no effect due to other players' choices
-  def get_superceded_choices(state) do
-    Enum.flat_map(state.players, fn {_seat, player} -> 
-      if player.choice != nil && player.choice != "skip" && player.choice != "play_tile" do
+  def get_superceded_choices(state, seat) do
+    Enum.flat_map(state.players, fn {dir, player} -> 
+      if seat != dir && player.choice != nil && player.choice != "skip" && player.choice != "play_tile" do
         if Map.has_key?(state.rules["buttons"], player.choice) && Map.has_key?(state.rules["buttons"][player.choice], "precedence_over") do
           ["skip", "play_tile"] ++ state.rules["buttons"][player.choice]["precedence_over"]
         else
@@ -516,7 +516,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # IO.puts("\nAdjudicating actions!")
       # clear last discard
       state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
-      superceded_choices = get_superceded_choices(state)
+      superceded_choices = Map.new(state.players, fn {seat, _player} -> {seat, get_superceded_choices(state, seat)} end)
       state = for {seat, player} <- state.players, reduce: state do
         state ->
           # only trigger choices that aren't superceded
@@ -526,7 +526,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
           state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-          state = if choice != nil && not Enum.member?(superceded_choices, choice) do
+          state = if choice != nil && not Enum.member?(superceded_choices[seat], choice) do
             # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
             # check if a call action exists, if it's a call and multiple call choices are available
             call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end)
@@ -653,7 +653,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # for the current turn's player, if they just acted (have deferred actions) and have no buttons, their choice is "skip"
       # for other players who have no buttons and have not made a choice yet, their choice is "skip"
       # also for other players who have made a choice, if their choice is superceded then set it to "skip"
-      superceded_choices = get_superceded_choices(state)
+      superceded_choices = get_superceded_choices(state, seat)
       last_action = get_last_action(state)
       turn_just_acted = last_action != nil && not Enum.empty?(state.players[state.turn].deferred_actions) && last_action.seat == state.turn
       last_discard_action = get_last_discard_action(state)
