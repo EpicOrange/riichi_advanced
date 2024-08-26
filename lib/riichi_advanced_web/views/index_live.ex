@@ -20,6 +20,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="riichi" selected>Riichi</option>
           <option value="hk">Hong Kong</option>
           <option value="sichuan">Sichuan Bloody</option>
+          <option value="saki">Sakijong</option>
         </select>
         <br/>
         Room:
