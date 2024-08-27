@@ -262,13 +262,18 @@ defmodule RiichiAdvanced.GameState do
         {name, auto_button["enabled_at_start"]}
       end
 
+      # statuses to keep between rounds
+      persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
+      IO.inspect(persistent_statuses)
+
       state = state
        |> Map.put(:wall_index, starting_tiles*4)
        |> update_all_players(&%Player{
             score: &2.score,
             nickname: &2.nickname,
             hand: hands[&1],
-            auto_buttons: initial_auto_buttons
+            auto_buttons: initial_auto_buttons,
+            status: Enum.filter(&2.status, fn status -> status in persistent_statuses end)
           })
        |> Map.put(:actions, [])
        |> Map.put(:reversed_turn_order, false)

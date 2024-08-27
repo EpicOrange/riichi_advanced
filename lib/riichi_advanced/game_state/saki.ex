@@ -46,7 +46,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     state = Map.put(state, :saki, %{
       saki_deck: Enum.shuffle(state.rules["saki_deck"]),
       saki_deck_index: 0,
-      all_drafted: false,
+      all_drafted: if Map.has_key?(state, :saki) do state.saki.all_drafted else false end,
       picking_discards: nil,
       marking_player: nil,
       # for example marked_objects = 
