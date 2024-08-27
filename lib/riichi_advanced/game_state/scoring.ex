@@ -423,23 +423,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
         delta_scores_reason = "Draw"
 
         # declare tenpai players as winners, as if they won from non-tenpai people
+        winners = Map.keys(state.winners)
         tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
         payers = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
         # do this so under the sea isn't scored
         state = Map.put(state, :wall_index, 0)
-        # for each tenpai player, find the highest point hand they could get
-        state = for {seat, tenpai?} <- tenpai, tenpai?, reduce: state do
+        # for each tenpai player who hasn't won, find the highest point hand they could get
+        state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners, reduce: state do
           state ->
             possible_tiles = state.players[seat].hand ++ state.players[seat].draw
               |> Enum.flat_map(fn tile -> [Riichi.pred(tile), tile, Riichi.succ(tile)] -- [nil] end)
             {winning_tile, best_yaku} = for winning_tile <- possible_tiles do
               possible_yaku = get_yaku(state, state.rules["yaku"], seat, winning_tile, :discard)
-              if Enum.empty?(possible_yaku) do
-                # shouldn't be possible, but handle it
-                {winning_tile, 0}
-              else
-                {winning_tile, possible_yaku}
-              end
+              {winning_tile, possible_yaku}
             end |> Enum.max_by(fn {_winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
             {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
             call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)

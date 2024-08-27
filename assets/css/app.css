@@ -394,7 +394,7 @@ div.tile.markable:hover, div.tile.marked {
   --border-width: calc(0.1 * var(--tile-size));
 }
 div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }
-div.tile.sideways { background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
+div.tile.sideways { width: var(--tile-height); background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
 div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
 div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) - var(--border-width)); }
@@ -478,12 +478,6 @@ div.tile:not(.flat) {
 div.tile.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
-}
-div.tile.sideways {
-  width: var(--tile-height);
-  /* get rid of residual pixels from filter */
-  clip-path: polygon(1.5% 1.5%, 100% 1.5%, 100% 100%, 1.5% 100%);
-  transform: translateX(-0.75%) scaleX(calc(100% / 0.985));
 }
 div.pond.self div.tile:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
@@ -1165,9 +1159,9 @@ div.scoreboard + a.goto-index-button:active {
 div.ruleset {
   position: absolute;
   top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
-  left: calc(50% - 50vw + var(--tile-size));
+  left: calc(50% - min(90vw, 80vh) / 2);
   background: #0f6f2f;
-  width: calc(100vw - 2 * var(--tile-size));
+  width: min(90vw, 80vh);
   height: 90vh;
 }
 div.ruleset::before {

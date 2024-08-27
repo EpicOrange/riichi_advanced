@@ -238,6 +238,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           "shimocha" -> Utils.get_seat(context.seat, :shimocha)
           "toimen" -> Utils.get_seat(context.seat, :toimen)
           "kamicha" -> Utils.get_seat(context.seat, :kamicha)
+          "last_discarder" -> get_last_discard_action(state).seat
           _ -> context.seat
         end
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))

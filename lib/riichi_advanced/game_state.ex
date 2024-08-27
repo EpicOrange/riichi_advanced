@@ -67,10 +67,10 @@ defmodule Game do
     wall: [],
     kyoku: 0,
     honba: 0,
+    riichi_sticks: 0,
     tags: %{},
 
     # working game state (reset on new round)
-    riichi_sticks: 0,
     turn: :east,
     wall_index: 0,
     actions: [],
@@ -270,6 +270,8 @@ defmodule RiichiAdvanced.GameState do
             hand: hands[&1],
             auto_buttons: initial_auto_buttons
           })
+       |> Map.put(:actions, [])
+       |> Map.put(:reversed_turn_order, false)
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       

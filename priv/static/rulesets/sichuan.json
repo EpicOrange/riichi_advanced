@@ -255,7 +255,7 @@
       "display_name": "Pong",
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available",
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available",
                      [
                        [
                          {"name": "status", "opts": ["void_manzu"]},
@@ -277,7 +277,7 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
-      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_discarded", "call_available",
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available",
                      [
                        [
                          {"name": "status", "opts": ["void_manzu"]},
@@ -293,7 +293,11 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"], ["set_status", "kan"], ["add_score", 2], ["add_score", -2, "last_discarder"], ["draw"]],
+      "actions": [
+        ["big_text", "Kong"], ["call"],
+        ["add_score", 2], ["add_score", -2, "last_discarder"], ["big_text", "  -2  ", "last_discarder"],
+        ["change_turn", "self"], ["set_status", "kan"], ["draw"]
+      ],
       "precedence_over": ["pon"]
     },
     "ankan": {
@@ -343,7 +347,7 @@
                      "not_our_turn",
                      {"name": "not_status", "opts": ["won"]}, 
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-                     "someone_else_discarded",
+                     "someone_else_just_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
                      [
                        [

@@ -395,14 +395,14 @@
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
                   ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
                   ["set_status", "kan"],
@@ -445,7 +445,7 @@
       "show_when": [
                      "not_our_turn",
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-                     "someone_else_discarded",
+                     "someone_else_just_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
                    ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
