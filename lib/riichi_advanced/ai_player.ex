@@ -60,16 +60,30 @@ defmodule RiichiAdvanced.AIPlayer do
       # pick the last button
       # button_name = Enum.at(player.buttons, -1)
 
-      # pick these (in order of precedence)
-      button_name = cond do
-        "ron" in player.buttons -> "ron"
-        "tsumo" in player.buttons -> "tsumo"
-        "hu" in player.buttons -> "hu"
-        "zimo" in player.buttons -> "zimo"
-        "riichi" in player.buttons -> "riichi"
-        "flower" in player.buttons -> "flower"
-        "skip" in player.buttons -> "skip"
-        true -> Enum.random(player.buttons)
+      button_name = if "void_manzu" in player.buttons do
+        # count suits, pick the minimum suit
+        hand = player.hand ++ player.draw
+        num_manzu = hand |> Enum.filter(&Riichi.is_manzu?/1) |> length()
+        num_pinzu = hand |> Enum.filter(&Riichi.is_pinzu?/1) |> length()
+        num_souzu = hand |> Enum.filter(&Riichi.is_souzu?/1) |> length()
+        minimum = min(num_manzu, num_pinzu) |> min(num_souzu)
+        cond do
+          num_manzu == minimum -> "void_manzu"
+          num_pinzu == minimum -> "void_pinzu"
+          num_souzu == minimum -> "void_souzu"
+        end
+      else
+        # pick these (in order of precedence)
+        cond do
+          "ron" in player.buttons -> "ron"
+          "tsumo" in player.buttons -> "tsumo"
+          "hu" in player.buttons -> "hu"
+          "zimo" in player.buttons -> "zimo"
+          "riichi" in player.buttons -> "riichi"
+          "flower" in player.buttons -> "flower"
+          "skip" in player.buttons -> "skip"
+          true -> Enum.random(player.buttons)
+        end
       end
       # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
       Process.sleep(trunc(500 / @ai_speed))
