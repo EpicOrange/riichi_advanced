@@ -1,40 +1,54 @@
 
 defmodule RiichiAdvanced.GameState.Debug do
-  @debug true
+  @debug false
   @debug_status false
+  @debug_fast_ai false
 
   def debug do
     @debug
   end
 
   def debug_status do
-    @debug && @debug_status
+    @debug_status
+  end
+
+  def debug_fast_ai do
+    @debug_fast_ai
   end
 
   def set_wall(wall) do
-    # wall = List.replace_at(wall, 52, :"1p") # first draw
-    # wall = List.replace_at(wall, 53, :"4p")
-    # wall = List.replace_at(wall, 54, :"3p")
-    # wall = List.replace_at(wall, 55, :"3p")
-    # wall = List.replace_at(wall, 56, :"1p") # second draw
-    # wall = List.replace_at(wall, 57, :"3p")
-    # wall = List.replace_at(wall, 58, :"3p")
-    # wall = List.replace_at(wall, 59, :"3p")
-    # wall = List.replace_at(wall, 60, :"3p")
+    # wall = List.replace_at(wall, 52, :"1m") # first draw
+    # wall = List.replace_at(wall, 53, :"6p")
+    # wall = List.replace_at(wall, 54, :"9p")
+    # wall = List.replace_at(wall, 55, :"1m")
+    # wall = List.replace_at(wall, 56, :"5z") # second draw
+    # wall = List.replace_at(wall, 57, :"9p")
+    # wall = List.replace_at(wall, 58, :"9p")
+    # wall = List.replace_at(wall, 59, :"5z")
+    # wall = List.replace_at(wall, 60, :"6p") # third draw
+    # wall = List.replace_at(wall, 80, :"8m") # seventh draw
     # wall = List.replace_at(wall, -15, :"1m") # last draw
-    # wall = List.replace_at(wall, -6, :"9m") # first dora
-    # wall = List.replace_at(wall, -8, :"9m") # second dora
-    # wall = List.replace_at(wall, -2, :"2z") # first kan draw
-    # wall = List.replace_at(wall, -1, :"3m") # second kan draw
-    # wall = List.replace_at(wall, -4, :"4m") # third kan draw
-    # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw
+    # wall = List.replace_at(wall, -6, :"7m") # first dora indicator
+    # wall = List.replace_at(wall, -8, :"9m") # second dora indicator
+    # wall = List.replace_at(wall, -1, :"7z") # first kan draw for saki
+    # wall = List.replace_at(wall, -2, :"6z") # second kan draw for saki
+    # wall = List.replace_at(wall, -3, :"4m") # third kan draw for saki
+    # wall = List.replace_at(wall, -4, :"6m") # fourth kan draw for saki
+    # wall = List.replace_at(wall, -2, :"3m") # first kan draw for riichi
+    # wall = List.replace_at(wall, -1, :"6z") # second kan draw for riichi
+    # wall = List.replace_at(wall, -4, :"4m") # third kan draw for riichi
+    # wall = List.replace_at(wall, -3, :"6m") # fourth kan draw for riichi
     wall
   end
-  def set_starting_hand(_wall) do
-    hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-              :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-              :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
-              :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
+  def set_starting_hand(wall) do
+    hands = %{:east  => Enum.slice(wall, 13..25),
+              :south => Utils.sort_tiles([:"3m", :"4m", :"5m", :"7m", :"8m", :"9m", :"2s", :"2s", :"2s", :"1z", :"1z", :"3z", :"3z"]),
+              :west  => Enum.slice(wall, 26..38),
+              :north => Utils.sort_tiles([:"2s", :"2s", :"3s", :"3s", :"4s", :"4s", :"5s", :"6s", :"1m", :"2m", :"3m", :"2m", :"2m"])}
+    # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+    #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+    #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
+    #           :north => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"])}
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
     #           :south => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),
     #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1p", :"2p", :"3p", :"4p"]),

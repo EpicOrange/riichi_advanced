@@ -1216,7 +1216,7 @@ defmodule RiichiAdvanced.GameState do
   # saki calls
   def handle_cast({:mark_tile, seat, index, tile_source}, state) do
     state = Saki.mark_tile(state, seat, index, tile_source)
-    state = if not Saki.needs_marking?(state, seat) do
+    state = if not Saki.needs_marking?(state, state.saki.marking_player) do
       state = Actions.run_deferred_actions(state, %{seat: state.saki.marking_player, marked_objects: state.saki.marked_objects})
       state = Saki.reset_marking(state)
 
