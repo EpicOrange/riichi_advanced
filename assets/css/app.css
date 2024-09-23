@@ -474,6 +474,7 @@ div.tile.inactive {
 }
 /* tile 3d */
 div.tile:not(.flat) {
+  transform: translateZ(0); /* https://stackoverflow.com/a/77475473 */
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side));
 }
