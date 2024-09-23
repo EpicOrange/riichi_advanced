@@ -25,8 +25,8 @@ defmodule Utils do
              :"1q"=>:"1q", :"2q"=>:"2q", :"3q"=>:"3q", :"4q"=>:"4q"}
   def to_tile(tile_str), do: @to_tile[tile_str]
 
-  def sort_tiles(tiles) do
-    Enum.sort_by(tiles, &case &1 do
+  def sort_value(tile) do
+    case tile do
       :"1m" -> 0; :"2m" -> 1; :"3m" -> 2; :"4m" -> 3; :"0m" -> 4; :"5m" -> 5; :"6m" -> 6; :"7m" -> 7; :"8m" -> 8; :"9m" -> 9;
       :"1p" -> 10; :"2p" -> 11; :"3p" -> 12; :"4p" -> 13; :"0p" -> 14; :"5p" -> 15; :"6p" -> 16; :"7p" -> 17; :"8p" -> 18; :"9p" -> 19;
       :"1s" -> 20; :"2s" -> 21; :"3s" -> 22; :"4s" -> 23; :"0s" -> 24; :"5s" -> 25; :"6s" -> 26; :"7s" -> 27; :"8s" -> 28; :"9s" -> 29;
@@ -39,7 +39,13 @@ defmodule Utils do
       :"1k" -> 61; :"2k" -> 62; :"3k" -> 63; :"4k" -> 64;
       :"1q" -> 65; :"2q" -> 66; :"3q" -> 67; :"4q" -> 68;
       :"1x" -> 69; :"2x" -> 70
-    end)
+    end
+  end
+  def sort_tiles(tiles, joker_assignment \\ %{}) do
+    tiles
+    |> Enum.with_index()
+    |> Enum.sort_by(fn {tile, ix} -> sort_value(Map.get(joker_assignment, ix, tile)) end)
+    |> Enum.map(fn {tile, _ix} -> tile end)
   end
 
   def next_turn(seat, iterations \\ 1) do

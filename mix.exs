@@ -55,6 +55,7 @@ defmodule RiichiAdvanced.MixProject do
       {:mutex, "~> 2.0.0"},
       {:accessible, "~> 0.3.0"},
       {:hackney, "~> 1.9"},
+      {:ex_smt, path: "../ex_smt/apps/ex_smt"},
     ]
   end
 

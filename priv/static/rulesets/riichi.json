@@ -883,6 +883,7 @@
     "Aka": "赤ドラ"
   },
   "point_name": "Han",
+  "minipoint_name": "Fu",
   "score_calculation": {
     "method": "riichi",
     "score_table_dealer": {

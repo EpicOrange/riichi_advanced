@@ -14,6 +14,7 @@ defmodule Player do
     auto_buttons: [],
     call_buttons: %{},
     call_name: "",
+    tile_mappings: %{},
     tile_aliases: %{},
     choice: nil,
     chosen_actions: nil,
@@ -234,7 +235,7 @@ defmodule RiichiAdvanced.GameState do
       hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
 
       # reserve some tiles (dead wall)
-      state = if Map.has_key?(rules, "reserved_tiles") do
+      state = if Map.has_key?(rules, "reserved_tiles") and length(rules["reserved_tiles"]) > 0 do
         reserved_tile_names = rules["reserved_tiles"]
         {wall, dead_wall} = Enum.split(wall, -length(reserved_tile_names))
         reserved_tiles = Enum.zip(reserved_tile_names, dead_wall)
@@ -264,7 +265,6 @@ defmodule RiichiAdvanced.GameState do
 
       # statuses to keep between rounds
       persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
-      IO.inspect(persistent_statuses)
 
       state = state
        |> Map.put(:wall_index, starting_tiles*4)
@@ -323,7 +323,8 @@ defmodule RiichiAdvanced.GameState do
       winning_hand: winning_hand,
       winning_tile: winning_tile,
       win_source: win_source,
-      point_name: state.rules["point_name"]
+      point_name: state.rules["point_name"],
+      minipoint_name: state.rules["minipoint_name"],
     }
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = if Map.has_key?(state.rules, "score_calculation") do
@@ -417,6 +418,43 @@ defmodule RiichiAdvanced.GameState do
 
         # only end the round once there are three winners; otherwise, continue
         state = Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
+        state
+      "vietnamese" ->
+        # deal with jokers
+        # TODO calls
+        # TODO taking yaku into account to maximize han
+        joker_assignment = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], [], translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+        IO.inspect(joker_assignment)
+
+        orig_hand = state.players[seat].hand
+        assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
+        assigned_winning_tile = if joker_assignment[length(orig_hand)] != nil do joker_assignment[length(orig_hand)] else winning_tile end
+
+        # temporarily replace winner's hand with joker assignment to determine yaku
+        state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand } end)
+        yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
+        {score, phan, mun} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+
+        # sort jokers into the hand for hand display
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        winner = Map.merge(winner, %{
+          yaku: yaku,
+          points: phan,
+          yakuman_mult: mun,
+          minipoints: mun,
+          score: score,
+          payer: payer
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
       _ ->
         state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")

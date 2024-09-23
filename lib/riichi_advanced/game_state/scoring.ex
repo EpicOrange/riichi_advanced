@@ -165,6 +165,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
         score = Map.get(fan_table, fan, fan_table["max"])
         score = if is_self_draw do 3 * (score + 1) else score end
         {score, points, 0}
+      "vietnamese" ->
+        phan = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        mun = Enum.reduce(yakuman, 0, fn {_name, value}, acc -> acc + value end)
+        mun = mun + Integer.floor_div(phan, 6)
+        phan = rem(phan, 6)
+        phan_table_discarder = scoring_table["score_table_phan_discarder"]
+        phan_table_non_discarder = scoring_table["score_table_phan_non_discarder"]
+        score_discarder = if mun == 0 do phan_table_discarder[Integer.to_string(phan)] else mun * phan_table_discarder["max"] end
+        score_non_discarder = if mun == 0 do phan_table_non_discarder[Integer.to_string(phan)] else mun * phan_table_non_discarder["max"] end
+        IO.inspect(score_discarder)
+        IO.inspect(score_non_discarder)
+        score = if is_self_draw do 3 * score_discarder else score_discarder + 2 * score_non_discarder end
+        {score, phan, mun}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         {0, 0, 0}
@@ -269,6 +282,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
               end
             end
         end
+      "vietnamese" ->
+        # same as hk, i think
+        self_pick = winner.payer == nil
+        basic_score = trunc(winner.score / if self_pick do 3 else 4 end)
+        payer_seat = winner.payer
+        for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
+          delta_scores ->
+            payment = if payer == payer_seat do 2 * basic_score else basic_score end
+            delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
+            delta_scores
+        end
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores
@@ -363,6 +388,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state = Map.update!(state, :winners, &Map.new(&1, fn {seat, winner} -> {seat, Map.put(winner, :processed, true)} end))
 
         {state, delta_scores, delta_scores_reason, next_dealer}
+      "vietnamese" ->
+        delta_scores = calculate_delta_scores(state)
+        {_seat, winner} = Enum.at(state.winners, 0)
+        delta_scores_reason = cond do
+            winner.payer == nil          -> "Tự ù"
+            map_size(state.winners) == 1 -> "Ù"
+            map_size(state.winners) == 2 -> "Double Ù"
+            map_size(state.winners) == 3 -> "Triple Ù"
+          end
+        {state, delta_scores, delta_scores_reason, :shimocha}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
@@ -463,8 +498,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
         
         next_dealer = if state.next_dealer != nil do state.next_dealer else :shimocha end
         {state, delta_scores, delta_scores_reason, next_dealer}
+      "vietnamese" ->
+        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+        state = Map.update!(state, :kyoku, & &1 + 1)
+        {state, delta_scores, "", false}
       _ ->
-        IO.puts("Unknown scoring method #{inspect(scoring_table["method"])}")
+        GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
         {state, delta_scores, "", false}

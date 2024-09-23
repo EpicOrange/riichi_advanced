@@ -41,7 +41,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
         <div class="score-display">
           <%= if not Map.has_key?(@winner, :yakuman) || Enum.empty?(@winner.yakuman) do %>
             <div class="total-han-display"><%= @winner.points %> <%= @winner.point_name %></div>
-            <div class="total-fu-display" :if={Map.has_key?(@winner, :minipoints)}><%= @winner.minipoints %> Fu</div>
+            <div class="total-fu-display" :if={Map.has_key?(@winner, :minipoints)}><%= @winner.minipoints %> <%= @winner.minipoint_name %></div>
             <div class="total-score-display"><%= @winner.score %></div>
             <div class="total-score-name-display" :if={Map.has_key?(@winner, :score_name) && @winner.score_name != ""}><%= @winner.score_name %></div>
           <% else %>
