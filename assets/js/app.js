@@ -39,11 +39,15 @@ Hooks.ClickListener = {
   mounted() {
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
-      this.pushEvent("double_clicked");
+      if (!e.target.attributes.hasOwnProperty("phx-click")) {
+        this.pushEvent("double_clicked");
+      }
     });
     this.el.addEventListener('contextmenu', e => {
       e.preventDefault();
-      this.pushEvent("right_clicked");
+      if (!e.target.attributes.hasOwnProperty("phx-click")) {
+        this.pushEvent("right_clicked");
+      }
     });
   }
 }
