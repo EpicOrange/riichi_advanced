@@ -137,7 +137,7 @@ div.compass {
   width: calc(4.75 * var(--tile-size));
   height: calc(4.75 * var(--tile-size));
   left: calc(50% - (2.375 * var(--tile-size)));
-  top: calc(50% - (2.625 * var(--tile-size)));
+  top: calc(50% - (2.875 * var(--tile-size)));
   transform-origin: 50% 50%;
   user-select: none;
   z-index: 2;
