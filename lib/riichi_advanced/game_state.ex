@@ -325,8 +325,9 @@ defmodule RiichiAdvanced.GameState do
       winning_hand: winning_hand,
       winning_tile: winning_tile,
       win_source: win_source,
-      point_name: state.rules["point_name"],
-      minipoint_name: state.rules["minipoint_name"],
+      point_name: Map.get(state.rules, "point_name", ""),
+      limit_point_name: Map.get(state.rules, "limit_point_name", ""),
+      minipoint_name: Map.get(state.rules, "minipoint_name", ""),
     }
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = if Map.has_key?(state.rules, "score_calculation") do
@@ -359,7 +360,11 @@ defmodule RiichiAdvanced.GameState do
         {score, points, yakuman_mult} = Scoring.score_yaku(state, seat, yaku, yakuman, win_source == :draw, minipoints)
         IO.puts("won by #{win_source}; hand: #{inspect(winning_hand)}, yaku: #{inspect(yaku)}")
         han = Integer.to_string(points)
-        score_name = Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"])
+        score_name = if yakuman_mult > 0 do
+          scoring_table["limit_hand_names"]["max"]
+        else
+          Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"])
+        end
         payer = case win_source do
           :draw    -> nil
           :discard -> get_last_discard_action(state).seat
@@ -373,7 +378,7 @@ defmodule RiichiAdvanced.GameState do
           true -> nil
         end
         winner = Map.merge(winner, %{
-          yaku: yaku,
+          yaku: if yakuman_mult > 0 do [] else yaku end,
           yakuman: yakuman,
           points: points,
           yakuman_mult: yakuman_mult,
@@ -423,7 +428,6 @@ defmodule RiichiAdvanced.GameState do
         state
       "vietnamese" ->
         # deal with jokers
-        # TODO calls
         # TODO taking yaku into account to maximize han
         joker_assignment = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
         IO.inspect(joker_assignment)
@@ -434,13 +438,19 @@ defmodule RiichiAdvanced.GameState do
 
         # temporarily replace winner's hand with joker assignment to determine yaku
         state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand } end)
-        yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
-        {score, phan, mun} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+        phan_yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
+        phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
+          Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, phan_yaku)
+        else phan_yaku end
+        mun_yaku = Scoring.get_yaku(state, state.rules["yakuman"], seat, assigned_winning_tile, win_source)
+        {score, phan, mun} = Scoring.score_yaku(state, seat, phan_yaku, mun_yaku, win_source == :draw)
 
         # sort jokers into the hand for hand display
         joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
         state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
         winner = Map.merge(winner, %{player: state.players[seat]})
+
+        # restore original hand
         state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
 
         payer = case win_source do
@@ -449,7 +459,8 @@ defmodule RiichiAdvanced.GameState do
           :call    -> get_last_call_action(state).seat
         end
         winner = Map.merge(winner, %{
-          yaku: yaku,
+          yaku: phan_yaku,
+          yakuman: mun_yaku,
           points: phan,
           yakuman_mult: mun,
           minipoints: mun,

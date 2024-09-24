@@ -838,6 +838,7 @@ div.yaku > div.yaku-text {
   position: relative;
   z-index: 2;
 }
+div.yaku > div.yaku-text.small { font-size: 75%; }
 div.yaku > div.yaku-text::before {
   position: absolute;
   content: "";

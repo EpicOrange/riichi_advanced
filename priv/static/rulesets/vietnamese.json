@@ -443,6 +443,7 @@
     }
   ],
   "point_name": "Phán",
+  "limit_point_name": "Mủn",
   "minipoint_name": "Mủn",
   "score_calculation": {
     "method": "vietnamese",
