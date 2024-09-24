@@ -231,15 +231,15 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("call_button_clicked", %{"name" => call_name, "choice" => choice}, socket) do
-    call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: nil}})
-    {:noreply, socket}
-  end
-
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
     GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Utils.to_tile(called_tile)}})
+    {:noreply, socket}
+  end
+
+  def handle_event("call_button_clicked", %{"name" => call_name, "choice" => choice}, socket) do
+    call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: nil}})
     {:noreply, socket}
   end
 
