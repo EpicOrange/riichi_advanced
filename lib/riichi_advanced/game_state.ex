@@ -307,7 +307,9 @@ defmodule RiichiAdvanced.GameState do
       Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: winning_tile, win_source: win_source})
     else state end
 
+    # reset animation
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = Map.put(state, :visible_screen, :winner)
@@ -472,7 +474,9 @@ defmodule RiichiAdvanced.GameState do
       Actions.run_actions(state, state.rules["before_exhaustive_draw"]["actions"], %{seat: state.turn})
     else state end
 
+    # reset animation
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+
     state = Map.put(state, :game_active, false)
     state = Map.put(state, :timer, 10)
     state = Map.put(state, :visible_screen, :scores)
@@ -484,6 +488,31 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, delta_scores_reason)
     state = Map.put(state, :next_dealer, next_dealer)
+    state
+  end
+
+  def abortive_draw(state, draw_name) do
+    state = Map.put(state, :round_result, :draw)
+    IO.puts("Abort")
+
+    # run before_abortive_draw actions
+    state = if Map.has_key?(state.rules, "before_abortive_draw") do
+      Actions.run_actions(state, state.rules["before_abortive_draw"]["actions"], %{seat: state.turn})
+    else state end
+
+    # reset animation
+    state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+
+    state = Map.put(state, :game_active, false)
+    state = Map.put(state, :timer, 10)
+    state = Map.put(state, :visible_screen, :scores)
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
+    Debounce.apply(state.timer_debouncer)
+
+    delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+    state = Map.put(state, :delta_scores, delta_scores)
+    state = Map.put(state, :delta_scores_reason, draw_name)
+    state = Map.put(state, :next_dealer, :self)
     state
   end
 
@@ -856,6 +885,7 @@ defmodule RiichiAdvanced.GameState do
       "kamicha_status"           -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :kamicha)].status end)
       "others_status"            -> Enum.any?(state.players, fn {seat, player} -> Enum.all?(opts, fn st -> seat != context.seat && st in player.status end) end)
       "anyone_status"            -> Enum.any?(state.players, fn {_seat, player} -> Enum.all?(opts, fn st -> st in player.status end) end)
+      "everyone_status"          -> Enum.all?(state.players, fn {_seat, player} -> Enum.all?(opts, fn st -> st in player.status end) end)
       "is_drawn_tile"            -> context.tile_source == :draw
       "buttons_include"          -> Enum.all?(opts, fn button_name -> button_name in state.players[context.seat].buttons end)
       "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in state.players[context.seat].buttons end)

@@ -1297,6 +1297,7 @@
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
                 ["untag", "no_discard"],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]]
                ]
@@ -1360,8 +1361,24 @@
                ]
   },
   "play_effects": [
-    ["any", [["unset_status", "discards_empty"]]],
+    ["1z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
+      ["set_status", "suufonrenda_1z"],
+      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_1z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
+    ]]]],
+    ["2z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
+      ["set_status", "suufonrenda_2z"],
+      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_2z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
+    ]]]],
+    ["3z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
+      ["set_status", "suufonrenda_3z"],
+      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_3z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
+    ]]]],
+    ["4z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
+      ["set_status", "suufonrenda_4z"],
+      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_4z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
+    ]]]],
     ["tanyaohai", [["unset_status", "nagashi"]]],
+    ["any", [["unset_status", "discards_empty"]]],
     ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takami Haru: extra turn!"],
@@ -1442,6 +1459,9 @@
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]],
                 ["when", [{"name": "status", "opts": ["takei-hisa"]}, {"name": "has_hell_pair_wait", "opts": ["pair_wait"]}], [["set_status", "double_score"]]]
                ]
+  },
+  "before_abortive_draw": {
+    "actions": []
   },
   "before_exhaustive_draw": {
     "actions": []
@@ -1671,7 +1691,10 @@
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [["draw", 1, "kandraw_4_lazy"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [
+          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+          ["draw", 1, "kandraw_4_lazy"]
+        ]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
@@ -1718,7 +1741,10 @@
         ["when", [{"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
         ["when", [{"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
         ["when", [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [["draw", 1, "kandraw_4_lazy"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [
+          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+          ["draw", 1, "kandraw_4_lazy"]
+        ]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
@@ -1737,7 +1763,10 @@
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [["draw", 1, "kandraw_4_lazy"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [
+          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+          ["draw", 1, "kandraw_4_lazy"]
+        ]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
@@ -1776,7 +1805,13 @@
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
         ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
+          ["add_score", -1000],
+          ["put_down_riichi_stick"],
+          ["pause", 1000],
+          ["abortive_draw", "Suucha Riichi"]
+        ]]
       ]
     },
     "ron": {

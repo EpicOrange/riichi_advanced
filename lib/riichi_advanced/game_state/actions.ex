@@ -261,6 +261,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + 1) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true })
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "ryuukyoku"             -> exhaustive_draw(state)
+      "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
       "discard_draw"          ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])
@@ -272,8 +273,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       "when"                  -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       "when_anyone"           ->
         for dir <- [:east, :south, :west, :north], check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
-          state -> run_actions(state, Enum.at(opts, 1, []), %{seat: dir})
+          state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
         end
+      "when_everyone"           ->
+        if Enum.all?([:east, :south, :west, :north], fn dir -> check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+          run_actions(state, Enum.at(opts, 1, []), context)
+        else state end
       "swap_hand_tile_with_same_suit_discard" ->
         {hand_tile, hand_seat, hand_index} = Enum.at(context.marked_objects.hand.marked, 0)
         {discard_tile, discard_seat, discard_index} = Enum.at(context.marked_objects.discard.marked, 0)
