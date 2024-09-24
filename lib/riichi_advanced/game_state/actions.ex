@@ -221,7 +221,18 @@ defmodule RiichiAdvanced.GameState.Actions do
       "flower"                -> trigger_call(state, context.seat, context.call_name, context.call_choice, nil, :hand)
       "draft_saki_card"       -> draft_saki_card(state, context.seat, context.choice)
       "advance_turn"          -> advance_turn(state)
-      "change_turn"           -> change_turn(state, Utils.get_seat(context.seat, String.to_atom(Enum.at(opts, 0, "self"))), true)
+      "change_turn"           -> 
+        seat = case Enum.at(opts, 0, "self") do
+          "east" -> :east
+          "south" -> :south
+          "west" -> :west
+          "north" -> :north
+          "shimocha" -> Utils.get_seat(context.seat, :shimocha)
+          "toimen" -> Utils.get_seat(context.seat, :toimen)
+          "kamicha" -> Utils.get_seat(context.seat, :kamicha)
+          _ -> context.seat
+        end
+        change_turn(state, seat, true)
       "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
       "win_by_call"           -> win(state, context.seat, get_last_action(state).called_tile, :call)
       "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)

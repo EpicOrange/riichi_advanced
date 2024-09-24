@@ -392,16 +392,21 @@
     "score_table_phan_non_discarder": {"0": 1, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "max": 32}
   },
   "before_turn_change": {
-    "actions": [["unset_status", "kan", "double_kan", "first_turn"]]
+    "actions": [
+      ["unset_status", "kan", "double_kan"],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+    ]
   },
   "after_turn_change": {
-    "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-                ["when", ["not_no_tiles_remaining"], [["draw"]]]
-               ]
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+    ]
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn"],
+      ["set_status_all", "first_turn", "match_start"],
       ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]],
       ["set_tile_alias_all", ["3j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
       ["set_tile_alias_all", ["4j"], ["1f","2f","3f","4f","1g","2g","3g","4g"]],
@@ -413,23 +418,41 @@
     ]
   },
   "buttons": {
+    "start_flower": {
+      "display_name": "Reveal flower",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match_simple", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], 1]]]]}],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], ["draw"]],
+      "unskippable": true
+    },
+    "start_joker": {
+      "display_name": "Reveal joker",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match_simple", "opts": [["hand", "draw"], [[[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
+      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], ["draw"]],
+      "unskippable": true
+    },
+    "start_no_flower": {
+      "display_name": "No flowers",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match_simple", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], 1]]]]}],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chow",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Coong",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Coong"], ["call"], ["change_turn", "self"],
                   ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
                   ["set_status", "kan"],
@@ -443,7 +466,7 @@
     "ankan": {
       "display_name": "Self Coong",
       "call": [[0, 0, 0]],
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [["big_text", "Coong"], ["self_call"],
                   ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
                   ["set_status", "kan"],
@@ -457,7 +480,7 @@
       "display_name": "Coong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [["big_text", "Coong"], ["upgrade_call"],
                   ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
                   ["set_status", "kan"],
@@ -510,7 +533,7 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], 1]]]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], ["draw"]]
     }
   },
