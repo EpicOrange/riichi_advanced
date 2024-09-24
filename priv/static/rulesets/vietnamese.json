@@ -120,6 +120,7 @@
       "value": 3,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["koutsu"], 4]]]]},
         {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
       ]
     },
@@ -134,82 +135,169 @@
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[["1f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[[["1f"]], 1]]]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[["2f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[[["2f"]], 1]]]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[["3f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[[["3f"]], 1]]]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[["4f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[[["4f"]], 1]]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[["1g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[[["1g"]], 1]]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[["2g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[[["2g"]], 1]]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[["3g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[[["3g"]], 1]]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[["4g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[[["4g"]], 1]]]]}]
     },
     {
       "display_name": "Seat King",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[["1k"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[[["1k"]], 1]]]]}]
     },
     {
       "display_name": "Seat King",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[["2k"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[[["2k"]], 1]]]]}]
     },
     {
       "display_name": "Seat King",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[["3k"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[[["3k"]], 1]]]]}]
     },
     {
       "display_name": "Seat King",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[["4k"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[[["4k"]], 1]]]]}]
     },
     {
       "display_name": "Seat Queen",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[["1q"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[[["1q"]], 1]]]]}]
     },
     {
       "display_name": "Seat Queen",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[["2q"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[[["2q"]], 1]]]]}]
     },
     {
       "display_name": "Seat Queen",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[["3q"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[[["3q"]], 1]]]]}]
     },
     {
       "display_name": "Seat Queen",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[["4q"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[[["4q"]], 1]]]]}]
+    },
+    {
+      "display_name": "Tổng (縂)",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["2j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Tổng (縂)",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["jokers"], [[[[["2j"]], 1]]]]},
+        [
+          {"name": "seat_is", "opts": ["east"]},
+          {"name": "match", "opts": [["start_jokers"], [[[[["2j"]], 1]]]]}
+        ]
+      ]
+    },
+    {
+      "display_name": "Hợp (合)",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["3j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Hợp (合)",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["jokers"], [[[[["3j"]], 1]]]]},
+        [
+          {"name": "seat_is", "opts": ["east"]},
+          {"name": "match", "opts": [["start_jokers"], [[[[["3j"]], 1]]]]}
+        ]
+      ]
+    },
+    {
+      "display_name": "Hoa (花)",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["flowers"], [[[[["4j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Nguyên (元)",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["5j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Nguyên (元)",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["jokers"], [[[[["5j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Hỷ (喜)",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["6j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Hỷ (喜)",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["jokers"], [[[[["6j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Thùng (筒)",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["7j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Thùng (筒)",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["jokers"], [[[[["7j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Soọc (索)",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["8j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Soọc (索)",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["jokers"], [[[[["8j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Thay (萬)",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["9j"]], 1]]]]}]
+    },
+    {
+      "display_name": "Thay (萬)",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["jokers"], [[[[["9j"]], 1]]]]}]
     }
   ],
   "yakuman": [
@@ -218,6 +306,7 @@
       "value": 1,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["koutsu"], 4]]]]},
         {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
       ]
     },
@@ -466,9 +555,8 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
-      ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]],
+      ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]],
       ["set_tile_alias_all", ["3j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["4j"], ["1f","2f","3f","4f","1g","2g","3g","4g"]],
       ["set_tile_alias_all", ["5j"], ["0z","6z","7z"]],
       ["set_tile_alias_all", ["6j"], ["1z","2z","3z","4z"]],
       ["set_tile_alias_all", ["7j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
@@ -595,10 +683,10 @@
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], ["draw"]]
     },
-    "general_flower": {
-      "display_name": "(縂) Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "2j"], ["draw"]]
+    "joker": {
+      "display_name": "Joker",
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
+      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw"]]
     }
   },
   "auto_buttons": {

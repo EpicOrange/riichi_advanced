@@ -794,6 +794,10 @@ defmodule RiichiAdvanced.GameState do
           "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
           "pond" -> [{hand ++ state.players[context.seat].pond, calls}]
           "calls" -> [{hand, calls ++ state.players[context.seat].calls}]
+          "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower"] end)}]
+          "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]
+          "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
+          "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1), calls}]
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
