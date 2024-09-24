@@ -3,12 +3,22 @@ defmodule Riichi do
   @pred %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m", :"0m"=>:"4m",
           :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
           :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s"}
-  def pred(tile), do: @pred[tile]
+  @pred_wraps %{:"1m"=>:"9m", :"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m", :"0m"=>:"4m",
+                :"1p"=>:"9p", :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
+                :"1s"=>:"9s", :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s"}
+  def pred(tile, wraps \\ false) do
+    if wraps do @succ_wraps[tile] else @pred[tile] end
+  end
 
   @succ %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"0m"=>:"6m",
           :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"0p"=>:"6p",
           :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"0s"=>:"6s"}
-  def succ(tile), do: @succ[tile]
+  @succ_wraps %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"9m"=>:"1m", :"0m"=>:"6m",
+                :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"9p"=>:"1p", :"0p"=>:"6p",
+                :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"9s"=>:"1s", :"0s"=>:"6s"}
+  def succ(tile, wraps \\ false) do
+    if wraps do @succ_wraps[tile] else @succ[tile] end
+  end
 
   @dora %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"9m"=>:"1m", :"0m"=>:"6m",
           :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"9p"=>:"1p", :"0p"=>:"6p",
@@ -18,15 +28,29 @@ defmodule Riichi do
         }
   def dora(tile), do: @dora[tile]
 
-  @pred_wraps %{:"1m"=>:"9m", :"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m", :"0m"=>:"4m",
-                :"1p"=>:"9p", :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
-                :"1s"=>:"9s", :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s"}
-  def pred_wraps(tile), do: @pred_wraps[tile]
+  @pred_honors %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m", :"0m"=>:"4m",
+                 :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
+                 :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s",
+                 :"2z"=>:"1z", :"3z"=>:"2z", :"4z"=>:"3z", :"6z"=>:"5z", :"7z"=>:"6z"}
+  @pred_honors_wraps %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m", :"0m"=>:"4m",
+                       :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
+                       :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s",
+                       :"1z"=>:"4z", :"2z"=>:"1z", :"3z"=>:"2z", :"4z"=>:"3z", :"5z"=>:"7z", :"6z"=>:"5z", :"7z"=>:"6z"}
+  def pred_honors(tile, wraps \\ false) do
+    if wraps do @pred_honors_wraps[tile] else @pred_honors[tile] end
+  end
 
-  @succ_wraps %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"9m"=>:"1m", :"0m"=>:"6m",
-                :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"9p"=>:"1p", :"0p"=>:"6p",
-                :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"9s"=>:"1s", :"0s"=>:"6s"}
-  def succ_wraps(tile), do: @succ_wraps[tile]
+  @succ_honors %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"0m"=>:"6m",
+                 :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"0p"=>:"6p",
+                 :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"0s"=>:"6s",
+                 :"1z"=>:"2z", :"2z"=>:"3z", :"3z"=>:"4z", :"5z"=>:"6z", :"6z"=>:"7z"}
+  @succ_honors_wraps %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"0m"=>:"6m",
+                       :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p", :"0p"=>:"6p",
+                       :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s", :"0s"=>:"6s",
+                       :"1z"=>:"2z", :"2z"=>:"3z", :"3z"=>:"4z", :"4z"=>:"1z", :"5z"=>:"6z", :"6z"=>:"7z", :"7z"=>:"5z"}
+  def succ_honors(tile, wraps \\ false) do
+    if wraps do @succ_honors_wraps[tile] else @succ_honors[tile] end
+  end
 
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
   @all_tiles [
@@ -36,15 +60,15 @@ defmodule Riichi do
     :"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"
   ]
 
-  def offset_tile(tile, n, wraps \\ false) do
+  def offset_tile(tile, n, wraps \\ false, honor_seqs \\ false) do
     if tile != nil do
       if (n < 1 && n > -1) || n < -10 || n > 10 do
         normalize_red_five(tile)
       else
         if n < 0 do
-          offset_tile(if wraps do pred_wraps(tile) else pred(tile) end, n+1, wraps)
+          offset_tile(if honor_seqs do pred_honors(tile, wraps) else pred(tile, wraps) end, n+1, wraps, honor_seqs)
         else
-          offset_tile(if wraps do succ_wraps(tile) else succ(tile) end, n-1, wraps)
+          offset_tile(if honor_seqs do succ_honors(tile, wraps) else succ(tile, wraps) end, n-1, wraps, honor_seqs)
         end
       end
     else nil end
@@ -104,14 +128,14 @@ defmodule Riichi do
   # includes returning multiple choices for red fives
   # if called_tiles is an empty list, then we choose from our hand
   # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
-  def make_calls(calls_spec, hand, called_tiles \\ [], wraps \\ false) do
+  def make_calls(calls_spec, hand, called_tiles \\ [], _tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false) do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     call_choices = if from_hand do hand else called_tiles end
     Map.new(call_choices, fn tile ->
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
-        other_tiles = Enum.map(call_spec, &offset_tile(tile, &1, wraps))
+        other_tiles = Enum.map(call_spec, &offset_tile(tile, &1, wraps, honor_seqs))
         {_, choices} = Enum.reduce(other_tiles, {hand, []}, fn t, {remaining_hand, tiles} ->
           exists = Enum.member?(remaining_hand, t)
           red_exists = Enum.member?(remaining_hand, to_red(t))
@@ -124,12 +148,10 @@ defmodule Riichi do
                |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end)
                |> Enum.uniq()
         result
-      end)}
+      end) |> Enum.uniq()}
     end)
   end
-
-  def can_call?(calls_spec, hand, called_tiles \\ [], wraps \\ false), do: Enum.any?(make_calls(calls_spec, hand, called_tiles, wraps), fn {_tile, choices} -> not Enum.empty?(choices) end)
-
+  def can_call?(calls_spec, hand, called_tiles \\ [], tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false), do: Enum.any?(make_calls(calls_spec, hand, called_tiles, tile_mappings, wraps, honor_seqs), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{})
   def try_remove_all_tiles(hand, [], _tile_aliases), do: [hand]
@@ -169,7 +191,7 @@ defmodule Riichi do
     end)
   end
 
-  def remove_group(hand, calls, group, tile_aliases \\ %{}, wrapping \\ false) do
+  def remove_group(hand, calls, group, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     cond do
       is_list(group) && not Enum.empty?(group) ->
@@ -182,7 +204,7 @@ defmodule Riichi do
           all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
           |> add_tile_aliases(tile_aliases)
           all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-            tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping) end end)
+            tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
             remove_from_hand_calls(hand, tiles, calls, tile_aliases)
           end)
         end
@@ -201,22 +223,22 @@ defmodule Riichi do
     end
   end
 
-  defp _remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping) do
+  defp _remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs) do
     Enum.reduce(hand_definition, [{hand, calls}, {normalize_red_fives(hand), calls}], fn [groups, num], all_hands ->
       Enum.reduce(1..num, all_hands, fn _, hands ->
         for {hand, calls} <- hands, group <- groups do
-          remove_group(hand, calls, group, tile_aliases, wrapping)
+          remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
         end |> Enum.concat()
       end) |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
     end)
   end
 
-  def remove_hand_definition(hand, calls, hand_definition, tile_aliases \\ %{}, wrapping \\ false) do
+  def remove_hand_definition(hand, calls, hand_definition, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
     # calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
-    case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition, tile_aliases, wrapping}) do
+    case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs}) do
       [] -> 
-        result = _remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping)
-        RiichiAdvanced.ETSCache.put({:remove_hand_definition, hand, calls, hand_definition, tile_aliases, wrapping}, result)
+        result = _remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs)
+        RiichiAdvanced.ETSCache.put({:remove_hand_definition, hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs}, result)
         # IO.puts("Results:\n  hand: #{inspect(hand)}\n  result: #{inspect(result)}")
         result
       [result] -> result
@@ -224,28 +246,28 @@ defmodule Riichi do
   end
 
   # check if hand contains all groups in each definition in hand_definitions
-  defp _check_hand(hand, calls, hand_definitions, tile_aliases, wrapping) do
-    Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping)) end)
+  defp _check_hand(hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs) do
+    Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs)) end)
   end
 
-  def check_hand(hand, calls, hand_definitions, tile_aliases \\ %{}, wrapping \\ false) do
-    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, hand_definitions, tile_aliases, wrapping}) do
+  def check_hand(hand, calls, hand_definitions, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
+    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs}) do
       [] -> 
-        result = _check_hand(hand, calls, hand_definitions, tile_aliases, wrapping)
-        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, hand_definitions, tile_aliases, wrapping}, result)
+        result = _check_hand(hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs)
+        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs}, result)
         # IO.puts("Results:\n  hand: #{inspect(hand)}\n  hand_definitions: #{inspect(hand_definitions)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
   end
 
-  def match_hand(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false) do
+  def match_hand(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
     # TODO replace check_hand
-    check_hand(hand, calls, match_definitions, tile_aliases, wrapping)
+    check_hand(hand, calls, match_definitions, tile_aliases, wrapping, honor_seqs)
   end
 
-  def get_waits(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false) do
-    Enum.filter(@all_tiles, fn tile -> match_hand(hand ++ [tile], calls, match_definitions, tile_aliases, wrapping) end)
+  def get_waits(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
+    Enum.filter(@all_tiles, fn tile -> match_hand(hand ++ [tile], calls, match_definitions, tile_aliases, wrapping, honor_seqs) end)
   end
 
   # only keeps one version of the hand (assumes groups don't overlap)
@@ -313,9 +335,9 @@ defmodule Riichi do
     end)
   end
 
-  def not_needed_for_hand(hand, calls, tile, hand_definitions, tile_aliases \\ %{}, wraps \\ false) do
+  def not_needed_for_hand(hand, calls, tile, hand_definitions, tile_aliases \\ %{}, wraps \\ false, honor_seqs \\ false) do
     Enum.any?(hand_definitions, fn hand_definition ->
-      removed = remove_hand_definition(hand, calls, hand_definition, tile_aliases, wraps)
+      removed = remove_hand_definition(hand, calls, hand_definition, tile_aliases, wraps, honor_seqs)
       normalize_red_five(tile) in Enum.concat(Enum.map(removed, fn {hand, _calls} -> hand end))
     end)
   end
@@ -408,40 +430,27 @@ defmodule Riichi do
         :"7p" -> try_remove_all_tiles(starting_hand, [:"8p", :"9p"], tile_aliases)
         :"3s" -> try_remove_all_tiles(starting_hand, [:"1s", :"2s"], tile_aliases)
         :"7s" -> try_remove_all_tiles(starting_hand, [:"8s", :"9s"], tile_aliases)
+        :"2z" -> if wraps do [] else try_remove_all_tiles(starting_hand, [:"3z", :"4z"], tile_aliases) end
+        :"3z" -> if wraps do [] else try_remove_all_tiles(starting_hand, [:"1z", :"2z"], tile_aliases) end
         _     -> []
       end |> Enum.map(fn hand -> {hand, fu+2} end)
     else [] end
-    tanyao_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s"]
-    possible_kanchan_removed = if winning_tile in tanyao_tiles do
-      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps), offset_tile(winning_tile, 1, wraps)], tile_aliases)
+    middle_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"2z", :"3z", :"6z"]
+    all_tiles = middle_tiles ++ [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"4z", :"5z", :"7z"]
+    kanchan_tiles = if wraps do all_tiles else middle_tiles end
+    possible_kanchan_removed = if winning_tile in middle_tiles do
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps, true), offset_tile(winning_tile, 1, wraps, true)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu+2} end)
     else [] end
-    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, wraps) != nil do
-      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, wraps), offset_tile(winning_tile, -1, wraps)], tile_aliases)
+    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, wraps, true) != nil do
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, wraps, true), offset_tile(winning_tile, -1, wraps, true)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu} end)
     else [] end
-    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, wraps) != nil do
-      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, wraps), offset_tile(winning_tile, 2, wraps)], tile_aliases)
+    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, wraps, true) != nil do
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, wraps, true), offset_tile(winning_tile, 2, wraps, true)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu} end)
     else [] end
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
-
-    # the following are for Senoo Kaori (should not affect normal hands)
-    sk_one_sided_removed = case winning_tile do
-      :"2z" -> try_remove_all_tiles(starting_hand, [:"3z", :"4z"], tile_aliases) ++ try_remove_all_tiles(starting_hand, [:"1z", :"3z"], tile_aliases)
-      :"3z" -> try_remove_all_tiles(starting_hand, [:"1z", :"2z"], tile_aliases) ++ try_remove_all_tiles(starting_hand, [:"2z", :"4z"], tile_aliases)
-      :"5z" -> try_remove_all_tiles(starting_hand, [:"6z", :"7z"], tile_aliases)
-      :"6z" -> try_remove_all_tiles(starting_hand, [:"5z", :"7z"], tile_aliases)
-      :"7z" -> try_remove_all_tiles(starting_hand, [:"5z", :"6z"], tile_aliases)
-      _     -> []
-    end |> Enum.map(fn hand -> {hand, fu+2} end)
-    sk_two_sided_removed = case winning_tile do
-      :"1z" -> try_remove_all_tiles(starting_hand, [:"2z", :"3z"], tile_aliases)
-      :"4z" -> try_remove_all_tiles(starting_hand, [:"2z", :"3z"], tile_aliases)
-      _     -> []
-    end |> Enum.map(fn hand -> {hand, fu} end)
-
-    hands_fu = hands_fu ++ sk_one_sided_removed ++ sk_two_sided_removed
 
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
@@ -461,7 +470,7 @@ defmodule Riichi do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
           normal = hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
-            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps), base_tile, offset_tile(base_tile, 1, wraps)], tile_aliases) do
+            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps, true), base_tile, offset_tile(base_tile, 1, wraps, true)], tile_aliases) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu} end)
             end

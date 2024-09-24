@@ -582,13 +582,15 @@ defmodule RiichiAdvanced.GameState.Actions do
                 is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
                 is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
                 wraps = Map.has_key?(state.rules["buttons"][button_name], "call_wraps") && state.rules["buttons"][button_name]["call_wraps"]
+                honor_seqs = Map.has_key?(state.rules["buttons"][button_name], "honor_seqs") && state.rules["buttons"][button_name]["honor_seqs"]
+                tile_mappings = state.players[seat].tile_mappings
                 {state, call_choices} = cond do
                   is_upgrade ->
                     call_choices = state.players[seat].calls
                       |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
                       |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
                       |> Enum.map(fn call_tiles ->
-                         Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, state.players[seat].hand ++ state.players[seat].draw, wraps)
+                         Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, state.players[seat].hand ++ state.players[seat].draw, tile_mappings, wraps, honor_seqs)
                       end)
                       |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
                     {state, call_choices}
@@ -605,7 +607,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                     {state, call_choices}
                   true ->
                     callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-                    call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, callable_tiles, wraps)
+                    call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, callable_tiles, tile_mappings, wraps, honor_seqs)
                     {state, call_choices}
                 end
                 # filter call_choices

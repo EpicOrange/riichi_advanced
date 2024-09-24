@@ -1283,8 +1283,10 @@
   "play_restrictions": [
     [["any"], ["all_saki_cards_drafted"]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_wraps", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["senoo-kaori"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_wraps", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_hseq", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_hseq_w", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
     [["any"], [{"name": "not_tagged", "opts": ["no_discard"]}]],
     [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
@@ -1301,7 +1303,10 @@
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["when", [{"name": "status_missing", "opts": ["senoo-kaori", "mase-yuuko"]}, {"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["when", [{"name": "status", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "match_honorseq", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["when", [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "match_wrapping", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}, {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
                 ["untag", "no_discard"],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]]
@@ -1486,6 +1491,63 @@
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]
     },
+    "senoo_kaori": {
+      "display_name": "Chii",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "honor_seqs": true,
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "show_when": [
+        {"name": "status", "opts": ["senoo-kaori"]},
+        {"name": "status_missing", "opts": ["mase-yuuko"]},
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        [
+          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
+          "not_last_discard_matches_existing"
+        ]
+      ],
+      "actions": [
+        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+      ]
+    },
+    "mase_yuuko": {
+      "display_name": "Chii",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_wraps": true,
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "show_when": [
+        {"name": "status", "opts": ["mase-yuuko"]},
+        {"name": "status_missing", "opts": ["senoo-kaori"]},
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        [
+          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
+          "not_last_discard_matches_existing"
+        ]
+      ],
+      "actions": [
+        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+      ]
+    },
+    "senoo_kaori_mase_yuuko": {
+      "display_name": "Chii",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "honor_seqs": true,
+      "call_wraps": true,
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "show_when": [
+        {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        [
+          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
+          "not_last_discard_matches_existing"
+        ]
+      ],
+      "actions": [
+        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+      ]
+    },
     "choe_myeonghwa": {
       "display_name": "Swap last discard with tile in hand",
       "show_when": [
@@ -1556,24 +1618,6 @@
         ["draw", 4]
       ],
       "unskippable": true
-    },
-    "mase_yuuko": {
-      "display_name": "Chii",
-      "call": [[-2, -1], [-1, 1], [1, 2]],
-      "call_wraps": true,
-      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "show_when": [
-        {"name": "status", "opts": ["mase-yuuko"]},
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        [
-          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
-          "not_last_discard_matches_existing"
-        ]
-      ],
-      "actions": [
-        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
-      ]
     },
     "matano_seiko": {
       "display_name": "Set aside 4th tile from discards",
@@ -1646,12 +1690,12 @@
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
+        {"name": "status_missing", "opts": ["mase-yuuko", "senoo-kaori"]},
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
-        ],
-        {"name": "status_missing", "opts": ["mase-yuuko"]}
+        ]
       ],
       "actions": [
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
@@ -1785,12 +1829,18 @@
         [
           {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
           [
+            {"name": "status", "opts": ["senoo-kaori"]},
             {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "match_honorseq", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
+          ],
+          [
+            {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "status", "opts": ["senoo-kaori"]},
             {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
           ],
           [
-            {"name": "status", "opts": ["senoo-kaori"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["senoo_kaori_tenpai"]]}
+            {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
+            {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
           ]
         ],
         [
@@ -1829,12 +1879,18 @@
         [
           {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
           [
+            {"name": "status", "opts": ["senoo-kaori"]},
+            {"name": "status_missing", "opts": ["mase-yuuko"]},
+            {"name": "match_honorseq", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+          ],
+          [
             {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "status_missing", "opts": ["senoo-kaori"]},
             {"name": "match_wrapping", "opts": [["hand", "calls", "last_discard"], ["win"]]}
           ],
           [
-            {"name": "status", "opts": ["senoo-kaori"]},
-            {"name": "match", "opts": [["hand", "calls", "last_discard"], ["senoo_kaori_win"]]}
+            {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
+            {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "last_discard"], ["win"]]}
           ]
         ],
         [
@@ -1897,12 +1953,16 @@
             [
               {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
               [
+                {"name": "status", "opts": ["senoo-kaori"]},
+                {"name": "match_honorseq", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ],
+              [
                 {"name": "status", "opts": ["mase-yuuko"]},
                 {"name": "match_wrapping", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
               ],
               [
-                {"name": "status", "opts": ["senoo-kaori"]},
-                {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["senoo_kaori_win"]]}
+                {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
+                {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
               ]
             ]
           ],
@@ -1914,9 +1974,21 @@
                 {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
               ],
               [
+                {"name": "status", "opts": ["senoo-kaori"]},
+                {"name": "status_missing", "opts": ["mase-yuuko"]},
+                {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
+                {"name": "match_honorseq", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ],
+              [
                 {"name": "status", "opts": ["mase-yuuko"]},
+                {"name": "status_missing", "opts": ["senoo-kaori"]},
                 {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
                 {"name": "match_wrapping", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+              ],
+              [
+                {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
+                {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
+                {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
               ]
             ]
           ]
@@ -1973,8 +2045,20 @@
             "has_yaku_with_hand"
           ],
           [
+            {"name": "status", "opts": ["senoo-kaori"]},
+            {"name": "status_missing", "opts": ["mase-yuuko"]},
+            {"name": "match_honorseq", "opts": [["hand", "calls", "draw"], ["win"]]},
+            "has_yaku_with_hand"
+          ],
+          [
             {"name": "status", "opts": ["mase-yuuko"]},
+            {"name": "status_missing", "opts": ["senoo-kaori"]},
             {"name": "match_wrapping", "opts": [["hand", "calls", "draw"], ["win"]]},
+            "has_yaku_with_hand"
+          ],
+          [
+            {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
+            {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "draw"], ["win"]]},
             "has_yaku_with_hand"
           ],
           {"name": "status", "opts": ["miyanaga-saki", "kan"]},
