@@ -314,7 +314,7 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def match_hand_smt_v2(hand, _calls, match_definitions, tile_mappings \\ %{}) do
+  def match_hand_smt_v2(hand, calls, match_definitions, tile_mappings \\ %{}) do
     # first figure out what the sets are
     # generates this:
     # (define-fun set1 () (_ BitVec 136) #x0000000000000000000000000000000111)
@@ -354,15 +354,15 @@ defmodule RiichiAdvanced.SMT do
     end)
     |> Enum.unzip()
 
+    # hand part 2: declare hand
     # (declare-const hand (_ BitVec 136))
     # (assert (= hand (bvadd #x0001100001110000000200000000000000 joker1)))
     hand_smt = hand
     |> Enum.with_index()
     |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, ix, joker_ixs)}\n                       " end)
-    hand_smt = ["(declare-const hand (_ BitVec 136))\n(assert (= hand (bvadd "] ++ hand_smt ++ [")))\n"]
+    hand_smt = ["(declare-const hand (_ BitVec 136))\n(assert (= hand (bvadd #{Enum.join(hand_smt)})))\n"]
     
-    # TODO calls
-    
+    # hand part 2: declare variables for hand indices
     # (declare-const hand_indices1 (_ BitVec 136))
     # (declare-const hand_indices2 (_ BitVec 136))
     # (declare-const hand_indices3 (_ BitVec 136))
@@ -374,6 +374,60 @@ defmodule RiichiAdvanced.SMT do
     hand_indices = Enum.map(1..length(all_sets), fn i -> "\n  (bvmul hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (equal_digits hand (bvadd#{hand_indices})))\n"]
 
+    calls = Enum.reject(calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    has_calls = length(calls) > 0
+    calls_smt = if has_calls do
+      # calls part 1: declare each non-flower call
+      # (declare-const call1 (_ BitVec 136))
+      # (assert (= call1 (bvadd joker3 #x0000000011000000000000000000000000)))
+      # (declare-const call2 (_ BitVec 136))
+      # (assert (= call2 (bvadd #x0000000000111000000000000000000000)))
+      calls_decls = calls
+      |> Enum.map(&Riichi.call_to_tiles/1)
+      |> Enum.with_index()
+      |> Enum.reduce([], fn {call, i}, calls_decls ->
+        call_smt = call
+        |> Enum.take(3) # ignore kans
+        |> Enum.with_index()
+        |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, ix, joker_ixs)}" end)
+        calls_decls ++ ["(declare-const call#{i+1} (_ BitVec 136))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
+      end)
+
+      # calls part 2: declare variables for call indices and set identities
+      # (declare-const call1_index (_ BitVec 8))
+      # (declare-const call1_set (_ BitVec 8))
+      # (assert (is_set_num call1_set))
+      # (assert (equal_digits call1 (bvmul (tile_from_index call1_index) (to_set call1_set))))
+      # (declare-const call2_index (_ BitVec 8))
+      # (declare-const call2_set (_ BitVec 8))
+      # (assert (is_set_num call2_set))
+      # (assert (equal_digits call2 (bvmul (tile_from_index call2_index) (to_set call2_set))))
+      call_identities = Enum.map(1..length(calls), fn i ->
+        """
+        (declare-const call#{i}_index (_ BitVec 8))
+        (declare-const call#{i}_set (_ BitVec 8))
+        (assert (is_set_num call#{i}_set))
+        (assert (equal_digits call#{i} (bvmul (tile_from_index call#{i}_index) (to_set call#{i}_set))))
+        """
+      end)
+
+      # calls part 3: assertions for call indices 
+      # (define-fun call_indices1 () (_ BitVec 136)
+      #   (bvadd (ite (= call1_set (_ bv1 8)) (tile_from_index call1_index) zero)
+      #          (ite (= call2_set (_ bv1 8)) (tile_from_index call2_index) zero)))
+      # (define-fun call_indices2 () (_ BitVec 136)
+      #   (bvadd (ite (= call1_set (_ bv2 8)) (tile_from_index call1_index) zero)
+      #          (ite (= call2_set (_ bv2 8)) (tile_from_index call2_index) zero)))
+      # (define-fun call_indices3 () (_ BitVec 136)
+      #   (bvadd (ite (= call1_set (_ bv3 8)) (tile_from_index call1_index) zero)
+      #          (ite (= call2_set (_ bv3 8)) (tile_from_index call2_index) zero)))
+      call_indices = Enum.map(1..length(all_sets), fn i ->
+        call_sets = Enum.map(1..length(calls), fn j -> "(ite (= call#{j}_set (_ bv#{i} 8)) (tile_from_index call#{j}_index) zero)" end)
+        "(define-fun call_indices#{i} () (_ BitVec 136)\n  (bvadd #{Enum.join(call_sets, "\n         ")}))\n"
+      end)
+
+      calls_decls ++ call_identities ++ call_indices
+    else [] end
     # (declare-const indices1 (_ BitVec 136))
     # (declare-const indices2 (_ BitVec 136))
     # (declare-const indices3 (_ BitVec 136))
@@ -388,7 +442,7 @@ defmodule RiichiAdvanced.SMT do
     # (assert (= sumindices3 (sum_digits indices3)))
     # (assert (= #x0 (bvand #x8 (add8_single sumindices1 (add8_single sumindices2 sumindices3)))))
     declare_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const indices#{i} (_ BitVec 136))\n" end)
-    assert_indices = Enum.map(1..length(all_sets), fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i})))\n" end)
+    assert_indices = Enum.map(1..length(all_sets), fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i}#{if has_calls do " call_indices#{i}" else "" end})))\n" end)
     declare_sumindices = Enum.map(1..length(all_sets), fn i -> "(declare-const sumindices#{i} (_ BitVec 4))\n" end)
     assert_sumindices = Enum.map(1..length(all_sets), fn i -> "(assert (= sumindices#{i} (sum_digits indices#{i})))\n" end)
     assert_indices_total = Enum.map(1..length(all_sets), fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
@@ -400,6 +454,8 @@ defmodule RiichiAdvanced.SMT do
              ++ declare_sumindices ++ assert_sumindices
              ++ [assert_indices_total]
 
+    # assert match definitions match
+    # ; example tiles for kokushi check
     # (declare-const tiles1 (_ BitVec 136))
     # (assert (or
     #   (= tiles1 #x0000000000000000000000000000000001)
@@ -415,15 +471,6 @@ defmodule RiichiAdvanced.SMT do
     #   (= tiles1 #x0010000000000000000000000000000000)
     #   (= tiles1 #x0100000000000000000000000000000000)
     #   (= tiles1 #x1000000000000000000000000000000000)))
-    # (assert (or
-    #   (and (= (_ bv4 4) (add8_single sumindices1 sumindices2))
-    #        (= (_ bv1 4) sumindices3))
-    #   (and (= (_ bv0 4) sumindices1)
-    #        (= (_ bv0 4) sumindices2)
-    #        (= (_ bv7 4) sumindices3))
-    #   (and (equal_digits hand (bvadd kokushi #x1111111100000001100000001100000001)))))
-
-    # assert match definitions match
     # ; e.g. 4 sets and a pair OR 7 pairs OR kokushi
     # (assert (or
     #   (and (= (_ bv4 4) (add8_single sumindices1 sumindices2))
@@ -432,7 +479,6 @@ defmodule RiichiAdvanced.SMT do
     #        (= (_ bv0 4) sumindices2)
     #        (= (_ bv7 4) sumindices3))
     #   (and (equal_digits hand (bvadd tiles1 #x1111111100000001100000001100000001)))))
-    IO.inspect(match_definitions)
     {match_assertions, tile_groups} = for match_definition <- match_definitions, reduce: {[], []} do
       {match_assertions, tile_groups} ->
         {assertions, mentioned_set_ixs, tile_groups} = for [groups, num] <- match_definition, reduce: {[], [], tile_groups} do
@@ -472,9 +518,9 @@ defmodule RiichiAdvanced.SMT do
     assert_tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {group, i} -> "(assert (or\n#{Enum.map(group, fn tiles -> "  (= tiles#{i} #{tiles})" end) |> Enum.join("\n")}))\n" end)
 
     check_sat = ["(check-sat)\n"]
-    query = "(get-value (" <> Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ") <> "))\n"
+    query = if length(joker_ixs) > 0 do "(get-value (" <> Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ") <> "))\n" else "" end
     # query = Enum.map(joker_ixs, fn i -> "(get-value (joker#{i}))\n" end) |> Enum.join()
-    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ [declare_tile_groups, assert_tile_groups] ++ index_smt ++ [match_assertions, check_sat, query])
+    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ [declare_tile_groups, assert_tile_groups] ++ index_smt ++ [match_assertions, check_sat, query])
     IO.puts(smt)
     result = ExSMT.Solver.query([smt])
     result = case result do

@@ -425,7 +425,7 @@ defmodule RiichiAdvanced.GameState do
         # deal with jokers
         # TODO calls
         # TODO taking yaku into account to maximize han
-        joker_assignment = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], [], translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+        joker_assignment = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
         IO.inspect(joker_assignment)
 
         orig_hand = state.players[seat].hand
