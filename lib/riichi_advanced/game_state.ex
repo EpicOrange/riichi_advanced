@@ -435,28 +435,38 @@ defmodule RiichiAdvanced.GameState do
         state
       "vietnamese" ->
         # deal with jokers
-        # TODO taking yaku into account to maximize han
-        joker_assignment = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
-        IO.inspect(joker_assignment)
+        joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+        # IO.inspect(joker_assignments)
 
         orig_hand = state.players[seat].hand
-        assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
-        assigned_winning_tile = if joker_assignment[length(orig_hand)] != nil do joker_assignment[length(orig_hand)] else winning_tile end
+        calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
 
-        # temporarily replace winner's hand with joker assignment to determine yaku
-        state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand } end)
-        phan_yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
-        phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
-          Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, phan_yaku)
-        else phan_yaku end
-        mun_yaku = Scoring.get_yaku(state, state.rules["yakuman"], seat, assigned_winning_tile, win_source)
-        {score, phan, mun} = Scoring.score_yaku(state, seat, phan_yaku, mun_yaku, win_source == :draw)
+        # find the maximum yaku obtainable across all joker assignments
+        {joker_assignment, phan_yaku, mun_yaku, score, phan, mun} = for joker_assignment <- joker_assignments do
+          assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
+          assigned_calls = calls
+          |> Enum.with_index()
+          |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 3*i + ix, winning_tile), sideways} end)} end)
+          assigned_winning_tile = Map.get(joker_assignment, length(orig_hand) + 3*length(calls), winning_tile)
+
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand } end)
+          phan_yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
+          mun_yaku = Scoring.get_yaku(state, state.rules["yakuman"], seat, assigned_winning_tile, win_source)
+          phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, mun_yaku ++ phan_yaku)
+          else phan_yaku end -- mun_yaku
+          {score, phan, mun} = Scoring.score_yaku(state, seat, phan_yaku, mun_yaku, win_source == :draw)
+
+          {joker_assignment, phan_yaku, mun_yaku, score, phan, mun}
+        end |> Enum.sort_by(fn {_, _, _, score, _, _} -> score end) |> Enum.at(-1)
+
+        # IO.inspect({joker_assignment, phan_yaku, mun_yaku, score, phan, mun})
 
         # sort jokers into the hand for hand display
         joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
         state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
         winner = Map.merge(winner, %{player: state.players[seat]})
-
         # restore original hand
         state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
 

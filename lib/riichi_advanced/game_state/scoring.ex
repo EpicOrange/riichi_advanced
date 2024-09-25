@@ -174,8 +174,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
         phan_table_non_discarder = scoring_table["score_table_phan_non_discarder"]
         score_discarder = if mun == 0 do phan_table_discarder[Integer.to_string(phan)] else mun * phan_table_discarder["max"] end
         score_non_discarder = if mun == 0 do phan_table_non_discarder[Integer.to_string(phan)] else mun * phan_table_non_discarder["max"] end
-        IO.inspect(score_discarder)
-        IO.inspect(score_non_discarder)
+        # IO.inspect(score_discarder)
+        # IO.inspect(score_non_discarder)
         score = if is_self_draw do 3 * score_discarder else score_discarder + 2 * score_non_discarder end
         {score, phan, mun}
       _ ->

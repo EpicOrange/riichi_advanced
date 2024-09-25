@@ -314,6 +314,24 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
+  def obtain_all_solutions(joker_ixs, last_assignment \\ nil, result \\ []) do
+    if length(joker_ixs) == 0 do
+      [%{}]
+    else
+      contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i])})" end) end
+      contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
+      query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
+      smt = Enum.join([contra, "(check-sat)\n", query])
+      # IO.puts(smt)
+      case ExSMT.Solver.query_continue([smt]) do
+        [:sat | assigns] ->
+          new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
+          obtain_all_solutions(joker_ixs, new_assignment, [new_assignment | result])
+        [:unsat | _] -> result
+      end
+    end
+  end
+
   def match_hand_smt_v2(hand, calls, match_definitions, tile_mappings \\ %{}) do
     # first figure out what the sets are
     # generates this:
@@ -514,22 +532,17 @@ defmodule RiichiAdvanced.SMT do
         {["\n  (and #{Enum.join(assertions, " ")})" | match_assertions], tile_groups}
     end
     match_assertions = "(assert (or#{match_assertions}))\n"
-    IO.inspect(tile_groups)
+    # IO.inspect(tile_groups)
 
     # TODO tile_groups
     declare_tile_groups = Enum.map(0..length(tile_groups)-1, fn i -> "(declare-const tiles#{i} (_ BitVec 136))\n" end)
     assert_tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {group, i} -> "(assert (or\n#{Enum.map(group, fn tiles -> "  (= tiles#{i} #{tiles})" end) |> Enum.join("\n")}))\n" end)
 
-    check_sat = ["(check-sat)\n"]
-    query = if length(joker_ixs) > 0 do "(get-value (" <> Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ") <> "))\n" else "" end
-    # query = Enum.map(joker_ixs, fn i -> "(get-value (joker#{i}))\n" end) |> Enum.join()
-    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ [declare_tile_groups, assert_tile_groups] ++ index_smt ++ [match_assertions, check_sat, query])
-    IO.puts(smt)
-    result = ExSMT.Solver.query([smt])
-    result = case result do
-      [:sat | assigns] -> Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
-      [:unsat | _] -> nil
-    end
+    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ [declare_tile_groups, assert_tile_groups] ++ index_smt ++ [match_assertions])
+    # IO.puts(smt)
+    ExSMT.Solver.query([smt])
+
+    result = obtain_all_solutions(joker_ixs)
     # IO.inspect(result)
     result
   end

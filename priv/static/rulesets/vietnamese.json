@@ -111,7 +111,7 @@
       "value": 1,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]},
-        {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
+        {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}
       ]
     },
     {
@@ -120,7 +120,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]},
         {"name": "not_match", "opts": [["calls"], [[[["koutsu"], 4]]]]},
-        {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
+        {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}
       ]
     },
     {
@@ -128,7 +128,7 @@
       "value": 3,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]},
-        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
+        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}
       ]
     },
     {
@@ -306,7 +306,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]},
         {"name": "not_match", "opts": [["calls"], [[[["koutsu"], 4]]]]},
-        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
+        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}
       ]
     },
     {
@@ -314,7 +314,7 @@
       "value": 1,
       "when": [
         {"name": "match", "opts": [["calls"], [[[["koutsu"], 4]]]]},
-        {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
+        {"name": "not_match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}
       ]
     },
     {
@@ -322,15 +322,14 @@
       "value": 2,
       "when": [
         {"name": "match", "opts": [["calls"], [[[["koutsu"], 4]]]]},
-        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]}
+        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}
       ]
     },
     {
       "display_name": "All Triplets with 1 and 9",
       "value": 1,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4]]]]},
-        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[["1m", "9m", "1p", "9p", "1s", "9s"], 1]]]}
+        {"name": "match_simple", "opts": [["hand", "calls", "winning_tile"], [[[[["1m", "1m", "1m"], ["1p", "1p", "1p"], ["1s", "1s", "1s"]], 1], [[["9m", "9m", "9m"], ["9p", "9p", "9p"], ["9s", "9s", "9s"]], 1], [["koutsu"], 2]]]]}
       ]
     },
     {
@@ -387,7 +386,7 @@
     {
       "display_name": "All Honors",
       "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "5z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"]}]
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"]}]
     },
     {
       "display_name": "13 Orphans",
@@ -554,7 +553,7 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
-      ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]],
+      ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]],
       ["set_tile_alias_all", ["3j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
       ["set_tile_alias_all", ["5j"], ["0z","6z","7z"]],
       ["set_tile_alias_all", ["6j"], ["1z","2z","3z","4z"]],
