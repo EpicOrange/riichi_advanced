@@ -114,6 +114,12 @@
     [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ]
   ],
   "not_kokushi_tenpai_definition": [
+    [ [["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"], 2] ],
+    [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 3] ],
+    [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1], [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1] ],
+    [ [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 2] ]
+  ],
+  "not_kokushi_tenpai_13_definition": [
     [ [["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"], 1] ],
     [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 2] ],
     [ [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1] ]
@@ -942,8 +948,8 @@
   },
   "play_restrictions": [
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "draw"], ["tenpai"]]}, {"name": "unneeded_for_hand_hseq_w", "opts": ["tenpai"]}]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["not_kokushi_tenpai"]]}, {"name": "not_unneeded_for_hand_hseq_w", "opts": ["not_kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "not_match_wrapping_honorseq", "opts": [["hand", "calls", "draw"], ["tenpai"]]}, {"name": "unneeded_for_hand_hseq_w", "opts": ["tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "match_wrapping_honorseq", "opts": [["hand", "calls", "draw"], ["not_kokushi_tenpai"]]}, {"name": "not_unneeded_for_hand_hseq_w", "opts": ["not_kokushi_tenpai_13"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]]
   ],
   "before_turn_change": {
