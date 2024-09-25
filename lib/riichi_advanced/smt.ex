@@ -343,7 +343,10 @@ defmodule RiichiAdvanced.SMT do
     to_set_fun = "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec 136)" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n"
 
     # first figure out which tiles are jokers based on tile_mappings
-    {joker_ixs, joker_constraints} = hand
+    call_tiles = Enum.map(calls, &Riichi.call_to_tiles/1)
+    |> Enum.map(&Enum.take(&1, 3))
+    |> Enum.concat()
+    {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
     |> Enum.filter(fn {tile, _ix} -> Map.has_key?(tile_mappings, tile) end)
     |> Enum.map(fn {tile, ix} ->
@@ -389,7 +392,7 @@ defmodule RiichiAdvanced.SMT do
         call_smt = call
         |> Enum.take(3) # ignore kans
         |> Enum.with_index()
-        |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, ix, joker_ixs)}" end)
+        |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, length(hand)+i*3+ix, joker_ixs)}" end)
         calls_decls ++ ["(declare-const call#{i+1} (_ BitVec 136))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
       end)
 
