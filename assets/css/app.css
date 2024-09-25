@@ -61,6 +61,7 @@ div.calls {
   position: absolute;
   flex-direction: row-reverse;
   right: 0;
+  z-index: -1;
 }
 div.call, div.draws, div.winning-tile {
   margin-left: calc(0.375 * var(--tile-size));
