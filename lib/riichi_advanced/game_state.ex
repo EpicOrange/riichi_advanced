@@ -840,7 +840,7 @@ defmodule RiichiAdvanced.GameState do
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.any?(fn {_name, call} ->
           call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
-          Riichi.can_call?(context.calls_spec, call_tiles, state.players[context.seat].hand ++ state.players[context.seat].draw, [], state.players[context.seat].tile_mappings, context.call_wraps, context.honor_seqs)
+          Riichi.can_call?(context.calls_spec, call_tiles, state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].tile_mappings, context.call_wraps, context.honor_seqs)
         end)
       "has_draw"                 -> not Enum.empty?(state.players[context.seat].draw)
       "furiten"                  -> false

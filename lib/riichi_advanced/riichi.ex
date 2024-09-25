@@ -7,7 +7,7 @@ defmodule Riichi do
                 :"1p"=>:"9p", :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p", :"0p"=>:"4p",
                 :"1s"=>:"9s", :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s", :"0s"=>:"4s"}
   def pred(tile, wraps \\ false) do
-    if wraps do @succ_wraps[tile] else @pred[tile] end
+    if wraps do @pred_wraps[tile] else @pred[tile] end
   end
 
   @succ %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m", :"0m"=>:"6m",
@@ -438,7 +438,7 @@ defmodule Riichi do
     middle_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"2z", :"3z", :"6z"]
     all_tiles = middle_tiles ++ [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"4z", :"5z", :"7z"]
     kanchan_tiles = if wraps do all_tiles else middle_tiles end
-    possible_kanchan_removed = if winning_tile in middle_tiles do
+    possible_kanchan_removed = if winning_tile in kanchan_tiles do
       try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps, true), offset_tile(winning_tile, 1, wraps, true)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu+2} end)
     else [] end
