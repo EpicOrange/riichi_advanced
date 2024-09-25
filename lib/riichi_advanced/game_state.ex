@@ -825,6 +825,7 @@ defmodule RiichiAdvanced.GameState do
     last_action = get_last_action(state)
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)
+    cxt_player = if Map.has_key?(context, :seat) do state.players[context.seat] else nil end
     result = case cond_spec do
       "true"                        -> true
       "false"                       -> false
@@ -847,68 +848,68 @@ defmodule RiichiAdvanced.GameState do
       "someone_else_just_discarded" -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
       "just_discarded"              -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
       "just_called"                 -> last_action != nil && last_action.action == :call
-      "call_available"              -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, state.players[context.seat].hand, [last_action.tile], state.players[context.seat].tile_mappings, context.call_wraps, context.honor_seqs)
-      "self_call_available"         -> Riichi.can_call?(context.calls_spec, state.players[context.seat].hand ++ state.players[context.seat].draw, [], state.players[context.seat].tile_mappings, context.call_wraps, context.honor_seqs)
-      "can_upgrade_call"            -> state.players[context.seat].calls
+      "call_available"              -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, cxt_player.hand, [last_action.tile], cxt_player.tile_aliases, cxt_player.tile_mappings, context.call_wraps, context.honor_seqs)
+      "self_call_available"         -> Riichi.can_call?(context.calls_spec, cxt_player.hand ++ cxt_player.draw, [], cxt_player.tile_aliases, cxt_player.tile_mappings, context.call_wraps, context.honor_seqs)
+      "can_upgrade_call"            -> cxt_player.calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.any?(fn {_name, call} ->
           call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
-          Riichi.can_call?(context.calls_spec, call_tiles, state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].tile_mappings, context.call_wraps, context.honor_seqs)
+          Riichi.can_call?(context.calls_spec, call_tiles, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings, context.call_wraps, context.honor_seqs)
         end)
-      "has_draw"                 -> not Enum.empty?(state.players[context.seat].draw)
+      "has_draw"                 -> not Enum.empty?(cxt_player.draw)
       "furiten"                  -> false
       # TODO consolidate these
-      "has_yaku_with_hand"       -> if not Enum.empty?(state.players[context.seat].draw) do
-          winning_tile = Enum.at(state.players[context.seat].draw, 0)
-          wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
+      "has_yaku_with_hand"       -> if not Enum.empty?(cxt_player.draw) do
+          winning_tile = Enum.at(cxt_player.draw, 0)
+          wraps = "wrapping_fu_calculation" in cxt_player.status
+          minipoints = Riichi.calculate_fu(cxt_player.hand, cxt_player.calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), cxt_player.tile_aliases, wraps)
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :draw, minipoints)) end)
         else false end
       "has_yaku_with_discard"    -> if last_action.action == :discard do
           winning_tile = last_action.tile
-          wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
+          wraps = "wrapping_fu_calculation" in cxt_player.status
+          minipoints = Riichi.calculate_fu(cxt_player.hand, cxt_player.calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), cxt_player.tile_aliases, wraps)
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "has_yaku_with_call"       -> if last_action.action == :call do
           winning_tile = last_action.tile
-          wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
+          wraps = "wrapping_fu_calculation" in cxt_player.status
+          minipoints = Riichi.calculate_fu(cxt_player.hand, cxt_player.calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), cxt_player.tile_aliases, wraps)
           Enum.any?(state.rules["yaku"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
-      "has_yakuman_with_hand"    -> if not Enum.empty?(state.players[context.seat].draw) do
-          winning_tile = Enum.at(state.players[context.seat].draw, 0)
-          wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
+      "has_yakuman_with_hand"    -> if not Enum.empty?(cxt_player.draw) do
+          winning_tile = Enum.at(cxt_player.draw, 0)
+          wraps = "wrapping_fu_calculation" in cxt_player.status
+          minipoints = Riichi.calculate_fu(cxt_player.hand, cxt_player.calls, winning_tile, :draw, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), cxt_player.tile_aliases, wraps)
           Enum.any?(state.rules["yakuman"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :draw, minipoints)) end)
         else false end
       "has_yakuman_with_discard" -> if last_action.action == :discard do
           winning_tile = last_action.tile
-          wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
+          wraps = "wrapping_fu_calculation" in cxt_player.status
+          minipoints = Riichi.calculate_fu(cxt_player.hand, cxt_player.calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), cxt_player.tile_aliases, wraps)
           Enum.any?(state.rules["yakuman"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "has_yakuman_with_call"    -> if last_action.action == :call do
           winning_tile = last_action.tile
-          wraps = "wrapping_fu_calculation" in state.players[context.seat].status
-          minipoints = Riichi.calculate_fu(state.players[context.seat].hand, state.players[context.seat].calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), state.players[context.seat].tile_aliases, wraps)
+          wraps = "wrapping_fu_calculation" in cxt_player.status
+          minipoints = Riichi.calculate_fu(cxt_player.hand, cxt_player.calls, winning_tile, :discard, Riichi.get_seat_wind(state.kyoku, context.seat), Riichi.get_round_wind(state.kyoku), cxt_player.tile_aliases, wraps)
           Enum.any?(state.rules["yakuman"], fn yaku -> not Enum.empty?(Scoring.get_yaku(state, [yaku], context.seat, winning_tile, :discard, minipoints)) end)
         else false end
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action})
-      "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition"), state.players[context.seat].tile_aliases, false, false) end)
-      "unneeded_for_hand_wraps"  -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition"), state.players[context.seat].tile_aliases, true, false) end)
-      "unneeded_for_hand_hseq"   -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition"), state.players[context.seat].tile_aliases, false, true) end)
-      "unneeded_for_hand_hseq_w" -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(state.players[context.seat].hand ++ state.players[context.seat].draw, state.players[context.seat].calls, context.tile, get_hand_definition(state, name <> "_definition"), state.players[context.seat].tile_aliases, true, true) end)
-      "has_calls"                -> not Enum.empty?(state.players[context.seat].calls)
-      "no_calls"                 -> Enum.empty?(state.players[context.seat].calls)
-      "has_call_named"           -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name in opts end)
-      "has_no_call_named"        -> Enum.all?(state.players[context.seat].calls, fn {name, _call} -> name not in opts end)
+      "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, false, false) end)
+      "unneeded_for_hand_wraps"  -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, true, false) end)
+      "unneeded_for_hand_hseq"   -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, false, true) end)
+      "unneeded_for_hand_hseq_w" -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, true, true) end)
+      "has_calls"                -> not Enum.empty?(cxt_player.calls)
+      "no_calls"                 -> Enum.empty?(cxt_player.calls)
+      "has_call_named"           -> Enum.all?(cxt_player.calls, fn {name, _call} -> name in opts end)
+      "has_no_call_named"        -> Enum.all?(cxt_player.calls, fn {name, _call} -> name not in opts end)
       "won_by_call"              -> context.win_source == :call
       "won_by_draw"              -> context.win_source == :draw
       "won_by_discard"           -> context.win_source == :discard
-      "status"                   -> Enum.all?(opts, fn st -> st in state.players[context.seat].status end)
-      "status_missing"           -> Enum.all?(opts, fn st -> st not in state.players[context.seat].status end)
+      "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
+      "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
       "discarder_status"         -> last_action.action == :discard && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
       "shimocha_status"          -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :shimocha)].status end)
       "toimen_status"            -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :toimen)].status end)
@@ -917,8 +918,8 @@ defmodule RiichiAdvanced.GameState do
       "anyone_status"            -> Enum.any?(state.players, fn {_seat, player} -> Enum.all?(opts, fn st -> st in player.status end) end)
       "everyone_status"          -> Enum.all?(state.players, fn {_seat, player} -> Enum.all?(opts, fn st -> st in player.status end) end)
       "is_drawn_tile"            -> context.tile_source == :draw
-      "buttons_include"          -> Enum.all?(opts, fn button_name -> button_name in state.players[context.seat].buttons end)
-      "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in state.players[context.seat].buttons end)
+      "buttons_include"          -> Enum.all?(opts, fn button_name -> button_name in cxt_player.buttons end)
+      "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in cxt_player.buttons end)
       "tile_drawn"               -> Enum.all?(opts, fn tile -> tile in state.drawn_reserved_tiles end)
       "tile_not_drawn"           -> Enum.all?(opts, fn tile -> tile not in state.drawn_reserved_tiles end)
       "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
@@ -959,35 +960,35 @@ defmodule RiichiAdvanced.GameState do
       "match"                    -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
+        tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases) end)
       "match_simple"         -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
+        tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_simple(hand, calls, match_definitions, tile_aliases) end)
       "match_wrapping"       -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
+        tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, true) end)
       "match_honorseq"       -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
+        tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, false, true) end)
       "match_wrapping_honorseq" -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
+        tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, true, true) end)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
-        winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)
+        winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
         Enum.all?(winning_hand, fn tile -> tile in tiles end)
       "winning_hand_and_tile_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
-        winning_hand = state.players[context.seat].hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles/1)
+        winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
         Enum.all?(winning_hand ++ [winning_tile], fn tile -> tile in tiles end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && state.saki.all_drafted
@@ -1013,16 +1014,16 @@ defmodule RiichiAdvanced.GameState do
       "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards
       "call_would_change_waits" ->
         win_definitions = translate_match_definitions(state, opts)
-        tile_aliases = state.players[context.seat].tile_aliases
-        hand = state.players[context.seat].hand
-        draw = state.players[context.seat].draw
-        calls = state.players[context.seat].calls
-        tile_mappings = state.players[context.seat].tile_mappings
+        hand = cxt_player.hand
+        draw = cxt_player.draw
+        calls = cxt_player.calls
+        tile_aliases = cxt_player.tile_aliases
+        tile_mappings = cxt_player.tile_mappings
         call_wraps = false # TODO
         honor_seqs = false # TODO
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, call_wraps, honor_seqs)
         # IO.inspect(Riichi.make_calls(context.calls_spec, hand ++ draw))
-        Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, [], tile_mappings, call_wraps, honor_seqs), fn {called_tile, call_choices} ->
+        Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, [], tile_aliases, tile_mappings, call_wraps, honor_seqs), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
             call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
@@ -1036,10 +1037,10 @@ defmodule RiichiAdvanced.GameState do
         # %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades, call_wraps: call_wraps})
       "call_changes_waits" ->
         win_definitions = translate_match_definitions(state, opts)
-        tile_aliases = state.players[context.seat].tile_aliases
-        hand = state.players[context.seat].hand
-        draw = state.players[context.seat].draw
-        calls = state.players[context.seat].calls
+        tile_aliases = cxt_player.tile_aliases
+        hand = cxt_player.hand
+        draw = cxt_player.draw
+        calls = cxt_player.calls
         call_tiles = [context.called_tile | context.call_choice]
         call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
@@ -1051,17 +1052,17 @@ defmodule RiichiAdvanced.GameState do
       "wait_count_at_least" ->
         number = Enum.at(opts, 0, 1)
         win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
-        hand = state.players[context.seat].hand
-        calls = state.players[context.seat].calls
+        tile_aliases = cxt_player.tile_aliases
+        hand = cxt_player.hand
+        calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
         length(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
         win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = state.players[context.seat].tile_aliases
-        hand = state.players[context.seat].hand
-        calls = state.players[context.seat].calls
+        tile_aliases = cxt_player.tile_aliases
+        hand = cxt_player.hand
+        calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
         length(waits) <= number
       "tagged"              ->
@@ -1069,10 +1070,10 @@ defmodule RiichiAdvanced.GameState do
         tagged_tile = state.tags[tag]
         Riichi.normalize_red_five(context.tile) == Riichi.normalize_red_five(tagged_tile)
       "has_hell_pair_wait" ->
-        hand = state.players[context.seat].hand
-        calls = state.players[context.seat].calls
+        hand = cxt_player.hand
+        calls = cxt_player.calls
         pair_wait_definitions = translate_match_definitions(state, opts)
-        tile_aliases = state.players[context.seat].tile_aliases
+        tile_aliases = cxt_player.tile_aliases
         pair_waits = Enum.flat_map(pair_wait_definitions, fn definition -> Riichi.remove_hand_definition(hand, calls, definition, tile_aliases, false) end)
         |> Enum.flat_map(fn {hand, _calls} -> hand end)
         visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
@@ -1080,8 +1081,8 @@ defmodule RiichiAdvanced.GameState do
         ukeire = Riichi.count_ukeire(pair_waits, hand, visible_ponds, visible_calls, context.winning_tile)
         # IO.puts("Pair waits: #{inspect(pair_waits)}, ukeire: #{inspect(ukeire)}")
         ukeire == 1
-      "third_row_discard"   -> length(state.players[context.seat].pond) >= 12
-      "tiles_in_hand"       -> length(state.players[context.seat].hand ++ state.players[context.seat].draw) == Enum.at(opts, 0, 0)
+      "third_row_discard"   -> length(cxt_player.pond) >= 12
+      "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"

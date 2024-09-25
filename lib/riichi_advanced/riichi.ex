@@ -117,44 +117,38 @@ defmodule Riichi do
     end
   end
 
-  # return all possible calls of each tile in called_tiles, given hand
-  # includes returning multiple choices for red fives
-  # if called_tiles is an empty list, then we choose from our hand
-  # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
-  def make_calls(calls_spec, hand, called_tiles \\ [], _tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false) do
-    # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
-    from_hand = Enum.empty?(called_tiles)
-    call_choices = if from_hand do hand else called_tiles end
-    Map.new(call_choices, fn tile ->
-      {tile, Enum.flat_map(calls_spec, fn call_spec ->
-        hand = if from_hand do List.delete(hand, tile) else hand end
-        other_tiles = Enum.map(call_spec, &offset_tile(tile, &1, wraps, honor_seqs))
-        {_, choices} = Enum.reduce(other_tiles, {hand, []}, fn t, {remaining_hand, tiles} ->
-          exists = Enum.member?(remaining_hand, t)
-          red_exists = Enum.member?(remaining_hand, to_red(t))
-          {List.delete(remaining_hand, if red_exists do to_red(t) else t end),
-           [(if exists do [t] else [] end) ++ (if red_exists do [to_red(t)] else [] end) | tiles]}
-        end)
-        # take the cartesian product of tile choices to get all choice sets
-        result = choices
-               |> Enum.reduce([[]], fn cs, accs -> for choice <- cs, acc <- accs, do: acc ++ [choice] end)
-               |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end)
-               |> Enum.uniq()
-        result
-      end) |> Enum.uniq()}
-    end)
-  end
-  def can_call?(calls_spec, hand, called_tiles \\ [], tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false), do: Enum.any?(make_calls(calls_spec, hand, called_tiles, tile_mappings, wraps, honor_seqs), fn {_tile, choices} -> not Enum.empty?(choices) end)
-
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{})
   def try_remove_all_tiles(hand, [], _tile_aliases), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases) do
     aliases = if Map.has_key?(tile_aliases, tile) do tile_aliases[tile] else [] end
-    for t <- [tile] ++ aliases do
+    for t <- (if to_red(tile) == nil do [tile] else [tile, to_red(tile)] end) ++ aliases do
       removed = List.delete(hand, t)
       if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases) end
     end |> Enum.concat()
   end
+
+  # return all possible calls of each tile in called_tiles, given hand
+  # includes returning multiple choices for red fives
+  # if called_tiles is an empty list, then we choose from our hand
+  # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
+  def make_calls(calls_spec, hand, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false) do
+    # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
+    from_hand = Enum.empty?(called_tiles)
+    call_choices = if from_hand do hand else called_tiles end
+    Map.new(call_choices, fn tile ->
+      joker_choices = [tile] ++ Map.get(tile_mappings, tile, [])
+      {tile, Enum.flat_map(calls_spec, fn call_spec ->
+        hand = if from_hand do List.delete(hand, tile) else hand end
+        for choice <- joker_choices, reduce: [] do
+          choices ->
+            target_tiles = Enum.map(call_spec, &offset_tile(choice, &1, wraps, honor_seqs))
+            possible_removals = try_remove_all_tiles(hand, target_tiles, tile_aliases)
+            choices ++ Enum.map(possible_removals, fn remaining -> hand -- remaining end)
+        end |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end) |> Enum.uniq()
+      end) |> Enum.uniq()}
+    end)
+  end
+  def can_call?(calls_spec, hand, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false), do: Enum.any?(make_calls(calls_spec, hand, called_tiles, tile_aliases, tile_mappings, wraps, honor_seqs), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
   def remove_from_hand_calls(hand, tiles, calls, tile_aliases \\ %{}) do
     # from hand
