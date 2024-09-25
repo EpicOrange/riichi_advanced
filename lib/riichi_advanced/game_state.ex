@@ -257,6 +257,13 @@ defmodule RiichiAdvanced.GameState do
         |> Map.put(:max_revealed_tiles, 0)
         |> Map.put(:drawn_reserved_tiles, [])
       end
+      state = state
+      |> Map.put(:round_result, nil)
+      |> Map.put(:winners, %{})
+      |> Map.put(:winner_index, 0)
+      |> Map.put(:delta_scores, nil)
+      |> Map.put(:delta_scores_reason, nil)
+      |> Map.put(:next_dealer, nil)
 
       # initialize auto buttons
       initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
@@ -821,6 +828,12 @@ defmodule RiichiAdvanced.GameState do
     result = case cond_spec do
       "true"                        -> true
       "false"                       -> false
+      "print"                       ->
+        IO.inspect(opts)
+        true
+      "print_context"               ->
+        IO.inspect(context)
+        true
       "our_turn"                    -> state.turn == context.seat
       "our_turn_is_next"            -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
       "our_turn_is_not_next"        -> state.turn != if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
