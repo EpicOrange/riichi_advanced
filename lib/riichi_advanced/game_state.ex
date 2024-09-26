@@ -995,6 +995,11 @@ defmodule RiichiAdvanced.GameState do
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
         tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, true, true) end)
+      "match_unique"         -> 
+        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
+        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        tile_aliases = cxt_player.tile_aliases
+        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_unique(hand, calls, match_definitions, tile_aliases) end)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)

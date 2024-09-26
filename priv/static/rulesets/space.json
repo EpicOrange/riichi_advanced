@@ -124,8 +124,8 @@
     [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 2] ],
     [ [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1] ]
   ],
-  "not_kyuushu_kyuuhai_definition": [
-    [ [["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s","ton_pair","nan_pair","shaa_pair","pei_pair","haku_pair","hatsu_pair","chun_pair"], 6] ]
+  "kyuushu_kyuuhai_definition": [
+    [ [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9] ]
   ],
   "win_definition": [
     [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
@@ -1265,7 +1265,7 @@
         "has_draw",
         {"name": "status", "opts": ["discards_empty"]},
         {"name": "status_missing", "opts": ["call_made"]},
-        {"name": "not_match_simple", "opts": [["hand", "draw"], ["not_kyuushu_kyuuhai"]]}
+        {"name": "match_unique", "opts": [["hand", "draw"], ["kyuushu_kyuuhai"]]}
       ],
       "actions": [
         ["big_text", "Kyushuu Kyuuhai"],

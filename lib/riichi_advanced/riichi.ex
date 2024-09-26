@@ -279,6 +279,29 @@ defmodule Riichi do
     Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_hand_definition_simple(hand, calls, match_definition, tile_aliases)) end)
   end
 
+  # same as simple, but for each group set, only removes each group at most once
+  defp remove_hand_definition_unique(hand, calls, hand_definition, tile_aliases) do
+    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
+      initial = Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end)
+      Enum.reduce(1..num, initial, fn _, hand_call_groups ->
+        case hand_call_groups do
+          [{hand, calls, remaining_groups}] ->
+            x = for group <- remaining_groups do
+              remove_group(hand, calls, group, tile_aliases)
+              |> Enum.map(fn {hand, calls} -> {hand, calls, remaining_groups -- [group]} end)
+            end |> Enum.concat() |> Enum.take(1)
+            IO.inspect(x)
+            x
+          [] -> []
+        end
+      end) |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
+    end)
+  end
+
+  def match_hand_unique(hand, calls, match_definitions, tile_aliases \\ %{}) do
+    Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_hand_definition_unique(hand, calls, match_definition, tile_aliases)) end)
+  end
+
   def tile_matches(tile_specs, context) do
     Enum.any?(tile_specs, &case &1 do
       "any" -> true
