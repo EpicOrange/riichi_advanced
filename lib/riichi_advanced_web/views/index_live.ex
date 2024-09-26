@@ -41,7 +41,12 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def handle_event("redirect", %{"ruleset" => ruleset, "session_id" => session_id, "nickname" => nickname}, socket) do
     socket = if session_id != "" do
-      push_navigate(socket, to: ~p"/lobby/#{ruleset}/#{session_id}?nickname=#{nickname}")
+      running_games = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, session_id))
+      if Enum.empty?(running_games) do
+        push_navigate(socket, to: ~p"/lobby/#{ruleset}/#{session_id}?nickname=#{nickname}")
+      else
+        push_navigate(socket, to: ~p"/game/#{ruleset}/#{session_id}?nickname=#{nickname}")
+      end
     else socket end
     {:noreply, socket}
   end
