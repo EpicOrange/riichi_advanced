@@ -38,6 +38,7 @@ defmodule Game do
     # pids
     supervisor: nil,
     mutex: nil,
+    smt_solver: nil,
     ai_supervisor: nil,
     exit_monitor: nil,
     play_tile_debounce: nil,
@@ -121,6 +122,7 @@ defmodule RiichiAdvanced.GameState do
     [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
     [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
+    [{smt_solver, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("smt_solver", state.ruleset, state.session_id))
 
     # initilize all debouncers
     {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :play_tile_debouncer_east, :reset_play_tile_debounce, :east)
@@ -158,6 +160,7 @@ defmodule RiichiAdvanced.GameState do
       ruleset_json: ruleset_json,
       supervisor: supervisor,
       mutex: mutex,
+      smt_solver: smt_solver,
       ai_supervisor: ai_supervisor,
       exit_monitor: exit_monitor,
       play_tile_debounce: %{:east => false, :south => false, :west => false, :north => false},

@@ -1,121 +1,5 @@
 defmodule RiichiAdvanced.SMT do
-  def to_smt_tile_v1(tile, ix \\ -1, joker_ixs \\ %{}) do
-    if ix in joker_ixs do
-      "joker#{ix}"
-    else
-      case tile do
-        :"1m" -> 1; :"2m" -> 2; :"3m" -> 3; :"4m" -> 4; :"5m" -> 5; :"0m" -> 5; :"6m" -> 6; :"7m" -> 7; :"8m" -> 8; :"9m" -> 9;
-        :"1p" -> 21; :"2p" -> 22; :"3p" -> 23; :"4p" -> 24; :"5p" -> 25; :"0p" -> 25; :"6p" -> 26; :"7p" -> 27; :"8p" -> 28; :"9p" -> 29;
-        :"1s" -> 41; :"2s" -> 42; :"3s" -> 43; :"4s" -> 44; :"5s" -> 45; :"0s" -> 45; :"6s" -> 46; :"7s" -> 47; :"8s" -> 48; :"9s" -> 49;
-        :"1z" -> 100; :"2z" -> 200; :"3z" -> 300; :"4z" -> 400; :"5z" -> 500; :"6z" -> 600; :"7z" -> 700
-        _ ->
-          IO.puts("Unhandled smt tile #{inspect(tile)}")
-          0
-      end
-    end
-  end
-
-  def from_smt_tile_v1(smt_tile) do
-    case smt_tile do
-      1 -> :"1m"; 2 -> :"2m"; 3 -> :"3m"; 4 -> :"4m"; 5 -> :"5m"; 6 -> :"6m"; 7 -> :"7m"; 8 -> :"8m"; 9 -> :"9m";
-      21 -> :"1p"; 22 -> :"2p"; 23 -> :"3p"; 24 -> :"4p"; 25 -> :"5p"; 26 -> :"6p"; 27 -> :"7p"; 28 -> :"8p"; 29 -> :"9p";
-      41 -> :"1s"; 42 -> :"2s"; 43 -> :"3s"; 44 -> :"4s"; 45 -> :"5s"; 46 -> :"6s"; 47 -> :"7s"; 48 -> :"8s"; 49 -> :"9s";
-      100 -> :"1z"; 200 -> :"2z"; 300 -> :"3z"; 400 -> :"4z"; 500 -> :"5z"; 600 -> :"6z"; 700 -> :"7z"
-      _ ->
-        IO.puts("Unhandled smt tile #{inspect(smt_tile)}")
-        0
-    end
-  end
-
-  def match_hand_smt_v1(hand, _calls, match_definitions, tile_mappings \\ %{}) do
-    # first figure out which tiles are jokers based on tile_mappings
-    {joker_ixs, joker_constraints} = hand
-    |> Enum.with_index()
-    |> Enum.filter(fn {tile, _ix} -> Map.has_key?(tile_mappings, tile) end)
-    |> Enum.map(fn {tile, ix} ->
-      mapping_constraints = tile_mappings[tile] ++ [tile]
-      |> Enum.map(fn tile2 -> "(= joker#{ix} #{to_smt_tile_v1(tile2)})" end)
-      |> Enum.join("\n             ")
-      {ix, "(declare-const joker#{ix} Int)\n(assert (or #{mapping_constraints}))\n"}
-    end)
-    |> Enum.unzip()
-
-    hand_smt = hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> "(assert (= (select hand #{ix}) #{to_smt_tile_v1(tile, ix, joker_ixs)}))\n" end)
-    hand_smt = ["(declare-const hand (Array Int Int))\n"] ++ hand_smt
-    {lens, match_assertions} = for match_definition <- match_definitions do
-      for [groups, num] <- match_definition, reduce: {0, ""} do
-        {ix, assertions} ->
-          first_group = Enum.at(groups, 0)
-          len_of_each_group = cond do
-            is_list(first_group)              -> length(first_group)
-            Utils.to_tile(first_group) != nil -> 1
-          end
-          assertions = for k <- 0..num-1, reduce: assertions do
-            assertions ->
-              var_names = Enum.map((ix+(k*len_of_each_group))..(ix+((k+1)*len_of_each_group)-1), fn i -> "(H #{i})" end)
-              group_constraints = for group <- groups do
-                cond do
-                  is_list(group) && not Enum.empty?(group) ->
-                    if Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) do
-                      # list of tiles
-                      tile_constraints = group
-                      |> Enum.zip(var_names)
-                      |> Enum.map(fn {tile, name} -> "(= #{name} #{to_smt_tile_v1(Utils.to_tile(tile))})" end)
-                      |> Enum.join("\n                 ")
-                      "(and " <> tile_constraints <> ")"
-                    else
-                      # list of integers specifying a group of tiles
-                      first = Enum.at(var_names, 0)
-                      tile_constraints = group
-                      |> Enum.zip(var_names)
-                      |> Enum.drop(1)
-                      |> Enum.map(fn {offset, name} -> "(= #{name} (+ #{first} #{offset}))" end)
-                      |> Enum.join("\n                 ")
-                      "(and " <> tile_constraints <> ")"
-                    end
-                  Utils.to_tile(group) != nil -> 
-                    # single tile
-                    first = Enum.at(var_names, 0)
-                    "(= #{first} #{to_smt_tile_v1(Utils.to_tile(group))})"
-                  # call
-                  is_binary(group) ->
-                    IO.puts("Unhandled call #{inspect(group)}")
-                    ""
-                  true ->
-                    IO.puts("Unhandled group #{inspect(group)}")
-                    ""
-                end
-              end |> Enum.join("\n            ")
-              assertions <> "(assert (or " <> group_constraints <> "))\n"
-          end
-          {ix + len_of_each_group * num, assertions}
-      end
-    end |> Enum.unzip()
-
-    hand_length = Enum.at(lens, 0)
-    p = 0..hand_length-1 |> Enum.map(fn i -> "(select p #{i})" end)
-    p = ["(declare-const p (Array Int Int))\n(assert (distinct ", Enum.join(p, "\n                  "), "))\n"]
-    p_constraints = 0..hand_length-1 |> Enum.map(fn i -> "(assert (and (>= (select p #{i}) 0) (<= (select p #{i}) #{hand_length-1})))\n" end)
-    h = ["(define-fun H ((i Int)) Int (select hand (select p i)))\n"]
-    check_sat = ["(check-sat)\n"]
-    query = "(get-value (" <> Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ") <> "))\n"
-    # query = 0..hand_length-1 |> Enum.map(fn i -> "(get-value ((select hand (select p #{i}))))\n" end)
-
-    smt = Enum.join(joker_constraints ++ hand_smt ++ p ++ p_constraints ++ h ++ match_assertions ++ check_sat ++ [query])
-    IO.puts(smt)
-    result = ExSMT.Solver.query([smt])
-    result = case result do
-      [:sat | assigns] -> Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile_v1(val) end))))
-      [:unsat | _] -> nil
-    end
-    IO.inspect(tile_mappings)
-    IO.inspect(result)
-  end
-
-
-
-
-
+  @print_smt true
 
   @boilerplate """
                (set-logic QF_FD)
@@ -314,7 +198,7 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(joker_ixs, last_assignment \\ nil, result \\ []) do
+  def obtain_all_solutions(solver_pid, joker_ixs, last_assignment \\ nil, result \\ []) do
     if length(joker_ixs) == 0 do
       [%{}]
     else
@@ -322,17 +206,20 @@ defmodule RiichiAdvanced.SMT do
       contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
       query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
       smt = Enum.join([contra, "(check-sat)\n", query])
-      # IO.puts(smt)
-      case ExSMT.Solver.query_continue([smt]) do
+      if @print_smt do
+        IO.puts(smt)
+      end
+      {:ok, response} = GenServer.call(solver_pid, {:query, [smt], false}, 5000)
+      case ExSMT.Solver.ResponseParser.parse(response) do
         [:sat | assigns] ->
           new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
-          obtain_all_solutions(joker_ixs, new_assignment, [new_assignment | result])
+          obtain_all_solutions(solver_pid, joker_ixs, new_assignment, [new_assignment | result])
         [:unsat | _] -> result
       end
     end
   end
 
-  def match_hand_smt_v2(hand, calls, match_definitions, tile_mappings \\ %{}) do
+  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_mappings \\ %{}) do
     # first figure out what the sets are
     # generates this:
     # (define-fun set1 () (_ BitVec 136) #x0000000000000000000000000000000111)
@@ -539,10 +426,11 @@ defmodule RiichiAdvanced.SMT do
     assert_tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {group, i} -> "(assert (or\n#{Enum.map(group, fn tiles -> "  (= tiles#{i} #{tiles})" end) |> Enum.join("\n")}))\n" end)
 
     smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ [declare_tile_groups, assert_tile_groups] ++ index_smt ++ [match_assertions])
-    # IO.puts(smt)
-    ExSMT.Solver.query([smt])
-
-    result = obtain_all_solutions(joker_ixs)
+    if @print_smt do
+      IO.puts(smt)
+    end
+    {:ok, _response} = GenServer.call(solver_pid, {:query, [smt], true}, 5000)
+    result = obtain_all_solutions(solver_pid, joker_ixs)
     # IO.inspect(result)
     result
   end
