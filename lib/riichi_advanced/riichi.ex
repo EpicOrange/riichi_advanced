@@ -417,7 +417,8 @@ defmodule Riichi do
   def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, tile_aliases \\ %{}, wraps \\ false) do
     starting_hand = normalize_red_fives(starting_hand)
     winning_tile = normalize_red_five(winning_tile)
-    num_pairs = Enum.frequencies(starting_hand ++ [winning_tile]) |> Map.values |> Enum.count(& &1 == 2)
+    standard_length = length(starting_hand) in [1, 4, 7, 10, 13]
+    starting_hand = if standard_length do starting_hand else starting_hand ++ [winning_tile] end
     # initial fu
     fu = case win_source do
       :draw -> 22
@@ -485,11 +486,11 @@ defmodule Riichi do
 
     # IO.inspect(hands_fu)
 
+    winning_tiles = if standard_length do add_tile_aliases([winning_tile], tile_aliases) else @all_tiles end
     # only valid hands should either have:
     # - one tile remaining (tanki)
     # - one pair remaining (standard)
     # - two pairs remaining (shanpon)
-    winning_tiles = add_tile_aliases([winning_tile], tile_aliases)
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
       cond do
@@ -497,14 +498,13 @@ defmodule Riichi do
         length(hand) == 2 && num_pairs == 1                    -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
         length(hand) == 4 && num_pairs == 2                    ->
           [tile1, tile2] = Enum.uniq(hand)
-          if tile1 in winning_tiles do
-            [fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)]
-          else
-            [fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)]
-          end
+          tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+          tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+          if tile1 in winning_tiles do [tile1_fu] else [] end ++ if tile2 in winning_tiles do [tile2_fu] else [] end
         true                                                   -> []
       end
     end)
+
     fu = if Enum.empty?(fus) do 0 else Enum.max(fus) end
 
     # if we can get (closed) pinfu, we should
@@ -521,11 +521,12 @@ defmodule Riichi do
     # IO.inspect(fu)
 
     # closed pinfu is 20 tsumo/30 ron, open pinfu is 30, chiitoitsu is 25
+    num_pairs = Enum.frequencies(starting_hand) |> Map.values |> Enum.count(& &1 == 2)
     cond do
       fu == 22 && win_source == :draw && Enum.empty?(calls) -> 20
       fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30
       fu == 20 && not Enum.empty?(calls)                    -> 30
-      Enum.empty?(fus) && num_pairs == 7                    -> 25
+      Enum.empty?(fus) && num_pairs == 6                    -> 25
       true                                                  ->
         # round up to nearest 10
         remainder = rem(fu, 10)
