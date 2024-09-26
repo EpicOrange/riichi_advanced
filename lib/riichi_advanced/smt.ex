@@ -231,6 +231,7 @@ defmodule RiichiAdvanced.SMT do
     #   (ite (= num (_ bv3 8)) set3 zero))))
     all_sets = match_definitions
     |> Enum.concat()
+    |> Enum.reject(&Kernel.is_binary/1)
     |> Enum.map(fn [groups, _num] -> groups end)
     |> Enum.concat()
     |> Enum.filter(fn group -> is_list(group) && is_integer(Enum.at(group, 0)) end)
@@ -247,10 +248,14 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(fn i -> "\n  (ite (= num (_ bv#{i} 8)) set#{i}" end)
     to_set_fun = "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec 136)" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n"
 
+    calls = calls
+    |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    |> Enum.with_index()
+    |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
+    IO.inspect(calls)
+
     # first figure out which tiles are jokers based on tile_mappings
-    call_tiles = Enum.map(calls, &Riichi.call_to_tiles/1)
-    |> Enum.map(&Enum.take(&1, 3))
-    |> Enum.concat()
+    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
     {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
     |> Enum.filter(fn {tile, _ix} -> Map.has_key?(tile_mappings, tile) end)
@@ -282,7 +287,8 @@ defmodule RiichiAdvanced.SMT do
     hand_indices = Enum.map(1..length(all_sets), fn i -> "\n  (bvmul hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (equal_digits hand (bvadd#{hand_indices})))\n"]
 
-    calls = Enum.reject(calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    IO.inspect(Enum.zip(joker_ixs, joker_constraints))
+
     has_calls = length(calls) > 0
     calls_smt = if has_calls do
       # calls part 1: declare each non-flower call
@@ -290,16 +296,14 @@ defmodule RiichiAdvanced.SMT do
       # (assert (= call1 (bvadd joker3 #x0000000011000000000000000000000000)))
       # (declare-const call2 (_ BitVec 136))
       # (assert (= call2 (bvadd #x0000000000111000000000000000000000)))
-      calls_decls = calls
-      |> Enum.map(&Riichi.call_to_tiles/1)
-      |> Enum.with_index()
-      |> Enum.reduce([], fn {call, i}, calls_decls ->
-        call_smt = call
-        |> Enum.take(3) # ignore kans
-        |> Enum.with_index()
-        |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, length(hand)+i*3+ix, joker_ixs)}" end)
-        calls_decls ++ ["(declare-const call#{i+1} (_ BitVec 136))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
-      end)
+      calls_decls = for {call, i} <- calls, reduce: [] do
+        calls_decls ->
+          call_smt = call
+          |> Enum.take(3) # ignore kans
+          |> Enum.with_index()
+          |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, length(hand)+i*3+ix, joker_ixs)}" end)
+          calls_decls ++ ["(declare-const call#{i+1} (_ BitVec 136))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
+      end
 
       # calls part 2: declare variables for call indices and set identities
       # (declare-const call1_index (_ BitVec 8))
