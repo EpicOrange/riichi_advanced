@@ -773,7 +773,7 @@ defmodule RiichiAdvanced.GameState do
   #                 Runs in factorial time n! where n is the total number of groups.
   #   "unique": Use each group in each group set exactly once. Useful for defining kokushi.
   #   "wraps": Allow sequences to wrap around: 891, 912.
-  #   "honor_seqs" Allow winds and dragons to form sequences.
+  #   "honorseq": Allow winds and dragons to form sequences.
   #
   # Example of a list of match definitions representing a winning hand:
   # [

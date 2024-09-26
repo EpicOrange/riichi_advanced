@@ -213,19 +213,23 @@ defmodule Riichi do
     end
   end
 
-  @match_keywords ["exhaustive", "unique", "wraps", "honor_seqs"]
+  @match_keywords ["exhaustive", "unique", "wraps", "honorseq", "debug"]
 
   defp _remove_match_definition(hand, calls, match_definition, tile_aliases) do
     exhaustive = "exhaustive" in match_definition
     unique = "unique" in match_definition
     wrapping = "wraps" in match_definition
-    honor_seqs = "honor_seqs" in match_definition
+    honor_seqs = "honorseq" in match_definition
+    debug = "debug" in match_definition
     for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
       hand_calls ->
         [groups, num] = match_definition_elem
         for _ <- 1..num, reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
           [] -> []
           hand_calls_groups ->
+            if debug do
+              IO.inspect(hand_calls_groups)
+            end
             new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
               remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
               |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)

@@ -1218,7 +1218,7 @@
                        ],
                        [
                          {"name": "last_call_is", "opts": ["ankan"]},
-                         {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+                         {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
                          {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
                        ]
                      ]
