@@ -89,11 +89,14 @@ defmodule Riichi do
   def is_manzu?(tile), do: tile in [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"0m"]
   def is_pinzu?(tile), do: tile in [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"0p"]
   def is_souzu?(tile), do: tile in [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"0s"]
-  def is_jihai?(tile), do: tile in [:"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
+  def is_jihai?(tile), do: tile in [:"1z", :"2z", :"3z", :"4z", :"5z", :"0z", :"6z", :"7z"]
   def is_suited?(tile), do: is_manzu?(tile) || is_pinzu?(tile) || is_souzu?(tile)
   def is_terminal?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s"]
   def is_yaochuuhai?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
   def is_tanyaohai?(tile), do: tile not in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
+  def is_flower?(tile), do: tile in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q"]
+  def is_joker?(tile), do: tile in [:"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j"]
+
   def is_num?(tile, num) do
     tile in case num do
       1 -> [:"1m", :"1p", :"1s"]
@@ -262,9 +265,10 @@ defmodule Riichi do
     Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
       Enum.reduce(1..num, hand_calls, fn _, hand_calls ->
         case hand_calls do
-          [{hand, calls}] -> for group <- groups do
-            remove_group(hand, calls, group, tile_aliases)
-          end |> Enum.concat() |> Enum.take(1)
+          [{hand, calls}] ->
+            for group <- groups do
+              remove_group(hand, calls, group, tile_aliases)
+            end |> Enum.concat() |> Enum.take(1)
           [] -> []
         end
       end)
@@ -272,11 +276,7 @@ defmodule Riichi do
   end
 
   def match_hand_simple(hand, calls, match_definitions, tile_aliases \\ %{}) do
-    Enum.any?(match_definitions, fn match_definition ->
-      removed = remove_hand_definition_simple(hand, calls, match_definition, tile_aliases)
-      removed2 = remove_hand_definition_simple(normalize_red_fives(hand), calls, match_definition, tile_aliases)
-      not Enum.empty?(removed ++ removed2)
-    end)
+    Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_hand_definition_simple(hand, calls, match_definition, tile_aliases)) end)
   end
 
   def tile_matches(tile_specs, context) do
@@ -291,6 +291,8 @@ defmodule Riichi do
       "terminal" -> is_terminal?(context.tile)
       "yaochuuhai" -> is_yaochuuhai?(context.tile)
       "tanyaohai" -> is_tanyaohai?(context.tile)
+      "flower" -> is_flower?(context.tile)
+      "joker" -> is_joker?(context.tile)
       "1" -> is_num?(context.tile, 1)
       "2" -> is_num?(context.tile, 2)
       "3" -> is_num?(context.tile, 3)
@@ -409,7 +411,7 @@ defmodule Riichi do
     # add called triplets
     fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
 
-    possible_penchan_removed = if not wraps do
+    possible_penchan_removed = if wraps do [] else
       case winning_tile do
         :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"], tile_aliases)
         :"7m" -> try_remove_all_tiles(starting_hand, [:"8m", :"9m"], tile_aliases)
@@ -421,7 +423,7 @@ defmodule Riichi do
         :"3z" -> if wraps do [] else try_remove_all_tiles(starting_hand, [:"1z", :"2z"], tile_aliases) end
         _     -> []
       end |> Enum.map(fn hand -> {hand, fu+2} end)
-    else [] end
+    end
     middle_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"2z", :"3z", :"6z"]
     all_tiles = middle_tiles ++ [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"4z", :"5z", :"7z"]
     kanchan_tiles = if wraps do all_tiles else middle_tiles end
@@ -456,20 +458,12 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          normal = hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
+          hand |> Enum.uniq() |> add_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
             case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps, true), base_tile, offset_tile(base_tile, 1, wraps, true)], tile_aliases) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu} end)
             end
           end)
-
-          # the following are for Senoo Kaori (should not affect normal hands)
-          sk = try_remove_all_tiles(hand, [:"1z", :"2z", :"3z"], tile_aliases)
-            ++ try_remove_all_tiles(hand, [:"2z", :"3z", :"4z"], tile_aliases)
-            ++ try_remove_all_tiles(hand, [:"5z", :"6z", :"7z"], tile_aliases)
-            |> Enum.map(fn hand -> {hand, fu} end)
-
-          normal ++ sk
         end) |> Enum.uniq()
     end
 

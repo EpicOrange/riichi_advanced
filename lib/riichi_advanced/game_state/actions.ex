@@ -445,39 +445,47 @@ defmodule RiichiAdvanced.GameState.Actions do
         tag = Enum.at(opts, 0, "missing_tag")
         {_, state} = pop_in(state.tags[tag])
         state
+      "convert_last_discard"  ->
+        last_discarder = get_last_discard_action(state).seat
+        tile = Utils.to_tile(Enum.at(opts, 0, "0m"))
+        state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
+        state = update_action(state, last_discarder, :discard, %{tile: tile})
+        state = Buttons.recalculate_buttons(state)
+        state
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
     end
 
-    if action == "pause" do
-      # schedule an unpause after the given delay
-      :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, actions, context}])
-      # IO.puts("Stopping actions due to pause: #{inspect(actions)}")
-      {state, []}
-    else
-      # if our action updates state, then we need to recalculate buttons
-      # this is so other players can react to certain actions
-      if Map.has_key?(state.rules, "interruptible_actions") && action in state.rules["interruptible_actions"] do
-        state = if not Enum.empty?(state.winners) do
-          # if there's a winner, never display buttons
-          update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
+    case action do
+      "pause" ->
+        # schedule an unpause after the given delay
+        :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, actions, context}])
+        # IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
+        {state, []}
+      _ ->
+        # if our action updates state, then we need to recalculate buttons
+        # this is so other players can react to certain actions
+        if Map.has_key?(state.rules, "interruptible_actions") && action in state.rules["interruptible_actions"] do
+          state = if not Enum.empty?(state.winners) do
+            # if there's a winner, never display buttons
+            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
+          else
+            Buttons.recalculate_buttons(state)
+          end
+          buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
+          # IO.puts("buttons_before: #{inspect(buttons_before)}")
+          # IO.puts("buttons_after: #{inspect(buttons_after)}")
+          if buttons_before == buttons_after || Buttons.no_buttons_remaining?(state) do
+            _run_actions(state, actions, context)
+          else
+            # if buttons changed, stop evaluating actions here
+            # IO.puts("Stopping actions due to buttons: #{inspect([[action | opts] | actions])} #{inspect(buttons_after)}")
+            {state, actions}
+          end
         else
-          Buttons.recalculate_buttons(state)
-        end
-        buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
-        # IO.puts("buttons_before: #{inspect(buttons_before)}")
-        # IO.puts("buttons_after: #{inspect(buttons_after)}")
-        if buttons_before == buttons_after || Buttons.no_buttons_remaining?(state) do
           _run_actions(state, actions, context)
-        else
-          # if buttons changed, stop evaluating actions here
-          # IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)}")
-          {state, actions}
         end
-      else
-        _run_actions(state, actions, context)
-      end
     end
   end
   defp _run_actions(state, [action | actions], context) do

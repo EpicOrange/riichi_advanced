@@ -562,6 +562,10 @@
       ["set_tile_alias_all", ["9j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
     ]
   },
+  "play_effects": [
+    ["flower", [["change_turn", "kamicha"], ["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "2j"], ["advance_turn"]]],
+    ["joker", [["set_status", "discarded_joker"], ["change_turn", "kamicha"], ["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "2j"], ["advance_turn"]]]
+  ],
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
@@ -694,7 +698,7 @@
       "enabled_at_start": true
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call", "convert_last_discard"],
   "initial_score": 0,
   "starting_tiles": 13,
   "max_rounds": 16
