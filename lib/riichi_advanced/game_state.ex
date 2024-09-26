@@ -169,9 +169,9 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    # decode the rules json
+    # decode the rules json, removing comments first
     {state, rules} = try do
-      case Jason.decode(ruleset_json) do
+      case Jason.decode(Regex.replace(~r{//.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
