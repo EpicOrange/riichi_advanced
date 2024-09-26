@@ -438,7 +438,7 @@ defmodule RiichiAdvanced.GameState do
         state
       "vietnamese" ->
         # deal with jokers
-        joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+        joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
         # IO.inspect(joker_assignments)
 
         orig_hand = state.players[seat].hand
@@ -741,7 +741,8 @@ defmodule RiichiAdvanced.GameState do
             translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
             [translated_groups, num]
           _ when is_binary(match_definition_elem) -> match_definition_elem
-          _ -> 
+          _ ->
+            IO.puts("#{inspect(match_definition_elem)} is not a valid match definition element.")
             GenServer.cast(self(), {:show_error, "#{inspect(match_definition_elem)} is not a valid match definition element."})
             nil
         end

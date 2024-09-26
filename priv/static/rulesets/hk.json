@@ -62,37 +62,31 @@
     "hatsu_pair": ["6z", "6z"],
     "chun_pair": ["7z", "7z"],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "orphans_1": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z"],
-    "orphans_2": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","7z"],
-    "orphans_3": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","6z","7z"],
-    "orphans_4": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","0z","6z","7z"],
-    "orphans_5": ["1m","9m","1p","9p","1s","9s","1z","2z","4z","0z","6z","7z"],
-    "orphans_6": ["1m","9m","1p","9p","1s","9s","1z","3z","4z","0z","6z","7z"],
-    "orphans_7": ["1m","9m","1p","9p","1s","9s","2z","3z","4z","0z","6z","7z"],
-    "orphans_8": ["1m","9m","1p","9p","1s","1z","2z","3z","4z","0z","6z","7z"],
-    "orphans_9": ["1m","9m","1p","9p","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "orphans_10": ["1m","9m","1p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "orphans_11": ["1m","9m","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "orphans_12": ["1m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "orphans_13": ["9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
     "chuurenpoutou_m": ["1m","1m","1m","2m","3m","4m","5m","6m","7m","8m","9m","9m","9m"],
     "chuurenpoutou_p": ["1p","1p","1p","2p","3p","4p","5p","6p","7p","8p","9p","9p","9p"],
     "chuurenpoutou_s": ["1s","1s","1s","2s","3s","4s","5s","6s","7s","8s","9s","9s","9s"]
   },
   "tenpai_definition": [
-    [ [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
-    [ [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
     [ [["pair"], 6] ]
   ],
   "kokushi_tenpai_definition": [
-    [ [["orphans_1", "orphans_2", "orphans_3", "orphans_4", "orphans_5", "orphans_6", "orphans_7", "orphans_8", "orphans_9", "orphans_10", "orphans_11", "orphans_12", "orphans_13"], 1],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1] ]
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13]
+    ]
   ],
   "win_definition": [
-    [ [["pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 7] ],
-    [ [["orphans_all"], 1],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1] ]
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
   ],
   "yaku": [
     {
@@ -393,13 +387,13 @@
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match_simple", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]],
       "unskippable": true
     },
     "start_no_flower": {
       "display_name": "No flowers",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match_simple", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
       "unskippable": true
     },
@@ -501,7 +495,7 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match_simple", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"], ["draw"]]
     }
   },
