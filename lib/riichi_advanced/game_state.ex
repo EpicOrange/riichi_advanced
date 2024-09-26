@@ -733,30 +733,18 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  defp get_hand_definition(state, name) do
-    # TODO deprecated
-    if Map.has_key?(state.rules, "set_definitions") do
-      translate_hand_definition(state.rules[name], state.rules["set_definitions"])
-    else
-      state.rules[name]
-    end
-  end
-
-  defp translate_hand_definition(hand_definitions, set_definitions) do
-    # TODO deprecated
-    for hand_def <- hand_definitions do
-      for [groups, num] <- hand_def do
-        translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
-        [translated_groups, num]
-      end
-    end
-  end
-
   defp translate_sets_in_match_definitions(match_definitions, set_definitions) do
     for match_definition <- match_definitions do
-      for [groups, num] <- match_definition do
-        translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
-        [translated_groups, num]
+      for match_definition_elem <- match_definition do
+        case match_definition_elem do
+          [groups, num] ->
+            translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
+            [translated_groups, num]
+          _ when is_binary(match_definition_elem) -> match_definition_elem
+          _ -> 
+            GenServer.cast(self(), {:show_error, "#{inspect(match_definition_elem)} is not a valid match definition element."})
+            nil
+        end
       end
     end
   end
@@ -773,12 +761,23 @@ defmodule RiichiAdvanced.GameState do
   # Named match definitions can be defined as a key "mydef_definition" at the top level.
   # They expand to a list of match definitions that all get added to the list of
   # match definitions they appear in.
+  # The toplevel "mydef_definition" may not reference other named match definitions.
+  # 
   # Named sets can be found in the key "set_definitions".
   # This function simply swaps out all names for their respective definitions.
   # 
+  # A match definition can also have one of the following strings as flags:
+  #   "exhaustive": Perform an exhaustive backtracking search.
+  #                 Useful when groups may overlap, thus a naive search without
+  #                 backtracking will fail without this flag.
+  #                 Runs in factorial time n! where n is the total number of groups.
+  #   "unique": Use each group in each group set exactly once. Useful for defining kokushi.
+  #   "wraps": Allow sequences to wrap around: 891, 912.
+  #   "honor_seqs" Allow winds and dragons to form sequences.
+  #
   # Example of a list of match definitions representing a winning hand:
   # [
-  #   [[["shuntsu", "koutsu"], 4], [["pair"], 1]],
+  #   ["exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1]],
   #   [[["pair"], 7]],
   #   "kokushi_musou" // defined top-level as "kokushi_musou_definition"
   # ]
@@ -910,10 +909,7 @@ defmodule RiichiAdvanced.GameState do
         else false end
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action})
-      "unneeded_for_hand"        -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, false, false) end)
-      "unneeded_for_hand_wraps"  -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, true, false) end)
-      "unneeded_for_hand_hseq"   -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, false, true) end)
-      "unneeded_for_hand_hseq_w" -> Enum.any?(opts, fn name -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, get_hand_definition(state, name <> "_definition"), cxt_player.tile_aliases, true, true) end)
+      "unneeded_for_hand"        -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_aliases)
       "has_calls"                -> not Enum.empty?(cxt_player.calls)
       "no_calls"                 -> Enum.empty?(cxt_player.calls)
       "has_call_named"           -> Enum.all?(cxt_player.calls, fn {name, _call} -> name in opts end)
@@ -975,31 +971,6 @@ defmodule RiichiAdvanced.GameState do
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
         tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases) end)
-      "match_simple"         -> 
-        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = cxt_player.tile_aliases
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_simple(hand, calls, match_definitions, tile_aliases) end)
-      "match_wrapping"       -> 
-        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = cxt_player.tile_aliases
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, true) end)
-      "match_honorseq"       -> 
-        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = cxt_player.tile_aliases
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, false, true) end)
-      "match_wrapping_honorseq" -> 
-        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = cxt_player.tile_aliases
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases, true, true) end)
-      "match_unique"         -> 
-        hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        tile_aliases = cxt_player.tile_aliases
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand_unique(hand, calls, match_definitions, tile_aliases) end)
       "winning_hand_consists_of" ->
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
@@ -1037,15 +1008,15 @@ defmodule RiichiAdvanced.GameState do
         calls = cxt_player.calls
         tile_aliases = cxt_player.tile_aliases
         tile_mappings = cxt_player.tile_mappings
-        call_wraps = false # TODO
-        honor_seqs = false # TODO
-        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, call_wraps, honor_seqs)
+        call_wraps = Enum.any?(win_definitions, fn win_definition -> "wraps" in win_definition end)
+        honor_seqs = Enum.any?(win_definitions, fn win_definition -> "honor_seqs" in win_definition end)
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases)
         # IO.inspect(Riichi.make_calls(context.calls_spec, hand ++ draw))
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, [], tile_aliases, tile_mappings, call_wraps, honor_seqs), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
             call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
-            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases, call_wraps, honor_seqs)
+            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
             # IO.puts("waits after call: #{inspect(waits_after_call)}")
@@ -1061,8 +1032,8 @@ defmodule RiichiAdvanced.GameState do
         calls = cxt_player.calls
         call_tiles = [context.called_tile | context.call_choice]
         call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
-        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
-        waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases, false)
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases)
+        waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, tile_aliases)
         # IO.puts("call: #{inspect(call)}")
         # IO.puts("waits: #{inspect(waits)}")
         # IO.puts("waits after call: #{inspect(waits_after_call)}")
@@ -1073,7 +1044,7 @@ defmodule RiichiAdvanced.GameState do
         tile_aliases = cxt_player.tile_aliases
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases)
         length(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
@@ -1081,7 +1052,7 @@ defmodule RiichiAdvanced.GameState do
         tile_aliases = cxt_player.tile_aliases
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases, false)
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases)
         length(waits) <= number
       "tagged"              ->
         tag = Enum.at(opts, 0, "missing_tag")
@@ -1092,7 +1063,7 @@ defmodule RiichiAdvanced.GameState do
         calls = cxt_player.calls
         pair_wait_definitions = translate_match_definitions(state, opts)
         tile_aliases = cxt_player.tile_aliases
-        pair_waits = Enum.flat_map(pair_wait_definitions, fn definition -> Riichi.remove_hand_definition(hand, calls, definition, tile_aliases, false) end)
+        pair_waits = Enum.flat_map(pair_wait_definitions, fn definition -> Riichi.remove_match_definition(hand, calls, definition, tile_aliases) end)
         |> Enum.flat_map(fn {hand, _calls} -> hand end)
         visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
         visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)

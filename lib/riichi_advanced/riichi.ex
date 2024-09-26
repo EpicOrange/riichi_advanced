@@ -213,93 +213,61 @@ defmodule Riichi do
     end
   end
 
-  defp _remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs) do
-    Enum.reduce(hand_definition, [{hand, calls}, {normalize_red_fives(hand), calls}], fn [groups, num], all_hands ->
-      Enum.reduce(1..num, all_hands, fn _, hands ->
-        for {hand, calls} <- hands, group <- groups do
-          remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
-        end |> Enum.concat()
-      end) |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
-    end)
+  @match_keywords ["exhaustive", "unique", "wraps", "honor_seqs"]
+
+  defp _remove_match_definition(hand, calls, match_definition, tile_aliases) do
+    exhaustive = "exhaustive" in match_definition
+    unique = "unique" in match_definition
+    wrapping = "wraps" in match_definition
+    honor_seqs = "honor_seqs" in match_definition
+    for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
+      hand_calls ->
+        [groups, num] = match_definition_elem
+        for _ <- 1..num, reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
+          [] -> []
+          hand_calls_groups ->
+            new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
+              remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
+              |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
+            end |> Enum.concat()
+            new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end
+            new_hand_calls_groups
+        end
+        |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
+        |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
+    end
   end
 
-  def remove_hand_definition(hand, calls, hand_definition, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
+  def remove_match_definition(hand, calls, match_definition, tile_aliases \\ %{}) do
     # calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
-    case RiichiAdvanced.ETSCache.get({:remove_hand_definition, hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs}) do
+    case RiichiAdvanced.ETSCache.get({:remove_match_definition, hand, calls, match_definition, tile_aliases}) do
       [] -> 
-        result = _remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs)
-        RiichiAdvanced.ETSCache.put({:remove_hand_definition, hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs}, result)
+        result = _remove_match_definition(hand, calls, match_definition, tile_aliases)
+        RiichiAdvanced.ETSCache.put({:remove_match_definition, hand, calls, match_definition, tile_aliases}, result)
         # IO.puts("Results:\n  hand: #{inspect(hand)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
   end
 
-  # check if hand contains all groups in each definition in hand_definitions
-  defp _check_hand(hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs) do
-    Enum.any?(hand_definitions, fn hand_definition -> not Enum.empty?(remove_hand_definition(hand, calls, hand_definition, tile_aliases, wrapping, honor_seqs)) end)
+  # check if hand contains all groups in each definition in match_definitions
+  defp _match_hand(hand, calls, match_definitions, tile_aliases) do
+    Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_aliases)) end)
   end
 
-  def check_hand(hand, calls, hand_definitions, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
-    case RiichiAdvanced.ETSCache.get({:check_hand, hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs}) do
+  def match_hand(hand, calls, match_definitions, tile_aliases \\ %{}) do
+    case RiichiAdvanced.ETSCache.get({:match_hand, hand, calls, match_definitions, tile_aliases}) do
       [] -> 
-        result = _check_hand(hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs)
-        RiichiAdvanced.ETSCache.put({:check_hand, hand, calls, hand_definitions, tile_aliases, wrapping, honor_seqs}, result)
-        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  hand_definitions: #{inspect(hand_definitions)}\n  result: #{inspect(result)}")
+        result = _match_hand(hand, calls, match_definitions, tile_aliases)
+        RiichiAdvanced.ETSCache.put({:match_hand, hand, calls, match_definitions, tile_aliases}, result)
+        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  match_definitions: #{inspect(match_definitions)}\n  result: #{inspect(result)}")
         result
       [result] -> result
     end
   end
 
-  def match_hand(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
-    # TODO replace check_hand
-    check_hand(hand, calls, match_definitions, tile_aliases, wrapping, honor_seqs)
-  end
-
-  def get_waits(hand, calls, match_definitions, tile_aliases \\ %{}, wrapping \\ false, honor_seqs \\ false) do
-    Enum.filter(@all_tiles, fn tile -> match_hand(hand ++ [tile], calls, match_definitions, tile_aliases, wrapping, honor_seqs) end)
-  end
-
-  # only keeps one version of the hand (assumes groups don't overlap)
-  defp remove_hand_definition_simple(hand, calls, hand_definition, tile_aliases) do
-    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
-      Enum.reduce(1..num, hand_calls, fn _, hand_calls ->
-        case hand_calls do
-          [{hand, calls}] ->
-            for group <- groups do
-              remove_group(hand, calls, group, tile_aliases)
-            end |> Enum.concat() |> Enum.take(1)
-          [] -> []
-        end
-      end)
-    end)
-  end
-
-  def match_hand_simple(hand, calls, match_definitions, tile_aliases \\ %{}) do
-    Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_hand_definition_simple(hand, calls, match_definition, tile_aliases)) end)
-  end
-
-  # same as simple, but for each group set, only removes each group at most once
-  defp remove_hand_definition_unique(hand, calls, hand_definition, tile_aliases) do
-    Enum.reduce(hand_definition, [{hand, calls}], fn [groups, num], hand_calls ->
-      initial = Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end)
-      Enum.reduce(1..num, initial, fn _, hand_call_groups ->
-        case hand_call_groups do
-          [{hand, calls, remaining_groups}] ->
-            x = for group <- remaining_groups do
-              remove_group(hand, calls, group, tile_aliases)
-              |> Enum.map(fn {hand, calls} -> {hand, calls, remaining_groups -- [group]} end)
-            end |> Enum.concat() |> Enum.take(1)
-            IO.inspect(x)
-            x
-          [] -> []
-        end
-      end) |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
-    end)
-  end
-
-  def match_hand_unique(hand, calls, match_definitions, tile_aliases \\ %{}) do
-    Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_hand_definition_unique(hand, calls, match_definition, tile_aliases)) end)
+  def get_waits(hand, calls, match_definitions, tile_aliases \\ %{}) do
+    Enum.filter(@all_tiles, fn tile -> match_hand(hand ++ [tile], calls, match_definitions, tile_aliases) end)
   end
 
   def tile_matches(tile_specs, context) do
@@ -347,10 +315,12 @@ defmodule Riichi do
     end)
   end
 
-  def not_needed_for_hand(hand, calls, tile, hand_definitions, tile_aliases \\ %{}, wraps \\ false, honor_seqs \\ false) do
-    Enum.any?(hand_definitions, fn hand_definition ->
-      removed = remove_hand_definition(hand, calls, hand_definition, tile_aliases, wraps, honor_seqs)
-      normalize_red_five(tile) in Enum.concat(Enum.map(removed, fn {hand, _calls} -> hand end))
+  def not_needed_for_hand(hand, calls, tile, match_definitions, tile_aliases \\ %{}) do
+    Enum.any?(match_definitions, fn match_definition ->
+      case try_remove_all_tiles(hand, [tile], tile_aliases) do
+        [] -> false
+        [hand] -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_aliases))
+      end
     end)
   end
 
