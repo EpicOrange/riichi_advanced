@@ -446,11 +446,11 @@ defmodule RiichiAdvanced.GameState do
           assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
           assigned_calls = calls
           |> Enum.with_index()
-          |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 3*i + ix, winning_tile), sideways} end)} end)
+          |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 3*i + ix, tile), sideways} end)} end)
           assigned_winning_tile = Map.get(joker_assignment, length(orig_hand) + 3*length(calls), winning_tile)
 
           # temporarily replace winner's hand with joker assignment to determine yaku
-          state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand } end)
+          state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls } end)
           phan_yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
           mun_yaku = Scoring.get_yaku(state, state.rules["yakuman"], seat, assigned_winning_tile, win_source)
           phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
