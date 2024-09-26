@@ -233,9 +233,12 @@ defmodule Riichi do
           hand_calls_groups = for _ <- 1..abs(num), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
             [] -> []
             hand_calls_groups ->
-              # if debug do
-              #   IO.inspect(hand_calls_groups)
-              # end
+              if debug do
+                IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc:")
+                for {hand, calls, remaining_groups} <- hand_calls_groups do
+                  IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups)}")
+                end
+              end
               new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
                 remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
                 |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)

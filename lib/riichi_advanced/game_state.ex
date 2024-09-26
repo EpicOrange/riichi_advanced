@@ -354,6 +354,9 @@ defmodule RiichiAdvanced.GameState do
       "riichi" ->
         wraps = "wrapping_fu_calculation" in state.players[seat].status
         minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+        if minipoints == 0 do
+          IO.inspect("Warning: 0 minipoints translates into nil score")
+        end
         yaku = Scoring.get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
         {minipoints, yaku} = if Map.has_key?(state, :saki) && win_source == :draw && :draw in Enum.concat(Map.values(state.players[seat].tile_aliases)) do
           # if :draw maps to some other tiles, use :draw instead as our winning tile to calculate fu/yaku
