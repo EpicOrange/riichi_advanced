@@ -115,7 +115,12 @@
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 6] ]
+    [ [["koutsu"], -1], [["pair"], 6] ]
+  ],
+  "tenpai_14_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["koutsu"], -2], [["pair"], 6] ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
@@ -125,9 +130,6 @@
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13]
     ]
-  ],
-  "false_tenpai_definition": [
-    [ "exhaustive", [["pair"], 5], [["koutsu"], 1] ]
   ],
   "kyuushu_kyuuhai_definition": [
     [ "unique", [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9] ]
@@ -1000,14 +1002,8 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
                 ["unset_status", "just_reached", "call_made", "kan", "nagashi"],
-                ["when", [
-                  {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-                  {"name": "not_match", "opts": [["hand", "calls", "draw"], ["false_tenpai"]]}
-                ], [["set_status", "tenpai"]]],
-                ["when", [[
-                  {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-                  {"name": "match", "opts": [["hand", "calls", "draw"], ["false_tenpai"]]}
-                ]], [["unset_status", "tenpai"]]]
+                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
+                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
                ]
   },
   "after_call": {
@@ -1177,7 +1173,7 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
+      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}],
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
