@@ -252,7 +252,6 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
     |> Enum.with_index()
     |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
-    IO.inspect(calls)
 
     # first figure out which tiles are jokers based on tile_mappings
     call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
@@ -286,8 +285,6 @@ defmodule RiichiAdvanced.SMT do
     declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec 136))\n" end)
     hand_indices = Enum.map(1..length(all_sets), fn i -> "\n  (bvmul hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (equal_digits hand (bvadd#{hand_indices})))\n"]
-
-    IO.inspect(Enum.zip(joker_ixs, joker_constraints))
 
     has_calls = length(calls) > 0
     calls_smt = if has_calls do

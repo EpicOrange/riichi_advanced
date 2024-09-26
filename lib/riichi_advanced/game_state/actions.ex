@@ -711,7 +711,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       last_discard_action = get_last_discard_action(state)
       turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
       extra_turn = "extra_turn" in state.players[state.turn].status
-      IO.inspect(extra_turn)
       state = for {seat, player} <- state.players, reduce: state do
         state -> cond do
           seat == state.turn && (turn_just_acted || (turn_just_discarded && not extra_turn)) && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->

@@ -227,21 +227,34 @@ defmodule Riichi do
     for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
       hand_calls ->
         [groups, num] = match_definition_elem
-        for _ <- 1..num, reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
-          [] -> []
-          hand_calls_groups ->
-            # if debug do
-            #   IO.inspect(hand_calls_groups)
-            # end
-            new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
-              remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
-              |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
-            end |> Enum.concat()
-            new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end
-            new_hand_calls_groups
+        if num == 0 do
+          hand_calls # no op
+        else
+          hand_calls_groups = for _ <- 1..abs(num), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
+            [] -> []
+            hand_calls_groups ->
+              # if debug do
+              #   IO.inspect(hand_calls_groups)
+              # end
+              new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
+                remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
+                |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
+              end |> Enum.concat()
+              new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end
+              new_hand_calls_groups
+          end
+          if num < 0 do
+            if length(hand_calls_groups) == 0 do
+              hand_calls
+            else
+              []
+            end
+          else
+            hand_calls_groups
+            |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
+            |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
+          end
         end
-        |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
-        |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
     end
   end
 
