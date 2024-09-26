@@ -105,6 +105,9 @@
   "daisuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
   ],
+  "any_joker_definition": [
+    [[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]
+  ],
   "yaku": [
     {
       "display_name": "All Sequences",
@@ -212,6 +215,26 @@
       "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[[["4q"]], 1]]]]}]
     },
     {
+      "display_name": "Matched Royalty",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[[["1k"]], 1], [[["1q"]], 1]]]]}]
+    },
+    {
+      "display_name": "Matched Royalty",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[[["2k"]], 1], [[["2q"]], 1]]]]}]
+    },
+    {
+      "display_name": "Matched Royalty",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[[["3k"]], 1], [[["3q"]], 1]]]]}]
+    },
+    {
+      "display_name": "Matched Royalty",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[[["4k"]], 1], [[["4q"]], 1]]]]}]
+    },
+    {
       "display_name": "Tổng (縂)",
       "value": 2,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["2j"]], 1]]]]}]
@@ -300,6 +323,14 @@
     }
   ],
   "yakuman": [
+    {
+      "display_name": "No Flowers, No Leaves",
+      "value": 3,
+      "when": [
+        {"name": "status_missing", "opts": ["has_joker"]},
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]
+    },
     {
       "display_name": "All Triplets With Honors",
       "value": 1,
@@ -647,7 +678,7 @@
                      "someone_else_just_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
                    ],
-      "actions": [["big_text", "Ù"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "actions": [["big_text", "Ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
@@ -667,7 +698,7 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Ù"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+      "actions": [["big_text", "Ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -677,7 +708,7 @@
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
                    ],
-      "actions": [["big_text", "Tự ù"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
+      "actions": [["big_text", "Tự ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "flower": {
