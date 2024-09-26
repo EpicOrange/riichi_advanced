@@ -698,7 +698,7 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_call"]],
+      "actions": [["big_text", "Ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "last_called_tile"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -708,17 +708,17 @@
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
                    ],
-      "actions": [["big_text", "Tự ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_draw"]],
+      "actions": [["big_text", "Tự ù"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match_simple", "opts": [["hand", "calls", "draw"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], ["draw"]]
     },
     "joker": {
       "display_name": "Joker",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
       "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw"]]
     }
   },

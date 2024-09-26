@@ -4,6 +4,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Saki, as: Saki
   import RiichiAdvanced.GameState
 
+  @debug_actions false
+
   def temp_disable_play_tile(state, seat) do
     state = Map.update!(state, :play_tile_debounce, &Map.put(&1, seat, true))
     Debounce.apply(state.play_tile_debouncers[seat])
@@ -223,10 +225,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "advance_turn"          -> advance_turn(state)
       "change_turn"           -> 
         seat = case Enum.at(opts, 0, "self") do
-          "east" -> :east
-          "south" -> :south
-          "west" -> :west
-          "north" -> :north
+          "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east)
+          "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south)
+          "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west)
+          "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north)
           "shimocha" -> Utils.get_seat(context.seat, :shimocha)
           "toimen" -> Utils.get_seat(context.seat, :toimen)
           "kamicha" -> Utils.get_seat(context.seat, :kamicha)
@@ -461,7 +463,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "pause" ->
         # schedule an unpause after the given delay
         :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, actions, context}])
-        # IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
+        if @debug_actions do
+          IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
+        end
         {state, []}
       _ ->
         # if our action updates state, then we need to recalculate buttons
@@ -480,7 +484,9 @@ defmodule RiichiAdvanced.GameState.Actions do
             _run_actions(state, actions, context)
           else
             # if buttons changed, stop evaluating actions here
-            # IO.puts("Stopping actions due to buttons: #{inspect([[action | opts] | actions])} #{inspect(buttons_after)}")
+            if @debug_actions do
+              IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)} actions are: #{inspect([[action | opts] | actions])}")
+            end
             {state, actions}
           end
         else
@@ -503,7 +509,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     {state, deferred_actions} = _run_actions(state, actions, context)
     # defer the remaining actions
     state = if not Enum.empty?(deferred_actions) do
-      # IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
+      if @debug_actions do
+        IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
+      end
       state = schedule_actions(state, context.seat, deferred_actions)
       state
     else state end
