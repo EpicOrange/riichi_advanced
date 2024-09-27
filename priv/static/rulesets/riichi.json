@@ -1,26 +1,19 @@
 {
-  "desc00": "The game above is completely parameterized by the JSON file you see   ",
-  "desc01": "before you. This is by design -- the intent for this mahjong client   ",
-  "desc02": "is to be a universal mahjong engine. The engine has no notion         ",
-  "desc03": "of 'tanyao' or 'tenpai' -- those are mere words in a JSON file that   ",
-  "desc04": "the engine blindly interprets. Yaku is customizable, calls are        ",
-  "desc05": "customizable, even the auto buttons on the bottom are customizable.   ",
+  // The game above is completely parameterized by the JSON file you see
+  // before you. This is by design -- the intent for this mahjong client
+  // is to be a universal mahjong engine. The engine has no notion
+  // of 'tanyao' or 'tenpai' -- those are mere words in a JSON file that
+  // the engine blindly interprets. Yaku is customizable, calls are
+  // customizable, even the auto buttons on the bottom are customizable.
+  // The major design goal is to be able to play any variant of mahjong out
+  // there -- Hong Kong, American, Saki-power-infused mahjong.
 
-  "desc06": "The major design goal is to be able to play any variant of mahjong out",
-  "desc07": "there -- Hong Kong, American, Saki-power-infused mahjong. We're not   ",
-  "desc08": "quite there yet, but the fact that we've implemented Riichi, one of   ",
-  "desc09": "the most complex variants, means many other variants will soon meet   ",
-  "desc10": "the same fate. (I tried to hardcode as little as possible when writing",
-  "desc11": "the Riichi ruleset, but there are still some things that are          ",
-  "desc12": "non-configurable, namely fu calculation and score adjudication.)      ",
+  // I am in the process of writing comprehensive documentation for this
+  // thing, but it might take a while before documentation is out.
 
-  "desc13": "I plan to write comprehensive documentation for this thing, but I'm   ",
-  "desc14": "still in the process of simplifying the specification, so it might    ",
-  "desc15": "take a while before documentation is out.                             ",
-
-  "desc16": "Currently there is no way to user-submit a custom ruleset other than  ",
-  "desc17": "sending it to me on Discord. Feel free to do that, by the way, if for ",
-  "desc18": "some reason you get into the mood of writing a custom ruleset!        ",
+  // Currently there is no way to user-submit a custom ruleset other than
+  // sending it to me on Discord. Feel free to do that, by the way! For the
+  // most part, all I need is the tiles, the scoring method, and the yaku.
   
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
