@@ -380,6 +380,26 @@ div.tile {
   flex-shrink: 0;
   box-sizing: border-box;
 }
+div.tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  --shadow-width: calc(0.95 * var(--tile-width));
+  --shadow-height: calc(0.95 * var(--tile-height));
+  --shadow-radial1: calc(0.5 * var(--tile-height));
+  --shadow-radial2: calc(0.6 * var(--tile-height));
+  --shadow-color: rgba(0,0,0,0.05);
+  background:
+   radial-gradient(circle at center, transparent var(--shadow-radial1), var(--shadow-color) var(--shadow-radial2)),
+   linear-gradient(to bottom, transparent var(--shadow-height), var(--shadow-color)) bottom,
+   linear-gradient(to left,   transparent var(--shadow-width), var(--shadow-color)) left,
+   linear-gradient(to right,  transparent var(--shadow-width), var(--shadow-color)) right,
+   linear-gradient(to top,    transparent var(--shadow-height), var(--shadow-color)) top;
+  border-radius: calc(0.1 * var(--tile-size));
+}
 div.tile.sideways + div.tile.sideways { width: 0; clip-path: none; }
 div.tile.sideways + div.tile.sideways::before {
   display: block;
