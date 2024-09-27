@@ -11,6 +11,7 @@ defmodule Lobby do
   defstruct [
     # params
     ruleset: nil,
+    ruleset_json: nil,
     session_id: nil,
     # pids
     supervisor: nil,
@@ -48,9 +49,16 @@ defmodule RiichiAdvanced.LobbyState do
     [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby", state.ruleset, state.session_id))
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_lobby", state.ruleset, state.session_id))
 
+    # read in the ruleset
+    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
+      {:ok, ruleset_json} -> ruleset_json
+      {:error, _err}      -> nil
+    end
+
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Lobby{
       ruleset: state.ruleset,
+      ruleset_json: ruleset_json,
       session_id: state.session_id,
       supervisor: supervisor,
       exit_monitor: exit_monitor

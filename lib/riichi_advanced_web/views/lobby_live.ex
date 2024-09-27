@@ -74,6 +74,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           </button>
         <% end %>
       </footer>
+      <div class="ruleset">
+        <textarea readonly><%= @state.ruleset_json %></textarea>
+      </div>
     </div>
     """
   end
