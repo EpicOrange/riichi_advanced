@@ -351,7 +351,9 @@ defmodule RiichiAdvanced.GameState do
       end
     scoring_table = state.rules["score_calculation"]
     # deal with jokers
-    joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+    joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+    end
     orig_hand = state.players[seat].hand
     non_flower_calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
     IO.inspect(joker_assignments)
@@ -442,6 +444,7 @@ defmodule RiichiAdvanced.GameState do
         end
         winner = Map.merge(winner, %{
           yaku: yaku,
+          yakuman: [],
           points: points,
           score: score,
           payer: payer
@@ -459,6 +462,7 @@ defmodule RiichiAdvanced.GameState do
         end
         winner = Map.merge(winner, %{
           yaku: yaku,
+          yakuman: [],
           points: points,
           score: score,
           payer: payer
