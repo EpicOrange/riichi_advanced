@@ -44,8 +44,14 @@ defmodule RiichiAdvancedWeb.PondComponent do
 
   def update(assigns, socket) do
     # check if we just declared riichi
-    socket = if socket.assigns.riichi_index == nil && Map.has_key?(assigns, :riichi) && assigns.riichi do
-      assign(socket, :riichi_index, length(socket.assigns.pond))
+    socket = if Map.has_key?(assigns, :riichi) do
+      if socket.assigns.riichi_index == nil && assigns.riichi do
+        assign(socket, :riichi_index, length(socket.assigns.pond))
+      else
+        if socket.assigns.riichi_index != nil && not assigns.riichi do
+          assign(socket, :riichi_index, nil)
+        else socket end
+      end
     else socket end
 
     # animate incoming discards
