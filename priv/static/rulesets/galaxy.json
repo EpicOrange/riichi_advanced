@@ -183,8 +183,7 @@
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iipeikou"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iipeikou"], 2], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iipeikou"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1]]]]}
       ]
     },
     {
@@ -252,22 +251,16 @@
       "value": 2,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pair"], 7]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["quad"], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["iipeikou"], 2], [["pair"], 1]]]]}
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["quad"], 1]]]]}
       ]
     },
     {
       "display_name": "Chanta",
       "value": 1,
       "when": [
-        {"name": "not_winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6", "ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]
-        ]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[
-          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
-          [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
         ]]]}
       ]
     },
@@ -276,14 +269,9 @@
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "not_winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6", "ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]
-        ]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[
-          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
-          [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
         ]]]}
       ]
     },
@@ -397,7 +385,6 @@
       "display_name": "Junchan",
       "value": 2,
       "when": [
-        {"name": "not_winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
@@ -409,7 +396,6 @@
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "not_winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
@@ -424,10 +410,7 @@
           {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]},
           {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
           {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
-        ],
-        {"name": "not_winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
-        {"name": "not_winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
-        {"name": "not_winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+        ]
       ]
     },
     {
@@ -439,10 +422,7 @@
           {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]},
           {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
           {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
-        ],
-        {"name": "not_winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
-        {"name": "not_winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
-        {"name": "not_winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+        ]
       ]
     },
     {
@@ -495,19 +475,16 @@
       "value": 1,
       "when": [
         "won_by_draw",
-        "not_no_discards_yet",
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 3], [["pair"], 2]]]]},
-        {"name": "not_match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}
+        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 3], [["pair"], 2]]]]}
       ]
     },
     {
       "display_name": "Suuankou Tanki",
       "value": 2,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        [
+        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
+        [ // tenhou upgrade
           "no_discards_yet",
           {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]}
         ],
@@ -532,18 +509,14 @@
     {
       "display_name": "Chuurenpoutou",
       "value": 1,
-      "when": [
-        "not_no_discards_yet",
-        {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]},
-        {"name": "not_match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
     },
     {
       "display_name": "Junsei Chuurenpoutou",
       "value": 2,
       "when": [[
         {"name": "match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]},
-        [
+        [ // tenhou upgrade
           "no_discards_yet",
           {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}
         ]
@@ -552,18 +525,14 @@
     {
       "display_name": "Kokushi Musou",
       "value": 1,
-      "when": [
-        "not_no_discards_yet",
-        {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]},
-        {"name": "not_match", "opts": [["hand"], [[[["orphans_all"], 1]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
     },
     {
       "display_name": "Kokushi Musou Juusan Menmachi",
       "value": 2,
       "when": [[
         {"name": "match", "opts": [["hand"], [[[["orphans_all"], 1]]]]},
-        [
+        [ // tenhou upgrade
           "no_discards_yet",
           {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}
         ]
@@ -577,10 +546,7 @@
     {
       "display_name": "Shousuushii",
       "value": 1,
-      "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}
-      ]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]}]
     },
     {
       "display_name": "Suukantsu",
@@ -588,6 +554,17 @@
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
     }
   ],
+  "yaku_precedence": {
+    "Chinitsu": ["Honitsu"],
+    "Chiitoitsu": ["Iipeikou"],
+    "Ryanpeikou": ["Iipeikou", "Chiitoitsu"],
+    "Junchan": ["Chanta"],
+    "Honroutou": ["Chanta", "Junchan"],
+    "Suuankou Tanki": ["Suuankou"],
+    "Junsei Chuurenpoutou": ["Chuurenpoutou"],
+    "Kokushi Musou Juusan Menmachi": ["Kokushi Musou"],
+    "Daisuushii": ["Shousuushii"]
+  },
   "extra_yaku": [
     {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 1]}]},
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_dora_count", "opts": ["doraindicator_1", 2]}]},

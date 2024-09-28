@@ -15,10 +15,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
       |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, value} end)
     eligible_yaku = existing_yaku ++ eligible_yaku
     yaku_map = Enum.reduce(eligible_yaku, %{}, fn {name, value}, acc -> Map.update(acc, name, value, & &1 + value) end)
-    eligible_yaku
+    eligible_yaku = eligible_yaku
       |> Enum.map(fn {name, _value} -> name end)
       |> Enum.uniq()
       |> Enum.map(fn name -> {name, yaku_map[name]} end)
+    if Map.has_key?(state.rules, "yaku_precedence") do
+      excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(state.rules["yaku_precedence"], name, []) end)
+      Enum.reject(eligible_yaku, fn {name, _value} -> name in excluded_yaku end)
+    else eligible_yaku end
   end
 
   defp parse_test_spec(rules, test_spec) do
