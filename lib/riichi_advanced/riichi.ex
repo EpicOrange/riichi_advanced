@@ -54,6 +54,12 @@ defmodule Riichi do
           :"11z"=>[:"1z",:"2z",:"3z",:"4z"], :"12z"=>[:"1z",:"2z",:"3z",:"14z"], :"13z"=>[:"1z",:"2z",:"3z",:"4z"], :"14z"=>[:"1z",:"2z",:"3z",:"4z"], :"15z"=>[:"5z",:"6z",:"7z"], :"16z"=>[:"5z",:"6z",:"7z"], :"17z"=>[:"5z",:"6z",:"7z"]}
   def dora(tile), do: @dora[tile]
 
+  @shift %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"0m"=>:"0p",
+           :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"0p"=>:"0s",
+           :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m", :"0s"=>:"0m",
+           :"1z"=>:"1z", :"2z"=>:"2z", :"3z"=>:"3z", :"4z"=>:"4z", :"5z"=>:"5z", :"6z"=>:"6z", :"7z"=>:"7z"}
+  def shift_suit(tile), do: @shift[tile]
+
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
   @all_tiles [
     :"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m",
@@ -64,14 +70,15 @@ defmodule Riichi do
 
   def offset_tile(tile, n, wraps \\ false, honor_seqs \\ false) do
     if tile != nil do
-      if (n < 1 && n > -1) || n < -10 || n > 10 do
-        normalize_red_five(tile)
-      else
-        if n < 0 do
+      cond do
+        (n < 1 && n > -1)|| n < -10 || n >= 30 ->
+          normalize_red_five(tile)
+        n >= 10 ->
+          offset_tile(shift_suit(tile), n-10, wraps, honor_seqs)
+        n < 0 ->
           offset_tile(if honor_seqs do pred_honors(tile, wraps) else pred(tile, wraps) end, n+1, wraps, honor_seqs)
-        else
+        true ->
           offset_tile(if honor_seqs do succ_honors(tile, wraps) else succ(tile, wraps) end, n-1, wraps, honor_seqs)
-        end
       end
     else nil end
   end
@@ -194,17 +201,31 @@ defmodule Riichi do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     cond do
       is_list(group) && not Enum.empty?(group) ->
-        if Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) do
+        cond do
+        Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) ->
           # list of tiles
           tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
           remove_from_hand_calls(hand, tiles, calls, tile_aliases)
-        else
+        Enum.all?(group, &Kernel.is_integer/1) ->
           # list of integers specifying a group of tiles
           all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
           |> add_tile_aliases(tile_aliases)
           all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
             tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
             remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+          end)
+        true ->
+          # list of lists of integers specifying multiple related groups of tiles
+          all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
+          |> add_tile_aliases(tile_aliases)
+          all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+            for set <- group, reduce: [{hand, calls}] do
+              hand_calls -> 
+                for {hand, calls} <- hand_calls do
+                  tiles = Enum.map(set, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
+                  remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+                end |> Enum.concat()
+            end
           end)
         end
       # tile
