@@ -100,6 +100,12 @@ defmodule RiichiAdvanced.GameState.Actions do
   def change_turn(state, seat, via_action \\ false) do
     # get previous turn
     prev_turn = state.turn
+
+    # erase previous turn's deferred actions
+    state = if prev_turn != nil do
+      update_player(state, prev_turn, &%Player{ &1 | deferred_actions: [] })
+    else state end
+
     # IO.puts("Changing turn from #{prev_turn} to #{seat}")
 
     # change turn
@@ -533,7 +539,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     actions = state.players[context.seat].deferred_actions
     if state.game_active && not Enum.empty?(actions) do
       state = update_player(state, context.seat, &%Player{ &1 | choice: nil, chosen_actions: nil, deferred_actions: [] })
-      # IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
+      if @debug_actions do
+        IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
+      end
       state = run_actions(state, actions, context)
       notify_ai(state)
       state
