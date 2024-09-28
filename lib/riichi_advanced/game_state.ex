@@ -360,11 +360,6 @@ defmodule RiichiAdvanced.GameState do
     state = case scoring_table["method"] do
       "riichi" ->
         wraps = "wrapping_fu_calculation" in state.players[seat].status
-        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
-        if minipoints == 0 do
-          IO.inspect("Warning: 0 minipoints translates into nil score")
-        end
-
         # find the maximum yaku obtainable across all joker assignments
         {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name} = for joker_assignment <- joker_assignments do
           assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
@@ -376,6 +371,10 @@ defmodule RiichiAdvanced.GameState do
 
           # temporarily replace winner's hand with joker assignment to determine yaku
           state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls, winning_hand: assigned_winning_hand } end)
+          minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+          if minipoints == 0 do
+            IO.inspect("Warning: 0 minipoints translates into nil score")
+          end
           yaku = Scoring.get_yaku(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, winning_tile, win_source, minipoints)
           {minipoints, yaku} = if Map.has_key?(state, :saki) && win_source == :draw && :draw in Enum.concat(Map.values(state.players[seat].tile_aliases)) do
             # if :draw maps to some other tiles, use :draw instead as our winning tile to calculate fu/yaku

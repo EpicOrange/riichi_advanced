@@ -351,7 +351,7 @@ defmodule Riichi do
     Enum.any?(match_definitions, fn match_definition ->
       case try_remove_all_tiles(hand, [tile], tile_aliases) do
         [] -> false
-        hands -> Enum.all?(hands, fn hand -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_aliases)) end)
+        hands -> Enum.any?(hands, fn hand -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_aliases)) end)
       end
     end)
   end
