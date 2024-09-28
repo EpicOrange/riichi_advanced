@@ -24,8 +24,10 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="saki">Sakijong v1.2</option>
           <option value="vietnamese">Vietnamese</option>
           <option value="galaxy">Galaxy</option>
+          <option value="space_galaxy">Space Galaxy</option>
           <option value="shouhai">Shouhai (beta)</option>
           <option value="space_shouhai">Space Shouhai (beta)</option>
+          <option value="bloody30faan">Bloody 30-Faan (beta)</option>
         </select>
         <br/>
         Room:
