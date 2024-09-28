@@ -77,7 +77,7 @@
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
     "iipeikou": [0, 0, 1, 1, 2, 2],
-    "iitsu": [[0,1,2],[3,4,5],[6,7,8]],
+    "ittsu": [[0,1,2],[3,4,5],[6,7,8]],
     "sanshoku_doujun": [[0,1,2],[10,11,12],[20,21,22]],
     "sanshoku_doukou": [[0,0,0],[10,10,10],[20,20,20]],
     "ton": ["1z", "1z", "1z"],
@@ -386,25 +386,25 @@
       ]
     },
     {
-      "display_name": "Iitsu",
+      "display_name": "Ittsu",
       "value": 1,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
-          [["iitsu"], 1],
+          [["ittsu"], 1],
           [["shuntsu", "koutsu"], 1],
           [["pair"], 1]
         ]]]}
       ]
     },
     {
-      "display_name": "Iitsu",
+      "display_name": "Ittsu",
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
-          [["iitsu"], 1],
+          [["ittsu"], 1],
           [["shuntsu", "koutsu"], 1],
           [["pair"], 1]
         ]]]}
@@ -847,9 +847,9 @@
       "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Chanta", 1]]}]
     },
     {
-      "display_name": "Iitsu",
+      "display_name": "Ittsu",
       "value": 1,
-      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Iitsu", 1]]}]
+      "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Ittsu", 1]]}]
     },
     {
       "display_name": "Sanshoku",
@@ -1096,7 +1096,7 @@
     "Double Riichi": "ダブル立直",
     "Chiitoitsu": "七対子",
     "Chanta": "混全帯幺九",
-    "Iitsu": "一気通貫",
+    "Ittsu": "一気通貫",
     "Sanshoku": "三色同順",
     "Sanshoku Doukou": "三色同刻",
     "Sankantsu": "三槓子",
