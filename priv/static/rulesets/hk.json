@@ -67,8 +67,8 @@
     "chuurenpoutou_s": ["1s","1s","1s","2s","3s","4s","5s","6s","7s","8s","9s","9s","9s"]
   },
   "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 6] ]
   ],
   "kokushi_tenpai_definition": [
@@ -122,12 +122,12 @@
     {
       "display_name": "All Sequences",
       "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "All Triplets",
       "value": 3,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "All Concealed Sets",
