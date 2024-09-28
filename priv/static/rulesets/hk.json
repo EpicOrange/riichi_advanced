@@ -62,9 +62,7 @@
     "hatsu_pair": ["6z", "6z"],
     "chun_pair": ["7z", "7z"],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "chuurenpoutou_m": ["1m","1m","1m","2m","3m","4m","5m","6m","7m","8m","9m","9m","9m"],
-    "chuurenpoutou_p": ["1p","1p","1p","2p","3p","4p","5p","6p","7p","8p","9p","9p","9p"],
-    "chuurenpoutou_s": ["1s","1s","1s","2s","3s","4s","5s","6s","7s","8s","9s","9s","9s"]
+    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
@@ -344,7 +342,7 @@
     {
       "display_name": "Nine Gates",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou_m", "chuurenpoutou_p", "chuurenpoutou_s"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
     },
     {
       "display_name": "Thirteen Orphans",
