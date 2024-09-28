@@ -154,7 +154,7 @@ defmodule Riichi do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     call_choices = if from_hand do hand else called_tiles end
-    Map.new(call_choices, fn tile ->
+    Enum.map(call_choices, fn tile ->
       joker_choices = [tile] ++ Map.get(tile_mappings, tile, [])
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
@@ -165,7 +165,7 @@ defmodule Riichi do
             choices ++ Enum.map(possible_removals, fn remaining -> hand -- remaining end)
         end |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end) |> Enum.uniq()
       end) |> Enum.uniq()}
-    end)
+    end) |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
   end
   def can_call?(calls_spec, hand, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false), do: Enum.any?(make_calls(calls_spec, hand, called_tiles, tile_aliases, tile_mappings, wraps, honor_seqs), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
