@@ -102,16 +102,31 @@ defmodule Riichi do
   end
   def normalize_red_fives(hand), do: Enum.map(hand, &normalize_red_five/1)
 
-  def is_manzu?(tile), do: tile in [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"0m"]
-  def is_pinzu?(tile), do: tile in [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"0p"]
-  def is_souzu?(tile), do: tile in [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"0s"]
-  def is_jihai?(tile), do: tile in [:"1z", :"2z", :"3z", :"4z", :"5z", :"0z", :"6z", :"7z"]
+  @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"0m",
+               :"11m", :"12m", :"13m", :"14m", :"15m", :"16m", :"17m", :"18m", :"19m"]
+  @pinzu      [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"0p",
+               :"11p", :"12p", :"13p", :"14p", :"15p", :"16p", :"17p", :"18p", :"19p"]
+  @souzu      [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"0s",
+               :"11s", :"12s", :"13s", :"14s", :"15s", :"16s", :"17s", :"18s", :"19s"]
+  @jihai      [:"1z", :"2z", :"3z", :"4z", :"5z", :"0z", :"6z", :"7z",
+               :"11z", :"12z", :"13z", :"14z", :"15z", :"10z", :"16z", :"17z"]
+  @terminal   [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s",
+               :"11m", :"19m", :"11p", :"19p", :"11s", :"19s"]
+  @yaochuuhai [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z", 
+               :"11m", :"19m", :"11p", :"19p", :"11s", :"19s", :"11z", :"12z", :"13z", :"14z", :"15z", :"16z", :"17z"]
+  @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q"]
+  @joker      [:"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j"]
+
+  def is_manzu?(tile), do: tile in @manzu
+  def is_pinzu?(tile), do: tile in @pinzu
+  def is_souzu?(tile), do: tile in @souzu
+  def is_jihai?(tile), do: tile in @jihai
   def is_suited?(tile), do: is_manzu?(tile) || is_pinzu?(tile) || is_souzu?(tile)
-  def is_terminal?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s"]
-  def is_yaochuuhai?(tile), do: tile in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
-  def is_tanyaohai?(tile), do: tile not in [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
-  def is_flower?(tile), do: tile in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q"]
-  def is_joker?(tile), do: tile in [:"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j"]
+  def is_terminal?(tile), do: tile in @terminal
+  def is_yaochuuhai?(tile), do: tile in @yaochuuhai
+  def is_tanyaohai?(tile), do: tile not in @yaochuuhai
+  def is_flower?(tile), do: tile in @flower
+  def is_joker?(tile), do: tile in @joker
 
   def is_num?(tile, num) do
     tile in case num do
