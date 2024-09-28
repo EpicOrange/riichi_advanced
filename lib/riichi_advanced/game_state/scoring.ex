@@ -65,7 +65,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def run_yaku_tests(state) do
-    if Map.has_key?(state.rules, "yaku_tests") && state.rules["run_yaku_tests"] do
+    if Map.has_key?(state.rules, "yaku_tests") && Map.has_key?(state.rules, "run_yaku_tests") && state.rules["run_yaku_tests"] do
       for test_spec <- state.rules["yaku_tests"] do
         {name, hand, calls, status, conditions, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku} = parse_test_spec(state.rules, test_spec)
 
