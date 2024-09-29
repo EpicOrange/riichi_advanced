@@ -255,10 +255,7 @@
     {
       "display_name": "Chiitoitsu",
       "value": 2,
-      "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pair"], 7]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["quad"], 1]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
     },
     {
       "display_name": "Chanta",
