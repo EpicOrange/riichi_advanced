@@ -24,13 +24,13 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
         <div class="yakus">
           <%= for {name, points} <- @winner.yaku do %>
             <div class="yaku">
-              <div class={["yaku-text", String.length(name) >= 12 && "small"]}><%= name %></div>
+              <div class={["yaku-text", String.length(name) >= 12 && "small", String.length(name) >= 20 && "tiny"]}><%= name %></div>
               <div class="han-counter"><%= points %> <%= @winner.point_name %></div>
             </div>
           <% end %>
           <%= for {name, points} <- @winner.yakuman do %>
             <div class="yaku">
-              <div class={["yaku-text", String.length(name) >= 12 && "small"]}><%= name %></div>
+              <div class={["yaku-text", String.length(name) >= 12 && "small", String.length(name) >= 20 && "tiny"]}><%= name %></div>
               <div class="han-counter"><%= points %> <%= @winner.limit_point_name %></div>
             </div>
           <% end %>
