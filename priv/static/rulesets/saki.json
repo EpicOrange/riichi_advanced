@@ -1325,7 +1325,7 @@
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_3"]}], [["reveal_tile", "1x"]]],
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_4"]}], [["reveal_tile", "1x"]]],
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]],
-                ["when", [{"name": "status", "opts": ["takei-hisa"]}, {"name": "has_hell_pair_wait", "opts": ["pair_wait"]}], [["set_status", "double_score"]]]
+                ["when", [{"name": "status", "opts": ["takei-hisa"]}, {"name": "has_hell_wait", "opts": ["pair_wait"]}], [["set_status", "double_score"]]]
                ]
   },
   "before_abortive_draw": {

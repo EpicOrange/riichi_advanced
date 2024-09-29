@@ -426,8 +426,30 @@ defmodule RiichiAdvanced.GameState do
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
       "hk" ->
-        yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, winning_tile, win_source)
-        {score, points, _} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+        # find the maximum yaku obtainable across all joker assignments
+        {joker_assignment, yaku, score, fan} = for joker_assignment <- joker_assignments do
+          # replace 5z with 0z
+          joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
+
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          {state, assigned_winning_tile} = Scoring.apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+          yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
+          yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, yaku)
+          else yaku end
+          {score, fan, _} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+
+          {joker_assignment, yaku, score, fan}
+        end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(-1)
+
+        # sort jokers into the hand for hand display
+        orig_hand = state.players[seat].hand
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        # restore original hand
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
         payer = case win_source do
           :draw    -> nil
           :discard -> get_last_discard_action(state).seat
@@ -436,7 +458,7 @@ defmodule RiichiAdvanced.GameState do
         winner = Map.merge(winner, %{
           yaku: yaku,
           yakuman: [],
-          points: points,
+          points: fan,
           score: score,
           payer: payer
         })
@@ -1047,12 +1069,12 @@ defmodule RiichiAdvanced.GameState do
         tag = Enum.at(opts, 0, "missing_tag")
         tagged_tile = state.tags[tag]
         Riichi.normalize_red_five(context.tile) == Riichi.normalize_red_five(tagged_tile)
-      "has_hell_pair_wait" ->
+      "has_hell_wait" ->
         hand = cxt_player.hand
         calls = cxt_player.calls
-        pair_wait_definitions = translate_match_definitions(state, opts)
+        wait_definitions = translate_match_definitions(state, opts)
         tile_aliases = cxt_player.tile_aliases
-        pair_waits = Enum.flat_map(pair_wait_definitions, fn definition -> Riichi.remove_match_definition(hand, calls, definition, tile_aliases) end)
+        pair_waits = Enum.flat_map(wait_definitions, fn definition -> Riichi.remove_match_definition(hand, calls, definition, tile_aliases) end)
         |> Enum.flat_map(fn {hand, _calls} -> hand end)
         visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
         visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
