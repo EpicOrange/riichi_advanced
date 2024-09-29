@@ -62,6 +62,7 @@
     "haku": ["5z", "5z", "5z"],
     "hatsu": ["6z", "6z", "6z"],
     "chun": ["7z", "7z", "7z"],
+    "dragons": ["5z", "6z", "7z"],
     "ton_pair": ["1z", "1z"],
     "nan_pair": ["2z", "2z"],
     "shaa_pair": ["3z", "3z"],
@@ -240,6 +241,11 @@
       "display_name": "Chun",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
+    },
+    {
+      "display_name": "Dragon Sequence",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["dragons"], 1]]]]}]
     },
     {
       "display_name": "Double Riichi",

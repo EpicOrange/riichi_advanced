@@ -888,7 +888,7 @@
     ["any", [["unset_status", "discards_empty"]]]
   ],
   "after_start": {
-    "actions": [["set_status_all", "discards_empty", "nagashi"]]
+    "actions": [["set_status_all", "discards_empty", "nagashi", "wrapping_fu_calculation"]]
   },
   "before_win": {
     "actions": [["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
