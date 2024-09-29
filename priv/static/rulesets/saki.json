@@ -1292,7 +1292,7 @@
   "after_saki_start": {
     "actions": [
       ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["reveal_hand"], ["set_status", "double_score"]]],
-      ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_status", "wrapping_fu_calculation"]]],
+      ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_status", "wrapping_score_calculation"]]],
       ["when", [{"name": "status", "opts": ["miyanaga-saki"]}], [["set_tile_alias", ["1z", "2z", "4z"], ["3z"]]]],
       ["when", [{"name": "status", "opts": ["miyanaga-teru"]}], [["set_status", "multiply_honba_with_han"]]]
     ]

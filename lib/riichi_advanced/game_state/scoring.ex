@@ -39,9 +39,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def _has_yaku(state, yaku_list, seat, winning_tile, win_source) do
-    wraps = "wrapping_fu_calculation" in state.players[seat].status
+    wraps = "wrapping_score_calculation" in state.players[seat].status
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     IO.puts("Joker assignments: #{inspect(joker_assignments)}")
     Enum.any?(joker_assignments, fn joker_assignment ->

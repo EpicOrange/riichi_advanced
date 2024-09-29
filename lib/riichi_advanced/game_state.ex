@@ -351,13 +351,13 @@ defmodule RiichiAdvanced.GameState do
       end
     scoring_table = state.rules["score_calculation"]
     # deal with jokers
+    wraps = "wrapping_score_calculation" in state.players[seat].status
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     IO.puts("Joker assignments: #{inspect(joker_assignments)}")
     state = case scoring_table["method"] do
       "riichi" ->
-        wraps = "wrapping_fu_calculation" in state.players[seat].status
         # find the maximum yaku obtainable across all joker assignments
         {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name} = for joker_assignment <- joker_assignments do
           # temporarily replace winner's hand with joker assignment to determine yaku

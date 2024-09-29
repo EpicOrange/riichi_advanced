@@ -96,6 +96,18 @@ defmodule RiichiAdvanced.SMT do
                  (bvshl (_ bv1 136) (concat (_ bv0 128) (bvshl ix (_ bv2 8)))))
                (define-fun is_set_num ((num (_ BitVec 8))) Bool
                  (and (bvule (_ bv1 8) num) (bvule num (_ bv3 8))))
+               (define-fun suit_mask () (_ BitVec 136) #x0000000000000000000000000777777777)
+               (define-fun wind_mask () (_ BitVec 136) #x0000000000000000000000000000007777)
+               (define-fun dragon_mask () (_ BitVec 136) #x0000000000000000000000000000000777)
+               (define-fun add_overflow ((size (_ BitVec 136)) (val (_ BitVec 136))) (_ BitVec 136)
+                 (bvor (bvand val suit_mask) (bvlshr val size)))
+               (define-fun shift_set ((indices (_ BitVec 136)) (set (_ BitVec 136))) (_ BitVec 136)
+                 (bvor
+                   (add_overflow (_ bv36 136) (bvmul set (bvand indices suit_mask)))
+                   (bvshl (add_overflow (_ bv36 136) (bvmul set (bvand (bvlshr indices (_ bv36 136)) suit_mask))) (_ bv36 136))
+                   (bvshl (add_overflow (_ bv36 136) (bvmul set (bvand (bvlshr indices (_ bv72 136)) suit_mask))) (_ bv72 136))
+                   (bvshl (add_overflow (_ bv16 136) (bvmul set (bvand (bvlshr indices (_ bv108 136)) wind_mask))) (_ bv108 136))
+                   (bvshl (add_overflow (_ bv12 136) (bvmul set (bvand (bvlshr indices (_ bv124 136)) dragon_mask))) (_ bv124 136))))
                """
 
   def to_smt_tile(tile, ix \\ -1, joker_ixs \\ %{}) do
@@ -220,7 +232,7 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_mappings \\ %{}) do
+  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_mappings \\ %{}, wraps \\ false) do
     # first figure out what the sets are
     # generates this:
     # (define-fun set1 () (_ BitVec 136) #x0000000000000000000000000000000111)
@@ -283,8 +295,9 @@ defmodule RiichiAdvanced.SMT do
     #   (bvmul hand_indices1 set1)
     #   (bvmul hand_indices2 set2)
     #   (bvmul hand_indices3 set3))))
+    shift_set = if wraps do "shift_set" else "bvmul" end
     declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec 136))\n" end)
-    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n  (bvmul hand_indices#{i} set#{i})" end) |> Enum.join()
+    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n  (#{shift_set} hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (equal_digits hand (bvadd#{hand_indices})))\n"]
 
     has_calls = length(calls) > 0
@@ -317,7 +330,7 @@ defmodule RiichiAdvanced.SMT do
         (declare-const call#{i}_index (_ BitVec 8))
         (declare-const call#{i}_set (_ BitVec 8))
         (assert (is_set_num call#{i}_set))
-        (assert (equal_digits call#{i} (bvmul (tile_from_index call#{i}_index) (to_set call#{i}_set))))
+        (assert (equal_digits call#{i} (#{shift_set} (tile_from_index call#{i}_index) (to_set call#{i}_set))))
         """
       end)
 
