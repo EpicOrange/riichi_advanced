@@ -217,39 +217,34 @@ defmodule Riichi do
     cond do
       is_list(group) && not Enum.empty?(group) ->
         cond do
-        Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) ->
-          # list of tiles
-          tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
-          remove_from_hand_calls(hand, tiles, calls, tile_aliases)
-        Enum.all?(group, &Kernel.is_integer/1) ->
-          # list of integers specifying a group of tiles
-          all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
-          |> add_tile_aliases(tile_aliases)
-          all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-            tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
+          Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) ->
+            # list of tiles
+            tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
             remove_from_hand_calls(hand, tiles, calls, tile_aliases)
-          end)
-        true ->
-          # list of lists of integers specifying multiple related groups of tiles
-          all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
-          |> add_tile_aliases(tile_aliases)
-          all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-            for set <- group, reduce: [{hand, calls}] do
-              hand_calls -> 
-                for {hand, calls} <- hand_calls do
-                  tiles = Enum.map(set, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
-                  remove_from_hand_calls(hand, tiles, calls, tile_aliases)
-                end |> Enum.concat()
-            end
-          end)
+          Enum.all?(group, &Kernel.is_integer/1) ->
+            # list of integers specifying a group of tiles
+            all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
+            |> add_tile_aliases(tile_aliases)
+            all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+              tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
+              remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+            end)
+          true ->
+            # list of lists of integers specifying multiple related groups of tiles
+            all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
+            |> add_tile_aliases(tile_aliases)
+            all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+              for set <- group, reduce: [{hand, calls}] do
+                hand_calls -> 
+                  for {hand, calls} <- hand_calls do
+                    tiles = Enum.map(set, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, wrapping, honor_seqs) end end)
+                    remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+                  end |> Enum.concat()
+              end
+            end)
         end
       # tile
-      Utils.to_tile(group) != nil -> 
-        if Enum.member?(hand, Utils.to_tile(group)) do
-          [{List.delete(hand, Utils.to_tile(group)), calls}]
-        else
-          []
-        end
+      Utils.to_tile(group) != nil -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
       # call
       is_binary(group) -> try_remove_call(hand, calls, group)
       true ->
@@ -258,17 +253,20 @@ defmodule Riichi do
     end
   end
 
-  @match_keywords ["exhaustive", "unique", "wraps", "honorseq", "debug"]
+  @match_keywords ["exhaustive", "unique", "wraps", "honorseq", "nojoker", "debug"]
 
   defp _remove_match_definition(hand, calls, match_definition, tile_aliases) do
     exhaustive = "exhaustive" in match_definition
     unique = "unique" in match_definition
     wrapping = "wraps" in match_definition
     honor_seqs = "honorseq" in match_definition
+    no_jokers = "nojoker" in match_definition
     debug = "debug" in match_definition
     if debug do
       IO.puts("Match definition: #{inspect(match_definition)}")
+      IO.puts("Tile aliases: #{inspect(tile_aliases)}")
     end
+    tile_aliases = if no_jokers do %{} else tile_aliases end
     for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
       hand_calls ->
         [groups, num] = match_definition_elem

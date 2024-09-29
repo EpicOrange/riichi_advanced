@@ -818,6 +818,7 @@ defmodule RiichiAdvanced.GameState do
   #   "unique": Use each group in each group set exactly once. Useful for defining kokushi.
   #   "wraps": Allow sequences to wrap around: 891, 912.
   #   "honorseq": Allow winds and dragons to form sequences.
+  #   "nojoker": Ignore joker abilities.
   #
   # Example of a list of match definitions representing a winning hand:
   # [
