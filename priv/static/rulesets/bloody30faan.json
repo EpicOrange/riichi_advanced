@@ -303,6 +303,30 @@
   "四歸四_definition": [
     [ "exhaustive", [[[0,0,0,0,1,1,1,1,2,2,2,2],[0,0,0,1,1,1,1,2,2,2,2,3],[0,0,0,1,1,1,2,2,2,2,3,4],[0,0,1,1,1,1,2,2,2,2,3,3],[0,0,1,1,1,2,2,2,2,3,3,4],[0,0,1,1,2,2,2,2,3,3,4,4],[0,1,1,1,1,2,2,2,2,3,3,3],[0,1,1,1,2,2,2,2,3,3,3,4],[0,1,1,2,2,2,2,3,3,3,4,4],[0,1,2,2,2,2,3,3,3,4,4,4]], 1], [["pair"], 1] ]
   ],
+  "三連對_definition": [
+    [ [[[0,0,1,1,2,2]], 1], [["pair"], 4] ]
+  ],
+  "五連對_definition": [
+    [ [[[0,0,1,1,2,2,3,3,4,4]], 1], [["pair"], 2] ]
+  ],
+  "七連對_definition": [
+    [ [[[0,0,1,1,2,2,3,3,4,4,5,5,6,6]], 1] ]
+  ],
+  "三同對_definition": [
+    [ [[[[0,0],[10,10],[20,20]]], 1], [["pair"], 4] ]
+  ],
+  "三元七對_definition": [
+    [ [[["0z","0z","6z","6z","7z","7z"]], 1], [["pair"], 4] ]
+  ],
+  "四喜七對_definition": [
+    [ [[["1z","1z","2z","2z","3z","3z","4z","4z"]], 1], [["pair"], 3] ]
+  ],
+  "將眼_definition": [
+    [ "exhaustive",
+      [[["2m","2m","2m"],["5m","5m","5m"],["8m","8m","8m"],
+        ["2p","2p","2p"],["5p","5p","5p"],["8p","8p","8p"],
+        ["2s","2s","2s"],["5s","5s","5s"],["8s","8s","8s"]], 1], [["shuntsu", "koutsu"], 4] ]
+  ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 7] ],
@@ -881,6 +905,11 @@
       "value": 5,
       "when": [{"name": "winning_hand_consists_of", "opts": ["2m","4m","6m","8m","2p","4p","6p","8p","2s","4s","6s","8s"]}]
     },
+    {
+      "display_name": "All Central",
+      "value": 5,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["4m","5m","6m","4p","5p","6p","4s","5s","6s"]}]
+    },
     // (5) 偶然類
     {
       "display_name": "After a Joker",
@@ -947,9 +976,64 @@
       "display_name": "No Jokers",
       "value": 2,
       "when": [{"name": "status_missing", "opts": ["has_joker"]}]
-    }
+    },
     // (7) 對子類
-
+    {
+      "display_name": "Three Consecutive Pairs",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三連對"]]}]
+    },
+    {
+      "display_name": "Five Consecutive Pairs",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["五連對"]]}]
+    },
+    {
+      "display_name": "Seven Consecutive Pairs",
+      "value": 30,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["七連對"]]}]
+    },
+    {
+      "display_name": "Seven Pairs",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
+    },
+    {
+      "display_name": "Three Identical Pairs",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三同對"]]}]
+    },
+    {
+      "display_name": "Three Dragons Seven Pairs",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三元七對"]]}]
+    },
+    {
+      "display_name": "Four Winds Seven Pairs",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["四喜七對"]]}]
+    },
+    // (8) 不搭類
+    {
+      "display_name": "Thirteen Unrelated",
+      "value": 5,
+      "when": [
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["pair"], 1]]]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["ryanmen/penchan"], 1]]]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["kanchan"], 1]]]]}
+      ]
+    },
+    // (9) 其他
+    {
+      "display_name": "Eyes of the General",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["將眼"]]}]
+    },
+    {
+      "display_name": "Thirteen Orphans",
+      "value": 30,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
+    }
   ],
   "meta_yaku": [
     {
@@ -961,6 +1045,11 @@
       "display_name": "Pure Shifted Linked Sequences",
       "value": 20,
       "when": [{"name": "has_existing_yaku", "opts": ["Pure Three Shifted Sequences", "Pure Three Linked Sequences"]}]
+    },
+    {
+      "display_name": "Chicken Hand",
+      "value": 15,
+      "when": ["has_no_yaku"]
     }
   ],
   "yaku_precedence": {
@@ -1006,7 +1095,9 @@
     "Three Sequence Intersection": ["Two Sequence Intersection"],
     "Four Sequence Intersection": ["Three Sequence Intersection"],
     "Triple Intersection": ["Double Intersection"],
-    "Fully Concealed Hand": ["Concealed Hand"]
+    "Fully Concealed Hand": ["Concealed Hand"],
+    "Five Consecutive Pairs": ["Three Consecutive Pairs"],
+    "Seven Consecutive Pairs": ["Five Consecutive Pairs"]
   },
   "point_name": "Faan",
   "score_calculation": {
