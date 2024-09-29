@@ -356,6 +356,7 @@ defmodule RiichiAdvanced.GameState do
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+    joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     state = case scoring_table["method"] do
       "riichi" ->
         # find the maximum yaku obtainable across all joker assignments

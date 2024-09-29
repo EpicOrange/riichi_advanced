@@ -44,6 +44,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+    joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
       minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
