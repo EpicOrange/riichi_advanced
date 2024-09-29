@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.AIPlayer do
   use GenServer
 
-  @ai_speed 2
+  @ai_speed 4
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.AIPlayer do
     if RiichiAdvanced.GameState.Debug.debug_fast_ai() do
       :timer.apply_after(100, Kernel, :send, [self(), :initialize])
     else
-      :timer.apply_after(5000, Kernel, :send, [self(), :initialize])
+      :timer.apply_after(3000, Kernel, :send, [self(), :initialize])
     end
     {:ok, state}
   end
