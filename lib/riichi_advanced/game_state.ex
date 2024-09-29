@@ -442,7 +442,7 @@ defmodule RiichiAdvanced.GameState do
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
-      "sichuan" ->
+      "sichuan" -> # TODO this is same as hk
         # add a winner
         yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, winning_tile, win_source)
         {score, points, _} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
@@ -459,9 +459,6 @@ defmodule RiichiAdvanced.GameState do
           payer: payer
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-
-        # only end the round once there are three winners; otherwise, continue
-        state = Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
         state
       "vietnamese" ->
         # find the maximum yaku obtainable across all joker assignments
@@ -511,6 +508,11 @@ defmodule RiichiAdvanced.GameState do
         state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")
         state
     end
+
+    state = if Map.has_key?(state.rules, "bloody_end") && state.rules["bloody_end"] do
+      # only end the round once there are three winners; otherwise, continue
+      Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
+    else state end
 
     state
   end

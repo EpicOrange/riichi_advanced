@@ -49,9 +49,6 @@
     "iipeikou": [0, 0, 1, 1, 2, 2],
     "老少順": [[0,1,2],[6,7,8]],
     "一色老少雙順": [0,0,1,1,2,2,6,6,7,7,8,8],
-    "兩連刻": [[0,0,0],[1,1,1]],
-    "小三連刻1": [[0,0],[1,1,1],[2,2,2]],
-    "小三連刻1": [[0,0],[1,1,1],[2,2,2]],
     "ton": ["1z", "1z", "1z"],
     "nan": ["2z", "2z", "2z"],
     "shaa": ["3z", "3z", "3z"],
@@ -70,8 +67,8 @@
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 6] ]
   ],
   "kokushi_tenpai_definition": [
@@ -82,6 +79,140 @@
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13]
     ]
+  ],
+  "any_joker_definition": [
+    [[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]
+  ],
+  "兩連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[1,1,1]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[11,11,11]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
+  ],
+  "小三連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[1,1],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[1,1],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[1,1,1],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[1,1,1],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[11,11,11],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[11,11,11],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[11,11,11],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[21,21,21],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[21,21,21],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ]
+  ],
+  "一色三連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ]
+  ],
+  "小一色四連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2],[3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[1,1],[2,2,2],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ]
+  ],
+  "一色四連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["pair"], 1] ]
+  ],
+  "小三色連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[11,11],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[11,11,11],[22,22,22]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ]
+  ],
+  "三色連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22,22]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
+  ],
+  "小三色四連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22,22],[3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[12,12,12],[3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[12,12],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[11,11],[22,22,22],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[21,21],[12,12,12],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0],[11,11,11],[22,22,22],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [[[[0,0],[21,21,21],[12,12,12],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ]
+  ],
+  "三色四連刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22,22],[3,3,3]]], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[21,21,21],[12,12,12],[3,3,3]]], 1], [["pair"], 1] ]
+  ],
+  "三色五連刻_definition": [
+    [ [[[[0,0,0],[11,11,11],[22,22,22],[3,3,3],[14,14]]], 1] ],
+    [ [[[[0,0,0],[21,21,21],[12,12,12],[3,3,3],[24,24]]], 1] ],
+    [ [[[[0,0,0],[11,11,11],[22,22,22],[3,3],[14,14,14]]], 1] ],
+    [ [[[[0,0,0],[21,21,21],[12,12,12],[3,3],[24,24,24]]], 1] ],
+    [ [[[[0,0,0],[11,11,11],[22,22],[3,3,3],[14,14,14]]], 1] ],
+    [ [[[[0,0,0],[21,21,21],[12,12],[3,3,3],[24,24,24]]], 1] ],
+    [ [[[[0,0,0],[11,11],[22,22,22],[3,3,3],[14,14,14]]], 1] ],
+    [ [[[[0,0,0],[21,21],[12,12,12],[3,3,3],[24,24,24]]], 1] ],
+    [ [[[[0,0],[11,11,11],[22,22,22],[3,3,3],[14,14,14]]], 1] ],
+    [ [[[[0,0],[21,21,21],[12,12,12],[3,3,3],[24,24,24]]], 1] ]
+  ],
+  "兩同刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[10,10,10]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[20,20,20]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
+  ],
+  "小三同刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[20,20,20],[10,10]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[10,10],[20,20,20]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[20,20],[10,10,10]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[10,10,10],[20,20,20]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[20,20,20],[10,10,10]]], 1], [["shuntsu", "koutsu"], 2] ]
+  ],
+  "三同刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20,20]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[10,10,10],[10,10,10]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[20,20,20],[20,20,20]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[0,0,0],[10,10,10]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[0,0,0],[20,20,20]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
+  ],
+  "四同刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20,20],[0,0,0]]], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20,20],[10,10,10]]], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20,20],[20,20,20]]], 1], [["pair"], 1] ]
+  ],
+  "筋刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[3,3,3]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[13,13,13]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[23,23,23]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
+  ],
+  "小三筋刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[13,13,13],[26,26]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[23,23,23],[16,16]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[13,13],[26,26,26]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0,0],[23,23],[16,16,16]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[13,13,13],[26,26,26]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,0],[23,23,23],[16,16,16]]], 1], [["shuntsu", "koutsu"], 2] ]
+  ],
+  "三筋刻_definition": [
+    [ "exhaustive", [[[[0,0,0],[13,13,13],[26,26,26]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0,0],[23,23,23],[16,16,16]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
+  ],
+  "兩相逢_definition": [
+    [ "exhaustive", [[[[0,1,2],[10,11,12]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,1,2],[20,21,22]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
@@ -443,6 +574,81 @@
           {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["pair"], 2]]]]}
         ]
       ]]
+    },
+    {
+      "display_name": "Two Shifted Triplets",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩連刻"]]}]
+    },
+    {
+      "display_name": "Three Small Shifted Triplets",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三連刻"]]}]
+    },
+    {
+      "display_name": "Three Pure Shifted Triplets",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三連刻"]]}]
+    },
+    {
+      "display_name": "Four Pure Small Shifted Triplets",
+      "value": 15,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小一色四連刻"]]}]
+    },
+    {
+      "display_name": "Four Pure Shifted Triplets",
+      "value": 20,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}]
+    },
+    {
+      "display_name": "Mixed Three Small Shifted Triplets",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色連刻"]]}]
+    },
+    {
+      "display_name": "Mixed Three Shifted Triplets",
+      "value": 8,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色連刻"]]}]
+    },
+    {
+      "display_name": "Mixed Four Small Shifted Triplets",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色四連刻"]]}]
+    },
+    {
+      "display_name": "Mixed Four Shifted Triplets",
+      "value": 15,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四連刻"]]}]
+    },
+    {
+      "display_name": "Mixed Five Small Shifted Triplets",
+      "value": 20,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色五連刻"]]}]
+    },
+    {
+      "display_name": "Double Triplets",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩同刻"]]}]
+    },
+    {
+      "display_name": "Small Triple Triplets",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三同刻"]]}]
+    },
+    {
+      "display_name": "Triple Triplets",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三同刻"]]}]
+    },
+    {
+      "display_name": "Quadruple Triplets",
+      "value": 30,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四同刻"]]}]
+    },
+    {
+      "display_name": "All Triplets",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
     }
   ],
   "yaku_precedence": {
@@ -457,7 +663,19 @@
     "Mixed Flush": ["One Voided Suit"],
     "Full Flush": ["Mixed Flush"],
     "Three Concealed Triplets": ["Two Concealed Triplets"],
-    "Four Concealed Triplets": ["Three Concealed Triplets"]
+    "Four Concealed Triplets": ["Three Concealed Triplets"],
+    "Three Small Shifted Triplets": ["Two Shifted Triplets"],
+    "Three Pure Shifted Triplets": ["Two Shifted Triplets"],
+    "Four Pure Small Shifted Triplets": ["Three Small Shifted Triplets"],
+    "Four Pure Shifted Triplets": ["Three Pure Shifted Triplets"],
+    "Mixed Three Small Shifted Triplets": ["Two Shifted Triplets", "Three Small Shifted Triplets"],
+    "Mixed Three Shifted Triplets": ["Two Shifted Triplets"],
+    "Mixed Four Small Shifted Triplets": ["Mixed Three Small Shifted Triplets"],
+    "Mixed Four Shifted Triplets": ["Mixed Three Shifted Triplets"],
+    "Mixed Five Small Shifted Triplets": ["Mixed Four Small Shifted Triplets"],
+    "Small Triple Triplets": ["Double Triplets"],
+    "Triple Triplets": ["Double Triplets"],
+    "Quadruple Triplets": ["Triple Triplets"]
   },
   "point_name": "Faan",
   "score_calculation": {
@@ -565,17 +783,19 @@
       "display_name": "Hu",
       "show_when": [
                      "not_our_turn",
+                     {"name": "status_missing", "opts": ["match_start", "won"]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      "someone_else_just_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
                    ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_discard"]],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["set_status", "won"], ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
       "display_name": "Hu",
       "show_when": [
                      "not_our_turn",
+                     {"name": "status_missing", "opts": ["match_start", "won"]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      [
                        [
@@ -589,18 +809,18 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_call"]],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["set_status", "won"], ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Zimo",
       "show_when": [
                      "our_turn",
-                     {"name": "status_missing", "opts": ["match_start"]},
+                     {"name": "status_missing", "opts": ["match_start", "won"]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
                    ],
-      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_draw"]],
+      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["set_status", "won"], ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "joker": {
@@ -619,5 +839,6 @@
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "max_rounds": 8
+  "max_rounds": 8,
+  "bloody_end": true
 }
