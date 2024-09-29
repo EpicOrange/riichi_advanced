@@ -532,42 +532,42 @@
   "yaku": [
     // (1) 字花類
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["2j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["3j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["4j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["5j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["6j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["7j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["8j"]], 1]]]]}]
     },
     {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[[["9j"]], 1]]]]}]
     },
@@ -1046,17 +1046,24 @@
     },
     // (3) 四歸類
     {
-      "display_name": "Two Sequence Intersection",
+      "display_name": "Tile Hog",
       "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸二"]]}]
+      "when": [
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸二"]]}
+      ]
     },
     {
-      "display_name": "Three Sequence Intersection",
+      "display_name": "Tile Hog",
       "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]}]
+      "when": [
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]}
+      ]
     },
     {
-      "display_name": "Four Sequence Intersection",
+      "display_name": "Tile Hog",
       "value": 15,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]}]
     },
@@ -1088,7 +1095,7 @@
     },
     // (5) 偶然類
     {
-      "display_name": "After a Joker",
+      "display_name": "After a Flower",
       "value": 1,
       "when": [{"name": "status", "opts": ["joker"]}]
     },
@@ -1304,8 +1311,6 @@
     "Mixed Shifted Linked Sequences": ["Mixed Three Shifted Sequences", "Mixed Three Linked Sequences"],
     "Pure Shifted Linked Sequences": ["Pure Three Shifted Sequences", "Pure Three Linked Sequences"],
     "Pure Straight": ["Mixed Straight"],
-    "Three Sequence Intersection": ["Two Sequence Intersection"],
-    "Four Sequence Intersection": ["Three Sequence Intersection"],
     "Triple Intersection": ["Double Intersection"],
     "Fully Concealed Hand": ["Concealed Hand"],
     "Five Consecutive Pairs": ["Three Consecutive Pairs"],
@@ -1447,9 +1452,9 @@
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "joker": {
-      "display_name": "Joker",
+      "display_name": "Flower",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], ["set_status", "joker"], ["draw"]]
+      "actions": [["big_text", "Flower"], ["flower", "2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], ["set_status", "joker"], ["draw"]]
     }
   },
   "auto_buttons": {
