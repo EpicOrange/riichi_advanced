@@ -56,6 +56,8 @@ defmodule RiichiAdvanced.SMT do
                    (= ((_ extract 11 8) left) ((_ extract 11 8) right))
                    (= ((_ extract 7 4) left) ((_ extract 7 4) right))
                    (= ((_ extract 3 0) left) ((_ extract 3 0) right))))
+               (define-fun nonzero ((val (_ BitVec 136))) Bool
+                 (not (equal_digits zero val)))
                (define-fun at_least_digits ((left (_ BitVec 136)) (right (_ BitVec 136))) Bool
                  (and
                    (bvuge ((_ extract 135 132) left) ((_ extract 135 132) right))
@@ -291,14 +293,16 @@ defmodule RiichiAdvanced.SMT do
     # (declare-const hand_indices1 (_ BitVec 136))
     # (declare-const hand_indices2 (_ BitVec 136))
     # (declare-const hand_indices3 (_ BitVec 136))
-    # (assert (equal_digits hand (bvadd
-    #   (bvmul hand_indices1 set1)
-    #   (bvmul hand_indices2 set2)
-    #   (bvmul hand_indices3 set3))))
+    # (assert (or
+    #   (equal_digits hand (bvadd
+    #     (bvmul hand_indices1 set1)
+    #     (bvmul hand_indices2 set2)
+    #     (bvmul hand_indices3 set3)))
+    #   (equal_digits zero (bvadd hand_indices1 hand_indices2 hand_indices3))))
     shift_set = if wraps do "shift_set" else "bvmul" end
     declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec 136))\n" end)
-    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n  (#{shift_set} hand_indices#{i} set#{i})" end) |> Enum.join()
-    assert_hand_indices = ["(assert (equal_digits hand (bvadd#{hand_indices})))\n"]
+    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (#{shift_set} hand_indices#{i} set#{i})" end) |> Enum.join()
+    assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(1..length(all_sets), fn i -> " hand_indices#{i}" end)}))))\n"]
 
     has_calls = length(calls) > 0
     calls_smt = if has_calls do
@@ -379,21 +383,21 @@ defmodule RiichiAdvanced.SMT do
 
     # assert match definitions match
     # ; example tiles for kokushi check
-    # (declare-const tiles1 (_ BitVec 136))
-    # (assert (or
-    #   (= tiles1 #x0000000000000000000000000000000001)
-    #   (= tiles1 #x0000000000000000000000000100000000)
-    #   (= tiles1 #x0000000000000000000000001000000000)
-    #   (= tiles1 #x0000000000000000100000000000000000)
-    #   (= tiles1 #x0000000000000001000000000000000000)
-    #   (= tiles1 #x0000000100000000000000000000000000)
-    #   (= tiles1 #x0000001000000000000000000000000000)
-    #   (= tiles1 #x0000010000000000000000000000000000)
-    #   (= tiles1 #x0000100000000000000000000000000000)
-    #   (= tiles1 #x0001000000000000000000000000000000)
-    #   (= tiles1 #x0010000000000000000000000000000000)
-    #   (= tiles1 #x0100000000000000000000000000000000)
-    #   (= tiles1 #x1000000000000000000000000000000000)))
+    # (define-fun tiles1 ((h (_ BitVec 136))) Bool
+    #   ((_ at-least 13)
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000000000000000000000000000000001)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000000000000000000000000100000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000000000000000000000001000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000000000000000100000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000000000000001000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000000100000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000001000000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000010000000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0000100000000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0001000000000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0010000000000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x0100000000000000000000000000000000)))
+    #     (nonzero (bvand h (bvmul (_ bv7 136) #x1000000000000000000000000000000000)))))
     # ; e.g. 4 sets and a pair OR 7 pairs OR kokushi
     # (assert (or
     #   (and (= (_ bv4 4) (add8_single sumindices1 sumindices2))
@@ -401,7 +405,7 @@ defmodule RiichiAdvanced.SMT do
     #   (and (= (_ bv0 4) sumindices1)
     #        (= (_ bv0 4) sumindices2)
     #        (= (_ bv7 4) sumindices3))
-    #   (and (equal_digits hand (bvadd tiles1 #x1111111100000001100000001100000001)))))
+    #   (and (tiles1 hand))))
     {match_assertions, tile_groups} = for match_definition <- match_definitions, reduce: {[], []} do
       {match_assertions, tile_groups} ->
         {assertions, mentioned_set_ixs, tile_groups} = for [groups, num] <- match_definition, reduce: {[], [], tile_groups} do
@@ -420,7 +424,7 @@ defmodule RiichiAdvanced.SMT do
 
             # then take care of tiles
             {assertions, tile_groups} = if not Enum.empty?(tiles) do
-              {["\n    (equal_digits hand (bvmul (_ bv#{num} 136) tiles#{length(tile_groups)}))" | assertions], tile_groups ++ [Enum.map(tiles, &to_smt_tile/1)]}
+              {["\n    (tiles#{length(tile_groups)} hand)" | assertions], tile_groups ++ [{Enum.map(tiles, &to_smt_tile/1), num}]}
             else {assertions, tile_groups} end
             # IO.inspect({groups, set_ixs, tiles})
             {assertions, set_ixs ++ mentioned_set_ixs, tile_groups}
@@ -437,10 +441,9 @@ defmodule RiichiAdvanced.SMT do
     # IO.inspect(tile_groups)
 
     # TODO tile_groups
-    declare_tile_groups = Enum.map(0..length(tile_groups)-1, fn i -> "(declare-const tiles#{i} (_ BitVec 136))\n" end)
-    assert_tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {group, i} -> "(assert (or\n#{Enum.map(group, fn tiles -> "  (= tiles#{i} #{tiles})" end) |> Enum.join("\n")}))\n" end)
+    tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {{group, num}, i} -> "(define-fun tiles#{i} ((h (_ BitVec 136))) Bool\n  ((_ at-least #{num})\n#{Enum.map(group, fn tiles -> "    (nonzero (bvand h (bvmul (_ bv7 136) #{tiles})))" end) |> Enum.join("\n")}))\n" end)
 
-    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ [declare_tile_groups, assert_tile_groups] ++ index_smt ++ [match_assertions])
+    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions])
     if @print_smt do
       IO.puts(smt)
     end
