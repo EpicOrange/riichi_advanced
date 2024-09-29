@@ -1248,8 +1248,8 @@
     },
     "joker": {
       "display_name": "Joker",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["set_status", "joker"], ["draw"]]
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
+      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], ["set_status", "joker"], ["draw"]]
     }
   },
   "auto_buttons": {
