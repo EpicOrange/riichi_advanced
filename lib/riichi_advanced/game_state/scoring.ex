@@ -25,6 +25,43 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else eligible_yaku end
   end
 
+  def apply_joker_assignment(state, seat, joker_assignment, winning_tile) do
+    orig_hand = state.players[seat].hand
+    non_flower_calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
+    assigned_calls = non_flower_calls
+    |> Enum.with_index()
+    |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile), sideways} end)} end)
+    assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
+    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Riichi.call_to_tiles/1) ++ [assigned_winning_tile]
+    state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls, winning_hand: assigned_winning_hand } end)
+    {state, assigned_winning_tile}
+  end
+
+  def _has_yaku(state, yaku_list, seat, winning_tile, win_source) do
+    wraps = "wrapping_fu_calculation" in state.players[seat].status
+    joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings)
+    end
+    IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+    Enum.any?(joker_assignments, fn joker_assignment ->
+      {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+      minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+      Enum.any?(yaku_list, fn yaku -> not Enum.empty?(get_yaku(state, [yaku], seat, assigned_winning_tile, win_source, minipoints)) end)
+    end)
+  end
+
+  def has_yaku(state, yaku_list, seat, winning_tile, win_source) do
+    yaku_names = Enum.map(yaku_list, fn yaku -> yaku["display_name"] end)
+    case RiichiAdvanced.ETSCache.get({:has_yaku, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names}) do
+      [] -> 
+        result = _has_yaku(state, yaku_list, seat, winning_tile, win_source)
+        RiichiAdvanced.ETSCache.put({:has_yaku, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names}, result)
+        result
+      [result] -> result
+    end
+  end
+
   defp parse_test_spec(rules, test_spec) do
     name = test_spec["name"]
     hand = if Map.has_key?(test_spec, "hand") do Enum.map(test_spec["hand"], &Utils.to_tile/1) else [] end
