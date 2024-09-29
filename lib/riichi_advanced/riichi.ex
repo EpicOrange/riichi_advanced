@@ -279,7 +279,7 @@ defmodule Riichi do
             [] -> []
             hand_calls_groups ->
               if debug do
-                IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc:")
+                IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
                 for {hand, calls, remaining_groups} <- hand_calls_groups do
                   IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups)}")
                 end
@@ -288,6 +288,12 @@ defmodule Riichi do
                 remove_group(hand, calls, group, tile_aliases, wrapping, honor_seqs)
                 |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
               end |> Enum.concat()
+              if debug do
+                IO.puts("Acc (after removal):")
+                for {hand, calls, remaining_groups} <- new_hand_calls_groups do
+                  IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups)}")
+                end
+              end
               new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end
               new_hand_calls_groups
           end
@@ -298,9 +304,16 @@ defmodule Riichi do
               []
             end
           else
-            hand_calls_groups
+            result = hand_calls_groups
             |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
             |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
+            if debug do
+              IO.puts("Final result:")
+              for {hand, calls} <- result do
+                IO.puts("- #{inspect(hand)} / #{inspect(calls)}")
+              end
+            end
+            result
           end
         end
     end
