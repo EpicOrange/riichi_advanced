@@ -58,13 +58,6 @@ defmodule RiichiAdvanced.GameState.Marking do
     mark_info = state.marking[marking_player][source]
     marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
     already_marked = is_marked?(state, marking_player, seat, index, source)
-    if index == 12 do
-      IO.inspect("can_mark called")
-      IO.inspect(tile)
-      IO.inspect(mark_info)
-      IO.inspect(marked_enough)
-      IO.inspect(already_marked)
-    end
     mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
         "match_suit"        ->

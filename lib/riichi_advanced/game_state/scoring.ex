@@ -412,6 +412,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         delta_scores_reason = cond do
             not has_payer        -> "Draw"
             winner.payer == nil  -> "Zimo"
+            length(winners) == 0 ->
+              IO.puts("Error: last win was nobody? #{inspect(state.winners)}")
+              "Hu"
             length(winners) == 1 -> "Hu"
             length(winners) == 2 -> "Double Hu"
             length(winners) == 3 -> "Triple Hu"
@@ -503,15 +506,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
         winners = Map.keys(state.winners)
         tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
         payers = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
-        # do this so under the sea isn't scored
-        state = Map.put(state, :wall_index, 0)
+
         # for each tenpai player who hasn't won, find the highest point hand they could get
         state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners, reduce: state do
           state ->
             possible_tiles = state.players[seat].hand ++ state.players[seat].draw
               |> Enum.flat_map(fn tile -> [Riichi.pred(tile), tile, Riichi.succ(tile)] -- [nil] end)
+            # do this so under the sea isn't scored
+            state2 = Map.put(state, :wall_index, 0)
             {winning_tile, best_yaku} = for winning_tile <- possible_tiles do
-              possible_yaku = get_yaku(state, state.rules["yaku"], seat, winning_tile, :discard)
+              possible_yaku = get_yaku(state2, state.rules["yaku"], seat, winning_tile, :discard)
               {winning_tile, possible_yaku}
             end |> Enum.max_by(fn {_winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
             {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
@@ -525,6 +529,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               win_source: :discard,
               point_name: state.rules["point_name"],
               yaku: best_yaku,
+              yakuman: [],
               points: points,
               score: score,
               payers: payers
@@ -532,7 +537,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
             state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
             state
         end
-        state = Map.put(state, :visible_screen, :winner)
+        state = if Enum.any?(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end) do
+          Map.put(state, :visible_screen, :winner)
+        else
+          Map.put(state, :visible_screen, :scores)
+        end
         state = Map.put(state, :round_result, :draw)
 
         # reveal hand for those players that are tenpai
