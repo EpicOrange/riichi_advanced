@@ -230,8 +230,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # send them left
       state = update_player(state, Utils.get_seat(hand_seat, :kamicha), &%Player{ &1 | draw: [hand_tile1, hand_tile2, hand_tile3] })
-      # state = put_in(state.marking[seat].done, true)
-      IO.inspect(state.marking)
+      state = put_in(state.marking[seat].done, true)
       state
     end
   end

@@ -13,7 +13,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :calls, [])
     socket = assign(socket, :aside, [])
     socket = assign(socket, :draw, [])
-    socket = assign(socket, :marking, false)
+    socket = assign(socket, :marking, %{})
     {:ok, socket}
   end
 
@@ -21,7 +21,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     ~H"""
     <div class={[@id, @just_called && "just-called", @just_drew && "just-drew"]}>
       <%= if @your_hand? do %>
-        <%= if @marking do %>
+        <%= if not Enum.empty?(@marking) do %>
           <div class="tiles">
             <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
               <%= if removed do %>

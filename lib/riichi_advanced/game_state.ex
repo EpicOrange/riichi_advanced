@@ -82,7 +82,8 @@ defmodule Game do
     reserved_tiles: [],
     revealed_tiles: [],
     max_revealed_tiles: 0,
-    drawn_reserved_tiles: []
+    drawn_reserved_tiles: [],
+    marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
   ]
   use Accessible
 end

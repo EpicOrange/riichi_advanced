@@ -9,14 +9,14 @@ defmodule RiichiAdvancedWeb.PondComponent do
     socket = assign(socket, :seat_turn?, false)
     socket = assign(socket, :viewer_buttons?, false)
     socket = assign(socket, :riichi_index, nil)
-    socket = assign(socket, :marking, false)
+    socket = assign(socket, :marking, %{})
     {:ok, socket}
   end
 
   def render(assigns) do
     ~H"""
     <div class={[@id, @highlight? && "highlight"]}>
-      <%= if @marking do %>
+      <%= if not Enum.empty?(@marking) do %>
         <%= for {tile, i} <- prepare_pond(@pond, @saki) do %>
           <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
             <div class={["tile", tile, "markable", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>

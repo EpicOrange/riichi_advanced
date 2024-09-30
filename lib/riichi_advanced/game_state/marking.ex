@@ -40,7 +40,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def needs_marking?(state, seat) do
-    Enum.any?(state.marking[seat], fn {source, mark_info} -> mark_info == true || not (source == :done) && length(mark_info.marked) < mark_info.needed end)
+    Enum.any?(state.marking[seat], fn {source, mark_info} -> not (source == :done) && length(mark_info.marked) < mark_info.needed end)
   end
 
   defp get_tile(state, seat, index, source) do
@@ -53,11 +53,18 @@ defmodule RiichiAdvanced.GameState.Marking do
     end
   end
 
-  def can_mark(state, marking_player, seat, index, source) do
+  def can_mark?(state, marking_player, seat, index, source) do
     tile = get_tile(state, seat, index, source)
     mark_info = state.marking[marking_player][source]
     marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
     already_marked = is_marked?(state, marking_player, seat, index, source)
+    if index == 12 do
+      IO.inspect("can_mark called")
+      IO.inspect(tile)
+      IO.inspect(mark_info)
+      IO.inspect(marked_enough)
+      IO.inspect(already_marked)
+    end
     mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
         "match_suit"        ->
@@ -111,7 +118,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def clear_marked_objects(state, seat) do
-    update_in(state.marking[seat], &Map.new(&1, fn {source, mark_info} -> {source, Map.put(mark_info, :marked, [])} end))
+    update_in(state.marking[seat], &Map.new(&1, fn {source, mark_info} -> {source, if source == :done do false else Map.put(mark_info, :marked, []) end} end))
   end
 
   def reset_marking(state, marking_player) do

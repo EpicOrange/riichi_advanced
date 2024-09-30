@@ -84,7 +84,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         aside={player.aside}
         status={player.status}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
-        marking={@marking}
+        marking={@state.marking[@seat]}
         play_tile={&send(self(), {:play_tile, &1})}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
         :for={{seat, player} <- @state.players} />
@@ -98,7 +98,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         pond={player.pond}
         riichi={"riichi" in player.status}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
-        marking={@marking}
+        marking={@state.marking[@seat]}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
         id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
@@ -138,7 +138,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
       <%= if @viewer != :spectator do %>
         <div class="buttons">
-          <%= if @marking do %>
+          <%= if not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-click="clear_marked_objects">Clear</button>
             <button class="button" phx-click="cancel_marked_objects">Cancel</button>
           <% else %>
@@ -301,7 +301,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
-      socket = assign(socket, :marking, GenServer.call(socket.assigns.game_state, {:needs_marking?, socket.assigns.seat}))
       {:noreply, socket}
     else
       {:noreply, socket}
