@@ -190,7 +190,9 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "not_status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}, {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining"], [["draw"]]],
+      // no initial draw
+      // ["when", [{"name": "not_status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}, {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining"], [["draw"]]],
       ["when", [{"name": "status", "opts": ["won"]}], [["advance_turn"]]]
     ]
   },
