@@ -1077,9 +1077,13 @@ defmodule RiichiAdvanced.GameState do
         waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases)
         length(waits) <= number
       "tagged"              ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tagged_tile = state.tags[tag]
-        Riichi.normalize_red_five(context.tile) == Riichi.normalize_red_five(tagged_tile)
+        targets = case Enum.at(opts, 0, "tile") do
+          "last_discard" -> if last_discard_action != nil do [Riichi.normalize_red_five(last_discard_action.tile)] else [] end
+          _ -> [Riichi.normalize_red_five(context.tile)]
+        end
+        tag = Enum.at(opts, 1, "missing_tag")
+        tagged_tile = Riichi.normalize_red_five(state.tags[tag])
+        Enum.any?(targets, fn target -> target == tagged_tile end)
       "has_hell_wait" ->
         hand = cxt_player.hand
         calls = cxt_player.calls

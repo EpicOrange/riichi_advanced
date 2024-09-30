@@ -238,6 +238,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp translate_tile_alias(state, context, tile_alias) do
     case tile_alias do
       "draw" -> state.players[context.seat].draw
+      "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
       _      -> [Utils.to_tile(tile_alias)]
     end
   end
