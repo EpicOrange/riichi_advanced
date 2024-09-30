@@ -507,37 +507,42 @@ defmodule RiichiAdvanced.GameState.Scoring do
         tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
         payers = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
 
-        # for each tenpai player who hasn't won, find the highest point hand they could get
-        state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners, reduce: state do
-          state ->
-            possible_tiles = state.players[seat].hand ++ state.players[seat].draw
-              |> Enum.flat_map(fn tile -> [Riichi.pred(tile), tile, Riichi.succ(tile)] -- [nil] end)
-            # do this so under the sea isn't scored
-            state2 = Map.put(state, :wall_index, 0)
-            {winning_tile, best_yaku} = for winning_tile <- possible_tiles do
-              possible_yaku = get_yaku(state2, state.rules["yaku"], seat, winning_tile, :discard)
-              {winning_tile, possible_yaku}
-            end |> Enum.max_by(fn {_winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
-            {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
-            call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
-            winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
-            winner = %{
-              seat: seat,
-              player: state.players[seat],
-              winning_hand: winning_hand,
-              winning_tile: winning_tile,
-              winning_tile_text: "",
-              win_source: :discard,
-              point_name: state.rules["point_name"],
-              yaku: best_yaku,
-              yakuman: [],
-              points: points,
-              score: score,
-              payers: payers
-            }
-            state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-            state
-        end
+        state = if Map.get(scoring_table, "draw_payments", false) do
+          # for each tenpai player who hasn't won, find the highest point hand they could get
+          win_definitions = translate_match_definitions(state, ["win"])
+          for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners, reduce: state do
+            state ->
+              tile_aliases = state.players[seat].tile_aliases
+              hand = state.players[seat].hand
+              calls = state.players[seat].calls
+              waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases) ++ [:"2x"]
+              state2 = Map.put(state, :wall_index, 0) # use this so under the sea isn't scored
+              {winning_tile, best_yaku} = for winning_tile <- waits do
+                possible_yaku = get_yaku(state2, state.rules["yaku"], seat, winning_tile, :discard)
+                {winning_tile, possible_yaku}
+              end |> Enum.max_by(fn {_winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
+              {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
+              call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
+              winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
+              winner = %{
+                seat: seat,
+                player: state.players[seat],
+                winning_hand: winning_hand,
+                winning_tile: winning_tile,
+                winning_tile_text: "",
+                win_source: :discard,
+                point_name: state.rules["point_name"],
+                yaku: best_yaku,
+                yakuman: [],
+                points: points,
+                score: score,
+                payers: payers
+              }
+              state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+              state
+          end
+        else state end
+
         state = if Enum.any?(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end) do
           Map.put(state, :visible_screen, :winner)
         else
