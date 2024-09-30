@@ -1348,6 +1348,9 @@
     "Pure Shifted Linked Sequences": ["Pure Three Shifted Sequences", "Pure Three Linked Sequences"],
     "Pure Straight": ["Mixed Straight"],
     "Within Seven Tiles": ["Within Ten Tiles"],
+    "Hand of Man": ["Within Seven Tiles"],
+    "Hand of Heaven": ["Within Seven Tiles"],
+    "Hand of Earth": ["Within Seven Tiles"],
     "Triple Intersection": ["Double Intersection"],
     "Fully Concealed Hand": ["Concealed Hand"],
     "Five Consecutive Pairs": ["Three Consecutive Pairs"],
@@ -1383,7 +1386,7 @@
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn"],
+      ["set_status_all", "first_turn", "discards_empty"],
       ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]],
       ["set_tile_alias_all", ["3j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
       ["set_tile_alias_all", ["4j"], ["1z","2z","3z","4z","0z","6z","7z"]],
