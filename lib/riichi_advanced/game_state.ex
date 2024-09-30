@@ -428,10 +428,11 @@ defmodule RiichiAdvanced.GameState do
         winner = Map.merge(winner, %{
           yaku: if yakuman_mult > 0 do [] else yaku end,
           yakuman: yakuman,
-          points: points,
+          points: if yakuman_mult > 0 do yakuman_mult else points end,
           yakuman_mult: yakuman_mult,
           score: score,
           score_name: score_name,
+          point_name: if yakuman_mult > 0 do winner.limit_point_name else winner.point_name end,
           minipoints: minipoints,
           payer: payer,
           pao_seat: pao_seat

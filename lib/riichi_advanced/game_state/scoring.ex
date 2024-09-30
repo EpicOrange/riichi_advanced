@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if is_dealer do
               yakuman_mult * 3 * oya_fu_table["max"]
             else
-              yakuman_mult * oya_fu_table["max"] + 2 * ko_fu_table["max"]
+              yakuman_mult * (oya_fu_table["max"] + 2 * ko_fu_table["max"])
             end
           else
             if is_dealer do
