@@ -66,7 +66,6 @@ defmodule RiichiAdvancedWeb.PondComponent do
     else socket end
 
     # toggle highlight
-    IO.inspect({socket.assigns.seat, socket.assigns.viewer_buttons?})
     socket = assign(socket, :highlight?, socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)
 
     socket = assigns
