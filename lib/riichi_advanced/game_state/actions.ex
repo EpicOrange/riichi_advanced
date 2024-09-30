@@ -235,10 +235,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  defp translate_tile_alias(_state, _context, tile_alias) do
+  defp translate_tile_alias(state, context, tile_alias) do
     case tile_alias do
-      "draw" -> :draw
-      _      -> Utils.to_tile(tile_alias)
+      "draw" -> state.players[context.seat].draw
+      _      -> [Utils.to_tile(tile_alias)]
     end
   end
 
@@ -437,7 +437,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "about_to_draw"         -> state # no-op
       "about_to_ron"          -> state # no-op
       "set_tile_alias"        ->
-        from_tiles = Enum.at(opts, 0, []) |> Enum.map(&translate_tile_alias(state, context, &1))
+        from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
         aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
           aliases -> Map.update(aliases, to, from_tiles, fn from -> from ++ from_tiles end)
@@ -449,7 +449,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_player(state, context.seat, &%Player{ &1 | tile_mappings: mappings })
         state
       "set_tile_alias_all"        ->
-        from_tiles = Enum.at(opts, 0, []) |> Enum.map(&translate_tile_alias(state, context, &1))
+        from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
         aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
           aliases -> Map.update(aliases, to, from_tiles, fn from -> from ++ from_tiles end)

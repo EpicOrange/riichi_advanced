@@ -1966,9 +1966,7 @@
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_status", "opts": ["just_reached"]},
         [
-          [
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
-          ],
+          {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
           [
             {"name": "status", "opts": ["senoo-kaori"]},
             {"name": "status_missing", "opts": ["mase-yuuko"]},
@@ -1983,7 +1981,10 @@
             {"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]},
             {"name": "match", "opts": [["hand", "calls", "draw"], ["win_wrapping_honorseq"]]}
           ],
-          {"name": "status", "opts": ["miyanaga-saki", "kan"]}
+          [
+            {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
+            {"name": "status", "opts": ["miyanaga-saki", "kan"]}
+          ]
         ],
         "has_yaku_with_hand",
         [
