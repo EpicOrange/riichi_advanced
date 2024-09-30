@@ -44,7 +44,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
           <div class="total-score-display"><%= @winner.score %></div>
           <div class="total-score-name-display" :if={Map.has_key?(@winner, :score_name) && @winner.score_name != ""}><%= @winner.score_name %></div>
         </div>
-        <div class="timer" phx-click="ready_for_next_round"><%= @timer %></div>
+        <div class="timer" phx-cancellable-click="ready_for_next_round"><%= @timer %></div>
       <% end %>
     </div>
     """

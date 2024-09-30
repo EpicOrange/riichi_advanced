@@ -139,10 +139,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       <%= if @viewer != :spectator do %>
         <div class="buttons">
           <%= if not Enum.empty?(@state.marking[@seat]) do %>
-            <button class="button" phx-click="clear_marked_objects">Clear</button>
-            <button class="button" phx-click="cancel_marked_objects">Cancel</button>
+            <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
+            <button class="button" phx-cancellable-click="cancel_marked_objects">Cancel</button>
           <% else %>
-            <button class="button" phx-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+            <button class="button" phx-cancellable-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
           <% end %>
         </div>
         <div class="auto-buttons">
@@ -161,7 +161,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                     <div class="call-button-separator"></div>
                   <% end %>
                   <%= for choice <- choices do %>
-                    <button class="call-button" phx-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
+                    <button class="call-button" phx-cancellable-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
                     <%= for tile <- choice do %>
                       <div class={["tile", tile]}></div>
                     <% end %>
@@ -169,7 +169,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                   <% end %>
                 <% else %>
                   <%= for choice <- choices do %>
-                    <button class="call-button" phx-click="saki_card_clicked" phx-value-choice={choice}>
+                    <button class="call-button" phx-cancellable-click="saki_card_clicked" phx-value-choice={choice}>
                     <%= for tile <- choice do %>
                       <div class={["saki-card", @state.saki.version, tile]}></div>
                     <% end %>

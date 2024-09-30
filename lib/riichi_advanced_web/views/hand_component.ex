@@ -28,7 +28,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <div class={["tile", tile, "removed"]} data-id={i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
-                  <div class={["tile", tile, "markable"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+                  <div class={["tile", tile, "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
                   <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
                     <div class={["tile", tile, "marked"]}></div>
@@ -42,7 +42,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws">
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
-                <div class={["tile", tile, "markable"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i}></div>
+                <div class={["tile", tile, "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
                   <div class={["tile", tile, "marked"]}></div>
@@ -60,7 +60,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <div class={["tile", tile, "removed"]} data-id={i}></div>
               <% else %>
                 <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :hand}) do %>
-                  <div phx-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
+                  <div phx-cancellable-click="play_tile" phx-target={@myself} phx-value-tile={tile} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
                 <% else %>
                   <div class={["tile", tile, "inactive"]} data-id={i}></div>
                 <% end %>
@@ -70,7 +70,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws">
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :draw}) do %>
-                <div phx-click="play_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
+                <div phx-cancellable-click="play_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
               <% else %>
                 <div class={["tile", tile, "inactive"]}></div>
               <% end %>

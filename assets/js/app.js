@@ -35,17 +35,52 @@ Hooks.Sortable = {
   }
 }
 
+function getCancellableClickTarget(elem) {
+  if (!elem) return null;
+  if (elem.attributes.hasOwnProperty("phx-cancellable-click")) return elem;
+  return getCancellableClickTarget(elem.parentElement);
+}
+
+var mouseDownElement = null;
 Hooks.ClickListener = {
   mounted() {
+    this.el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      var target = getCancellableClickTarget(e.target);
+      if (target !== null) {
+        mouseDownElement = target;
+      }
+    });
+    this.el.addEventListener('mouseup', e => {
+      e.preventDefault();
+      var target = getCancellableClickTarget(e.target);
+      if (target !== null) {
+        if (mouseDownElement == target) {
+          var params = {};
+          for (let attr of target.attributes) {
+            if (attr.name.startsWith("phx-value-")) {
+              var key = attr.name.substring(10);
+              params[key] = attr.value;
+            }
+          }
+          if (target.attributes.hasOwnProperty("phx-target")) {
+            this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-cancellable-click"), params);
+          } else {
+            this.pushEvent(target.getAttribute("phx-cancellable-click"), params);
+          }
+        }
+        mouseDownElement == null;
+      }
+    });
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
-      if (!e.target.attributes.hasOwnProperty("phx-click")) {
+      if (!e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("double_clicked");
       }
     });
     this.el.addEventListener('contextmenu', e => {
       e.preventDefault();
-      if (!e.target.attributes.hasOwnProperty("phx-click")) {
+      if (!e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("right_clicked");
       }
     });
