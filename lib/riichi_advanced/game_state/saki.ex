@@ -18,6 +18,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "miyanaga-saki",
     "miyanaga-teru",
     "nanpo-kazue",
+    "onjouji-toki",
     "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",

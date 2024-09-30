@@ -14,6 +14,7 @@
     "miyanaga-saki",
     "miyanaga-teru",
     "nanpo-kazue",
+    "onjouji-toki",
     "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",
@@ -193,7 +194,7 @@
     ]
   ],
   "win_wrapping_definition": [
-    [ "exhaustive", "wrapping", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ "exhaustive", "wraps", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
@@ -209,7 +210,7 @@
     ]
   ],
   "win_wrapping_honorseq_definition": [
-    [ "exhaustive", "wrapping", "honorseq", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ "exhaustive", "wraps", "honorseq", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
@@ -1149,8 +1150,8 @@
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_hseq", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_hseq_w", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
-    [["any"], [{"name": "not_tagged", "opts": ["no_discard"]}]],
-    [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
+    [["any"], [{"name": "not_tagged", "opts": ["no_discard"]}]]
+    // [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
@@ -1160,7 +1161,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn"],
+                ["unset_status", "just_reached", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn", "onjouji-toki_drew"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
@@ -1190,7 +1191,30 @@
                   ]],
                   [["set_status", "furiten"]]
                 ],
-                ["when", ["not_no_tiles_remaining"], [["set_status", "about_to_draw"], ["about_to_draw"], ["unset_status", "about_to_draw"], ["draw"]]]
+                ["when", [
+                  "not_no_tiles_remaining",
+                  [
+                    {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
+                    "not_has_aside"
+                  ]
+                ], [
+                  ["set_status", "about_to_draw"],
+                  ["about_to_draw"],
+                  ["unset_status", "about_to_draw"],
+                  ["draw"]
+                ]],
+                ["when", [
+                  [
+                    {"name": "status", "opts": ["shibuya-takami"]},
+                    {"name": "status", "opts": ["matano-seiko"]}
+                  ],
+                  "has_aside"
+                ], [
+                  ["set_status", "about_to_draw"],
+                  ["about_to_draw"],
+                  ["unset_status", "about_to_draw"],
+                  ["draw_from_aside"]
+                ]]
                ]
   },
   "before_call": {
@@ -1511,6 +1535,44 @@
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted2"],
         ["draw_and_place_2_tiles_at_end_of_dead_wall"]
+      ]
+    },
+    "onjouji_toki_start": {
+      "display_name": "Draw an extra tile and set it aside",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "onjouji-toki_exhausted"]}, {"name": "status", "opts": ["onjouji-toki"]}],
+      "actions": [
+        ["big_text", "Onjouji Toki: set aside!"],
+        ["set_status", "onjouji-toki_exhausted", "onjouji-toki_drew"],
+        ["draw"],
+        ["set_aside_draw"]
+      ],
+      "unskippable": true
+    },
+    "onjouji_toki_draw": {
+      "display_name": "Draw aside tile",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "actions": [
+        ["big_text", "Onjouji Toki: draw!"],
+        ["draw_from_aside"],
+        ["set_status", "onjouji-toki_drew"]
+      ],
+      "unskippable": true
+    },
+    "onjouji_toki_nodraw": {
+      "display_name": "Draw from wall",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "actions": [
+        ["draw"],
+        ["set_status", "onjouji-toki_drew"]
+      ],
+      "unskippable": true
+    },
+    "onjouji_toki_swap": {
+      "display_name": "Swap tile with aside",
+      "show_when": ["our_turn", "not_just_discarded", {"name": "status", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "actions": [
+        ["big_text", "Onjouji Toki: swap!"],
+        ["swap_tile_with_aside"]
       ]
     },
     "sawamura_tomoki": {
@@ -2041,6 +2103,7 @@
     "miyanaga-saki",
     "miyanaga-teru",
     "nanpo-kazue",
+    "onjouji-toki",
     "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",

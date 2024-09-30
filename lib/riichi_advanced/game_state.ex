@@ -914,6 +914,7 @@ defmodule RiichiAdvanced.GameState do
           Riichi.can_call?(context.calls_spec, call_tiles, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings, context.call_wraps, context.honor_seqs)
         end)
       "has_draw"                 -> not Enum.empty?(cxt_player.draw)
+      "has_aside"                -> not Enum.empty?(cxt_player.aside)
       "has_yaku_with_hand"       -> not Enum.empty?(cxt_player.draw) && Scoring.has_yaku(state, state.rules["yaku"] ++ state.rules["yakuman"], context.seat, Enum.at(cxt_player.draw, 0), :draw)
       "has_yaku_with_discard"    -> last_action.action == :discard && Scoring.has_yaku(state, state.rules["yaku"] ++ state.rules["yakuman"], context.seat, last_action.tile, :discard)
       "has_yaku_with_call"       -> last_action.action == :call && Scoring.has_yaku(state, state.rules["yaku"] ++ state.rules["yakuman"], context.seat, last_action.tile, :call)

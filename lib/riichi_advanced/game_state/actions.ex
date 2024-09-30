@@ -57,30 +57,24 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def draw_tile(state, seat, num, tile_spec \\ nil) do
     if num > 0 do
-      case state.players[seat].aside do
-        [] ->
-          {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index), state.wall_index + 1} end
-          if tile_name == nil do
-            IO.puts("Tried to draw a nil tile!")
-            state
-          else
-            state = if is_binary(tile_name) && List.keymember?(state.reserved_tiles, tile_name, 0) do
-                Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
-              else state end
-            tile = from_tile_name(state, tile_name)
-            state = update_player(state, seat, &%Player{ &1 |
-              hand: &1.hand ++ &1.draw,
-              draw: [tile]
-            })
-            state = Map.put(state, :wall_index, wall_index)
-            state = update_action(state, seat, :draw, %{tile: tile})
+      {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index), state.wall_index + 1} end
+      if tile_name == nil do
+        IO.puts("Tried to draw a nil tile!")
+        state
+      else
+        state = if is_binary(tile_name) && List.keymember?(state.reserved_tiles, tile_name, 0) do
+            Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
+          else state end
+        tile = from_tile_name(state, tile_name)
+        state = update_player(state, seat, &%Player{ &1 |
+          hand: &1.hand ++ &1.draw,
+          draw: [tile]
+        })
+        state = Map.put(state, :wall_index, wall_index)
+        state = update_action(state, seat, :draw, %{tile: tile})
 
-            # IO.puts("wall index is now #{get_state().wall_index}")
-            draw_tile(state, seat, num - 1, tile_spec)
-          end
-        [tile | aside] ->
-          # draw from aside instead of wall
-          update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile], aside: aside })
+        # IO.puts("wall index is now #{get_state().wall_index}")
+        draw_tile(state, seat, num - 1, tile_spec)
       end
     else state end
   end
@@ -460,6 +454,28 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state)
         state
+      "draw_from_aside"    ->
+        state = case state.players[context.seat].aside do
+          [] -> state
+          [tile | aside] -> update_player(state, context.seat, &%Player{ &1 | draw: &1.draw ++ [tile], aside: aside })
+        end
+        state
+      "set_aside_draw"     -> update_player(state, context.seat, &%Player{ &1 | draw: [], aside: &1.aside ++ &1.draw })
+      "swap_tile_with_aside" ->
+        {hand_tile, hand_seat, hand_index} = Enum.at(context.marked_objects.hand.marked, 0)
+        [aside_tile | aside] = state.players[hand_seat].aside
+        aside = [hand_tile | aside]
+
+        # replace hand tile with aside tile
+        hand_length = length(state.players[hand_seat].hand)
+        state = if hand_index < hand_length do
+          update_player(state, hand_seat, &%Player{ &1 | aside: aside, hand: List.replace_at(&1.hand, hand_index, aside_tile) })
+        else
+          update_player(state, hand_seat, &%Player{ &1 | aside: aside, draw: List.replace_at(&1.draw, hand_index - hand_length, aside_tile) })
+        end
+        
+        state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {aside_tile, hand_seat, 0, :aside}})
+        state
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
@@ -594,7 +610,8 @@ defmodule RiichiAdvanced.GameState.Actions do
               "set_aside_discard_matching_called_tile",
               "pon_discarded_red_dragon",
               "draw_and_place_2_tiles_at_end_of_dead_wall",
-              "set_aside_own_discard"
+              "set_aside_own_discard",
+              "swap_tile_with_aside"
             ] end)
             cond do
               call_action_exists ->
@@ -667,6 +684,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                     state = Saki.setup_marking(state, seat, [{"hand", 2, []}])
                     state
                   Enum.any?(actions, fn [action | _opts] -> action == "set_aside_own_discard" end)                      -> Saki.setup_marking(state, seat, [{"discard", 1, ["self"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_tile_with_aside" end)                       -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
                 end
                 state = schedule_actions(state, seat, actions)
                 notify_ai_marking(state, seat)
