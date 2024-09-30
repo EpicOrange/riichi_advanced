@@ -2083,7 +2083,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard", "about_to_draw", "about_to_ron"],
+  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard", "swap_tile_with_aside", "draw_from_aside", "about_to_draw", "about_to_ron"],
   "display_riichi_sticks": true,
   "display_honba": true,
   "initial_score": 30000,
