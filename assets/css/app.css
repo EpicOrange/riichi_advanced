@@ -135,7 +135,6 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
 div.pond.highlight div.tile:last-child {
   --tile-brightness: 80%;
   --tile-saturate: 100%;;
-  */
 }
 /* compass */
 div.compass {
