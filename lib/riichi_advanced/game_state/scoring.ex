@@ -526,6 +526,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               player: state.players[seat],
               winning_hand: winning_hand,
               winning_tile: winning_tile,
+              winning_tile_text: "",
               win_source: :discard,
               point_name: state.rules["point_name"],
               yaku: best_yaku,
