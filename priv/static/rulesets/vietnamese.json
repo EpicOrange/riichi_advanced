@@ -35,7 +35,7 @@
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
            "1g", "2g", "3g", "4g",
-           "2j", "3j", "4j", "5j",
+           "2j", "3j", "10j", "5j",
            "6j", "7j", "8j", "9j",
            "1k", "2k", "3k", "4k",
            "1q", "2q", "3q", "4q"],
@@ -98,7 +98,7 @@
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
   ],
   "any_joker_definition": [
-    [[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]
+    [[["2j", "3j", "10j", "5j", "6j", "7j", "8j", "9j"], 1]]
   ],
   "yaku": [
     {
@@ -261,7 +261,7 @@
     {
       "display_name": "Hoa (花)",
       "value": 2,
-      "when": [{"name": "match", "opts": [["flowers"], [[[[["4j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[[[["10j"]], 1]]]]}]
     },
     {
       "display_name": "Nguyên (元)",
@@ -359,7 +359,7 @@
       "display_name": "No Flowers or Honors",
       "value": 1,
       "when": [
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}
       ]
     },
     {
@@ -367,7 +367,7 @@
       "value": 2,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}
       ]
     },
     {
@@ -396,7 +396,7 @@
     {
       "display_name": "All Honors",
       "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"]}]
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"]}]
     },
     {
       "display_name": "13 Orphans",
@@ -429,7 +429,7 @@
       "value": 1,
       "when": [
         "won_by_draw",
-        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]},
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         {"name": "match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 3], [["pair"], 2]]]]},
         {"name": "not_match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 4]]]]},
@@ -456,7 +456,7 @@
       "display_name": "Four Quads",
       "value": 1,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]},
         {"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}
       ]
     },
@@ -479,7 +479,7 @@
       "display_name": "Shousuushii",
       "value": 1,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]},
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}
       ]
@@ -501,7 +501,7 @@
       "display_name": "Daisuushii",
       "value": 1,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}
       ]
     },
@@ -575,8 +575,8 @@
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], ["draw"]],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["draw"]],
       "unskippable": true
     },
     "start_joker": {
@@ -587,7 +587,7 @@
     },
     "start_no_flower": {
       "display_name": "No flowers",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
       "unskippable": true
     },
@@ -688,8 +688,8 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "4j"], ["draw"]]
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["draw"]]
     },
     "joker": {
       "display_name": "Joker",
