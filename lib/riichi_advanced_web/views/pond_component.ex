@@ -3,6 +3,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
 
   def mount(socket) do
     socket = assign(socket, :seat, nil)
+    socket = assign(socket, :viewer, nil)
     socket = assign(socket, :pond, [])
     socket = assign(socket, :highlight?, false)
     socket = assign(socket, :just_discarded?, false)
@@ -66,7 +67,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
     else socket end
 
     # toggle highlight
-    socket = assign(socket, :highlight?, socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)
+    socket = assign(socket, :highlight?, socket.assigns.viewer != socket.assigns.seat && socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)
 
     socket = assigns
              |> Map.drop([:flash])
