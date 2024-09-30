@@ -171,7 +171,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                   <%= for choice <- choices do %>
                     <button class="call-button" phx-click="saki_card_clicked" phx-value-choice={choice}>
                     <%= for tile <- choice do %>
-                      <div class={["saki-card", tile]}></div>
+                      <div class={["saki-card", @state.saki.version, tile]}></div>
                     <% end %>
                     </button>
                   <% end %>

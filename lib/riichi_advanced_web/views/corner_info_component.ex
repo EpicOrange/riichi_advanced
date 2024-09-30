@@ -15,7 +15,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
       </div>
       <%= if @saki != nil && Map.has_key?(@saki, :all_drafted) && @saki.all_drafted do %>
         <div class="saki-cards">
-          <div class={["saki-card", card]} :for={card <- Saki.filter_cards(@player.status)}></div>
+          <div class={["saki-card", @saki.version, card]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>
       <% end %>
     </div>

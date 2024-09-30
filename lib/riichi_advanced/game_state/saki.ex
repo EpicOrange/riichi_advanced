@@ -34,6 +34,14 @@ defmodule RiichiAdvanced.GameState.Saki do
   ]
 
   def initialize_saki(state) do
+    state = if not Map.has_key?(state.rules, "saki_ver") do
+      show_error(state, """
+      Expected rules file to have key \"saki_ver\".
+
+      Supported versions: "v12", "v13"
+      """)
+    else state end
+    
     state = if not Map.has_key?(state.rules, "saki_deck") do
       show_error(state, """
       Expected rules file to have key \"saki_deck\".
@@ -45,6 +53,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     else state end
     
     state = Map.put(state, :saki, %{
+      version: state.rules["saki_ver"],
       saki_deck: Enum.shuffle(state.rules["saki_deck"]),
       saki_deck_index: 0,
       all_drafted: if Map.has_key?(state, :saki) do state.saki.all_drafted else false end,
