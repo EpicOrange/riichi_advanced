@@ -60,7 +60,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       |> assign(:loading, false)
-      |> assign(:marking, Map.has_key?(state, :saki) && state.saki != nil && GenServer.call(game_state, {:needs_marking?, seat}))
+      |> assign(:marking, GenServer.call(game_state, {:needs_marking?, seat}))
       {:ok, socket}
     else
       {:ok, socket}
@@ -301,7 +301,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
-      socket = assign(socket, :marking, Map.has_key?(state, :saki) && GenServer.call(socket.assigns.game_state, {:needs_marking?, socket.assigns.seat}))
+      socket = assign(socket, :marking, GenServer.call(socket.assigns.game_state, {:needs_marking?, socket.assigns.seat}))
       {:noreply, socket}
     else
       {:noreply, socket}

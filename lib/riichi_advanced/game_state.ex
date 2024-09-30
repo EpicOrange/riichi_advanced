@@ -93,6 +93,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.GameState.Marking, as: Marking
   use GenServer
 
   def start_link(init_data) do
@@ -291,6 +292,8 @@ defmodule RiichiAdvanced.GameState do
        |> Map.put(:game_active, true)
        |> Map.put(:turn, nil) # so that change_turn detects a turn change
       
+      state = Marking.initialize_marking(state)
+
       # initialize saki if needed
       state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
       
@@ -746,9 +749,9 @@ defmodule RiichiAdvanced.GameState do
 
   def notify_ai_marking(state, seat) do
     if state.game_active do
-      if is_pid(Map.get(state, seat)) && Map.has_key?(state, :saki) && Saki.needs_marking?(state, seat) do
+      if is_pid(Map.get(state, seat)) && Map.has_key?(state, :saki) && Marking.needs_marking?(state, seat) do
         # IO.puts("Notifying #{seat} AI about marking")
-        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], marked_objects: state.saki.marked_objects}})
+        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], marked_objects: state.marking.marked_objects}})
       end
     end
   end
@@ -1195,10 +1198,10 @@ defmodule RiichiAdvanced.GameState do
     {:reply, our_turn && (not turn_just_discarded || extra_turn), state}
   end
 
-  # saki calls
-  def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Saki.needs_marking?(state, seat), state}
-  def handle_call({:is_marked, seat, index, tile_source}, _from, state), do: {:reply, Saki.is_marked(state, seat, index, tile_source), state}
-  def handle_call({:can_mark, seat, index, tile_source}, _from, state), do: {:reply, Saki.can_mark(state, seat, index, tile_source), state}
+  # marking calls
+  def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Marking.needs_marking?(state, seat), state}
+  def handle_call({:is_marked, seat, index, tile_source}, _from, state), do: {:reply, Marking.is_marked(state, seat, index, tile_source), state}
+  def handle_call({:can_mark, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark(state, seat, index, tile_source), state}
 
   # debugging only
   def handle_call(:get_state, _from, state) do
@@ -1334,12 +1337,12 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  # saki calls
+  # marking calls
   def handle_cast({:mark_tile, seat, index, tile_source}, state) do
-    state = Saki.mark_tile(state, seat, index, tile_source)
-    state = if not Saki.needs_marking?(state, state.saki.marking_player) do
-      state = Actions.run_deferred_actions(state, %{seat: state.saki.marking_player, marked_objects: state.saki.marked_objects})
-      state = Saki.reset_marking(state)
+    state = Marking.mark_tile(state, seat, index, tile_source)
+    state = if not Marking.needs_marking?(state, state.marking.marking_player) do
+      state = Actions.run_deferred_actions(state, %{seat: state.marking.marking_player, marked_objects: state.marking.marked_objects})
+      state = Marking.reset_marking(state)
 
       # if we're still going, run deferred actions for everyone and then notify ai
       state = if state.game_active do
@@ -1357,13 +1360,13 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:clear_marked_objects, state) do
-    state = Saki.clear_marked_objects(state)
+    state = Marking.clear_marked_objects(state)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:reset_marking, seat}, state) do
-    state = Saki.reset_marking(state)
+    state = Marking.reset_marking(state)
 
     # go back to button clicking phase
     state = Buttons.recalculate_buttons(state)

@@ -118,6 +118,7 @@ defmodule RiichiAdvanced.AIPlayer do
   def handle_info({:mark_tiles, %{player: player, marked_objects: marked_objects}}, state) do
     if state.initialized do
       state = %{ state | player: player }
+      IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
       # for each source, generate all possible choices and pick n of them
       Process.sleep(trunc(500 / @ai_speed))
       if Map.has_key?(marked_objects, :hand) do

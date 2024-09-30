@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Saki, as: Saki
+  alias RiichiAdvanced.GameState.Marking, as: Marking
   import RiichiAdvanced.GameState
 
   @debug_actions false
@@ -256,6 +257,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
       "pause"                 -> Map.put(state, :game_active, false)
+      "random"                -> run_actions(state, Enum.random(opts), context)
       "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       "reveal_tile"           -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
       "add_score"             ->
@@ -476,6 +478,25 @@ defmodule RiichiAdvanced.GameState.Actions do
         
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {aside_tile, hand_seat, 0, :aside}})
         state
+      "charleston_left" ->
+        IO.inspect("asdf")
+        {hand_tile1, hand_seat, hand_index1} = Enum.at(context.marked_objects.hand.marked, 0)
+        {hand_tile2, _, hand_index2} = Enum.at(context.marked_objects.hand.marked, 1)
+        {hand_tile3, _, hand_index3} = Enum.at(context.marked_objects.hand.marked, 2)
+        hand_length = length(state.players[hand_seat].hand)
+        # remove specified tiles from hand
+        state = for ix <- Enum.sort([-hand_index1, -hand_index2, -hand_index3]), reduce: state do
+          state ->
+            ix = -ix
+            if ix < hand_length do
+              update_player(state, hand_seat, &%Player{ &1 | hand: List.delete_at(&1.hand, ix) })
+            else
+              update_player(state, hand_seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
+            end
+        end
+        # send them left
+        state = update_player(state, Utils.get_seat(hand_seat, :kamicha), &%Player{ &1 | draw: [hand_tile1, hand_tile2, hand_tile3] })
+        state
       _                       ->
         IO.puts("Unhandled action #{action}")
         state
@@ -611,7 +632,10 @@ defmodule RiichiAdvanced.GameState.Actions do
               "pon_discarded_red_dragon",
               "draw_and_place_2_tiles_at_end_of_dead_wall",
               "set_aside_own_discard",
-              "swap_tile_with_aside"
+              "swap_tile_with_aside",
+              "charleston_left",
+              "charleston_across",
+              "charleston_right"
             ] end)
             cond do
               call_action_exists ->
@@ -674,17 +698,18 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
               picking_discards ->
                 state = cond do
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)      -> Saki.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)           -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)          -> Saki.setup_marking(state, seat, [{"hand", 4, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_discard_matching_called_tile" end)     -> Saki.setup_marking(state, seat, [{"discard", 1, ["match_called_tile"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "pon_discarded_red_dragon" end)                   -> Saki.setup_marking(state, seat, [{"discard", 1, ["7z"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)      -> Marking.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)           -> Marking.setup_marking(state, seat, [{"hand", 1, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)          -> Marking.setup_marking(state, seat, [{"hand", 4, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_discard_matching_called_tile" end)     -> Marking.setup_marking(state, seat, [{"discard", 1, ["match_called_tile"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "pon_discarded_red_dragon" end)                   -> Marking.setup_marking(state, seat, [{"discard", 1, ["7z"]}])
                   Enum.any?(actions, fn [action | _opts] -> action == "draw_and_place_2_tiles_at_end_of_dead_wall" end) ->
                     state = draw_tile(state, seat, 2)
-                    state = Saki.setup_marking(state, seat, [{"hand", 2, []}])
+                    state = Marking.setup_marking(state, seat, [{"hand", 2, []}])
                     state
-                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_own_discard" end)                      -> Saki.setup_marking(state, seat, [{"discard", 1, ["self"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_tile_with_aside" end)                       -> Saki.setup_marking(state, seat, [{"hand", 1, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_own_discard" end)                      -> Marking.setup_marking(state, seat, [{"discard", 1, ["self"]}])
+                  Enum.any?(actions, fn [action | _opts] -> action == "swap_tile_with_aside" end)                       -> Marking.setup_marking(state, seat, [{"hand", 1, []}])
+                  Enum.any?(actions, fn [action | _opts] -> action in ["charleston_left", "charleston_across", "charleston_right"] end) -> Marking.setup_marking(state, seat, [{"hand", 3, []}])
                 end
                 state = schedule_actions(state, seat, actions)
                 notify_ai_marking(state, seat)
@@ -717,7 +742,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
     made_choice = state.players[seat].choice != nil && state.players[seat].choice != "skip"
-    marking = Map.has_key?(state, :saki) && Saki.needs_marking?(state, seat)
+    marking = Marking.needs_marking?(state, seat)
     not no_call_buttons || made_choice || marking
   end
 
