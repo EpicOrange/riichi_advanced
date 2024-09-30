@@ -821,18 +821,9 @@
     {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 2]}]},
     {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 3]}]},
     {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_dora_count", "opts": ["doraindicator_5", 4]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 1]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 1]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 1]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 2]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 2]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 2]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 3]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 3]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 3]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 4]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 4]]]]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 4]]]]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_m"]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_p"]}]},
+    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_s"]}]},
     {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["uraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 1]}]},
     {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["uraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 2]}]},
     {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": ["uraindicator_1"]}, {"name": "winning_dora_count", "opts": ["uraindicator_1", 3]}]},
@@ -1916,6 +1907,9 @@
             "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
             "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
             "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
         ["win_by_discard"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -2006,7 +2000,13 @@
            "has_yakuman_with_call"
         ]
       ],
-      "actions": [["big_text", "Ron"], ["pause", 1000], ["about_to_ron"], ["reveal_hand"], ["win_by_call"]],
+      "actions": [
+        ["big_text", "Ron"], ["pause", 1000], ["about_to_ron"], ["reveal_hand"],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
+        ["win_by_call"]
+      ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -2094,6 +2094,9 @@
             "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
             "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
             "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
+        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
         ["win_by_draw"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
