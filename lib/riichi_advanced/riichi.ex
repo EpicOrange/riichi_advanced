@@ -159,6 +159,9 @@ defmodule Riichi do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     call_choices = if from_hand do hand else called_tiles end
+    {calls_spec, tile_aliases, tile_mappings} = if Enum.at(calls_spec, 0) == "nojoker" do
+      {Enum.drop(calls_spec, 1), %{}, %{}}
+    else {calls_spec, tile_aliases, tile_mappings} end
     Enum.map(call_choices, fn tile ->
       joker_choices = [tile] ++ Map.get(tile_mappings, tile, [])
       {tile, Enum.flat_map(calls_spec, fn call_spec ->

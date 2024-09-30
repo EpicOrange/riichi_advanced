@@ -1397,7 +1397,7 @@
   "buttons": {
     "chii": {
       "display_name": "Chow",
-      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call": ["nojoker", [-2, -1], [-1, 1], [1, 2]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
