@@ -2,8 +2,12 @@ defmodule RiichiAdvancedWeb.PondComponent do
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
+    socket = assign(socket, :seat, nil)
     socket = assign(socket, :pond, [])
-    socket = assign(socket, :just_discarded, false)
+    socket = assign(socket, :highlight?, false)
+    socket = assign(socket, :just_discarded?, false)
+    socket = assign(socket, :seat_turn?, false)
+    socket = assign(socket, :viewer_buttons?, false)
     socket = assign(socket, :riichi_index, nil)
     socket = assign(socket, :marking, false)
     {:ok, socket}
@@ -11,21 +15,21 @@ defmodule RiichiAdvancedWeb.PondComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={@id}>
+    <div class={[@id, @highlight? && "highlight"]}>
       <%= if @marking do %>
         <%= for {tile, i} <- prepare_pond(@pond, @saki) do %>
           <%= if GenServer.call(@game_state, {:can_mark, @seat, i, :discard}) do %>
-            <div class={["tile", tile, "markable", @just_discarded && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+            <div class={["tile", tile, "markable", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
             <%= if GenServer.call(@game_state, {:is_marked, @seat, i, :discard}) do %>
-              <div class={["tile", tile, "marked", @just_discarded && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
+              <div class={["tile", tile, "marked", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
             <% else %>
-              <div class={["tile", tile, @just_discarded && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
+              <div class={["tile", tile, @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
             <% end %>
           <% end %>
         <% end %>
       <% else %>
-        <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", tile, @just_discarded && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
+        <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", tile, @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
       <% end %>
     </div>
     """
@@ -56,10 +60,14 @@ defmodule RiichiAdvancedWeb.PondComponent do
 
     # animate incoming discards
     socket = if Map.has_key?(assigns, :pond) && length(assigns.pond) > length(socket.assigns.pond) do
-      socket = assign(socket, :just_discarded, true)
+      socket = assign(socket, :just_discarded?, true)
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_discard_anim, assigns.seat}])
       socket
     else socket end
+
+    # toggle highlight
+    IO.inspect({socket.assigns.seat, socket.assigns.viewer_buttons?})
+    socket = assign(socket, :highlight?, socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)
 
     socket = assigns
              |> Map.drop([:flash])

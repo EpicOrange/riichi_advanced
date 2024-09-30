@@ -91,6 +91,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       <.live_component module={RiichiAdvancedWeb.PondComponent}
         id={"pond #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
+        seat_turn?={seat == @state.turn}
+        viewer_buttons?={not Enum.empty?(@state.players[@seat].buttons)}
         seat={seat}
         viewer={@viewer}
         pond={player.pond}
