@@ -64,8 +64,19 @@ div.calls {
   right: 0;
   z-index: -1;
 }
-div.call, div.draws, div.winning-tile {
+div.call, div.draws, div.winning-tile-container {
   margin-left: calc(0.375 * var(--tile-size));
+}
+div.winning-tile-container {
+  position: relative;
+}
+div.winning-tile-text {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  font-size: calc(0.4 * var(--tile-size));
+  top: calc(-0.75 * var(--tile-size));
+  color: white;
 }
 div.hand.self {
   bottom: 0;
@@ -875,7 +886,7 @@ div.game-end-window > div.score-display {
   pointer-events: none;
   user-select: none;
 }
-div.winning-hand { justify-content: center; }
+div.winning-hand { padding-top: calc(0.25 * var(--tile-size)); justify-content: center; }
 /* yakus */
 div.yakus {
   display: flex;
@@ -884,7 +895,7 @@ div.yakus {
   row-gap: calc(0.5 * var(--tile-size));
   margin-left: calc(0.5 * var(--tile-size));
   margin-right: calc(-0.5 * var(--tile-size));
-  margin-top: 10%;
+  margin-top: calc(1.75 * var(--tile-size));
   width: 100%;
   height: 90%;
 }

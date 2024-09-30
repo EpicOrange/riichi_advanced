@@ -326,7 +326,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, 10)
+    state = Map.put(state, :timer, 10000)
     state = Map.put(state, :visible_screen, :winner)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
@@ -334,10 +334,18 @@ defmodule RiichiAdvanced.GameState do
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
     state = update_player(state, seat, fn player -> %Player{ player | winning_hand: state.players[seat].hand ++ call_tiles ++ [winning_tile] } end)
     # add this to the state so yaku conditions can refer to the winner
+    winning_tile_text = if Map.has_key?(state.rules, "score_calculation") do
+      case win_source do
+        :draw -> Map.get(state.rules["score_calculation"], "win_by_draw_name", "")
+        :discard -> Map.get(state.rules["score_calculation"], "win_by_discard_name", "")
+        :call -> Map.get(state.rules["score_calculation"], "win_by_discard_name", "")
+      end
+    else "" end
     winner = %{
       seat: seat,
       player: state.players[seat],
       winning_tile: winning_tile, # for display use only
+      winning_tile_text: winning_tile_text, # for display use only
       win_source: win_source,
       point_name: Map.get(state.rules, "point_name", ""),
       limit_point_name: Map.get(state.rules, "limit_point_name", ""),
@@ -952,7 +960,7 @@ defmodule RiichiAdvanced.GameState do
       "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
       "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index <= 0
-      "tiles_remaining_at_least" -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
+      "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->
         draws_left = length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
         case Utils.get_relative_seat(context.seat, state.turn) do

@@ -19,7 +19,10 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
               <div class={["tile", tile, sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>
-          <div class={["tile", "winning-tile", @winner.winning_tile]}></div>
+          <div class="winning-tile-container">
+            <div class={["tile", "winning-tile", @winner.winning_tile]}></div>
+            <div class="winning-tile-text"><%= @winner.winning_tile_text %></div>
+          </div>
         </div>
         <div class="yakus">
           <%= for {name, points} <- @winner.yaku do %>
