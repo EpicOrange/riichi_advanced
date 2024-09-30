@@ -80,6 +80,7 @@ defmodule RiichiAdvanced.AIPlayer do
           "hu" in player.buttons -> "hu"
           "zimo" in player.buttons -> "zimo"
           "riichi" in player.buttons -> "riichi"
+          "ankan" in player.buttons -> "ankan"
           "flower" in player.buttons -> "flower"
           "skip" in player.buttons -> "skip"
           true -> Enum.random(player.buttons)
