@@ -1410,6 +1410,9 @@
   "before_continue": {
     "actions": [["advance_turn"]]
   },
+  "play_effects": [
+    ["any", [["unset_status", "discards_empty"]]]
+  ],
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "discards_empty"],
