@@ -1,7 +1,5 @@
 
 defmodule RiichiAdvanced.GameState.Marking do
-  alias RiichiAdvanced.GameState.Buttons, as: Buttons
-  alias RiichiAdvanced.GameState.Saki, as: Saki
   import RiichiAdvanced.GameState
 
   def initialize_marking(state) do
@@ -59,7 +57,7 @@ defmodule RiichiAdvanced.GameState.Marking do
     tile = get_tile(state, seat, index, source)
     mark_info = state.marking[marking_player][source]
     marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
-    already_marked = is_marked(state, marking_player, seat, index, source)
+    already_marked = is_marked?(state, marking_player, seat, index, source)
     mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
         "match_suit"        ->
@@ -92,7 +90,7 @@ defmodule RiichiAdvanced.GameState.Marking do
     end)
   end
 
-  def is_marked(state, marking_player, seat, index, source) do
+  def is_marked?(state, marking_player, seat, index, source) do
     case source do
       :hand    -> Map.has_key?(state.marking[marking_player], :hand) && Enum.any?(state.marking[marking_player].hand.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
       :discard -> Map.has_key?(state.marking[marking_player], :discard) && Enum.any?(state.marking[marking_player].discard.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)

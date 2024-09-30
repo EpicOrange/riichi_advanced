@@ -126,7 +126,7 @@ defmodule RiichiAdvanced.AIPlayer do
       if Map.has_key?(marked_objects, :hand) do
         player.hand ++ player.draw
         |> Enum.with_index()
-        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, state.seat, i, :hand}) end)
+        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, state.seat, i, :hand}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.hand.needed)
         |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :hand}) end)
@@ -134,7 +134,7 @@ defmodule RiichiAdvanced.AIPlayer do
       if Map.has_key?(marked_objects, :discard) do
         player.pond
         |> Enum.with_index()
-        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, state.seat, i, :discard}) end)
+        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, state.seat, i, :discard}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.discard.needed)
         |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :discard}) end)

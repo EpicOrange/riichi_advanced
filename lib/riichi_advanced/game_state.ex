@@ -1200,8 +1200,8 @@ defmodule RiichiAdvanced.GameState do
 
   # marking calls
   def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Marking.needs_marking?(state, seat), state}
-  def handle_call({:is_marked, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.is_marked(state, marking_player, seat, index, tile_source), state}
-  def handle_call({:can_mark, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark(state, marking_player, seat, index, tile_source), state}
+  def handle_call({:is_marked?, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.is_marked?(state, marking_player, seat, index, tile_source), state}
+  def handle_call({:can_mark?, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark?(state, marking_player, seat, index, tile_source), state}
 
   # debugging only
   def handle_call(:get_state, _from, state) do
