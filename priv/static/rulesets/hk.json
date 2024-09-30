@@ -358,6 +358,8 @@
   "point_name": "Fan",
   "score_calculation": {
     "method": "hk",
+    "win_by_discard_name": "Hu",
+    "win_by_draw_name": "Zimo",
     "score_table_nondealer": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 16, "6": 16, "7": 32, "8": 32, "9": 32, "max": 64},
     "score_table_nondealer_draw": {"1": 4, "2": 8, "3": 16, "4": 32, "5": 32, "6": 32, "7": 64, "8": 64, "9": 64, "max": 128},
     "score_table_dealer": {"0": 2, "1": 4, "2": 8, "3": 16, "4": 32, "5": 32, "6": 32, "7": 64, "8": 64, "9": 64, "max": 128},

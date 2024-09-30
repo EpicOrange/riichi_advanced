@@ -540,6 +540,8 @@
   "minipoint_name": "Mủn",
   "score_calculation": {
     "method": "vietnamese",
+    "win_by_discard_name": "Ù",
+    "win_by_draw_name": "Tự ù",
     "score_table_phan_discarder": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 32, "max": 64},
     "score_table_phan_non_discarder": {"0": 1, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "max": 32}
   },

@@ -147,6 +147,8 @@
   "point_name": "Fan",
   "score_calculation": {
     "method": "sichuan",
+    "win_by_discard_name": "Hu",
+    "win_by_draw_name": "Zimo",
     "score_table": {"0": 1, "1": 2, "2": 4, "max": 8}
   },
   "play_restrictions": [
