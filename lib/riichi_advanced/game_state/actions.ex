@@ -228,8 +228,8 @@ defmodule RiichiAdvanced.GameState.Actions do
             update_player(state, hand_seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
           end
       end
-      # send them left
-      state = update_player(state, Utils.get_seat(hand_seat, :kamicha), &%Player{ &1 | hand: &1.hand ++ &1.draw, draw: [hand_tile1, hand_tile2, hand_tile3] })
+      # send them according to dir
+      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ &1.draw, draw: [hand_tile1, hand_tile2, hand_tile3] })
       state = put_in(state.marking[seat].done, true)
       state
     end

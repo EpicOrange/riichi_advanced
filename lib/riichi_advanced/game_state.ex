@@ -772,7 +772,9 @@ defmodule RiichiAdvanced.GameState do
       else
         Enum.each([:east, :south, :west, :north], fn seat ->
           has_buttons = not Enum.empty?(state.players[seat].buttons)
-          if is_pid(Map.get(state, seat)) && has_buttons do
+          has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
+          has_marking_ui = not Enum.empty?(state.marking[seat])
+          if is_pid(Map.get(state, seat)) && has_buttons && not has_call_buttons && not has_marking_ui do
             # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
             send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
           end
@@ -1359,7 +1361,12 @@ defmodule RiichiAdvanced.GameState do
       # if we're still going, run deferred actions for everyone and then notify ai
       state = if state.game_active do
         state = for {seat, _player} <- state.players, reduce: state do
-          state -> Actions.run_deferred_actions(state, %{seat: seat})
+          state ->
+            state = Actions.run_deferred_actions(state, %{seat: seat})
+            state = if not Enum.empty?(state.marking[seat]) && state.marking[seat].done do
+              Marking.reset_marking(state, seat)
+            else state end
+            state
         end
         notify_ai(state)
         state
