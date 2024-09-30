@@ -326,7 +326,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, 10000)
+    state = Map.put(state, :timer, 10)
     state = Map.put(state, :visible_screen, :winner)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
