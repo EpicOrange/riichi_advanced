@@ -73,9 +73,10 @@ div.winning-tile-container {
 div.winning-tile-text {
   text-align: center;
   position: absolute;
-  width: 100%;
+  width: 500%;
   font-size: calc(0.4 * var(--tile-size));
   top: calc(-0.75 * var(--tile-size));
+  left: -200%;
   color: white;
 }
 div.hand.self {
