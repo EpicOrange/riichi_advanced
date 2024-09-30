@@ -913,6 +913,9 @@
   "after_start": {
     "actions": [
       ["set_status_all", "discards_empty", "nagashi", "wrapping_score_calculation"],
+      ["set_tile_alias_all", ["0m"], ["5m"]],
+      ["set_tile_alias_all", ["0p"], ["5p"]],
+      ["set_tile_alias_all", ["0s"], ["5s"]],
       ["set_tile_alias_all", ["11m"], ["1m","1s","1p"]],
       ["set_tile_alias_all", ["12m"], ["2m","2s","2p"]],
       ["set_tile_alias_all", ["13m"], ["3m","3s","3p"]],

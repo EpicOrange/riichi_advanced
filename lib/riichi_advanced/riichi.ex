@@ -83,36 +83,6 @@ defmodule Riichi do
     else nil end
   end
 
-  def from_red(tile) do
-    case tile do
-      :"0m" -> :"5m"
-      :"0p" -> :"5p"
-      :"0s" -> :"5s"
-      _     -> nil
-    end
-  end
-
-  def to_red(tile) do
-    case tile do
-      :"5m" -> :"0m"
-      :"5p" -> :"0p"
-      :"5s" -> :"0s"
-      _     -> nil
-    end
-  end
-
-  def toggle_red(tile) do
-    case tile do
-      :"0m" -> :"5m"
-      :"0p" -> :"5p"
-      :"0s" -> :"5s"
-      :"5m" -> :"0m"
-      :"5p" -> :"0p"
-      :"5s" -> :"0s"
-      _     -> nil
-    end
-  end
-
   def normalize_red_five(tile) do
     case tile do
       :"0m" -> :"5m"
@@ -175,15 +145,14 @@ defmodule Riichi do
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{})
   def try_remove_all_tiles(hand, [], _tile_aliases), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases) do
-    aliases = (if toggle_red(tile) == nil do [tile] else [tile, toggle_red(tile)] end) ++ Map.get(tile_aliases, tile, [])
-    for t <- aliases do
+    for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
       removed = List.delete(hand, t)
       if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases) end
     end |> Enum.concat()
   end
 
   # return all possible calls of each tile in called_tiles, given hand
-  # includes returning multiple choices for red fives
+  # includes returning multiple choices for jokers (incl. red fives)
   # if called_tiles is an empty list, then we choose from our hand
   # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
   def make_calls(calls_spec, hand, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}, wraps \\ false, honor_seqs \\ false) do

@@ -884,7 +884,12 @@
     ["any", [["unset_status", "discards_empty"]]]
   ],
   "after_start": {
-    "actions": [["set_status_all", "discards_empty", "nagashi"]]
+    "actions": [
+      ["set_status_all", "discards_empty", "nagashi"],
+      ["set_tile_alias_all", ["0m"], ["5m"]],
+      ["set_tile_alias_all", ["0p"], ["5p"]],
+      ["set_tile_alias_all", ["0s"], ["5s"]]
+    ]
   },
   "before_win": {
     "actions": [["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],

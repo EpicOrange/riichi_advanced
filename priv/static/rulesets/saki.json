@@ -1284,6 +1284,9 @@
   "after_start": {
     "actions": [
       ["set_status_all", "discards_empty", "nagashi"],
+      ["set_tile_alias_all", ["0m"], ["5m"]],
+      ["set_tile_alias_all", ["0p"], ["5p"]],
+      ["set_tile_alias_all", ["0s"], ["5s"]],
       ["when", ["not_all_saki_cards_drafted"], [["set_status_all", "match_start"]]],
       ["when", [{"name": "status", "opts": ["yumeno-maho"]}], [["unset_status",
         "atarashi-ako",
@@ -1801,7 +1804,6 @@
         {"name": "status_missing", "opts": ["furiten", "just_reached", "tried_to_ron"]},
         "someone_else_just_discarded",
         "last_discard_exists",
-        {"name": "print", "opts": ["a"]},
         [
           {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
           [
@@ -1819,12 +1821,10 @@
             {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win_wrapping_honorseq"]]}
           ]
         ],
-        {"name": "print", "opts": ["b"]},
         [
           "has_yaku_with_discard",
           {"name": "status", "opts": ["senoo-kaori"]}
         ],
-        {"name": "print", "opts": ["c"]},
         [
           {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
           [
@@ -1861,12 +1861,10 @@
           ],
           "has_yakuman_with_discard"
         ],
-        {"name": "print", "opts": ["d"]},
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
-        ],
-        {"name": "print", "opts": ["e"]}
+        ]
       ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
