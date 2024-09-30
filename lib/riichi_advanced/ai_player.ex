@@ -120,22 +120,24 @@ defmodule RiichiAdvanced.AIPlayer do
       state = %{ state | player: player }
       IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
       # for each source, generate all possible choices and pick n of them
+      # note: we only support marking our own hand and discards, for now
+      # TODO support marking other players' hand and/or discards
       Process.sleep(trunc(500 / @ai_speed))
       if Map.has_key?(marked_objects, :hand) do
         player.hand ++ player.draw
         |> Enum.with_index()
-        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, i, :hand}) end)
+        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, state.seat, i, :hand}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.hand.needed)
-        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, i, :hand}) end)
+        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :hand}) end)
       end
       if Map.has_key?(marked_objects, :discard) do
         player.pond
         |> Enum.with_index()
-        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, i, :discard}) end)
+        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark, state.seat, state.seat, i, :discard}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.discard.needed)
-        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, i, :discard}) end)
+        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :discard}) end)
       end
     end
     {:noreply, state}

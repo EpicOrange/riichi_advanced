@@ -177,7 +177,10 @@
     ]]]
   ],
   "after_start": {
-    "actions": [["set_status_all", "round_start"]]
+    "actions": [
+      // ["set_status_all", "charleston_left"]
+      ["random", [["set_status_all", "charleston_left"], ["set_status_all", "charleston_across"], ["set_status_all", "charleston_right"]]]
+    ]
   },
   "before_turn_change": {
     "actions": [["unset_status", "kan", "first_turn"],
@@ -187,7 +190,7 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "not_status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}, {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining"], [["draw"]]],
       ["when", [{"name": "status", "opts": ["won"]}], [["advance_turn"]]]
     ]
   },
@@ -195,6 +198,24 @@
     "actions": [["advance_turn"]]
   },
   "buttons": {
+    "charleston_left": {
+      "display_name": "Select three tiles to pass left",
+      "show_when": [{"name": "status", "opts": ["charleston_left"]}],
+      "actions": [["unset_status", "charleston_left"], ["set_status", "round_start"], ["charleston_left"]],
+      "unskippable": true
+    },
+    "charleston_across": {
+      "display_name": "Select three tiles to pass across",
+      "show_when": [{"name": "status", "opts": ["charleston_across"]}],
+      "actions": [["unset_status", "charleston_across"], ["set_status", "round_start"], ["charleston_across"]],
+      "unskippable": true
+    },
+    "charleston_right": {
+      "display_name": "Select three tiles to pass right",
+      "show_when": [{"name": "status", "opts": ["charleston_right"]}],
+      "actions": [["unset_status", "charleston_right"], ["set_status", "round_start"], ["charleston_right"]],
+      "unskippable": true
+    },
     "void_manzu": {
       "display_name": "No Craks",
       "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
@@ -422,7 +443,7 @@
       "enabled_at_start": true
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call", "charleston_left", "charleston_across", "charleston_right"],
   "initial_score": 0,
   "starting_tiles": 13,
   "max_rounds": 4,

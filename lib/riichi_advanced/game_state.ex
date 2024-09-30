@@ -749,9 +749,9 @@ defmodule RiichiAdvanced.GameState do
 
   def notify_ai_marking(state, seat) do
     if state.game_active do
-      if is_pid(Map.get(state, seat)) && Map.has_key?(state, :saki) && Marking.needs_marking?(state, seat) do
+      if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
         # IO.puts("Notifying #{seat} AI about marking")
-        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], marked_objects: state.marking.marked_objects}})
+        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], marked_objects: state.marking[seat]}})
       end
     end
   end
@@ -1200,8 +1200,8 @@ defmodule RiichiAdvanced.GameState do
 
   # marking calls
   def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Marking.needs_marking?(state, seat), state}
-  def handle_call({:is_marked, seat, index, tile_source}, _from, state), do: {:reply, Marking.is_marked(state, seat, index, tile_source), state}
-  def handle_call({:can_mark, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark(state, seat, index, tile_source), state}
+  def handle_call({:is_marked, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.is_marked(state, marking_player, seat, index, tile_source), state}
+  def handle_call({:can_mark, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark(state, marking_player, seat, index, tile_source), state}
 
   # debugging only
   def handle_call(:get_state, _from, state) do
@@ -1338,11 +1338,14 @@ defmodule RiichiAdvanced.GameState do
   end
 
   # marking calls
-  def handle_cast({:mark_tile, seat, index, tile_source}, state) do
-    state = Marking.mark_tile(state, seat, index, tile_source)
-    state = if not Marking.needs_marking?(state, state.marking.marking_player) do
-      state = Actions.run_deferred_actions(state, %{seat: state.marking.marking_player, marked_objects: state.marking.marked_objects})
-      state = Marking.reset_marking(state)
+  def handle_cast({:mark_tile, marking_player, seat, index, tile_source}, state) do
+    state = Marking.mark_tile(state, marking_player, seat, index, tile_source)
+    state = if not Marking.needs_marking?(state, marking_player) do
+      state = Actions.run_deferred_actions(state, %{seat: marking_player})
+      # only reset marking if the mark action states that it is done
+      state = if state.marking[marking_player].done do
+        Marking.reset_marking(state, marking_player)
+      else state end
 
       # if we're still going, run deferred actions for everyone and then notify ai
       state = if state.game_active do
@@ -1359,14 +1362,14 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  def handle_cast(:clear_marked_objects, state) do
-    state = Marking.clear_marked_objects(state)
+  def handle_cast({:clear_marked_objects, marking_player}, state) do
+    state = Marking.clear_marked_objects(state, marking_player)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:reset_marking, seat}, state) do
-    state = Marking.reset_marking(state)
+    state = Marking.reset_marking(state, seat)
 
     # go back to button clicking phase
     state = Buttons.recalculate_buttons(state)

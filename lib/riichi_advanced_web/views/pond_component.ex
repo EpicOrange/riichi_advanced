@@ -18,10 +18,10 @@ defmodule RiichiAdvancedWeb.PondComponent do
     <div class={[@id, @highlight? && "highlight"]}>
       <%= if @marking do %>
         <%= for {tile, i} <- prepare_pond(@pond, @saki) do %>
-          <%= if GenServer.call(@game_state, {:can_mark, @seat, i, :discard}) do %>
+          <%= if GenServer.call(@game_state, {:can_mark, @viewer, @seat, i, :discard}) do %>
             <div class={["tile", tile, "markable", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
-            <%= if GenServer.call(@game_state, {:is_marked, @seat, i, :discard}) do %>
+            <%= if GenServer.call(@game_state, {:is_marked, @viewer, @seat, i, :discard}) do %>
               <div class={["tile", tile, "marked", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
             <% else %>
               <div class={["tile", tile, @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
@@ -42,7 +42,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
 
   def handle_event("mark_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.seat, ix, :discard})
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :discard})
     {:noreply, socket}
   end
 

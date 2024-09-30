@@ -27,10 +27,10 @@ defmodule RiichiAdvancedWeb.HandComponent do
               <%= if removed do %>
                 <div class={["tile", tile, "removed"]} data-id={i}></div>
               <% else %>
-                <%= if GenServer.call(@game_state, {:can_mark, @seat, i, :hand}) do %>
+                <%= if GenServer.call(@game_state, {:can_mark, @viewer, @seat, i, :hand}) do %>
                   <div class={["tile", tile, "markable"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
-                  <%= if GenServer.call(@game_state, {:is_marked, @seat, i, :hand}) do %>
+                  <%= if GenServer.call(@game_state, {:is_marked, @viewer, @seat, i, :hand}) do %>
                     <div class={["tile", tile, "marked"]}></div>
                   <% else %>
                     <div class={["tile", tile]}></div>
@@ -41,10 +41,10 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
           <div class="draws">
             <%= for {tile, i} <- prepare_draw(assigns) do %>
-              <%= if GenServer.call(@game_state, {:can_mark, @seat, length(assigns.hand) + i, :hand}) do %>
+              <%= if GenServer.call(@game_state, {:can_mark, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
                 <div class={["tile", tile, "markable"]} phx-click="mark_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i}></div>
               <% else %>
-                <%= if GenServer.call(@game_state, {:is_marked, @seat, length(assigns.hand) + i, :hand}) do %>
+                <%= if GenServer.call(@game_state, {:is_marked, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
                   <div class={["tile", tile, "marked"]}></div>
                 <% else %>
                   <div class={["tile", tile]}></div>
@@ -122,7 +122,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def handle_event("mark_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.seat, ix, :hand})
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :hand})
     {:noreply, socket}
   end
 
