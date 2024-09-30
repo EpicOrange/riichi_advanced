@@ -83,8 +83,29 @@ defmodule Riichi do
     else nil end
   end
 
+  def from_red(tile) do
+    case tile do
+      :"0m" -> :"5m"
+      :"0p" -> :"5p"
+      :"0s" -> :"5s"
+      _     -> nil
+    end
+  end
+
   def to_red(tile) do
     case tile do
+      :"5m" -> :"0m"
+      :"5p" -> :"0p"
+      :"5s" -> :"0s"
+      _     -> nil
+    end
+  end
+
+  def toggle_red(tile) do
+    case tile do
+      :"0m" -> :"5m"
+      :"0p" -> :"5p"
+      :"0s" -> :"5s"
       :"5m" -> :"0m"
       :"5p" -> :"0p"
       :"5s" -> :"0s"
@@ -154,8 +175,8 @@ defmodule Riichi do
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{})
   def try_remove_all_tiles(hand, [], _tile_aliases), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases) do
-    aliases = if Map.has_key?(tile_aliases, tile) do tile_aliases[tile] else [] end
-    for t <- (if to_red(tile) == nil do [tile] else [tile, to_red(tile)] end) ++ aliases do
+    aliases = (if toggle_red(tile) == nil do [tile] else [tile, toggle_red(tile)] end) ++ Map.get(tile_aliases, tile, [])
+    for t <- aliases do
       removed = List.delete(hand, t)
       if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases) end
     end |> Enum.concat()

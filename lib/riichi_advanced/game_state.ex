@@ -991,14 +991,22 @@ defmodule RiichiAdvanced.GameState do
         tile_aliases = cxt_player.tile_aliases
         Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, tile_aliases) end)
       "winning_hand_consists_of" ->
+        tile_aliases = cxt_player.tile_aliases
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
-        Enum.all?(winning_hand, fn tile -> tile in tiles end)
+        Enum.all?(winning_hand, fn tile -> 
+          aliases = (if Riichi.from_red(tile) == nil do [tile] else [tile, Riichi.from_red(tile)] end) ++ Map.get(tile_aliases, tile, [])
+          Enum.any?(aliases, fn t -> t in tiles end)
+        end)
       "winning_hand_and_tile_consists_of" ->
+        tile_aliases = cxt_player.tile_aliases
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(winning_hand ++ [winning_tile], fn tile -> tile in tiles end)
+        Enum.all?(winning_hand ++ [winning_tile], fn tile -> 
+          aliases = (if Riichi.from_red(tile) == nil do [tile] else [tile, Riichi.from_red(tile)] end) ++ Map.get(tile_aliases, tile, [])
+          Enum.any?(aliases, fn t -> t in tiles end)
+        end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && state.saki.all_drafted
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)

@@ -546,6 +546,111 @@
       "display_name": "Inazuma Riichi",
       "value": 5,
       "when": [{"name": "status", "opts": ["inazuma_riichi"]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 1]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 2]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 3]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 4]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 5]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 6]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 7]]]]}]
+    },
+    {
+      "display_name": "Mase Yuuko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 8]]]]}]
+    },
+    {
+      "display_name": "Matano Seiko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 2]]]]}]
+    },
+    {
+      "display_name": "Matano Seiko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 3]]]]}]
+    },
+    {
+      "display_name": "Matano Seiko",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 9]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 11]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 13]]]]}]
+    },
+    {
+      "display_name": "Warm Tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 14]]]]}]
+    },
+    {
+      "display_name": "Sagimori Arata",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 6]]]]}]
+    },
+    {
+      "display_name": "Sagimori Arata",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 9]]]]}]
+    },
+    {
+      "display_name": "Sagimori Arata",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 11]]]]}]
+    },
+    {
+      "display_name": "Three-Sided Wait",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "wait_count_at_least", "opts": [3, ["win"]]}]
+    },
+    {
+      "display_name": "Single Wait",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}]
+    },
+    {
+      "display_name": "Takimi Haru",
+      "value": 1,
+      "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}]
     }
   ],
   "yakuman": [
@@ -915,101 +1020,6 @@
       "when": [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}, {"name": "match", "opts": [["pond"], [[[["pair"], 16]]]]}]
     },
     {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 1]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 2]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 3]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 4]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 5]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 6]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 7]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 8]]]]}]
-    },
-    {
-      "display_name": "Matano Seiko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 2]]]]}]
-    },
-    {
-      "display_name": "Matano Seiko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 3]]]]}]
-    },
-    {
-      "display_name": "Matano Seiko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 9]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 11]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 13]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 14]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 6]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 9]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 11]]]]}]
-    },
-    {
-      "display_name": "Three-Sided Wait",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "wait_count_at_least", "opts": [3, ["win"]]}]
-    },
-    {
       "display_name": "Tsumo",
       "value": 1,
       "when": [{"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "has_existing_yaku", "opts": ["Tsumo"]}]
@@ -1028,16 +1038,6 @@
       "display_name": "No Yaku",
       "value": 1,
       "when": [{"name": "status", "opts": ["senoo-kaori"]}, "has_no_yaku"]
-    },
-    {
-      "display_name": "Single Wait",
-      "value": 2,
-      "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}]
-    },
-    {
-      "display_name": "Takimi Haru",
-      "value": 1,
-      "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}]
     }
   ],
   "yaku_alt_names": {
@@ -1299,6 +1299,7 @@
         "miyanaga-saki",
         "miyanaga-teru",
         "nanpo-kazue",
+        "onjouji-toki",
         "sagimori-arata",
         "sawamura-tomoki",
         "senoo-kaori",
@@ -1366,7 +1367,7 @@
       "display_name": "Swap a discard with same suit in hand",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
-        ["big_text", "Atarashi Ako: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_same_suit_discard"],
+        ["big_text", "Atarashi Ako: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_same_suit_discard"], ["noop"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]
     },
@@ -1572,7 +1573,8 @@
       "show_when": ["our_turn", "not_just_discarded", {"name": "status", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
-        ["swap_tile_with_aside"]
+        ["swap_tile_with_aside"],
+        ["noop"]
       ]
     },
     "sawamura_tomoki": {
@@ -1617,7 +1619,8 @@
       "actions": [
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["set_status", "chii"]
+        ["set_status", "chii"],
+        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
     "pon": {
@@ -1634,7 +1637,8 @@
       ],
       "actions": [
         ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
       "precedence_over": ["chii"]
     },
@@ -1664,7 +1668,8 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -1714,7 +1719,8 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
     "kakan": {
@@ -1736,7 +1742,8 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
     "riichi": {
@@ -1783,7 +1790,8 @@
           ["put_down_riichi_stick"],
           ["pause", 1000],
           ["abortive_draw", "Suucha Riichi"]
-        ]]
+        ]],
+        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
     "ron": {
@@ -1793,6 +1801,7 @@
         {"name": "status_missing", "opts": ["furiten", "just_reached", "tried_to_ron"]},
         "someone_else_just_discarded",
         "last_discard_exists",
+        {"name": "print", "opts": ["a"]},
         [
           {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
           [
@@ -1810,10 +1819,12 @@
             {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win_wrapping_honorseq"]]}
           ]
         ],
+        {"name": "print", "opts": ["b"]},
         [
           "has_yaku_with_discard",
           {"name": "status", "opts": ["senoo-kaori"]}
         ],
+        {"name": "print", "opts": ["c"]},
         [
           {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
           [
@@ -1850,10 +1861,12 @@
           ],
           "has_yakuman_with_discard"
         ],
+        {"name": "print", "opts": ["d"]},
         [
           {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
           "not_last_discard_matches_existing"
-        ]
+        ],
+        {"name": "print", "opts": ["e"]}
       ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -2083,7 +2096,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "swap_hand_tile_with_same_suit_discard", "swap_tile_with_aside", "draw_from_aside", "about_to_draw", "about_to_ron"],
+  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "noop", "draw_from_aside", "about_to_draw", "about_to_ron"],
   "display_riichi_sticks": true,
   "display_honba": true,
   "initial_score": 30000,
