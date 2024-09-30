@@ -224,7 +224,7 @@ defmodule RiichiAdvanced.SMT do
       if @print_smt do
         IO.puts(smt)
       end
-      {:ok, response} = GenServer.call(solver_pid, {:query, [smt], false}, 5000)
+      {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 5000)
       case ExSMT.Solver.ResponseParser.parse(response) do
         [:sat | assigns] ->
           new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
@@ -447,7 +447,7 @@ defmodule RiichiAdvanced.SMT do
     if @print_smt do
       IO.puts(smt)
     end
-    {:ok, _response} = GenServer.call(solver_pid, {:query, [smt], true}, 5000)
+    {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 5000)
     result = obtain_all_solutions(solver_pid, joker_ixs)
     # IO.inspect(result)
     result
