@@ -750,9 +750,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # done with all choices
       state = if not performing_intermediate_action?(state) do
-        state = Buttons.recalculate_buttons(state)
         notify_ai(state)
-        state
+        if Buttons.no_buttons_remaining?(state) do
+          Buttons.recalculate_buttons(state)
+        else state end
       else state end
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
       Mutex.release(state.mutex, lock)
