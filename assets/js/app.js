@@ -45,14 +45,12 @@ var mouseDownElement = null;
 Hooks.ClickListener = {
   mounted() {
     this.el.addEventListener('mousedown', e => {
-      e.preventDefault();
       var target = getCancellableClickTarget(e.target);
       if (target !== null) {
         mouseDownElement = target;
       }
     });
     this.el.addEventListener('mouseup', e => {
-      e.preventDefault();
       var target = getCancellableClickTarget(e.target);
       if (target !== null) {
         if (mouseDownElement == target) {
