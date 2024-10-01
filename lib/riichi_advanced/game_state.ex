@@ -103,7 +103,8 @@ defmodule RiichiAdvanced.GameState do
       __MODULE__,
       %{session_id: Keyword.get(init_data, :session_id),
         ruleset: Keyword.get(init_data, :ruleset)},
-      name: Keyword.get(init_data, :name))
+        name: Keyword.get(init_data, :name),
+        mods: Keyword.get(init_data, :mods, []))
   end
 
   defp debounce_worker(debouncers, delay, id, message, seat \\ nil) do
@@ -156,11 +157,19 @@ defmodule RiichiAdvanced.GameState do
       {:error, _err}      -> nil
     end
 
+    # strip comments
+    orig_ruleset_json = ruleset_json
+    ruleset_json = Regex.replace(~r{//.*|/\*[.\n]*?\*/}, ruleset_json, "")
+
+    # apply mods
+    mods = Map.get(state, :mods, [])
+    ruleset_json = RiichiAdvanced.ModLoader.apply_mods(ruleset_json, mods)
+
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
       ruleset: state.ruleset,
       session_id: state.session_id,
-      ruleset_json: ruleset_json,
+      ruleset_json: if Enum.empty?(mods) do orig_ruleset_json else ruleset_json end,
       supervisor: supervisor,
       mutex: mutex,
       smt_solver: smt_solver,
@@ -174,7 +183,7 @@ defmodule RiichiAdvanced.GameState do
 
     # decode the rules json, removing comments first
     {state, rules} = try do
-      case Jason.decode(Regex.replace(~r{//.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+      case Jason.decode(ruleset_json) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
@@ -186,6 +195,7 @@ defmodule RiichiAdvanced.GameState do
         state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
         {state, %{}}
     end
+
     state = Map.put(state, :rules, rules)
 
     initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end

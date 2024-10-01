@@ -58,6 +58,7 @@ defmodule RiichiAdvanced.MixProject do
       {:decimal, "~> 2.0"},
       {:nimble_parsec, "~> 1.4.0"},
       {:porcelain, github: "walkr/porcelain"},
+      {:temp, "~> 0.4"},
     ]
   end
 
