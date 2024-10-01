@@ -464,6 +464,7 @@ defmodule Riichi do
   end
 
   def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, tile_aliases \\ %{}, wraps \\ false) do
+    IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
     starting_hand = normalize_red_fives(starting_hand)
     winning_tile = normalize_red_five(winning_tile)
     standard_length = length(starting_hand) in [1, 4, 7, 10, 13]
@@ -536,10 +537,14 @@ defmodule Riichi do
     # IO.inspect(hands_fu)
 
     winning_tiles = if standard_length do add_tile_aliases([winning_tile], tile_aliases) else @all_tiles end
-    # only valid hands should either have:
+    # standard hands should either have:
     # - one tile remaining (tanki)
     # - one pair remaining (standard)
     # - two pairs remaining (shanpon)
+    # shouhai hands should either have:
+    # - seven tiles (including pair) remaining (floating/complete)
+    # - four tiles (including pair) remaining (sticking)
+    # - four tiles (no pair) remaining (headless)
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
       cond do
@@ -550,6 +555,13 @@ defmodule Riichi do
           tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           if tile1 in winning_tiles do [tile1_fu] else [] end ++ if tile2 in winning_tiles do [tile2_fu] else [] end
+        length(hand) == 4 && num_pairs == 0                    -> [fu]
+        length(hand) == 7 && num_pairs == 1                    ->
+          pair_fu = Enum.frequencies(hand)
+          |> Enum.filter(fn {_tile, freq} -> freq == 2 end)
+          |> Enum.map(fn {tile, _freq} -> calculate_pair_fu(tile, seat_wind, round_wind) end)
+          |> Enum.max()
+          [fu + pair_fu]
         true                                                   -> []
       end
     end)
