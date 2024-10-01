@@ -8,6 +8,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:nickname, params["nickname"])
     |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
+    |> assign(:lobby_state, nil)
     |> assign(:state, %Lobby{})
     if socket.root_pid != nil do
       # start a new lobby process, if it doesn't exist already
@@ -41,7 +42,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
 
   def render(assigns) do
     ~H"""
-    <div class="lobby">
+    <div id="container" class="lobby" phx-hook="ClickListener">
       <header>
         <h1>Lobby</h1>
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
@@ -50,7 +51,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       <div class="seats">
         <%= for seat <- [:east, :south, :west, :north] do %>
           <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
-            <button phx-click="sit" phx-value-seat={seat}>
+            <button phx-cancellable-click="sit" phx-value-seat={seat}>
               <%= if @state.seats[seat] != nil do %>
                 <%= @state.seats[seat].nickname %>
               <% else %>
@@ -65,10 +66,10 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <input id="shuffle-seats" type="checkbox" class="shuffle-seats" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
         <label for="shuffle-seats">Shuffle seats on start?</label>
         <%= if Enum.any?(@state.seats, fn {_seat, player} -> player != nil && player.id == @id end) do %>
-          <button class="get-up-button" phx-click="get_up">Get up</button>
+          <button class="get-up-button" phx-cancellable-click="get_up">Get up</button>
         <% end %>
         <%= if not Enum.all?(@state.seats, fn {_seat, player} -> player == nil end) do %>
-          <button class="start-game-button" phx-click="start_game">
+          <button class="start-game-button" phx-cancellable-click="start_game">
             Start game
             <%= if nil in Map.values(@state.seats) do %>
             (with AI)
@@ -82,7 +83,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           <label for={mod}><%= mod %></label>
         <% end %>
       </div>
-      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={nil} error={@state.error}/>
+      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>

@@ -16,9 +16,11 @@
   // most part, all I need is the tiles, the scoring method, and the yaku.
 
   "default_mods": [
+    "dora"
   ],
   "available_mods": [
-    "mega_riichi_bet"
+    "mega_riichi_bet",
+    "dora"
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -63,8 +65,8 @@
     "kandraw_3", "kandraw_4",
     "kandraw_1", "kandraw_2"
   ],
-  "revealed_tiles": ["doraindicator_1"],
-  "max_revealed_tiles": 5,
+  "revealed_tiles": [],
+  "max_revealed_tiles": 0,
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],

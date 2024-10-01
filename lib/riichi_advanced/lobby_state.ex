@@ -188,6 +188,7 @@ defmodule RiichiAdvanced.LobbyState do
         state
       {:error, {:already_started, _pid}} ->
         IO.puts("Already started game session #{state.session_id}")
+        state = show_error(state, "A game session for this variant with this same room ID is already in play -- please leave the lobby and try entering it directly!")
         state
     end
     state = broadcast_state_change(state)

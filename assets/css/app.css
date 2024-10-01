@@ -1619,8 +1619,9 @@ div.lobby > div.seats > div.player-slot.filled > button {
   filter: none;
   font-size: calc(0.35 * var(--tile-size));
 }
-div.lobby > div.seats > div.player-slot > button:active {
-  filter: none;
+div.lobby > div.seats > div.player-slot > button:active,
+div.lobby > div.seats-buttons > button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
   z-index: 1;
 }
