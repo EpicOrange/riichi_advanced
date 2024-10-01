@@ -913,7 +913,14 @@
     },
     "riichi": {
       "display_name": "Riichi",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}],
+      "show_when": [
+        "our_turn",
+        "has_draw",
+        {"name": "status_missing", "opts": ["riichi"]},
+        "next_draw_possible",
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}
+      ],
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],

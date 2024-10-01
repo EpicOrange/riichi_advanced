@@ -100,3 +100,9 @@
 ]
 |
 .yaku |= map(select(.display_name != "Chiitoitsu"))
+|
+.after_start.actions |= map(if .[0] == "set_status_all" then (. + ["wrapping_score_calculation"]) else . end)
+|
+.buttons.chii += {"honor_seqs": true, "call_wraps": true}
+|
+.buttons.chii.show_when |= map(if . == "kamicha_discarded" then "someone_else_just_discarded" else . end)
