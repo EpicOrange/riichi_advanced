@@ -654,9 +654,13 @@ defmodule RiichiAdvanced.GameState do
         state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
         state = Map.put(state, :delta_scores, nil)
 
+        # check for tobi
+        tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
+        state = if tobi && Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
+
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
-          if Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
+          if state.round_result == :end_game || Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
             finalize_game(state)
           else
             initialize_new_round(state)
