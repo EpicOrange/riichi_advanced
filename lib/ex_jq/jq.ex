@@ -21,7 +21,7 @@ defmodule JQ do
           IO.write(fd, result)
           File.close(fd)
           args = ["formatter.py", file_path, "2", "180", "8"]
-          case System.cmd("python", args, stderr_to_stdout: true) do
+          case System.cmd("python3", args, stderr_to_stdout: true) do
             {_, code} = error when is_integer(code) and code != 0 ->
               raise(SystemCmdException, result: error, command: "python", args: args)
 
