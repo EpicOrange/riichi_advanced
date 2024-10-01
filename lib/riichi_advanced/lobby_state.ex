@@ -71,7 +71,11 @@ defmodule RiichiAdvanced.LobbyState do
         state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
         {state, %{}}
     end
-    default_mods = Map.get(rules, "default_mods", [])
+
+    default_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
+      [mods] -> mods
+      []     -> Map.get(rules, "default_mods", [])
+    end
     mods = Map.get(rules, "available_mods", [])
 
     # put params, debouncers, and process ids into state

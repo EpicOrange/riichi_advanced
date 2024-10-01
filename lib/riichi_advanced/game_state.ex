@@ -36,6 +36,7 @@ defmodule Game do
     ruleset: nil,
     session_id: nil,
     ruleset_json: nil,
+    mods: nil,
     # pids
     supervisor: nil,
     mutex: nil,
@@ -166,6 +167,10 @@ defmodule RiichiAdvanced.GameState do
     # apply mods
     mods = Map.get(state, :mods, [])
     ruleset_json = RiichiAdvanced.ModLoader.apply_mods(ruleset_json, mods)
+    if not Enum.empty?(mods) do
+      # cache mods
+      RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, mods, :cache_mods)
+    end
 
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
