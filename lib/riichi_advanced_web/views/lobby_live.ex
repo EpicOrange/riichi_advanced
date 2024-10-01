@@ -78,9 +78,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <% end %>
       </div>
       <div class="mods">
-        <%= for {mod, _} <- Enum.sort_by(@state.mods, fn {_name, mod} -> mod.index end) do %>
+        <%= for {mod, mod_details} <- Enum.sort_by(@state.mods, fn {_name, mod} -> mod.index end) do %>
           <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
-          <label for={mod}><%= mod %></label>
+          <label for={mod} title={mod_details.desc}><%= mod_details.name %></label>
         <% end %>
       </div>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>

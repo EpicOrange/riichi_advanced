@@ -25,7 +25,8 @@ defmodule Lobby do
     players: %{},
     shuffle: false,
     started: false,
-    mods: %{}
+    mods: %{},
+    mod_dependencies: %{}
   ]
   use Accessible
 end
@@ -76,6 +77,7 @@ defmodule RiichiAdvanced.LobbyState do
       [mods] -> mods
       []     -> Map.get(rules, "default_mods", [])
     end
+    mod_dependencies = Map.get(rules, "mod_dependencies", %{})
     mods = Map.get(rules, "available_mods", [])
 
     # put params, debouncers, and process ids into state
@@ -86,7 +88,8 @@ defmodule RiichiAdvanced.LobbyState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod, %{ enabled: mod in default_mods, index: i }} end)
+      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod["id"], %{ enabled: mod["id"] in default_mods, index: i, name: mod["name"], desc: mod["desc"] }} end),
+      mod_dependencies: mod_dependencies
     })
 
     {:ok, state}
@@ -160,6 +163,11 @@ defmodule RiichiAdvanced.LobbyState do
 
   def handle_cast({:toggle_mod, mod, enabled}, state) do
     state = put_in(state.mods[mod].enabled, enabled)
+    state = if enabled == true do
+      for dep <- Map.get(state.mod_dependencies, mod, []), reduce: state do
+        state -> put_in(state.mods[dep].enabled, true)
+      end
+    else state end
     state = broadcast_state_change(state)
     {:noreply, state}
   end
