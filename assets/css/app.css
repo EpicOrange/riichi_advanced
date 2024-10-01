@@ -1549,20 +1549,43 @@ div.main-page > form, div.main-page > form * {
 
 
 /* lobby screen */
-div.lobby, div.lobby > footer {
+div.lobby {
   display: flex;
+  position: relative;
   flex-direction: column;
   row-gap: calc(0.25 * var(--tile-size));
+  color: white;
 }
 div.lobby > header {
-  display: flex;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: calc(0.5 * var(--tile-size));
-  font-weight: 800;
+  position: absolute;
+  top: calc(-1 * var(--tile-size));
+  width: 100%;
 }
-div.lobby button {
+div.lobby > div.seats, div.lobby > div.mods {
+  position: absolute;
+  padding: calc(0.5 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  background: #FFFFFF3F;
+  width: calc(100% - 3 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
+  position: relative;
+}
+div.lobby > div.seats {
+  top: calc(1.5 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  display: flex;
+  justify-content: space-between;
+}
+div.lobby > div.seats > div.player-slot {
+  position: relative;
+  width: 20%;
+}
+div.lobby > div.seats > div.player-slot > button,
+div.lobby > div.seats-buttons > button {
   background: var(--tile-front);
   color: black;
   border-width: 0;
@@ -1571,34 +1594,79 @@ div.lobby button {
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
 }
-div.lobby button:active {
+div.lobby > div.seats > div.player-slot > button {
+  position: absolute;
+  top: calc(0.45 * var(--tile-size));
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  font-size: calc(0.5 * var(--tile-size));
+  width: 100%;
+}
+div.lobby > div.seats > div.player-slot > div.player-slot-label {
+  position: absolute;
+  top: calc(-0.55 * var(--tile-size));
+  width: 100%;
+  text-align: center;
+  font-size: calc(0.75 * var(--tile-size));
+  color: white;
+}
+div.lobby > div.seats > div.player-slot.filled > button {
   filter: none;
-  transform: translateY(calc(var(--tile-size) / 4));
+  font-size: calc(0.35 * var(--tile-size));
+}
+div.lobby > div.seats > div.player-slot > button:active {
+  filter: none;
+  transform: translateY(calc(var(--tile-size) / 8));
   z-index: 1;
 }
-div.lobby > div.player-slot {
+div.lobby > div.seats-buttons {
   display: flex;
-  font-size: calc(1.5 * var(--tile-size));
+  position: absolute;
+  width: calc(11 * var(--tile-size));
+  text-align: center;
+  top: calc(4 * var(--tile-size));
+  left: calc(4 * var(--tile-size));
+  font-size: calc(0.4 * var(--tile-size));
+  justify-content: start;
+  align-items: center;
+  column-gap: calc(0.25 * var(--tile-size));
 }
-div.lobby > div.player-slot > div.player-slot-name {
-  width: 80%;
-  font-size: calc(1.5 * var(--tile-size));
-}
-div.lobby > div.player-slot > button.sit-button {
-  width: calc(2 * var(--tile-size));
-  font-size: calc(1.5 * var(--tile-size));
-  flex-shrink: 0;
-}
-div.lobby > footer { text-align: center; }
-div.lobby > footer > button.get-up-button,
-div.lobby > footer > button.start-game-button {
-  font-size: calc(0.75 * var(--tile-size));
-}
-div.lobby > footer > input { display: none; }
-div.lobby > footer > label {
-  font-size: calc(0.5 * var(--tile-size));
+div.lobby > div.seats-buttons > input { display: none; }
+div.lobby > div.seats-buttons > label {
   background: gray;
   padding: 0 calc(0.125 * var(--tile-size));
+  margin-top: calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
 }
-div.lobby > footer > input:checked + label { background: var(--tile-back); }
+div.lobby > div.seats-buttons > input:checked + label { background: var(--tile-back); }
+div.lobby > div.seats-buttons > button.get-up-button,
+div.lobby > div.seats-buttons > button.start-game-button {
+  font-size: calc(0.4 * var(--tile-size));
+}
+div.lobby > div.mods {
+  top: calc(3 * var(--tile-size));
+  height: calc(9 * var(--tile-size));
+}
+div.lobby > div.mods::before {
+  content: "Mods";
+  position: absolute;
+  top: calc(-1.5 * var(--tile-size));
+  left: calc(-0.5 * var(--tile-size));
+  font-size: calc(1 * var(--tile-size));
+}
+div.lobby > div.mods {
+  font-size: calc(0.5 * var(--tile-size));
+}
+div.lobby > div.mods > input { display: none; }
+div.lobby > div.mods > label {
+  background: gray;
+  padding: 0 calc(0.125 * var(--tile-size));
+  margin-top: calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+}
+div.lobby > div.mods > input:checked + label { background: var(--tile-back); }

@@ -14,7 +14,10 @@
   // Currently there is no way to user-submit a custom ruleset other than
   // sending it to me on Discord. Feel free to do that, by the way! For the
   // most part, all I need is the tiles, the scoring method, and the yaku.
-  
+
+  "eligible_mods": [
+    "mega_riichi_bet"
+  ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",

@@ -101,10 +101,12 @@ defmodule RiichiAdvanced.GameState do
     IO.puts("Supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
-      %{session_id: Keyword.get(init_data, :session_id),
-        ruleset: Keyword.get(init_data, :ruleset)},
-        name: Keyword.get(init_data, :name),
-        mods: Keyword.get(init_data, :mods, []))
+      %{
+        session_id: Keyword.get(init_data, :session_id),
+        ruleset: Keyword.get(init_data, :ruleset),
+        mods: Keyword.get(init_data, :mods, [])
+      },
+      name: Keyword.get(init_data, :name))
   end
 
   defp debounce_worker(debouncers, delay, id, message, seat \\ nil) do

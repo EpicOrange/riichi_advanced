@@ -44,24 +44,26 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     <div class="lobby">
       <header>
         <h1>Lobby</h1>
-        <div class="variant">Variant:&nbsp; <%= @ruleset %></div>
-        <div class="session">Room:&nbsp; <%= @session_id %></div>
+        <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
+        <div class="session">Room:&nbsp;<b><%= @session_id %></b></div>
       </header>
-      <%= for {seat, player} <- @state.seats do %>
-        <div class="player-slot">
-          <%= seat %>:&nbsp;
-          <%= if player != nil do %>
-            <div class="player-slot-name"><%= player.nickname %></div>
-          <% else %>
-            <div class="player-slot-name">Empty</div>
-            <button class="sit-button" phx-click="sit" phx-value-seat={seat}>Sit</button>
-          <% end %>
-        </div>
-      <% end %>
-      <footer>
+      <div class="seats">
+        <%= for seat <- [:east, :south, :west, :north] do %>
+          <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
+            <button phx-click="sit" phx-value-seat={seat}>
+              <%= if @state.seats[seat] != nil do %>
+                <%= @state.seats[seat].nickname %>
+              <% else %>
+                Sit
+              <% end %>
+            </button>
+            <div class="player-slot-label"><%= seat %></div>
+          </div>
+        <% end %>
+      </div>
+      <div class="seats-buttons">
         <input id="shuffle-seats" type="checkbox" class="shuffle-seats" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
         <label for="shuffle-seats">Shuffle seats on start?</label>
-        <br/>
         <%= if Enum.any?(@state.seats, fn {_seat, player} -> player != nil && player.id == @id end) do %>
           <button class="get-up-button" phx-click="get_up">Get up</button>
         <% end %>
@@ -73,7 +75,14 @@ defmodule RiichiAdvancedWeb.LobbyLive do
             <% end %>
           </button>
         <% end %>
-      </footer>
+      </div>
+      <div class="mods">
+        <%= for {mod, _} <- @state.mods do %>
+          <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
+          <label for={mod}><%= mod %></label>
+        <% end %>
+      </div>
+      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={nil} error={@state.error}/>
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
@@ -94,6 +103,12 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   def handle_event("shuffle_seats_toggled", %{"enabled" => enabled}, socket) do
     enabled = enabled == "true"
     GenServer.cast(socket.assigns.lobby_state, {:toggle_shuffle_seats, not enabled})
+    {:noreply, socket}
+  end
+
+  def handle_event("toggle_mod", %{"mod" => mod, "enabled" => enabled}, socket) do
+    enabled = enabled == "true"
+    GenServer.cast(socket.assigns.lobby_state, {:toggle_mod, mod, not enabled})
     {:noreply, socket}
   end
 

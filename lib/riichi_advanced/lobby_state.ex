@@ -24,7 +24,8 @@ defmodule Lobby do
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     players: %{},
     shuffle: false,
-    started: false
+    started: false,
+    mods: %{}
   ]
   use Accessible
 end
@@ -37,8 +38,10 @@ defmodule RiichiAdvanced.LobbyState do
     IO.puts("Supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
-      %{session_id: Keyword.get(init_data, :session_id),
-        ruleset: Keyword.get(init_data, :ruleset)},
+      %Lobby{
+        session_id: Keyword.get(init_data, :session_id),
+        ruleset: Keyword.get(init_data, :ruleset)
+      },
       name: Keyword.get(init_data, :name))
   end
 
@@ -55,13 +58,30 @@ defmodule RiichiAdvanced.LobbyState do
       {:error, _err}      -> nil
     end
 
+    # parse the ruleset now, in order to get the list of eligible mods
+    {state, rules} = try do
+      case Jason.decode(Regex.replace(~r{//.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+        {:ok, rules} -> {state, rules}
+        {:error, err} ->
+          state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+          {state, %{}}
+      end
+    rescue
+      ArgumentError ->
+        state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
+        {state, %{}}
+    end
+    mods = Map.get(rules, "eligible_mods", [])
+
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Lobby{
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       session_id: state.session_id,
+      error: state.error,
       supervisor: supervisor,
-      exit_monitor: exit_monitor
+      exit_monitor: exit_monitor,
+      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod, %{ enabled: false, index: i }} end)
     })
 
     {:ok, state}
@@ -133,6 +153,12 @@ defmodule RiichiAdvanced.LobbyState do
     {:noreply, state}
   end
 
+  def handle_cast({:toggle_mod, mod, enabled}, state) do
+    state = put_in(state.mods[mod].enabled, enabled)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
   def handle_cast({:get_up, socket_id}, state) do
     state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
     state = broadcast_state_change(state)
@@ -140,7 +166,10 @@ defmodule RiichiAdvanced.LobbyState do
   end
 
   def handle_cast(:start_game, state) do
-    mods = Map.get(state, :mods, [])
+    mods = Map.get(state, :mods, %{})
+    |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
+    |> Enum.sort_by(fn {_mod, opts} -> opts.index end)
+    |> Enum.map(fn {mod, _opts} -> mod end)
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->

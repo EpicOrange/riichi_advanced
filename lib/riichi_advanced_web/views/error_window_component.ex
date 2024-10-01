@@ -18,7 +18,9 @@ defmodule RiichiAdvancedWeb.ErrorWindowComponent do
   end
 
   def handle_event("dismiss_error", _assigns, socket) do
-    GenServer.cast(socket.assigns.game_state, :dismiss_error)
+    if socket.assigns.game_state != nil do
+      GenServer.cast(socket.assigns.game_state, :dismiss_error)
+    end
     {:noreply, socket}
   end
 end
