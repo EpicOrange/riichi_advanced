@@ -2,12 +2,9 @@ defmodule RiichiAdvanced.ModLoader do
 
   def apply_mod(mod_name, ruleset_json) do
     # apply mods
-    mod = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{mod_name <> ".jq"}")) do
-      {:ok, mod}     -> mod
-      {:error, _err} -> nil
-    end
-    IO.puts("Applying mod #{mod_name}: #{mod}")
-    ruleset_json = JQ.query_string!(ruleset_json, mod)
+    query_path = Application.app_dir(:riichi_advanced, "/priv/static/mods/#{mod_name <> ".jq"}")
+    IO.puts("Applying mod #{mod_name}")
+    ruleset_json = JQ.query_string!(ruleset_json, query_path)
     ruleset_json
   end
 

@@ -1,13 +1,13 @@
 defmodule JQ do
   alias JQ.{NoResultException, SystemCmdException, UnknownException}
 
-  def query_string!(payload, query) do
+  def query_string!(payload, query_path) do
     {fd, file_path} = Temp.open!(%{mode: [:write, :utf8]})
     IO.write(fd, payload)
     File.close(fd)
 
     try do
-      args = ["-c", query, file_path]
+      args = ["-cf", query_path, file_path]
       case System.cmd("jq", args, stderr_to_stdout: true) do
         {_, code} = error when is_integer(code) and code != 0 ->
           raise(SystemCmdException, result: error, command: "jq", args: args)
