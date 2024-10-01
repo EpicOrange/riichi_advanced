@@ -71,7 +71,8 @@ defmodule RiichiAdvanced.LobbyState do
         state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
         {state, %{}}
     end
-    mods = Map.get(rules, "eligible_mods", [])
+    default_mods = Map.get(rules, "default_mods", [])
+    mods = Map.get(rules, "available_mods", [])
 
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Lobby{
@@ -81,7 +82,7 @@ defmodule RiichiAdvanced.LobbyState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod, %{ enabled: false, index: i }} end)
+      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod, %{ enabled: mod in default_mods, index: i }} end)
     })
 
     {:ok, state}

@@ -15,7 +15,9 @@
   // sending it to me on Discord. Feel free to do that, by the way! For the
   // most part, all I need is the tiles, the scoring method, and the yaku.
 
-  "eligible_mods": [
+  "default_mods": [
+  ],
+  "available_mods": [
     "mega_riichi_bet"
   ],
   "wall": ["1m", "1m", "1m", "1m",
