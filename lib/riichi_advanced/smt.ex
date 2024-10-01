@@ -213,24 +213,25 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(solver_pid, joker_ixs, last_assignment \\ nil, result \\ []) do
-    if length(joker_ixs) == 0 do
-      [%{}]
-    else
-      contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i])})" end) end
-      contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
-      query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
-      smt = Enum.join([contra, "(check-sat)\n", query])
-      if @print_smt do
-        IO.puts(smt)
-      end
-      {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 5000)
-      case ExSMT.Solver.ResponseParser.parse(response) do
-        [:sat | assigns] ->
-          new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
-          obtain_all_solutions(solver_pid, joker_ixs, new_assignment, [new_assignment | result])
-        [:unsat | _] -> result
-      end
+  def obtain_all_solutions(solver_pid, joker_ixs, last_assignment \\ nil, result \\ [%{}]) do
+    cond do
+      length(joker_ixs) == 0 -> [%{}]
+      length(result) >= 100  -> result
+      true ->
+        contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i])})" end) end
+        contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
+        query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
+        smt = Enum.join([contra, "(check-sat)\n", query])
+        if @print_smt do
+          IO.puts(smt)
+        end
+        {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 5000)
+        case ExSMT.Solver.ResponseParser.parse(response) do
+          [:sat | assigns] ->
+            new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
+            obtain_all_solutions(solver_pid, joker_ixs, new_assignment, [new_assignment | result])
+          [:unsat | _] -> result
+        end
     end
   end
 
