@@ -791,7 +791,8 @@
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-      "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]]
+      "actions": [["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]],
+      "precedence_over": ["chii"]
     },
     "pon": {
       "display_name": "Pon",
@@ -799,7 +800,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]],
-      "precedence_over": ["chii"]
+      "precedence_over": ["chii", "pon"]
     },
     "daiminkan": {
       "display_name": "Kan",
@@ -814,7 +815,7 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
       ],
-      "precedence_over": ["chii", "pon"]
+      "precedence_over": ["chii", "pon", "daiminkan"]
     },
     "ankan": {
       "display_name": "Ankan",

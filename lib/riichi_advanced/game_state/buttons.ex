@@ -46,8 +46,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
   # then that seat is not considered to have button choices
   def no_buttons_remaining?(state) do
     Enum.all?(state.players, fn {seat, player} ->
-      superceded_choices = Actions.get_superceded_choices(state, seat)
-      Enum.all?(player.buttons, fn name -> Enum.member?(superceded_choices, name) end)
+      superceded_buttons = Actions.get_all_superceded_buttons(state, seat)
+      Enum.all?(player.buttons, fn name -> name in superceded_buttons end)
     end)
   end
 
