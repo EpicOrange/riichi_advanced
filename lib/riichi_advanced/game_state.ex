@@ -51,6 +51,7 @@ defmodule Game do
     south: nil,
     west: nil,
     north: nil,
+    messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
 
     # control variables
     game_active: false,
@@ -1163,6 +1164,22 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def push_message(state, message) do
+    for {_seat, messages_state} <- state.messages_states, messages_state != nil do
+      # IO.puts("Sending to #{inspect(messages_state)} the message #{inspect(message)}")
+      GenServer.cast(messages_state, {:add_message, message})
+    end
+    state
+  end
+
+  def push_messages(state, messages) do
+    for {_seat, messages_state} <- state.messages_states, messages_state != nil do
+      # IO.puts("Sending to #{inspect(messages_state)} the messages #{inspect(messages)}")
+      GenServer.cast(messages_state, {:add_messages, messages})
+    end
+    state
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
@@ -1192,7 +1209,13 @@ defmodule RiichiAdvanced.GameState do
         Map.put(state, seat, nil)
       else state end
 
+      # tell everyone else
+      state = push_message(state, %{text: "Player #{socket.assigns.nickname} joined as #{seat}"})
+
+      # initialize the player
       state = Map.put(state, seat, socket.id)
+      messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
+      state = put_in(state.messages_states[seat], messages_state)
       state = update_player(state, seat, &%Player{ &1 | nickname: socket.assigns.nickname })
       GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
@@ -1208,8 +1231,13 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:delete_player, seat}, _from, state) do
     state = Map.put(state, seat, nil)
+    state = put_in(state.messages_states[seat], nil)
     state = update_player(state, seat, &%Player{ &1 | nickname: nil })
     IO.puts("Player #{seat} exited")
+
+    # tell everyone else
+    state = push_message(state, %{text: "Player #{seat} #{state.players[seat].nickname} exited"})
+
     state = if Enum.all?([:east, :south, :west, :north], fn dir -> Map.get(state, dir) == nil || is_pid(Map.get(state, dir)) end) do
       # all players have left, shutdown
       IO.puts("Stopping game #{state.session_id}")

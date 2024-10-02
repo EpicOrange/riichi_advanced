@@ -62,12 +62,14 @@ defmodule RiichiAdvanced.MessagesState do
   end
 
   def handle_cast({:add_message, message}, state) do
+    IO.puts("Player #{state.socket_id} got message #{inspect(message)}")
     state = Map.update!(state, :messages, fn messages -> [message | messages] end)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:add_messages, msgs}, state) do
+    IO.puts("Player #{state.socket_id} got messages #{inspect(msgs)}")
     state = Map.update!(state, :messages, fn messages -> Enum.reverse(msgs) ++ messages end)
     state = broadcast_state_change(state)
     {:noreply, state}
@@ -102,8 +104,6 @@ defmodule RiichiAdvanced.MessagesState do
           [{messages_state, _}] = Registry.lookup(:game_registry, "messages_state-" <> socket.id)
           messages_state
       end
-      # subscribe to state updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
       # init a new player and get the current state
       [state] = GenServer.call(messages_state, {:new_player, socket})
       %{

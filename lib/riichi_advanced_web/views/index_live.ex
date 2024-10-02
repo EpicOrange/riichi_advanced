@@ -6,7 +6,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
-      GenServer.cast(messages_init.messages_state, {:add_message, %{color: "white", text: "Welcome to Riichi Advanced!"}})
+      GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
       socket
     else socket end
     {:ok, socket}

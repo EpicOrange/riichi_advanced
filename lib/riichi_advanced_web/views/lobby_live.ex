@@ -41,10 +41,10 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{color: "white", text: "Entered lobby"},
-          %{color: "white", bold: true, text: socket.assigns.session_id},
-          %{color: "white", text: "for variant"},
-          %{color: "white", bold: true, text: socket.assigns.ruleset}
+          %{text: "Entered lobby"},
+          %{bold: true, text: socket.assigns.session_id},
+          %{text: "for variant"},
+          %{bold: true, text: socket.assigns.ruleset}
         ]})
         socket
       else socket end
