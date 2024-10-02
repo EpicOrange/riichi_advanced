@@ -7,7 +7,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def render(assigns) do
     ~H"""
-    <div class="main-page">
+    <div id="container">
       <div class="title">
         <div class="title-riichi">Riichi</div>
         <div class="title-advanced">Advanced</div>
@@ -33,6 +33,9 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <br/>
         <button type="submit" class="enter-button">Enter</button>
       </form>
+      <div class="messages-container">
+        <div class="messages"></div>
+      </div>
     </div>
     """
   end

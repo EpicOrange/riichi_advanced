@@ -10,7 +10,7 @@ main {
   max-width: 90vw;
   max-height: 80vh;
   aspect-ratio: 1/1;
-  margin: 10vh auto;
+  margin: calc(2 * var(--tile-size)) auto;
 
   --tile-size: min(calc(90vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
@@ -31,14 +31,60 @@ main::before {
   height: calc(100% + var(--tile-size));
   z-index: -1;
 }
-main > div.container {
+main div#container {
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: -1;
   display: flex;
 }
-
+main div.messages-container {
+  width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
+  height: 100%;
+  position: absolute;
+  top: calc(-0.5 * var(--tile-size));
+  height: calc(100% + var(--tile-size));
+  display: flex;
+}
+main div.messages-container > div.messages {
+  position: absolute;
+  background: #3f3f3f;
+  border-radius: calc(0.25 * var(--tile-size));
+  color: white;
+  width: 100%;
+  height: 100%;
+  white-space: wrap;
+  border: none;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+}
+/* landscape */
+@media (min-aspect-ratio: 1.2/1) {
+  main::before {
+    left: calc(-20% + -0.5 * var(--tile-size));
+  }
+  main div#container {
+    left: -20%;
+  }
+  main div.messages-container {
+    left: calc(100% + var(--tile-size));
+  }
+}
+/* portrait (mobile) */
+@media (max-aspect-ratio: 1.2/1) {
+  main {
+    max-height: 60vh;
+    --tile-size: min(calc(90vw / 16), calc(60vh / 16));
+  }
+  /* CSS rules for viewports where the height is greater than the width */
+  main div.messages-container {
+    left: calc(-0.5 * var(--tile-size));
+    top: calc(100% + var(--tile-size));
+    width: calc(100% + var(--tile-size));
+    height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
+  }
+}
 
 /* hands */
 div.hand, div.tiles, div.calls, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
@@ -1528,7 +1574,7 @@ div.title > div.title-advanced::before {
   z-index: -1;
 }
 
-div.main-page > form {
+div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
   top: calc(50% - 1 * var(--tile-size));
@@ -1537,7 +1583,7 @@ div.main-page > form {
   border-radius: calc(0.25 * var(--tile-size));
   background: #FFFFFF3F;
 }
-div.main-page > form, div.main-page > form * {
+div#container > form, div#container > form * {
   font-size: calc(0.75 * var(--tile-size));
 }
 

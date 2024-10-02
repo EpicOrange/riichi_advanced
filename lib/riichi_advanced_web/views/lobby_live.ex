@@ -91,6 +91,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <% end %>
       </div>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
+      <div class="messages-container">
+        <div class="messages"></div>
+      </div>
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>

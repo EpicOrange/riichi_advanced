@@ -74,7 +74,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <div id="container" class="container" phx-hook="ClickListener">
+    <div id="container" phx-hook="ClickListener">
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
@@ -195,6 +195,9 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="status-text" :for={status <- player.status}><%= status %></div>
         </div>
       <% end %>
+      <div class="messages-container">
+        <div class="messages"></div>
+      </div>
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
