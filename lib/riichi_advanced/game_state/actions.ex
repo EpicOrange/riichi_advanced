@@ -34,6 +34,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         last_discard: {tile, index}
       })
       state = update_action(state, seat, :discard, %{tile: tile})
+      state = push_message(state, [
+        %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
+        Utils.pt(tile)
+      ])
 
       # check if it completes second row discards
       state = if Map.has_key?(state, :saki) do
@@ -172,7 +176,14 @@ defmodule RiichiAdvanced.GameState.Actions do
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
     state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [call] })
-    state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+    state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+    state = push_message(state, [
+      %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+      %{bold: true, text: "#{call_name}"},
+      %{text: " on "},
+      Utils.pt(called_tile),
+      %{text: " with "}
+    ] ++ Utils.ph(call_choice))
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state = if Map.has_key?(state.rules, "after_call") do
       run_actions(state, state.rules["after_call"]["actions"], %{seat: seat, callee: state.turn, caller: seat, call: call})
@@ -249,6 +260,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     marked_objects = state.marking[context.seat]
     state = case action do
       "noop"                  -> state
+      "push_message"          -> push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil))
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)

@@ -213,7 +213,7 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(solver_pid, joker_ixs, last_assignment \\ nil, result \\ [%{}]) do
+  def obtain_all_solutions(solver_pid, joker_ixs, last_assignment \\ nil, result \\ []) do
     cond do
       length(joker_ixs) == 0 -> [%{}]
       length(result) >= 100  -> result

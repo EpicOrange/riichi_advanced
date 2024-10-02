@@ -370,6 +370,15 @@ defmodule RiichiAdvanced.GameState do
       minipoint_name: Map.get(state.rules, "minipoint_name", ""),
     }
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+
+    state = push_message(state, [
+      %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+      %{bold: true, text: "#{String.downcase(winning_tile_text)}"},
+      %{text: " on "},
+      Utils.pt(winning_tile),
+      %{text: " with hand "}
+    ] ++ Utils.ph(Utils.sort_tiles(state.players[seat].hand)))
+
     state = if Map.has_key?(state.rules, "score_calculation") do
         if Map.has_key?(state.rules["score_calculation"], "method") do
           state
@@ -570,6 +579,8 @@ defmodule RiichiAdvanced.GameState do
   def exhaustive_draw(state) do
     state = Map.put(state, :round_result, :draw)
 
+    state = push_message(state, [%{text: "Game ended by exhaustive draw"}])
+
     # run before_exhaustive_draw actions
     state = if Map.has_key?(state.rules, "before_exhaustive_draw") do
       Actions.run_actions(state, state.rules["before_exhaustive_draw"]["actions"], %{seat: state.turn})
@@ -595,6 +606,8 @@ defmodule RiichiAdvanced.GameState do
   def abortive_draw(state, draw_name) do
     state = Map.put(state, :round_result, :draw)
     IO.puts("Abort")
+
+    state = push_message(state, [%{text: "Game ended by abortive draw (#{draw_name})"}])
 
     # run before_abortive_draw actions
     state = if Map.has_key?(state.rules, "before_abortive_draw") do

@@ -14,6 +14,7 @@
     ["big_text", "Open Riichi"],
     ["reveal_hand"],
     ["set_status", "riichi", "open_riichi", "just_reached"],
+    ["push_message", "declared open riichi"],
     ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
   ]
 }

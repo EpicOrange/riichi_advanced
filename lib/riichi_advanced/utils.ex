@@ -33,6 +33,28 @@ defmodule Utils do
              :"11z"=>:"11z", :"12z"=>:"12z", :"13z"=>:"13z", :"14z"=>:"14z", :"15z"=>:"15z", :"16z"=>:"16z", :"17z"=>:"17z"}
   def to_tile(tile_str), do: @to_tile[tile_str]
 
+  @tile_color %{:"1m"=>"pink", :"2m"=>"pink", :"3m"=>"pink", :"4m"=>"pink", :"5m"=>"pink", :"6m"=>"pink", :"7m"=>"pink", :"8m"=>"pink", :"9m"=>"pink", :"0m"=>"pink",
+                :"1p"=>"lightblue", :"2p"=>"lightblue", :"3p"=>"lightblue", :"4p"=>"lightblue", :"5p"=>"lightblue", :"6p"=>"lightblue", :"7p"=>"lightblue", :"8p"=>"lightblue", :"9p"=>"lightblue", :"0p"=>"lightblue",
+                :"1s"=>"lightgreen", :"2s"=>"lightgreen", :"3s"=>"lightgreen", :"4s"=>"lightgreen", :"5s"=>"lightgreen", :"6s"=>"lightgreen", :"7s"=>"lightgreen", :"8s"=>"lightgreen", :"9s"=>"lightgreen", :"0s"=>"lightgreen",
+                :"1z"=>"white", :"2z"=>"white", :"3z"=>"white", :"4z"=>"white", :"5z"=>"white", :"6z"=>"white", :"7z"=>"white", :"0z"=>"white",
+                :"1x"=>"orange", :"2x"=>"orange",
+                :"1f"=>"white", :"2f"=>"white", :"3f"=>"white", :"4f"=>"white",
+                :"1g"=>"white", :"2g"=>"white", :"3g"=>"white", :"4g"=>"white",
+                :"1a"=>"white", :"2a"=>"white", :"3a"=>"white", :"4a"=>"white",
+                :"1y"=>"white", :"2y"=>"white",
+                :"1j"=>"white", :"2j"=>"white", :"3j"=>"white", :"4j"=>"white", :"5j"=>"white", :"6j"=>"white", :"7j"=>"white", :"8j"=>"white", :"9j"=>"white", :"10j"=>"white",
+                :"1k"=>"white", :"2k"=>"white", :"3k"=>"white", :"4k"=>"white",
+                :"1q"=>"white", :"2q"=>"white", :"3q"=>"white", :"4q"=>"white",
+                :"11m"=>"cyan", :"12m"=>"cyan", :"13m"=>"cyan", :"14m"=>"cyan", :"15m"=>"cyan", :"16m"=>"cyan", :"17m"=>"cyan", :"18m"=>"cyan", :"19m"=>"cyan",
+                :"11p"=>"cyan", :"12p"=>"cyan", :"13p"=>"cyan", :"14p"=>"cyan", :"15p"=>"cyan", :"16p"=>"cyan", :"17p"=>"cyan", :"18p"=>"cyan", :"19p"=>"cyan",
+                :"11s"=>"cyan", :"12s"=>"cyan", :"13s"=>"cyan", :"14s"=>"cyan", :"15s"=>"cyan", :"16s"=>"cyan", :"17s"=>"cyan", :"18s"=>"cyan", :"19s"=>"cyan",
+                :"11z"=>"cyan", :"12z"=>"cyan", :"13z"=>"cyan", :"14z"=>"cyan", :"15z"=>"cyan", :"16z"=>"cyan", :"17z"=>"cyan"}
+  def tile_color(tile), do: @tile_color[tile]
+
+  # print tile, print hand
+  def pt(tile), do: %{bold: true, color: tile_color(tile), text: "#{tile}"}
+  def ph(tiles), do: Enum.map(tiles, &pt/1)
+
   def sort_value(tile) do
     case tile do
       :"1m" ->  10; :"2m" ->  20; :"3m" ->  30; :"4m" ->  40; :"0m" ->  50; :"5m" ->  51; :"6m" ->  60; :"7m" ->  70; :"8m" ->  80; :"9m" ->  90;

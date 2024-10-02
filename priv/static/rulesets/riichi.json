@@ -914,6 +914,7 @@
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached"],
+        ["push_message", "declared riichi"],
         ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
       ]
     },
