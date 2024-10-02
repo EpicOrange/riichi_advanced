@@ -404,10 +404,14 @@ defmodule RiichiAdvanced.GameState do
           {score, points, yakuman_mult} = Scoring.score_yaku(state, seat, yaku, yakuman, win_source == :draw, minipoints)
           IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}")
           han = Integer.to_string(points)
+          fu = Integer.to_string(minipoints)
           score_name = if yakuman_mult > 0 do
             scoring_table["yakuman_limit_hand_name"]
           else
-            Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"])
+            case Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"]) do
+              score_name when is_binary(score_name) -> score_name
+              score_name_table                      -> Map.get(score_name_table, fu, score_name_table["max"])
+            end
           end
           {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name}
         end |> Enum.sort_by(fn {_, _, _, _, score, _, _, _} -> score end) |> Enum.at(-1)

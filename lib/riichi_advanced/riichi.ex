@@ -555,8 +555,8 @@ defmodule Riichi do
           tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           if tile1 in winning_tiles do [tile1_fu] else [] end ++ if tile2 in winning_tiles do [tile2_fu] else [] end
-        length(hand) == 4 && num_pairs == 0                    -> [fu]
-        length(hand) == 7 && num_pairs == 1                    ->
+        length(starting_hand) == 12 && length(hand) == 4 && num_pairs == 0 -> [fu]
+        length(starting_hand) == 12 && length(hand) == 7 && num_pairs == 1 ->
           pair_fu = Enum.frequencies(hand)
           |> Enum.filter(fn {_tile, freq} -> freq == 2 end)
           |> Enum.map(fn {tile, _freq} -> calculate_pair_fu(tile, seat_wind, round_wind) end)
