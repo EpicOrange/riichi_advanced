@@ -1509,11 +1509,32 @@
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, {"name": "status", "opts": ["ikeda-kana"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}],
+      "show_when": [
+        "our_turn",
+        {"name": "not_status", "opts": ["match_start"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        {"name": "status", "opts": ["ikeda-kana"]},
+        "has_draw",
+        {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]},
+        {"name": "has_score", "opts": [5000]},
+        "next_draw_possible",
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
+      ],
       "actions": [
         ["big_text", "Inazuma Riichi"],
         ["set_status", "inazuma_riichi", "just_reached", "ippatsu"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
+          ["add_score", -5000],
+          ["put_down_riichi_stick"],
+          ["put_down_riichi_stick"],
+          ["put_down_riichi_stick"],
+          ["put_down_riichi_stick"],
+          ["put_down_riichi_stick"],
+          ["pause", 1000],
+          ["abortive_draw", "Suucha Riichi"]
+        ]]
       ]
     },
     "kataoka_yuuki": {
@@ -1780,7 +1801,14 @@
     "riichi": {
       "display_name": "Riichi",
       "show_when": [
-        "our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "has_draw", {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]}, "next_draw_possible", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        "our_turn",
+        {"name": "not_status", "opts": ["match_start"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "has_draw",
+        {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]},
+        {"name": "has_score", "opts": [1000]},
+        "next_draw_possible",
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         [
           {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]},
           [
