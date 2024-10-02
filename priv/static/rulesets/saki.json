@@ -1170,9 +1170,9 @@
     [["any"], ["all_saki_cards_drafted"]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["senoo-kaori"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_wraps", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_hseq", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand_hseq_w", "opts": ["tenpai", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai_wrapping", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai_honorseq", "kokushi_tenpai"]}]]],
+    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["senoo-kaori"]}, {"name": "status_missing", "opts": ["mase-yuuko"]}, {"name": "unneeded_for_hand", "opts": ["tenpai_wrapping_honorseq", "kokushi_tenpai"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
     [["any"], [{"name": "not_tagged", "opts": ["tile", "no_discard"]}]]
     // [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
