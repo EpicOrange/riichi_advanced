@@ -1,5 +1,4 @@
-(.before_turn_change.actions | map(. as $e | if type == "array" and $e[0] == "unset_status" and ($e | index("kan")) then true else false end)
-  | index(true)) as $idx
+(.before_turn_change.actions | map(type == "array" and .[0] == "unset_status" and (. | index("kan"))) | index(true)) as $idx
 | 
 .before_turn_change.actions |= 
 (
