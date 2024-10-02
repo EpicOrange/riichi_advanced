@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.GameState do
           IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}")
           han = Integer.to_string(points)
           score_name = if yakuman_mult > 0 do
-            scoring_table["limit_hand_names"]["max"]
+            scoring_table["yakuman_limit_hand_name"]
           else
             Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"])
           end
