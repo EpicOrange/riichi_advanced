@@ -69,12 +69,18 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           <button class="get-up-button" phx-cancellable-click="get_up">Get up</button>
         <% end %>
         <%= if not Enum.all?(@state.seats, fn {_seat, player} -> player == nil end) do %>
-          <button class="start-game-button" phx-cancellable-click="start_game">
-            Start game
-            <%= if nil in Map.values(@state.seats) do %>
-            (with AI)
-            <% end %>
-          </button>
+          <%= if @state.starting do %>
+            <button class="start-game-button">
+              Starting game...
+            </button>
+          <% else %>
+            <button class="start-game-button" phx-cancellable-click="start_game">
+              Start game
+              <%= if nil in Map.values(@state.seats) do %>
+              (with AI)
+              <% end %>
+            </button>
+          <% end %>
         <% end %>
       </div>
       <div class="mods">

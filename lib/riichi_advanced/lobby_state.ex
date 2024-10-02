@@ -24,6 +24,7 @@ defmodule Lobby do
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     players: %{},
     shuffle: false,
+    starting: false,
     started: false,
     mods: %{}
   ]
@@ -192,6 +193,8 @@ defmodule RiichiAdvanced.LobbyState do
   end
 
   def handle_cast(:start_game, state) do
+    state = Map.put(state, :starting, true)
+    state = broadcast_state_change(state)
     mods = Map.get(state, :mods, %{})
     |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
     |> Enum.sort_by(fn {_mod, opts} -> opts.index end)
@@ -210,10 +213,12 @@ defmodule RiichiAdvanced.LobbyState do
       {:error, {:shutdown, error}} ->
         IO.puts("Error when starting game session #{state.session_id}")
         IO.inspect(error)
+        state = Map.put(state, :starting, false)
         state
       {:error, {:already_started, _pid}} ->
         IO.puts("Already started game session #{state.session_id}")
         state = show_error(state, "A game session for this variant with this same room ID is already in play -- please leave the lobby and try entering it directly!")
+        state = Map.put(state, :starting, false)
         state
     end
     state = broadcast_state_change(state)
