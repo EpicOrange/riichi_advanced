@@ -53,7 +53,7 @@
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "three_dora_start", "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
     {"id": "calls_are_forced", "name": "Calls Are Forced", "desc": "Make all calls unskippable, including riichi."},
-    {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman scoring hands."}
+    {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."}
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",

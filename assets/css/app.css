@@ -1584,7 +1584,7 @@ div.lobby > div.seats > div.player-slot {
   position: relative;
   width: 20%;
 }
-div.lobby > div.seats > div.player-slot > button,
+div.lobby > div.seats > div.player-slot > .player-slot-button,
 div.lobby > div.seats-buttons > button {
   background: var(--tile-front);
   color: black;
@@ -1593,8 +1593,14 @@ div.lobby > div.seats-buttons > button {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: center;
+  flex-direction: column;
 }
-div.lobby > div.seats > div.player-slot > button {
+div.lobby > div.seats > div.player-slot > .player-slot-button {
   position: absolute;
   top: calc(0.45 * var(--tile-size));
   background: var(--tile-front);
@@ -1606,18 +1612,21 @@ div.lobby > div.seats > div.player-slot > button {
   cursor: pointer;
   font-size: calc(0.5 * var(--tile-size));
   width: 100%;
+  height: calc(0.6 * var(--tile-size));
 }
 div.lobby > div.seats > div.player-slot > div.player-slot-label {
   position: absolute;
   top: calc(-0.55 * var(--tile-size));
-  width: 100%;
   text-align: center;
   font-size: calc(0.75 * var(--tile-size));
   color: white;
+  width: 100%;
 }
-div.lobby > div.seats > div.player-slot.filled > button {
+div.lobby > div.seats > div.player-slot.filled > .player-slot-button {
   filter: none;
+  cursor: default;
   font-size: calc(0.35 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
 }
 div.lobby > div.seats > div.player-slot > button:active,
 div.lobby > div.seats-buttons > button:active {

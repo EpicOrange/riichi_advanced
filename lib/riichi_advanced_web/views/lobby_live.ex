@@ -50,16 +50,17 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       </header>
       <div class="seats">
         <%= for seat <- [:east, :south, :west, :north] do %>
-          <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
-            <button phx-cancellable-click="sit" phx-value-seat={seat}>
-              <%= if @state.seats[seat] != nil do %>
-                <%= @state.seats[seat].nickname %>
-              <% else %>
-                Sit
-              <% end %>
-            </button>
-            <div class="player-slot-label"><%= seat %></div>
-          </div>
+          <%= if @state.seats[seat] != nil do %>
+            <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
+              <div class="player-slot-button"><%= @state.seats[seat].nickname %></div>
+              <div class="player-slot-label"><%= seat %></div>
+            </div>
+          <% else %>
+            <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
+              <button class="player-slot-button" phx-cancellable-click="sit" phx-value-seat={seat}>Sit</button>
+              <div class="player-slot-label"><%= seat %></div>
+            </div>
+          <% end %>
         <% end %>
       </div>
       <div class="seats-buttons">
