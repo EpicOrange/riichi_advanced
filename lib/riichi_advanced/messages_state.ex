@@ -62,14 +62,14 @@ defmodule RiichiAdvanced.MessagesState do
   end
 
   def handle_cast({:add_message, message}, state) do
-    IO.puts("Player #{state.socket_id} got message #{inspect(message)}")
+    # IO.puts("Player #{state.socket_id} got message #{inspect(message)}")
     state = Map.update!(state, :messages, fn messages -> [message | messages] end)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:add_messages, msgs}, state) do
-    IO.puts("Player #{state.socket_id} got messages #{inspect(msgs)}")
+    # IO.puts("Player #{state.socket_id} got messages #{inspect(msgs)}")
     state = Map.update!(state, :messages, fn messages -> Enum.reverse(msgs) ++ messages end)
     state = broadcast_state_change(state)
     {:noreply, state}
