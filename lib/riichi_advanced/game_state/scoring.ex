@@ -399,6 +399,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
           map_size(state.winners) == 3 -> "Triple Ron"
         end
 
+        {state, delta_scores, delta_scores_reason} = if Map.get(scoring_table, "triple_ron_draw", false) && map_size(state.winners) == 3 do
+          state = Map.put(state, :winners, %{})
+          delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+          delta_scores_reason = "Sanchahou"
+          {state, delta_scores, delta_scores_reason}
+        else {state, delta_scores, delta_scores_reason} end
+
         next_dealer = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do :self else :shimocha end
         {state, delta_scores, delta_scores_reason, next_dealer}
       "hk" ->
