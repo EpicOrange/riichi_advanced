@@ -45,7 +45,8 @@
     {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "three_dora_start", "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
-    {"id": "calls_are_forced", "name": "Calls Are Forced", "desc": "Make all calls unskippable."}
+    {"id": "calls_are_forced", "name": "Calls Are Forced", "desc": "Make all calls unskippable."},
+    {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman scoring hands."}
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -885,7 +886,7 @@
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        "has_yaku_with_discard"
+        ["has_han_with_discard", "has_yakuman_with_discard"]
       ],
       "actions": [
         ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"],
@@ -931,7 +932,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        "has_yaku_with_hand"
+        ["has_han_with_hand", "has_yakuman_with_hand"]
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"],
