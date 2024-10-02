@@ -16,6 +16,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:nickname, params["nickname"])
     |> assign(:seat_param, params["seat"])
     |> assign(:game_state, nil)
+    |> assign(:messages, [])
     |> assign(:state, %Game{})
     |> assign(:seat, :east)
     |> assign(:shimocha, nil)
@@ -66,6 +67,14 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       |> assign(:loading, false)
       |> assign(:marking, GenServer.call(game_state, {:needs_marking?, seat}))
+
+      # fetch messages
+      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      socket = if Map.has_key?(messages_init, :messages_state) do
+        socket = assign(socket, :messages_state, messages_init.messages_state)
+        GenServer.cast(messages_init.messages_state, {:add_message, %{color: "white", text: "Entered game"}})
+        socket
+      else socket end
       {:ok, socket}
     else
       {:ok, socket}
@@ -195,9 +204,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="status-text" :for={status <- player.status}><%= status %></div>
         </div>
       <% end %>
-      <div class="messages-container">
-        <div class="messages"></div>
-      </div>
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
@@ -309,6 +316,15 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       socket = assign(socket, :state, state)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
+    if topic == "messages:" <> socket.id do
+      socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else
       {:noreply, socket}

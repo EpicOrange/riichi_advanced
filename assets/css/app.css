@@ -58,6 +58,11 @@ main div.messages-container > div.messages {
   display: flex;
   flex-direction: column-reverse;
   overflow-y: auto;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+main div.messages-container > div.messages span.bold {
+  font-weight: 800;
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {

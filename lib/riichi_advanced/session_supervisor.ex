@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.GameSessionSupervisor do
+defmodule RiichiAdvanced.SessionSupervisor do
   use DynamicSupervisor
 
   def start_link(opts) do

@@ -9,6 +9,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:lobby_state, nil)
+    |> assign(:messages, [])
     |> assign(:state, %Lobby{})
     if socket.root_pid != nil do
       # start a new lobby process, if it doesn't exist already
@@ -34,6 +35,19 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       socket = socket
       |> assign(:lobby_state, lobby_state)
       |> assign(:state, state)
+
+      # fetch messages
+      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      socket = if Map.has_key?(messages_init, :messages_state) do
+        socket = assign(socket, :messages_state, messages_init.messages_state)
+        GenServer.cast(messages_init.messages_state, {:add_message, [
+          %{color: "white", text: "Entered lobby"},
+          %{color: "white", bold: true, text: socket.assigns.session_id},
+          %{color: "white", text: "for variant"},
+          %{color: "white", bold: true, text: socket.assigns.ruleset}
+        ]})
+        socket
+      else socket end
       {:ok, socket}
     else
       {:ok, socket}
@@ -91,9 +105,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <% end %>
       </div>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
-      <div class="messages-container">
-        <div class="messages"></div>
-      </div>
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
@@ -149,6 +161,15 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         end
         push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
       else socket end
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
+    if topic == "messages:" <> socket.id do
+      socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else
       {:noreply, socket}

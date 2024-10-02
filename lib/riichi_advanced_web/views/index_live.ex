@@ -2,6 +2,13 @@ defmodule RiichiAdvancedWeb.IndexLive do
   use RiichiAdvancedWeb, :live_view
 
   def mount(_params, _session, socket) do
+    socket = assign(socket, :messages, [])
+    messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+    socket = if Map.has_key?(messages_init, :messages_state) do
+      socket = assign(socket, :messages_state, messages_init.messages_state)
+      GenServer.cast(messages_init.messages_state, {:add_message, %{color: "white", text: "Welcome to Riichi Advanced!"}})
+      socket
+    else socket end
     {:ok, socket}
   end
 
@@ -33,9 +40,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <br/>
         <button type="submit" class="enter-button">Enter</button>
       </form>
-      <div class="messages-container">
-        <div class="messages"></div>
-      </div>
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
     </div>
     """
   end
@@ -50,5 +55,14 @@ defmodule RiichiAdvancedWeb.IndexLive do
       end
     else socket end
     {:noreply, socket}
+  end
+
+  def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
+    if topic == "messages:" <> socket.id do
+      socket = assign(socket, :messages, state.messages)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 end

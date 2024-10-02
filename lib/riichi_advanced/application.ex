@@ -12,12 +12,13 @@ defmodule RiichiAdvanced.Application do
       RiichiAdvanced.Repo,
       {Registry, keys: :unique, name: :game_registry},
       RiichiAdvanced.ETSCache,
-      {RiichiAdvanced.GameSessionSupervisor, name: RiichiAdvanced.GameSessionSupervisor},
-      {RiichiAdvanced.LobbySessionSupervisor, name: RiichiAdvanced.LobbySessionSupervisor},
+      Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.GameSessionSupervisor}, id: :game_session_supervisor),
+      Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.LobbySessionSupervisor}, id: :lobby_session_supervisor),
+      Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.MessagesSessionSupervisor}, id: :messages_session_supervisor),
       {DNSCluster, query: Application.get_env(:riichi_advanced, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: RiichiAdvanced.PubSub},
       # Start the Finch HTTP client for sending emails
-      {Finch, name: RiichiAdvanced.Finch},
+      # {Finch, name: RiichiAdvanced.Finch},
       # Start a worker by calling: RiichiAdvanced.Worker.start_link(arg)
       # {RiichiAdvanced.Worker, arg},
       # Start to serve requests, typically the last entry
