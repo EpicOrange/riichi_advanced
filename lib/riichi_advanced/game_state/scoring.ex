@@ -51,7 +51,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-      minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+      minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, assigned_winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
       points = for yaku <- yaku_list, reduce: 0 do
         points when points >= min_points -> points
         points -> case get_yaku(state, [yaku], seat, assigned_winning_tile, win_source, minipoints) do

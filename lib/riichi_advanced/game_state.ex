@@ -1047,7 +1047,7 @@ defmodule RiichiAdvanced.GameState do
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
         Enum.all?(winning_hand ++ [winning_tile], fn tile -> Enum.any?([tile] ++ Map.get(tile_mappings, tile, []), fn t -> t in tiles end) end)
-      "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && state.saki.all_drafted
+      "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)
           name          -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end)

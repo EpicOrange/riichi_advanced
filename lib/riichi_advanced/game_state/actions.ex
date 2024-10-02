@@ -209,12 +209,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  defp draft_saki_card(state, seat, choice) do
-    state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
-    state = Saki.check_if_all_drafted(state)
-    state
-  end
-
   defp do_charleston(state, dir, seat, marked_objects) do
     if Enum.any?(state.players, fn {seat, _} -> Marking.needs_marking?(state, seat) end) do
       # defer until everyone is done marking
@@ -268,7 +262,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "self_call"             -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
       "upgrade_call"          -> upgrade_call(state, context.seat, context.call_name, context.call_choice, context.called_tile)
       "flower"                -> trigger_call(state, context.seat, context.call_name, context.call_choice, nil, :hand)
-      "draft_saki_card"       -> draft_saki_card(state, context.seat, context.choice)
+      "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice)
       "advance_turn"          -> advance_turn(state)
       "change_turn"           -> 
         seat = case Enum.at(opts, 0, "self") do

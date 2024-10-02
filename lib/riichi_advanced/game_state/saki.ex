@@ -56,7 +56,6 @@ defmodule RiichiAdvanced.GameState.Saki do
       version: state.rules["saki_ver"],
       saki_deck: Enum.shuffle(state.rules["saki_deck"]),
       saki_deck_index: 0,
-      all_drafted: if Map.has_key?(state, :saki) do state.saki.all_drafted else false end,
       just_finished_second_row_discards: false,
       already_finished_second_row_discards: false
     })
@@ -71,12 +70,9 @@ defmodule RiichiAdvanced.GameState.Saki do
     {state, cards}
   end
 
-  def check_if_all_drafted(state) do
-    all_drafted = Enum.all?(state.players, fn {_seat, player} ->
-      Enum.any?(player.status, fn status -> status in @supported_cards end)
-    end)
-    if all_drafted do
-      state = Map.update!(state, :saki, &Map.put(&1, :all_drafted, true))
+  def draft_saki_card(state, seat, choice) do
+    state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
+    state = if check_if_all_drafted(state) do
       state = Map.put(state, :game_active, true)
 
       # run after_saki_start actions
@@ -88,6 +84,13 @@ defmodule RiichiAdvanced.GameState.Saki do
       notify_ai(state)
       state
     else state end
+    state
+  end
+
+  def check_if_all_drafted(state) do
+    Enum.all?(state.players, fn {_seat, player} ->
+      Enum.any?(player.status, fn status -> status in @supported_cards end)
+    end)
   end
 
   def filter_cards(statuses) do

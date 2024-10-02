@@ -13,7 +13,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
       <div class="round-marker" :if={@seat == :east}>
         <%= Utils.get_wind_name(Riichi.get_round_wind(@kyoku)) %>
       </div>
-      <%= if @saki != nil && Map.has_key?(@saki, :all_drafted) && @saki.all_drafted do %>
+      <%= if @saki != nil && @all_drafted do %>
         <div class="saki-cards">
           <div class={["saki-card", @saki.version, card]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>

@@ -1,4 +1,9 @@
 {
+  "default_mods": [],
+  "available_mods": [
+    {"id": "persistent_saki_cards", "name": "Persistent Cards", "desc": "The character card you choose at the beginning is your card for the whole game."}
+  ],
+
   "enable_saki_cards": true,
   "saki_ver": "v12",
   "saki_deck": [
@@ -24,6 +29,21 @@
     "takei-hisa",
     "takimi-haru",
     "toyouko-momoko",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
+    "yumeno-maho",
     "yumeno-maho"
   ],
   "wall": ["1m", "1m", "1m", "1m",
@@ -2182,30 +2202,5 @@
   "display_honba": true,
   "initial_score": 30000,
   "starting_tiles": 13,
-  "max_rounds": 8,
-  "persistent_statuses": [
-    "atarashi-ako",
-    "choe-myeonghwa",
-    "haramura-nodoka",
-    "ikeda-kana",
-    "jindai-komaki",
-    "kakura-kurumi",
-    "kataoka-yuuki",
-    "mase-yuuko",
-    "matano-seiko",
-    "matsumi-yuu",
-    "miyanaga-saki",
-    "miyanaga-teru",
-    "nanpo-kazue",
-    "onjouji-toki",
-    "sagimori-arata",
-    "sawamura-tomoki",
-    "senoo-kaori",
-    "shibuya-takami",
-    "takakamo-shizuno",
-    "takei-hisa",
-    "takimi-haru",
-    "toyouko-momoko",
-    "yumeno-maho"
-  ]
+  "max_rounds": 8
 }
