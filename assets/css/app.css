@@ -85,7 +85,7 @@ main div.messages-container > div.messages span.bold {
   /* CSS rules for viewports where the height is greater than the width */
   main div.messages-container {
     left: calc(-0.5 * var(--tile-size));
-    top: calc(100% + var(--tile-size));
+    top: calc(100% + 1.25 * var(--tile-size));
     width: calc(100% + var(--tile-size));
     height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
   }
