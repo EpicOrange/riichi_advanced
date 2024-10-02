@@ -977,6 +977,7 @@ defmodule RiichiAdvanced.GameState do
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
       "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index <= 0
       "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
+      "has_score"                -> state.players[context.seat].score >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->
         draws_left = length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
         case Utils.get_relative_seat(context.seat, state.turn) do
