@@ -1,4 +1,4 @@
-# add ippatsu yaku
+# add ippatsu yaku after riichi
 (.yaku | map(.display_name == "Riichi") | index(true)) as $ix
 |
 .yaku |= .[:$ix+1] + [
