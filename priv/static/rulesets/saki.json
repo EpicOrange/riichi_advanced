@@ -1668,7 +1668,7 @@
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
-      "precedence_over": ["chii"]
+      "precedence_over": ["chii", "pon"]
     },
     "daiminkan": {
       "display_name": "Kan",
@@ -1700,7 +1700,7 @@
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
-      "precedence_over": ["chii", "pon"]
+      "precedence_over": ["chii", "pon", "daiminkan"]
     },
     "ankan": {
       "display_name": "Ankan",

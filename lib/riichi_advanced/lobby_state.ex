@@ -86,7 +86,14 @@ defmodule RiichiAdvanced.LobbyState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod["id"], %{ enabled: mod["id"] in default_mods, index: i, name: mod["name"], desc: mod["desc"], deps: Map.get(mod, "deps", []) }} end),
+      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod["id"], %{
+        enabled: mod["id"] in default_mods,
+        index: i,
+        name: mod["name"],
+        desc: mod["desc"],
+        deps: Map.get(mod, "deps", []),
+        conflicts: Map.get(mod, "conflicts", [])
+      }} end),
     })
 
     {:ok, state}
@@ -160,18 +167,20 @@ defmodule RiichiAdvanced.LobbyState do
 
   def handle_cast({:toggle_mod, mod, enabled}, state) do
     state = put_in(state.mods[mod].enabled, enabled)
-    # enable dependencies
-    state = if enabled == true do
-      for dep <- state.mods[mod].deps, reduce: state do
+    state = if enabled do
+      # enable dependencies and disable conflicting mods
+      state = for dep <- state.mods[mod].deps, reduce: state do
         state -> put_in(state.mods[dep].enabled, true)
       end
-    else state end
-    # disable dependent mods
-    state = if enabled == false do
+      for conflict <- state.mods[mod].conflicts, reduce: state do
+        state -> put_in(state.mods[conflict].enabled, false)
+      end
+    else
+      # disable dependent mods
       for {dep, opts} <- state.mods, mod in opts.deps, reduce: state do
         state -> put_in(state.mods[dep].enabled, false)
       end
-    else state end
+    end
     state = broadcast_state_change(state)
     {:noreply, state}
   end
