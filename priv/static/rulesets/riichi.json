@@ -20,7 +20,10 @@
     "ippatsu",
     "nagashi",
     "tobi",
-    "suucha_riichi"
+    "suufon_renda",
+    "suucha_riichi",
+    "suukaikan",
+    "kyuushu_kyuuhai"
   ],
   "available_mods": [
     {"id": "dora", "name": "Dora", "desc": "Enables dora."},
@@ -30,7 +33,10 @@
     {"id": "ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
     {"id": "nagashi", "name": "Nagashi", "desc": "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
+    {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
     {"id": "suucha_riichi", "name": "Suucha Riichi", "desc": "Enable 4 riichi abortive draw."},
+    {"id": "suukaikan", "name": "Suukaikan", "desc": "Enable 4 kan abortive draw."},
+    {"id": "kyuushu_kyuuhai", "name": "Kyuushu Kyuuhai", "desc": "Enable 9 distinct terminal/honor abortive draw."},
     {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
     {"id": "galaxy", "name": "Galaxy Mahjong", "desc": "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
     {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
@@ -143,9 +149,6 @@
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13]
     ]
-  ],
-  "kyuushu_kyuuhai_definition": [
-    [ "unique", [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9] ]
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
@@ -708,8 +711,7 @@
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
-                ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]]
+                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]]
                ]
   },
   "after_turn_change": {
@@ -764,22 +766,6 @@
                ]
   },
   "play_effects": [
-    ["1z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
-      ["set_status", "suufonrenda_1z"],
-      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_1z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
-    ]]]],
-    ["2z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
-      ["set_status", "suufonrenda_2z"],
-      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_2z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
-    ]]]],
-    ["3z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
-      ["set_status", "suufonrenda_3z"],
-      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_3z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
-    ]]]],
-    ["4z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
-      ["set_status", "suufonrenda_4z"],
-      ["when", [{"name": "everyone_status", "opts": ["suufonrenda_4z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
-    ]]]],
     ["any", [["unset_status", "discards_empty"]]]
   ],
   "after_start": {
@@ -820,10 +806,7 @@
       "actions": [
         ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [
-          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
-          ["draw", 1, "kandraw_4"]
-        ]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
@@ -956,22 +939,6 @@
         ["win_by_draw"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
-    },
-    "kyuushu_kyuuhai": {
-      "display_name": "Kyuushu Kyuuhai",
-      "show_when": [
-        "our_turn",
-        "has_draw",
-        {"name": "status", "opts": ["discards_empty"]},
-        {"name": "status_missing", "opts": ["call_made"]},
-        {"name": "match", "opts": [["hand", "draw"], ["kyuushu_kyuuhai"]]}
-      ],
-      "actions": [
-        ["big_text", "Kyushuu Kyuuhai"],
-        ["reveal_hand"],
-        ["pause", 1000],
-        ["abortive_draw", "Kyushuu Kyuuhai"]
-      ]
     }
   },
   "auto_buttons": {
