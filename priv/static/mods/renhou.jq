@@ -6,5 +6,5 @@
     "display_name": "Renhou",
     "value": 1,
     "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
-  },
+  }
 ] + .[$ix+1:]
