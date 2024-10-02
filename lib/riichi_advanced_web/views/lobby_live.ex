@@ -91,6 +91,14 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     """
   end
 
+  def handle_event("double_clicked", _assigns, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("right_clicked", _assigns, socket) do
+    {:noreply, socket}
+  end
+
   def handle_event("sit", %{"seat" => seat}, socket) do
     GenServer.cast(socket.assigns.lobby_state, {:sit, socket.id, seat})
     {:noreply, socket}
