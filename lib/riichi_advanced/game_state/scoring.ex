@@ -530,10 +530,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
           win_definitions = translate_match_definitions(state, ["win"])
           for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners, reduce: state do
             state ->
+              ordering = state.players[seat].ordering
+              ordering_r = state.players[seat].ordering_r
               tile_aliases = state.players[seat].tile_aliases
               hand = state.players[seat].hand
               calls = state.players[seat].calls
-              waits = Riichi.get_waits(hand, calls, win_definitions, tile_aliases) ++ [:"2x"]
+              waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases) ++ [:"2x"]
               state2 = Map.put(state, :wall_index, 0) # use this so under the sea isn't scored
               {winning_tile, best_yaku} = for winning_tile <- waits do
                 possible_yaku = get_yaku(state2, state.rules["yaku"], seat, winning_tile, :discard)

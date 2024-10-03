@@ -484,6 +484,24 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         state = update_all_players(state, fn _seat, player -> %Player{ player | tile_mappings: mappings } end)
         state
+      "set_tile_ordering"     ->
+        tiles = Enum.map(opts, &Utils.to_tile/1)
+        ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
+        ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
+        state = update_player(state, context.seat, &%Player{ &1 |
+          tile_ordering: Map.merge(&1.tile_ordering, ordering),
+          tile_ordering_r: Map.merge(&1.tile_ordering, ordering_r)
+        })
+        state
+      "set_tile_ordering_all"     ->
+        tiles = Enum.map(opts, &Utils.to_tile/1)
+        ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
+        ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
+        state = update_all_players(state, fn _seat, player -> %Player{ player |
+          tile_ordering: Map.merge(player.tile_ordering, ordering),
+          tile_ordering_r: Map.merge(player.tile_ordering, ordering_r)
+        } end)
+        state
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "draw_and_place_2_tiles_at_end_of_dead_wall" ->
         {hand_tile1, hand_seat, hand_index1} = Enum.at(marked_objects.hand.marked, 0)
@@ -712,8 +730,8 @@ defmodule RiichiAdvanced.GameState.Actions do
                 is_upgrade = Enum.any?(actions, fn [action | _opts] -> action == "upgrade_call" end)
                 is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
                 is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
-                wraps = Map.has_key?(state.rules["buttons"][button_name], "call_wraps") && state.rules["buttons"][button_name]["call_wraps"]
-                honor_seqs = Map.has_key?(state.rules["buttons"][button_name], "honor_seqs") && state.rules["buttons"][button_name]["honor_seqs"]
+                ordering = state.players[seat].tile_ordering
+                ordering_r = state.players[seat].tile_ordering_r
                 tile_aliases = state.players[seat].tile_aliases
                 tile_mappings = state.players[seat].tile_mappings
                 {state, call_choices} = cond do
@@ -722,7 +740,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                       |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
                       |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
                       |> Enum.map(fn call_tiles ->
-                         Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, state.players[seat].hand ++ state.players[seat].draw, tile_aliases, tile_mappings, wraps, honor_seqs)
+                         Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, state.players[seat].hand ++ state.players[seat].draw, tile_aliases, tile_mappings)
                       end)
                       |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
                     {state, call_choices}
@@ -739,7 +757,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                     {state, call_choices}
                   true ->
                     callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-                    call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, callable_tiles, tile_aliases, tile_mappings, wraps, honor_seqs)
+                    call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, ordering, ordering_r, callable_tiles, tile_aliases, tile_mappings)
                     {state, call_choices}
                 end
                 # filter call_choices
