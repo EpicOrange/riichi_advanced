@@ -40,8 +40,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
-    wraps = "wrapping_score_calculation" in state.players[seat].status
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+      # TODO actually generalize SMT wrapping based on ordering rather than hardcoding
+      wraps = "1m" in state.players[seat].tile_ordering["9m"]
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
@@ -51,7 +52,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-      minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, assigned_winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+      minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, assigned_winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases)
       points = for yaku <- yaku_list, reduce: 0 do
         points when points >= min_points -> points
         points -> case get_yaku(state, [yaku], seat, assigned_winning_tile, win_source, minipoints) do
@@ -124,7 +125,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # setup a state where a given player has the given hand, calls, and tiles
         minipoints = if state.rules["score_calculation"]["method"] == "riichi" do
-            Riichi.calculate_fu(hand, calls, winning_tile, win_source, Riichi.get_seat_wind(kyoku, seat), Riichi.get_round_wind(kyoku))
+            Riichi.calculate_fu(hand, calls, winning_tile, win_source, Riichi.get_seat_wind(kyoku, seat), Riichi.get_round_wind(kyoku), state.players.east.tile_ordering, state.players.east.tile_ordering_r)
           else 0 end
         state = state
           |> update_player(seat, &%Player{ &1 | hand: hand, calls: calls, status: if status == nil do &1.status else status end })

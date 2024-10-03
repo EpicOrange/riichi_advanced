@@ -396,8 +396,9 @@ defmodule RiichiAdvanced.GameState do
       end
     scoring_table = state.rules["score_calculation"]
     # deal with jokers
-    wraps = "wrapping_score_calculation" in state.players[seat].status
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+      # TODO actually generalize SMT wrapping based on ordering rather than hardcoding
+      wraps = "1m" in state.players[seat].tile_ordering["9m"]
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     IO.puts("Joker assignments: #{inspect(joker_assignments)}")
@@ -408,7 +409,7 @@ defmodule RiichiAdvanced.GameState do
         {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name} = for joker_assignment <- joker_assignments do
           # temporarily replace winner's hand with joker assignment to determine yaku
           {state, assigned_winning_tile} = Scoring.apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-          minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, assigned_winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_aliases, wraps)
+          minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, assigned_winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases)
           if minipoints == 0 do
             IO.inspect("Warning: 0 minipoints translates into nil score")
           end
@@ -868,8 +869,6 @@ defmodule RiichiAdvanced.GameState do
   #                 backtracking will fail without this flag.
   #                 Runs in factorial time n! where n is the total number of groups.
   #   "unique": Use each group in each group set exactly once. Useful for defining kokushi.
-  #   "wraps": Allow sequences to wrap around: 891, 912.
-  #   "honorseq": Allow winds and dragons to form sequences.
   #   "nojoker": Ignore joker abilities.
   #
   # Example of a list of match definitions representing a winning hand:

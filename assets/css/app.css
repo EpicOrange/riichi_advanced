@@ -805,8 +805,10 @@ div.buttons, div.call-buttons-container {
   z-index: 10;
 }
 div.buttons, div.call-buttons {
+  justify-content: right;
   align-items: center;
   column-gap: calc(0.25 * var(--tile-size));
+  flex-wrap: wrap;
 }
 div.call-buttons > div.tile:first-child {
   margin-top: calc(0.25 * var(--tile-size));

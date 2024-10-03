@@ -391,7 +391,7 @@ defmodule Riichi do
     fu
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, tile_aliases \\ %{}, wraps \\ false) do
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}) do
     IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
     starting_hand = starting_hand
     winning_tile = winning_tile
@@ -406,6 +406,9 @@ defmodule Riichi do
     # add called triplets
     fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
 
+    # TODO actually generalize wrapping based on ordering
+    # rather than hardcoding
+    wraps = "1m" in ordering["9m"]
     possible_penchan_removed = if wraps do [] else
       case winning_tile do
         :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"], tile_aliases)
@@ -423,15 +426,15 @@ defmodule Riichi do
     all_tiles = middle_tiles ++ [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"4z", :"5z", :"7z"]
     kanchan_tiles = if wraps do all_tiles else middle_tiles end
     possible_kanchan_removed = if winning_tile in kanchan_tiles do
-      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, wraps, true), offset_tile(winning_tile, 1, wraps, true)], tile_aliases)
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, ordering, ordering_r), offset_tile(winning_tile, 1, ordering, ordering_r)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu+2} end)
     else [] end
-    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, wraps, true) != nil do
-      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, wraps, true), offset_tile(winning_tile, -1, wraps, true)], tile_aliases)
+    possible_left_ryanmen_removed = if offset_tile(winning_tile, -3, ordering, ordering_r) != nil do
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, ordering, ordering_r), offset_tile(winning_tile, -1, ordering, ordering_r)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu} end)
     else [] end
-    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, wraps, true) != nil do
-      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, wraps, true), offset_tile(winning_tile, 2, wraps, true)], tile_aliases)
+    possible_right_ryanmen_removed = if offset_tile(winning_tile, 3, ordering, ordering_r) != nil do
+      try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, ordering, ordering_r), offset_tile(winning_tile, 2, ordering, ordering_r)], tile_aliases)
       |> Enum.map(fn hand -> {hand, fu} end)
     else [] end
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
@@ -454,7 +457,7 @@ defmodule Riichi do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
           hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
-            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, wraps, true), base_tile, offset_tile(base_tile, 1, wraps, true)], tile_aliases) do
+            case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, ordering, ordering_r), base_tile, offset_tile(base_tile, 1, ordering, ordering_r)], tile_aliases) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu} end)
             end

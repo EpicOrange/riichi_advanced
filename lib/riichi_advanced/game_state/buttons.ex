@@ -15,10 +15,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
           buttons = state.rules["buttons"]
             |> Enum.filter(fn {name, button} ->
                  calls_spec = if Map.has_key?(button, "call") do button["call"] else [] end
-                 call_wraps = if Map.has_key?(button, "call") do if Map.has_key?(button, "call_wraps") do button["call_wraps"] else false end else false end
-                 honor_seqs = if Map.has_key?(button, "call") do if Map.has_key?(button, "honor_seqs") do button["honor_seqs"] else false end else false end
                  upgrades = if Map.has_key?(button, "upgrades") do button["upgrades"] else [] end
-                 check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades, call_wraps: call_wraps, honor_seqs: honor_seqs})
+                 check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
                end)
             |> Enum.map(fn {name, _button} -> name end)
           unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)

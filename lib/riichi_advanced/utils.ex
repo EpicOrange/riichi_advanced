@@ -94,7 +94,6 @@ defmodule Utils do
   def same_tile(tile1, tile2, tile_aliases) do
     l1 = [tile1] ++ adjacent_jokers(tile1, tile_aliases)
     l2 = [tile2] ++ adjacent_jokers(tile2, tile_aliases)
-    IO.inspect({tile1, tile2, l1, l2, Enum.any?(l1, fn tile -> tile in l2 end)})
     Enum.any?(l1, fn tile -> tile in l2 end)
   end
   

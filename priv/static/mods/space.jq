@@ -1,9 +1,4 @@
-.tenpai_definition |= map(if .[0] == "exhaustive" then (["exhaustive", "wraps", "honorseq"] + .[1:]) else . end)
-|
-.tenpai_14_definition |= map(if .[0] == "exhaustive" then (["exhaustive", "wraps", "honorseq"] + .[1:]) else . end)
-|
-.win_definition |= map(if .[0] == "exhaustive" then (["exhaustive", "wraps", "honorseq"] + .[1:]) else . end)
-|
+# add open kokushi
 .kokushi_tenpai_definition += [
   [ "unique",
     [["1m","9m","1p","9p","1s","9s","4z","5z","6z","7z"], 9],
@@ -56,6 +51,7 @@
   ]
 ]
 |
+# add open kokushi
 .win_definition += [
   [
     [[["1m","9m","1p","9p","1s","9s"]], 1],
@@ -87,6 +83,7 @@
   ]
 ]
 |
+# add open kokushi
 .yaku += [
   {
     "display_name": "Open Kokushi Musou",
@@ -99,10 +96,17 @@
   }
 ]
 |
+# remove chiitoitsu
 .yaku |= map(select(.display_name != "Chiitoitsu"))
 |
-.after_start.actions |= map(if .[0] == "set_status_all" then (. + ["wrapping_score_calculation"]) else . end)
+# sequences wrap and honors form sequences
+.after_start.actions += [
+  ["set_tile_ordering", ["9m", "1m"]],
+  ["set_tile_ordering", ["9p", "1p"]],
+  ["set_tile_ordering", ["9s", "1s"]],
+  ["set_tile_ordering", ["1z", "2z", "3z", "4z", "1z"]],
+  ["set_tile_ordering", ["5z", "6z", "7z", "5z"]]
+]
 |
-.buttons.chii += {"honor_seqs": true, "call_wraps": true}
-|
+# chii from anyone
 .buttons.chii.show_when |= map(if . == "kamicha_discarded" then "someone_else_just_discarded" else . end)

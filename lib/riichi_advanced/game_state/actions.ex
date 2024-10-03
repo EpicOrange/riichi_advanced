@@ -485,22 +485,26 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_all_players(state, fn _seat, player -> %Player{ player | tile_mappings: mappings } end)
         state
       "set_tile_ordering"     ->
-        tiles = Enum.map(opts, &Utils.to_tile/1)
+        tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
+        IO.inspect({ordering, ordering_r})
         state = update_player(state, context.seat, &%Player{ &1 |
           tile_ordering: Map.merge(&1.tile_ordering, ordering),
           tile_ordering_r: Map.merge(&1.tile_ordering, ordering_r)
         })
+        IO.inspect({state.players[context.seat].tile_ordering, state.players[context.seat].tile_ordering_r})
         state
       "set_tile_ordering_all"     ->
-        tiles = Enum.map(opts, &Utils.to_tile/1)
+        tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
+        IO.inspect({ordering, ordering_r})
         state = update_all_players(state, fn _seat, player -> %Player{ player |
           tile_ordering: Map.merge(player.tile_ordering, ordering),
           tile_ordering_r: Map.merge(player.tile_ordering, ordering_r)
         } end)
+        IO.inspect({state.players[context.seat].tile_ordering, state.players[context.seat].tile_ordering_r})
         state
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "draw_and_place_2_tiles_at_end_of_dead_wall" ->
