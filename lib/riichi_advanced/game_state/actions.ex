@@ -491,7 +491,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect({ordering, ordering_r})
         state = update_player(state, context.seat, &%Player{ &1 |
           tile_ordering: Map.merge(&1.tile_ordering, ordering),
-          tile_ordering_r: Map.merge(&1.tile_ordering, ordering_r)
+          tile_ordering_r: Map.merge(&1.tile_ordering_r, ordering_r)
         })
         IO.inspect({state.players[context.seat].tile_ordering, state.players[context.seat].tile_ordering_r})
         state
@@ -502,7 +502,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect({ordering, ordering_r})
         state = update_all_players(state, fn _seat, player -> %Player{ player |
           tile_ordering: Map.merge(player.tile_ordering, ordering),
-          tile_ordering_r: Map.merge(player.tile_ordering, ordering_r)
+          tile_ordering_r: Map.merge(player.tile_ordering_r, ordering_r)
         } end)
         IO.inspect({state.players[context.seat].tile_ordering, state.players[context.seat].tile_ordering_r})
         state
