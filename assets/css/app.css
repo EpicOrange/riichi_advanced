@@ -1331,8 +1331,12 @@ div.ruleset > textarea {
   color: white;
   white-space: pre;
 }
-
-
+/* landscape */
+@media (min-aspect-ratio: 1.2/1) {
+  div.ruleset {
+    width: calc(min(90vw, 80vh) + 0.5 * var(--tile-size) + min(50%, calc(40vw - 20% - 0.5 * var(--tile-size))));
+  }
+}
 
 
 
