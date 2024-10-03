@@ -1029,7 +1029,12 @@ defmodule RiichiAdvanced.GameState do
             IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
         end
-      "winning_dora_count"       -> Enum.count(Riichi.normalize_red_fives(cxt_player.winning_hand), fn tile -> tile in Riichi.dora(from_tile_name(state, Enum.at(opts, 0, :"1m"))) end) == Enum.at(opts, 1, 1)
+      "winning_dora_count"       ->
+        dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
+        num = Enum.at(opts, 1, 1)
+        dora = state.rules["dora_indicators"][Atom.to_string(dora_indicator)]
+        IO.inspect(dora)
+        Enum.count(Riichi.normalize_red_fives(cxt_player.winning_hand), fn tile -> Atom.to_string(tile) in dora end) == num
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       "match"                    -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
