@@ -3,206 +3,44 @@ defmodule RiichiAdvanced.SMT do
 
   @boilerplate """
                (set-logic QF_FD)
-               (define-fun zero () (_ BitVec 136) (_ bv0 136))
+               (define-fun zero () (_ BitVec <len>) (_ bv0 <len>))
+               (define-fun one () (_ BitVec <len>) (_ bv1 <len>))
                (define-fun add8_single ((left (_ BitVec 4)) (right (_ BitVec 4))) (_ BitVec 4)
                  (bvor (bvand #x8 left) (bvand #x8 right) (bvadd (bvand #x7 left) (bvand #x7 right))))
-               (define-fun octal_mask () (_ BitVec 136) #x7777777777777777777777777777777777)
-               (define-fun carry_mask () (_ BitVec 136) #x8888888888888888888888888888888888)
-               (define-fun add8 ((left (_ BitVec 136)) (right (_ BitVec 136))) (_ BitVec 136)
+               (declare-const octal_mask (_ BitVec <len>))
+               (declare-const carry_mask (_ BitVec <len>))
+               (define-fun add8 ((left (_ BitVec <len>)) (right (_ BitVec <len>))) (_ BitVec <len>)
                  (bvor (bvand carry_mask left) (bvand carry_mask right) (bvadd (bvand octal_mask left) (bvand octal_mask right))))
-               (define-fun fold_digits ((shift (_ BitVec 136)) (bv (_ BitVec 136))) (_ BitVec 136)
-                 (bvand (bvsub (bvshl (_ bv1 136) shift) (_ bv1 136)) (add8 bv (bvlshr bv shift))))
-               (define-fun sum_digits ((bv (_ BitVec 136))) (_ BitVec 4)
-                 ((_ extract 3 0)
-                   (fold_digits (_ bv4 136)
-                   (fold_digits (_ bv8 136)
-                   (fold_digits (_ bv12 136)
-                   (fold_digits (_ bv20 136)
-                   (fold_digits (_ bv36 136)
-                   (fold_digits (_ bv68 136) bv))))))))
-               (define-fun equal_digits ((left (_ BitVec 136)) (right (_ BitVec 136))) Bool
-                 (and
-                   (= ((_ extract 135 132) left) ((_ extract 135 132) right))
-                   (= ((_ extract 131 128) left) ((_ extract 131 128) right))
-                   (= ((_ extract 127 124) left) ((_ extract 127 124) right))
-                   (= ((_ extract 123 120) left) ((_ extract 123 120) right))
-                   (= ((_ extract 119 116) left) ((_ extract 119 116) right))
-                   (= ((_ extract 115 112) left) ((_ extract 115 112) right))
-                   (= ((_ extract 111 108) left) ((_ extract 111 108) right))
-                   (= ((_ extract 107 104) left) ((_ extract 107 104) right))
-                   (= ((_ extract 103 100) left) ((_ extract 103 100) right))
-                   (= ((_ extract 99 96) left) ((_ extract 99 96) right))
-                   (= ((_ extract 95 92) left) ((_ extract 95 92) right))
-                   (= ((_ extract 91 88) left) ((_ extract 91 88) right))
-                   (= ((_ extract 87 84) left) ((_ extract 87 84) right))
-                   (= ((_ extract 83 80) left) ((_ extract 83 80) right))
-                   (= ((_ extract 79 76) left) ((_ extract 79 76) right))
-                   (= ((_ extract 75 72) left) ((_ extract 75 72) right))
-                   (= ((_ extract 71 68) left) ((_ extract 71 68) right))
-                   (= ((_ extract 67 64) left) ((_ extract 67 64) right))
-                   (= ((_ extract 63 60) left) ((_ extract 63 60) right))
-                   (= ((_ extract 59 56) left) ((_ extract 59 56) right))
-                   (= ((_ extract 55 52) left) ((_ extract 55 52) right))
-                   (= ((_ extract 51 48) left) ((_ extract 51 48) right))
-                   (= ((_ extract 47 44) left) ((_ extract 47 44) right))
-                   (= ((_ extract 43 40) left) ((_ extract 43 40) right))
-                   (= ((_ extract 39 36) left) ((_ extract 39 36) right))
-                   (= ((_ extract 35 32) left) ((_ extract 35 32) right))
-                   (= ((_ extract 31 28) left) ((_ extract 31 28) right))
-                   (= ((_ extract 27 24) left) ((_ extract 27 24) right))
-                   (= ((_ extract 23 20) left) ((_ extract 23 20) right))
-                   (= ((_ extract 19 16) left) ((_ extract 19 16) right))
-                   (= ((_ extract 15 12) left) ((_ extract 15 12) right))
-                   (= ((_ extract 11 8) left) ((_ extract 11 8) right))
-                   (= ((_ extract 7 4) left) ((_ extract 7 4) right))
-                   (= ((_ extract 3 0) left) ((_ extract 3 0) right))))
-               (define-fun nonzero ((val (_ BitVec 136))) Bool
-                 (not (equal_digits zero val)))
-               (define-fun at_least_digits ((left (_ BitVec 136)) (right (_ BitVec 136))) Bool
-                 (and
-                   (bvuge ((_ extract 135 132) left) ((_ extract 135 132) right))
-                   (bvuge ((_ extract 131 128) left) ((_ extract 131 128) right))
-                   (bvuge ((_ extract 127 124) left) ((_ extract 127 124) right))
-                   (bvuge ((_ extract 123 120) left) ((_ extract 123 120) right))
-                   (bvuge ((_ extract 119 116) left) ((_ extract 119 116) right))
-                   (bvuge ((_ extract 115 112) left) ((_ extract 115 112) right))
-                   (bvuge ((_ extract 111 108) left) ((_ extract 111 108) right))
-                   (bvuge ((_ extract 107 104) left) ((_ extract 107 104) right))
-                   (bvuge ((_ extract 103 100) left) ((_ extract 103 100) right))
-                   (bvuge ((_ extract 99 96) left) ((_ extract 99 96) right))
-                   (bvuge ((_ extract 95 92) left) ((_ extract 95 92) right))
-                   (bvuge ((_ extract 91 88) left) ((_ extract 91 88) right))
-                   (bvuge ((_ extract 87 84) left) ((_ extract 87 84) right))
-                   (bvuge ((_ extract 83 80) left) ((_ extract 83 80) right))
-                   (bvuge ((_ extract 79 76) left) ((_ extract 79 76) right))
-                   (bvuge ((_ extract 75 72) left) ((_ extract 75 72) right))
-                   (bvuge ((_ extract 71 68) left) ((_ extract 71 68) right))
-                   (bvuge ((_ extract 67 64) left) ((_ extract 67 64) right))
-                   (bvuge ((_ extract 63 60) left) ((_ extract 63 60) right))
-                   (bvuge ((_ extract 59 56) left) ((_ extract 59 56) right))
-                   (bvuge ((_ extract 55 52) left) ((_ extract 55 52) right))
-                   (bvuge ((_ extract 51 48) left) ((_ extract 51 48) right))
-                   (bvuge ((_ extract 47 44) left) ((_ extract 47 44) right))
-                   (bvuge ((_ extract 43 40) left) ((_ extract 43 40) right))
-                   (bvuge ((_ extract 39 36) left) ((_ extract 39 36) right))
-                   (bvuge ((_ extract 35 32) left) ((_ extract 35 32) right))
-                   (bvuge ((_ extract 31 28) left) ((_ extract 31 28) right))
-                   (bvuge ((_ extract 27 24) left) ((_ extract 27 24) right))
-                   (bvuge ((_ extract 23 20) left) ((_ extract 23 20) right))
-                   (bvuge ((_ extract 19 16) left) ((_ extract 19 16) right))
-                   (bvuge ((_ extract 15 12) left) ((_ extract 15 12) right))
-                   (bvuge ((_ extract 11 8) left) ((_ extract 11 8) right))
-                   (bvuge ((_ extract 7 4) left) ((_ extract 7 4) right))
-                   (bvuge ((_ extract 3 0) left) ((_ extract 3 0) right))))
-               (define-fun tile_from_index ((ix (_ BitVec 8))) (_ BitVec 136)
-                 (bvshl (_ bv1 136) (concat (_ bv0 128) (bvshl ix (_ bv2 8)))))
+               (define-fun fold_digits ((shift (_ BitVec <len>)) (bv (_ BitVec <len>))) (_ BitVec <len>)
+                 (bvand (bvsub (bvshl one shift) one) (add8 bv (bvlshr bv shift))))
                (define-fun is_set_num ((num (_ BitVec 8))) Bool
                  (and (bvule (_ bv1 8) num) (bvule num (_ bv3 8))))
-               (define-fun suit_mask () (_ BitVec 136) #x0000000000000000000000000777777777)
-               (define-fun wind_mask () (_ BitVec 136) #x0000000000000000000000000000007777)
-               (define-fun dragon_mask () (_ BitVec 136) #x0000000000000000000000000000000777)
-               (define-fun add_overflow ((size (_ BitVec 136)) (val (_ BitVec 136))) (_ BitVec 136)
-                 (bvor (bvand val suit_mask) (bvlshr val size)))
-               (define-fun shift_set ((indices (_ BitVec 136)) (set (_ BitVec 136))) (_ BitVec 136)
-                 (bvor
-                   (add_overflow (_ bv36 136) (bvmul set (bvand indices suit_mask)))
-                   (bvshl (add_overflow (_ bv36 136) (bvmul set (bvand (bvlshr indices (_ bv36 136)) suit_mask))) (_ bv36 136))
-                   (bvshl (add_overflow (_ bv36 136) (bvmul set (bvand (bvlshr indices (_ bv72 136)) suit_mask))) (_ bv72 136))
-                   (bvshl (add_overflow (_ bv16 136) (bvmul set (bvand (bvlshr indices (_ bv108 136)) wind_mask))) (_ bv108 136))
-                   (bvshl (add_overflow (_ bv12 136) (bvmul set (bvand (bvlshr indices (_ bv124 136)) dragon_mask))) (_ bv124 136))))
+               (define-fun make_mask ((size (_ BitVec <len>))) (_ BitVec <len>)
+                 (bvsub (bvshl one size) one))
+               (define-fun add_overflow ((size (_ BitVec <len>)) (val (_ BitVec <len>))) (_ BitVec <len>)
+                 (bvor (bvand val (make_mask size)) (bvlshr val size)))
+               (define-fun apply_set ((set (_ BitVec <len>)) (ixs (_ BitVec <len>)) (suit_size (_ BitVec <len>))) (_ BitVec <len>)
+                 (bvmul set (bvand ixs (make_mask suit_size))))
+               (define-fun apply_set_cycle ((set (_ BitVec <len>)) (ixs (_ BitVec <len>)) (pos (_ BitVec <len>)) (suit_size (_ BitVec <len>))) (_ BitVec <len>)
+                 (bvshl (add_overflow suit_size (apply_set set (bvlshr ixs pos) suit_size)) pos))
+               (define-fun apply_set_chain ((set (_ BitVec <len>)) (ixs (_ BitVec <len>)) (pos (_ BitVec <len>)) (suit_size (_ BitVec <len>))) (_ BitVec <len>)
+                 (bvshl (bvand (apply_set set (bvlshr ixs pos) suit_size) (make_mask suit_size)) pos))
                """
 
-  def to_smt_tile(tile, ix \\ -1, joker_ixs \\ %{}) do
+  def to_smt_tile(tile, encoding, ix \\ -1, joker_ixs \\ %{}) do
     if is_list(tile) do
-      smt_tile_list = for t <- tile, do: to_smt_tile(t, ix, joker_ixs)
+      smt_tile_list = for t <- tile, do: to_smt_tile(t, encoding, ix, joker_ixs)
       "(bvadd #{Enum.join(smt_tile_list, " ")})"
     else
-      if ix in joker_ixs do
-        "joker#{ix}"
-      else
-        case tile do
-          :"1m" -> "#x0000000000000000000000000000000001"
-          :"2m" -> "#x0000000000000000000000000000000010"
-          :"3m" -> "#x0000000000000000000000000000000100"
-          :"4m" -> "#x0000000000000000000000000000001000"
-          :"5m" -> "#x0000000000000000000000000000010000"
-          :"6m" -> "#x0000000000000000000000000000100000"
-          :"7m" -> "#x0000000000000000000000000001000000"
-          :"8m" -> "#x0000000000000000000000000010000000"
-          :"9m" -> "#x0000000000000000000000000100000000"
-          :"1p" -> "#x0000000000000000000000001000000000"
-          :"2p" -> "#x0000000000000000000000010000000000"
-          :"3p" -> "#x0000000000000000000000100000000000"
-          :"4p" -> "#x0000000000000000000001000000000000"
-          :"5p" -> "#x0000000000000000000010000000000000"
-          :"6p" -> "#x0000000000000000000100000000000000"
-          :"7p" -> "#x0000000000000000001000000000000000"
-          :"8p" -> "#x0000000000000000010000000000000000"
-          :"9p" -> "#x0000000000000000100000000000000000"
-          :"1s" -> "#x0000000000000001000000000000000000"
-          :"2s" -> "#x0000000000000010000000000000000000"
-          :"3s" -> "#x0000000000000100000000000000000000"
-          :"4s" -> "#x0000000000001000000000000000000000"
-          :"5s" -> "#x0000000000010000000000000000000000"
-          :"6s" -> "#x0000000000100000000000000000000000"
-          :"7s" -> "#x0000000001000000000000000000000000"
-          :"8s" -> "#x0000000010000000000000000000000000"
-          :"9s" -> "#x0000000100000000000000000000000000"
-          :"1z" -> "#x0000001000000000000000000000000000"
-          :"2z" -> "#x0000010000000000000000000000000000"
-          :"3z" -> "#x0000100000000000000000000000000000"
-          :"4z" -> "#x0001000000000000000000000000000000"
-          :"5z" -> "#x0010000000000000000000000000000000"
-          :"0z" -> "#x0010000000000000000000000000000000"
-          :"6z" -> "#x0100000000000000000000000000000000"
-          :"7z" -> "#x1000000000000000000000000000000000"
-          _ ->
-            IO.puts("Unhandled smt tile #{inspect(tile)}")
-            "#x0000000000000000000000000000000000"
+      if ix in joker_ixs do "joker#{ix}" else
+        case encoding[tile] do
+          nil ->
+            IO.puts("Unhandled smt tile #{inspect(tile)}\nEncoding:")
+            IO.inspect(encoding)
+            "zero"
+          encoded -> encoded
         end
       end
-    end
-  end
-
-  def from_smt_tile(smt_tile) do
-    case smt_tile do
-      0x0000000000000000000000000000000001 -> :"1m"
-      0x0000000000000000000000000000000010 -> :"2m"
-      0x0000000000000000000000000000000100 -> :"3m"
-      0x0000000000000000000000000000001000 -> :"4m"
-      0x0000000000000000000000000000010000 -> :"5m"
-      0x0000000000000000000000000000100000 -> :"6m"
-      0x0000000000000000000000000001000000 -> :"7m"
-      0x0000000000000000000000000010000000 -> :"8m"
-      0x0000000000000000000000000100000000 -> :"9m"
-      0x0000000000000000000000001000000000 -> :"1p"
-      0x0000000000000000000000010000000000 -> :"2p"
-      0x0000000000000000000000100000000000 -> :"3p"
-      0x0000000000000000000001000000000000 -> :"4p"
-      0x0000000000000000000010000000000000 -> :"5p"
-      0x0000000000000000000100000000000000 -> :"6p"
-      0x0000000000000000001000000000000000 -> :"7p"
-      0x0000000000000000010000000000000000 -> :"8p"
-      0x0000000000000000100000000000000000 -> :"9p"
-      0x0000000000000001000000000000000000 -> :"1s"
-      0x0000000000000010000000000000000000 -> :"2s"
-      0x0000000000000100000000000000000000 -> :"3s"
-      0x0000000000001000000000000000000000 -> :"4s"
-      0x0000000000010000000000000000000000 -> :"5s"
-      0x0000000000100000000000000000000000 -> :"6s"
-      0x0000000001000000000000000000000000 -> :"7s"
-      0x0000000010000000000000000000000000 -> :"8s"
-      0x0000000100000000000000000000000000 -> :"9s"
-      0x0000001000000000000000000000000000 -> :"1z"
-      0x0000010000000000000000000000000000 -> :"2z"
-      0x0000100000000000000000000000000000 -> :"3z"
-      0x0001000000000000000000000000000000 -> :"4z"
-      0x0010000000000000000000000000000000 -> :"5z"
-      0x0100000000000000000000000000000000 -> :"6z"
-      0x1000000000000000000000000000000000 -> :"7z"
-      _ ->
-        IO.puts("Unhandled smt tile #{inspect(smt_tile)}")
-        :"1m"
     end
   end
 
@@ -210,12 +48,12 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(solver_pid, joker_ixs, last_assignment \\ nil, result \\ []) do
+  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, last_assignment \\ nil, result \\ []) do
     cond do
       length(joker_ixs) == 0 -> [%{}]
       length(result) >= 100  -> result
       true ->
-        contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i])})" end) end
+        contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i], encoding)})" end) end
         contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
         query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
         smt = Enum.join([contra, "(check-sat)\n", query])
@@ -225,14 +63,190 @@ defmodule RiichiAdvanced.SMT do
         {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 5000)
         case ExSMT.Solver.ResponseParser.parse(response) do
           [:sat | assigns] ->
-            new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> from_smt_tile(val) end))))
-            obtain_all_solutions(solver_pid, joker_ixs, new_assignment, [new_assignment | result])
+            new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
+            obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, new_assignment, [new_assignment | result])
           [:unsat | _] -> result
         end
     end
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_mappings \\ %{}, wraps \\ false) do
+  def get_chain(ordering, x, depth \\ 0)
+  def get_chain(_, nil, _), do: []
+  def get_chain(ordering, x, depth) do
+    if depth >= 100 do [] else [x | get_chain(ordering, ordering[x], depth + 1)] end
+  end
+
+  def find_chains_cycles(ordering, other_tiles \\ []) do
+    if not Enum.empty?(ordering) do
+      # starting from non-destination points, find all chains
+      chains = (other_tiles ++ Map.keys(ordering))
+      |> MapSet.new()
+      |> MapSet.difference(ordering |> Map.values() |> MapSet.new())
+      |> Enum.map(&get_chain(ordering, &1))
+      used_tiles = Enum.concat(chains)
+      # remove used tiles, plus an arbitrary link, and repeat
+      ordering = ordering
+      |> Enum.reject(fn {t1, _t2} -> t1 in used_tiles end)
+      |> Enum.drop(1)
+      |> Map.new()
+      {cycles1, cycles2} = find_chains_cycles(ordering)
+      {chains, cycles1 ++ cycles2}
+    else {[], []} end
+  end
+  # RiichiAdvanced.SMT.find_chains_cycles(%{"2m": :"3m", "6m": :"7m", "7m": :"8m", "1m": :"2m", "3m": :"4m", "8m": :"9m", "4m": :"5m"})
+  # RiichiAdvanced.SMT.find_chains_cycles(%{"2m": :"3m", "6m": :"7m", "7m": :"8m", "5m": :"6m", "1m": :"2m", "3m": :"4m", "8m": :"9m", "4m": :"5m"})
+  # RiichiAdvanced.SMT.find_chains_cycles(%{"2m": :"3m", "6m": :"7m", "7m": :"8m", "5m": :"6m", "1m": :"2m", "3m": :"4m", "8m": :"9m", "4m": :"5m", "9m": :"1m"})
+  # RiichiAdvanced.SMT.find_chains_cycles(%{"1z": :"2z", "2z": :"3z", "3z": :"4z", "4z": :"1z", "5z": :"6z", "6z": :"7z", "7z": :"5z"})
+
+  # return encoding length, a map from tiles to smt tile values, and a smt function that shifts sets accordingly
+
+  def sum_digits_ix_generator(ix, acc \\ [])
+  def sum_digits_ix_generator(ix, acc) when ix <= 4 do
+    Enum.reverse(acc)
+  end
+  def sum_digits_ix_generator(ix, acc) do
+    next_ix = trunc(Float.ceil(ix / 8) * 4)
+    sum_digits_ix_generator(next_ix, [next_ix | acc])
+  end
+
+  def determine_encoding(ordering, other_tiles \\ []) do
+    {chains, cycles} = find_chains_cycles(ordering, other_tiles)
+    num_tiles = length(Enum.concat(chains ++ cycles))
+    len = 4 * num_tiles
+    # (define-fun shift_set ((indices (_ BitVec 136)) (set (_ BitVec 136))) (_ BitVec 136)
+    #   (bvor
+    #     (apply_set_cycle set indices (_ bv0 136) (_ bv36 136))
+    #     (apply_set_cycle set indices (_ bv36 136) (_ bv36 136))
+    #     (apply_set_cycle set indices (_ bv72 136) (_ bv36 136))
+    #     (apply_set_chain set indices (_ bv108 136) (_ bv16 136))
+    #     (apply_set_chain set indices (_ bv124 136) (_ bv12 136))))
+    {acc, encoding, encoding_r, suits} = for chain <- chains, reduce: {0, %{}, %{}, []} do
+      {acc, encoding, encoding_r, suits} ->
+        suit_len = 4 * length(chain)
+        new_suit = "(apply_set_chain set indices (_ bv#{acc} #{len}) (_ bv#{suit_len} #{len}))"
+        new_encoding = chain
+        |> Enum.with_index()
+        |> Map.new(fn {tile, i} -> {tile, "(bvshl one (_ bv#{acc+i*4} #{len}))"} end)
+        new_encoding_r = chain
+        |> Enum.with_index()
+        |> Map.new(fn {tile, i} -> {Bitwise.<<<(1, acc+i*4), tile} end)
+        {acc + suit_len, Map.merge(encoding, new_encoding), Map.merge(encoding_r, new_encoding_r), [new_suit | suits]}
+    end
+    {_, encoding, suits} = for cycle <- cycles, reduce: {acc, encoding, suits} do
+      {acc, encoding, suits} ->
+        suit_len = 4 * length(cycle)
+        new_suit = "(apply_set_cycle set indices (_ bv#{acc} #{len}) (_ bv#{suit_len} #{len}))"
+        new_encoding = cycle
+        |> Enum.with_index()
+        |> Map.new(fn {tile, i} -> {tile, "(bvshl one (_ bv#{acc+i*4} #{len}))"} end)
+        new_encoding_r = cycle
+        |> Enum.with_index()
+        |> Map.new(fn {tile, i} -> {Bitwise.<<<(1, acc+i*4), tile} end)
+        {acc + suit_len, Map.merge(encoding, new_encoding), Map.merge(encoding_r, new_encoding_r), [new_suit | suits]}
+    end
+    shift_set = "(define-fun shift_set ((indices (_ BitVec #{len})) (set (_ BitVec #{len}))) (_ BitVec #{len})\n  (bvor " <> Enum.join(suits, "\n        ") <> "))"
+
+    # (assert (= octal_mask #x7777777777777777777777777777777777))
+    # (assert (= carry_mask #x8888888888888888888888888888888888))
+    octal_mask = "(assert (= octal_mask #x#{String.duplicate("7", num_tiles)}))"
+    carry_mask = "(assert (= carry_mask #x#{String.duplicate("8", num_tiles)}))"
+
+    # (define-fun sum_digits ((bv (_ BitVec 136))) (_ BitVec 4)
+    #   ((_ extract 3 0)
+    #     (fold_digits (_ bv4 136)
+    #     (fold_digits (_ bv8 136)
+    #     (fold_digits (_ bv12 136)
+    #     (fold_digits (_ bv20 136)
+    #     (fold_digits (_ bv36 136)
+    #     (fold_digits (_ bv68 136) bv))))))))
+    fold_digits_calls = Enum.reduce(RiichiAdvanced.SMT.sum_digits_ix_generator(len), "bv", fn ix, exp -> "(fold_digits (_ bv#{ix} #{len})\n    #{exp})" end)
+    sum_digits = """
+    (define-fun sum_digits ((bv (_ BitVec #{len}))) (_ BitVec 4)
+      ((_ extract 3 0)
+        #{fold_digits_calls}))
+    """
+
+    # (define-fun equal_digits ((left (_ BitVec 136)) (right (_ BitVec 136))) Bool
+    #   (and
+    #     (= ((_ extract 135 132) left) ((_ extract 135 132) right))
+    #     (= ((_ extract 131 128) left) ((_ extract 131 128) right))
+    #     (= ((_ extract 127 124) left) ((_ extract 127 124) right))
+    #     ...
+    #     (= ((_ extract 11 8) left) ((_ extract 11 8) right))
+    #     (= ((_ extract 7 4) left) ((_ extract 7 4) right))
+    #     (= ((_ extract 3 0) left) ((_ extract 3 0) right))))
+    equal_calls = Enum.map(0..len-1//4, fn ix -> "(= ((_ extract #{ix+3} #{ix}) left) ((_ extract #{ix+3} #{ix}) right))" end)
+    equal_digits = """
+    (define-fun equal_digits ((left (_ BitVec #{len})) (right (_ BitVec #{len}))) Bool
+      (and
+        #{Enum.join(equal_calls, "\n    ")}))
+    (define-fun nonzero ((val (_ BitVec #{len}))) Bool
+      (not (equal_digits zero val)))
+    """
+
+    tile_from_index = """
+    (define-fun tile_from_index ((ix (_ BitVec 8))) (_ BitVec #{len})
+      (bvshl one (concat (_ bv0 #{len-8}) (bvshl ix (_ bv2 8)))))
+    """
+
+    smt = Enum.join([octal_mask, carry_mask, sum_digits, equal_digits, tile_from_index, shift_set, ""], "\n")
+
+    {len, encoding, encoding_r, smt}
+  end
+  # RiichiAdvanced.SMT.determine_encoding(%{"1z": :"2z", "2z": :"3z", "3z": :"4z", "4z": :"1z", "5z": :"6z", "6z": :"7z"})
+
+  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, ordering, tile_mappings \\ %{}) do
+    calls = calls
+    |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    |> Enum.with_index()
+    |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
+
+    all_tiles = hand
+    ++ Enum.flat_map(calls, fn {tiles, _i} -> tiles end)
+    ++ Enum.flat_map(tile_mappings, fn {_tile, mappings} -> mappings end)
+    jokers = Map.keys(tile_mappings)
+    all_tiles = all_tiles
+    |> Enum.uniq()
+    |> Enum.reject(fn tile -> tile in jokers end)
+    {len, encoding, encoding_r, encoding_boilerplate} = determine_encoding(ordering, all_tiles)
+    # encoding = %{
+    #   :"1m" => "#x0000000000000000000000000000000001",
+    #   :"2m" => "#x0000000000000000000000000000000010",
+    #   :"3m" => "#x0000000000000000000000000000000100",
+    #   :"4m" => "#x0000000000000000000000000000001000",
+    #   :"5m" => "#x0000000000000000000000000000010000",
+    #   :"6m" => "#x0000000000000000000000000000100000",
+    #   :"7m" => "#x0000000000000000000000000001000000",
+    #   :"8m" => "#x0000000000000000000000000010000000",
+    #   :"9m" => "#x0000000000000000000000000100000000",
+    #   :"1p" => "#x0000000000000000000000001000000000",
+    #   :"2p" => "#x0000000000000000000000010000000000",
+    #   :"3p" => "#x0000000000000000000000100000000000",
+    #   :"4p" => "#x0000000000000000000001000000000000",
+    #   :"5p" => "#x0000000000000000000010000000000000",
+    #   :"6p" => "#x0000000000000000000100000000000000",
+    #   :"7p" => "#x0000000000000000001000000000000000",
+    #   :"8p" => "#x0000000000000000010000000000000000",
+    #   :"9p" => "#x0000000000000000100000000000000000",
+    #   :"1s" => "#x0000000000000001000000000000000000",
+    #   :"2s" => "#x0000000000000010000000000000000000",
+    #   :"3s" => "#x0000000000000100000000000000000000",
+    #   :"4s" => "#x0000000000001000000000000000000000",
+    #   :"5s" => "#x0000000000010000000000000000000000",
+    #   :"6s" => "#x0000000000100000000000000000000000",
+    #   :"7s" => "#x0000000001000000000000000000000000",
+    #   :"8s" => "#x0000000010000000000000000000000000",
+    #   :"9s" => "#x0000000100000000000000000000000000",
+    #   :"1z" => "#x0000001000000000000000000000000000",
+    #   :"2z" => "#x0000010000000000000000000000000000",
+    #   :"3z" => "#x0000100000000000000000000000000000",
+    #   :"4z" => "#x0001000000000000000000000000000000",
+    #   :"5z" => "#x0010000000000000000000000000000000",
+    #   :"0z" => "#x0010000000000000000000000000000000",
+    #   :"6z" => "#x0100000000000000000000000000000000",
+    #   :"7z" => "#x1000000000000000000000000000000000"
+    # }
+
     # first figure out what the sets are
     # generates this:
     # (define-fun set1 () (_ BitVec 136) #x0000000000000000000000000000000111)
@@ -256,15 +270,10 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(fn vals -> Enum.map(vals, fn a -> Integer.to_string(a) end) end)
     |> Enum.map(&Enum.join/1) # ["2", "111", "3"]
     |> Enum.with_index()
-    |> Enum.map(fn {str, i} -> "(define-fun set#{i+1} () (_ BitVec 136) #x#{String.pad_leading(str, 34, "0")})\n" end)
+    |> Enum.map(fn {str, i} -> "(define-fun set#{i+1} () (_ BitVec #{len}) #x#{String.pad_leading(str, Integer.floor_div(len, 4), "0")})\n" end)
     to_set_fun = 1..length(all_sets)
     |> Enum.map(fn i -> "\n  (ite (= num (_ bv#{i} 8)) set#{i}" end)
-    to_set_fun = "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec 136)" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n"
-
-    calls = calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
-    |> Enum.with_index()
-    |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
+    to_set_fun = "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n"
 
     # first figure out which tiles are jokers based on tile_mappings
     call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
@@ -273,9 +282,9 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.filter(fn {tile, _ix} -> Map.has_key?(tile_mappings, tile) end)
     |> Enum.map(fn {tile, ix} ->
       joker_choices = tile_mappings[tile]
-      |> Enum.map(fn tile2 -> "(= joker#{ix} #{to_smt_tile(tile2)})" end)
+      |> Enum.map(fn tile2 -> "(= joker#{ix} #{to_smt_tile(tile2, encoding)})" end)
       |> Enum.join("\n            ")
-      {ix, "(declare-const joker#{ix} (_ BitVec 136))\n(assert (or #{joker_choices}))\n"}
+      {ix, "(declare-const joker#{ix} (_ BitVec #{len}))\n(assert (or #{joker_choices}))\n"}
     end)
     |> Enum.unzip()
 
@@ -284,8 +293,8 @@ defmodule RiichiAdvanced.SMT do
     # (assert (= hand (bvadd #x0001100001110000000200000000000000 joker1)))
     hand_smt = hand
     |> Enum.with_index()
-    |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, ix, joker_ixs)}\n                       " end)
-    hand_smt = ["(declare-const hand (_ BitVec 136))\n(assert (= hand (bvadd #{Enum.join(hand_smt)})))\n"]
+    |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, encoding, ix, joker_ixs)}\n                       " end)
+    hand_smt = ["(declare-const hand (_ BitVec #{len}))\n(assert (= hand (bvadd #{Enum.join(hand_smt)})))\n"]
     
     # hand part 2: declare variables for hand indices
     # (declare-const hand_indices1 (_ BitVec 136))
@@ -297,9 +306,8 @@ defmodule RiichiAdvanced.SMT do
     #     (bvmul hand_indices2 set2)
     #     (bvmul hand_indices3 set3)))
     #   (equal_digits zero (bvadd hand_indices1 hand_indices2 hand_indices3))))
-    shift_set = if wraps do "shift_set" else "bvmul" end
-    declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec 136))\n" end)
-    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (#{shift_set} hand_indices#{i} set#{i})" end) |> Enum.join()
+    declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end)
+    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (shift_set hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(1..length(all_sets), fn i -> " hand_indices#{i}" end)}))))\n"]
 
     has_calls = length(calls) > 0
@@ -314,8 +322,8 @@ defmodule RiichiAdvanced.SMT do
           call_smt = call
           |> Enum.take(3) # ignore kans
           |> Enum.with_index()
-          |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, length(hand)+i*3+ix, joker_ixs)}" end)
-          calls_decls ++ ["(declare-const call#{i+1} (_ BitVec 136))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
+          |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, encoding, length(hand)+i*3+ix, joker_ixs)}" end)
+          calls_decls ++ ["(declare-const call#{i+1} (_ BitVec #{len}))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
       end
 
       # calls part 2: declare variables for call indices and set identities
@@ -332,7 +340,7 @@ defmodule RiichiAdvanced.SMT do
         (declare-const call#{i}_index (_ BitVec 8))
         (declare-const call#{i}_set (_ BitVec 8))
         (assert (is_set_num call#{i}_set))
-        (assert (equal_digits call#{i} (#{shift_set} (tile_from_index call#{i}_index) (to_set call#{i}_set))))
+        (assert (equal_digits call#{i} (shift_set (tile_from_index call#{i}_index) (to_set call#{i}_set))))
         """
       end)
 
@@ -348,7 +356,7 @@ defmodule RiichiAdvanced.SMT do
       #          (ite (= call2_set (_ bv3 8)) (tile_from_index call2_index) zero)))
       call_indices = Enum.map(1..length(all_sets), fn i ->
         call_sets = Enum.map(1..length(calls), fn j -> "(ite (= call#{j}_set (_ bv#{i} 8)) (tile_from_index call#{j}_index) zero)" end)
-        "(define-fun call_indices#{i} () (_ BitVec 136)\n  (bvadd #{Enum.join(call_sets, "\n         ")}))\n"
+        "(define-fun call_indices#{i} () (_ BitVec #{len})\n  (bvadd #{Enum.join(call_sets, "\n         ")}))\n"
       end)
 
       calls_decls ++ call_identities ++ call_indices
@@ -366,7 +374,7 @@ defmodule RiichiAdvanced.SMT do
     # (assert (= sumindices2 (sum_digits indices2)))
     # (assert (= sumindices3 (sum_digits indices3)))
     # (assert (= #x0 (bvand #x8 (add8_single sumindices1 (add8_single sumindices2 sumindices3)))))
-    declare_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const indices#{i} (_ BitVec 136))\n" end)
+    declare_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const indices#{i} (_ BitVec #{len}))\n" end)
     assert_indices = Enum.map(1..length(all_sets), fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i}#{if has_calls do " call_indices#{i}" else "" end})))\n" end)
     declare_sumindices = Enum.map(1..length(all_sets), fn i -> "(declare-const sumindices#{i} (_ BitVec 4))\n" end)
     assert_sumindices = Enum.map(1..length(all_sets), fn i -> "(assert (= sumindices#{i} (sum_digits indices#{i})))\n" end)
@@ -422,7 +430,7 @@ defmodule RiichiAdvanced.SMT do
 
             # then take care of tiles
             {assertions, tile_groups} = if not Enum.empty?(tiles) do
-              {["\n    (tiles#{length(tile_groups)} hand)" | assertions], tile_groups ++ [{Enum.map(tiles, &to_smt_tile/1), num}]}
+              {["\n    (tiles#{length(tile_groups)} hand)" | assertions], tile_groups ++ [{Enum.map(tiles, &to_smt_tile(&1, encoding)), num}]}
             else {assertions, tile_groups} end
             # IO.inspect({groups, set_ixs, tiles})
             {assertions, set_ixs ++ mentioned_set_ixs, tile_groups}
@@ -439,14 +447,15 @@ defmodule RiichiAdvanced.SMT do
     # IO.inspect(tile_groups)
 
     # TODO tile_groups
-    tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {{group, num}, i} -> "(define-fun tiles#{i} ((h (_ BitVec 136))) Bool\n  ((_ at-least #{num})\n#{Enum.map(group, fn tiles -> "    (nonzero (bvand h (bvmul (_ bv7 136) #{tiles})))" end) |> Enum.join("\n")}))\n" end)
+    tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {{group, num}, i} -> "(define-fun tiles#{i} ((h (_ BitVec #{len}))) Bool\n  ((_ at-least #{num})\n#{Enum.map(group, fn tiles -> "    (nonzero (bvand h (bvmul (_ bv7 #{len}) #{tiles})))" end) |> Enum.join("\n")}))\n" end)
 
-    smt = Enum.join([@boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions])
+    smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions])
     if @print_smt do
       IO.puts(smt)
+      IO.inspect(encoding)
     end
     {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 5000)
-    result = obtain_all_solutions(solver_pid, joker_ixs)
+    result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
     # IO.inspect(result)
     result
   end
