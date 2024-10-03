@@ -33,9 +33,9 @@ defmodule Utils do
              :"11z"=>:"11z", :"12z"=>:"12z", :"13z"=>:"13z", :"14z"=>:"14z", :"15z"=>:"15z", :"16z"=>:"16z", :"17z"=>:"17z"}
   def to_tile(tile_str), do: @to_tile[tile_str]
 
-  @tile_color %{:"1m"=>"pink", :"2m"=>"pink", :"3m"=>"pink", :"4m"=>"pink", :"5m"=>"pink", :"6m"=>"pink", :"7m"=>"pink", :"8m"=>"pink", :"9m"=>"pink", :"0m"=>"pink",
-                :"1p"=>"lightblue", :"2p"=>"lightblue", :"3p"=>"lightblue", :"4p"=>"lightblue", :"5p"=>"lightblue", :"6p"=>"lightblue", :"7p"=>"lightblue", :"8p"=>"lightblue", :"9p"=>"lightblue", :"0p"=>"lightblue",
-                :"1s"=>"lightgreen", :"2s"=>"lightgreen", :"3s"=>"lightgreen", :"4s"=>"lightgreen", :"5s"=>"lightgreen", :"6s"=>"lightgreen", :"7s"=>"lightgreen", :"8s"=>"lightgreen", :"9s"=>"lightgreen", :"0s"=>"lightgreen",
+  @tile_color %{:"1m"=>"pink", :"2m"=>"pink", :"3m"=>"pink", :"4m"=>"pink", :"5m"=>"pink", :"6m"=>"pink", :"7m"=>"pink", :"8m"=>"pink", :"9m"=>"pink", :"0m"=>"red",
+                :"1p"=>"lightblue", :"2p"=>"lightblue", :"3p"=>"lightblue", :"4p"=>"lightblue", :"5p"=>"lightblue", :"6p"=>"lightblue", :"7p"=>"lightblue", :"8p"=>"lightblue", :"9p"=>"lightblue", :"0p"=>"red",
+                :"1s"=>"lightgreen", :"2s"=>"lightgreen", :"3s"=>"lightgreen", :"4s"=>"lightgreen", :"5s"=>"lightgreen", :"6s"=>"lightgreen", :"7s"=>"lightgreen", :"8s"=>"lightgreen", :"9s"=>"lightgreen", :"0s"=>"red",
                 :"1z"=>"white", :"2z"=>"white", :"3z"=>"white", :"4z"=>"white", :"5z"=>"white", :"6z"=>"white", :"7z"=>"white", :"0z"=>"white",
                 :"1x"=>"orange", :"2x"=>"orange",
                 :"1f"=>"white", :"2f"=>"white", :"3f"=>"white", :"4f"=>"white",
@@ -82,6 +82,22 @@ defmodule Utils do
     |> Enum.map(fn {tile, _ix} -> tile end)
   end
 
+  # find all jokers that map to the same tile(s) as the given one
+  # together with the tile(s) they are connected by
+  def adjacent_jokers(joker, tile_aliases) do
+    tile_aliases
+    |> Enum.filter(fn {_t, aliases} -> joker in aliases end)
+    |> Enum.flat_map(fn {t, aliases} -> [t | aliases] end)
+    |> Enum.uniq()
+  end
+
+  def same_tile(tile1, tile2, tile_aliases) do
+    l1 = [tile1] ++ adjacent_jokers(tile1, tile_aliases)
+    l2 = [tile2] ++ adjacent_jokers(tile2, tile_aliases)
+    IO.inspect({tile1, tile2, l1, l2, Enum.any?(l1, fn tile -> tile in l2 end)})
+    Enum.any?(l1, fn tile -> tile in l2 end)
+  end
+  
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = cond do

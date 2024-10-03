@@ -83,6 +83,7 @@
     // {"id": "pao", "name": "Pao", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
     // {"id": "suukantsu_pao", "deps": ["pao"], "name": "Suukantsu Pao", "desc": "You are also responsible for payments if you deal the last kan tile called for a suukantsu hand."},
     // {"id": "rinshan_pao", "name": "Rinshan Pao", "desc": "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."},
+    // {"id": "set", "name": "Set", "desc": "You are now playing the card game SET. Sets are no longer sequences or triplets -- instead the three tiles must all match on X property or all be different on X property for all X properties in {suit, suji, low/middle/high}."},
     // {"id": "double_wind_2_fu", "name": "Double Wind 2 Fu", "desc": "A pair of round+seat winds is worth 2 fu instead of 4 fu."},
     // local yaku:
     // {"id": "sanrenkou", "name": "Sanrenkou", "desc": "Local yaku. 2 han for having three triplets of the same suit in sequence, like 222,333,444."},
@@ -745,7 +746,7 @@
   "play_restrictions": [
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]]
+    [["any"], [["not_just_called", {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],

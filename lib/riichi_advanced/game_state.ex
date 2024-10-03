@@ -970,8 +970,8 @@ defmodule RiichiAdvanced.GameState do
       "has_yakuman_with_hand"    -> not Enum.empty?(cxt_player.draw) && Scoring.seat_scores_points(state, state.rules["yakuman"], 1, context.seat, Enum.at(cxt_player.draw, 0), :draw)
       "has_yakuman_with_discard" -> last_action.action == :discard && Scoring.seat_scores_points(state, state.rules["yakuman"], 1, context.seat, last_action.tile, :discard)
       "has_yakuman_with_call"    -> last_action.action == :call && Scoring.seat_scores_points(state, state.rules["yakuman"], 1, context.seat, last_action.tile, :call)
-      "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile})
-      "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action})
+      "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile, tile_aliases: state.players[context.seat].tile_aliases})
+      "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, tile_aliases: state.players[context.seat].tile_aliases, call: last_call_action})
       "unneeded_for_hand"        -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_aliases)
       "has_calls"                -> not Enum.empty?(cxt_player.calls)
       "no_calls"                 -> Enum.empty?(cxt_player.calls)
@@ -1033,7 +1033,7 @@ defmodule RiichiAdvanced.GameState do
         dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
         num = Enum.at(opts, 1, 1)
         dora = Map.get(state.rules["dora_indicators"], Atom.to_string(dora_indicator), [])
-        Enum.count(Riichi.normalize_red_fives(cxt_player.winning_hand), fn tile -> Atom.to_string(tile) in dora end) == num
+        Enum.count(cxt_player.winning_hand, fn tile -> Atom.to_string(tile) in dora end) == num
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       "match"                    -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -1064,11 +1064,18 @@ defmodule RiichiAdvanced.GameState do
         Enum.at(placements, Enum.at(opts, 0, 1) - 1) == context.seat
       "last_discard_matches_existing" -> 
         if last_discard_action != nil do
-          tile = Riichi.normalize_red_five(last_discard_action.tile)
-          discards = state.players[last_discard_action.seat].discards |> Riichi.normalize_red_fives() |> Enum.drop(-1)
-          tile in discards
+          tile = last_discard_action.tile
+          discards = state.players[last_discard_action.seat].discards |> Enum.drop(-1)
+          tile_aliases = state.players[last_discard_action.seat].tile_aliases
+          Enum.any?(discards, fn discard -> Utils.same_tile(tile, discard, tile_aliases) end)
         else false end
-      "called_tile_matches_any_discard" -> last_call_action != nil && Riichi.normalize_red_five(last_call_action.called_tile) in Riichi.normalize_red_fives(Enum.flat_map(state.players, fn {_seat, player} -> player.pond end))
+      "called_tile_matches_any_discard" ->
+        if last_call_action != nil do
+          tile = last_call_action.called_tile
+          discards = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
+          tile_aliases = state.players[context.seat].tile_aliases
+          Enum.any?(discards, fn discard -> Utils.same_tile(tile, discard, tile_aliases) end)
+        else false end
       "last_discard_exists" ->
         last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
       "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards
@@ -1127,12 +1134,13 @@ defmodule RiichiAdvanced.GameState do
         length(waits) <= number
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
-          "last_discard" -> if last_discard_action != nil do [Riichi.normalize_red_five(last_discard_action.tile)] else [] end
-          _ -> [Riichi.normalize_red_five(context.tile)]
+          "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
+          _ -> [context.tile]
         end
         tag = Enum.at(opts, 1, "missing_tag")
-        tagged_tile = Riichi.normalize_red_five(state.tags[tag])
-        Enum.any?(targets, fn target -> target == tagged_tile end)
+        tagged_tile = state.tags[tag]
+        tile_aliases = state.players[context.seat].tile_aliases
+        Enum.any?(targets, fn target -> Utils.same_tile(target, tagged_tile, tile_aliases) end)
       "has_hell_wait" ->
         hand = cxt_player.hand
         calls = cxt_player.calls
@@ -1142,7 +1150,7 @@ defmodule RiichiAdvanced.GameState do
         |> Enum.flat_map(fn {hand, _calls} -> hand end)
         visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
         visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
-        ukeire = Riichi.count_ukeire(pair_waits, hand, visible_ponds, visible_calls, context.winning_tile)
+        ukeire = Riichi.count_ukeire(pair_waits, hand, visible_ponds, visible_calls, context.winning_tile, tile_aliases)
         # IO.puts("Pair waits: #{inspect(pair_waits)}, ukeire: #{inspect(ukeire)}")
         ukeire == 1
       "third_row_discard"   -> length(cxt_player.pond) >= 12

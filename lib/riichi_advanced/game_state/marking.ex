@@ -80,7 +80,7 @@ defmodule RiichiAdvanced.GameState.Marking do
               GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
               true
           end
-        "match_called_tile" -> Riichi.normalize_red_five(tile) == Riichi.normalize_red_five(get_last_call_action(state).called_tile)
+        "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
         "7z"                -> tile == :"7z"
         "self"              -> seat == state.marking.marking_player
         _                   ->
