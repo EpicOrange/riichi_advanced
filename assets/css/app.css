@@ -393,6 +393,10 @@ div.centerpiece > div.honba-counter::after {
   transform: rotate(90deg);
   z-index: 1;
 }
+/* sometimes the compass duplicates itself, remove the duplicate */
+div.compass ~ div.compass {
+  display: none;
+}
 
 
 /* corner info */

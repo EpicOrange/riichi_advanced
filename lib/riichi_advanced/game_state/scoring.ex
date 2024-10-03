@@ -42,7 +42,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # t = System.system_time(:millisecond)
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       # TODO actually generalize SMT wrapping based on ordering rather than hardcoding
-      wraps = "1m" in state.players[seat].tile_ordering["9m"]
+      wraps = "1m" in Map.get(state.players[seat].tile_ordering, "9m", [])
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_mappings, wraps)
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")

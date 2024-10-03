@@ -408,7 +408,7 @@ defmodule Riichi do
 
     # TODO actually generalize wrapping based on ordering
     # rather than hardcoding
-    wraps = "1m" in ordering["9m"]
+    wraps = "1m" in Map.get(ordering, "9m", [])
     possible_penchan_removed = if wraps do [] else
       case winning_tile do
         :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"], tile_aliases)
