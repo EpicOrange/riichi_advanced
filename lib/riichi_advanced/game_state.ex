@@ -1201,6 +1201,10 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def play_sound(state, path, seat \\ nil) do
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "play_sound", %{"seat" => seat, "path" => path})
+  end
+  
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
       Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}

@@ -325,6 +325,15 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
+  def handle_info(%{topic: topic, event: "play_sound", payload: %{"seat" => seat, "path" => path}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) && (seat == nil || seat == socket.assigns.viewer) do
+      socket = push_event(socket, "play-sound", %{path: path})
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
     if topic == "messages:" <> socket.id do
       socket = assign(socket, :messages, state.messages)

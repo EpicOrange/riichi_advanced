@@ -25,6 +25,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
           {seat, if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end}
         end
       end)
+      
+      # play button notify sound
+      for {seat, buttons} <- new_buttons do
+        if not Enum.empty?(buttons) do
+          play_sound(state, "/audio/pop.mp3", seat)
+        end
+      end
+
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_buttons)}")
       update_all_players(state, fn seat, player -> %Player{ player | buttons: new_buttons[seat] } end)
     else state end

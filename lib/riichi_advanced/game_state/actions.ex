@@ -39,6 +39,15 @@ defmodule RiichiAdvanced.GameState.Actions do
         Utils.pt(tile)
       ])
 
+      click_sounds = [
+        "/audio/tile1.mp3",
+        "/audio/tile2.mp3",
+        "/audio/tile3.mp3",
+        "/audio/tile4.mp3",
+        "/audio/tile5.mp3",
+      ]
+      play_sound(state, Enum.random(click_sounds))
+
       # check if it completes second row discards
       state = if Map.has_key?(state, :saki) do
         if length(state.players[seat].pond) == 1 && not state.saki.already_finished_second_row_discards do
@@ -184,6 +193,14 @@ defmodule RiichiAdvanced.GameState.Actions do
       Utils.pt(called_tile),
       %{text: " with "}
     ] ++ Utils.ph(call_choice))
+    click_sounds = [
+      "/audio/call1.mp3",
+      "/audio/call2.mp3",
+      "/audio/call3.mp3",
+      "/audio/call4.mp3",
+      "/audio/call5.mp3",
+    ]
+    play_sound(state, Enum.random(click_sounds))
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state = if Map.has_key?(state.rules, "after_call") do
       run_actions(state, state.rules["after_call"]["actions"], %{seat: seat, callee: state.turn, caller: seat, call: call})

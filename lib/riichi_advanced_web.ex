@@ -17,7 +17,7 @@ defmodule RiichiAdvancedWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images mods rulesets favicon.ico robots.txt .well-known)
+  def static_paths, do: ~w(assets fonts images audio rulesets mods favicon.ico robots.txt .well-known)
 
   def router do
     quote do
