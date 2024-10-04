@@ -107,12 +107,18 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <% end %>
       </div>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
+      <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
     </div>
     """
+  end
+
+  def handle_event("back", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/")
+    {:noreply, socket}
   end
 
   def handle_event("double_clicked", _assigns, socket) do

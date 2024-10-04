@@ -61,7 +61,6 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
     if topic == "messages:" <> socket.id do
-      IO.inspect(state)
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else
