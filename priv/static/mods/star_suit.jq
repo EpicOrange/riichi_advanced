@@ -27,3 +27,13 @@ if .dora_indicators then
     "8t": ["9t"]
   }
 else . end
+|
+# aka support
+if any(.wall[]; . == "0m") then
+  (.wall | index("5t")) as $idx | if $idx then .wall[$idx] = "0t" else . end
+else . end
+|
+# ten support
+if any(.wall[]; . == "10m") then
+  .wall += ["10t", "10t", "10t", "10t"]
+else . end
