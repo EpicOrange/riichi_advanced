@@ -183,6 +183,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.merge(state, %Game{
       ruleset: state.ruleset,
       session_id: state.session_id,
+      mods: state.mods,
       ruleset_json: if Enum.empty?(mods) do orig_ruleset_json else ruleset_json end,
       supervisor: supervisor,
       mutex: mutex,

@@ -5,7 +5,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     socket = socket
     |> assign(:session_id, params["id"])
     |> assign(:ruleset, params["ruleset"])
-    |> assign(:nickname, params["nickname"])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:lobby_state, nil)

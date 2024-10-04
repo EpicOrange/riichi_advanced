@@ -12,11 +12,22 @@ def add_yaku_statuses($actions; $type):
 # replace a 7z with golden chun
 (.wall | index("7z")) as $idx | if $idx then .wall[$idx] = "27z" else . end
 |
-# treat red hatsu as 6z, golden chun as 5 wildcard or chun
+# treat red hatsu as 6z
 .after_start.actions += [
-  ["set_tile_alias_all", ["26z"], ["6z"]],
-  ["set_tile_alias_all", ["27z"], ["5m", "5p", "5s", "7z"]]
+  ["set_tile_alias_all", ["26z"], ["6z"]]
 ]
+|
+# treat golden chun as 5 wildcard or chun
+# support for star suit mod
+if any(.wall[]; . == "1t") then
+  .after_start.actions += [
+    ["set_tile_alias_all", ["27z"], ["5m", "5p", "5s", "5t", "7z"]]
+  ]
+else
+  .after_start.actions += [
+    ["set_tile_alias_all", ["27z"], ["5m", "5p", "5s", "7z"]]
+  ]
+end
 # add golden chun definition for when it's used as a five
 |
 .golden_chun_77z_win_definition = [

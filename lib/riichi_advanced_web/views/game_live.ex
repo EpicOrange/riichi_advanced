@@ -74,7 +74,14 @@ defmodule RiichiAdvancedWeb.GameLive do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
-        GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Entered game"}})
+        GenServer.cast(messages_init.messages_state, {:add_message, [
+          %{text: "Entered a "},
+          %{bold: true, text: socket.assigns.ruleset},
+          %{text: "game, room code"},
+          %{bold: true, text: socket.assigns.session_id}
+        ] ++ if state.mods != nil && not Enum.empty?(state.mods) do
+          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
+        else [] end})
         socket
       else socket end
       {:ok, socket}
@@ -149,10 +156,14 @@ defmodule RiichiAdvancedWeb.GameLive do
         display_riichi_sticks={@display_riichi_sticks}
         display_honba={@display_honba}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
-      <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@state.winners} winner_index={@state.winner_index} timer={@state.timer} visible_screen={@state.visible_screen}/>
-      <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen}/>
-      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
-      <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
+      <%= if @state.visible_screen != nil do %>
+        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winners={@state.winners} winner_index={@state.winner_index} timer={@state.timer} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
+      <% end %>
+      <%= if @state.error != nil do %>
+        <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
+      <% end %>
       <%= if @viewer != :spectator do %>
         <div class="buttons">
           <%= if not Enum.empty?(@state.marking[@seat]) do %>
@@ -232,7 +243,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{Map.get(socket.assigns, :nickname, "")}")
     {:noreply, socket}
   end
 
