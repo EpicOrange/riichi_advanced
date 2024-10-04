@@ -43,6 +43,11 @@ function getCancellableClickTarget(elem) {
   if (elem.attributes.hasOwnProperty("phx-cancellable-click")) return elem;
   return getCancellableClickTarget(elem.parentElement);
 }
+function inLabelOrButton(elem) {
+  if (!elem) return false;
+  if (elem.tagName == "LABEL" || elem.tagName == "BUTTON") return true;
+  return inLabelOrButton(elem.parentElement);
+}
 
 window.mouseDownElement = null;
 Hooks.ClickListener = {
@@ -75,13 +80,13 @@ Hooks.ClickListener = {
     });
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
-      if (e.target.tagName != "LABEL" && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (!inLabelOrButton(e.target) && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("double_clicked");
       }
     });
     this.el.addEventListener('contextmenu', e => {
       e.preventDefault();
-      if (e.target.tagName != "LABEL" && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (!inLabelOrButton(e.target) && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("right_clicked");
       }
     });

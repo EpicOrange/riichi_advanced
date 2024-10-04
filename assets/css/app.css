@@ -14,7 +14,7 @@ main {
 
   --tile-size: min(calc(90vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
-  --tile-front-side: #f0ece7;
+  --tile-front-side: #eee4d8;
   --tile-back: #f0974c;
   --tile-back-side: #f0974c;
   position: relative;
@@ -1747,6 +1747,7 @@ div.lobby > div.mods > label {
   padding: 0 calc(0.125 * var(--tile-size));
   margin-top: calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
+  white-space: nowrap;
 }
 div.lobby > div.mods > input:checked + label { background: var(--tile-back); }
 
