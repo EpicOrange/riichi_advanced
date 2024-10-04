@@ -100,7 +100,7 @@
 .yaku |= map(select(.display_name != "Chiitoitsu"))
 |
 # sequences wrap (supports ten mod)
-if any(.after_start.actions[]; . == ["set_tile_ordering", ["9m", "10m"]]) then
+if any(.wall[]; . == "10m") then
   .after_start.actions += [
     ["set_tile_ordering", ["10m", "1m"]],
     ["set_tile_ordering", ["10p", "1p"]],

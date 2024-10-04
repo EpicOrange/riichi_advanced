@@ -132,7 +132,7 @@ defmodule RiichiAdvanced.SMT do
         |> Map.new(fn {tile, i} -> {Bitwise.<<<(1, acc+i*4), tile} end)
         {acc + suit_len, Map.merge(encoding, new_encoding), Map.merge(encoding_r, new_encoding_r), [new_suit | suits]}
     end
-    {_, encoding, suits} = for cycle <- cycles, reduce: {acc, encoding, suits} do
+    {_, encoding, encoding_r, suits} = for cycle <- cycles, reduce: {acc, encoding, suits} do
       {acc, encoding, suits} ->
         suit_len = 4 * length(cycle)
         new_suit = "(apply_set_cycle set indices (_ bv#{acc} #{len}) (_ bv#{suit_len} #{len}))"
