@@ -207,7 +207,6 @@ defmodule RiichiAdvanced.LobbyState do
         state = if state.shuffle do
           Map.update!(state, :seats, fn seats -> Map.keys(seats) |> Enum.zip(Map.values(seats) |> Enum.shuffle()) |> Map.new() end)
         else state end
-        IO.inspect(state.seats)
         state = Map.put(state, :started, true)
         state
       {:error, {:shutdown, error}} ->

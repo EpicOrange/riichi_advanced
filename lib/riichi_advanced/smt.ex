@@ -132,8 +132,8 @@ defmodule RiichiAdvanced.SMT do
         |> Map.new(fn {tile, i} -> {Bitwise.<<<(1, acc+i*4), tile} end)
         {acc + suit_len, Map.merge(encoding, new_encoding), Map.merge(encoding_r, new_encoding_r), [new_suit | suits]}
     end
-    {_, encoding, encoding_r, suits} = for cycle <- cycles, reduce: {acc, encoding, suits} do
-      {acc, encoding, suits} ->
+    {_, encoding, encoding_r, suits} = for cycle <- cycles, reduce: {acc, encoding, encoding_r, suits} do
+      {acc, encoding, encoding_r, suits} ->
         suit_len = 4 * length(cycle)
         new_suit = "(apply_set_cycle set indices (_ bv#{acc} #{len}) (_ bv#{suit_len} #{len}))"
         new_encoding = cycle
@@ -452,7 +452,7 @@ defmodule RiichiAdvanced.SMT do
     smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions])
     if @print_smt do
       IO.puts(smt)
-      IO.inspect(encoding)
+      # IO.inspect(encoding)
     end
     {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 5000)
     result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)

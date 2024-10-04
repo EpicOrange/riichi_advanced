@@ -25,7 +25,6 @@ defmodule RiichiAdvanced.MessagesState do
   end
 
   def init(state) do
-    IO.inspect(state)
     # lookup pids of the other processes we'll be using
     [{supervisor, _}] = Registry.lookup(:game_registry, "messages-" <> state.socket_id)
     [{exit_monitor, _}] = Registry.lookup(:game_registry, "exit_monitor_messages-" <> state.socket_id)
@@ -48,7 +47,6 @@ defmodule RiichiAdvanced.MessagesState do
   def handle_call({:new_player, socket}, _from, state) do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     IO.puts("Retrieving messages for #{socket.id}")
-    IO.inspect(state)
     state = broadcast_state_change(state)
     state = Map.put(state, :disconnected, false)
     {:reply, [state], state}

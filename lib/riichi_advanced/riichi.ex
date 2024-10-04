@@ -302,7 +302,6 @@ defmodule Riichi do
         potential_set = context.call.other_tiles ++ [context.tile2]
         triplet = remove_group(potential_set, [], [0,0,0], context.ordering, context.ordering_r, context.tile_aliases)
         sequence = remove_group(potential_set, [], [0,1,2], context.ordering, context.ordering_r, context.tile_aliases)
-        IO.inspect({potential_set, triplet, sequence})
         Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs
