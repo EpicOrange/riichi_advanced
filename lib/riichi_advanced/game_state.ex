@@ -252,6 +252,13 @@ defmodule RiichiAdvanced.GameState do
       """)
     else
       wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
+      
+      # check that there are no nil tiles
+      state = wall
+      |> Enum.zip(rules["wall"])
+      |> Enum.filter(fn {result, _orig} -> result == nil end)
+      |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
+
       wall = Enum.shuffle(wall)
       wall = if Debug.debug() do Debug.set_wall(wall) else wall end
 
