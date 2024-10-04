@@ -33,8 +33,8 @@
            "0z", "0z", "0z", "0z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z",
-           "2j", "3j", "4j", "5j",
-           "6j", "7j", "8j", "9j"],
+           "12j", "13j", "14j", "15j",
+           "16j", "17j", "18j", "19j"],
   "reserved_tiles": [
     "kandraw_3", "kandraw_4",
     "kandraw_1", "kandraw_2"
@@ -265,7 +265,7 @@
     [ "nojoker", [["ryanmen/penchan", "kanchan", "pair"], 2] ]
   ],
   "any_joker_definition": [
-    [[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]
+    [[["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]]
   ],
   "副露九子連環_definition": [
     [ [[[[0,0,0],[0,1,2],[3,4,5],[6,7,8],[8,8]]], 1] ],
@@ -545,49 +545,49 @@
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["2j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["12j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["3j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["13j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["4j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["14j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["5j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["15j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["6j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["16j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["7j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["17j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["8j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["18j"]], 1]]]]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["9j"]], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[[["19j"]], 1]]]]}]
     },
     {
       "display_name": "No Honors or Flowers",
       "value": 2,
       "when": [
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]},
-        {"name": "not_match", "opts": [["jokers"], [[[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}
+        {"name": "not_match", "opts": [["jokers"], [[[["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]]]]}
       ]
     },
     {
@@ -1548,14 +1548,14 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "discards_empty"],
-      ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]],
-      ["set_tile_alias_all", ["3j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["4j"], ["1z","2z","3z","4z","0z","6z","7z"]],
-      ["set_tile_alias_all", ["5j"], ["0z","6z","7z"]],
-      ["set_tile_alias_all", ["6j"], ["1z","2z","3z","4z"]],
-      ["set_tile_alias_all", ["7j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
-      ["set_tile_alias_all", ["8j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["9j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
+      ["set_tile_alias_all", ["12j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]],
+      ["set_tile_alias_all", ["13j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+      ["set_tile_alias_all", ["14j"], ["1z","2z","3z","4z","0z","6z","7z"]],
+      ["set_tile_alias_all", ["15j"], ["0z","6z","7z"]],
+      ["set_tile_alias_all", ["16j"], ["1z","2z","3z","4z"]],
+      ["set_tile_alias_all", ["17j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
+      ["set_tile_alias_all", ["18j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+      ["set_tile_alias_all", ["19j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
     ]
   },
   "buttons": {
@@ -1656,8 +1656,8 @@
     },
     "joker": {
       "display_name": "Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "2j", "3j", "4j", "5j", "6j", "7j", "8j", "9j"], ["set_status", "joker"], ["draw"]]
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]]]]}],
+      "actions": [["big_text", "Flower"], ["flower", "12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], ["set_status", "joker"], ["draw"]]
     }
   },
   "auto_buttons": {

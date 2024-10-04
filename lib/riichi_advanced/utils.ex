@@ -10,6 +10,8 @@ defmodule Utils do
              "1a"=>:"1a", "2a"=>:"2a", "3a"=>:"3a", "4a"=>:"4a",
              "1y"=>:"1y", "2y"=>:"2y",
              "1j"=>:"1j", "2j"=>:"2j", "3j"=>:"3j", "4j"=>:"4j", "5j"=>:"5j", "6j"=>:"6j", "7j"=>:"7j", "8j"=>:"8j", "9j"=>:"9j", "10j"=>:"10j",
+             "12j"=>:"12j", "13j"=>:"13j", "15j"=>:"15j", "16j"=>:"16j", "18j"=>:"18j", "19j"=>:"19j", 
+             "14j"=>:"4j", "17j"=>:"7j",
              "1k"=>:"1k", "2k"=>:"2k", "3k"=>:"3k", "4k"=>:"4k",
              "1q"=>:"1q", "2q"=>:"2q", "3q"=>:"3q", "4q"=>:"4q",
              "11m"=>:"11m", "12m"=>:"12m", "13m"=>:"13m", "14m"=>:"14m", "15m"=>:"15m", "16m"=>:"16m", "17m"=>:"17m", "18m"=>:"18m", "19m"=>:"19m",
@@ -30,6 +32,7 @@ defmodule Utils do
              :"1a"=>:"1a", :"2a"=>:"2a", :"3a"=>:"3a", :"4a"=>:"4a",
              :"1y"=>:"1y", :"2y"=>:"2y",
              :"1j"=>:"1j", :"2j"=>:"2j", :"3j"=>:"3j", :"4j"=>:"4j", :"5j"=>:"5j", :"6j"=>:"6j", :"7j"=>:"7j", :"8j"=>:"8j", :"9j"=>:"9j", :"10j"=>:"10j",
+             :"12j"=>:"12j", :"13j"=>:"13j", :"15j"=>:"15j", :"16j"=>:"16j", :"18j"=>:"18j", :"19j"=>:"19j",
              :"1k"=>:"1k", :"2k"=>:"2k", :"3k"=>:"3k", :"4k"=>:"4k",
              :"1q"=>:"1q", :"2q"=>:"2q", :"3q"=>:"3q", :"4q"=>:"4q",
              :"11m"=>:"11m", :"12m"=>:"12m", :"13m"=>:"13m", :"14m"=>:"14m", :"15m"=>:"15m", :"16m"=>:"16m", :"17m"=>:"17m", :"18m"=>:"18m", :"19m"=>:"19m",
@@ -45,20 +48,12 @@ defmodule Utils do
   @tile_color %{:"1m"=>"pink", :"2m"=>"pink", :"3m"=>"pink", :"4m"=>"pink", :"5m"=>"pink", :"6m"=>"pink", :"7m"=>"pink", :"8m"=>"pink", :"9m"=>"pink", :"0m"=>"red",
                 :"1p"=>"lightblue", :"2p"=>"lightblue", :"3p"=>"lightblue", :"4p"=>"lightblue", :"5p"=>"lightblue", :"6p"=>"lightblue", :"7p"=>"lightblue", :"8p"=>"lightblue", :"9p"=>"lightblue", :"0p"=>"red",
                 :"1s"=>"lightgreen", :"2s"=>"lightgreen", :"3s"=>"lightgreen", :"4s"=>"lightgreen", :"5s"=>"lightgreen", :"6s"=>"lightgreen", :"7s"=>"lightgreen", :"8s"=>"lightgreen", :"9s"=>"lightgreen", :"0s"=>"red",
-                :"1z"=>"white", :"2z"=>"white", :"3z"=>"white", :"4z"=>"white", :"5z"=>"white", :"6z"=>"white", :"7z"=>"white", :"0z"=>"white",
                 :"1x"=>"orange", :"2x"=>"orange",
-                :"1f"=>"white", :"2f"=>"white", :"3f"=>"white", :"4f"=>"white",
-                :"1g"=>"white", :"2g"=>"white", :"3g"=>"white", :"4g"=>"white",
-                :"1a"=>"white", :"2a"=>"white", :"3a"=>"white", :"4a"=>"white",
-                :"1y"=>"white", :"2y"=>"white",
-                :"1j"=>"white", :"2j"=>"white", :"3j"=>"white", :"4j"=>"white", :"5j"=>"white", :"6j"=>"white", :"7j"=>"white", :"8j"=>"white", :"9j"=>"white", :"10j"=>"white",
-                :"1k"=>"white", :"2k"=>"white", :"3k"=>"white", :"4k"=>"white",
-                :"1q"=>"white", :"2q"=>"white", :"3q"=>"white", :"4q"=>"white",
                 :"11m"=>"cyan", :"12m"=>"cyan", :"13m"=>"cyan", :"14m"=>"cyan", :"15m"=>"cyan", :"16m"=>"cyan", :"17m"=>"cyan", :"18m"=>"cyan", :"19m"=>"cyan",
                 :"11p"=>"cyan", :"12p"=>"cyan", :"13p"=>"cyan", :"14p"=>"cyan", :"15p"=>"cyan", :"16p"=>"cyan", :"17p"=>"cyan", :"18p"=>"cyan", :"19p"=>"cyan",
                 :"11s"=>"cyan", :"12s"=>"cyan", :"13s"=>"cyan", :"14s"=>"cyan", :"15s"=>"cyan", :"16s"=>"cyan", :"17s"=>"cyan", :"18s"=>"cyan", :"19s"=>"cyan",
                 :"11z"=>"cyan", :"12z"=>"cyan", :"13z"=>"cyan", :"14z"=>"cyan", :"15z"=>"cyan", :"16z"=>"cyan", :"17z"=>"cyan"}
-  def tile_color(tile), do: @tile_color[tile]
+  def tile_color(tile), do: Map.get(@tile_color, tile, "white")
 
   # print tile, print hand
   def pt(tile), do: %{bold: true, color: tile_color(tile), text: "#{tile}"}
@@ -81,6 +76,7 @@ defmodule Utils do
       :"1a" -> 2460; :"2a" -> 2470; :"3a" -> 2480; :"4a" -> 2490;
       :"1y" -> 2500; :"2y" -> 2510;
       :"1j" -> 2520; :"2j" -> 2530; :"7j" -> 2540; :"8j" -> 2550; :"9j" -> 2560; :"3j" -> 2570; :"4j" -> 2580; :"10j" -> 2590; :"5j" -> 2600; :"6j" -> 2610; 
+      :"12j" -> 2531; :"18j" -> 2551; :"19j" -> 2561; :"13j" -> 2571; :"15j" -> 2601; :"16j" -> 2611; 
       :"1k" -> 2620; :"2k" -> 2630; :"3k" -> 2640; :"4k" -> 2650;
       :"1q" -> 2660; :"2q" -> 2670; :"3q" -> 2680; :"4q" -> 2690;
       :"1x" -> 5000; :"2x" -> 5001

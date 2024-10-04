@@ -439,7 +439,7 @@ div.tile {
   --tile-width: calc(0.75 * var(--tile-size));
   --tile-height: calc(1 * var(--tile-size));
   --border-width: 0px;
-  --num-tiles: 123;
+  --num-tiles: 129;
   border: var(--border-width) solid var(--tile-back);
   width: var(--tile-width);
   height: var(--tile-height);
@@ -621,6 +621,12 @@ div.tile.\36 t { background-position-y: calc(-119 * var(--tile-size) - var(--bor
 div.tile.\37 t { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
 div.tile.\38 t { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
 div.tile.\39 t { background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \32 j { background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \33 j { background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \35 j { background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \36 j { background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \38 j { background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \39 j { background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.inactive {
   opacity: 0.6;
