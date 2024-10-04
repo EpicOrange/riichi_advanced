@@ -23,10 +23,13 @@ Hooks.Sortable = {
   mounted() {
     let sorter = new Sortable(this.el, {
       animation: 150,
-      delay: 100,
+      delay: 0,
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
       forceFallback: true,
+      onStart: function (evt) {
+        window.mouseDownElement = null;
+      },
       onEnd: e => {
         let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
         this.pushEventTo(this.el, "reposition", params)
@@ -41,19 +44,19 @@ function getCancellableClickTarget(elem) {
   return getCancellableClickTarget(elem.parentElement);
 }
 
-var mouseDownElement = null;
+window.mouseDownElement = null;
 Hooks.ClickListener = {
   mounted() {
     this.el.addEventListener('mousedown', e => {
       var target = getCancellableClickTarget(e.target);
       if (target !== null) {
-        mouseDownElement = target;
+        window.mouseDownElement = target;
       }
     });
     this.el.addEventListener('mouseup', e => {
       var target = getCancellableClickTarget(e.target);
       if (target !== null) {
-        if (mouseDownElement == target) {
+        if (window.mouseDownElement == target) {
           var params = {};
           for (let attr of target.attributes) {
             if (attr.name.startsWith("phx-value-")) {
@@ -67,18 +70,18 @@ Hooks.ClickListener = {
             this.pushEvent(target.getAttribute("phx-cancellable-click"), params);
           }
         }
-        mouseDownElement == null;
+        window.mouseDownElement = null;
       }
     });
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
-      if (!e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (e.target.tagName != "LABEL" && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("double_clicked");
       }
     });
     this.el.addEventListener('contextmenu', e => {
       e.preventDefault();
-      if (!e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (e.target.tagName != "LABEL" && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("right_clicked");
       }
     });

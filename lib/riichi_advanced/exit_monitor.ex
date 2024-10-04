@@ -10,11 +10,18 @@ defmodule RiichiAdvanced.ExitMonitor do
   end
 
   def handle_call({:new_player, pid, identifier}, {from_pid, _tag}, state) do
-    state = Map.put(state, pid, %{from: from_pid, identifier: identifier, monitor_ref: Process.monitor(pid)})
-    {:reply, :ok, state}
+    if not Map.has_key?(state, pid) do
+      state = Map.put(state, pid, %{from: from_pid, identifier: identifier, monitor_ref: Process.monitor(pid)})
+      # IO.puts("#{inspect(self())}: Now monitoring #{inspect(pid)}! state: #{inspect(state)}")
+      {:reply, :ok, state}
+    else
+      # IO.puts("#{inspect(self())}: Already monitoring #{inspect(pid)}! state: #{inspect(state)}")
+      {:reply, :ok, state}
+    end
   end
 
   def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
+    # IO.puts("#{inspect(self())}: #{inspect(pid)} just went down! state: #{inspect(state)}")
     GenServer.call(state[pid].from, {:delete_player, state[pid].identifier})
     {:noreply, Map.delete(state, pid)}
   end
