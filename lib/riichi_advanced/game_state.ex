@@ -84,6 +84,7 @@ defmodule Game do
     # working game state (reset on new round)
     turn: :east,
     wall_index: 0,
+    dead_wall_index: 0,
     actions: [],
     dead_wall: [],
     reversed_turn_order: false,
@@ -1007,8 +1008,8 @@ defmodule RiichiAdvanced.GameState do
       "tile_not_drawn"           -> Enum.all?(opts, fn tile -> tile not in state.drawn_reserved_tiles end)
       "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
-      "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index <= 0
-      "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
+      "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index <= 0
+      "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index >= Enum.at(opts, 0, 0)
       "has_score"                -> state.players[context.seat].score >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->
         draws_left = length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index

@@ -564,6 +564,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "charleston_left" -> do_charleston(state, :kamicha, context.seat, marked_objects)
       "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
       "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
+      "shift_dead_wall_index" -> Map.update!(state, :dead_wall_index, & &1 + Enum.at(opts, 0, 1))
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

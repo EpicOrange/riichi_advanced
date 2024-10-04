@@ -30,7 +30,8 @@ defmodule RiichiAdvanced.GameState.Saki do
     "toyouko-momoko",
     "usuzawa-sae",
     "usuzumi-hatsumi",
-    "yumeno-maho"
+    "yumeno-maho",
+    "amae-koromo",
   ]
 
   def initialize_saki(state) do
