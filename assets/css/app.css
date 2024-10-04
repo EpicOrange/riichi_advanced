@@ -439,7 +439,7 @@ div.tile {
   --tile-width: calc(0.75 * var(--tile-size));
   --tile-height: calc(1 * var(--tile-size));
   --border-width: 0px;
-  --num-tiles: 114;
+  --num-tiles: 123;
   border: var(--border-width) solid var(--tile-back);
   width: var(--tile-width);
   height: var(--tile-height);
@@ -612,6 +612,15 @@ div.tile.\31 \30 s { background-position-y: calc(-110 * var(--tile-size) - var(-
 div.tile.\32 \35 z { background-position-y: calc(-111 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 \36 z { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 \37 z { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 t { background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 t { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 t { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 t { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 t { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 t { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 t { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 t { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 t { background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.inactive {
   opacity: 0.6;
