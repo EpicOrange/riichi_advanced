@@ -107,3 +107,23 @@ if .dora_indicators then
     "17z": ["5z", "6z", "7z"]
   }
 else . end
+|
+# support for ten mod
+if any(.wall[]; . == "10m") then
+  if .dora_indicators then
+    .dora_indicators += {
+      "19m": ["10m", "10p", "10s"],
+      "19p": ["10m", "10p", "10s"],
+      "19s": ["10m", "10p", "10s"],
+      "110m": ["1m", "1p", "1s"],
+      "110p": ["1m", "1p", "1s"],
+      "110s": ["1m", "1p", "1s"]
+    }
+  else . end
+  |
+  .after_start.actions += [
+    ["set_tile_alias_all", ["110m"], ["10m","10s","10p"]],
+    ["set_tile_alias_all", ["110p"], ["10m","10s","10p"]],
+    ["set_tile_alias_all", ["110s"], ["10m","10s","10p"]]
+  ]
+else . end
