@@ -72,7 +72,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
-        # subscribe to state updates
+        # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Entered game"}})
         socket

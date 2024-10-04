@@ -6,6 +6,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
+      # subscribe to message updates
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
       GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
       socket
     else socket end
@@ -59,6 +61,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
     if topic == "messages:" <> socket.id do
+      IO.inspect(state)
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else
