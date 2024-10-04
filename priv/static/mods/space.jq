@@ -99,11 +99,23 @@
 # remove chiitoitsu
 .yaku |= map(select(.display_name != "Chiitoitsu"))
 |
-# sequences wrap and honors form sequences
+# sequences wrap (supports ten mod)
+if any(.after_start.actions[]; . == ["set_tile_ordering", ["9m", "10m"]]) then
+  .after_start.actions += [
+    ["set_tile_ordering", ["10m", "1m"]],
+    ["set_tile_ordering", ["10p", "1p"]],
+    ["set_tile_ordering", ["10s", "1s"]]
+  ]
+else
+  .after_start.actions += [
+    ["set_tile_ordering", ["9m", "1m"]],
+    ["set_tile_ordering", ["9p", "1p"]],
+    ["set_tile_ordering", ["9s", "1s"]]
+  ]
+end
+|
+# honors form wrapping sequences
 .after_start.actions += [
-  ["set_tile_ordering", ["9m", "1m"]],
-  ["set_tile_ordering", ["9p", "1p"]],
-  ["set_tile_ordering", ["9s", "1s"]],
   ["set_tile_ordering", ["1z", "2z", "3z", "4z", "1z"]],
   ["set_tile_ordering", ["5z", "6z", "7z", "5z"]]
 ]
