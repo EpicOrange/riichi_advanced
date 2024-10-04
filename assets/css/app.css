@@ -607,12 +607,12 @@ div.tile.\31 \34 z { background-position-y: calc(-104 * var(--tile-size) - var(-
 div.tile.\31 \35 z { background-position-y: calc(-105 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \36 z { background-position-y: calc(-106 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \37 z { background-position-y: calc(-107 * var(--tile-size) - var(--border-width)); }
-div.tile.\11 \30 m { background-position-y: calc(-108 * var(--tile-size) - var(--border-width)); }
-div.tile.\11 \30 p { background-position-y: calc(-109 * var(--tile-size) - var(--border-width)); }
-div.tile.\11 \30 s { background-position-y: calc(-110 * var(--tile-size) - var(--border-width)); }
-div.tile.\12 \35 z { background-position-y: calc(-111 * var(--tile-size) - var(--border-width)); }
-div.tile.\12 \36 z { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
-div.tile.\12 \37 z { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \30 m { background-position-y: calc(-108 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \30 p { background-position-y: calc(-109 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \30 s { background-position-y: calc(-110 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 z { background-position-y: calc(-111 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \36 z { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \37 z { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.inactive {
   opacity: 0.6;

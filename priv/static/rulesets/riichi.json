@@ -54,6 +54,7 @@
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
     {"id": "no_draw_riichi", "name": "No Draw Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
     {"id": "open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
+    {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
     {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
     {"id": "galaxy", "conflicts": ["chinitsu"], "name": "Galaxy Mahjong", "desc": "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."},
@@ -67,7 +68,6 @@
     {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."}
 
     // pending mod ideas:
-    // {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled)."},
     // {"id": "shiro_pocchi", "name": "Shiro Pocchi", "desc": "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
     // {"id": "golden_chun", "conflicts": ["shiro_pocchi"], "name": "Golden Chun", "desc": "One of each dragon tile gets a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which acts as a joker for any five, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."
     // {"id": "blue_dragon", "name": "Blue Dragon", "desc": "Adds the Chinese blue-framed white dragon as a fourth dragon tile. Changes dora accordingly (if dora is enabled)."},
