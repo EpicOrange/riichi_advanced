@@ -58,7 +58,9 @@
     {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
     {"id": "galaxy", "conflicts": ["chinitsu"], "name": "Galaxy Mahjong", "desc": "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."},
-    {"id": "no_honors", "name": "No Honors", "desc": "Removes the honor tiles (winds and dragons) from the game."},
+    {"id": "no_honors", "conflicts": ["shiro_pocchi", "golden_chun"], "name": "No Honors", "desc": "Removes the honor tiles (winds and dragons) from the game."},
+    {"id": "shiro_pocchi", "conflicts": ["no_honors"], "name": "Shiro Pocchi", "desc": "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."},
+    {"id": "golden_chun", "deps": ["shiro_pocchi"], "conflicts": ["no_honors"], "name": "Golden Chun", "desc": "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which acts as a joker for any five, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."},
     {"id": "shouhai", "name": "Shouhai (beta)", "desc": "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand. This mod is in beta because most yaku needs to be replaced."},
     {"id": "chinitsu", "conflicts": ["galaxy", "fifth_tile"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile."},
     {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
@@ -68,8 +70,6 @@
     {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."}
 
     // pending mod ideas:
-    // {"id": "shiro_pocchi", "name": "Shiro Pocchi", "desc": "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
-    // {"id": "golden_chun", "conflicts": ["shiro_pocchi"], "name": "Golden Chun", "desc": "One of each dragon tile gets a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which acts as a joker for any five, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."
     // {"id": "blue_dragon", "name": "Blue Dragon", "desc": "Adds the Chinese blue-framed white dragon as a fourth dragon tile. Changes dora accordingly (if dora is enabled)."},
     // {"id": "star_suit", "name": "Star Suit", "desc": "Adds a fourth suit (stars) and associated yaku."},
     // {"id": "toriuchi", "name": "Toriuchi", "desc": "Each 1s (bird) tile is worth 1 extra han, unless your hand contains 7p (pistol) which would shoot the birds dead. That is, unless your hand contains 8s (birdcage) which would protect the birds from gunfire."},
@@ -931,11 +931,7 @@
         ["has_han_with_discard", "has_yakuman_with_discard"]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-        ["win_by_discard"]
+        ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -959,11 +955,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-        ["win_by_call"]
+        ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -977,11 +969,7 @@
         ["has_han_with_hand", "has_yakuman_with_hand"]
       ],
       "actions": [
-        ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-        ["win_by_draw"]
+        ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     }

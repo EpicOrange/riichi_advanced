@@ -1,4 +1,4 @@
-.play_effects += [
+.play_effects = [
   ["1z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
     ["set_status", "suufonrenda_1z"],
     ["when", [{"name": "everyone_status", "opts": ["suufonrenda_1z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
@@ -15,4 +15,4 @@
     ["set_status", "suufonrenda_4z"],
     ["when", [{"name": "everyone_status", "opts": ["suufonrenda_4z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
   ]]]]
-]
+] + .play_effects
