@@ -193,9 +193,6 @@
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13]
     ]
   ],
   "win_definition": [
@@ -759,8 +756,7 @@
                ]
   },
   "after_turn_change": {
-    "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-                ["when", ["not_no_tiles_remaining"], [["draw"]]],
+    "actions": [["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw"]]],
                 ["when_anyone",
                   [[
                     {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},

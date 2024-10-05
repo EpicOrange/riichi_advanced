@@ -207,6 +207,7 @@ defmodule RiichiAdvanced.GameState do
       case Jason.decode(ruleset_json) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
+          IO.inspect(ruleset_json)
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
           # state = show_error(state, inspect(err))
           {state, %{}}
@@ -250,109 +251,99 @@ defmodule RiichiAdvanced.GameState do
   def initialize_new_round(state) do
     rules = state.rules
 
-    if not Map.has_key?(rules, "wall") do
-      show_error(state, """
-      Expected rules file to have key \"wall\".
+    wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
+    
+    # check that there are no nil tiles
+    state = wall
+    |> Enum.zip(Map.get(rules, "wall", []))
+    |> Enum.filter(fn {result, _orig} -> result == nil end)
+    |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
 
-      This should be an array listing out all the tiles contained in the
-      wall. Each tile is a string, like "3m". See the documentation for
-      more info.
-      """)
+    wall = Enum.shuffle(wall)
+    wall = if Debug.debug() do Debug.set_wall(wall) else wall end
+
+    starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
+    hands = if starting_tiles > 0 do
+      %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+        :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+        :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+        :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+    else Map.new([:east, :south, :west, :north], &{&1, []}) end
+    hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
+
+    # reserve some tiles (dead wall)
+    state = if Map.has_key?(rules, "reserved_tiles") and length(rules["reserved_tiles"]) > 0 do
+      reserved_tile_names = rules["reserved_tiles"]
+      {wall, dead_wall} = Enum.split(wall, -length(reserved_tile_names))
+      reserved_tiles = Enum.zip(reserved_tile_names, dead_wall)
+      revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
+      max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
+      state 
+      |> Map.put(:wall, wall)
+      |> Map.put(:haipai, hands)
+      |> Map.put(:dead_wall, dead_wall)
+      |> Map.put(:reserved_tiles, reserved_tiles)
+      |> Map.put(:revealed_tiles, revealed_tiles)
+      |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+      |> Map.put(:drawn_reserved_tiles, [])
     else
-      wall = Enum.map(rules["wall"], &Utils.to_tile(&1))
-      
-      # check that there are no nil tiles
-      state = wall
-      |> Enum.zip(rules["wall"])
-      |> Enum.filter(fn {result, _orig} -> result == nil end)
-      |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
-
-      wall = Enum.shuffle(wall)
-      wall = if Debug.debug() do Debug.set_wall(wall) else wall end
-
-      starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
-      hands = if starting_tiles > 0 do
-        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
-      else Map.new([:east, :south, :west, :north], &{&1, []}) end
-      hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
-
-      # reserve some tiles (dead wall)
-      state = if Map.has_key?(rules, "reserved_tiles") and length(rules["reserved_tiles"]) > 0 do
-        reserved_tile_names = rules["reserved_tiles"]
-        {wall, dead_wall} = Enum.split(wall, -length(reserved_tile_names))
-        reserved_tiles = Enum.zip(reserved_tile_names, dead_wall)
-        revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
-        max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
-        state 
-        |> Map.put(:wall, wall)
-        |> Map.put(:haipai, hands)
-        |> Map.put(:dead_wall, dead_wall)
-        |> Map.put(:reserved_tiles, reserved_tiles)
-        |> Map.put(:revealed_tiles, revealed_tiles)
-        |> Map.put(:max_revealed_tiles, max_revealed_tiles)
-        |> Map.put(:drawn_reserved_tiles, [])
-      else
-        state
-        |> Map.put(:wall, wall)
-        |> Map.put(:dead_wall, [])
-        |> Map.put(:reserved_tiles, [])
-        |> Map.put(:revealed_tiles, [])
-        |> Map.put(:max_revealed_tiles, 0)
-        |> Map.put(:drawn_reserved_tiles, [])
-      end
-      state = state
-      |> Map.put(:round_result, nil)
-      |> Map.put(:winners, %{})
-      |> Map.put(:winner_index, 0)
-      |> Map.put(:delta_scores, nil)
-      |> Map.put(:delta_scores_reason, nil)
-      |> Map.put(:next_dealer, nil)
-
-      # initialize auto buttons
-      initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
-        {name, auto_button["enabled_at_start"]}
-      end
-
-      # statuses to keep between rounds
-      persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
-
-      state = state
-       |> Map.put(:wall_index, starting_tiles*4)
-       |> Map.put(:dead_wall_index, 0)
-       |> update_all_players(&%Player{
-            score: &2.score,
-            nickname: &2.nickname,
-            hand: hands[&1],
-            auto_buttons: initial_auto_buttons,
-            status: Enum.filter(&2.status, fn status -> status in persistent_statuses end)
-          })
-       |> Map.put(:actions, [])
-       |> Map.put(:reversed_turn_order, false)
-       |> Map.put(:game_active, true)
-       |> Map.put(:turn, nil) # so that change_turn detects a turn change
-      
-      state = Marking.initialize_marking(state)
-
-      # initialize saki if needed
-      state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
-      
-      # start the game
-      state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku))
-
-      # run after_start actions
-      state = if Map.has_key?(state.rules, "after_start") do
-        Actions.run_actions(state, state.rules["after_start"]["actions"], %{seat: state.turn})
-      else state end
-
-      state = Buttons.recalculate_buttons(state)
-
-      notify_ai(state)
-
       state
+      |> Map.put(:wall, wall)
+      |> Map.put(:dead_wall, [])
+      |> Map.put(:reserved_tiles, [])
+      |> Map.put(:revealed_tiles, [])
+      |> Map.put(:max_revealed_tiles, 0)
+      |> Map.put(:drawn_reserved_tiles, [])
     end
+    state = state
+    |> Map.put(:round_result, nil)
+    |> Map.put(:winners, %{})
+    |> Map.put(:winner_index, 0)
+    |> Map.put(:delta_scores, nil)
+    |> Map.put(:delta_scores_reason, nil)
+    |> Map.put(:next_dealer, nil)
+
+    # initialize auto buttons
+    initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
+      {name, auto_button["enabled_at_start"]}
+    end
+
+    # statuses to keep between rounds
+    persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
+
+    state = state
+     |> Map.put(:wall_index, starting_tiles*4)
+     |> Map.put(:dead_wall_index, 0)
+     |> update_all_players(&%Player{
+          score: &2.score,
+          nickname: &2.nickname,
+          hand: hands[&1],
+          auto_buttons: initial_auto_buttons,
+          status: Enum.filter(&2.status, fn status -> status in persistent_statuses end)
+        })
+     |> Map.put(:actions, [])
+     |> Map.put(:reversed_turn_order, false)
+     |> Map.put(:game_active, true)
+     |> Map.put(:turn, nil) # so that change_turn detects a turn change
+    
+    state = Marking.initialize_marking(state)
+
+    # initialize saki if needed
+    state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
+    
+    # start the game
+    state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku))
+
+    # run after_start actions
+    state = if Map.has_key?(state.rules, "after_start") do
+      Actions.run_actions(state, state.rules["after_start"]["actions"], %{seat: state.turn})
+    else state end
+
+    state = Buttons.recalculate_buttons(state)
+
+    notify_ai(state)
+
+    state
   end
 
   def win(state, seat, winning_tile, win_source) do

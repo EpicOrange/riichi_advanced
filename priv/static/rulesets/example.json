@@ -1,0 +1,49 @@
+{
+  "wall": ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s"],
+  "starting_tiles": 13,
+  "after_turn_change": {
+    "actions": [["draw"]]
+  },
+  "auto_buttons": {
+    "auto_sort": {
+      "display_name": "A",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    }
+  },
+  "buttons": {
+    "pair": {
+      "display_name": "Pair",
+      "call": [[0]],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pair"], ["call"], ["change_turn", "self"]]
+    }
+  },
+  "interruptible_actions": ["play_tile"]
+}

@@ -9,13 +9,18 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   def apply_mods(ruleset_json, mod_names) do
-    # first list out the mods as a "enabled_mods" key
-    # do this via string replacement
-    enabled_mods = "\"enabled_mods\":" <> inspect(mod_names) <> ","
-    ruleset_json = String.replace(ruleset_json, "{", "{" <> enabled_mods, global: false)
+    # apply the mods
+    modded_json = Enum.reduce(mod_names, ruleset_json, &apply_mod/2)
 
-    # then apply the mods
-    Enum.reduce(mod_names, ruleset_json, &apply_mod/2)
+    # list out the mods as a "enabled_mods" key, via string replacement
+    modded_json = if String.contains?(ruleset_json, "\"") do
+      String.replace(ruleset_json, "{", "{\"enabled_mods\":" <> inspect(mod_names) <> ",", global: false)
+    else
+      # if the json file is empty, don't add the comma
+      String.replace(ruleset_json, "{", "{\"enabled_mods\":" <> inspect(mod_names), global: false)
+    end
+
+    modded_json
   end
 
 end
