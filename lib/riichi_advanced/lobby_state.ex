@@ -85,7 +85,7 @@ defmodule RiichiAdvanced.LobbyState do
         put_in(state.rooms[session_id], %LobbyRoom{
           players: room_state.seats,
           mods: RiichiAdvanced.RoomState.get_enabled_mods(room_state),
-          private: if Map.has_key?(state.rooms, session_id) do state.rooms[session_id].private else true end
+          private: room_state.private
         })
     end
 
@@ -164,7 +164,7 @@ defmodule RiichiAdvanced.LobbyState do
     state = put_in(state.rooms[session_id], %LobbyRoom{
       players: room_state.seats,
       mods: RiichiAdvanced.RoomState.get_enabled_mods(room_state),
-      private: if Map.has_key?(state.rooms, session_id) do state.rooms[session_id].private else true end
+      private: room_state.private
     })
     state = broadcast_state_change(state)
     {:noreply, state}

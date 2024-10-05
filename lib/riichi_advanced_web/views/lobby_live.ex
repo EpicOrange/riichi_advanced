@@ -62,7 +62,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
       </header>
       <div class="rooms">
-        <%= for {room_name, room} <- @state.rooms do %>
+        <%= for {room_name, room} <- @state.rooms, not room.private do %>
           <div class="room">
             <button class="join-room" phx-cancellable-click="join_room" phx-value-name={room_name}>
               <%= for tile <- String.split(room_name, ",") do %>

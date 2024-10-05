@@ -61,12 +61,14 @@ defmodule RiichiAdvancedWeb.RoomLive do
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
         <h1>Room</h1>
-        <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
         <div class="session">Room:&nbsp;
           <%= for tile <- String.split(@session_id, ",") do %>
             <div class={["tile", tile]}></div>
           <% end %>
         </div>
+        <input id="private-toggle" type="checkbox" class="private-toggle" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={@state.private}>
+        <label for="private-toggle">Private?</label>
+        <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
       </header>
       <div class="seats">
         <%= for seat <- [:east, :south, :west, :north] do %>
@@ -140,6 +142,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def handle_event("get_up", _assigns, socket) do
     GenServer.cast(socket.assigns.room_state, {:get_up, socket.id})
+    {:noreply, socket}
+  end
+
+  def handle_event("private_toggled", %{"enabled" => enabled}, socket) do
+    enabled = enabled == "true"
+    GenServer.cast(socket.assigns.room_state, {:toggle_private, not enabled})
     {:noreply, socket}
   end
 

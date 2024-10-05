@@ -24,6 +24,7 @@ defmodule Room do
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     players: %{},
     shuffle: false,
+    private: false,
     starting: false,
     started: false,
     mods: %{}
@@ -178,6 +179,12 @@ defmodule RiichiAdvanced.RoomState do
       IO.puts("Player #{socket_id} sat in seat #{seat}")
       state
     else state end
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:toggle_private, enabled}, state) do
+    state = Map.put(state, :private, enabled)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
