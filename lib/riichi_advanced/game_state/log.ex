@@ -14,6 +14,7 @@ defmodule RiichiAdvanced.GameState.Log do
   def init_log(state) do
     state = Map.put(state, :log_state, %{
       log: [],
+      kyokus: [],
       calls: Map.new(state.players, fn {seat, _player} -> {seat, nil} end)
     })
     state
@@ -34,8 +35,65 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def add_buttons(state) do
-    params = %{possible_calls: Enum.flat_map(state.players, fn {seat, player} -> Enum.map(player.button_choices, fn {name, choices} -> %{seat: seat, name: name, choices: choices} end) end)}
-    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.merge(event.params, params) } end)
+    possible_calls = for {seat, player} <- state.players do
+      # TODO make sure this doesn't crash on saki
+      for {name, {:call, choices}} <- player.button_choices do
+        for choice <- Map.values(choices) |> Enum.concat() do
+          %{player: seat, type: name, tiles: choice}
+        end
+      end |> Enum.concat()
+    end |> Enum.concat()
+    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :possible_calls, possible_calls) } end)
+  end
+
+  def add_call(state, seat, call_name, call_choice) do
+    call = %{player: seat, type: call_name, tiles: call_choice}
+    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
+  end
+
+  def finalize_kyoku(state) do
+    state = update_in(state.log_state.kyokus, fn kyokus -> [%{
+      index: length(state.log_state.kyokus),
+      haipai: state.haipai,
+      players: Enum.map([:east, :south, :west, :north], fn dir -> %{
+        points: state.players[dir].score,
+        haipai: state.haipai[dir]
+      } end),
+      kyoku: state.kyoku,
+      honba: state.honba,
+      riichi_sticks: state.riichi_sticks,
+      doras: ["todo"],
+      uras: ["todo"],
+      kan_tiles: ["todo"],
+      wall: state.wall |> Enum.drop(52) |> Enum.take(70),
+      events: state.log_state.log
+        |> Enum.reverse()
+        |> Enum.with_index()
+        |> Enum.map(&format_event/1),
+      result: "todo"
+    } | kyokus] end)
+    state = put_in(state.log_state.log, [])
+    state
+  end
+
+  # output functions
+
+  defp format_event({event, ix}) do
+    Map.merge(%{index: ix, player: event.seat, type: event.event_type}, event.params)
+  end
+
+  def output(state) do
+    out = %{
+      ver: "v1",
+      players: Enum.map(state.players, fn {seat, player} -> %{
+        name: player.nickname,
+        score: player.score,
+        payout: player.score # TODO no uma?
+      } end),
+      rules: %{},
+      kyokus: Enum.reverse(state.log_state.kyokus)
+    }
+    Jason.encode!(out)
   end
 
 end

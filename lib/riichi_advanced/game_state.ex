@@ -88,6 +88,7 @@ defmodule Game do
     turn: :east,
     wall_index: 0,
     dead_wall_index: 0,
+    haipai: [],
     actions: [],
     dead_wall: [],
     reversed_turn_order: false,
@@ -287,6 +288,7 @@ defmodule RiichiAdvanced.GameState do
         max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
         state 
         |> Map.put(:wall, wall)
+        |> Map.put(:haipai, hands)
         |> Map.put(:dead_wall, dead_wall)
         |> Map.put(:reserved_tiles, reserved_tiles)
         |> Map.put(:revealed_tiles, revealed_tiles)
@@ -712,6 +714,9 @@ defmodule RiichiAdvanced.GameState do
         # check for tobi
         tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
         state = if tobi && Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
+
+        # log
+        state = Log.finalize_kyoku(state)
 
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do

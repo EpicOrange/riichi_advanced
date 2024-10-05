@@ -199,6 +199,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       Utils.pt(called_tile),
       %{text: " with "}
     ] ++ Utils.ph(call_choice))
+    state = Log.add_call(state, seat, call_name, call_choice)
     click_sounds = [
       "/audio/call1.mp3",
       "/audio/call2.mp3",
