@@ -1,4 +1,4 @@
-defmodule LobbyPlayer do
+defmodule RoomPlayer do
   defstruct [
     nickname: nil,
     id: "",
@@ -7,7 +7,7 @@ defmodule LobbyPlayer do
   use Accessible
 end
 
-defmodule Lobby do
+defmodule Room do
   defstruct [
     # params
     ruleset: nil,
@@ -32,14 +32,14 @@ defmodule Lobby do
 end
 
 
-defmodule RiichiAdvanced.LobbyState do
+defmodule RiichiAdvanced.RoomState do
   use GenServer
 
   def start_link(init_data) do
     IO.puts("Supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
-      %Lobby{
+      %Room{
         session_id: Keyword.get(init_data, :session_id),
         ruleset: Keyword.get(init_data, :ruleset)
       },
@@ -50,8 +50,8 @@ defmodule RiichiAdvanced.LobbyState do
     IO.puts("Game state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby", state.ruleset, state.session_id))
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_lobby", state.ruleset, state.session_id))
+    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room", state.ruleset, state.session_id))
+    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_room", state.ruleset, state.session_id))
 
     # read in the ruleset
     ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
@@ -80,7 +80,7 @@ defmodule RiichiAdvanced.LobbyState do
     mods = Map.get(rules, "available_mods", [])
 
     # put params, debouncers, and process ids into state
-    state = Map.merge(state, %Lobby{
+    state = Map.merge(state, %Room{
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       session_id: state.session_id,
@@ -113,14 +113,14 @@ defmodule RiichiAdvanced.LobbyState do
 
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
-    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-lobby:" <> state.session_id, "state_updated", %{"state" => state})
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.session_id, "state_updated", %{"state" => state})
     state
   end
 
   def handle_call({:new_player, socket}, _from, state) do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
-    state = put_in(state.players[socket.id], %LobbyPlayer{nickname: nickname, id: socket.id})
+    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id})
     IO.puts("Player #{socket.id} joined")
     state = broadcast_state_change(state)
     {:reply, [state], state}
@@ -132,8 +132,8 @@ defmodule RiichiAdvanced.LobbyState do
     IO.puts("Player #{socket_id} exited")
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
-      IO.puts("Stopping lobby #{state.session_id}")
-      DynamicSupervisor.terminate_child(RiichiAdvanced.LobbySessionSupervisor, state.supervisor)
+      IO.puts("Stopping room #{state.session_id}")
+      DynamicSupervisor.terminate_child(RiichiAdvanced.RoomSessionSupervisor, state.supervisor)
       state
     else
       state = broadcast_state_change(state)
@@ -216,7 +216,7 @@ defmodule RiichiAdvanced.LobbyState do
         state
       {:error, {:already_started, _pid}} ->
         IO.puts("Already started game session #{state.session_id}")
-        state = show_error(state, "A game session for this variant with this same room ID is already in play -- please leave the lobby and try entering it directly!")
+        state = show_error(state, "A game session for this variant with this same room ID is already in play -- please leave the room and try entering it directly!")
         state = Map.put(state, :starting, false)
         state
     end

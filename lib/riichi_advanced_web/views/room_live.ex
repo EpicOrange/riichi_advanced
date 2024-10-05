@@ -1,4 +1,4 @@
-defmodule RiichiAdvancedWeb.LobbyLive do
+defmodule RiichiAdvancedWeb.RoomLive do
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, _session, socket) do
@@ -8,32 +8,32 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
-    |> assign(:lobby_state, nil)
+    |> assign(:room_state, nil)
     |> assign(:messages, [])
-    |> assign(:state, %Lobby{})
+    |> assign(:state, %Room{})
     if socket.root_pid != nil do
-      # start a new lobby process, if it doesn't exist already
-      lobby_spec = {RiichiAdvanced.LobbySupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("lobby", socket.assigns.ruleset, socket.assigns.session_id)}}}
-      lobby_state = case DynamicSupervisor.start_child(RiichiAdvanced.LobbySessionSupervisor, lobby_spec) do
+      # start a new room process, if it doesn't exist already
+      room_spec = {RiichiAdvanced.RoomSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("room", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      room_state = case DynamicSupervisor.start_child(RiichiAdvanced.RoomSessionSupervisor, room_spec) do
         {:ok, _pid} ->
-          IO.puts("Starting lobby session #{socket.assigns.session_id}")
-          [{lobby_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", socket.assigns.ruleset, socket.assigns.session_id))
-          lobby_state
+          IO.puts("Starting room session #{socket.assigns.session_id}")
+          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.session_id))
+          room_state
         {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting lobby session #{socket.assigns.session_id}")
+          IO.puts("Error when starting room session #{socket.assigns.session_id}")
           IO.inspect(error)
           nil
         {:error, {:already_started, _pid}} ->
-          IO.puts("Already started lobby session #{socket.assigns.session_id}")
-          [{lobby_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", socket.assigns.ruleset, socket.assigns.session_id))
-          lobby_state
+          IO.puts("Already started room session #{socket.assigns.session_id}")
+          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.session_id))
+          room_state
       end
       # subscribe to state updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-lobby:" <> socket.assigns.session_id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> socket.assigns.session_id)
       # init a new player and get the current state
-      [state] = GenServer.call(lobby_state, {:new_player, socket})
+      [state] = GenServer.call(room_state, {:new_player, socket})
       socket = socket
-      |> assign(:lobby_state, lobby_state)
+      |> assign(:room_state, room_state)
       |> assign(:state, state)
 
       # fetch messages
@@ -43,7 +43,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered lobby"},
+          %{text: "Entered room"},
           %{bold: true, text: socket.assigns.session_id},
           %{text: "for variant"},
           %{bold: true, text: socket.assigns.ruleset}
@@ -58,9 +58,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
 
   def render(assigns) do
     ~H"""
-    <div id="container" class="lobby" phx-hook="ClickListener">
+    <div id="container" class="room" phx-hook="ClickListener">
       <header>
-        <h1>Lobby</h1>
+        <h1>Room</h1>
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
         <div class="session">Room:&nbsp;<b><%= @session_id %></b></div>
       </header>
@@ -106,7 +106,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           <label for={mod} title={mod_details.desc}><%= mod_details.name %></label>
         <% end %>
       </div>
-      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
+      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
@@ -130,34 +130,34 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_event("sit", %{"seat" => seat}, socket) do
-    GenServer.cast(socket.assigns.lobby_state, {:sit, socket.id, seat})
+    GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
     {:noreply, socket}
   end
 
   def handle_event("get_up", _assigns, socket) do
-    GenServer.cast(socket.assigns.lobby_state, {:get_up, socket.id})
+    GenServer.cast(socket.assigns.room_state, {:get_up, socket.id})
     {:noreply, socket}
   end
 
   def handle_event("shuffle_seats_toggled", %{"enabled" => enabled}, socket) do
     enabled = enabled == "true"
-    GenServer.cast(socket.assigns.lobby_state, {:toggle_shuffle_seats, not enabled})
+    GenServer.cast(socket.assigns.room_state, {:toggle_shuffle_seats, not enabled})
     {:noreply, socket}
   end
 
   def handle_event("toggle_mod", %{"mod" => mod, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
-    GenServer.cast(socket.assigns.lobby_state, {:toggle_mod, mod, not enabled})
+    GenServer.cast(socket.assigns.room_state, {:toggle_mod, mod, not enabled})
     {:noreply, socket}
   end
 
   def handle_event("start_game", _assigns, socket) do
-    GenServer.cast(socket.assigns.lobby_state, :start_game)
+    GenServer.cast(socket.assigns.room_state, :start_game)
     {:noreply, socket}
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
-    if topic == (socket.assigns.ruleset <> "-lobby:" <> socket.assigns.session_id) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.session_id) do
       socket = assign(socket, :state, state)
       socket = if state.started do
         seat = cond do

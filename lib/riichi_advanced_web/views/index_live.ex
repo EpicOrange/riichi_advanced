@@ -51,7 +51,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
     socket = if session_id != "" do
       running_games = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, session_id))
       if Enum.empty?(running_games) do
-        push_navigate(socket, to: ~p"/lobby/#{ruleset}/#{session_id}?nickname=#{nickname}")
+        push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
       else
         push_navigate(socket, to: ~p"/game/#{ruleset}/#{session_id}?nickname=#{nickname}")
       end

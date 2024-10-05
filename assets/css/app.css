@@ -1644,15 +1644,15 @@ div#container > form, div#container > form * {
 
 
 
-/* lobby screen */
-div.lobby {
+/* room screen */
+div.room {
   display: flex;
   position: relative;
   flex-direction: column;
   row-gap: calc(0.25 * var(--tile-size));
   color: white;
 }
-div.lobby > header {
+div.room > header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1661,7 +1661,7 @@ div.lobby > header {
   top: calc(-1 * var(--tile-size));
   width: 100%;
 }
-div.lobby > div.seats, div.lobby > div.mods {
+div.room > div.seats, div.room > div.mods {
   position: absolute;
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
@@ -1670,18 +1670,18 @@ div.lobby > div.seats, div.lobby > div.mods {
   left: calc(1 * var(--tile-size));
   position: relative;
 }
-div.lobby > div.seats {
+div.room > div.seats {
   top: calc(1.5 * var(--tile-size));
   height: calc(1 * var(--tile-size));
   display: flex;
   justify-content: space-between;
 }
-div.lobby > div.seats > div.player-slot {
+div.room > div.seats > div.player-slot {
   position: relative;
   width: 20%;
 }
-div.lobby > div.seats > div.player-slot > .player-slot-button,
-div.lobby > div.seats-buttons > button {
+div.room > div.seats > div.player-slot > .player-slot-button,
+div.room > div.seats-buttons > button {
   background: var(--tile-front);
   color: black;
   border-width: 0;
@@ -1696,7 +1696,7 @@ div.lobby > div.seats-buttons > button {
   vertical-align: center;
   flex-direction: column;
 }
-div.lobby > div.seats > div.player-slot > .player-slot-button {
+div.room > div.seats > div.player-slot > .player-slot-button {
   position: absolute;
   top: calc(0.45 * var(--tile-size));
   background: var(--tile-front);
@@ -1710,7 +1710,7 @@ div.lobby > div.seats > div.player-slot > .player-slot-button {
   width: 100%;
   height: calc(0.6 * var(--tile-size));
 }
-div.lobby > div.seats > div.player-slot > div.player-slot-label {
+div.room > div.seats > div.player-slot > div.player-slot-label {
   position: absolute;
   top: calc(-0.55 * var(--tile-size));
   text-align: center;
@@ -1718,19 +1718,19 @@ div.lobby > div.seats > div.player-slot > div.player-slot-label {
   color: white;
   width: 100%;
 }
-div.lobby > div.seats > div.player-slot.filled > .player-slot-button {
+div.room > div.seats > div.player-slot.filled > .player-slot-button {
   filter: none;
   cursor: default;
   font-size: calc(0.35 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
 }
-div.lobby > div.seats > div.player-slot > button:active,
-div.lobby > div.seats-buttons > button:active {
+div.room > div.seats > div.player-slot > button:active,
+div.room > div.seats-buttons > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
   z-index: 1;
 }
-div.lobby > div.seats-buttons {
+div.room > div.seats-buttons {
   display: flex;
   position: absolute;
   width: calc(11 * var(--tile-size));
@@ -1742,41 +1742,41 @@ div.lobby > div.seats-buttons {
   align-items: center;
   column-gap: calc(0.25 * var(--tile-size));
 }
-div.lobby > div.seats-buttons > input { display: none; }
-div.lobby > div.seats-buttons > label {
+div.room > div.seats-buttons > input { display: none; }
+div.room > div.seats-buttons > label {
   background: gray;
   padding: 0 calc(0.125 * var(--tile-size));
   margin-top: calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
 }
-div.lobby > div.seats-buttons > input:checked + label { background: var(--tile-back); }
-div.lobby > div.seats-buttons > button.get-up-button,
-div.lobby > div.seats-buttons > button.start-game-button {
+div.room > div.seats-buttons > input:checked + label { background: var(--tile-back); }
+div.room > div.seats-buttons > button.get-up-button,
+div.room > div.seats-buttons > button.start-game-button {
   font-size: calc(0.4 * var(--tile-size));
 }
-div.lobby > div.mods {
+div.room > div.mods {
   top: calc(3 * var(--tile-size));
   height: calc(9 * var(--tile-size));
 }
-div.lobby > div.mods::before {
+div.room > div.mods::before {
   content: "Mods";
   position: absolute;
   top: calc(-1.5 * var(--tile-size));
   left: calc(-0.5 * var(--tile-size));
   font-size: calc(1 * var(--tile-size));
 }
-div.lobby > div.mods {
+div.room > div.mods {
   font-size: calc(0.5 * var(--tile-size));
 }
-div.lobby > div.mods > input { display: none; }
-div.lobby > div.mods > label {
+div.room > div.mods > input { display: none; }
+div.room > div.mods > label {
   background: gray;
   padding: 0 calc(0.125 * var(--tile-size));
   margin-top: calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
   white-space: nowrap;
 }
-div.lobby > div.mods > input:checked + label { background: var(--tile-back); }
+div.room > div.mods > input:checked + label { background: var(--tile-back); }
 
 
 /* menu nav buttons */

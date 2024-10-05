@@ -13,7 +13,7 @@ defmodule RiichiAdvanced.Application do
       {Registry, keys: :unique, name: :game_registry},
       RiichiAdvanced.ETSCache,
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.GameSessionSupervisor}, id: :game_session_supervisor),
-      Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.LobbySessionSupervisor}, id: :lobby_session_supervisor),
+      Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.RoomSessionSupervisor}, id: :room_session_supervisor),
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.MessagesSessionSupervisor}, id: :messages_session_supervisor),
       {DNSCluster, query: Application.get_env(:riichi_advanced, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: RiichiAdvanced.PubSub},
