@@ -93,9 +93,12 @@ Hooks.ClickListener = {
   }
 }
 
-window.addEventListener("phx:play-sound", (ev) => {
+window.addEventListener("phx:play-sound", ev => {
   var audio = new Audio(ev.detail.path);
   audio.play();
+});
+window.addEventListener("phx:copy-log", ev => {
+  navigator.clipboard.writeText(ev.detail.log);
 });
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.

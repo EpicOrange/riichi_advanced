@@ -1333,6 +1333,11 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:can_mark?, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark?(state, marking_player, seat, index, tile_source), state}
 
   # debugging only
+  def handle_call(:get_log, _from, state) do
+    log = Log.output(state)
+    {:reply, log, state}
+  end
+  # debugging only
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end

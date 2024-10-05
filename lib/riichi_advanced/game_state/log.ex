@@ -85,7 +85,7 @@ defmodule RiichiAdvanced.GameState.Log do
     out = %{
       ver: "v1",
       players: Enum.map(state.players, fn {seat, player} -> %{
-        name: player.nickname,
+        name: if player.nickname == nil do Atom.to_string(seat) else player.nickname end,
         score: player.score,
         payout: player.score # TODO no uma?
       } end),

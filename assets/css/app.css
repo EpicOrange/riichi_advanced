@@ -1786,6 +1786,8 @@ div.menu-buttons-container {
   top: calc(-1.5 * var(--tile-size));
   right: 0;
   display: flex;
+  flex-direction: row-reverse;
+  column-gap: calc(0.25 * var(--tile-size));
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
@@ -1801,10 +1803,7 @@ div.menu-buttons-container {
     right: calc(-0.5 * var(--tile-size));
   }
 }
-div.menu-buttons-container > button.back {
-  position: absolute;
-  top: 0;
-  right: 0;
+div.menu-buttons-container > button {
   height: calc(0.6 * var(--tile-size));
   background: var(--tile-front);
   font-size: calc(0.5 * var(--tile-size));
@@ -1813,4 +1812,8 @@ div.menu-buttons-container > button.back {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
+}
+div.menu-buttons-container > button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
 }

@@ -222,7 +222,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="status-text" :for={status <- player.status}><%= status %></div>
         </div>
       <% end %>
-      <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
+      <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" log_button={true} />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>
@@ -247,6 +247,12 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("back", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{Map.get(socket.assigns, :nickname, "")}")
+    {:noreply, socket}
+  end
+
+  def handle_event("log", _assigns, socket) do
+    log = GenServer.call(socket.assigns.game_state, :get_log)
+    socket = push_event(socket, "copy-log", %{log: log})
     {:noreply, socket}
   end
 
