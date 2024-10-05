@@ -170,7 +170,11 @@ defmodule RiichiAdvancedWeb.GameLive do
             <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects">Cancel</button>
           <% else %>
-            <button class="button" phx-cancellable-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+            <%= if not Enum.empty?(@state.players[@seat].call_buttons) do %>
+              <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
+            <% else %>
+              <button class="button" phx-cancellable-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+            <% end %>
           <% end %>
         </div>
         <div class="auto-buttons">
@@ -282,6 +286,11 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("saki_card_clicked", %{"choice" => choice}, socket) do
     GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, choice: choice}})
+    {:noreply, socket}
+  end
+
+  def handle_event("cancel_call_buttons", _assigns, socket) do
+    GenServer.cast(socket.assigns.game_state, {:cancel_call_buttons, socket.assigns.seat})
     {:noreply, socket}
   end
 

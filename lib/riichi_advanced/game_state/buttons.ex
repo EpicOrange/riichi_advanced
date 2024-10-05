@@ -5,6 +5,12 @@ defmodule RiichiAdvanced.GameState.Buttons do
   # alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
+  def to_buttons(state, button_choices) do
+    buttons = Map.keys(button_choices)
+    unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
+    if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end
+  end
+      
   def make_button_choices(state, seat, button_name, button) do
     actions = button["actions"]
     # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
@@ -113,11 +119,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
         end
       end
 
-      buttons = for {seat, button_choices} <- new_button_choices do
-        buttons = Map.keys(button_choices)
-        unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
-        {seat, if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end}
-      end |> Map.new()
+      buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_button_choices)}")
       update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
     else state end

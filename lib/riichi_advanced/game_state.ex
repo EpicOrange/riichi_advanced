@@ -1410,17 +1410,14 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  # def handle_cast({:cancel_call_buttons, seat}, state) do
-  #   state = update_all_players(state, fn seat, player -> %Player{ player | call_buttons: [] } end)
+  def handle_cast({:cancel_call_buttons, seat}, state) do
+    # go back to button clicking phase
+    state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [] } end)
+    notify_ai(state)
 
-  #   # go back to button clicking phase
-  #   state = Buttons.recalculate_buttons(state)
-  #   state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [] } end)
-  #   notify_ai(state)
-
-  #   state = broadcast_state_change(state)
-  #   {:noreply, state}
-  # end
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
 
   # clicking the compass will send this
   # ai also sends this once they initialize

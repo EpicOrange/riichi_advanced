@@ -830,17 +830,18 @@ div.tile.sideways + div.tile.sideways::before {
 
 
 /* buttons, auto buttons, and call choice buttons */
-div.call-buttons-container {
-  display: flex;
-  flex-direction: column-reverse;
-  row-gap: calc(0.25 * var(--tile-size));
-}
 div.buttons, div.call-buttons-container {
   position: absolute;
   bottom: calc(1.5 * var(--tile-size));
   right: calc(1.5 * var(--tile-size));
   align-items: flex-end;
   z-index: 10;
+}
+div.call-buttons-container {
+  display: flex;
+  flex-direction: column-reverse;
+  row-gap: calc(0.25 * var(--tile-size));
+  right: calc(3.25 * var(--tile-size)); /* make room for 'cancel' button */
 }
 div.buttons, div.call-buttons {
   justify-content: right;
