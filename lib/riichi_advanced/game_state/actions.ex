@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
   @debug_actions false
@@ -38,6 +39,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
         Utils.pt(tile)
       ])
+      tsumogiri = index >= length(state.players[seat].hand)
+      riichi = "just_reached" in state.players[seat].status
+      state = Log.log(state, seat, :discard, %{tile: tile, tsumogiri: tsumogiri, riichi: riichi})
 
       click_sounds = [
         "/audio/tile1.mp3",
@@ -86,6 +90,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         })
         state = Map.put(state, :wall_index, wall_index)
         state = update_action(state, seat, :draw, %{tile: tile})
+        kan_draw = "kan" in state.players[seat].status
+        state = Log.log(state, seat, :discard, %{tile: tile, kan_draw: kan_draw})
 
         # IO.puts("wall index is now #{get_state().wall_index}")
         draw_tile(state, seat, num - 1, tile_spec)
@@ -316,7 +322,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       "pause"                 -> Map.put(state, :game_active, false)
       "random"                -> run_actions(state, [Enum.random(Enum.at(opts, 0, ["noop"]))], context)
       "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
-      "reveal_tile"           -> Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [Enum.at(opts, 0, :"1m")] end)
+      "reveal_tile"           ->
+        tile_name = Enum.at(opts, 0, :"1m")
+        Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+        state = if String.starts_with?(tile_name, "doraindicator") do
+          Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_tile_name(state, tile_name)})
+        else state end
+        state
       "add_score"             ->
         recipients = case Enum.at(opts, 1) do
           "shimocha" -> [Utils.get_seat(context.seat, :shimocha)]
@@ -706,68 +718,18 @@ defmodule RiichiAdvanced.GameState.Actions do
           # if they choose to skip, we still want to advance turn
           state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
           state = if choice != nil do
-            # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
-            # check if a call action exists, if it's a call and multiple call choices are available
-            call_action_exists = Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end)
-            picking_discards = Enum.any?(actions, fn [action | _opts] -> action in [
-              "swap_hand_tile_with_same_suit_discard",
-              "swap_hand_tile_with_last_discard",
-              "place_4_tiles_at_end_of_live_wall",
-              "set_aside_discard_matching_called_tile",
-              "pon_discarded_red_dragon",
-              "draw_and_place_2_tiles_at_end_of_dead_wall",
-              "set_aside_own_discard",
-              "swap_tile_with_aside",
-              "charleston_left",
-              "charleston_across",
-              "charleston_right"
-            ] end)
-            cond do
-              call_action_exists ->
-                # call button choices logic
+            IO.inspect({choice, state.players[seat].button_choices})
+            button_choice = if state.players[seat].button_choices != nil do
+              Map.get(state.players[seat].button_choices, choice, nil)
+            else nil end
+ #            {"pon", nil,
+ # %{
+ #   "daiminkan" => {:call, %{"1z": [[:"1z", :"1z", :"1z"]]}},
+ #   "pon" => {:call, %{"1z": [[:"1z", :"1z"]]}}
+ # }}
+            case button_choice do
+              {:call, call_choices} ->
                 button_name = choice
-                # if there is a call action, check if there are multiple call choices
-                is_call = Enum.any?(actions, fn [action | _opts] -> action == "call" end)
-                is_upgrade = Enum.any?(actions, fn [action | _opts] -> action == "upgrade_call" end)
-                is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
-                is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
-                ordering = state.players[seat].tile_ordering
-                ordering_r = state.players[seat].tile_ordering_r
-                tile_aliases = state.players[seat].tile_aliases
-                tile_mappings = state.players[seat].tile_mappings
-                {state, call_choices} = cond do
-                  is_upgrade ->
-                    call_choices = state.players[seat].calls
-                      |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
-                      |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
-                      |> Enum.map(fn call_tiles ->
-                         Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, state.players[seat].hand ++ state.players[seat].draw, tile_aliases, tile_mappings)
-                      end)
-                      |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
-                    {state, call_choices}
-                  is_flower ->
-                    flowers = Enum.flat_map(actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
-                    flowers_in_hand = Enum.filter(state.players[seat].hand ++ state.players[seat].draw, fn tile -> tile in flowers end)
-                    call_choices = %{nil => Enum.map(flowers_in_hand, fn tile -> [tile] end)}
-                    {state, call_choices}
-                  is_saki_card ->
-                    # TODO use Enum.drop_while instead to get num
-                    [num] = Enum.flat_map(actions, fn [action | opts] -> if action == "draft_saki_card" do [Enum.at(opts, 0, 4)] else [] end end)
-                    {state, cards} = Saki.draw_saki_cards(state, num)
-                    call_choices = %{"saki" => Enum.map(cards, fn card -> [card] end)}
-                    {state, call_choices}
-                  true ->
-                    callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-                    call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, ordering, ordering_r, callable_tiles, tile_aliases, tile_mappings)
-                    {state, call_choices}
-                end
-                # filter call_choices
-                call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
-                  conditions = state.rules["buttons"][button_name]["call_conditions"]
-                  for {called_tile, choices} <- call_choices do
-                    {called_tile, Enum.filter(choices, fn call_choice -> check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
-                  end |> Map.new()
-                else call_choices end
                 flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
                 if length(flattened_call_choices) == 1 do
                   # if there's only one choice, automatically choose it
@@ -781,25 +743,14 @@ defmodule RiichiAdvanced.GameState.Actions do
                   notify_ai_call_buttons(state, seat)
                   state
                 end
-              picking_discards ->
-                state = cond do
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)      -> Marking.setup_marking(state, seat, [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)           -> Marking.setup_marking(state, seat, [{"hand", 1, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)          -> Marking.setup_marking(state, seat, [{"hand", 4, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_discard_matching_called_tile" end)     -> Marking.setup_marking(state, seat, [{"discard", 1, ["match_called_tile"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "pon_discarded_red_dragon" end)                   -> Marking.setup_marking(state, seat, [{"discard", 1, ["7z"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "draw_and_place_2_tiles_at_end_of_dead_wall" end) ->
-                    state = draw_tile(state, seat, 2)
-                    state = Marking.setup_marking(state, seat, [{"hand", 2, []}])
-                    state
-                  Enum.any?(actions, fn [action | _opts] -> action == "set_aside_own_discard" end)                      -> Marking.setup_marking(state, seat, [{"discard", 1, ["self"]}])
-                  Enum.any?(actions, fn [action | _opts] -> action == "swap_tile_with_aside" end)                       -> Marking.setup_marking(state, seat, [{"hand", 1, []}])
-                  Enum.any?(actions, fn [action | _opts] -> action in ["charleston_left", "charleston_across", "charleston_right"] end) -> Marking.setup_marking(state, seat, [{"hand", 3, []}])
-                end
+              {:mark, mark_spec} ->
+                draw_2 = Enum.any?(actions, fn [action | _opts] -> action == "draw_and_place_2_tiles_at_end_of_dead_wall" end)
+                state = if draw_2 do draw_tile(state, seat, 2) else state end
+                state = Marking.setup_marking(state, seat, mark_spec)
                 state = schedule_actions(state, seat, actions)
                 notify_ai_marking(state, seat)
                 state
-              true ->
+              nil ->
                 # just run all button actions as normal
                 state = run_actions(state, actions, %{seat: seat})
                 state

@@ -11,6 +11,7 @@ defmodule Player do
     calls: [],
     aside: [],
     buttons: [],
+    button_choices: %{},
     auto_buttons: [],
     call_buttons: %{},
     call_name: "",
@@ -80,8 +81,10 @@ defmodule Game do
     honba: 0,
     riichi_sticks: 0,
     tags: %{},
+    log_state: %{},
 
     # working game state (reset on new round)
+    # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
     turn: :east,
     wall_index: 0,
     dead_wall_index: 0,
@@ -104,6 +107,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.Log, as: Log
   use GenServer
 
   def start_link(init_data) do
@@ -213,6 +217,7 @@ defmodule RiichiAdvanced.GameState do
     end
 
     state = Map.put(state, :rules, rules)
+    state = Log.init_log(state)
 
     initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
 
@@ -314,6 +319,7 @@ defmodule RiichiAdvanced.GameState do
 
       state = state
        |> Map.put(:wall_index, starting_tiles*4)
+       |> Map.put(:dead_wall_index, 0)
        |> update_all_players(&%Player{
             score: &2.score,
             nickname: &2.nickname,
@@ -1374,7 +1380,7 @@ defmodule RiichiAdvanced.GameState do
     state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
-      state = update_player(state, seat, &%Player{ &1 | buttons: [], call_buttons: %{}, call_name: "" })
+      state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "" })
       actions = [["play_tile", tile, index], ["advance_turn"]]
       state = Actions.submit_actions(state, seat, "play_tile", actions)
       state = broadcast_state_change(state)
@@ -1419,7 +1425,6 @@ defmodule RiichiAdvanced.GameState do
   # clicking the compass will send this
   # ai also sends this once they initialize
   def handle_cast(:notify_ai, state) do
-    state = Buttons.recalculate_buttons(state)
     notify_ai(state)
     state = broadcast_state_change(state)
     {:noreply, state}
