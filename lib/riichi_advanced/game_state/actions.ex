@@ -91,7 +91,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = Map.put(state, :wall_index, wall_index)
         state = update_action(state, seat, :draw, %{tile: tile})
         kan_draw = "kan" in state.players[seat].status
-        state = Log.log(state, seat, :discard, %{tile: tile, kan_draw: kan_draw})
+        state = Log.log(state, seat, :draw, %{tile: tile, kan_draw: kan_draw})
 
         # IO.puts("wall index is now #{get_state().wall_index}")
         draw_tile(state, seat, num - 1, tile_spec)
@@ -718,15 +718,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           # if they choose to skip, we still want to advance turn
           state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
           state = if choice != nil do
-            IO.inspect({choice, state.players[seat].button_choices})
             button_choice = if state.players[seat].button_choices != nil do
               Map.get(state.players[seat].button_choices, choice, nil)
             else nil end
- #            {"pon", nil,
- # %{
- #   "daiminkan" => {:call, %{"1z": [[:"1z", :"1z", :"1z"]]}},
- #   "pon" => {:call, %{"1z": [[:"1z", :"1z"]]}}
- # }}
             case button_choice do
               {:call, call_choices} ->
                 button_name = choice

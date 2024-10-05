@@ -239,7 +239,6 @@ defmodule RiichiAdvancedWeb.GameLive do
       index = length(player.hand)
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
     else
-      IO.inspect(player.buttons)
       if "skip" in player.buttons do
         GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
       end

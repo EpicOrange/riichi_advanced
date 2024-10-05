@@ -1,7 +1,7 @@
 defmodule GameEvent do
   defstruct [
     seat: nil,
-    event_name: nil,
+    event_type: nil,
     params: %{}
   ]
   use Accessible
@@ -19,18 +19,23 @@ defmodule RiichiAdvanced.GameState.Log do
     state
   end
 
-  def log(state, seat, event_name, params) do
-    update_in(state.log_state.log, &[%GameEvent{ seat: seat, event_name: event_name, params: params } | &1])
+  def log(state, seat, event_type, params) do
+    update_in(state.log_state.log, &[%GameEvent{ seat: seat, event_type: event_type, params: params } | &1])
   end
 
-  # def adjudicate_calls(state) do
+  defp modify_last_draw_discard(state, fun) do
+    ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw || event.event_type == :discard end)
+    if ix != nil do
+      update_in(state.log_state.log, &List.update_at(&1, ix, fun))
+    else
+      IO.inspect("Tried to update last draw/discard of log, but there is none")
+      state
+    end
+  end
 
-  # end
-
-  # def queue_call(state, seat, call
-
-  # def modify_last_log(state, fun) do
-  #   Map.update!(state, :log, &List.update_at(&1, 0, fun))
-  # end
+  def add_buttons(state) do
+    params = %{possible_calls: Enum.flat_map(state.players, fn {seat, player} -> Enum.map(player.button_choices, fn {name, choices} -> %{seat: seat, name: name, choices: choices} end) end)}
+    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.merge(event.params, params) } end)
+  end
 
 end

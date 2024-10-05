@@ -785,7 +785,7 @@ defmodule RiichiAdvanced.GameState do
         if String.ends_with?(tile_name, "_lazy") do
           # draw from dead wall, which might change over the course of the game
           reverse_ix = Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end) - length(state.reserved_tiles)
-          IO.inspect({tile_name, Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end), length(state.reserved_tiles)})
+          # IO.inspect({tile_name, Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end), length(state.reserved_tiles)})
           Enum.at(state.dead_wall, reverse_ix)
         else
           {_, tile} = List.keyfind(state.reserved_tiles, tile_name, 0)

@@ -2,7 +2,7 @@
 defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Saki, as: Saki
-  # alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
   def to_buttons(state, button_choices) do
@@ -121,7 +121,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_button_choices)}")
-      update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
+      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
+      state = Log.add_buttons(state)
+      state
     else state end
   end
 
