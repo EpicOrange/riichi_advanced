@@ -67,7 +67,7 @@ end
 |
 # add golden chun yakuman
 .yakuman += [
-  {"display_name": "Golden Chun", "value": 1, "when": [
+  {"display_name": "Sangen Pocchi", "value": 1, "when": [
     {"name": "status", "opts": ["shiro_pocchi", "aka_h", "golden_chun"]},
     [
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["7z"], -1]]]]},
