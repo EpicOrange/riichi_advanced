@@ -24,7 +24,7 @@ defmodule Room do
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     players: %{},
     shuffle: false,
-    private: false,
+    private: true,
     starting: false,
     started: false,
     mods: %{}
