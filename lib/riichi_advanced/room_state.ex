@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.RoomState do
   use GenServer
 
   def start_link(init_data) do
-    IO.puts("Supervisor PID is #{inspect(self())}")
+    IO.puts("Room supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
       %Room{
@@ -47,7 +47,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def init(state) do
-    IO.puts("Game state PID is #{inspect(self())}")
+    IO.puts("Room state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
     [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room", state.ruleset, state.session_id))

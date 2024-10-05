@@ -34,9 +34,6 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="bloody30faan">Bloody 30-Faan (beta)</option>
         </select>
         <br/>
-        Room:
-        <input type="text" name="session_id" placeholder="Room ID (required)" value="main" />
-        <br/>
         Name:
         <input type="text" name="nickname" placeholder="Nickname (optional)" />
         <br/>
@@ -47,15 +44,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
     """
   end
 
-  def handle_event("redirect", %{"ruleset" => ruleset, "session_id" => session_id, "nickname" => nickname}, socket) do
-    socket = if session_id != "" do
-      running_games = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, session_id))
-      if Enum.empty?(running_games) do
-        push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
-      else
-        push_navigate(socket, to: ~p"/game/#{ruleset}/#{session_id}?nickname=#{nickname}")
-      end
-    else socket end
+  def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname}, socket) do
+    socket = push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
     {:noreply, socket}
   end
 

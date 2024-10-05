@@ -112,7 +112,7 @@ defmodule RiichiAdvanced.GameState do
   use GenServer
 
   def start_link(init_data) do
-    IO.puts("Supervisor PID is #{inspect(self())}")
+    IO.puts("Game supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
       %{
