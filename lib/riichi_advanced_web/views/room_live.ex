@@ -62,7 +62,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
       <header>
         <h1>Room</h1>
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
-        <div class="session">Room:&nbsp;<b><%= @session_id %></b></div>
+        <div class="session">Room:&nbsp;
+          <%= for tile <- String.split(@session_id, ",") do %>
+            <div class={["tile", tile]}></div>
+          <% end %>
+        </div>
       </header>
       <div class="seats">
         <%= for seat <- [:east, :south, :west, :north] do %>
@@ -117,7 +121,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/")
+    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}")
     {:noreply, socket}
   end
 

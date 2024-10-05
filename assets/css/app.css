@@ -1668,8 +1668,17 @@ div.lobby > div.rooms {
   left: calc(0 * var(--tile-size));
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  row-gap: calc(0.5 * var(--tile-size));
 }
+/* allow scroll but hide scrollbar */
+div.lobby > div.rooms {
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+div.lobby > div.rooms::-webkit-scrollbar { 
+  display: none; /* Safari/Chrome */
+}
+
 div.lobby > div.rooms > div.room {
   display: flex;
   flex-direction: row;
@@ -1749,6 +1758,11 @@ div.room > header {
   position: absolute;
   top: calc(-1 * var(--tile-size));
   width: 100%;
+}
+div.room > header > div.session {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 div.room > div.seats, div.room > div.mods {
   position: relative;

@@ -10,6 +10,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:messages, [])
     |> assign(:state, %Lobby{})
     if socket.root_pid != nil do
+      # subscribe to state updates
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "lobby:" <> socket.assigns.ruleset)
+
       # start a new lobby process, if it doesn't exist already
       lobby_spec = {RiichiAdvanced.LobbySupervisor, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("lobby", socket.assigns.ruleset, "")}}}
       lobby_state = case DynamicSupervisor.start_child(RiichiAdvanced.LobbySessionSupervisor, lobby_spec) do
@@ -26,8 +29,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           [{lobby_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", socket.assigns.ruleset, ""))
           lobby_state
       end
-      # subscribe to state updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "lobby:" <> socket.assigns.ruleset)
+
       # init a new player and get the current state
       [state] = GenServer.call(lobby_state, {:new_player, socket})
       socket = socket
@@ -60,23 +62,23 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
       </header>
       <div class="rooms">
-        <%= for {room_name, _room} <- @state.rooms do %>
+        <%= for {room_name, room} <- @state.rooms do %>
           <div class="room">
-            <button class="join-room">
-              <%= for tile <- String.split(room_name, " ") do %>
+            <button class="join-room" phx-cancellable-click="join_room" phx-value-name={room_name}>
+              <%= for tile <- String.split(room_name, ",") do %>
                 <div class={["tile", tile]}></div>
               <% end %>
             </button>
             <div class="room-mods">
-              <%= for mod <- ["aka", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora"] do %>
+              <%= for mod <- room.mods do %>
                 <div class="room-mod"><%= mod %></div>
               <% end %>
             </div>
-            <div class="room-players">0/4</div>
+            <div class="room-players"><%= 4 - (Map.values(room.players) |> Enum.count(& &1 == nil)) %>/4</div>
           </div>
         <% end %>
       </div>
-      <button class="create-room">Create a room</button>
+      <button class="create-room" phx-cancellable-click="create_room">Create a room</button>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
@@ -100,36 +102,38 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     {:noreply, socket}
   end
 
-  def handle_event("sit", %{"seat" => seat}, socket) do
-    GenServer.cast(socket.assigns.lobby_state, {:sit, socket.id, seat})
+  def handle_event("join_room", %{"name" => session_id}, socket) do
+    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{session_id}?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 
-  def handle_event("get_up", _assigns, socket) do
-    GenServer.cast(socket.assigns.lobby_state, {:get_up, socket.id})
-    {:noreply, socket}
-  end
-
-  def handle_event("shuffle_seats_toggled", %{"enabled" => enabled}, socket) do
-    enabled = enabled == "true"
-    GenServer.cast(socket.assigns.lobby_state, {:toggle_shuffle_seats, not enabled})
-    {:noreply, socket}
-  end
-
-  def handle_event("toggle_mod", %{"mod" => mod, "enabled" => enabled}, socket) do
-    enabled = enabled == "true"
-    GenServer.cast(socket.assigns.lobby_state, {:toggle_mod, mod, not enabled})
-    {:noreply, socket}
-  end
-
-  def handle_event("start_game", _assigns, socket) do
-    GenServer.cast(socket.assigns.lobby_state, :start_game)
-    {:noreply, socket}
+  def handle_event("create_room", _assigns, socket) do
+    case GenServer.call(socket.assigns.lobby_state, :create_room) do
+      :no_names_remaining -> {:noreply, socket}
+      {:ok, session_id}    ->
+        socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{session_id}?nickname=#{socket.assigns.nickname}")
+        {:noreply, socket}
+    end
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == ("lobby:" <> socket.assigns.ruleset) do
       socket = assign(socket, :state, state)
+      {:noreply, socket}
+    else
+      if String.starts_with?(topic, state.ruleset <> "-room:") do
+        session_id = String.replace_prefix(topic, state.ruleset <> "-room:", "")
+        GenServer.cast(socket.assigns.lobby_state, {:update_room_state, session_id, state})
+        {:noreply, socket}
+      else
+        {:noreply, socket}
+      end
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "new_room", payload: %{"name" => session_id}}, socket) do
+    if topic == ("lobby:" <> socket.assigns.ruleset) do
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> session_id)
       {:noreply, socket}
     else
       {:noreply, socket}

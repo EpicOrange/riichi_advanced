@@ -9,7 +9,8 @@ end
 
 defmodule LobbyRoom do
   defstruct [
-    room_code: nil,
+    players: %{east: nil, south: nil, west: nil, north: nil},
+    mods: [],
     private: true
   ]
   use Accessible
@@ -61,25 +62,32 @@ defmodule RiichiAdvanced.LobbyState do
       {:error, _err}      -> nil
     end
 
-    # put params, debouncers, and process ids into state
+    # put params and process ids into state
     state = Map.merge(state, %Lobby{
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      rooms: %{
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-        generate_room_name(state) => %LobbyRoom{},
-      }
+      rooms: %{}
     })
+
+    # load all existing rooms
+    session_ids = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
+    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+    |> Enum.filter(fn name -> String.starts_with?(name, "room-#{state.ruleset}-") end)
+    |> Enum.map(fn name -> String.replace_prefix(name, "room-#{state.ruleset}-", "") end)
+    state = for session_id <- session_ids, reduce: state do
+      state ->
+        state = broadcast_new_room(state, session_id)
+        [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", state.ruleset, session_id))
+        room_state = GenServer.call(room_state_pid, :get_state)
+        put_in(state.rooms[session_id], %LobbyRoom{
+          players: room_state.seats,
+          mods: RiichiAdvanced.RoomState.get_enabled_mods(room_state),
+          private: if Map.has_key?(state.rooms, session_id) do state.rooms[session_id].private else true end
+        })
+    end
 
     {:ok, state}
   end
@@ -95,6 +103,10 @@ defmodule RiichiAdvanced.LobbyState do
     RiichiAdvancedWeb.Endpoint.broadcast("lobby:" <> state.ruleset, "state_updated", %{"state" => state})
     state
   end
+  def broadcast_new_room(state, session_id) do
+    RiichiAdvancedWeb.Endpoint.broadcast("lobby:" <> state.ruleset, "new_room", %{"name" => session_id})
+    state
+  end
 
   @tiles [
     "1m","2m","3m","4m","5m","6m","7m","8m","9m",
@@ -104,7 +116,7 @@ defmodule RiichiAdvanced.LobbyState do
   ]
   def generate_room_name(state, tries_left \\ 1000) do
     if tries_left > 0 do
-      room_name = Enum.join([Enum.random(@tiles), Enum.random(@tiles), Enum.random(@tiles)], " ")
+      room_name = Enum.join([Enum.random(@tiles), Enum.random(@tiles), Enum.random(@tiles)], ",")
       if Map.has_key?(state.rooms, room_name) do
         generate_room_name(state, tries_left - 1)
       else
@@ -140,21 +152,26 @@ defmodule RiichiAdvanced.LobbyState do
   def handle_call(:create_room, _from, state) do
     case generate_room_name(state) do
       nil       -> {:reply, :no_names_remaining, state}
-      room_name ->
-        state = Map.put(state.rooms, room_name, %LobbyRoom{})
-        {:reply, {:ok, room_name}, state}
+      session_id ->
+        state = put_in(state.rooms[session_id], %LobbyRoom{})
+        state = broadcast_state_change(state)
+        state = broadcast_new_room(state, session_id)
+        {:reply, {:ok, session_id}, state}
     end
   end
 
-  def handle_cast({:enter_room, _socket_id, _room_name}, state) do
-    # TODO
-    # running_games = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, session_id))
-    # if Enum.empty?(running_games) do
-    # else
-    #   push_navigate(socket, to: ~p"/game/#{ruleset}/#{session_id}?nickname=#{nickname}")
-    # end
+  def handle_cast({:update_room_state, session_id, room_state}, state) do
+    state = put_in(state.rooms[session_id], %LobbyRoom{
+      players: room_state.seats,
+      mods: RiichiAdvanced.RoomState.get_enabled_mods(room_state),
+      private: if Map.has_key?(state.rooms, session_id) do state.rooms[session_id].private else true end
+    })
     state = broadcast_state_change(state)
     {:noreply, state}
   end
 
+  def handle_cast({:delete_room, session_id}, state) do
+    {_, state} = pop_in(state.rooms[session_id])
+    {:noreply, state}
+  end
 end

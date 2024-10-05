@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.RoomState do
     end
     mods = Map.get(rules, "available_mods", [])
 
-    # put params, debouncers, and process ids into state
+    # put params and process ids into state
     state = Map.merge(state, %Room{
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
@@ -97,6 +97,12 @@ defmodule RiichiAdvanced.RoomState do
       }} end),
     })
 
+    # check if a lobby exists. if so, notify the lobby that this room now exists
+    case Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", state.ruleset, "")) do
+      [{lobby_state, _}] -> GenServer.cast(lobby_state, {:update_room_state, state.session_id, state})
+      _                  -> nil
+    end
+
     {:ok, state}
   end
 
@@ -109,6 +115,13 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :error, fn err -> if err == nil do message else err <> "\n\n" <> message end end)
     state = broadcast_state_change(state)
     state
+  end
+
+  def get_enabled_mods(state) do
+    Map.get(state, :mods, %{})
+    |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
+    |> Enum.sort_by(fn {_mod, opts} -> opts.index end)
+    |> Enum.map(fn {mod, _opts} -> mod end)
   end
 
   def broadcast_state_change(state) do
@@ -132,6 +145,11 @@ defmodule RiichiAdvanced.RoomState do
     IO.puts("Player #{socket_id} exited #{state.session_id} for ruleset #{state.ruleset}")
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
+      # check if a lobby exists. if so, notify the lobby that this room no longer exists
+      case Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", state.ruleset, "")) do
+        [{lobby_state, _}] -> GenServer.cast(lobby_state, {:delete_room, state.session_id})
+        _                  -> nil
+      end
       IO.puts("Stopping room #{state.session_id} for ruleset #{state.ruleset}")
       DynamicSupervisor.terminate_child(RiichiAdvanced.RoomSessionSupervisor, state.supervisor)
       state
@@ -140,6 +158,10 @@ defmodule RiichiAdvanced.RoomState do
       state
     end
     {:reply, :ok, state}
+  end
+
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
   end
 
   def handle_cast({:sit, socket_id, seat}, state) do
@@ -195,10 +217,7 @@ defmodule RiichiAdvanced.RoomState do
   def handle_cast(:start_game, state) do
     state = Map.put(state, :starting, true)
     state = broadcast_state_change(state)
-    mods = Map.get(state, :mods, %{})
-    |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
-    |> Enum.sort_by(fn {_mod, opts} -> opts.index end)
-    |> Enum.map(fn {mod, _opts} -> mod end)
+    mods = get_enabled_mods(state)
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
