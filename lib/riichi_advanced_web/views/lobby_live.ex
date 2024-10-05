@@ -54,11 +54,29 @@ defmodule RiichiAdvancedWeb.LobbyLive do
 
   def render(assigns) do
     ~H"""
-    <div id="container" class="room" phx-hook="ClickListener">
+    <div id="container" class="lobby" phx-hook="ClickListener">
       <header>
         <h1>Lobby</h1>
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
       </header>
+      <div class="rooms">
+        <%= for {room_name, _room} <- @state.rooms do %>
+          <div class="room">
+            <button class="join-room">
+              <%= for tile <- String.split(room_name, " ") do %>
+                <div class={["tile", tile]}></div>
+              <% end %>
+            </button>
+            <div class="room-mods">
+              <%= for mod <- ["aka", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora", "dora", "aka", "dora"] do %>
+                <div class="room-mod"><%= mod %></div>
+              <% end %>
+            </div>
+            <div class="room-players">0/4</div>
+          </div>
+        <% end %>
+      </div>
+      <button class="create-room">Create a room</button>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />

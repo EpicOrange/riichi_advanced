@@ -68,6 +68,17 @@ defmodule RiichiAdvanced.LobbyState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
+      rooms: %{
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+        generate_room_name(state) => %LobbyRoom{},
+      }
     })
 
     {:ok, state}
@@ -106,17 +117,17 @@ defmodule RiichiAdvanced.LobbyState do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
     state = put_in(state.players[socket.id], %LobbyPlayer{nickname: nickname, id: socket.id})
-    IO.puts("Player #{socket.id} joined")
+    IO.puts("Player #{socket.id} joined lobby for #{state.ruleset}")
     state = broadcast_state_change(state)
     {:reply, [state], state}
   end
 
   def handle_call({:delete_player, socket_id}, _from, state) do
     {_, state} = pop_in(state.players[socket_id])
-    IO.puts("Player #{socket_id} exited")
+    IO.puts("Player #{socket_id} exited lobby for #{state.ruleset}")
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
-      IO.puts("Stopping lobby #{state.session_id}")
+      IO.puts("Stopping lobby for ruleset #{state.ruleset}")
       DynamicSupervisor.terminate_child(RiichiAdvanced.LobbySessionSupervisor, state.supervisor)
       state
     else

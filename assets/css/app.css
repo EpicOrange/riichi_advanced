@@ -1640,6 +1640,95 @@ div#container > form, div#container > form * {
 
 
 
+/* lobby screen */
+div.lobby {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  row-gap: calc(0.25 * var(--tile-size));
+  color: white;
+}
+div.lobby > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: calc(0.5 * var(--tile-size));
+  position: absolute;
+  top: calc(-1 * var(--tile-size));
+  width: 100%;
+}
+div.lobby > div.rooms {
+  position: relative;
+  padding: calc(0.5 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  background: #FFFFFF3F;
+  width: calc(100% - 1 * var(--tile-size));
+  height: calc(100% - 3 * var(--tile-size));
+  top: calc(1 * var(--tile-size));
+  left: calc(0 * var(--tile-size));
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+div.lobby > div.rooms > div.room {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+div.lobby > div.rooms > div.room > button.join-room,
+div.lobby > button.create-room {
+  background: var(--tile-front-side);
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+div.lobby > div.rooms > div.room > button.join-room {
+  padding-top: calc(0.25 * var(--tile-size));
+}
+div.lobby > div.rooms > div.room > button.join-room:active,
+div.lobby > button.create-room:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
+  z-index: 1;
+}
+div.lobby > div.rooms > div.room > div.room-mods {
+  display: flex;
+  flex-flow: row wrap;
+  flex-grow: 1;
+  padding: 0 calc(0.25 * var(--tile-size));
+  align-items: center;
+  column-gap: calc(0.25 * var(--tile-size));
+}
+div.lobby > div.rooms > div.room > div.room-players {
+  font-size: calc(0.75 * var(--tile-size));
+}
+div.lobby > button.create-room {
+  position: absolute;
+  width: 100%;
+  bottom: calc(0 * var(--tile-size));
+  left: calc(0 * var(--tile-size));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1662,13 +1751,12 @@ div.room > header {
   width: 100%;
 }
 div.room > div.seats, div.room > div.mods {
-  position: absolute;
+  position: relative;
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   background: #FFFFFF3F;
   width: calc(100% - 3 * var(--tile-size));
   left: calc(1 * var(--tile-size));
-  position: relative;
 }
 div.room > div.seats {
   top: calc(1.5 * var(--tile-size));
