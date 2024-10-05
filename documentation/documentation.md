@@ -309,89 +309,73 @@ That's about it for match specifications.
 
 # `ruleset.json` full documentation
 
+Here are all the toplevel keys. Every key is optional.
 
+Events
 
+- `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
+- `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
+- `after_start`: Triggers at the start of each round. Context: `seat` is the current seat (so, east).
+- `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
+- `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
+- `before_call`: Triggers at the start of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
+- `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
+- `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
+- `before_win`: Triggers before a win is called. Context: `seat` is the seat who called the win.
+- `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. TODO document this
 
+Buttons:
 
+- `auto_buttons`: List of auto buttons, described above
+- `buttons`: List of buttons, described above
 
+Mods:
 
+- `available_mods`: List of available mods
+- `default_mods`: List of mods enabled by default
 
+Rules:
 
-- `"after_turn_change"`
-- `"auto_buttons"`
-- `"before_turn_change"`
-- `"before_win"`
-- `"buttons"`
-- `"extra_yaku"`
-- `"kokushi_tenpai_definition"`
-- `"max_revealed_tiles"`
-- `"play_restrictions"`
-- `"point_name"`
-- `"reserved_tiles"`
-- `"revealed_tiles"`
-- `"score_calculation"`
-- `"set_definitions"`
-- `"tenpai_definition"`
-- `"uninterruptible_actions"`
-- `"wall"`
-- `"win_definition"`
-- `"yaku"`
-- `"yaku_alt_names"`
-- `"yakuman"`
+- `display_honba`: Whether to show number of honba in the middle
+- `display_riichi_sticks`: Whether to show number of riichi sticks in the middle
+- `dora_indicators`: Defines what tile dora indicators indicate
+- `enable_saki_cards`: Set to `true` to enable saki power stuff (may remove this key in the future)
+- `initial_score`: Starting score
+- `interruptible_actions`: List of actions that can be interrupted by buttons
+- `max_revealed_tiles`: Number of tiles to show at the top at all times
+- `max_rounds`: Number of rounds before the game ends
+- `play_restrictions`: TODO
+- `reserved_tiles`: List of tiles reserved from the end of the wall
+- `revealed_tiles`: List of reserved tiles revealed at the start of the game
+- `set_definitions`: List of definitions for sets used in match definitions, described above
+- `starting_tiles`: Number of tiles every player starts with every round
+- `wall`: The list of tiles used in the game
 
-Other than `"wall"`, every key is optional.
+Yaku and scoring:
 
-Each subsection below will detail the function of each key mentioned above.
+- `extra_yaku`: List of yaku that doesn't count towards having yaku, like dora
+- `limit_point_name`: Name for limit points, like ★
+- `meta_yaku`: List of yaku whose conditions depend on existing yaku.
+- `minipoint_name`: Name for minipoints, like Fu
+- `point_name`: Name for points, like Han
+- `score_calculation`: TODO
+- `yaku`: List of yaku.
+- `yaku_alt_names`: Does nothing, but I might make it do something in the future.
+- `yaku_precedence`: An object specifying which yaku gets overridden by other yaku.
+- `yakuman`: List of yakuman.
 
-## `"wall"`
+Saki:
 
-This should be an array listing out all the tiles contained in the wall, for example:
+- `saki_deck`: Deck of saki cards.
+- `saki_ver`: The saki card spritesheet to use, either "v12" or "v13".
 
-    "wall": ["1m", "1m", "1m", "1m",
-             "2m", "2m", "2m", "2m",
-             "3m", "3m", "3m", "3m",
-             "4m", "4m", "4m", "4m",
-             "0m", "5m", "5m", "5m",
-             "6m", "6m", "6m", "6m",
-             "7m", "7m", "7m", "7m",
-             "8m", "8m", "8m", "8m",
-             "9m", "9m", "9m", "9m",
-             "1p", "1p", "1p", "1p",
-             "2p", "2p", "2p", "2p",
-             "3p", "3p", "3p", "3p",
-             "4p", "4p", "4p", "4p",
-             "0p", "5p", "5p", "5p",
-             "6p", "6p", "6p", "6p",
-             "7p", "7p", "7p", "7p",
-             "8p", "8p", "8p", "8p",
-             "9p", "9p", "9p", "9p",
-             "1s", "1s", "1s", "1s",
-             "2s", "2s", "2s", "2s",
-             "3s", "3s", "3s", "3s",
-             "4s", "4s", "4s", "4s",
-             "0s", "5s", "5s", "5s",
-             "6s", "6s", "6s", "6s",
-             "7s", "7s", "7s", "7s",
-             "8s", "8s", "8s", "8s",
-             "9s", "9s", "9s", "9s",
-             "1z", "1z", "1z", "1z",
-             "2z", "2z", "2z", "2z",
-             "3z", "3z", "3z", "3z",
-             "4z", "4z", "4z", "4z",
-             "5z", "5z", "5z", "5z",
-             "6z", "6z", "6z", "6z",
-             "7z", "7z", "7z", "7z"]
+# Actions
 
+TODO
 
+# Conditions
 
-
-
-
-
-
-
-
-
+TODO
 
 # Scoring
 
@@ -405,24 +389,13 @@ Scoring will be performed based on the `"method"` key in this object. Here are t
 
 Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action.
 
-
-
-
-
 This method enables fu calculations for a winning hand. Fu calculation is currently hardcoded and cannot be customized, but this is subject to change.
 
 In the event of an exhaustive draw, this method looks for the status `"tenpai"` among all existing players. (This means you will have to set and unset tenpai status through the course of the game.) All `"tenpai"` players will pay the non-`"tenpai"` players according to the rules of riichi. That is, unless any player has the status `"nagashi"`, in which case they get nagashi payments.
 
+TODO: other scoring methods
 
-
-
-
-
-
-
-
-
-# Game loop
+# Game loop in detail (might be outdated)
 
 Here's how the game loop functions:
 
@@ -452,7 +425,7 @@ For instance, a double ron would display rons in that order.
 Afterwards, everyone's choices are cleared.
 
 That's the basic game loop, but there is some subtlety regarding running and interrupting actions.
-Any action (except those in the "uninterruptible_actions" key of the rules) can be interrupted given the right conditions.
+Any action in the "interruptible_actions" key of the rules can be interrupted given the right conditions.
 Specifically, after every action a check is made to every player for each button to see if it can appear.
 If any button appears for any player, all future actions are deferred.
 The result is that after action adjudication, every player has a possible list of deferred actions.
@@ -469,27 +442,3 @@ If the ponning player presses "pon" then they discard the deferred "advance_turn
 ("pon" includes a `["change_turn", "self"]` action, which allows game flow to continue.)
 Otherwise if the ponning player presses "skip", then all players have chosen skip.
 This means the deferred "advance_turn" is then run, as if the pon choice never happened.
-
-Because of this interrupt system, it is useful to add certain actions to the "uninterruptible_actions" array.
-For example, "big_text" merely shows big text, and thus there is no need to react to it even if buttons can be shown afterwards.
-
-
-
-
-
-
-
-
-## Auto buttons
-
-Auto buttons are triggered on the following:
-
-- Upon toggling them on,
-- After running any set of actions (e.g. `"advance_turn"`)
-
-Note that auto buttons might click buttons or play tiles, forcing a choice to be made.
-
-
-
-
-
