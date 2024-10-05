@@ -36,7 +36,6 @@ defmodule RiichiAdvanced.GameState.Log do
 
   def add_buttons(state) do
     possible_calls = for {seat, player} <- state.players do
-      # TODO make sure this doesn't crash on saki
       for {name, {:call, choices}} <- player.button_choices do
         for choice <- Map.values(choices) |> Enum.concat() do
           %{player: seat, type: name, tiles: choice}
