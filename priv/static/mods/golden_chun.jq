@@ -41,8 +41,8 @@ end
 |
 # add aka and golden chun yaku
 .extra_yaku += [
-  {"display_name": "Kin", "value": 1, "when": [{"name": "status", "opts": ["aka_h"]}]},
-  {"display_name": "Golden Chun", "value": 1, "when": [
+  {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_h"]}]},
+  {"display_name": "Kin", "value": 1, "when": [
     {"name": "status", "opts": ["golden_chun"]},
     [
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["7z"], -1]]]]},
