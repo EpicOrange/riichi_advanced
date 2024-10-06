@@ -8,7 +8,6 @@ defmodule RoomPlayer do
 end
 
 defmodule Room do
-  alias Delta.Op
   defstruct [
     # params
     ruleset: nil,
@@ -29,7 +28,7 @@ defmodule Room do
     starting: false,
     started: false,
     mods: %{},
-    textarea: [Op.insert("{}")],
+    textarea: [Delta.Op.insert("{}")],
     textarea_deltas: [],
     textarea_version: 0,
   ]
@@ -104,6 +103,7 @@ defmodule RiichiAdvanced.RoomState do
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
+      textarea: [Delta.Op.insert(ruleset_json)],
     })
 
     # check if a lobby exists. if so, notify the lobby that this room now exists
@@ -254,7 +254,7 @@ defmodule RiichiAdvanced.RoomState do
   def handle_cast(:start_game, state) do
     state = Map.put(state, :starting, true)
     state = broadcast_state_change(state)
-    mods = get_enabled_mods(state)
+    mods = if state.ruleset == "custom" do [] else get_enabled_mods(state) end
     if state.ruleset == "custom" do
       RiichiAdvanced.ETSCache.put(state.session_id, Enum.at(state.textarea, 0)["insert"], :cache_rulesets)
     end
