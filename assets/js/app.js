@@ -116,7 +116,6 @@ Hooks.CollaborativeTextarea = {
     this.el.addEventListener('focus', update.bind(this));
     this.el.addEventListener('blur', update.bind(this));
     this.el.addEventListener('keyup', update.bind(this));
-    this.el.addEventListener('paste', () => window.onTimeout(update.bind(this), 100));
   }
 }
 
