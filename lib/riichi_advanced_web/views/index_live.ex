@@ -45,7 +45,23 @@ defmodule RiichiAdvancedWeb.IndexLive do
   end
 
   def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname}, socket) do
-    socket = push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
+    # check if there are any public rooms of this ruleset
+    # if not, skip the lobby and go directly to making a new table
+    session_ids = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
+    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+    |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
+    |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
+    has_public_room = Enum.any?(session_ids, fn session_id -> 
+      [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, session_id))
+      room_state = GenServer.call(room_state_pid, :get_state)
+      not room_state.private
+    end)
+    socket = if has_public_room do
+      push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
+    else
+      {:ok, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
+      push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
+    end
     {:noreply, socket}
   end
 

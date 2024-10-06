@@ -125,6 +125,17 @@ defmodule RiichiAdvanced.LobbyState do
     else nil end
   end
 
+  def create_room(state) do
+    case generate_room_name(state) do
+      nil       -> :no_names_remaining
+      session_id ->
+        state = put_in(state.rooms[session_id], %LobbyRoom{})
+        state = broadcast_state_change(state)
+        state = broadcast_new_room(state, session_id)
+        {:ok, session_id}
+    end
+  end
+
   def handle_call({:new_player, socket}, _from, state) do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
@@ -150,14 +161,7 @@ defmodule RiichiAdvanced.LobbyState do
   end
 
   def handle_call(:create_room, _from, state) do
-    case generate_room_name(state) do
-      nil       -> {:reply, :no_names_remaining, state}
-      session_id ->
-        state = put_in(state.rooms[session_id], %LobbyRoom{})
-        state = broadcast_state_change(state)
-        state = broadcast_new_room(state, session_id)
-        {:reply, {:ok, session_id}, state}
-    end
+    {:reply, create_room(state), state}
   end
 
   def handle_cast({:update_room_state, session_id, room_state}, state) do
