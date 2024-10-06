@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.ETSCache do
   def init(:ok) do
     :ets.new(:cache, [:named_table, :set, :public, read_concurrency: true, write_concurrency: true])
     :ets.new(:cache_mods, [:named_table, :set, :public, read_concurrency: true, write_concurrency: true])
+    :ets.new(:cache_rulesets, [:named_table, :set, :public, read_concurrency: true, write_concurrency: true])
     {:ok, %{}}
   end
 

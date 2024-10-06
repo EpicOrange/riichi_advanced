@@ -59,12 +59,14 @@ defmodule RiichiAdvanced.RoomState do
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_room", state.ruleset, state.session_id))
 
     # read in the ruleset
-    ruleset_json = if state.ruleset != "custom" do
+    ruleset_json = if state.ruleset == "custom" do
+      RiichiAdvanced.ETSCache.get(state.session_id, ["{}"], :cache_rulesets) |> Enum.at(0)
+    else
       case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
         {:ok, ruleset_json} -> ruleset_json
         {:error, _err}      -> nil
       end
-    else "{}" end
+    end
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
@@ -253,6 +255,9 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.put(state, :starting, true)
     state = broadcast_state_change(state)
     mods = get_enabled_mods(state)
+    if state.ruleset == "custom" do
+      RiichiAdvanced.ETSCache.put(state.session_id, Enum.at(state.textarea, 0)["insert"], :cache_rulesets)
+    end
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
@@ -274,6 +279,12 @@ defmodule RiichiAdvanced.RoomState do
         state = Map.put(state, :starting, false)
         state
     end
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:dismiss_error, state) do
+    state = Map.put(state, :error, nil)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

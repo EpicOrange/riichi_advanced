@@ -183,4 +183,11 @@ defmodule RiichiAdvanced.LobbyState do
     {_, state} = pop_in(state.rooms[session_id])
     {:noreply, state}
   end
+  
+  def handle_cast(:dismiss_error, state) do
+    state = Map.put(state, :error, nil)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
 end

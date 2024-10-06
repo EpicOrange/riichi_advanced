@@ -168,9 +168,13 @@ defmodule RiichiAdvanced.GameState do
     }
 
     # read in the ruleset
-    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
-      {:ok, ruleset_json} -> ruleset_json
-      {:error, _err}      -> nil
+    ruleset_json = if state.ruleset == "custom" do
+      RiichiAdvanced.ETSCache.get(state.session_id, ["{}"], :cache_rulesets) |> Enum.at(0)
+    else
+      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
+        {:ok, ruleset_json} -> ruleset_json
+        {:error, _err}      -> nil
+      end
     end
 
     # strip comments
