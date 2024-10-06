@@ -1153,6 +1153,21 @@ defmodule RiichiAdvanced.GameState do
         calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
         length(waits) <= number
+      "call_contains" ->
+        tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
+        count = Enum.at(opts, 1, 1)
+        called_tiles = [context.called_tile] ++ context.call_choice
+        Enum.count(called_tiles, fn tile -> tile in tiles end) >= count
+      "called_tile_contains" ->
+        tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
+        count = Enum.at(opts, 1, 1)
+        called_tiles = [context.called_tile]
+        Enum.count(called_tiles, fn tile -> tile in tiles end) >= count
+      "call_choice_contains" ->
+        tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
+        count = Enum.at(opts, 1, 1)
+        called_tiles = context.call_choice
+        Enum.count(called_tiles, fn tile -> tile in tiles end) >= count
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
           "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
