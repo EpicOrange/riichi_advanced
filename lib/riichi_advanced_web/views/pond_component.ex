@@ -70,8 +70,8 @@ defmodule RiichiAdvancedWeb.PondComponent do
     socket = assign(socket, :highlight?, socket.assigns.viewer != socket.assigns.seat && socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)
 
     socket = assigns
-             |> Map.drop([:flash])
-             |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
+    |> Map.drop([:flash])
+    |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     {:ok, socket}
   end

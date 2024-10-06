@@ -172,8 +172,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
     else socket end
 
     socket = assigns
-             |> Map.drop([:flash])
-             |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
+    |> Map.drop([:flash])
+    |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     # animate played tile by inserting an invisible tile at its index
     # this gets undone after 750ms

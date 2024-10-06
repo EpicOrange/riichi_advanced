@@ -57,10 +57,12 @@ defmodule RiichiAdvanced.LobbyState do
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_lobby", state.ruleset, ""))
 
     # read in the ruleset
-    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
-      {:ok, ruleset_json} -> ruleset_json
-      {:error, _err}      -> nil
-    end
+    ruleset_json = if state.ruleset != "custom" do
+      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
+        {:ok, ruleset_json} -> ruleset_json
+        {:error, _err}      -> nil
+      end
+    else "{}" end
 
     # put params and process ids into state
     state = Map.merge(state, %Lobby{
@@ -132,7 +134,7 @@ defmodule RiichiAdvanced.LobbyState do
         state = put_in(state.rooms[session_id], %LobbyRoom{})
         state = broadcast_state_change(state)
         state = broadcast_new_room(state, session_id)
-        {:ok, session_id}
+        {:ok, state, session_id}
     end
   end
 
@@ -161,7 +163,10 @@ defmodule RiichiAdvanced.LobbyState do
   end
 
   def handle_call(:create_room, _from, state) do
-    {:reply, create_room(state), state}
+    case create_room(state) do
+      :no_names_remaining      -> {:reply, :no_names_remaining, state}
+      {:ok, state, session_id} -> {:reply, {:ok, session_id}, state}
+    end
   end
 
   def handle_cast({:update_room_state, session_id, room_state}, state) do

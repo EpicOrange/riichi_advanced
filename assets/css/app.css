@@ -1773,7 +1773,9 @@ div.room > header > label {
 }
 div.room > header > input:checked + label { background: var(--tile-back); }
 
-div.room > div.seats, div.room > div.mods {
+div.room > div.seats,
+div.room > div.mods,
+div.room > div.custom-json {
   position: relative;
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
@@ -1865,20 +1867,21 @@ div.room > div.seats-buttons > button.get-up-button,
 div.room > div.seats-buttons > button.start-game-button {
   font-size: calc(0.4 * var(--tile-size));
 }
-div.room > div.mods {
+div.room > div.mods,
+div.room > div.custom-json {
   top: calc(3 * var(--tile-size));
   height: calc(9 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
 }
-div.room > div.mods::before {
-  content: "Mods";
+div.room > div.mods::before,
+div.room > div.custom-json::before {
   position: absolute;
   top: calc(-1.5 * var(--tile-size));
   left: calc(-0.5 * var(--tile-size));
   font-size: calc(1 * var(--tile-size));
 }
-div.room > div.mods {
-  font-size: calc(0.5 * var(--tile-size));
-}
+div.room > div.mods::before { content: "Mods"; }
+div.room > div.custom-json::before { content: "Ruleset"; }
 div.room > div.mods > input { display: none; }
 div.room > div.mods > label {
   background: gray;
@@ -1888,7 +1891,18 @@ div.room > div.mods > label {
   white-space: nowrap;
 }
 div.room > div.mods > input:checked + label { background: var(--tile-back); }
-
+div.room > div.custom-json > textarea {
+  position: absolute;
+  background: #3f3f3f;
+  color: white;
+  width: calc(100% - 0.5 * var(--tile-size));
+  height: calc(100% - 0.5 * var(--tile-size));
+  top: calc(0.25 * var(--tile-size));
+  left: calc(0.25 * var(--tile-size));
+  white-space: pre;
+  box-sizing: border-box;
+  font-size: calc(0.25 * var(--tile-size));
+}
 
 /* menu nav buttons */
 div.menu-buttons-container {

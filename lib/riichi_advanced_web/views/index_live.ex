@@ -32,6 +32,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="saki">Sakijong v1.2</option>
           <option value="vietnamese">Vietnamese</option>
           <option value="bloody30faan">Bloody 30-Faan (beta)</option>
+          <option value="custom">Custom</option>
         </select>
         <br/>
         Name:
@@ -59,7 +60,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
     socket = if has_public_room do
       push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
     else
-      {:ok, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
+      {:ok, _, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
       push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
     end
     {:noreply, socket}

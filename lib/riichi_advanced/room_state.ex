@@ -8,6 +8,7 @@ defmodule RoomPlayer do
 end
 
 defmodule Room do
+  alias Delta.Op
   defstruct [
     # params
     ruleset: nil,
@@ -27,7 +28,10 @@ defmodule Room do
     private: true,
     starting: false,
     started: false,
-    mods: %{}
+    mods: %{},
+    textarea: [Op.insert("{}")],
+    textarea_deltas: [],
+    textarea_version: 0,
   ]
   use Accessible
 end
@@ -55,10 +59,12 @@ defmodule RiichiAdvanced.RoomState do
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_room", state.ruleset, state.session_id))
 
     # read in the ruleset
-    ruleset_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
-      {:ok, ruleset_json} -> ruleset_json
-      {:error, _err}      -> nil
-    end
+    ruleset_json = if state.ruleset != "custom" do
+      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
+        {:ok, ruleset_json} -> ruleset_json
+        {:error, _err}      -> nil
+      end
+    else "{}" end
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
@@ -164,6 +170,28 @@ defmodule RiichiAdvanced.RoomState do
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
+
+  # collaborative textarea
+
+  def handle_call(:get_textarea, _from, state) do
+    {:reply, {state.textarea_version, state.textarea}, state}
+  end
+
+  def handle_call({:update_textarea, client_version, client_delta}, _from, state) do
+    version_diff = state.textarea_version - client_version
+
+    missed_deltas = Enum.take(state.textarea_deltas, version_diff)
+    transformed_delta = missed_deltas |> Enum.reverse() |> Enum.reduce(client_delta, &Delta.transform(&1, &2, true))
+    returned_delta = Delta.compose_all([transformed_delta | missed_deltas] |> Enum.reverse())
+    state = Map.update!(state, :textarea_version, & &1 + 1)
+    state = Map.update!(state, :textarea_deltas, &[transformed_delta | &1])
+    state = Map.update!(state, :textarea, &Delta.compose(&1, transformed_delta))
+
+    IO.inspect(state.textarea_deltas)
+    {:reply, {state.textarea_version, returned_delta}, state}
+  end
+
+
 
   def handle_cast({:sit, socket_id, seat}, state) do
     seat = case seat do

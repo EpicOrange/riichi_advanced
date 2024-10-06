@@ -93,6 +93,32 @@ Hooks.ClickListener = {
   }
 }
 
+import Delta from "quill-delta";
+window.delta_version = 0;
+window.delta = new Delta().insert("");
+Hooks.CollaborativeTextarea = {
+  mounted() {
+    this.handleEvent("apply-delta", ({from_version, version, delta}) => {
+      if (window.delta_version == from_version) {
+        window.delta_version = version;
+        window.delta = window.delta.compose(new Delta(delta));
+        if (window.delta.ops.length > 0) {
+          this.el.value = window.delta.ops[0]["insert"];
+        } else {
+          this.el.value = "";
+        }
+      }
+    });
+    function update(el) {
+      var client_delta = window.delta.diff(new Delta().insert(this.el.value));
+      this.pushEventTo(this.el.getAttribute("phx-target"), "push_delta", {"version": window.delta_version, "delta": client_delta["ops"]});
+    }
+    this.el.addEventListener('focus', update.bind(this));
+    this.el.addEventListener('blur', update.bind(this));
+    this.el.addEventListener('keyup', update.bind(this));
+  }
+}
+
 window.addEventListener("phx:play-sound", ev => {
   var audio = new Audio(ev.detail.path);
   audio.play();

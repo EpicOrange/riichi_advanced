@@ -59,6 +59,8 @@ defmodule RiichiAdvanced.MixProject do
       {:nimble_parsec, "~> 1.4.0"},
       {:porcelain, github: "walkr/porcelain"},
       {:temp, "~> 0.4"},
+      {:diff_match_patch, github: "pzingg/diff_match_patch"},
+      {:diffy, "~> 1.1"}
     ]
   end
 

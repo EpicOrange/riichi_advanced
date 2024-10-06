@@ -106,12 +106,18 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <% end %>
         <% end %>
       </div>
-      <div class="mods">
-        <%= for {mod, mod_details} <- Enum.sort_by(@state.mods, fn {_name, mod} -> mod.index end) do %>
-          <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
-          <label for={mod} title={mod_details.desc}><%= mod_details.name %></label>
-        <% end %>
-      </div>
+      <%= if @ruleset == "custom" do %>
+        <div class="custom-json">
+          <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
+        </div>
+      <% else %>
+        <div class="mods">
+          <%= for {mod, mod_details} <- Enum.sort_by(@state.mods, fn {_name, mod} -> mod.index end) do %>
+            <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
+            <label for={mod} title={mod_details.desc}><%= mod_details.name %></label>
+          <% end %>
+        </div>
+      <% end %>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
@@ -177,7 +183,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           get_in(state.seats.south.id) == socket.id -> :south
           get_in(state.seats.west.id)  == socket.id -> :west
           get_in(state.seats.north.id) == socket.id -> :north
-          true                              -> :spectator
+          true                                      -> :spectator
         end
         push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
       else socket end
