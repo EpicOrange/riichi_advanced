@@ -249,7 +249,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{Map.get(socket.assigns, :nickname, "")}")
+    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname || ""}")
     {:noreply, socket}
   end
 

@@ -74,7 +74,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {called_tile, Enum.filter(choices, fn call_choice -> check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
           end |> Map.new()
         else call_choices end
-        {:call, call_choices}
+        {state, {:call, call_choices}}
       Enum.any?(actions, fn [action | _opts] -> action in mark_actions end) ->
         mark_spec = cond do
           Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)      -> [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}]
@@ -87,8 +87,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
           Enum.any?(actions, fn [action | _opts] -> action == "swap_tile_with_aside" end)                       -> [{"hand", 1, []}]
           Enum.any?(actions, fn [action | _opts] -> action in ["charleston_left", "charleston_across", "charleston_right"] end) -> [{"hand", 3, []}]
         end
-        {:mark, mark_spec}
-      true -> nil
+        {state, {:mark, mark_spec}}
+      true -> {state, nil}
     end
   end
 
@@ -96,21 +96,28 @@ defmodule RiichiAdvanced.GameState.Buttons do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
-      new_button_choices = Map.new(state.players, fn {seat, _player} ->
-        if Actions.performing_intermediate_action?(state, seat) do
-          # don't regenerate buttons if we're performing an intermediate action
-          {seat, %{}}
-        else
-          button_choices = state.rules["buttons"]
-            |> Enum.filter(fn {name, button} ->
-                 calls_spec = if Map.has_key?(button, "call") do button["call"] else [] end
-                 upgrades = if Map.has_key?(button, "upgrades") do button["upgrades"] else [] end
-                 check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
-               end)
-            |> Map.new(fn {name, button} -> {name, make_button_choices(state, seat, name, button)} end)
-          {seat, button_choices}
-        end
-      end)
+      {state, new_button_choices} = for {seat, _player} <- state.players, reduce: {state, []} do
+        {state, new_button_choices} ->
+          if Actions.performing_intermediate_action?(state, seat) do
+            # don't regenerate buttons if we're performing an intermediate action
+            {state, [{seat, %{}} | new_button_choices]}
+          else
+            button_choices = state.rules["buttons"]
+              |> Enum.filter(fn {name, button} ->
+                   calls_spec = if Map.has_key?(button, "call") do button["call"] else [] end
+                   upgrades = if Map.has_key?(button, "upgrades") do button["upgrades"] else [] end
+                   check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                 end)
+            {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
+              {state, button_choices} ->
+                {state, spec} = make_button_choices(state, seat, name, button)
+                {state, [{name, spec} | button_choices]}
+            end
+            button_choices = Map.new(button_choices)
+            {state, [{seat, button_choices} | new_button_choices]}
+          end
+      end
+      new_button_choices = Map.new(new_button_choices)
       
       # play button notify sound
       for {seat, button_choices} <- new_button_choices do
