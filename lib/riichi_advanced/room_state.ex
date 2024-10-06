@@ -189,7 +189,7 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :textarea_deltas, &[transformed_delta | &1])
     state = Map.update!(state, :textarea, &Delta.compose(&1, transformed_delta))
 
-    IO.inspect(state.textarea_deltas)
+    # IO.inspect(state.textarea_deltas)
     {:reply, {state.textarea_version, returned_delta}, state}
   end
 

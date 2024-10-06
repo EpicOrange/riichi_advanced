@@ -40,7 +40,7 @@
     {"id": "sanchahou", "conflicts": ["head_bump"], "name": "Sanchahou", "desc": "Enable triple ron abortive draw."},
     // {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
     // {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
-    // {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place."},
+    // {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
     // {"id": "tenpaiyame", "deps": ["tenpairenchan"], "name": "Tenpaiyame", "desc": "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."},
     {"id": "kyuushu_kyuuhai", "name": "Kyuushu Kyuuhai", "desc": "Enable 9 distinct terminal/honor abortive draw."},
     {"id": "renhou", "name": "Renhou", "desc": "Enable renhou yakuman."},

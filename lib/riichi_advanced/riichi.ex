@@ -7,6 +7,8 @@ defmodule Riichi do
   def shift_suit(tile), do: @shift_suit[tile]
 
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
+
+  # TODO remove this, replace with wall - joker tiles
   @all_tiles [
     :"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m",
     :"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p",
