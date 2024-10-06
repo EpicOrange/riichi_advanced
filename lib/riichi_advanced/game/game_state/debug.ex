@@ -2,17 +2,17 @@
 defmodule RiichiAdvanced.GameState.Debug do
   @debug false
   @debug_status false
-  @debug_fast_ai true
+  @debug_fast_ai false
 
   def debug, do: @debug
   def debug_status, do: @debug_status
   def debug_fast_ai, do: @debug_fast_ai
 
   def set_wall(wall) do
-    wall = List.replace_at(wall, 52, :"1z") # first draw
-    wall = List.replace_at(wall, 53, :"2z")
+    wall = List.replace_at(wall, 52, :"5s") # first draw
+    wall = List.replace_at(wall, 53, :"0z")
     wall = List.replace_at(wall, 54, :"1z")
-    wall = List.replace_at(wall, 55, :"1z")
+    wall = List.replace_at(wall, 55, :"6m")
     wall = List.replace_at(wall, 56, :"1z") # second draw
     # wall = List.replace_at(wall, 57, :"1m")
     # wall = List.replace_at(wall, 58, :"1m")
@@ -46,10 +46,14 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
-    hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"5z", :"6z", :"6z", :"6z", :"5z", :"6z", :"1z", :"1z", :"1z", :"2s", :"3s"]),
+    hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"5p", :"12j", :"3p", :"4p"]),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}
+    # hands = %{:east  => Utils.sort_tiles([:"5z", :"5z", :"5z", :"6z", :"6z", :"6z", :"5z", :"6z", :"1z", :"1z", :"1z", :"2s", :"3s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"6m", :"6m", :"8m", :"9m", :"6z", :"26z", :"7m", :"27z", :"7z", :"7z"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
