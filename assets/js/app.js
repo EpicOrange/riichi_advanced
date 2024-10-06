@@ -98,8 +98,14 @@ window.delta_version = 0;
 window.delta = new Delta().insert("");
 Hooks.CollaborativeTextarea = {
   mounted() {
-    this.handleEvent("apply-delta", ({from_version, version, delta}) => {
+    var debounced = (fun) => (...args) => {
+      window.clearTimeout(window.delta_debounce);
+      window.delta_debounce = window.setTimeout(fun.apply(this, args), 50);
+    }
+    
+    function write({from_version, version, delta}) {
       if (window.delta_version == from_version) {
+        console.log(window.delta_version, version); 
         window.delta_version = version;
         window.delta = window.delta.compose(new Delta(delta));
         if (window.delta.ops.length > 0) {
@@ -108,19 +114,16 @@ Hooks.CollaborativeTextarea = {
           this.el.value = "";
         }
       }
-    });
+    }
+    this.handleEvent("apply-delta", debounced(write).bind(this));
 
     function update() {
       var client_delta = window.delta.diff(new Delta().insert(this.el.value));
       this.pushEventTo(this.el.getAttribute("phx-target"), "push_delta", {"version": window.delta_version, "delta": client_delta["ops"]});
     }
-    function debouncedUpdate() {
-      window.clearTimeout(window.delta_debounce);
-      window.delta_debounce = setTimeout(update.bind(this), 100);
-    }
-    this.el.addEventListener('focus', debouncedUpdate.bind(this));
-    this.el.addEventListener('blur', debouncedUpdate.bind(this));
-    this.el.addEventListener('keyup', debouncedUpdate.bind(this));
+    this.el.addEventListener('focus', debounced(update).bind(this));
+    this.el.addEventListener('blur', debounced(update).bind(this));
+    this.el.addEventListener('keyup', debounced(update).bind(this));
   }
 }
 
