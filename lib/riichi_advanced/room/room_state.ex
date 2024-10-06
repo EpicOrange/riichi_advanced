@@ -70,7 +70,7 @@ defmodule RiichiAdvanced.RoomState do
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
-      case Jason.decode(Regex.replace(~r{//.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+      case Jason.decode(Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")

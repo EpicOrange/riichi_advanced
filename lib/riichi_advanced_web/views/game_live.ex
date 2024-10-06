@@ -93,6 +93,9 @@ defmodule RiichiAdvancedWeb.GameLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
+      <%= if Map.has_key?(@state.rules, "tile_images") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomTilesComponent} id="custom-tiles" tiles={@state.rules["tile_images"]}/>
+      <% end %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}

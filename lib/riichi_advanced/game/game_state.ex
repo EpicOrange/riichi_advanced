@@ -179,7 +179,7 @@ defmodule RiichiAdvanced.GameState do
 
     # strip comments
     orig_ruleset_json = ruleset_json
-    ruleset_json = Regex.replace(~r{//.*|/\*[.\n]*?\*/}, ruleset_json, "")
+    ruleset_json = Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")
 
     # apply mods
     mods = Map.get(state, :mods, [])
