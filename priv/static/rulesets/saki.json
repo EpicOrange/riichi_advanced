@@ -1153,7 +1153,8 @@
     [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
-    [["any"], [{"name": "not_tagged", "opts": ["tile", "no_discard"]}]]
+    [["any"], [{"name": "not_tagged", "opts": ["tile", "no_discard"]}]],
+    [["any"], [[{"name": "not_status", "opts": ["amae-koromo"]}, "not_just_discarded"]]]
     // [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
   ],
   "before_turn_change": {
