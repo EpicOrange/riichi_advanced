@@ -109,13 +109,18 @@ Hooks.CollaborativeTextarea = {
         }
       }
     });
-    function update(el) {
+
+    function update() {
       var client_delta = window.delta.diff(new Delta().insert(this.el.value));
       this.pushEventTo(this.el.getAttribute("phx-target"), "push_delta", {"version": window.delta_version, "delta": client_delta["ops"]});
     }
-    this.el.addEventListener('focus', update.bind(this));
-    this.el.addEventListener('blur', update.bind(this));
-    this.el.addEventListener('keyup', update.bind(this));
+    function debouncedUpdate() {
+      window.clearTimeout(window.delta_debounce);
+      window.delta_debounce = setTimeout(update.bind(this), 100);
+    }
+    this.el.addEventListener('focus', debouncedUpdate.bind(this));
+    this.el.addEventListener('blur', debouncedUpdate.bind(this));
+    this.el.addEventListener('keyup', debouncedUpdate.bind(this));
   }
 }
 
