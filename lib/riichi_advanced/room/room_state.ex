@@ -30,7 +30,9 @@ defmodule Room do
     mods: %{},
     textarea: [Delta.Op.insert("{}")],
     textarea_deltas: [],
-    textarea_version: 0,
+    textarea_delta_invs: [],
+    textarea_delta_uuids: [],
+    textarea_version: 1,
   ]
   use Accessible
 end
@@ -179,18 +181,33 @@ defmodule RiichiAdvanced.RoomState do
     {:reply, {state.textarea_version, state.textarea}, state}
   end
 
-  def handle_call({:update_textarea, client_version, client_delta}, _from, state) do
+  def handle_call({:update_textarea, client_version, uuid, client_delta, applied_uuids}, _from, state) do
     version_diff = state.textarea_version - client_version
-
     missed_deltas = Enum.take(state.textarea_deltas, version_diff)
-    transformed_delta = missed_deltas |> Enum.reverse() |> Enum.reduce(client_delta, &Delta.transform(&1, &2, true))
-    returned_delta = Delta.compose_all([transformed_delta | missed_deltas] |> Enum.reverse())
+    others_deltas = missed_deltas
+    |> Enum.zip(Enum.take(state.textarea_delta_uuids, version_diff))
+    |> Enum.reject(fn {_delta, uuid} -> uuid in applied_uuids end)
+    |> Enum.map(fn {delta, _uuid} -> delta end)
+
+    transformed_delta = others_deltas |> Enum.reverse() |> Enum.reduce(client_delta, &Delta.transform(&1, &2, true))
+    returned_deltas = [transformed_delta | missed_deltas] |> Enum.reverse()
+    # IO.puts("""
+    #   #{client_version} => #{state.textarea_version+1}
+    #   Given the client delta #{inspect(client_delta)}
+    #   and the missed deltas #{inspect(missed_deltas)}
+    #   where others contributed #{inspect(others_deltas)}
+    #   we transform the client delta into #{inspect(transformed_delta)}
+    #   and return #{inspect(returned_deltas)}
+    # """)
+
+    returned_uuids = [uuid | Enum.take(state.textarea_delta_uuids, version_diff)]
     state = Map.update!(state, :textarea_version, & &1 + 1)
     state = Map.update!(state, :textarea_deltas, &[transformed_delta | &1])
+    state = Map.update!(state, :textarea_delta_invs, &[transformed_delta |> Delta.invert(state.textarea) | &1])
+    state = Map.update!(state, :textarea_delta_uuids, &[uuid | &1])
     state = Map.update!(state, :textarea, &Delta.compose(&1, transformed_delta))
 
-    # IO.inspect(state.textarea_deltas)
-    {:reply, {state.textarea_version, returned_delta}, state}
+    {:reply, {state.textarea_version, returned_uuids, returned_deltas}, state}
   end
 
 

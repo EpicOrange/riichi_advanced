@@ -13,10 +13,10 @@ defmodule RiichiAdvancedWeb.CollaborativeTextareaComponent do
     """
   end
 
-  def handle_event("push_delta", %{"version" => version, "delta" => delta}, socket) do
-    {new_version, new_delta} = GenServer.call(socket.assigns.room_state, {:update_textarea, version, delta})
+  def handle_event("push_delta", %{"version" => version, "uuid" => uuid, "delta" => delta, "applied_uuids" => applied_uuids}, socket) do
+    {new_version, uuids, new_deltas} = GenServer.call(socket.assigns.room_state, {:update_textarea, version, uuid, delta, applied_uuids})
     # IO.inspect({version, new_version, delta, "becomes", new_delta})
-    socket = push_event(socket, "apply-delta", %{from_version: version, version: new_version, delta: new_delta})
+    socket = push_event(socket, "apply-delta", %{from_version: version, version: new_version, uuids: uuids, deltas: new_deltas})
     {:noreply, socket}
   end
 
@@ -29,7 +29,7 @@ defmodule RiichiAdvancedWeb.CollaborativeTextareaComponent do
     socket = if socket.assigns.room_state != nil do
       # initialize the textarea to the current value
       {version, delta} = GenServer.call(socket.assigns.room_state, :get_textarea)
-      socket = push_event(socket, "apply-delta", %{from_version: 0, version: version, delta: delta})
+      socket = push_event(socket, "apply-delta", %{from_version: 0, version: version, deltas: [delta]})
       socket
     else socket end
 
