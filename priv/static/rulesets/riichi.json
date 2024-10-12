@@ -925,7 +925,7 @@
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        ["has_han_with_discard", "has_yakuman_with_discard"]
+        {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]}
       ],
       "actions": [
         ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
@@ -963,7 +963,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        ["has_han_with_hand", "has_yakuman_with_hand"]
+        {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]}
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]

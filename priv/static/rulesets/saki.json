@@ -1771,7 +1771,7 @@
           ]
         ],
         [
-          "has_han_with_discard",
+          {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]},
           {"name": "status", "opts": ["senoo-kaori"]}
         ],
         [
@@ -1914,7 +1914,7 @@
             "no_tiles_remaining"
           ]
         ],
-        "has_han_with_hand",
+        {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]},
         [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
            [

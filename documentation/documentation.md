@@ -441,7 +441,87 @@ Other:
 
 # Conditions
 
-TODO
+Prepend `"not_"` to any of the condition names to negate it.
+
+- `"true"`: Always true.
+- `"false"`: Always false.
+- `"our_turn"`: The current turn is ours.
+- `"our_turn_is_next"`: The next turn is ours.
+- `"our_turn_is_prev"`: The previous turn is ours.
+- `"game_start"`: No actions have been performed.
+- `"no_discards_yet"`: No discard actions have been performed.
+- `"no_calls_yet"`: No call actions have been performed.
+- `{"name": "last_call_is", "opts": [call_button_id]}`: The last call, if any, was performed by the given call button id.
+- `"kamicha_discarded"`: The last action, if any, was kamicha discarding.
+- `"someone_else_just_discarded"`: The last action, if any, was someone else discarding.
+- `"just_discarded"`: The last action, if any, was us discarding.
+- `"just_called"`: The last action, if any, was us calling.
+- `"call_available"`: For call buttons only. The specified call is available.
+- `"self_call_available"`: For self call buttons only. The specified self call is available.
+- `"can_upgrade_call"`: For upgrade call buttons only. The specified upgrade call is available.
+- `"has_draw"`: The current player has drawn a tile.
+- `"has_aside"`: The current player has set aside a tile.
+- `"has_calls"`: The current player has called tiles.
+- `{"name": "has_call_named", "opts": [call1, call2, ...]}`: The current player has one of the specified calls. Example: `{"name": "has_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}`
+- `{"name": "has_no_call_named", "opts": [call1, call2, ...]}`: The current player has none of the specified calls. Example: `{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}`
+- `"won_by_call"`: The winner won by stealing a called tile.
+- `"won_by_draw"`: The winner won by drawing the winning tile.
+- `"won_by_discard"`: The winner won by stealing the discard tile.
+- `{"name": "fu_equals", "opts": [fu]}`: The winning player has the given amount of fu. Valid values of fu are multiples of 10.
+- `{"name": "has_yaku_with_hand", "opts": [han, yaku_keys]}`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in the specified toplevel keys. Example: `{"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]}`
+- `{"name": "has_yaku_with_discard", "opts": [han, yaku_keys]}`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in the specified toplevel keys. Example: `{"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]}`
+- `{"name": "has_yaku_with_call", "opts": [han, yaku_keys]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in the specified toplevel keys. Example: `{"name": "has_yaku_with_call", "opts": [1, ["yaku", "yakuman"]]}`
+- `{"name": "last_discard_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last discard matches one of the given tile specs. See the tile specs section for details.
+- `{"name": "last_called_tile_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last called tile matches one of the given tile specs. See the tile specs section for details.
+- `{"name": "unneeded_for_hand", "opts": [match_spec1, match_spec2, ...]}`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is not needed for the current player's hand to match one of the given match specifications.
+- `"is_drawn_tile`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is a drawn tile.
+- `{"name": "status", "opts": [status1, status2, ...]}`: The current player has all of the specified statuses.
+- `{"name": "status_missing", "opts": [status1, status2, ...]}`: The current player is missing all of the specified statuses.
+- `{"name": "discarder_status", "opts": [status1, status2, ...]}`: The last discarder has all of the specified statuses.
+- `{"name": "shimocha_status", "opts": [status1, status2, ...]}`: Shimocha has all of the specified statuses.
+- `{"name": "toimen_status", "opts": [status1, status2, ...]}`: Toimen has all of the specified statuses.
+- `{"name": "kamicha_status", "opts": [status1, status2, ...]}`: Kamicha has all of the specified statuses.
+- `{"name": "others_status", "opts": [status1, status2, ...]}`: Someone else has all of the specified statuses.
+- `{"name": "anyone_status", "opts": [status1, status2, ...]}`: Anyone has all of the specified statuses.
+- `{"name": "everyone_status", "opts": [status1, status2, ...]}`: Everyone has all of the specified statuses.
+- `{"name": "buttons_include", "opts": [button1, button2, ...]}`: All of the specified buttons are showing for the current player.
+- `{"name": "buttons_exclude", "opts": [button1, button2, ...]}`: None of the specified buttons are showing for the current player.
+- `{"name": "tile_drawn", "opts": [tile1, tile2, ...]}`: All of the given reserved tiles have been drawn.
+- `{"name": "tile_not_drawn", "opts": [tile1, tile2, ...]}`: None of the given reserved tiles have been drawn.
+- `{"name": "tile_revealed", "opts": [tile1, tile2, ...]}`: All of the given reserved tiles have been revealed above.
+- `{"name": "tile_not_revealed", "opts": [tile1, tile2, ...]}`: None of the given reserved tiles have been revealed above.
+- `"no_tiles_remaining"`: No tiles remain in the wall.
+- `{"name": "tiles_remaining", "opts": [num]}`: At least `num` tiles remain in the wall.
+- `"next_draw_possible"`: The player whose turn it is has at least one draw remaining (after their current draw).
+- `{"name": "has_score", "opts": [score]}`: The current player has at least `score` score.
+- `{"name": "round_wind_is", "opts": [direction]}`: The current round wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
+- `{"name": "seat_wind_is", "opts": [direction]}`: The current player's seat wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
+- `{"name": "winning_dora_count", "opts": [dora_indicator, num]}`: The current player has `num` dora tiles of the given dora indicator.
+- `{"name": "match", "opts": [to_match, [match_spec1, match_spec2, ...]]}`: See the section on match specifications to see how this condition works.
+- `{"name": "winning_hand_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (excluding winning tile) contains only the given tiles (jokers allowed).
+- `{"name": "winning_hand_and_tile_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (including winning tile) contains only the given tiles (jokers allowed).
+- `"all_saki_cards_drafted"`: Everyone has at least one saki card.
+- `{"name": "has_existing_yaku", "opts": [yaku1, yaku2, ...]}`: Used in `meta_yaku` only. The winner has scored all of the given yaku.
+- `"has_no_yaku"`: Used in `meta_yaku` only. The winner has scored no yaku.
+- `"placement"`: The current player has the given placement (1-4).
+- `"last_discard_matches_existing"`: The last discarded tile matches one of the current player's existing discards (includes called discards) (uses jokers).
+- `"called_tile_matches_any_discard"`: The last called tile matches one of anybody's existing discards (excludes called discards) (uses jokers).
+- `"last_discard_exists"`: The last discarded tile was not taken by another player.
+- `"first_time_finished_second_row_discards"`: Someone's last discard just finished off their second row of discards.
+- `{"name": "call_would_change_waits", "opts": [match_spec1, match_spec2, ...]}`: For call buttons' `show_when` key only. The given call would change the waits of the current player, where a winning hand is defined by the given match definitions.
+- `{"name": "call_changes_waits", "opts": [match_spec1, match_spec2, ...]}`: For call buttons' `call_conditions` key only. The given call changes the waits of the current player, where a winning hand is defined by the given match definitions.
+- `{"name": "wait_count_at_least", "opts": [num, [match_spec1, match_spec2, ...]]}`: The number of tiles the current player is waiting on is at least `num`, where a winning hand is defined by the given match definitions.
+- `{"name": "wait_count_at_most", "opts": [num, [match_spec1, match_spec2, ...]]}`: The number of tiles the current player is waiting on is at most `num`, where a winning hand is defined by the given match definitions.
+- `{"name": "call_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The call contains at least `num` of any of the given tiles.
+- `{"name": "called_tile_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The called tile contains at least `num` of any of the given tiles. (only num=1 is valid)
+- `{"name": "call_choice_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The tiles used to call contains at least `num` of any of the given tiles.
+- `{"name": "tagged", "opts": [tile, tag_name]}`: The given tile is tagged with the given `tag_name`. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
+- `{"name": "has_hell_wait", "opts": [match_spec1, match_spec2, ...]}`: The current player is waiting on a single out, where a winning hand is defined by the given match definitions.
+- `"third_row_discard"`: The current player has at least 12 tiles in their pond.
+- `{"name": "tiles_in_hand", "opts": [num]}`: The current player has `num` tiles in hand.
+- `{"name": "anyone", "opts": [cond1, cond2, ...]}`: Anyone satisfies the given conditions.
+
+# Tile specs
 
 # Scoring
 
