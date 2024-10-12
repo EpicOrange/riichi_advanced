@@ -167,7 +167,6 @@ Hooks.CollaborativeTextarea = {
       }
     }
     this.handleEvent("apply-delta", debounced(write).bind(this));
-    // window.setInterval(() => debounced(update).bind(this)(false), 250);
   }
 }
 

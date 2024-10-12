@@ -193,6 +193,15 @@ defmodule RiichiAdvancedWeb.RoomLive do
     end
   end
 
+  def handle_info(%{topic: topic, event: "textarea_updated", payload: %{"from_version" => from_version, "version" => version, "uuids" => uuids, "deltas" => deltas}}, socket) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.session_id) do
+      socket = push_event(socket, "apply-delta", %{from_version: from_version, version: version, uuids: uuids, deltas: deltas})
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
     if topic == "messages:" <> socket.id do
       socket = assign(socket, :messages, state.messages)

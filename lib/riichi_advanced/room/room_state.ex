@@ -140,6 +140,14 @@ defmodule RiichiAdvanced.RoomState do
     state
   end
 
+  def broadcast_textarea_change(state, {from_version, version, uuids, deltas}) do
+    # IO.puts("broadcast_textarea_change called")
+    if version > from_version do
+      RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.session_id, "textarea_updated", %{"from_version" => from_version, "version" => version, "uuids" => uuids, "deltas" => deltas})
+    end
+    state
+  end
+
   def handle_call({:new_player, socket}, _from, state) do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
@@ -208,7 +216,9 @@ defmodule RiichiAdvanced.RoomState do
       state = Map.update!(state, :textarea, &Delta.compose(&1, transformed_delta))
       state
     else state end
-    {:reply, {state.textarea_version, returned_uuids, returned_deltas}, state}
+    change = {client_version, state.textarea_version, returned_uuids, returned_deltas}
+    state = broadcast_textarea_change(state, change)
+    {:reply, :ok, state}
   end
 
 
