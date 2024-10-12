@@ -67,7 +67,13 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <% end %>
         </div>
         <input id="private-toggle" type="checkbox" class="private-toggle" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={@state.private}>
-        <label for="private-toggle">Private?</label>
+        <label for="private-toggle">
+          <%= if @state.private do %>
+            Private
+          <% else %>
+            Public
+          <% end %>
+        </label>
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
       </header>
       <div class="seats">
