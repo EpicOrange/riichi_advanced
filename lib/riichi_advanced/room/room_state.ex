@@ -181,12 +181,12 @@ defmodule RiichiAdvanced.RoomState do
     {:reply, {state.textarea_version, state.textarea}, state}
   end
 
-  def handle_call({:update_textarea, client_version, uuid, client_delta, applied_uuids}, _from, state) do
+  def handle_call({:update_textarea, client_version, uuid, client_delta, pending_uuids}, _from, state) do
     version_diff = state.textarea_version - client_version
     missed_deltas = Enum.take(state.textarea_deltas, version_diff)
     others_deltas = missed_deltas
     |> Enum.zip(Enum.take(state.textarea_delta_uuids, version_diff))
-    |> Enum.reject(fn {_delta, uuid} -> uuid in applied_uuids end)
+    |> Enum.reject(fn {_delta, uuid} -> uuid in pending_uuids end)
     |> Enum.map(fn {delta, _uuid} -> delta end)
 
     transformed_delta = others_deltas |> Enum.reverse() |> Enum.reduce(client_delta, &Delta.transform(&1, &2, true))
@@ -200,7 +200,7 @@ defmodule RiichiAdvanced.RoomState do
     #   and return #{inspect(returned_deltas)}
     # """)
 
-    returned_uuids = [uuid | Enum.take(state.textarea_delta_uuids, version_diff)]
+    returned_uuids = [uuid | Enum.take(state.textarea_delta_uuids, version_diff)] |> Enum.reverse()
     state = Map.update!(state, :textarea_version, & &1 + 1)
     state = Map.update!(state, :textarea_deltas, &[transformed_delta | &1])
     state = Map.update!(state, :textarea_delta_invs, &[transformed_delta |> Delta.invert(state.textarea) | &1])
