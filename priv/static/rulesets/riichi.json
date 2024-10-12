@@ -69,7 +69,8 @@
     {"id": "calls_are_forced", "name": "Calls Are Forced", "desc": "Forces you to make all available calls, including riichi. You still get to choose if multiple calls are available."},
     {"id": "no_kazoe_yakuman", "name": "No Kazoe Yakuman", "desc": "Disable kazoe yakuman. 13+ han is worth sanbaiman."},
     {"id": "no_double_yakuman", "name": "No Double Yakuman", "desc": "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."},
-    {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."}
+    {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
 
     // pending mod ideas:
     // {"id": "toriuchi", "name": "Toriuchi", "desc": "Each 1s (bird) tile is worth 1 extra han, unless your hand contains 7p (pistol) which would shoot the birds dead. That is, unless your hand contains 8s (birdcage) which would protect the birds from gunfire."},

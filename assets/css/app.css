@@ -935,6 +935,35 @@ div.status-line > div.status-text {
   margin-left: calc(0.5 * var(--tile-size));
 }
 
+/* visible waits */
+
+div.visible-waits-container {
+  position: absolute;
+  width: calc(100% - 8 * var(--tile-size));
+  left: calc(4 * var(--tile-size));
+  bottom: calc(2 * var(--tile-size));
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 10;
+}
+div.visible-waits {
+  background: #0000001F;
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size));
+  display: flex;
+  flex-flow: row wrap;
+}
+div.visible-waits > div.visible-wait {
+  font-size: calc(0.4 * var(--tile-size));
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+
 /* revealed tiles */
 
 div.revealed-tiles {

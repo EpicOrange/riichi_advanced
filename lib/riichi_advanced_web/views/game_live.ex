@@ -27,6 +27,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:display_honba, false)
     |> assign(:loading, true)
     |> assign(:marking, false)
+    |> assign(:visible_waits, %{})
+    |> assign(:show_waits, false)
 
     last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
       [mods] -> mods
@@ -112,6 +114,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
         play_tile={&send(self(), {:play_tile, &1})}
+        hover={&send(self(), {:hover, &1})}
+        hover_off={fn -> send(self(), :hover_off) end}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.PondComponent}
@@ -233,6 +237,16 @@ defmodule RiichiAdvancedWeb.GameLive do
           </div>
         <% end %>
       <% end %>
+      <div class="visible-waits-container" :if={not Enum.empty?(@visible_waits)}>
+        <div class="visible-waits">
+          <%= for {wait, num} <- @visible_waits do %>
+            <div class="visible-wait">
+              <div class="visible-wait-num"><%= num %></div>
+              <div class={["tile", wait]}></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" log_button={true} />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
@@ -330,10 +344,26 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_info({:play_tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.state.turn do
+      socket = assign(socket, :visible_waits, GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index}))
+      socket = assign(socket, :show_waits, false)
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
+      {:noreply, socket}
+    else
+      {:noreply, socket}
     end
+  end
+
+  def handle_info({:hover, index}, socket) do
+    socket = assign(socket, :visible_waits, GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index}))
+    socket = assign(socket, :show_waits, true)
     {:noreply, socket}
   end
+
+  def handle_info(:hover_off, socket) do
+    socket = assign(socket, :show_waits, false)
+    {:noreply, socket}
+  end
+
   def handle_info({:reindex_hand, from, to}, socket) do
     GenServer.cast(socket.assigns.game_state, {:reindex_hand, socket.assigns.seat, from, to})
     {:noreply, socket}

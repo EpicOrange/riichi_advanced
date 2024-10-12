@@ -43,6 +43,11 @@ function getCancellableClickTarget(elem) {
   if (elem.attributes.hasOwnProperty("phx-cancellable-click")) return elem;
   return getCancellableClickTarget(elem.parentElement);
 }
+function getHoverTarget(elem) {
+  if (!elem) return null;
+  if (elem.attributes.hasOwnProperty("phx-hover")) return elem;
+  return getCancellableClickTarget(elem.parentElement);
+}
 function inLabelOrButton(elem) {
   if (!elem) return false;
   if (elem.tagName == "LABEL" || elem.tagName == "BUTTON") return true;
@@ -50,6 +55,7 @@ function inLabelOrButton(elem) {
 }
 
 window.mouseDownElement = null;
+window.hoverElement = null;
 Hooks.ClickListener = {
   mounted() {
     this.el.addEventListener('mousedown', e => {
@@ -88,6 +94,36 @@ Hooks.ClickListener = {
       e.preventDefault();
       if (!inLabelOrButton(e.target) && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("right_clicked");
+      }
+    });
+    this.el.addEventListener('mousemove', e => {
+      var target = getHoverTarget(e.target);
+      if (target !== null) {
+        if (window.hoverElement !== target) {
+          var params = {};
+          for (let attr of target.attributes) {
+            if (attr.name.startsWith("phx-value-")) {
+              var key = attr.name.substring(10);
+              params[key] = attr.value;
+            }
+          }
+          if (target.attributes.hasOwnProperty("phx-target")) {
+            this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
+          } else {
+            this.pushEvent(target.getAttribute("phx-hover"), params);
+          }
+        }
+        window.hoverElement = target;
+      } else {
+        if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
+          target = window.hoverElement;
+          if (target.attributes.hasOwnProperty("phx-target")) {
+            this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
+          } else {
+            this.pushEvent(target.getAttribute("phx-hover-off"), params);
+          }
+        }
+        window.hoverElement = null;
       }
     });
   }

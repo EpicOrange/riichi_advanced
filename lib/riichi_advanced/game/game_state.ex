@@ -1223,6 +1223,25 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def get_visible_waits(state, seat, index) do
+    hand = state.players[seat].hand ++ state.players[seat].draw
+    hand = if index != nil do
+      List.delete_at(hand, index)
+    else hand end
+    calls = state.players[seat].calls
+    win_definitions = translate_match_definitions(state, Map.get(state.rules["show_waits"], "win_definitions", []))
+    ordering = state.players[seat].tile_ordering
+    ordering_r = state.players[seat].tile_ordering_r
+    tile_aliases = state.players[seat].tile_aliases
+    waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+    IO.inspect({hand, calls, waits})
+
+    # temp
+    waits = Map.new(waits, fn wait -> {wait, 1} end)
+
+    waits
+  end
+
   def push_message(state, message) do
     for {_seat, messages_state} <- state.messages_states, messages_state != nil do
       # IO.puts("Sending to #{inspect(messages_state)} the message #{inspect(message)}")
@@ -1317,6 +1336,21 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:is_playable, seat, tile, tile_source}, _from, state), do: {:reply, is_playable?(state, seat, tile, tile_source), state}
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
+
+  def handle_call({:get_visible_waits, seat, index}, _from, state) do
+    if index == nil do
+      {:reply, get_visible_waits(state, seat, nil), state}
+    else
+      tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
+      tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
+      playable = is_playable?(state, seat, tile, tile_source)
+      if not playable || not Map.has_key?(state.rules, "show_waits") do
+        {:reply, %{}, state}
+      else
+        {:reply, get_visible_waits(state, seat, index), state}
+      end
+    end
+  end
 
   # the AI calls these to figure out if it's allowed to play
   # (this is since they operate on a delay, so state may have changed between when they were
