@@ -322,7 +322,7 @@ Events
 - `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
 - `before_win`: Triggers before a win is called. Context: `seat` is the seat who called the win.
-- `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. TODO document this
+- `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. Context: `seat` is the seat who played a tile, and `tile` is the played tile.
 
 Buttons:
 
@@ -344,7 +344,7 @@ Rules:
 - `interruptible_actions`: List of actions that can be interrupted by buttons
 - `max_revealed_tiles`: Number of tiles to show at the top at all times
 - `max_rounds`: Number of rounds before the game ends
-- `play_restrictions`: TODO
+- `play_restrictions`: List of two-element arrays detailing a **play restriction**. The first element is an array of tiles that the restriction applies to. The second element is a condition -- if the condition is true, the player cannot play that tile.
 - `reserved_tiles`: List of tiles reserved from the end of the wall
 - `revealed_tiles`: List of reserved tiles revealed at the start of the game
 - `set_definitions`: List of definitions for sets used in match definitions, described above
@@ -359,7 +359,7 @@ Yaku and scoring:
 - `meta_yaku`: List of yaku whose conditions depend on existing yaku.
 - `minipoint_name`: Name for minipoints, like Fu
 - `point_name`: Name for points, like Han
-- `score_calculation`: TODO
+- `score_calculation`: Scoring method. See the scoring method section.
 - `yaku`: List of yaku.
 - `yaku_alt_names`: Does nothing, but I might make it do something in the future.
 - `yaku_precedence`: An object specifying which yaku gets overridden by other yaku.
@@ -524,13 +524,24 @@ Prepend `"not_"` to any of the condition names to negate it.
 
 # Tile specs
 
-# Scoring
+- `"any"`: Matches any tile.
+- `"1z"`, `"3m"`, etc: Matches that exact tile.
+- `"same"`: Matches the same tile. Only used in `play_restrictions` for the `last_discard_matches` or `last_called_tile_matches` conditions.
+- `"not_same"`: Matches a different tile. Only used in `play_restrictions` for the `last_discard_matches` or `last_called_tile_matches` conditions.
+- `"manzu"`: Matches a manzu tile (hardcoded).
+- `"pinzu"`: Matches a pinzu tile (hardcoded).
+- `"souzu"`: Matches a souzu tile (hardcoded).
+- `"jihai"`: Matches a honor tile (hardcoded).
+- `"terminal"`: Matches a terminal tile (hardcoded).
+- `"yaochuuhai"`: Matches a terminal/honor tile (hardcoded).
+- `"flower"`: Matches a flower tile (hardcoded).
+- `"joker"`: Matches a joker tile (hardcoded).
+- `"1"` to `"9"`: Matches that number tile (hardcoded).
+- `"not_kuikae"`: Matches a tile that is not kuikae to the last call. Only used in `play_restrictions`.
 
-Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and be associated with an object with the following keys:
+# Scoring methods
 
-- `"method"`
-
-Scoring will be performed based on the `"method"` key in this object. Here are the currently supported options for `"method"`:
+Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and be associated with an object with a `"method"` key. Scoring will be performed based on this `"method"` key. Here are the currently supported options for `"method"`:
 
 ## `"method": "riichi"`
 
@@ -540,7 +551,19 @@ This method enables fu calculations for a winning hand. Fu calculation is curren
 
 In the event of an exhaustive draw, this method looks for the status `"tenpai"` among all existing players. (This means you will have to set and unset tenpai status through the course of the game.) All `"tenpai"` players will pay the non-`"tenpai"` players according to the rules of riichi. That is, unless any player has the status `"nagashi"`, in which case they get nagashi payments.
 
-TODO: other scoring methods
+## `"method": "hk"`
+
+Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action.
+
+All players pay for a win -- the discarder pays double.
+
+## `"method": "sichuan"`
+
+Currently does the same as `hk` except only the discarder pays in case of a win by discard.
+
+## `"method": "vietnamese"`
+
+This is the same as `"method": "riichi"` but it does not calculate fu. Instead it uses the `"yaku"` key to calculate Phán and the `"yakuman" key to calculate Mủn. Also, there are no tenpai payments.
 
 # Game loop in detail (might be outdated)
 
