@@ -3,7 +3,8 @@
   "available_mods": [
     {"id": "persistent_saki_cards", "name": "Persistent Cards", "desc": "The character card you choose at the beginning is your card for the whole game."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
-    {"id": "saki_yumeno_maho", "name": "Yumeno Maho", "desc": "Adds Yumeno Maho to the game."}
+    {"id": "saki_yumeno_maho", "name": "Yumeno Maho", "desc": "Adds Yumeno Maho to the game."},
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
 
   "enable_saki_cards": true,
