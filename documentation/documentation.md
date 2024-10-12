@@ -369,9 +369,75 @@ Saki:
 - `saki_deck`: Deck of saki cards.
 - `saki_ver`: The saki card spritesheet to use, either "v12" or "v13".
 
+Other:
+
+- `tile_images`: Mapping of tiles to replacement image urls.
+
 # Actions
 
-TODO
+- `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
+- `["push_message", message]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`
+- `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall.
+- `["call"]`: For call buttons only, like pon. Triggers the call.
+- `["self_call"]`: For self call buttons only, like ankan. Triggers the self call.
+- `["upgrade_call"]`: For upgrade call buttons only, like kakan. Triggers the upgrade call.
+- `["flower", flower1, flower2, ...]`: Declare a flower, with `flower1`, etc as the choices.
+- `["draft_saki_card", num]`: Draw a saki card out of `num` choices.
+- `["reverse_turn_order"]`: Reverses the turn order.
+- `["advance_turn"]`: Goes forward in turn order.
+- `["change_turn", seat]`: Change turn to the specified seat. Allowed values of `seat` are: `"east"`, `"south"`, `"west"`, `"north"`, `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`
+- `["win_by_discard"]`: Declares a win using the last discard as the winning tile.
+- `["win_by_call"]`: Declares a win using the last called tile as the winning tile.
+- `["win_by_draw"]`: Declares a win using the first drawn tile as the winning tile.
+- `["ryuukyoku"]`: Declares an exhaustive draw.
+- `["abortive_draw", name]`: Declares an abortive draw by the given `name`.
+- `["set_status", status1, status2, ...]`: Add to the set of statuses for the current player.
+- `["unset_status", status1, status2, ...]`: Remove from the set of statuses for the current player.
+- `["set_status_all", status1, status2, ...]`: Add to the set of statuses for all players.
+- `["unset_status_all", status1, status2, ...]`: Remove from the set of statuses for all players.
+- `["set_callee_status", status1, status2, ...]`: Only usable in the `after_call` event. Set statuses for the player called from.
+- `["unset_callee_status", status1, status2, ...]`: Only usable in the `after_call` event. Unset statuses for the player called from.
+- `["set_caller_status", status1, status2, ...]`: Only usable in the `after_call` event. Set statuses for the player doing the call.
+- `["unset_caller_status", status1, status2, ...]`: Only usable in the `after_call` event. Unset statuses for the player doing the call.
+- `["big_text", text, seat]`: Popup big text for the current player, or the given seat if `seat` is specified. Allowed values of `seat` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`
+- `["pause", ms]`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
+- `["sort_hand"]`: Sort the current player's hand.
+- `["reveal_tile", tile]`: Show a given tile above the game for the remainder of the round.
+- `["add_score", amount, recipients]`: Add to the score for the current player, or for the `recipients` if specified. Allowed values for `recipients` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`, `"all"`, `"others"`
+- `["put_down_riichi_stick", num]`: Makes the current player put down a riichi stick, or `num` riichi sticks if specified. Does not change their score.
+- `["add_honba", num]`: Adds the given number of honba. (default 1)
+- `["reveal_hand"]`: Shows the current player's hand to everyone for the remainder of the round.
+- `["discard_draw"]`: Discards the current player's draw. Useful as an auto button.
+- `["press_button", button_id]`: Press a given button by id, does nothing if the button doesn't exist. Useful as an auto button.
+- `["random", [action1, action2, ...]]`: Run one of the given actions at random.
+- `["when", cond, actions]`: If `cond` evaluates to true, run the given actions.
+- `["ite", cond, actions1, actions2]`: If `cond` evaluates to true, run `actions1`, otherwise run `actions2`.
+- `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player.
+- `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player.
+- Hardcoded actions that involve selecting tiles (used in sakicards):
+  + `["swap_hand_tile_with_same_suit_discard"]`
+  + `["swap_hand_tile_with_last_discard"]`
+  + `["place_4_tiles_at_end_of_live_wall"]`
+  + `["set_aside_discard_matching_called_tile"]`
+  + `["set_aside_own_discard"]`
+  + `["pon_discarded_red_dragon"]`
+  + `["draw_and_place_2_tiles_at_end_of_dead_wall"]`
+  + `["about_to_draw"]`: no-op
+  + `["about_to_ron"]`: no-op
+- `["set_tile_alias", from, to]`: Assigns all tiles in `from` to tiles in `to` for the current player. Basically if `from` is a single tile, then that tile becomes a joker whose possible values are the tiles in `to`, and this only applies to the current player.
+- `["set_tile_alias_all", from, to]`: Same, but applies this assignment to all players.
+- `["set_tile_ordering", [tile1, tile2, ...]]`: Asserts that `tile1` comes after `tile2` and so on. Applies only to the current player.
+- `["set_tile_ordering_all", [tile1, tile2, ...]]`: Same, but applies this assertion to all players.
+- `["tag_drawn_tile", tag_name]`: Globally tag the current player's drawn tile with the given tag name.
+- `["untag", tag_name]`: Untag all tiles tagged with the given tag name.
+- `["convert_last_discard", tile]`: Turn the last discard into the given tile.
+- `["set_aside_draw"]`: Set aside the drawn tile.
+- `["draw_from_aside"]`: Draw a tile from the tiles set aside.
+- `["swap_tile_with_aside"]`: Swap a selected tile with the first tile set aside.
+- `["charleston_left"]`: Select and pass three tiles left.
+- `["charleston_across"]`: Select and pass three tiles across.
+- `["charleston_right"]`: Select and pass three tiles right.
+- `["shift_dead_wall_index", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
 
 # Conditions
 

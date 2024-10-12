@@ -791,6 +791,7 @@ defmodule RiichiAdvanced.GameState do
           {_, tile} = List.keyfind(state.reserved_tiles, tile_name, 0)
           tile
         end
+      is_binary(tile_name) && Utils.to_tile(tile_name) != nil -> Utils.to_tile(tile_name)
       is_atom(tile_name) -> tile_name
       true ->
         IO.puts("Unknown tile name #{inspect(tile_name)}")
