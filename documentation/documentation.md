@@ -348,6 +348,7 @@ Rules:
 - `reserved_tiles`: List of tiles reserved from the end of the wall
 - `revealed_tiles`: List of reserved tiles revealed at the start of the game
 - `set_definitions`: List of definitions for sets used in match definitions, described above
+- `shown_statuses`: List of statuses to show (private to the player)
 - `starting_tiles`: Number of tiles every player starts with every round
 - `wall`: The list of tiles used in the game
 

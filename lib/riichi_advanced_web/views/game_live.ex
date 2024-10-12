@@ -224,6 +224,14 @@ defmodule RiichiAdvancedWeb.GameLive do
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
         </div>
+      <% else %>
+        <%= if @state.players[@viewer] != nil do %>
+          <div class={["status-line", "self"]}>
+            <%= for status <- @state.players[@viewer].status, status in Map.get(@state.rules, "shown_statuses", []) do %>
+              <div class="status-text"><%= status %></div>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" log_button={true} />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
