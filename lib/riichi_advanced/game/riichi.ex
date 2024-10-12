@@ -273,8 +273,25 @@ defmodule Riichi do
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
-  def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.filter(@all_tiles, fn tile -> match_hand(hand ++ [tile], calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+  # TODO move wall to front, remove @all_tiles
+  def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles) do
+    Enum.filter(Enum.uniq(wall), fn tile -> match_hand(hand ++ [tile], calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+  end
+
+  def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do
+    waits = get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases, wall)
+    freqs = Enum.frequencies(wall -- visible_tiles)
+    Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
+  end
+
+  def get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, wall, visible_tiles, hand, calls, match_definitions, ordering, tile_aliases}) do
+      [] -> 
+        result = _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
+        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, wall, visible_tiles, hand, calls, match_definitions, ordering, tile_aliases}, result)
+        result
+      [result] -> result
+    end
   end
 
   def tile_matches(tile_specs, context) do
@@ -535,6 +552,7 @@ defmodule Riichi do
     {ko_payment, oya_payment}
   end
 
+  # TODO take in wall
   def count_ukeire(waits, hand, visible_ponds, visible_calls, winning_tile, tile_aliases \\ %{}) do
     all_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &call_to_tiles/1) -- [winning_tile]
     waits

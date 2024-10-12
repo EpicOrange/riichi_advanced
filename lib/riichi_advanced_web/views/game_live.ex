@@ -237,9 +237,9 @@ defmodule RiichiAdvancedWeb.GameLive do
           </div>
         <% end %>
       <% end %>
-      <div class="visible-waits-container" :if={not Enum.empty?(@visible_waits)}>
+      <div class="visible-waits-container" :if={@show_waits && not Enum.empty?(@visible_waits)}>
         <div class="visible-waits">
-          <%= for {wait, num} <- @visible_waits do %>
+          <%= for {wait, num} <- Enum.sort_by(@visible_waits, fn {wait, _num} -> Utils.sort_value(wait) end) do %>
             <div class="visible-wait">
               <div class="visible-wait-num"><%= num %></div>
               <div class={["tile", wait]}></div>

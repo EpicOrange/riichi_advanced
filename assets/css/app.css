@@ -939,8 +939,8 @@ div.status-line > div.status-text {
 
 div.visible-waits-container {
   position: absolute;
-  width: calc(100% - 8 * var(--tile-size));
-  left: calc(4 * var(--tile-size));
+  width: calc(100% - 8.25 * var(--tile-size));
+  left: calc(4.125 * var(--tile-size));
   bottom: calc(2 * var(--tile-size));
   display: flex;
   flex-flow: row wrap;
@@ -954,6 +954,7 @@ div.visible-waits {
   padding: calc(0.25 * var(--tile-size));
   display: flex;
   flex-flow: row wrap;
+  justify-content: center;
 }
 div.visible-waits > div.visible-wait {
   font-size: calc(0.4 * var(--tile-size));

@@ -76,6 +76,7 @@ defmodule Game do
     # persistent game state (not reset on new round)
     players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
     rules: %{},
+    all_tiles: [],
     wall: [],
     kyoku: 0,
     honba: 0,
@@ -255,7 +256,8 @@ defmodule RiichiAdvanced.GameState do
   def initialize_new_round(state) do
     rules = state.rules
 
-    wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
+    all_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
+    wall = all_tiles
     
     # check that there are no nil tiles
     state = wall
@@ -283,6 +285,7 @@ defmodule RiichiAdvanced.GameState do
       revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
       max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
       state 
+      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
@@ -292,6 +295,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:drawn_reserved_tiles, [])
     else
       state
+      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:dead_wall, [])
       |> Map.put(:reserved_tiles, [])
@@ -1233,13 +1237,11 @@ defmodule RiichiAdvanced.GameState do
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
-    waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
-    IO.inspect({hand, calls, waits})
-
-    # temp
-    waits = Map.new(waits, fn wait -> {wait, 1} end)
-
-    waits
+    # construct all visible tiles
+    visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
+    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
+    visible_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &Riichi.call_to_tiles/1)
+    Riichi.get_waits_and_ukeire(state.all_tiles, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
   end
 
   def push_message(state, message) do
