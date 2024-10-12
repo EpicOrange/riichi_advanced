@@ -107,24 +107,29 @@ Hooks.CollaborativeTextarea = {
       window.clearTimeout(window.delta_debounce);
       window.delta_debounce = window.setTimeout(() => fun.apply(this, args), 50);
     }
-    function update() {
+    function update(no_poll) {
       var new_client_doc = new Delta().insert(this.el.value)
       var client_delta = window.client_doc.diff(new_client_doc);
       window.client_doc = new_client_doc;
       var uuid = uuidv4();
-      window.client_deltas.push(client_delta);
-      window.client_delta_uuids.push(uuid);
-      this.pushEventTo(this.el.getAttribute("phx-target"), "push_delta", {"version": window.server_version, "uuid": uuid, "delta": client_delta["ops"], "pending_uuids": window.client_delta_uuids});
+      if (client_delta.ops.length > 0) {
+        window.client_deltas.push(client_delta);
+        window.client_delta_uuids.push(uuid);
+        var params = {"version": window.server_version, "uuids": window.client_delta_uuids, "deltas": window.client_deltas.map(delta => delta["ops"])};
+        this.pushEventTo(this.el.getAttribute("phx-target"), "push_delta", params);
+      } else {
+        if (!no_poll) this.pushEventTo(this.el.getAttribute("phx-target"), "poll_deltas", {"version": window.server_version});
+      }
     }
-    this.el.addEventListener('focus', debounced(update).bind(this));
-    this.el.addEventListener('blur', debounced(update).bind(this));
+    this.el.addEventListener('focus', () => debounced(update).bind(this)(false));
+    this.el.addEventListener('blur', () => debounced(update).bind(this)(false));
     this.el.addEventListener('keyup', (e) => {
       // console.log("key pressed:", e.key, this.el.value);
-      debounced(update).bind(this)();
+      debounced(update).bind(this)(false);
     });
 
     function get_contents(delta) {
-      if (delta.ops.length > 0) return delta.ops[0]["insert"];
+      if (delta.ops.length > 0) return delta.ops[0]["insert"] || "";
       else return "";
     }
 
@@ -134,21 +139,21 @@ Hooks.CollaborativeTextarea = {
       var server_delta = server_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
       // console.log(`Received update ${from_version}=>${version}: ${JSON.stringify(server_deltas)}`);
       if (same_version) { // TODO just drop initial deltas if we're a newer version
-        update.bind(this)(); // add current delta, if there is one, to window.client_deltas
+        update.bind(this)(true); // add current delta, if there is one, to window.client_deltas
         // take only client deltas that are not accounted for by the server delta
-        var client_delta_uuids = window.client_delta_uuids.filter(uuid => !uuids.includes(uuid));
-        var client_deltas = window.client_deltas.filter((delta, i) => !uuids.includes(window.client_delta_uuids[i]));
+        var flattened_uuids = uuids.flat();
+        var client_delta_uuids = window.client_delta_uuids.filter(uuid => !flattened_uuids.includes(uuid));
+        var client_deltas = window.client_deltas.filter((delta, i) => !flattened_uuids.includes(window.client_delta_uuids[i]));
         var client_delta = client_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
         // store diff between client and server doc (for cursor calculation later)
         var undo = window.client_doc.diff(window.server_doc);
         var redo = undo.invert(window.client_doc);
         // only then do we update the server doc
-        console.log(window.server_doc, window.client_doc);
         window.server_version = version;
         window.server_doc = window.server_doc.compose(server_delta);
         window.client_doc = window.server_doc.compose(client_delta);
         // calculate new cursor position
-        var server_only_deltas = server_deltas.filter((delta, i) => !window.client_delta_uuids.includes(uuids[i]));
+        var server_only_deltas = server_deltas.filter((delta, i) => uuids[i].every(uuid => !window.client_delta_uuids.includes(uuid)));
         var server_only_delta = server_only_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
         var new_cursor_position = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionEnd);
         // set textarea to client doc contents
@@ -158,10 +163,11 @@ Hooks.CollaborativeTextarea = {
         window.client_deltas = client_deltas;
         window.client_delta_uuids = client_delta_uuids;
       } else {
-        console.log(`Rejecting update ${from_version}=>${version} since our version is ${window.server_version}`);
+        // console.log(`Rejecting update ${from_version}=>${version} since our version is ${window.server_version}`);
       }
     }
     this.handleEvent("apply-delta", debounced(write).bind(this));
+    // window.setInterval(() => debounced(update).bind(this)(false), 250);
   }
 }
 
