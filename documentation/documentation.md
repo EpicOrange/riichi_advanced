@@ -83,7 +83,7 @@ Add `"starting_tiles"` to have each player start with that many tiles from the w
       "starting_tiles": 13
     }
 
-![](starting_tiles.mp4)
+https://github.com/user-attachments/assets/523253a2-ca78-40f0-b677-f4ad54530aa8
 
 Because every player has drawn 13 tiles, that leaves 56 tiles in the wall. Note that there is no drawing from the wall quite yet.
 
@@ -101,7 +101,7 @@ Add the following to the ruleset:
 
 This results in the following game:
 
-![](draw.mp4)
+https://github.com/user-attachments/assets/d765d382-9d6a-4579-84e0-938ebe3efb03
 
 The `after_turn_change` **event** is triggered after every turn change, as well as at the start of the game. Every event handler (like this one) is defined by a top-level key.
 
@@ -180,7 +180,7 @@ We will spend this section breaking down the following implementation.
       "interruptible_actions": ["play_tile"]
     }
 
-![](call.mp4)
+https://github.com/user-attachments/assets/392652bc-1baf-413b-a616-16617211ff94
 
 This defines a button with button text "Pair" that shows when every condition in the `show_when` condition list is satisfied. Then it runs the action list: `call` calls tiles based on the `call` key in the button, and `change_turn` changes turn to ourselves.
 
