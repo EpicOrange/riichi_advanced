@@ -192,13 +192,21 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [call] })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
-    state = push_message(state, [
-      %{text: "Player #{seat} #{state.players[seat].nickname} called "},
-      %{bold: true, text: "#{call_name}"},
-      %{text: " on "},
-      Utils.pt(called_tile),
-      %{text: " with "}
-    ] ++ Utils.ph(call_choice))
+    state = if called_tile != nil do
+      push_message(state, [
+        %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+        %{bold: true, text: "#{call_name}"},
+        %{text: " on "},
+        Utils.pt(called_tile),
+        %{text: " with "}
+      ] ++ Utils.ph(call_choice))
+    else
+      push_message(state, [
+        %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+        %{bold: true, text: "#{call_name}"},
+        %{text: " on "}
+      ] ++ Utils.ph(call_choice))
+    end
     state = Log.add_call(state, seat, call_name, call_choice)
     click_sounds = [
       "/audio/call1.mp3",
