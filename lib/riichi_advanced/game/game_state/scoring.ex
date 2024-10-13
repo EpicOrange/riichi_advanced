@@ -213,9 +213,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         fan = Integer.to_string(points)
 
-        fan_table = scoring_table["score_table"]
+        fan_table = scoring_table[if is_self_draw do "score_table_draw" else "score_table" end]
         score = Map.get(fan_table, fan, fan_table["max"])
-        score = if is_self_draw do 3 * (score + 1) else score end
+        score = if is_self_draw do 3 * score else score end
         {score, points, 0}
       "vietnamese" ->
         phan = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)

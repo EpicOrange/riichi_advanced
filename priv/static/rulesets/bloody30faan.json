@@ -1544,6 +1544,20 @@
       "25": 96, "26": 96, "27": 96, "28": 96, "29": 96,
       "30": 128, "31": 128, "32": 128, "33": 128, "34": 128, "35": 128, "36": 128, "37": 128, "38": 128, "39": 128,
       "max": 256
+    },
+    "score_table_draw": {
+      "0": 1, "1": 2, "2": 2,
+      "3": 4, "4": 4,
+      "5": 8, "6": 8,
+      "7": 12, "8": 12,
+      "9": 16, "10": 16,
+      "11": 24, "12": 24, "13": 24,
+      "14": 32, "15": 32, "16": 32,
+      "17": 48, "18": 48, "19": 48,
+      "20": 64, "21": 64, "22": 64, "23": 64, "24": 64,
+      "25": 96, "26": 96, "27": 96, "28": 96, "29": 96,
+      "30": 128, "31": 128, "32": 128, "33": 128, "34": 128, "35": 128, "36": 128, "37": 128, "38": 128, "39": 128,
+      "max": 256
     }
   },
   "before_turn_change": {
@@ -1602,7 +1616,7 @@
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["kan"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
                   ["set_status", "kan"],
                   ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
