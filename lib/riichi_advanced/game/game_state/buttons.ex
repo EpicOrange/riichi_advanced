@@ -111,7 +111,16 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
                 {state, spec} = make_button_choices(state, seat, name, button)
-                {state, [{name, spec} | button_choices]}
+                case spec do
+                  {_, choices} -> 
+                    empty_choices = choices |> Map.values() |> Enum.concat() |> Enum.empty?()
+                    if empty_choices do
+                      {state, button_choices}
+                    else
+                      {state, [{name, spec} | button_choices]}
+                    end
+                  _ -> {state, [{name, spec} | button_choices]}
+                end
             end
             button_choices = Map.new(button_choices)
             {state, [{seat, button_choices} | new_button_choices]}
