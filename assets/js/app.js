@@ -46,7 +46,7 @@ function getCancellableClickTarget(elem) {
 function getHoverTarget(elem) {
   if (!elem) return null;
   if (elem.attributes.hasOwnProperty("phx-hover")) return elem;
-  return getCancellableClickTarget(elem.parentElement);
+  return getHoverTarget(elem.parentElement);
 }
 function inLabelOrButton(elem) {
   if (!elem) return false;
