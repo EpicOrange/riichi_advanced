@@ -109,7 +109,7 @@ Hooks.ClickListener = {
           }
           if (target.attributes.hasOwnProperty("phx-target")) {
             this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
-          } else {
+          } else if (target.attributes.hasOwnProperty("phx-hover")) {
             this.pushEvent(target.getAttribute("phx-hover"), params);
           }
         }
@@ -119,7 +119,7 @@ Hooks.ClickListener = {
           target = window.hoverElement;
           if (target.attributes.hasOwnProperty("phx-target")) {
             this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
-          } else {
+          } else if (target.attributes.hasOwnProperty("phx-hover-off")) {
             this.pushEvent(target.getAttribute("phx-hover-off"), params);
           }
         }
