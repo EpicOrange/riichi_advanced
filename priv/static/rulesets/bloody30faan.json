@@ -834,15 +834,15 @@
       "display_name": "Open Kong",
       "value": 1,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]},
-        {"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}
+        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 2]]]]},
+        {"name": "match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], 1]]]]}
       ]
     },
     {
       "display_name": "Concealed Kong",
       "value": 2,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]},
+        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 2]]]]},
         {"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}
       ]
     },
@@ -850,42 +850,42 @@
       "display_name": "Two Kongs",
       "value": 5,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]},
-        {"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}
+        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 3]]]]},
+        {"name": "match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 2]]]]}
       ]
     },
     {
       "display_name": "Three Kongs",
       "value": 15,
       "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]},
-        {"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}
+        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 4]]]]},
+        {"name": "match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 3]]]]}
       ]
     },
     {
       "display_name": "Four Kongs",
       "value": 30,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan", "ankan"], 4]]]]}]
     },
     {
       "display_name": "Two Concealed Triplets",
       "value": 2,
       "when": [[
         // 0-2 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
         // 0-1 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         // 0 open triplets, hand must be 2 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]},
         [
           "won_by_draw",
           [
             // 0-2 open triplet tsumo, hand must be 3 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -3], [["koutsu"], 3], [["pair"], 2]]]]},
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -3], [["koutsu"], 3], [["pair"], 2]]]]},
             // 0-1 open triplet tsumo, hand must be 2 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]},
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]},
             // 0 open triplet tsumo, hand must be 1 triplet and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 1], [["shuntsu"], 1], [["pair"], 2]]]]}
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 1], [["shuntsu"], 1], [["pair"], 2]]]]}
           ]
         ]
       ]]
@@ -895,16 +895,16 @@
       "value": 8,
       "when": [[
         // 0-1 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
         // 0 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         [
           "won_by_draw",
           [
             // 0-1 open triplet tsumo, hand must be 3 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["pair"], 2]]]]},
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 3], [["pair"], 2]]]]},
             // 0 open triplet tsumo, hand must be 2 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]}
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]}
           ]
         ]
       ]]
@@ -914,11 +914,11 @@
       "value": 15,
       "when": [[
         // 0 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
         [
           "won_by_draw",
           // 0 open triplet tsumo, hand must be 3 triplets and 2 pairs
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["pair"], 2]]]]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 3], [["pair"], 2]]]]}
         ]
       ]]
     },
@@ -1339,22 +1339,22 @@
     {
       "display_name": "Concealed Hand",
       "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
+      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"]}]
     },
     {
       "display_name": "Fully Concealed Hand",
       "value": 2,
-      "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
+      "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"]}]
     },
     {
       "display_name": "Self Drawn Melded Hand",
       "value": 2,
-      "when": ["won_by_draw", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
+      "when": ["won_by_draw", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "ankan", "kakan"], 4]]]]}]
     },
     {
       "display_name": "Melded Hand",
       "value": 5,
-      "when": ["won_by_discard", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
+      "when": ["won_by_discard", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "ankan", "kakan"], 4]]]]}]
     },
     {
       "display_name": "Hell Wait",
@@ -1638,8 +1638,41 @@
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii", "pon_joker", "pon_joker2", "pon_joker3"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+      ]
+    },
+    "pon_joker": {
+      "display_name": "Pung",
+      "call": [[0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii", "pon_joker2", "pon_joker3"],
+      "call_conditions": [
+        {"name": "call_contains", "opts": [["15j", "16j", "17j", "18j", "19j"], 1]},
+        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}
+      ]
+    },
+    "pon_joker2": {
+      "display_name": "Pung",
+      "call": [[0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii", "pon_joker3"],
+      "call_conditions": [
+        {"name": "call_contains", "opts": [["13j", "14j"], 1]},
+        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}
+      ]
+    },
+    "pon_joker3": {
+      "display_name": "Pung",
+      "call": [[0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"],
       "call_conditions": [
+        {"name": "call_contains", "opts": [["12j"], 1]},
         {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}
       ]
     },
@@ -1654,8 +1687,59 @@
                   ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
                   ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
                  ],
-      "precedence_over": ["chii", "pon"],
+      "precedence_over": ["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3"],
       "call_conditions": [
+        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+      ]
+    },
+    "daiminkan_joker": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
+                  ["set_status", "kan"],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+                  ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+                 ],
+      "precedence_over": ["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan_joker2", "daiminkan_joker3"],
+      "call_conditions": [
+        {"name": "call_contains", "opts": [["15j", "16j", "17j", "18j", "19j"], 1]},
+        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}
+      ]
+    },
+    "daiminkan_joker2": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
+                  ["set_status", "kan"],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+                  ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+                 ],
+      "precedence_over": ["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan_joker3"],
+      "call_conditions": [
+        {"name": "call_contains", "opts": [["13j", "14j"], 1]},
+        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}
+      ]
+    },
+    "daiminkan_joker3": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
+                  ["set_status", "kan"],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+                  ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+                  ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+                 ],
+      "precedence_over": ["chii", "pon", "pon_joker", "pon_joker2", "pon_joker3"],
+      "call_conditions": [
+        {"name": "call_contains", "opts": [["12j"], 1]},
         {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}
       ]
     },
@@ -1707,7 +1791,7 @@
         ["set_status", "won"],
         ["add_counter", "jokers", "count_matches", ["hand", "calls", "draw"], ["any_joker"]],
         ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "pon_joker", "kan", "riichi", "daiminkan", "daiminkan_joker", "ankan", "kakan"]
     },
     "chankan": {
       "display_name": "Hu",
