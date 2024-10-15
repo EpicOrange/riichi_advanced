@@ -112,7 +112,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
               {state, button_choices} ->
                 {state, spec} = make_button_choices(state, seat, name, button)
                 case spec do
-                  {_, choices} -> 
+                  {:call, choices} -> 
                     empty_choices = choices |> Map.values() |> Enum.concat() |> Enum.empty?()
                     if empty_choices do
                       {state, button_choices}
