@@ -134,10 +134,6 @@ defmodule Riichi do
     cond do
       is_list(group) && not Enum.empty?(group) ->
         cond do
-          Enum.all?(group, fn tile -> Utils.to_tile(tile) != nil end) ->
-            # list of tiles
-            tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
-            remove_from_hand_calls(hand, tiles, calls, tile_aliases)
           Enum.all?(group, &Kernel.is_integer/1) ->
             # list of integers specifying a group of tiles
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
@@ -146,10 +142,11 @@ defmodule Riichi do
               tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
               remove_from_hand_calls(hand, tiles, calls, tile_aliases)
             end)
-          true ->
+          Enum.all?(group, &Kernel.is_list/1) && Enum.all?(group, &Enum.all?(&1, fn item -> Kernel.is_integer(item) end)) ->
             # list of lists of integers specifying multiple related groups of tiles
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
+            IO.inspect({"asdf",all_tiles})
             all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
               for set <- group, reduce: [{hand, calls}] do
                 hand_calls -> 
@@ -159,6 +156,10 @@ defmodule Riichi do
                   end |> Enum.concat()
               end
             end)
+          true ->
+            # list of tiles
+            tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
+            remove_from_hand_calls(hand, tiles, calls, tile_aliases)
         end
       # tile
       Utils.to_tile(group) != nil -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
