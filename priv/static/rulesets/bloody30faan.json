@@ -230,6 +230,12 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13]
     ]
   ],
+  "kokushi_definition": [
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
+    ]
+  ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ [["pair"], 7] ],
@@ -1400,13 +1406,17 @@
     {
       "display_name": "Knitted Hand",
       "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]}]
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}
+      ]
     },
     {
       "display_name": "Knitted Honors",
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ]]]}
       ]
     },
@@ -1415,6 +1425,7 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,3,6],[11,14,17],[22,25,28]]], 1] ], [ [[[[0,3,6],[21,24,27],[12,15,18]]], 1] ]]]}
       ]
     },
@@ -1423,6 +1434,7 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,3,6],[10,13,16],[20,23,26]]], 1] ]]]}
       ]
     },
@@ -1431,6 +1443,7 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,3],[11,14],[22,25]]], 1] ], [ [[[[0,3],[21,24],[12,15]]], 1] ]]]}
       ]
     },
@@ -1439,6 +1452,7 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,6],[11,17],[22,28]]], 1] ], [ [[[[0,6],[21,27],[12,18]]], 1] ]]]}
       ]
     },
