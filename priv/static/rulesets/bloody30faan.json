@@ -1422,17 +1422,13 @@
     {
       "display_name": "Knitted Hand",
       "value": 5,
-      "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}
-      ]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]}]
     },
     {
       "display_name": "Knitted Honors",
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ]]]}
       ]
     },
@@ -1441,7 +1437,6 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,3,6],[11,14,17],[22,25,28]]], 1] ], [ [[[[0,3,6],[21,24,27],[12,15,18]]], 1] ]]]}
       ]
     },
@@ -1450,7 +1445,6 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,3,6],[10,13,16],[20,23,26]]], 1] ]]]}
       ]
     },
@@ -1459,7 +1453,6 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,3],[11,14],[22,25]]], 1] ], [ [[[[0,3],[21,24],[12,15]]], 1] ]]]}
       ]
     },
@@ -1468,7 +1461,6 @@
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["knitted"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [[[[0,6],[11,17],[22,28]]], 1] ], [ [[[[0,6],[21,27],[12,18]]], 1] ]]]}
       ]
     },
@@ -1570,7 +1562,16 @@
     "Fully Concealed Hand": ["Concealed Hand"],
     "Five Consecutive Pairs": ["Three Consecutive Pairs"],
     "Seven Consecutive Pairs": ["Five Consecutive Pairs"],
-    "Knitted Straight": ["Knitted Short Straight", "Knitted Terminal Sequences"]
+    "Knitted Straight": ["Knitted Short Straight", "Knitted Terminal Sequences"],
+    "Thirteen Orphans": [
+      "Mixed Terminals",
+      "Knitted Hand",
+      "Knitted Honors",
+      "Knitted Straight",
+      "Knitted Triplets",
+      "Knitted Short Straight",
+      "Knitted Terminal Sequences"
+    ]
   },
   "point_name": "Faan",
   "score_calculation": {
