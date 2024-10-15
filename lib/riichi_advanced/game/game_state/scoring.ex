@@ -41,7 +41,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   def seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))

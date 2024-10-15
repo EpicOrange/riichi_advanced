@@ -416,7 +416,7 @@ defmodule RiichiAdvanced.GameState do
     scoring_table = state.rules["score_calculation"]
     # deal with jokers
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
     end
     IO.puts("Joker assignments: #{inspect(joker_assignments)}")
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end

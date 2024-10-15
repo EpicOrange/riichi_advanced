@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # tiles = Enum.map(call_choice, fn t -> {t, false} end)
     call = if called_tile != nil do
       style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
-      style_call(style, call_choice, called_tile)
+      style_call(style, Utils.strip_attrs(call_choice), Utils.strip_attrs(called_tile))
     else
       Enum.map(call_choice, fn tile -> {tile, false} end)
     end

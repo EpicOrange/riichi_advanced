@@ -35,6 +35,8 @@ defmodule RiichiAdvanced.SMT do
       if ix in joker_ixs do "joker#{ix}" else
         case encoding[tile] do
           nil ->
+            # IO.puts("Unhandled smt tile #{inspect(tile)}")
+            # IO.inspect(Process.info(self(), :current_stacktrace))
             IO.puts("Unhandled smt tile #{inspect(tile)}\nEncoding:")
             IO.inspect(encoding)
             "zero"
@@ -195,19 +197,19 @@ defmodule RiichiAdvanced.SMT do
   end
   # RiichiAdvanced.SMT.determine_encoding(%{"1z": :"2z", "2z": :"3z", "3z": :"4z", "4z": :"1z", "5z": :"6z", "6z": :"7z"})
 
-  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, ordering, tile_mappings \\ %{}) do
+  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
     calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
     |> Enum.with_index()
     |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
 
-    all_tiles = hand
-    ++ Enum.flat_map(calls, fn {tiles, _i} -> tiles end)
-    ++ Enum.flat_map(tile_mappings, fn {_tile, mappings} -> mappings end)
+    # IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
+    # IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
     jokers = Map.keys(tile_mappings)
     all_tiles = all_tiles
     |> Enum.uniq()
-    |> Enum.reject(fn tile -> tile in jokers end)
+    |> Enum.reject(fn tile -> tile in jokers && tile not in tile_mappings[tile] end)
+    # IO.puts("Non-joker tiles are #{inspect(all_tiles)}")
     {len, encoding, encoding_r, encoding_boilerplate} = determine_encoding(ordering, all_tiles)
     # encoding = %{
     #   :"1m" => "#x0000000000000000000000000000000001",
@@ -425,7 +427,11 @@ defmodule RiichiAdvanced.SMT do
             # first take care of sets
             assertions = if not Enum.empty?(set_ixs) do
               sum = Enum.map(set_ixs, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
-              ["\n    (= (_ bv#{num} 4) #{sum})" | assertions]
+              if num < 0 do
+                ["\n    (bvult (_ bv#{-num} 4) #{sum})" | assertions]
+              else
+                ["\n    (= (_ bv#{num} 4) #{sum})" | assertions]
+              end
             else assertions end
 
             # then take care of tiles
