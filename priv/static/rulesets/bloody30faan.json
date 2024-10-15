@@ -1564,6 +1564,11 @@
     "Seven Consecutive Pairs": ["Five Consecutive Pairs"],
     "Knitted Straight": ["Knitted Short Straight", "Knitted Terminal Sequences"],
     "Thirteen Orphans": [
+      "Seat Wind",
+      "Round Wind",
+      "White Dragon",
+      "Green Dragon",
+      "Red Dragon",
       "Mixed Terminals",
       "Knitted Hand",
       "Knitted Honors",
