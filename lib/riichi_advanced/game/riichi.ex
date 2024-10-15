@@ -250,7 +250,8 @@ defmodule Riichi do
   end
 
   def match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    case RiichiAdvanced.ETSCache.get({:match_hand, hand, calls, match_definitions, ordering, tile_aliases}) do
+    t = System.os_time(:millisecond)
+    ret = case RiichiAdvanced.ETSCache.get({:match_hand, hand, calls, match_definitions, ordering, tile_aliases}) do
       [] -> 
         result = _match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
         RiichiAdvanced.ETSCache.put({:match_hand, hand, calls, match_definitions, ordering, tile_aliases}, result)
@@ -258,6 +259,11 @@ defmodule Riichi do
         result
       [result] -> result
     end
+    elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("match_hand: #{inspect(elapsed_time)} ms")
+    # end
+    ret
   end
 
   # return all possible calls of each tile in called_tiles, given hand

@@ -561,11 +561,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
         aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
-          aliases -> Map.update(aliases, to, from_tiles, fn from -> from ++ from_tiles end)
+          aliases -> Map.update(aliases, to, Enum.uniq(from_tiles), fn from -> Enum.uniq(from ++ from_tiles) end)
         end
         state = update_player(state, context.seat, &%Player{ &1 | tile_aliases: aliases })
         mappings = for from <- from_tiles, reduce: state.players[context.seat].tile_mappings do
-          mappings -> Map.update(mappings, from, to_tiles, fn to -> to ++ to_tiles end)
+          mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
         end
         state = update_player(state, context.seat, &%Player{ &1 | tile_mappings: mappings })
         state
@@ -573,11 +573,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
         aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
-          aliases -> Map.update(aliases, to, from_tiles, fn from -> from ++ from_tiles end)
+          aliases -> Map.update(aliases, to, Enum.uniq(from_tiles), fn from -> Enum.uniq(from ++ from_tiles) end)
         end
         state = update_all_players(state, fn _seat, player -> %Player{ player | tile_aliases: aliases } end)
         mappings = for from <- from_tiles, reduce: state.players[context.seat].tile_mappings do
-          mappings -> Map.update(mappings, from, to_tiles, fn to -> to ++ to_tiles end)
+          mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
         end
         state = update_all_players(state, fn _seat, player -> %Player{ player | tile_mappings: mappings } end)
         state
