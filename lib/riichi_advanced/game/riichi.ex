@@ -16,19 +16,26 @@ defmodule Riichi do
     :"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"
   ]
 
-  def offset_tile(tile, n, order, order_r) do
+  def _offset_tile(tile, n, order, order_r) do
     if tile != nil do
       cond do
         (n < 1 && n > -1)|| n < -10 || n >= 30 ->
           tile
         n >= 10 ->
-          offset_tile(shift_suit(tile), n-10, order, order_r)
+          _offset_tile(shift_suit(tile), n-10, order, order_r)
         n < 0 ->
-          offset_tile(order_r[tile], n+1, order, order_r)
+          _offset_tile(order_r[tile], n+1, order, order_r)
         true ->
-          offset_tile(order[tile], n-1, order, order_r)
+          _offset_tile(order[tile], n-1, order, order_r)
       end
     else nil end
+  end
+
+  def offset_tile(tile, n, order, order_r) do
+    case tile do
+      {tile, attrs} -> {_offset_tile(tile, n, order, order_r), attrs}
+      tile -> _offset_tile(tile, n, order, order_r)
+    end    
   end
 
   @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"0m", :"10m",
@@ -80,11 +87,16 @@ defmodule Riichi do
     end
   end
 
+  defp remove_exact_tile(hand, tile) do
+    ix = Enum.find_index(hand, &Utils.same_tile(&1, tile, %{}))
+    if ix != nil do List.delete_at(hand, ix) else hand end
+  end
+
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{})
   def try_remove_all_tiles(hand, [], _tile_aliases), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases) do
     for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
-      removed = List.delete(hand, t)
+      removed = remove_exact_tile(hand, t)
       if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases) end
     end |> Enum.concat()
   end
@@ -188,7 +200,7 @@ defmodule Riichi do
               new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
                 remove_group(hand, calls, group, ordering, ordering_r, tile_aliases)
                 |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
-              end |> Enum.concat()
+              end |> Enum.concat() |> Enum.uniq()
               if debug do
                 IO.puts("Acc (after removal):")
                 for {hand, calls, remaining_groups} <- new_hand_calls_groups do
@@ -204,7 +216,7 @@ defmodule Riichi do
             else
               []
             end
-          else
+          else 
             result = hand_calls_groups
             |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
             |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
@@ -251,15 +263,14 @@ defmodule Riichi do
   # return all possible calls of each tile in called_tiles, given hand
   # includes returning multiple choices for jokers (incl. red fives)
   # if called_tiles is an empty list, then we choose from our hand
-  # example: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
+  # example output: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
   def make_calls(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}) do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
-    call_choices = if from_hand do hand else called_tiles end
     {calls_spec, tile_aliases, tile_mappings} = if Enum.at(calls_spec, 0) == "nojoker" do
       {Enum.drop(calls_spec, 1), %{}, %{}}
     else {calls_spec, tile_aliases, tile_mappings} end
-    Enum.map(call_choices, fn tile ->
+    for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
         for choice <- [tile] ++ Map.get(tile_mappings, tile, []), reduce: [] do
@@ -269,7 +280,7 @@ defmodule Riichi do
             choices ++ Enum.map(possible_removals, fn remaining -> hand -- remaining end)
         end |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end) |> Enum.uniq()
       end) |> Enum.uniq()}
-    end) |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
+    end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
@@ -318,7 +329,7 @@ defmodule Riichi do
       "8" -> is_num?(context.tile, 8)
       "9" -> is_num?(context.tile, 9)
       "not_kuikae" ->
-        potential_set = context.call.other_tiles ++ [context.tile2]
+        potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], [:hand])
         triplet = remove_group(potential_set, [], [0,0,0], context.ordering, context.ordering_r, context.tile_aliases)
         sequence = remove_group(potential_set, [], [0,1,2], context.ordering, context.ordering_r, context.tile_aliases)
         Enum.empty?(triplet ++ sequence)

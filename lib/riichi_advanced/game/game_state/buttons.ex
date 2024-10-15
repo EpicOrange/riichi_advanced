@@ -37,6 +37,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
         is_upgrade = Enum.any?(actions, fn [action | _opts] -> action == "upgrade_call" end)
         is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
         is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
+        hand = Utils.add_attr(state.players[seat].hand, [:hand])
+        draw = Utils.add_attr(state.players[seat].draw, [:hand, :draw])
         ordering = state.players[seat].tile_ordering
         ordering_r = state.players[seat].tile_ordering_r
         tile_aliases = state.players[seat].tile_aliases
@@ -45,10 +47,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
           is_upgrade ->
             call_choices = state.players[seat].calls
               |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
-              |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
+              |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> Utils.add_attr(tile, [:hand, :called]) end) end)
               |> Enum.map(fn call_tiles ->
-                 Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, state.players[seat].hand ++ state.players[seat].draw, tile_aliases, tile_mappings)
-              end)
+                   Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, hand ++ draw, tile_aliases, tile_mappings)
+                 end)
               |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
             {state, call_choices}
           is_flower ->
@@ -64,7 +66,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, call_choices}
           true ->
             callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-            call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], state.players[seat].hand ++ state.players[seat].draw, ordering, ordering_r, callable_tiles, tile_aliases, tile_mappings)
+            call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, ordering, ordering_r, callable_tiles, tile_aliases, tile_mappings)
             {state, call_choices}
         end
         # filter call_choices
@@ -94,8 +96,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def recalculate_buttons(state) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
-      # IO.puts("Regenerating buttons...")
-      # IO.inspect(Process.info(self(), :current_stacktrace))
+      IO.puts("Regenerating buttons...")
+      IO.inspect(Process.info(self(), :current_stacktrace))
       {state, new_button_choices} = for {seat, _player} <- state.players, reduce: {state, []} do
         {state, new_button_choices} ->
           if Actions.performing_intermediate_action?(state, seat) do

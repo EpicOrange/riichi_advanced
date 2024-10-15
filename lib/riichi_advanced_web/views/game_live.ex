@@ -196,21 +196,21 @@ defmodule RiichiAdvancedWeb.GameLive do
               <div class="call-buttons">
                 <%= if called_tile != "saki" do %>
                   <%= if called_tile != nil do %>
-                    <div class={["tile", called_tile]}></div>
+                    <div class={["tile", Utils.strip_attrs(called_tile)]}></div>
                     <div class="call-button-separator"></div>
                   <% end %>
                   <%= for choice <- choices do %>
-                    <button class="call-button" phx-cancellable-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={called_tile} phx-value-choice={Enum.join(choice, ",")}>
+                    <button class="call-button" phx-cancellable-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={Utils.strip_attrs(called_tile)} phx-value-choice={Enum.join(Utils.strip_attrs(choice), ",")}>
                     <%= for tile <- choice do %>
-                      <div class={["tile", tile]}></div>
+                      <div class={["tile", Utils.strip_attrs(tile)]}></div>
                     <% end %>
                     </button>
                   <% end %>
                 <% else %>
                   <%= for choice <- choices do %>
                     <button class="call-button" phx-cancellable-click="saki_card_clicked" phx-value-choice={choice}>
-                    <%= for tile <- choice do %>
-                      <div class={["saki-card", @state.saki.version, tile]}></div>
+                    <%= for card <- choice do %>
+                      <div class={["saki-card", @state.saki.version, card]}></div>
                     <% end %>
                     </button>
                   <% end %>

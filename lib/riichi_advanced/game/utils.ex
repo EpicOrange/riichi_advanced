@@ -45,7 +45,38 @@ defmodule Utils do
              :"10m"=>:"10m", :"10p"=>:"10p", :"10s"=>:"10s", :"10t"=>:"10t",
              :"25z"=>:"25z", :"26z"=>:"26z", :"27z"=>:"27z",
             }
-  def to_tile(tile_str), do: @to_tile[tile_str]
+  def to_tile(tile_spec) do
+    case tile_spec do
+      [tile_spec | attrs] -> {@to_tile[tile_spec], Enum.map(attrs, &to_attr/1)}
+      _ -> @to_tile[tile_spec]
+    end
+  end
+
+  @attrs %{"hand" => :hand}
+  def to_attr(attr_str), do: @attrs[attr_str]
+
+  defp to_attr_tile(tile) do
+    case tile do
+      {tile, attrs} -> {tile, attrs}
+      tile          -> {tile, []}
+    end
+  end
+
+  def add_attr(tile, attrs) do
+    case tile do
+      {tile, existing_attrs} -> {tile, Enum.uniq(attrs ++ existing_attrs)}
+      _ when is_list(tile) -> Enum.map(tile, &add_attr(&1, attrs))
+      tile -> {tile, attrs}
+    end
+  end
+
+  def strip_attrs(tile) do
+    case tile do
+      {tile, _attrs} -> tile
+      _ when is_list(tile) -> Enum.map(tile, &strip_attrs/1)
+      tile -> tile
+    end
+  end
 
   @tile_color %{:"1m"=>"pink", :"2m"=>"pink", :"3m"=>"pink", :"4m"=>"pink", :"5m"=>"pink", :"6m"=>"pink", :"7m"=>"pink", :"8m"=>"pink", :"9m"=>"pink", :"0m"=>"red",
                 :"1p"=>"lightblue", :"2p"=>"lightblue", :"3p"=>"lightblue", :"4p"=>"lightblue", :"5p"=>"lightblue", :"6p"=>"lightblue", :"7p"=>"lightblue", :"8p"=>"lightblue", :"9p"=>"lightblue", :"0p"=>"red",
@@ -58,10 +89,15 @@ defmodule Utils do
   def tile_color(tile), do: Map.get(@tile_color, tile, "white")
 
   # print tile, print hand
-  def pt(tile), do: %{bold: true, color: tile_color(tile), text: "#{tile}"}
+  # print tile, print hand
+  def pt(tile) do
+    {tile, _attrs} = to_attr_tile(tile)
+    %{bold: true, color: tile_color(tile), text: "#{tile}"}
+  end
   def ph(tiles), do: Enum.map(tiles, &pt/1)
 
   def sort_value(tile) do
+    {tile, _attrs} = to_attr_tile(tile)
     case tile do
       :"1m" ->  10; :"2m" ->  20; :"3m" ->  30; :"4m" ->  40; :"0m" ->  50; :"5m" ->  51; :"6m" ->  60; :"7m" ->  70; :"8m" ->  80; :"9m" ->  90; :"10m" -> 95;
       :"1p" -> 110; :"2p" -> 120; :"3p" -> 130; :"4p" -> 140; :"0p" -> 150; :"5p" -> 151; :"6p" -> 160; :"7p" -> 170; :"8p" -> 180; :"9p" -> 190; :"10p" -> 195;
@@ -104,10 +140,15 @@ defmodule Utils do
     |> Enum.uniq()
   end
 
+  # tile1 must have at least the attributes of tile2
   def same_tile(tile1, tile2, tile_aliases) do
+    {tile1, attrs1} = to_attr_tile(tile1)
+    {tile2, attrs2} = to_attr_tile(tile2)
     l1 = [tile1] ++ adjacent_jokers(tile1, tile_aliases)
     l2 = [tile2] ++ adjacent_jokers(tile2, tile_aliases)
-    Enum.any?(l1, fn tile -> tile in l2 end)
+    same_id = Enum.any?(l1, fn tile -> tile in l2 end)
+    attrs_match = Enum.all?(attrs2, fn attr -> attr in attrs1 end)
+    same_id && attrs_match
   end
   
   def next_turn(seat, iterations \\ 1) do

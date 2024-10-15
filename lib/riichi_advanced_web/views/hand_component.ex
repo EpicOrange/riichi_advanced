@@ -25,15 +25,15 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="tiles">
             <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
               <%= if removed do %>
-                <div class={["tile", tile, "removed"]} data-id={i}></div>
+                <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
-                  <div class={["tile", tile, "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+                  <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
                   <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
-                    <div class={["tile", tile, "marked"]}></div>
+                    <div class={["tile", Utils.strip_attrs(tile), "marked"]}></div>
                   <% else %>
-                    <div class={["tile", tile]}></div>
+                    <div class={["tile", Utils.strip_attrs(tile)]}></div>
                   <% end %>
                 <% end %>
               <% end %>
@@ -42,12 +42,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws">
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
-                <div class={["tile", tile, "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i}></div>
+                <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
-                  <div class={["tile", tile, "marked"]}></div>
+                  <div class={["tile", Utils.strip_attrs(tile), "marked"]}></div>
                 <% else %>
-                  <div class={["tile", tile]}></div>
+                  <div class={["tile", Utils.strip_attrs(tile)]}></div>
                 <% end %>
               <% end %>
             <% end %>
@@ -57,12 +57,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="tiles" phx-hook="Sortable" id={@id}>
             <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
               <%= if removed do %>
-                <div class={["tile", tile, "removed"]} data-id={i}></div>
+                <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
                 <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :hand}) do %>
-                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", tile]} data-id={i}></div>
+                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile)]} data-id={i}></div>
                 <% else %>
-                  <div class={["tile", tile, "inactive"]} data-id={i}></div>
+                  <div class={["tile", Utils.strip_attrs(tile), "inactive"]} data-id={i}></div>
                 <% end %>
               <% end %>
             <% end %>
@@ -70,9 +70,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws">
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :draw}) do %>
-                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", tile]}></div>
+                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", Utils.strip_attrs(tile)]}></div>
               <% else %>
-                <div class={["tile", tile, "inactive"]}></div>
+                <div class={["tile", Utils.strip_attrs(tile), "inactive"]}></div>
               <% end %>
             <% end %>
           </div>
@@ -80,25 +80,25 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <% else %>
         <div class="tiles">
           <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
-            <div class={["tile", tile, removed && "removed"]} data-id={i}></div>
+            <div class={["tile", Utils.strip_attrs(tile), removed && "removed"]} data-id={i}></div>
           <% end %>
         </div>
         <div class="draws">
           <%= for {tile, _i} <- prepare_draw(assigns) do %>
-            <div class={["tile", tile]}></div>
+            <div class={["tile", Utils.strip_attrs(tile)]}></div>
           <% end %>
         </div>
       <% end %>
       <div class="calls">
           <%= for {_name, call} <- @calls do %>
             <div class="call">
-              <div class={["tile", tile, sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+              <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>
           <%= for tile <- @aside do %>
             <div class="call">
               <%= if @your_hand? do %>
-                <div class={["tile", tile]}></div>
+                <div class={["tile", Utils.strip_attrs(tile)]}></div>
               <% else %>
                 <div class={["tile", "1x"]}></div>
               <% end %>

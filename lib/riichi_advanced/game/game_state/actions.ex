@@ -187,10 +187,18 @@ defmodule RiichiAdvanced.GameState.Actions do
     else state end
     state = case call_source do
       :discards -> update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) })
-      :hand     -> update_player(state, seat, &%Player{ &1 | hand: (&1.hand ++ &1.draw) -- [called_tile], draw: [] })
+      :hand     ->
+        new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, [:hand]) ++ Utils.add_attr(state.players[seat].draw, [:hand, :draw]), [called_tile])
+        |> Enum.at(0)
+        |> Utils.strip_attrs()
+        update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [] })
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
-    state = update_player(state, seat, &%Player{ &1 | hand: &1.hand -- call_choice, calls: &1.calls ++ [call] })
+    new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, [:hand]), call_choice)
+    new_hand = new_hand
+    |> Enum.at(0)
+    |> Utils.strip_attrs()
+    state = update_player(state, seat, &%Player{ &1 | hand: new_hand, calls: &1.calls ++ [call] })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = if called_tile != nil do
       push_message(state, [
@@ -235,7 +243,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
     sideways_index = if sideways_index == nil do -1 else sideways_index end
     upgraded_call = {call_name, List.insert_at(call, sideways_index, {called_tile, true})}
-    state = update_player(state, seat, &%Player{ &1 | hand: (&1.hand ++ &1.draw) -- [called_tile], draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
+    state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, [:hand]) ++ Utils.add_attr(&1.draw, [:hand, :draw]), [called_tile]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state
