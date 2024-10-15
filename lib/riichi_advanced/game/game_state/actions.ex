@@ -241,6 +241,48 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  defp multiply_match_definitions(match_definitions, mult) do
+    for match_definition <- match_definitions do
+      for [groups, num] <- match_definition do
+        [groups, if num < 0 do num else num * mult end]
+      end
+    end
+  end
+
+  defp binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l \\ -1, r \\ 1) do
+    if l < r do
+      m = if l == -1 do r else Integer.floor_div(l + r + 1, 2) end
+      multiplied_match_def = multiply_match_definitions(match_definitions, m)
+      matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
+      {l, r} = if matched do
+        if l == -1 do {l, r * 2} else {m, r} end
+      else
+        if l == -1 do {0, r} else {l, m - 1} end
+      end
+      binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l, r)
+    else l end 
+  end
+
+  defp interpret_amount(state, seat, amt_spec) do
+    case amt_spec do
+      ["count_matches" | opts] ->
+        hand_calls = get_hand_calls_spec(state, %{seat: seat}, Enum.at(opts, 0, []))
+        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        ordering = state.players[seat].tile_ordering
+        ordering_r = state.players[seat].tile_ordering_r
+        tile_aliases = state.players[seat].tile_aliases
+        binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+      _ when is_integer(amt_spec) -> amt_spec
+    end
+  end
+
+  defp add_counter(state, seat, counter_name, amt_spec) do
+    amount = interpret_amount(state, seat, amt_spec)
+    new_ctr = amount + Map.get(state.players[seat].counters, counter_name, 0)
+    state = put_in(state.players[seat].counters[counter_name], new_ctr)
+    state
+  end
+
   defp do_charleston(state, dir, seat, marked_objects) do
     if Enum.any?(state.players, fn {seat, _} -> Marking.needs_marking?(state, seat) end) do
       # defer until everyone is done marking
@@ -321,6 +363,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "unset_callee_status"   -> update_player(state, context.callee, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "set_caller_status"     -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_caller_status"   -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "add_counter"           -> add_counter(state, context.seat, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
         seat = case Enum.at(opts, 1) do
           "shimocha" -> Utils.get_seat(context.seat, :shimocha)

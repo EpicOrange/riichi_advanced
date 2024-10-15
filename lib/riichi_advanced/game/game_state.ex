@@ -28,6 +28,7 @@ defmodule Player do
     deferred_actions: [],
     big_text: "",
     status: [],
+    counters: %{},
     riichi_stick: false,
     hand_revealed: false,
     last_discard: nil, # for animation purposes only
@@ -318,6 +319,7 @@ defmodule RiichiAdvanced.GameState do
 
     # statuses to keep between rounds
     persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
+    persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
 
     state = state
      |> Map.put(:wall_index, starting_tiles*4)
@@ -327,7 +329,8 @@ defmodule RiichiAdvanced.GameState do
           nickname: &2.nickname,
           hand: hands[&1],
           auto_buttons: initial_auto_buttons,
-          status: Enum.filter(&2.status, fn status -> status in persistent_statuses end)
+          status: Enum.filter(&2.status, fn status -> status in persistent_statuses end),
+          counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
         })
      |> Map.put(:actions, [])
      |> Map.put(:reversed_turn_order, false)
@@ -1194,6 +1197,9 @@ defmodule RiichiAdvanced.GameState do
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
+      "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) == Enum.at(opts, 1, 0)
+      "counter_at_least"    -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) >= Enum.at(opts, 1, 0)
+      "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Enum.at(opts, 1, 0)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

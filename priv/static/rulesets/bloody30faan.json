@@ -1358,7 +1358,7 @@
     {
       "display_name": "No Jokers",
       "value": 2,
-      "when": [{"name": "status_missing", "opts": ["has_joker"]}]
+      "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}]
     },
     // (7) 對子類
     {
@@ -1455,8 +1455,24 @@
     },
     {
       "display_name": "Thirteen Orphans",
-      "value": 30,
+      "value": 20,
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
+    },
+    {
+      "display_name": "Thirteen Orphans",
+      "value": 5,
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["jokers", 3]}
+      ]
+    },
+    {
+      "display_name": "Thirteen Orphans",
+      "value": 5,
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["jokers", 1]}
+      ]
     }
   ],
   "meta_yaku": [
@@ -1670,7 +1686,13 @@
                      "someone_else_just_discarded",
                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
                    ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["set_status", "won"], ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_discard"]],
+      "actions": [
+        ["big_text", "Hu"],
+        ["pause", 1000],
+        ["reveal_hand"],
+        ["set_status", "won"],
+        ["add_counter", "jokers", "count_matches", ["hand", "calls", "draw"], ["any_joker"]],
+        ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
@@ -1691,7 +1713,14 @@
                        ]
                      ]
                    ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["set_status", "won"], ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_call"]],
+      "actions": [
+        ["big_text", "Hu"],
+        ["pause", 1000],
+        ["reveal_hand"],
+        ["set_status", "won"],
+        ["add_counter", "jokers", "count_matches", ["hand", "calls", "draw"], ["any_joker"]],
+        ["win_by_call"]
+      ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -1702,7 +1731,14 @@
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]},
                      {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
                    ],
-      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["set_status", "won"], ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["any_joker"]]}], [["set_status", "has_joker"]]], ["win_by_draw"]],
+      "actions": [
+        ["big_text", "Zimo"],
+        ["pause", 1000],
+        ["reveal_hand"],
+        ["set_status", "won"],
+        ["add_counter", "jokers", "count_matches", ["hand", "calls", "draw"], ["any_joker"]],
+        ["win_by_draw"]
+      ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "joker": {

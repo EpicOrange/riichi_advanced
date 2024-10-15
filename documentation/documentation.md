@@ -344,6 +344,8 @@ Rules:
 - `interruptible_actions`: List of actions that can be interrupted by buttons
 - `max_revealed_tiles`: Number of tiles to show at the top at all times
 - `max_rounds`: Number of rounds before the game ends
+- `persistent_statuses`: Names of statuses that should persist between rounds.
+- `persistent_counters`: Names of counters that should persist between rounds.
 - `play_restrictions`: List of two-element arrays detailing a **play restriction**. The first element is an array of tiles that the restriction applies to. The second element is a condition -- if the condition is true, the player cannot play that tile.
 - `reserved_tiles`: List of tiles reserved from the end of the wall
 - `revealed_tiles`: List of reserved tiles revealed at the start of the game
@@ -439,6 +441,8 @@ Other:
 - `["charleston_across"]`: Select and pass three tiles across.
 - `["charleston_right"]`: Select and pass three tiles right.
 - `["shift_dead_wall_index", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
+- `["add_counter", counter_name, amount or spec, ...opts]`: Add `amount` to the current player's counter `counter_name`. In place of `amount` you can also put one of the following strings followed by some options:
+  + `"count_matches", to_match, [match_spec1, match_spec2, ...]` Counts the number of times the given match specs matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
 
 # Conditions
 
@@ -521,6 +525,9 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"third_row_discard"`: The current player has at least 12 tiles in their pond.
 - `{"name": "tiles_in_hand", "opts": [num]}`: The current player has `num` tiles in hand.
 - `{"name": "anyone", "opts": [cond1, cond2, ...]}`: Anyone satisfies the given conditions.
+- `{"name": "counter_equals", "opts": [counter_name, amount]}`: The counter `counter_name` equals `amount`.
+- `{"name": "counter_at_least", "opts": [counter_name, amount]}`: The counter `counter_name` is at least `amount`.
+- `{"name": "counter_at_most", "opts": [counter_name, amount]}`: The counter `counter_name` is at most `amount`.
 
 # Tile specs
 

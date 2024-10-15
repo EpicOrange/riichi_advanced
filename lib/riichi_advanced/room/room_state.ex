@@ -229,7 +229,6 @@ defmodule RiichiAdvanced.RoomState do
 
 
   def handle_cast(:delta_compression, state) do
-    prev_version = state.textarea_version
     state = Map.put(state, :textarea_version, 0)
     compressed = state.textarea_deltas
     |> Enum.reverse()
