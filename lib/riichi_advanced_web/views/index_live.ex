@@ -31,7 +31,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="sichuan">Sichuan Bloody</option>
           <option value="saki">Sakijong v1.2</option>
           <option value="vietnamese">Vietnamese</option>
-          <option value="bloody30faan">Bloody 30-Faan (beta)</option>
+          <option value="bloody30faan">Bloody 30-Faan Jokers</option>
           <option value="custom">Custom</option>
         </select>
         <br/>
