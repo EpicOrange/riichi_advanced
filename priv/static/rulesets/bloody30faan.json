@@ -73,7 +73,7 @@
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 6] ],
+    [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique", [["1m","4m","7m","1p","4p","7p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
     [ "unique", [["1m","4m","7m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
     [ "unique", [["1m","4m","7m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
@@ -165,7 +165,7 @@
   "tenpai_14_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 6] ],
+    [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique", [["1m","4m","7m","1p","4p","7p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
     [ "unique", [["1m","4m","7m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
     [ "unique", [["1m","4m","7m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
@@ -238,7 +238,7 @@
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 7] ],
+    [ [["koutsu"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
