@@ -943,6 +943,7 @@ defmodule RiichiAdvanced.GameState do
             [{hand ++ [winning_tile], calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
+          _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()
     end
@@ -975,8 +976,8 @@ defmodule RiichiAdvanced.GameState do
       "someone_else_just_discarded" -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
       "just_discarded"              -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
       "just_called"                 -> last_action != nil && last_action.action == :call
-      "call_available"              -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, [:hand]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [last_action.tile], cxt_player.tile_aliases, cxt_player.tile_mappings)
-      "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, [:hand]) ++ Utils.add_attr(cxt_player.draw, [:hand, :draw]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [], cxt_player.tile_aliases, cxt_player.tile_mappings)
+      "call_available"              -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [last_action.tile], cxt_player.tile_aliases, cxt_player.tile_mappings)
+      "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]) ++ Utils.add_attr(cxt_player.draw, ["hand", "draw"]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [], cxt_player.tile_aliases, cxt_player.tile_mappings)
       "can_upgrade_call"            -> cxt_player.calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.any?(fn {_name, call} ->
@@ -1100,8 +1101,8 @@ defmodule RiichiAdvanced.GameState do
       "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards
       "call_would_change_waits" ->
         win_definitions = translate_match_definitions(state, opts)
-        hand = Utils.add_attr(cxt_player.hand, [:hand])
-        draw = Utils.add_attr(cxt_player.draw, [:hand, :draw])
+        hand = Utils.add_attr(cxt_player.hand, ["hand"])
+        draw = Utils.add_attr(cxt_player.draw, ["hand", "draw"])
         calls = cxt_player.calls
         ordering = cxt_player.tile_ordering
         ordering_r = cxt_player.tile_ordering_r
@@ -1180,6 +1181,14 @@ defmodule RiichiAdvanced.GameState do
         tagged_tile = state.tags[tag]
         tile_aliases = state.players[context.seat].tile_aliases
         Enum.any?(targets, fn target -> Utils.same_tile(target, tagged_tile, tile_aliases) end)
+      "has_attr"              ->
+        targets = get_hand_calls_spec(state, context, [Enum.at(opts, 0, "tile")])
+        |> Enum.map(fn {hand, _calls} -> hand end)
+        attrs = Enum.drop(opts, 1)
+        Enum.any?(targets, fn target -> case target do
+          {_tile, existing_attrs} -> Enum.all?(attrs, fn attr -> attr in existing_attrs end)
+          _tile -> false
+        end end)
       "has_hell_wait" ->
         hand = cxt_player.hand
         calls = cxt_player.calls

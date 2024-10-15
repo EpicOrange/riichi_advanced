@@ -1173,7 +1173,6 @@
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
                 ["untag", "no_discard"],
-                ["untag", "rinshan"],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]]
                ]
   },
@@ -1206,6 +1205,7 @@
                   ["unset_status", "about_to_draw"],
                   ["draw"]
                 ]],
+                ["when", ["no_tiles_remaining"], [["add_attr_drawn_tile", "haitei"]]],
                 ["when", [
                   [
                     {"name": "status", "opts": ["shibuya-takami"]},
@@ -1297,6 +1297,16 @@
     "actions": [
       ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["reveal_hand"], ["set_status", "double_score"]]],
       ["when", [{"name": "status", "opts": ["miyanaga-saki"]}], [["set_tile_alias", [["1z", "hand"], ["2z", "hand"], ["4z", "hand"]], ["3z"]]]],
+      ["when", [{"name": "status", "opts": ["miyanaga-saki"]}], [["set_tile_alias", [["any", "rinshan"]], [
+        "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+        "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+        "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+        "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+      ["when", [{"name": "status", "opts": ["amae-koromo"]}], [["set_tile_alias", [["any", "haitei"]], [
+        "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+        "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+        "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+        "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
       ["when", [{"name": "status", "opts": ["miyanaga-teru"]}], [["set_status", "multiply_honba_with_han"]]],
       ["when", [{"name": "status", "opts": ["senoo-kaori"]}], [["set_tile_ordering", ["1z", "2z", "3z", "4z"]], ["set_tile_ordering", ["5z", "6z", "7z"]]]],
       ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_tile_ordering", ["9m", "1m"]], ["set_tile_ordering", ["9p", "1p"]], ["set_tile_ordering", ["9s", "1s"]]]],
@@ -1639,7 +1649,7 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["tag_drawn_tile", "rinshan"],
+        ["add_attr_drawn_tile", "rinshan"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
@@ -1687,7 +1697,7 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["tag_drawn_tile", "rinshan"],
+        ["add_attr_drawn_tile", "rinshan"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
@@ -1711,7 +1721,7 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["tag_drawn_tile", "rinshan"],
+        ["add_attr_drawn_tile", "rinshan"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
@@ -1762,13 +1772,13 @@
           {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
           [
             {"name": "status", "opts": ["miyanaga-saki"]},
-            {"name": "tagged", "opts": ["last_discard", "rinshan"]},
+            {"name": "has_attr", "opts": ["last_discard", "rinshan"]},
             {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
           ],
           [
             {"name": "status", "opts": ["amae-koromo"]},
-            {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-            "no_tiles_remaining"
+            {"name": "has_attr", "opts": ["last_discard", "haitei"]},
+            {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
           ]
         ],
         [
@@ -1818,15 +1828,6 @@
       ],
       "actions": [
         ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"],
-        ["when", [[
-          [{"name": "status", "opts": ["miyanaga-saki", "kan"]}, {"name": "tagged", "opts": ["last_discard", "rinshan"]}],
-          [{"name": "status", "opts": ["amae-koromo"]}, "no_tiles_remaining"]
-        ]], [
-          ["set_tile_alias", ["last_discard"], [
-            "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
-            "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
-            "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
-            "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
         ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
         ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
         ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
@@ -1906,13 +1907,14 @@
         [
           {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
           [
-            {"name": "status", "opts": ["miyanaga-saki", "kan"]},
+            {"name": "status", "opts": ["miyanaga-saki"]},
+            {"name": "has_attr", "opts": ["draw", "rinshan"]},
             {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
           ],
           [
             {"name": "status", "opts": ["amae-koromo"]},
-            {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-            "no_tiles_remaining"
+            {"name": "has_attr", "opts": ["draw", "haitei"]},
+            {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
           ]
         ],
         {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]},
@@ -1963,15 +1965,6 @@
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"],
-        ["when", [[
-          {"name": "status", "opts": ["miyanaga-saki", "kan"]},
-          [{"name": "status", "opts": ["amae-koromo"]}, "no_tiles_remaining"]
-        ]], [
-          ["set_tile_alias", ["draw"], [
-            "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
-            "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
-            "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
-            "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
         ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
         ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
         ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],

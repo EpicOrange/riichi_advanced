@@ -329,7 +329,7 @@ defmodule Riichi do
       "8" -> is_num?(context.tile, 8)
       "9" -> is_num?(context.tile, 9)
       "not_kuikae" ->
-        potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], [:hand])
+        potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], ["hand"])
         triplet = remove_group(potential_set, [], [0,0,0], context.ordering, context.ordering_r, context.tile_aliases)
         sequence = remove_group(potential_set, [], [0,1,2], context.ordering, context.ordering_r, context.tile_aliases)
         Enum.empty?(triplet ++ sequence)

@@ -13,14 +13,14 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
     <div class={["game-end-window", @visible_screen != :winner && "inactive"]}>
       <%= if @winner != nil && Map.has_key?(@winner, :yaku) && @winner.yaku != nil do %>
         <div class="hand winning-hand">
-          <div class={["tile", tile]} :for={tile <- @winner.player.hand}></div>
+          <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- @winner.player.hand}></div>
           <%= for {_name, call} <- @winner.player.calls do %>
             <div class="call">
-              <div class={["tile", tile, sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+              <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>
           <div class="winning-tile-container">
-            <div class={["tile", "winning-tile", @winner.winning_tile]}></div>
+            <div class={["tile", "winning-tile", Utils.strip_attrs(@winner.winning_tile)]}></div>
             <div class="winning-tile-text"><%= @winner.winning_tile_text %></div>
           </div>
         </div>

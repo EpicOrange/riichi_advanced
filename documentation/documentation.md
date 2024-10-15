@@ -443,6 +443,8 @@ Other:
 - `["shift_dead_wall_index", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
 - `["add_counter", counter_name, amount or spec, ...opts]`: Add `amount` to the current player's counter `counter_name`. In place of `amount` you can also put one of the following strings followed by some options:
   + `"count_matches", to_match, [match_spec1, match_spec2, ...]` Counts the number of times the given match specs matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
+- `["add_attr_last_discard", attr1, attr2, ...]`: Add the given attributes to the last discard
+- `["add_attr_drawn_tile", attr1, attr2, ...]`: Add the given attributes to all drawn tiles for the current player.
 
 # Conditions
 
@@ -528,6 +530,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "counter_equals", "opts": [counter_name, amount]}`: The counter `counter_name` equals `amount`.
 - `{"name": "counter_at_least", "opts": [counter_name, amount]}`: The counter `counter_name` is at least `amount`.
 - `{"name": "counter_at_most", "opts": [counter_name, amount]}`: The counter `counter_name` is at most `amount`.
+- `{"name": "has_attr", "opts": [tile, attr1, attr2]}`: The given tile is has the given attributes `attr1`, `attr2`, etc. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
 
 # Tile specs
 

@@ -188,13 +188,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = case call_source do
       :discards -> update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) })
       :hand     ->
-        new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, [:hand]) ++ Utils.add_attr(state.players[seat].draw, [:hand, :draw]), [called_tile])
+        new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, ["hand"]) ++ Utils.add_attr(state.players[seat].draw, [:hand, :draw]), [called_tile])
         |> Enum.at(0)
         |> Utils.strip_attrs()
         update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [] })
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
-    new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, [:hand]), call_choice)
+    new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, ["hand"]), call_choice)
     new_hand = new_hand
     |> Enum.at(0)
     |> Utils.strip_attrs()
@@ -243,7 +243,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
     sideways_index = if sideways_index == nil do -1 else sideways_index end
     upgraded_call = {call_name, List.insert_at(call, sideways_index, {called_tile, true})}
-    state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, [:hand]) ++ Utils.add_attr(&1.draw, [:hand, :draw]), [called_tile]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
+    state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand", "draw"]), [called_tile]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call,  %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state
@@ -323,11 +323,14 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   defp translate_tile_alias(state, context, tile_alias) do
-    case tile_alias do
+    ret = case tile_alias do
+      "any" -> state.all_tiles
       "draw" -> state.players[context.seat].draw
       "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+      [tile_alias | attrs] -> translate_tile_alias(state, context, tile_alias) |> Utils.add_attr(attrs)
       _      -> [Utils.to_tile(tile_alias)]
     end
+    ret
   end
 
   defp _run_actions(state, [], _context), do: {state, []}
@@ -595,6 +598,15 @@ defmodule RiichiAdvanced.GameState.Actions do
           tile_ordering: Map.merge(player.tile_ordering, ordering),
           tile_ordering_r: Map.merge(player.tile_ordering_r, ordering_r)
         } end)
+        state
+      "add_attr_last_discard"   ->
+        # TODO generalize to add_attr
+        last_discarder = get_last_discard_action(state).seat
+        state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ (Enum.at(pond, -1) |> Utils.add_attr(opts)) end)
+        state
+      "add_attr_drawn_tile"   ->
+        # TODO generalize to add_attr
+        state = update_player(state, context.seat, &%Player{ &1 | draw: Utils.add_attr(&1.draw, opts) })
         state
       "tag_drawn_tile"        ->
         tag = Enum.at(opts, 0, "missing_tag")

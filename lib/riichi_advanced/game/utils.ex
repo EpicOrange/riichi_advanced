@@ -47,13 +47,10 @@ defmodule Utils do
             }
   def to_tile(tile_spec) do
     case tile_spec do
-      [tile_spec | attrs] -> {@to_tile[tile_spec], Enum.map(attrs, &to_attr/1)}
+      [tile_spec | attrs] -> {@to_tile[tile_spec], attrs}
       _ -> @to_tile[tile_spec]
     end
   end
-
-  @attrs %{"hand" => :hand}
-  def to_attr(attr_str), do: @attrs[attr_str]
 
   defp to_attr_tile(tile) do
     case tile do
