@@ -135,7 +135,7 @@ window.client_doc = new Delta().insert("");
 window.client_deltas = [];
 window.client_delta_uuids = [];
 window.server_doc = new Delta().insert("");
-window.server_version = 0;
+window.server_version = -1;
 Hooks.CollaborativeTextarea = {
   mounted() {
     this.el.value = "";
@@ -174,6 +174,12 @@ Hooks.CollaborativeTextarea = {
       var server_deltas = deltas.map(delta => new Delta(delta));
       var server_delta = server_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
       // console.log(`Received update ${from_version}=>${version}: ${JSON.stringify(server_deltas)}`);
+      // check if it's a full reload
+      if (from_version < 0) {
+        same_version = true;
+        window.server_doc = new Delta().insert("");
+        window.server_version = from_version;
+      }
       if (same_version) { // TODO just drop initial deltas if we're a newer version
         update.bind(this)(true); // add current delta, if there is one, to window.client_deltas
         // take only client deltas that are not accounted for by the server delta

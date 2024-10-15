@@ -8,6 +8,8 @@ defmodule RoomPlayer do
 end
 
 defmodule Room do
+  @initial_textarea Delta.Op.insert("{}")
+  def initial_textarea, do: @initial_textarea
   defstruct [
     # params
     ruleset: nil,
@@ -28,10 +30,10 @@ defmodule Room do
     starting: false,
     started: false,
     mods: %{},
-    textarea: [Delta.Op.insert("{}")],
-    textarea_deltas: [],
+    textarea: [@initial_textarea],
+    textarea_deltas: [[@initial_textarea]],
     textarea_delta_uuids: [],
-    textarea_version: 1,
+    textarea_version: 0,
   ]
   use Accessible
 end
@@ -218,10 +220,27 @@ defmodule RiichiAdvanced.RoomState do
     else state end
     change = {client_version, state.textarea_version, returned_uuids, returned_deltas}
     state = broadcast_textarea_change(state, change)
+    if state.textarea_version > 100 do
+      GenServer.cast(self(), :delta_compression)
+    end
     {:reply, :ok, state}
   end
 
 
+
+  def handle_cast(:delta_compression, state) do
+    prev_version = state.textarea_version
+    state = Map.put(state, :textarea_version, 0)
+    compressed = state.textarea_deltas
+    |> Enum.reverse()
+    |> Delta.compose_all()
+    state = Map.put(state, :textarea_deltas, [compressed])
+    state = Map.update!(state, :textarea_delta_uuids, fn uuids -> [uuids |> Enum.take(99) |> Enum.concat()] end)
+    state = Map.put(state, :textarea, compressed)
+    change = {-1, 0, state.textarea_delta_uuids, state.textarea_deltas}
+    state = broadcast_textarea_change(state, change)
+    {:noreply, state}
+  end
 
   def handle_cast({:sit, socket_id, seat}, state) do
     seat = case seat do

@@ -32,7 +32,7 @@ defmodule RiichiAdvancedWeb.CollaborativeTextareaComponent do
     socket = if socket.assigns.room_state != nil do
       # initialize the textarea to the current value
       {version, delta} = GenServer.call(socket.assigns.room_state, :get_textarea)
-      socket = push_event(socket, "apply-delta", %{from_version: 0, version: version, uuids: [["initial"]], deltas: [delta]})
+      socket = push_event(socket, "apply-delta", %{from_version: -1, version: version, uuids: [[]], deltas: [delta]})
       socket
     else socket end
 
