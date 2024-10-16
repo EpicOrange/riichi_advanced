@@ -608,6 +608,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         # TODO generalize to add_attr
         state = update_player(state, context.seat, &%Player{ &1 | draw: Utils.add_attr(&1.draw, opts) })
         state
+      "remove_attr_all"   ->
+        # TODO generalize to remove_attr
+        state = update_player(state, context.seat, &%Player{ &1 | hand: Utils.remove_attr(&1.hand, opts), draw: Utils.remove_attr(&1.draw, opts), aside: Utils.remove_attr(&1.aside, opts) })
+        state
       "tag_drawn_tile"        ->
         tag = Enum.at(opts, 0, "missing_tag")
         state = put_in(state.tags[tag], Enum.at(state.players[context.seat].draw, 0, :"1x"))

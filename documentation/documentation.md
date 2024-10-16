@@ -445,6 +445,7 @@ Other:
   + `"count_matches", to_match, [match_spec1, match_spec2, ...]` Counts the number of times the given match specs matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
 - `["add_attr_last_discard", attr1, attr2, ...]`: Add the given attributes to the last discard
 - `["add_attr_drawn_tile", attr1, attr2, ...]`: Add the given attributes to all drawn tiles for the current player.
+- `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
 
 # Conditions
 

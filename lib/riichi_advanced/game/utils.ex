@@ -65,9 +65,21 @@ defmodule Utils do
 
   def add_attr(tile, attrs) do
     case tile do
-      {tile, existing_attrs} -> {tile, Enum.uniq(attrs ++ existing_attrs)}
+      {tile, existing_attrs} -> {tile, Enum.uniq(existing_attrs ++ attrs)}
       _ when is_list(tile) -> Enum.map(tile, &add_attr(&1, attrs))
       tile -> {tile, attrs}
+    end
+  end
+
+  def remove_attr(tile, attrs) do
+    case tile do
+      {tile, existing_attrs} ->
+        case Enum.uniq(existing_attrs -- attrs) do
+          []              -> tile
+          remaining_attrs -> {tile, remaining_attrs}
+        end
+      _ when is_list(tile) -> Enum.map(tile, &remove_attr(&1, attrs))
+      tile -> tile
     end
   end
 
