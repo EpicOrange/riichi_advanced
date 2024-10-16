@@ -777,7 +777,7 @@ defmodule RiichiAdvanced.GameState do
         # if Riichi.tile_matches(tile_spec, %{tile: tile}) do
         #   IO.inspect({tile, cond_spec, check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})})
         # end
-        not Riichi.tile_matches(tile_spec, %{tile: tile}) || check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})
+        not Riichi.tile_matches(tile_spec, %{tile: tile}) || not check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})
       end)
     else true end
   end
@@ -1001,7 +1001,7 @@ defmodule RiichiAdvanced.GameState do
       "has_yaku_with_call"       -> last_action.action == :call && Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile, ordering: state.players[context.seat].tile_ordering, ordering_r: state.players[context.seat].tile_ordering_r, tile_aliases: state.players[context.seat].tile_aliases})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, ordering: state.players[context.seat].tile_ordering, ordering_r: state.players[context.seat].tile_ordering_r, tile_aliases: state.players[context.seat].tile_aliases, call: last_call_action})
-      "unneeded_for_hand"        -> Riichi.not_needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.tile_aliases)
+      "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.tile_aliases)
       "is_drawn_tile"            -> context.tile_source == :draw
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
@@ -1165,17 +1165,20 @@ defmodule RiichiAdvanced.GameState do
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
         called_tiles = [context.called_tile] ++ context.call_choice
-        Enum.count(called_tiles, fn tile -> tile in tiles end) >= count
+        tile_aliases = cxt_player.tile_aliases
+        Enum.count(called_tiles, fn tile -> Enum.any?(tiles, fn tile2 -> Utils.same_tile(tile, tile2, tile_aliases) end) end) >= count
       "called_tile_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
         called_tiles = [context.called_tile]
-        Enum.count(called_tiles, fn tile -> tile in tiles end) >= count
+        tile_aliases = cxt_player.tile_aliases
+        Enum.count(called_tiles, fn tile -> Enum.any?(tiles, fn tile2 -> Utils.same_tile(tile, tile2, tile_aliases) end) end) >= count
       "call_choice_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
         called_tiles = context.call_choice
-        Enum.count(called_tiles, fn tile -> tile in tiles end) >= count
+        tile_aliases = cxt_player.tile_aliases
+        Enum.count(called_tiles, fn tile -> Enum.any?(tiles, fn tile2 -> Utils.same_tile(tile, tile2, tile_aliases) end) end) >= count
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
           "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end

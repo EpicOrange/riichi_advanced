@@ -334,11 +334,11 @@ defmodule Riichi do
       "7" -> is_num?(context.tile, 7)
       "8" -> is_num?(context.tile, 8)
       "9" -> is_num?(context.tile, 9)
-      "not_kuikae" ->
+      "kuikae" ->
         potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], ["hand"])
         triplet = remove_group(potential_set, [], [0,0,0], context.ordering, context.ordering_r, context.tile_aliases)
         sequence = remove_group(potential_set, [], [0,1,2], context.ordering, context.ordering_r, context.tile_aliases)
-        Enum.empty?(triplet ++ sequence)
+        not Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs
         if Utils.to_tile(&1) != nil do
@@ -350,11 +350,11 @@ defmodule Riichi do
     end)
   end
 
-  def not_needed_for_hand(hand, calls, tile, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.any?(match_definitions, fn match_definition ->
+  def needed_for_hand(hand, calls, tile, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+    Enum.all?(match_definitions, fn match_definition ->
       case try_remove_all_tiles(hand, [tile], tile_aliases) do
         [] -> false
-        hands -> Enum.any?(hands, fn hand -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)) end)
+        hands -> Enum.all?(hands, fn hand -> Enum.empty?(remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)) end)
       end
     end)
   end
@@ -554,6 +554,7 @@ defmodule Riichi do
       fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30
       fu == 20 && not Enum.empty?(calls)                    -> 30
       Enum.empty?(fus) && num_pairs == 6                    -> 25
+      Enum.empty?(fus) && num_pairs == 5                    -> 30 # kakura kurumi
       true                                                  ->
         # round up to nearest 10
         remainder = rem(fu, 10)

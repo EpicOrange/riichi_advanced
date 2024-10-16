@@ -479,7 +479,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "has_yaku_with_call", "opts": [han, yaku_keys]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in the specified toplevel keys. Example: `{"name": "has_yaku_with_call", "opts": [1, ["yaku", "yakuman"]]}`
 - `{"name": "last_discard_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last discard matches one of the given tile specs. See the tile specs section for details.
 - `{"name": "last_called_tile_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last called tile matches one of the given tile specs. See the tile specs section for details.
-- `{"name": "unneeded_for_hand", "opts": [match_spec1, match_spec2, ...]}`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is not needed for the current player's hand to match one of the given match specifications.
+- `{"name": "needed_for_hand", "opts": [match_spec1, match_spec2, ...]}`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is needed for the current player's hand to match one of the given match specifications.
 - `"is_drawn_tile`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is a drawn tile.
 - `{"name": "status", "opts": [status1, status2, ...]}`: The current player has all of the specified statuses.
 - `{"name": "status_missing", "opts": [status1, status2, ...]}`: The current player is missing all of the specified statuses.
@@ -547,7 +547,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"flower"`: Matches a flower tile (hardcoded).
 - `"joker"`: Matches a joker tile (hardcoded).
 - `"1"` to `"9"`: Matches that number tile (hardcoded).
-- `"not_kuikae"`: Matches a tile that is not kuikae to the last call. Only used in `play_restrictions`.
+- `"kuikae"`: Matches a tile that is kuikae to the last call. Only used in `play_restrictions`.
 
 # Scoring methods
 

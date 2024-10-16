@@ -170,36 +170,37 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def trigger_call(state, seat, call_name, call_choice, called_tile, call_source) do
     call_style = if Map.has_key?(state.rules["buttons"][call_name], "call_style") do
-        state.rules["buttons"][call_name]["call_style"]
-      else Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end) end
+      state.rules["buttons"][call_name]["call_style"]
+    else Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end) end
 
     # style the call
-    # tiles = Enum.map(call_choice, fn t -> {t, false} end)
     call = if called_tile != nil do
       style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
       style_call(style, Utils.strip_attrs(call_choice), Utils.strip_attrs(called_tile))
     else
       Enum.map(call_choice, fn tile -> {tile, false} end)
     end
+
+    # run before_call actions
     call = {call_name, call}
     state = if Map.has_key?(state.rules, "before_call") do
       run_actions(state, state.rules["before_call"]["actions"], %{seat: state.turn, callee: state.turn, caller: seat, call: call})
     else state end
-    state = case call_source do
-      :discards -> update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) })
-      :hand     ->
-        new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, ["hand"]) ++ Utils.add_attr(state.players[seat].draw, [:hand, :draw]), [called_tile])
-        |> Enum.at(0)
-        |> Utils.strip_attrs()
-        update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [] })
+
+    # remove called tiles from its source
+    {state, to_remove} = case call_source do
+      :discards -> {update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) }), call_choice}
+      :hand     -> {state, [called_tile | call_choice]}
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
-    new_hand = Riichi.try_remove_all_tiles(Utils.add_attr(state.players[seat].hand, ["hand"]), call_choice)
-    new_hand = new_hand
-    |> Enum.at(0)
-    |> Utils.strip_attrs()
-    state = update_player(state, seat, &%Player{ &1 | hand: new_hand, calls: &1.calls ++ [call] })
+    hand = Utils.add_attr(state.players[seat].hand, ["hand"])
+    draw = Utils.add_attr(state.players[seat].draw, ["hand", "draw"])
+    new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.strip_attrs()
+    # actually add the call to the player
+    state = update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+
+    # messages and log
     state = if called_tile != nil do
       push_message(state, [
         %{text: "Player #{seat} #{state.players[seat].nickname} called "},
@@ -224,10 +225,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       "/audio/call5.mp3",
     ]
     play_sound(state, Enum.random(click_sounds))
-    state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
+
+    # run after_call actions
     state = if Map.has_key?(state.rules, "after_call") do
       run_actions(state, state.rules["after_call"]["actions"], %{seat: seat, callee: state.turn, caller: seat, call: call})
     else state end
+
+    state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state
   end
 

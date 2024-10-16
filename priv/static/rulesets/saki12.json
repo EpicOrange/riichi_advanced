@@ -1150,13 +1150,13 @@
     "honba_value": 100
   },
   "play_restrictions": [
-    [["any"], ["all_saki_cards_drafted"]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
-    [["any"], [{"name": "not_tagged", "opts": ["tile", "no_discard"]}]],
-    [["any"], [[{"name": "not_status", "opts": ["amae-koromo"]}, "not_just_discarded"]]],
-    [["any"], [{"name": "not_status", "opts": ["matano-seiko", "pon"]}]]
+    [["any"], ["not_all_saki_cards_drafted"]],
+    [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
+    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
+    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
+    [["any"], [{"name": "tagged", "opts": ["tile", "no_discard"]}]],
+    [["any"], [{"name": "status", "opts": ["amae-koromo"]}, "just_discarded"]],
+    [["any"], [{"name": "status", "opts": ["matano-seiko", "pon"]}]]
     // [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
   ],
   "before_turn_change": {

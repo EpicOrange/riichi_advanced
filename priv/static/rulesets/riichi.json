@@ -204,6 +204,9 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
     ]
   ],
+  "standard_win_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
+  ],
   "shousuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]],
     [[["ton"], 1], [["nan"], 1], [["shaa_pair"], 1], [["pei"], 1]],
@@ -250,7 +253,11 @@
     {
       "display_name": "Pinfu",
       "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]]
+      "when": [
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["standard_win"]]},
+        [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]
+      ]
     },
     {
       "display_name": "Tanyao",
@@ -743,9 +750,9 @@
     "honba_value": 100
   },
   "play_restrictions": [
-    [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [["not_just_called", {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]
+    [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
+    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
+    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],

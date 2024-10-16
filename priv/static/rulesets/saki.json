@@ -16,7 +16,7 @@
     "ikeda-kana",
     "jindai-komaki",
     "amae-koromo",
-    // "kakura-kurumi",
+    "kakura-kurumi",
     "kataoka-yuuki",
     "mase-yuuko",
     "matano-seiko",
@@ -201,6 +201,9 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
     ]
   ],
+  "standard_win_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
+  ],
   "shousuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]],
     [[["ton"], 1], [["nan"], 1], [["shaa_pair"], 1], [["pei"], 1]],
@@ -209,6 +212,12 @@
   ],
   "daisuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
+  ],
+  "kakura_kurumi_tenpai_definition": [
+    [ [["quad"], -1], [["koutsu"], -2], [["pair"], -6], [["pair"], 5] ]
+  ],
+  "kakura_kurumi_win_definition": [
+    [ [["koutsu"], -1], [["pair"], 6] ]
   ],
   "yaku": [
     {
@@ -252,7 +261,11 @@
     {
       "display_name": "Pinfu",
       "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]]
+      "when": [
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["standard_win"]]},
+        [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]
+      ]
     },
     {
       "display_name": "Tanyao",
@@ -1150,14 +1163,14 @@
     "honba_value": 100
   },
   "play_restrictions": [
-    [["any"], ["all_saki_cards_drafted"]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}, "is_drawn_tile"]]],
-    [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
-    [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
-    [["any"], [{"name": "not_tagged", "opts": ["tile", "no_discard"]}]],
-    [["any"], [[{"name": "not_status", "opts": ["amae-koromo"]}, "not_just_discarded"]]],
-    [["any"], [{"name": "not_status", "opts": ["matano-seiko", "pon"]}]]
-    // [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
+    [["any"], ["not_all_saki_cards_drafted"]],
+    [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
+    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["kakura-kurumi"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
+    [["any"], [{"name": "status", "opts": ["riichi", "just_reached", "kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "needed_for_hand", "opts": ["kakura_kurumi_tenpai"]}]],
+    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
+    [["any"], [{"name": "tagged", "opts": ["tile", "no_discard"]}]],
+    [["any"], [{"name": "status", "opts": ["amae-koromo"]}, "just_discarded"]],
+    [["any"], [{"name": "status", "opts": ["matano-seiko", "pon"]}]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
@@ -1172,6 +1185,7 @@
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
+                ["when", [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "match", "opts": [["hand", "calls", "any_discard"], ["kakura_kurumi_win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
                 ["untag", "no_discard"],
                 ["remove_attr_all", "rinshan"],
@@ -1191,6 +1205,17 @@
                       {"name": "last_call_is", "opts": ["ankan"]},
                       {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
                       {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+                    ],
+                    [
+                      {"name": "status", "opts": ["kakura-kurumi"]},
+                      {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]},
+                      {"name": "match", "opts": [["hand", "last_discard"], ["kakura_kurumi_win"]]}
+                    ],
+                    [
+                      {"name": "status", "opts": ["kakura-kurumi"]},
+                      {"name": "last_call_is", "opts": ["kakan"]},
+                      {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]},
+                      {"name": "match", "opts": [["hand", "last_called_tile"], ["kakura_kurumi_win"]]}
                     ]
                   ]],
                   [["set_status", "furiten"]]
@@ -1659,11 +1684,7 @@
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        [
-          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
-          "not_last_discard_matches_existing"
-        ]
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"
       ],
       "actions": [
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
@@ -1678,10 +1699,6 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        [
-          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
-          "not_last_discard_matches_existing"
-        ],
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -1697,10 +1714,6 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        [
-          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
-          "not_last_discard_matches_existing"
-        ],
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -1811,7 +1824,13 @@
         {"name": "has_score", "opts": [1000]},
         "next_draw_possible",
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]},
+        [
+          {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]},
+          [
+            {"name": "status", "opts": ["kakura-kurumi"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["kakura_kurumi_tenpai"]]}
+          ]
+        ],
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
@@ -1860,6 +1879,10 @@
             {"name": "status", "opts": ["amae-koromo"]},
             {"name": "has_attr", "opts": ["last_discard", "haitei"]},
             {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
+          ],
+          [
+            {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
+            {"name": "match", "opts": [["hand", "calls", "last_discard"], ["kakura_kurumi_win"]]}
           ]
         ],
         [
@@ -1901,10 +1924,6 @@
             ]
           ],
           "has_yakuman_with_discard"
-        ],
-        [
-          {"name": "not_discarder_status", "opts": ["kakura-kurumi"]},
-          "not_last_discard_matches_existing"
         ]
       ],
       "actions": [
@@ -1932,6 +1951,10 @@
             {"name": "last_call_is", "opts": ["ankan"]},
             {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ],
+          [
+            {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["kakura_kurumi_win"]]}
           ]
         ],
         [
@@ -1997,6 +2020,10 @@
             {"name": "status", "opts": ["amae-koromo"]},
             {"name": "has_attr", "opts": ["draw", "haitei"]},
             {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
+          ],
+          [
+            {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
+            {"name": "match", "opts": [["hand", "calls", "last_discard"], ["kakura_kurumi_win"]]}
           ]
         ],
         {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]},
