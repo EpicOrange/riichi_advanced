@@ -247,7 +247,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {basic_score_pao, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, winner.win_source == :draw, winner.minipoints)
           {basic_score_non_pao, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, winner.win_source == :draw, winner.minipoints)
           delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yakuman: pao_yakuman }, collect_sticks)
-          delta_scores_non_pao = calculate_delta_scores_for_single_winner(state,%{ winner | score: basic_score_non_pao, yakuman: non_pao_yakuman }, collect_sticks)
+          delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yakuman: non_pao_yakuman }, collect_sticks)
           delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
           delta_scores
         else
@@ -360,10 +360,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {_seat, some_winner} = Enum.at(state.winners, 0)
         payer = some_winner.payer
         if payer == nil do some_winner.seat else
-          next_seat_1 = if state.reversed_turn_order do Utils.next_turn(payer) else Utils.prev_turn(payer) end
-          next_seat_2 = if state.reversed_turn_order do Utils.next_turn(next_seat_1) else Utils.prev_turn(next_seat_1) end
-          next_seat_3 = if state.reversed_turn_order do Utils.next_turn(next_seat_2) else Utils.prev_turn(next_seat_2) end
-          next_seat_4 = if state.reversed_turn_order do Utils.next_turn(next_seat_3) else Utils.prev_turn(next_seat_3) end
+          next_seat_1 = if state.reversed_turn_order do Utils.prev_turn(payer) else Utils.next_turn(payer) end
+          next_seat_2 = if state.reversed_turn_order do Utils.prev_turn(next_seat_1) else Utils.next_turn(next_seat_1) end
+          next_seat_3 = if state.reversed_turn_order do Utils.prev_turn(next_seat_2) else Utils.next_turn(next_seat_2) end
+          next_seat_4 = if state.reversed_turn_order do Utils.prev_turn(next_seat_3) else Utils.next_turn(next_seat_3) end
           cond do
             Map.has_key?(state.winners, next_seat_1) -> next_seat_1
             Map.has_key?(state.winners, next_seat_2) -> next_seat_2
