@@ -25,7 +25,7 @@
     "miyanaga-teru",
     "nanpo-kazue",
     "onjouji-toki",
-    // "sagimori-arata",
+    "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",
     // "shibuya-takami",
@@ -652,17 +652,22 @@
     {
       "display_name": "Sagimori Arata",
       "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 6]]]]}]
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 8]]]]}]
     },
     {
       "display_name": "Sagimori Arata",
       "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 9]]]]}]
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 10]]]]}]
     },
     {
       "display_name": "Sagimori Arata",
       "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["6p"],["7p"],["8p"],["9p"]], 11]]]]}]
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 13]]]]}]
+    },
+    {
+      "display_name": "Sagimori Arata",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 14]]]]}]
     },
     {
       "display_name": "Three-Sided Wait",
