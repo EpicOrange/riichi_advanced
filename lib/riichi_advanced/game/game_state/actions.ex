@@ -447,6 +447,25 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
         state = put_in(state.marking[context.seat].done, true)
         state
+      "swap_marked_hand_and_dora_indicator" ->
+        {hand_tile, hand_seat, hand_index} = Enum.at(marked_objects.hand.marked, 0)
+        {revealed_tile, _, revealed_tile_index} = Enum.at(marked_objects.revealed_tile.marked, 0)
+
+        # replace revealed tile with hand tile
+        tile_spec = Enum.at(state.revealed_tiles, revealed_tile_index)
+        state = update_in(state.reserved_tiles, &List.keyreplace(&1, tile_spec, 0, {tile_spec, hand_tile}))
+
+        # replace hand tile with revealed tile
+        hand_length = length(state.players[hand_seat].hand)
+        state = if hand_index < hand_length do
+          update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, revealed_tile) })
+        else
+          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, revealed_tile) })
+        end
+
+        state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {revealed_tile, nil, revealed_tile_index, :discard}})
+        state = put_in(state.marking[context.seat].done, true)
+        state
       "extend_live_wall_with_marked" ->
         {_, hand_seat, _} = Enum.at(marked_objects.hand.marked, 0)
         {hand_tiles, hand_indices} = marked_objects.hand.marked

@@ -8,15 +8,15 @@
   ],
 
   "enable_saki_cards": true,
-  "saki_ver": "v13",
+  "saki_ver": "v12",
   "saki_deck": [
     "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
-    // "ikeda-kana",
+    "ikeda-kana",
     "jindai-komaki",
     "amae-koromo",
-    // "kakura-kurumi",
+    "kakura-kurumi",
     "kataoka-yuuki",
     "mase-yuuko",
     "matano-seiko",
@@ -25,12 +25,12 @@
     "miyanaga-teru",
     "nanpo-kazue",
     "onjouji-toki",
-    // "sagimori-arata",
+    "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",
-    // "shibuya-takami",
+    "shibuya-takami",
     "takakamo-shizuno",
-    // "takei-hisa",
+    "takei-hisa",
     "takimi-haru",
     "toyouko-momoko"
   ],
@@ -1369,21 +1369,8 @@
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
         ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]],
-        ["push_message", "swapped a discard with a same-suit tile from hand (Atarashi Ako)"],
+        ["push_message", "swapped a tile in hand with a same-suit discard (Atarashi Ako)"],
         ["swap_marked_hand_and_discard"],
-        ["noop"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
-      ]
-    },
-    "atarashi_ako_dora": {
-      "display_name": "Swap dora indicator with same suit in hand",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
-      "actions": [
-        ["big_text", "Atarashi Ako: swap!"],
-        ["unset_status", "just_called"],
-        ["mark", [["hand", 1, ["match_suit"]], ["revealed_tile", 1, ["match_suit"]]]],
-        ["push_message", "swapped a dora indicator with a same-suit tile from hand (Atarashi Ako)"],
-        ["swap_marked_hand_and_dora_indicator"],
         ["noop"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]

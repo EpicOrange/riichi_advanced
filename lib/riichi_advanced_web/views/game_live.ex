@@ -1,14 +1,6 @@
 defmodule RiichiAdvancedWeb.GameLive do
   use RiichiAdvancedWeb, :live_view
 
-  defp to_revealed_tiles(state) do
-    revealed_tiles = for tile_spec <- state.revealed_tiles do
-      {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
-      tile
-    end
-    revealed_tiles ++ Enum.map(length(revealed_tiles)+1..state.max_revealed_tiles//1, fn _ -> :"1x" end)
-  end
-
   def mount(params, _session, socket) do
     socket = socket
     |> assign(:session_id, params["id"])
@@ -220,9 +212,14 @@ defmodule RiichiAdvancedWeb.GameLive do
           <% end %>
         </div>
       <% end %>
-      <div class="revealed-tiles">
-        <div class={["tile", tile]} :for={tile <- to_revealed_tiles(@state)}></div>
-      </div>
+      <.live_component module={RiichiAdvancedWeb.RevealedTilesComponent}
+        id="revealed-tiles"
+        game_state={@game_state}
+        viewer={@viewer}
+        revealed_tiles={@state.revealed_tiles}
+        max_revealed_tiles={@state.max_revealed_tiles}
+        reserved_tiles={@state.reserved_tiles}
+        marking={@state.marking[@seat]} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>

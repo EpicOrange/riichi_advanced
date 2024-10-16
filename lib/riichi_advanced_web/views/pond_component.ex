@@ -20,12 +20,12 @@ defmodule RiichiAdvancedWeb.PondComponent do
       <%= if not Enum.empty?(@marking) do %>
         <%= for {tile, i} <- prepare_pond(@pond, @marking) do %>
           <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
-            <div class={["tile", Utils.strip_attrs(tile), "markable", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+            <div class={["tile", Utils.strip_attrs(tile), "markable", i == @riichi_index && "sideways"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
             <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
-              <div class={["tile", Utils.strip_attrs(tile), "marked", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
+              <div class={["tile", Utils.strip_attrs(tile), "marked", i == @riichi_index && "sideways"]}></div>
             <% else %>
-              <div class={["tile", Utils.strip_attrs(tile), @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
+              <div class={["tile", Utils.strip_attrs(tile), i == @riichi_index && "sideways"]}></div>
             <% end %>
           <% end %>
         <% end %>
@@ -36,7 +36,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
     """
   end
 
-  def prepare_pond(pond, _saki) do
+  def prepare_pond(pond, _marking) do
     # need to pass in the marking arg, so the pond updates when marking updates
     Enum.with_index(pond)
   end
