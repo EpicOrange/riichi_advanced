@@ -388,7 +388,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
-        Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+        state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
         state = if String.starts_with?(tile_name, "doraindicator") do
           Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_tile_name(state, tile_name)})
         else state end
