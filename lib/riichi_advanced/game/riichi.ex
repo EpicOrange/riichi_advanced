@@ -146,7 +146,6 @@ defmodule Riichi do
             # list of lists of integers specifying multiple related groups of tiles
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
-            IO.inspect({"asdf",all_tiles})
             all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
               for set <- group, reduce: [{hand, calls}] do
                 hand_calls -> 

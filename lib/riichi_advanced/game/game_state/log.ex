@@ -89,7 +89,9 @@ defmodule RiichiAdvanced.GameState.Log do
         score: player.score,
         payout: player.score # TODO no uma?
       } end),
-      rules: %{},
+      rules: %{
+        mods: state.mods
+      },
       kyokus: Enum.reverse(state.log_state.kyokus)
     }
     Jason.encode!(out)

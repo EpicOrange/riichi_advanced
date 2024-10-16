@@ -1,38 +1,39 @@
 defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
-  @supported_cards [
-    "atarashi-ako",
-    "choe-myeonghwa",
-    "haramura-nodoka",
-    "ikeda-kana",
-    "jindai-komaki",
-    "kakura-kurumi",
-    "kataoka-yuuki",
-    "mase-yuuko",
-    "matano-seiko",
-    "matsumi-kuro",
-    "matsumi-yuu",
-    "miyanaga-saki",
-    "miyanaga-teru",
-    "nanpo-kazue",
-    "onjouji-toki",
-    "sagimori-arata",
-    "sawamura-tomoki",
-    "senoo-kaori",
-    "shibuya-takami",
-    "takakamo-shizuno",
-    "takei-hisa",
-    "takimi-haru",
-    "toyouko-mokmoko",
-    "toyouko-momoko",
-    "usuzawa-sae",
-    "usuzumi-hatsumi",
-    "yumeno-maho",
-    "amae-koromo",
-  ]
+  @card_names %{
+    "atarashi-ako" => "Atarashi Ako",
+    "choe-myeonghwa" => "Choe Myeonghwa",
+    "haramura-nodoka" => "Haramura Nodoka",
+    "ikeda-kana" => "Ikeda Kana",
+    "jindai-komaki" => "Jindai Komaki",
+    "kakura-kurumi" => "Kakura Kurumi",
+    "kataoka-yuuki" => "Kataoka Yuuki",
+    "mase-yuuko" => "Mase Yuuko",
+    "matano-seiko" => "Matano Seiko",
+    "matsumi-kuro" => "Matsumi Kuro",
+    "matsumi-yuu" => "Matsumi Yuu",
+    "miyanaga-saki" => "Miyanaga Saki",
+    "miyanaga-teru" => "Miyanaga Teru",
+    "nanpo-kazue" => "Nanpo Kazue",
+    "onjouji-toki" => "Onjouji Toki",
+    "sagimori-arata" => "Sagimori Arata",
+    "sawamura-tomoki" => "Sawamura Tomoki",
+    "senoo-kaori" => "Senoo Kaori",
+    "shibuya-takami" => "Shibuya Takami",
+    "takakamo-shizuno" => "Takakamo Shizuno",
+    "takei-hisa" => "Takei Hisa",
+    "takimi-haru" => "Takimi Haru",
+    "toyouko-mokmoko" => "Toyouko Mokmoko",
+    "toyouko-momoko" => "Toyouko Momoko",
+    "usuzawa-sae" => "Usuzawa Sae",
+    "usuzumi-hatsumi" => "Usuzumi Hatsumi",
+    "yumeno-maho" => "Yumeno Maho",
+    "amae-koromo" => "Amae Koromo",
+  }
 
   def initialize_saki(state) do
     state = if not Map.has_key?(state.rules, "saki_ver") do
@@ -73,6 +74,12 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   def draft_saki_card(state, seat, choice) do
     state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
+    push_message(state, [
+      %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
+      %{bold: true, text: "#{@card_names[choice]}"}
+    ])
+    state = Log.log(state, seat, :saki_card, %{card: choice})
+
     state = if check_if_all_drafted(state) do
       state = Map.put(state, :game_active, true)
 
@@ -90,11 +97,11 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   def check_if_all_drafted(state) do
     Enum.all?(state.players, fn {_seat, player} ->
-      Enum.any?(player.status, fn status -> status in @supported_cards end)
+      Enum.any?(player.status, fn status -> Map.has_key?(@card_names, status) end)
     end)
   end
 
   def filter_cards(statuses) do
-    Enum.filter(statuses, fn status -> status in @supported_cards end)
+    Enum.filter(statuses, fn status -> Map.has_key?(@card_names, status) end)
   end
 end
