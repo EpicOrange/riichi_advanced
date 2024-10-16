@@ -1738,6 +1738,7 @@
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
         "not_just_discarded",
         "not_just_called",
         {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]},

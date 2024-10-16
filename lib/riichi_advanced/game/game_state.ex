@@ -1050,6 +1050,7 @@ defmodule RiichiAdvanced.GameState do
             IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
         end
+      "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
       "winning_dora_count"       ->
         dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
         num = Enum.at(opts, 1, 1)
