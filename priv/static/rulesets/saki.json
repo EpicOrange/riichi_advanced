@@ -1416,7 +1416,7 @@
       "actions": [
         ["big_text", "Choe Myeonghwa: swap!"],
         ["unset_status", "just_called"],
-        ["mark", [["hand", 1, []], ["discard", 1, ["last_discard"]]]],
+        ["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]],
         ["push_message", "swapped a tile in hand with the last discard (Choe Myeonghwa)"],
         ["swap_marked_hand_and_discard"],
         ["advance_turn"],

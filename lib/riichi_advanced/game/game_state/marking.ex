@@ -84,6 +84,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "others"            -> marking_player != seat
         "current_turn"      -> seat == state.turn
         "7z"                -> tile == :"7z"
+        "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
         "last_discard"      ->
           case source do
             :hand    -> false
