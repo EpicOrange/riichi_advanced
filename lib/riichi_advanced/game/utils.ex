@@ -83,6 +83,14 @@ defmodule Utils do
     end
   end
 
+  def has_attr?(tile, attrs) do
+    case tile do
+      {tile, existing_attrs} -> Enum.all?(attrs, & &1 in existing_attrs)
+      _ when is_list(tile) -> Enum.any?(tile, &has_attr?(&1, attrs))
+      tile -> false
+    end
+  end
+
   def strip_attrs(tile) do
     case tile do
       {tile, _attrs} -> tile

@@ -195,7 +195,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     hand = Utils.add_attr(state.players[seat].hand, ["hand"])
     draw = Utils.add_attr(state.players[seat].draw, ["hand", "draw"])
-    new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.strip_attrs()
+    new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
     # actually add the call to the player
     state = update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})

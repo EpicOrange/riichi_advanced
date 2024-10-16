@@ -772,7 +772,7 @@ defmodule RiichiAdvanced.GameState do
 
   def is_playable?(state, seat, tile, tile_source) do
     have_unskippable_button = Enum.any?(state.players[seat].buttons, fn button_name -> state.rules["buttons"][button_name] != nil && Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
-    not have_unskippable_button && if Map.has_key?(state.rules, "play_restrictions") do
+    not have_unskippable_button && not Utils.has_attr?(tile, ["no_discard"]) && if Map.has_key?(state.rules, "play_restrictions") do
       Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
         # if Riichi.tile_matches(tile_spec, %{tile: tile}) do
         #   IO.inspect({tile, cond_spec, check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})})
@@ -1191,11 +1191,7 @@ defmodule RiichiAdvanced.GameState do
       "has_attr"              ->
         targets = get_hand_calls_spec(state, context, [Enum.at(opts, 0, "tile")])
         |> Enum.map(fn {hand, _calls} -> hand end)
-        attrs = Enum.drop(opts, 1)
-        Enum.any?(targets, fn target -> case target do
-          {_tile, existing_attrs} -> Enum.all?(attrs, fn attr -> attr in existing_attrs end)
-          _tile -> false
-        end end)
+        Utils.has_attr?(targets, Enum.drop(opts, 1))
       "has_hell_wait" ->
         hand = cxt_player.hand
         calls = cxt_player.calls

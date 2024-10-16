@@ -28,7 +28,7 @@
     "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",
-    // "shibuya-takami",
+    "shibuya-takami",
     "takakamo-shizuno",
     // "takei-hisa",
     "takimi-haru",
@@ -1173,7 +1173,7 @@
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["kakura-kurumi"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached", "kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "needed_for_hand", "opts": ["kakura_kurumi_tenpai"]}]],
     [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
-    [["any"], [{"name": "tagged", "opts": ["tile", "no_discard"]}]],
+    [["any"], [{"name": "has_attr", "opts": ["tile", "no_discard"]}]],
     [["any"], [{"name": "status", "opts": ["amae-koromo"]}, "just_discarded"]],
     [["any"], [{"name": "status", "opts": ["matano-seiko", "pon"]}]]
   ],
@@ -1192,7 +1192,6 @@
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "match", "opts": [["hand", "calls", "any_discard"], ["kakura_kurumi_win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
-                ["untag", "no_discard"],
                 ["remove_attr_all", "rinshan"],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]]
                ]
@@ -1522,7 +1521,7 @@
       ],
       "unskippable": true
     },
-    "matano_seiko_1": {
+    "matano_seiko": {
       "display_name": "Set aside 4th tile from discards",
       "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
       "actions": [
@@ -1534,7 +1533,7 @@
       ],
       "unskippable": true
     },
-    "matano_seiko_2": {
+    "matano_seiko_skip": {
       "display_name": "Skip",
       "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
       "actions": [["unset_status", "pon"]],
@@ -1637,11 +1636,32 @@
         ["big_text", "Shibuya Takami: set aside!"],
         ["unset_status", "about_to_draw"],
         ["mark", [["discard", 1, ["self"]]]],
+        ["push_message", "drew of their discards facedown (Shibuya Takami)"],
         ["set_aside_marked"],
-        ["push_message", "set aside one of their discards as their next draw (Shibuya Takami)"],
         ["draw_from_aside"],
-        ["tag_drawn_tile", "no_discard"]
-      ]
+        ["add_attr_drawn_tile", "facedown", "no_discard"]
+      ],
+      "unskippable": true
+    },
+    "shibuya_takami": {
+      "display_name": "Set aside a discard as next draw",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
+      "actions": [
+        ["big_text", "Shibuya Takami: set aside!"],
+        ["unset_status", "about_to_draw"],
+        ["mark", [["discard", 1, ["self"]]]],
+        ["push_message", "drew of their discards facedown (Shibuya Takami)"],
+        ["set_aside_marked"],
+        ["draw_from_aside"],
+        ["add_attr_drawn_tile", "facedown", "no_discard"]
+      ],
+      "unskippable": true
+    },
+    "shibuya_takami_skip": {
+      "display_name": "Skip",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
+      "actions": [["unset_status", "about_to_draw"], ["draw", 1]],
+      "unskippable": true
     },
     "takimi_haru": {
       "display_name": "Discard facedown",
