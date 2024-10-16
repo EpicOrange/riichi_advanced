@@ -1499,7 +1499,7 @@
       "show_when": ["not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
       "actions": [
         ["big_text", "Matsumi Yuu: pon!"],
-        ["mark", [["discard", 1, ["others", "7z"]]]],
+        ["mark", [["discard", 1, ["current_turn", "7z"]]]],
         ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
         ["pon_marked_discard"],
         ["cancel_deferred_actions"],

@@ -82,6 +82,7 @@ defmodule RiichiAdvanced.GameState.Marking do
           end
         "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
         "others"            -> marking_player != seat
+        "current_turn"      -> seat == state.turn
         "7z"                -> tile == :"7z"
         "last_discard"      ->
           case source do
