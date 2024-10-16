@@ -1363,7 +1363,12 @@
       "display_name": "Swap a discard with same suit in hand",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
-        ["big_text", "Atarashi Ako: swap!"], ["unset_status", "just_called"], ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]], ["swap_marked_hand_and_discard"], ["noop"],
+        ["big_text", "Atarashi Ako: swap!"],
+        ["unset_status", "just_called"],
+        ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]],
+        ["push_message", "swapped a tile in hand with a same-suit discard (Atarashi Ako)"],
+        ["swap_marked_hand_and_discard"],
+        ["noop"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]
     },
@@ -1409,14 +1414,23 @@
         {"name": "status", "opts": ["choe-myeonghwa"]}
       ],
       "actions": [
-        ["big_text", "Choe Myeonghwa: swap!"], ["unset_status", "just_called"], ["mark", [["hand", 1, []], ["discard", 1, ["last_discard"]]]], ["swap_marked_hand_and_discard"], ["advance_turn"],
+        ["big_text", "Choe Myeonghwa: swap!"],
+        ["unset_status", "just_called"],
+        ["mark", [["hand", 1, []], ["discard", 1, ["last_discard"]]]],
+        ["push_message", "swapped a tile in hand with the last discard (Choe Myeonghwa)"],
+        ["swap_marked_hand_and_discard"],
+        ["advance_turn"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]
     },
     "haramura_nodoka": {
       "display_name": "Discard facedown",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}, {"name": "status", "opts": ["haramura-nodoka"]}, "has_draw", "not_just_discarded"],
-      "actions": [["big_text", "Haramura Nodoka: discard!"], ["set_status", "haramura-nodoka_exhausted", "discard_facedown"]]
+      "actions": [
+        ["big_text", "Haramura Nodoka: discard!"],
+        ["set_status", "haramura-nodoka_exhausted", "discard_facedown"],
+        ["push_message", "discarded facedown (Haramura Nodoka)"]
+      ]
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
@@ -1435,6 +1449,7 @@
       "actions": [
         ["big_text", "Inazuma Riichi"],
         ["set_status", "inazuma_riichi", "just_reached", "ippatsu"],
+        ["push_message", "declared inazuma riichi"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
           ["add_score", -5000],
@@ -1455,6 +1470,7 @@
         ["big_text", "Kataoka Yuuki: mulligan!"],
         ["set_status", "kataoka-yuuki_exhausted"],
         ["mark", [["hand", 4, []]]],
+        ["push_message", "added four tiles from hand to the end of the live wall, before drawing four more tiles (Kataoka Yuuki)"],
         ["extend_live_wall_with_marked"],
         ["draw", 4]
       ],
@@ -1467,6 +1483,7 @@
         ["big_text", "Matano Seiko: set aside!"],
         ["unset_status", "pon"],
         ["mark", [["discard", 1, ["match_called_tile"]]]],
+        ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
         ["set_aside_marked"]
       ],
       "unskippable": true
@@ -1483,6 +1500,7 @@
       "actions": [
         ["big_text", "Matsumi Yuu: pon!"],
         ["mark", [["discard", 1, ["others", "7z"]]]],
+        ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
         ["pon_marked_discard"],
         ["cancel_deferred_actions"],
         ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
@@ -1497,6 +1515,7 @@
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted"],
         ["mark", [["hand", 2, []]], [["draw", 2]]],
+        ["push_message", "drew two tiles and added two tiles from hand at the end of the dead wall (Nanpo Kazue)"],
         ["extend_dead_wall_with_marked"]
       ],
       "unskippable": true
@@ -1508,6 +1527,7 @@
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted2"],
         ["mark", [["hand", 2, []]], [["draw", 2]]],
+        ["push_message", "drew two tiles and added two tiles from hand at the end of the dead wall (Nanpo Kazue)"],
         ["extend_dead_wall_with_marked"]
       ]
     },
@@ -1519,6 +1539,7 @@
         ["set_status", "onjouji-toki_exhausted", "onjouji-toki_drew"],
         ["draw"],
         ["set_aside_draw"],
+        ["push_message", "drew and set aside an extra tile (Onjouji Toki)"],
         ["draw"]
       ],
       "unskippable": true
@@ -1529,6 +1550,7 @@
       "actions": [
         ["big_text", "Onjouji Toki: draw!"],
         ["draw_from_aside"],
+        ["push_message", "drew the tile they set aside (Onjouji Toki)"],
         ["set_status", "onjouji-toki_drew"]
       ],
       "unskippable": true
@@ -1549,13 +1571,18 @@
         ["big_text", "Onjouji Toki: swap!"],
         ["mark", [["hand", 1, []]]],
         ["swap_marked_with_aside"],
+        ["push_message", "swapped a tile from hand with the tile they set aside (Onjouji Toki)"],
         ["noop"]
       ]
     },
     "sawamura_tomoki": {
       "display_name": "Discard facedown",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discard_facedown"]}, {"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "others_status", "opts": ["ippatsu"]}, "has_draw", "not_just_discarded"],
-      "actions": [["big_text", "Sawamura Tomoki: discard!"], ["set_status", "discard_facedown"]]
+      "actions": [
+        ["big_text", "Sawamura Tomoki: discard!"],
+        ["set_status", "discard_facedown"],
+        ["push_message", "discarded facedown after being threatened by ippatsu (Sawamura Tomoki)"]
+      ]
     },
     "shibuya_takami": {
       "display_name": "Set aside a discard as next draw",
@@ -1565,6 +1592,7 @@
         ["unset_status", "about_to_draw"],
         ["mark", [["discard", 1, ["self"]]]],
         ["set_aside_marked"],
+        ["push_message", "set aside one of their discards as their next draw (Shibuya Takami)"],
         ["draw_from_aside"],
         ["tag_drawn_tile", "no_discard"]
       ]
@@ -1572,7 +1600,11 @@
     "takimi_haru": {
       "display_name": "Discard facedown",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discard_facedown"]}, {"name": "status", "opts": ["takimi-haru", "chii"]}, "not_just_discarded"],
-      "actions": [["big_text", "Takimi Haru: discard!"], ["set_status", "discard_facedown"]]
+      "actions": [
+        ["big_text", "Takimi Haru: discard!"],
+        ["set_status", "discard_facedown"],
+        ["push_message", "discarded facedown after calling chii (Takimi Haru)"]
+      ]
     },
     "amae_koromo": {
       "display_name": "Move haitei tile from live wall to dead wall",
@@ -1585,6 +1617,7 @@
       "actions": [
         ["big_text", "Amae-Koromo: shift!"],
         ["shift_dead_wall_index", 1],
+        ["push_message", "shifted a tile from the end of the live wall to the start of the dead wall (Amae Koromo)"],
         ["advance_turn"]
       ]
     },
@@ -1601,6 +1634,7 @@
       "actions": [
         ["big_text", "Amae-Koromo: shift 2!"],
         ["shift_dead_wall_index", 2],
+        ["push_message", "shifted two tiles from the end of the live wall to the start of the dead wall (Amae Koromo)"],
         ["advance_turn"]
       ]
     },
@@ -1778,6 +1812,7 @@
       "actions": [
         ["big_text", "Riichi"],
         ["set_status", "riichi", "just_reached", "ippatsu"],
+        ["push_message", "declared riichi"],
         ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
