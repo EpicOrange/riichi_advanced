@@ -260,6 +260,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           end
 
           honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
+          honba_payment = if "triple_noten_payments" in state.players[winner.seat].status do honba_payment * 3 else honba_payment end
 
           # calculate some parameters that change if pao exists
           {delta_scores, basic_score, payer, direct_hit} =
