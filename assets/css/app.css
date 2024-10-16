@@ -638,7 +638,7 @@ div.tile.\31 \36 t { background-position-y: calc(-136 * var(--tile-size) - var(-
 div.tile.\31 \37 t { background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \38 t { background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \39 t { background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 x { visibility: hidden; } /* blank space */
+div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.inactive {
   opacity: 0.6;
 }

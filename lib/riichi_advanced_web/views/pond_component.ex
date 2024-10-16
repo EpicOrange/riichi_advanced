@@ -18,7 +18,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
     ~H"""
     <div class={[@id, @highlight? && "highlight"]}>
       <%= if not Enum.empty?(@marking) do %>
-        <%= for {tile, i} <- prepare_pond(@pond, @saki) do %>
+        <%= for {tile, i} <- prepare_pond(@pond, @marking) do %>
           <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
             <div class={["tile", Utils.strip_attrs(tile), "markable", @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
@@ -37,7 +37,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
   end
 
   def prepare_pond(pond, _saki) do
-    # need to pass in the saki arg, so the pond updates when saki updates
+    # need to pass in the marking arg, so the pond updates when marking updates
     Enum.with_index(pond)
   end
 

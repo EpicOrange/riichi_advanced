@@ -1155,7 +1155,8 @@
     [["any"], [[{"name": "status_missing", "opts": ["riichi", "just_reached"]}, {"name": "unneeded_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]]],
     [["any"], [["not_just_called", [{"name": "last_called_tile_matches", "opts": ["not_same"]}, {"name": "last_called_tile_matches", "opts": ["not_kuikae"]}]]]],
     [["any"], [{"name": "not_tagged", "opts": ["tile", "no_discard"]}]],
-    [["any"], [[{"name": "not_status", "opts": ["amae-koromo"]}, "not_just_discarded"]]]
+    [["any"], [[{"name": "not_status", "opts": ["amae-koromo"]}, "not_just_discarded"]]],
+    [["any"], [{"name": "not_status", "opts": ["matano-seiko", "pon"]}]]
     // [["any"], [["has_draw", {"name": "status", "opts": ["just_called"]}]]]
   ],
   "before_turn_change": {
@@ -1362,7 +1363,7 @@
       "display_name": "Swap a discard with same suit in hand",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
-        ["big_text", "Atarashi Ako: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_same_suit_discard"], ["noop"],
+        ["big_text", "Atarashi Ako: swap!"], ["unset_status", "just_called"], ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]], ["swap_marked_hand_and_discard"], ["noop"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]
     },
@@ -1408,7 +1409,7 @@
         {"name": "status", "opts": ["choe-myeonghwa"]}
       ],
       "actions": [
-        ["big_text", "Choe Myeonghwa: swap!"], ["unset_status", "just_called"], ["swap_hand_tile_with_last_discard"], ["advance_turn"],
+        ["big_text", "Choe Myeonghwa: swap!"], ["unset_status", "just_called"], ["mark", [["hand", 1, []], ["discard", 1, ["last_discard"]]]], ["swap_marked_hand_and_discard"], ["advance_turn"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ]
     },
@@ -1448,53 +1449,66 @@
       ]
     },
     "kataoka_yuuki": {
-      "display_name": "Choose 4 tiles to place at the end of the live wall",
+      "display_name": "Place 4 tiles at the end of the live wall (last selection is haitei)",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "kataoka-yuuki_exhausted"]}, {"name": "status", "opts": ["kataoka-yuuki"]}, {"name": "round_wind_is", "opts": ["east"]}],
       "actions": [
         ["big_text", "Kataoka Yuuki: mulligan!"],
         ["set_status", "kataoka-yuuki_exhausted"],
-        ["place_4_tiles_at_end_of_live_wall"],
+        ["mark", [["hand", 4, []]]],
+        ["extend_live_wall_with_marked"],
         ["draw", 4]
       ],
       "unskippable": true
     },
-    "matano_seiko": {
+    "matano_seiko_1": {
       "display_name": "Set aside 4th tile from discards",
       "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
       "actions": [
         ["big_text", "Matano Seiko: set aside!"],
         ["unset_status", "pon"],
-        ["set_aside_discard_matching_called_tile"]
-      ]
+        ["mark", [["discard", 1, ["match_called_tile"]]]],
+        ["set_aside_marked"]
+      ],
+      "unskippable": true
+    },
+    "matano_seiko_2": {
+      "display_name": "Skip",
+      "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
+      "actions": [["unset_status", "pon"]],
+      "unskippable": true
     },
     "matsumi_yuu": {
-      "display_name": "Pon discarded red dragon",
-      "show_when": ["not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["all_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
+      "display_name": "Pon red dragon with priority",
+      "show_when": ["not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
       "actions": [
         ["big_text", "Matsumi Yuu: pon!"],
-        ["pon_discarded_red_dragon"],
-        ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
+        ["mark", [["discard", 1, ["others", "7z"]]]],
+        ["pon_marked_discard"],
+        ["cancel_deferred_actions"],
+        ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ],
       "precedence_over": ["choe_myeonghwa", "chii", "mase_yuuko", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
     "nanpo_kazue_nonskippable": {
-      "display_name": "Choose 2 tiles to place at the end of the dead wall",
+      "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted"],
-        ["draw_and_place_2_tiles_at_end_of_dead_wall"]
+        ["mark", [["hand", 2, []]], [["draw", 2]]],
+        ["extend_dead_wall_with_marked"]
       ],
       "unskippable": true
     },
     "nanpo_kazue_skippable": {
-      "display_name": "Choose 2 tiles to place at the end of the dead wall",
+      "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted2"],
-        ["draw_and_place_2_tiles_at_end_of_dead_wall"]
+        ["mark", [["hand", 2, []]], [["draw", 2]]],
+        ["extend_dead_wall_with_marked"]
       ]
     },
     "onjouji_toki_start": {
@@ -1533,7 +1547,8 @@
       "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
-        ["swap_tile_with_aside"],
+        ["mark", [["hand", 1, []]]],
+        ["swap_marked_with_aside"],
         ["noop"]
       ]
     },
@@ -1546,10 +1561,11 @@
       "display_name": "Set aside a discard as next draw",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
       "actions": [
-        ["big_text", "Shibuya Takami: draw!"],
+        ["big_text", "Shibuya Takami: set aside!"],
         ["unset_status", "about_to_draw"],
-        ["set_aside_own_discard"],
-        ["draw"],
+        ["mark", [["discard", 1, ["self"]]]],
+        ["set_aside_marked"],
+        ["draw_from_aside"],
         ["tag_drawn_tile", "no_discard"]
       ]
     },
@@ -1600,7 +1616,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["set_status", "chii"],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
@@ -1619,7 +1635,7 @@
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
-        ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
+        ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
@@ -1638,7 +1654,7 @@
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
-        ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -1686,7 +1702,7 @@
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
-        ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"],
+        ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -1714,7 +1730,7 @@
       "upgrades": "pon",
       "show_when": ["our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
-        ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status_all", "just_called"], ["set_status_all", "call_made"],
+        ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
@@ -1777,7 +1793,8 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "status_missing", "opts": ["furiten", "just_reached", "tried_to_ron"]},
+        {"name": "status_missing", "opts": ["furiten", "just_reached"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "someone_else_just_discarded",
         "last_discard_exists",
         [
@@ -1853,6 +1870,7 @@
         "not_our_turn",
         {"name": "not_status", "opts": ["furiten"]},
         {"name": "not_status", "opts": ["just_reached"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},

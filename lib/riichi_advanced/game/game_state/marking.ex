@@ -81,8 +81,20 @@ defmodule RiichiAdvanced.GameState.Marking do
               true
           end
         "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
+        "others"            -> marking_player != seat
         "7z"                -> tile == :"7z"
-        "self"              -> seat == state.marking.marking_player
+        "last_discard"      ->
+          case source do
+            :hand    -> false
+            :discard ->
+              last_discard_action = get_last_discard_action(state)
+              if last_discard_action != nil do
+                seat_matches = seat == last_discard_action.seat
+                index_matches = index == length(state.players[seat].pond) - 1
+                seat_matches && index_matches
+              else false end
+          end
+        "self"              -> seat == marking_player
         _                   ->
           GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
           true

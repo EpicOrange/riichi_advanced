@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
   import RiichiAdvanced.GameState
 
   def to_buttons(state, button_choices) do
-    buttons = Map.keys(button_choices)
+    buttons = Map.keys(button_choices) |> Enum.sort()
     unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
     if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end
   end
@@ -15,22 +15,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
     actions = button["actions"]
     # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
     # check if a call action exists, if it's a call and multiple call choices are available
-    call_actions = ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"]
-    mark_actions = [
-      "swap_hand_tile_with_same_suit_discard",
-      "swap_hand_tile_with_last_discard",
-      "place_4_tiles_at_end_of_live_wall",
-      "set_aside_discard_matching_called_tile",
-      "pon_discarded_red_dragon",
-      "draw_and_place_2_tiles_at_end_of_dead_wall",
-      "set_aside_own_discard",
-      "swap_tile_with_aside",
-      "charleston_left",
-      "charleston_across",
-      "charleston_right"
-    ]
     cond do
-      Enum.any?(actions, fn [action | _opts] -> action in call_actions end) ->
+      Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end) ->
         # call button choices logic
         # if there is a call action, check if there are multiple call choices
         is_call = Enum.any?(actions, fn [action | _opts] -> action == "call" end)
@@ -77,19 +63,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
           end |> Map.new()
         else call_choices end
         {state, {:call, call_choices}}
-      Enum.any?(actions, fn [action | _opts] -> action in mark_actions end) ->
-        mark_spec = cond do
-          Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_same_suit_discard" end)      -> [{"hand", 1, ["match_suit"]}, {"discard", 1, ["match_suit"]}]
-          Enum.any?(actions, fn [action | _opts] -> action == "swap_hand_tile_with_last_discard" end)           -> [{"hand", 1, []}]
-          Enum.any?(actions, fn [action | _opts] -> action == "place_4_tiles_at_end_of_live_wall" end)          -> [{"hand", 4, []}]
-          Enum.any?(actions, fn [action | _opts] -> action == "set_aside_discard_matching_called_tile" end)     -> [{"discard", 1, ["match_called_tile"]}]
-          Enum.any?(actions, fn [action | _opts] -> action == "pon_discarded_red_dragon" end)                   -> [{"discard", 1, ["7z"]}]
-          Enum.any?(actions, fn [action | _opts] -> action == "draw_and_place_2_tiles_at_end_of_dead_wall" end) -> [{"hand", 2, []}]
-          Enum.any?(actions, fn [action | _opts] -> action == "set_aside_own_discard" end)                      -> [{"discard", 1, ["self"]}]
-          Enum.any?(actions, fn [action | _opts] -> action == "swap_tile_with_aside" end)                       -> [{"hand", 1, []}]
-          Enum.any?(actions, fn [action | _opts] -> action in ["charleston_left", "charleston_across", "charleston_right"] end) -> [{"hand", 3, []}]
-        end
-        {state, {:mark, mark_spec}}
+      Enum.any?(actions, fn [action | _opts] -> action == "mark" end) ->
+        [_ | opts] = Enum.filter(actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
+        mark_spec = Enum.at(opts, 0, []) |> Enum.map(fn [target, needed, restrictions] -> {target, needed, restrictions} end)
+        {state, {:mark, mark_spec, Enum.at(opts, 1, [])}}
       true -> {state, nil}
     end
   end

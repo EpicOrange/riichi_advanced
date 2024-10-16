@@ -417,16 +417,6 @@ Other:
 - `["ite", cond, actions1, actions2]`: If `cond` evaluates to true, run `actions1`, otherwise run `actions2`.
 - `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player.
 - `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player.
-- Hardcoded actions that involve selecting tiles (used in sakicards):
-  + `["swap_hand_tile_with_same_suit_discard"]`
-  + `["swap_hand_tile_with_last_discard"]`
-  + `["place_4_tiles_at_end_of_live_wall"]`
-  + `["set_aside_discard_matching_called_tile"]`
-  + `["set_aside_own_discard"]`
-  + `["pon_discarded_red_dragon"]`
-  + `["draw_and_place_2_tiles_at_end_of_dead_wall"]`
-  + `["about_to_draw"]`: no-op
-  + `["about_to_ron"]`: no-op
 - `["set_tile_alias", from, to]`: Assigns all tiles in `from` to tiles in `to` for the current player. Basically if `from` is a single tile, then that tile becomes a joker whose possible values are the tiles in `to`, and this only applies to the current player.
 - `["set_tile_alias_all", from, to]`: Same, but applies this assignment to all players.
 - `["set_tile_ordering", [tile1, tile2, ...]]`: Asserts that `tile1` comes after `tile2` and so on. Applies only to the current player.
@@ -436,16 +426,24 @@ Other:
 - `["convert_last_discard", tile]`: Turn the last discard into the given tile.
 - `["set_aside_draw"]`: Set aside the drawn tile.
 - `["draw_from_aside"]`: Draw a tile from the tiles set aside.
-- `["swap_tile_with_aside"]`: Swap a selected tile with the first tile set aside.
-- `["charleston_left"]`: Select and pass three tiles left.
-- `["charleston_across"]`: Select and pass three tiles across.
-- `["charleston_right"]`: Select and pass three tiles right.
 - `["shift_dead_wall_index", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
 - `["add_counter", counter_name, amount or spec, ...opts]`: Add `amount` to the current player's counter `counter_name`. In place of `amount` you can also put one of the following strings followed by some options:
   + `"count_matches", to_match, [match_spec1, match_spec2, ...]` Counts the number of times the given match specs matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
 - `["add_attr_last_discard", attr1, attr2, ...]`: Add the given attributes to the last discard
 - `["add_attr_drawn_tile", attr1, attr2, ...]`: Add the given attributes to all drawn tiles for the current player.
 - `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
+- `["mark", mark_spec, pre_mark_actions]`: First runs the `pre_mark_actions` before asking the player to mark a tile. Like `"call"` this happens before any of the actions in the current action list, so it doesn't matter where you put the mark action. For examples of `mark_spec` look at example usages in the `saki.json` ruleset.
+- `["swap_marked_hand_and_discard"]` Swap the first marked hand tile with the first marked discard tile. Must be preceded by a `"mark"` action that marks a hand tile and a discard tile.
+- `["extend_live_wall_with_marked"]` Add all marked hand tiles to the end of the live wall. Must be preceded by a `"mark"` action that marks a hand tile.
+- `["extend_dead_wall_with_marked"]` Add all marked hand tiles to the end of the dead wall. Must be preceded by a `"mark"` action that marks a hand tile.
+- `["set_aside_marked"]` Set aside the marked discard. Must be preceded by a `"mark"` action that marks a discard.
+- `["pon_marked_discard"]` Calls pon on the marked discard. Must be preceded by a `"mark"` action that marks a discard.
+- `["swap_marked_with_aside"]`: Swap the first marked hand tile with the first aside tile. Must be preceded by a `"mark"` action that marks a hand tile.
+- `["charleston_left"]`: Select and pass three tiles left. Must be preceded by a `"mark"` action that marks 3 hand tiles.
+- `["charleston_across"]`: Select and pass three tiles across. Must be preceded by a `"mark"` action that marks 3 hand tiles.
+- `["charleston_right"]`: Select and pass three tiles right. Must be preceded by a `"mark"` action that marks 3 hand tiles.
+
+Every unrecognized action is a no-op.
 
 # Conditions
 

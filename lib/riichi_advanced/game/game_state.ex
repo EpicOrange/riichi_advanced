@@ -945,6 +945,7 @@ defmodule RiichiAdvanced.GameState do
             [{hand ++ [winning_tile], calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
+          "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
           _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()
