@@ -1503,7 +1503,8 @@
         ["big_text", "Onjouji Toki: set aside!"],
         ["set_status", "onjouji-toki_exhausted", "onjouji-toki_drew"],
         ["draw"],
-        ["set_aside_draw"]
+        ["set_aside_draw"],
+        ["draw"]
       ],
       "unskippable": true
     },
@@ -1528,7 +1529,7 @@
     },
     "onjouji_toki_swap": {
       "display_name": "Swap tile with aside",
-      "show_when": ["our_turn", "not_just_discarded", {"name": "status", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
         ["swap_tile_with_aside"],
@@ -1677,6 +1678,10 @@
           {"name": "not_status", "opts": ["nanpo-kazue"]},
           {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
         ],
+        [
+          {"name": "not_status", "opts": ["onjouji-toki"]},
+          {"name": "status", "opts": ["onjouji-toki_exhausted"]}
+        ],
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -1732,7 +1737,8 @@
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
-        "has_draw",
+        "not_just_discarded",
+        "not_just_called",
         {"name": "status_missing", "opts": ["riichi", "inazuma_riichi"]},
         {"name": "has_score", "opts": [1000]},
         "next_draw_possible",
@@ -1745,6 +1751,10 @@
         [
           {"name": "not_status", "opts": ["nanpo-kazue"]},
           {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
+        ],
+        [
+          {"name": "not_status", "opts": ["onjouji-toki"]},
+          {"name": "status", "opts": ["onjouji-toki_exhausted"]}
         ]
       ],
       "actions": [
@@ -1961,6 +1971,10 @@
         [
           {"name": "not_status", "opts": ["nanpo-kazue"]},
           {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
+        ],
+        [
+          {"name": "not_status", "opts": ["onjouji-toki"]},
+          {"name": "status", "opts": ["onjouji-toki_exhausted"]}
         ]
       ],
       "actions": [
