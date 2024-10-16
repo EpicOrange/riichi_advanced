@@ -402,7 +402,9 @@ defmodule RiichiAdvanced.GameState do
       %{text: " on "},
       Utils.pt(winning_tile),
       %{text: " with hand "}
-    ] ++ Utils.ph(Utils.sort_tiles(state.players[seat].hand)))
+    ] ++ Utils.ph(state.players[seat].hand |> Utils.sort_tiles())
+      ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
+    )
 
     state = if Map.has_key?(state.rules, "score_calculation") do
         if Map.has_key?(state.rules["score_calculation"], "method") do
@@ -1051,8 +1053,8 @@ defmodule RiichiAdvanced.GameState do
       "winning_dora_count"       ->
         dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
         num = Enum.at(opts, 1, 1)
-        dora = Map.get(state.rules["dora_indicators"], Atom.to_string(dora_indicator), [])
-        Enum.count(cxt_player.winning_hand, fn tile -> Atom.to_string(tile) in dora end) == num
+        dora = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), [])
+        Enum.count(cxt_player.winning_hand, fn tile -> Utils.tile_to_string(tile) in dora end) == num
       "match"                    -> 
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
