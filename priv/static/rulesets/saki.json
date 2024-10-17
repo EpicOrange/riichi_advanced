@@ -14,6 +14,7 @@
     "anetai-toyone",
     "arakawa-kei",
     "atago-hiroe",
+    "atago-kinue",
     "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
@@ -1194,6 +1195,8 @@
   "play_restrictions": [
     [["any"], ["not_all_saki_cards_drafted"]],
     [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
+    [["any"], [{"name": "status", "opts": ["atago_kinue_aside_waits"]}, {"name": "status_missing", "opts": ["just_changed_atago_kinue_aside_waits"]}, "not_is_drawn_tile"]],
+    [["any"], [{"name": "status", "opts": ["atago_kinue_aside_waits", "just_changed_atago_kinue_aside_waits"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["kakura-kurumi"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached", "kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "needed_for_hand", "opts": ["kakura_kurumi_tenpai"]}]],
     [["any"], ["just_called", {"name": "status_missing", "opts": ["anetai-toyone"]}, {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
@@ -1209,7 +1212,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn", "onjouji-toki_drew"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn", "onjouji-toki_drew"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -1353,7 +1356,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "call_made", "chii", "pon", "kan", "nagashi"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi"],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
                 ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
                ]
@@ -1376,6 +1379,11 @@
                 ],
                 ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
                 ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
+                ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+                ["when_anyone", [{"name": "status", "opts": ["atago-kinue"]}, "not_no_tiles_remaining"], [
+                  ["draw_aside"],
+                  ["push_message", "drew a tile aside (Atago Kinue)"]
+                ]],
                 ["when", [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}], [
                   ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
                   ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
@@ -1800,7 +1808,7 @@
         "not_no_tiles_remaining"
       ],
       "actions": [
-        ["big_text", "Amae-Koromo: shift!"],
+        ["big_text", "Amae Koromo: shift!"],
         ["shift_dead_wall_index", 1],
         ["push_message", "shifted a tile from the end of the live wall to the start of the dead wall (Amae Koromo)"],
         ["advance_turn"]
@@ -1817,10 +1825,32 @@
         {"name": "tiles_remaining", "opts": [2]}
       ],
       "actions": [
-        ["big_text", "Amae-Koromo: shift 2!"],
+        ["big_text", "Amae Koromo: shift 2!"],
         ["shift_dead_wall_index", 2],
         ["push_message", "shifted two tiles from the end of the live wall to the start of the dead wall (Amae Koromo)"],
         ["advance_turn"]
+      ]
+    },
+    "atago_kinue": {
+      "display_name": "Bet 1000 to change wait to aside tiles",
+      "show_when": ["our_turn",
+        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "status", "opts": ["atago-kinue", "tenpai"]},
+        {"name": "status_missing", "opts": ["atago_kinue_aside_waits"]},
+        "not_just_discarded",
+        "has_aside",
+        ["just_called", "has_draw"]
+      ],
+      "actions": [
+        ["big_text", "Atago Kinue: change waits!"],
+        ["bet_points", 1000],
+        ["set_status", "atago_kinue_aside_waits", "just_changed_atago_kinue_aside_waits"],
+        ["set_tile_alias", [["any", "discard"]], [
+          "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+          "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+          "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+          "1z", "2z", "3z", "4z", "5z", "6z", "7z"]],
+        ["push_message", "bet 1000 to wait on aside tiles (Atago Kinue)"]
       ]
     },
     "chii": {
@@ -1828,12 +1858,11 @@
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available"
       ],
       "actions": [
-        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["set_status", "chii"],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
@@ -1843,7 +1872,7 @@
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
@@ -1854,7 +1883,6 @@
       "actions": [
         ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
       "precedence_over": ["chii", "pon"]
@@ -1864,7 +1892,7 @@
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
+        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
@@ -1888,7 +1916,6 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
         ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -1940,7 +1967,6 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
         ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
@@ -1964,7 +1990,6 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
         ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
@@ -2032,12 +2057,14 @@
         {"name": "status_missing", "opts": ["just_reached"]},
         [
           {"name": "status_missing", "opts": ["furiten"]},
-          {"name": "status", "opts": ["atago-hiroe", "riichi"]}
+          {"name": "status", "opts": ["atago-hiroe", "riichi"]},
+          {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]}
         ],
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "someone_else_just_discarded",
         "last_discard_exists",
         [
+          {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
           {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
           [
             {"name": "status", "opts": ["miyanaga-saki"]},
@@ -2053,6 +2080,10 @@
             {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
             {"name": "match", "opts": [["hand", "calls", "last_discard"], ["kakura_kurumi_win"]]}
           ]
+        ],
+        [
+          {"name": "not_status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
+          {"name": "match", "opts": [["aside_unique", "last_discard"], [["nojoker", [["pair"], 1]]]]}
         ],
         [
           {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]},
@@ -2113,6 +2144,7 @@
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
+            {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ],
           [
@@ -2121,9 +2153,15 @@
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ],
           [
+            {"name": "last_call_is", "opts": ["kakan"]},
             {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["kakura_kurumi_win"]]}
           ]
+        ],
+        [
+          {"name": "not_status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
+          {"name": "last_call_is", "opts": ["kakan"]},
+          {"name": "match", "opts": [["aside_unique", "last_called_tile"], [["nojoker", [["pair"], 1]]]]}
         ],
         [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
@@ -2174,6 +2212,7 @@
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_status", "opts": ["just_reached"]},
         [
+          {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
           {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
           [
             {"name": "status", "opts": ["miyanaga-saki"]},
@@ -2187,8 +2226,12 @@
           ],
           [
             {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
-            {"name": "match", "opts": [["hand", "calls", "last_discard"], ["kakura_kurumi_win"]]}
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["kakura_kurumi_win"]]}
           ]
+        ],
+        [
+          {"name": "not_status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
+          {"name": "match", "opts": [["aside_unique", "draw"], [["nojoker", [["pair"], 1]]]]}
         ],
         {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]},
         [

@@ -931,6 +931,8 @@ defmodule RiichiAdvanced.GameState do
           "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
           "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
           "pond" -> [{hand ++ state.players[context.seat].pond, calls}]
+          "aside" -> [{hand ++ state.players[context.seat].aside, calls}]
+          "aside_unique" -> [{hand ++ Enum.uniq(state.players[context.seat].aside), calls}]
           "calls" -> [{hand, calls ++ state.players[context.seat].calls}]
           "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower"] end)}]
           "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]

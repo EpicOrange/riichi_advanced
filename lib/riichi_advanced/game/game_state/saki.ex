@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "anetai-toyone" => "Anetai Toyone",
     "arakawa-kei" => "Arakawa Kei",
     "atago-hiroe" => "Atago Hiroe",
+    "atago-kinue" => "Atago Kinue",
     "amae-koromo" => "Amae Koromo",
     "atarashi-ako" => "Atarashi Ako",
     "choe-myeonghwa" => "Choe Myeonghwa",

@@ -33,7 +33,7 @@ defmodule RiichiAdvanced.SMT do
       "(bvadd #{Enum.join(smt_tile_list, " ")})"
     else
       if ix in joker_ixs do "joker#{ix}" else
-        case encoding[tile] do
+        case encoding[Utils.strip_attrs(tile)] do
           nil ->
             # IO.puts("Unhandled smt tile #{inspect(tile)}")
             # IO.inspect(Process.info(self(), :current_stacktrace))

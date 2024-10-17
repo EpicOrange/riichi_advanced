@@ -522,10 +522,6 @@ defmodule Riichi do
     # - four tiles (no pair) remaining (headless)
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
-      if length(hand) == 1 do
-        IO.inspect({Enum.at(hand, 0), winning_tiles, Enum.at(hand, 0) in winning_tiles})
-        IO.inspect(tile_aliases)
-      end
       cond do
         length(hand) == 1 && Enum.any?(winning_tiles, &Utils.same_tile(&1, Enum.at(hand, 0), tile_aliases)) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
         length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]

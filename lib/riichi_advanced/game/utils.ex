@@ -232,4 +232,8 @@ defmodule Utils do
     name <> "-" <> ruleset <> "-" <> session_id
   end
 
+  def try_integer(value) do
+    if value == trunc(value) do trunc(value) else value end
+  end
+
 end
