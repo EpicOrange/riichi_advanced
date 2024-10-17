@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
         is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
         is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
         hand = Utils.add_attr(state.players[seat].hand, ["hand"])
-        draw = Utils.add_attr(state.players[seat].draw, ["hand", "draw"])
+        draw = Utils.add_attr(state.players[seat].draw, ["hand"])
         ordering = state.players[seat].tile_ordering
         ordering_r = state.players[seat].tile_ordering_r
         tile_aliases = state.players[seat].tile_aliases

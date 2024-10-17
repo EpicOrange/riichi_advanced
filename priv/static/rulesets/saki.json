@@ -30,7 +30,7 @@
     "senoo-kaori",
     "shibuya-takami",
     "takakamo-shizuno",
-    // "takei-hisa",
+    "takei-hisa",
     "takimi-haru",
     "toyouko-momoko"
   ],
@@ -1187,8 +1187,36 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
                 ["unset_status", "just_reached", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn", "onjouji-toki_drew"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+                  ["set_status", "tenpai"],
+                  ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
+                    ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
+                      ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
+                      ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
+                      ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
+                      ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
+                      ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
+                      ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
+                      ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
+                      ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
+                      ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
+                    ], [
+                      ["clear_tile_aliases"],
+                      ["set_tile_alias", ["0m"], ["5m"]],
+                      ["set_tile_alias", ["0p"], ["5p"]],
+                      ["set_tile_alias", ["0s"], ["5s"]]
+                    ]]
+                  ]]
+                ]],
+                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+                  ["unset_status", "tenpai"],
+                  ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
+                    ["clear_tile_aliases"],
+                    ["set_tile_alias", ["0m"], ["5m"]],
+                    ["set_tile_alias", ["0p"], ["5p"]],
+                    ["set_tile_alias", ["0s"], ["5s"]]
+                  ]]
+                ]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "match", "opts": [["hand", "calls", "any_discard"], ["kakura_kurumi_win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
@@ -1374,8 +1402,7 @@
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_3"]}], [["reveal_tile", "1x"]]],
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_4"]}], [["reveal_tile", "1x"]]],
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
-                  ]],
-                ["when", [{"name": "status", "opts": ["takei-hisa"]}, {"name": "has_hell_wait", "opts": ["pair_wait"]}], [["set_status", "double_score"]]]
+                  ]]
                ]
   },
   "before_abortive_draw": {
