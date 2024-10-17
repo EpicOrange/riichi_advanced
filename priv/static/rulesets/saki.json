@@ -10,6 +10,7 @@
   "enable_saki_cards": true,
   "saki_ver": "v13",
   "saki_deck": [
+    "aislinn-wishart",
     "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
@@ -1333,12 +1334,21 @@
     ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takami Haru: extra turn!"],
+      ["push_message", "took an extra turn by discarding 2 (Takimi Haru)"],
       ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
       ["change_turn", "kamicha"]
     ]]]],
     ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takami Haru: extra turn!"],
+      ["push_message", "took an extra turn by discarding 8 (Takimi Haru)"],
+      ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+      ["change_turn", "kamicha"]
+    ]]]],
+    ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Aislinn Wishart: extra turn!"],
+      ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"],
       ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
       ["change_turn", "kamicha"]
     ]]]]
@@ -1739,6 +1749,7 @@
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"
       ],
       "actions": [
+        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["set_status", "chii"],
@@ -1751,9 +1762,15 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        {"name": "status_missing", "opts": ["mase-yuuko"]}
+        {"name": "status_missing", "opts": ["mase-yuuko"]},
+        [
+          {"name": "not_others_status", "opts": ["aislinn-wishart"]},
+          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "has_score", "opts": [1500]}
+        ]
       ],
       "actions": [
+        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
@@ -1766,9 +1783,15 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        {"name": "status_missing", "opts": ["mase-yuuko"]}
+        {"name": "status_missing", "opts": ["mase-yuuko"]},
+        [
+          {"name": "not_others_status", "opts": ["aislinn-wishart"]},
+          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "has_score", "opts": [1500]}
+        ]
       ],
       "actions": [
+        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
         ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
@@ -2154,10 +2177,17 @@
         ["abortive_draw", "Kyushuu Kyuuhai"]
       ]
     },
-    "skip_extra_turn": {
+    "extra_turn": {
+      "display_name": "Take extra turn",
+      "show_when": ["our_turn", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "actions": [["set_status", "extra_turn_taken"], ["draw"]],
+      "unskippable": true
+    },
+    "extra_turn_skip": {
       "display_name": "Skip extra turn",
-      "show_when": ["our_turn", {"name": "status", "opts": ["extra_turn"]}],
-      "actions": [["unset_status", "extra_turn"], ["advance_turn"]]
+      "show_when": ["our_turn", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "actions": [["unset_status", "extra_turn"], ["advance_turn"]],
+      "unskippable": true
     }
   },
   "auto_buttons": {

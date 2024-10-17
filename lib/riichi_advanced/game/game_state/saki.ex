@@ -5,6 +5,8 @@ defmodule RiichiAdvanced.GameState.Saki do
   import RiichiAdvanced.GameState
 
   @card_names %{
+    "aislinn-wishart" => "Aislinn Wishart",
+    "amae-koromo" => "Amae Koromo",
     "atarashi-ako" => "Atarashi Ako",
     "choe-myeonghwa" => "Choe Myeonghwa",
     "haramura-nodoka" => "Haramura Nodoka",
@@ -32,7 +34,6 @@ defmodule RiichiAdvanced.GameState.Saki do
     "usuzawa-sae" => "Usuzawa Sae",
     "usuzumi-hatsumi" => "Usuzumi Hatsumi",
     "yumeno-maho" => "Yumeno Maho",
-    "amae-koromo" => "Amae Koromo",
   }
 
   def initialize_saki(state) do
