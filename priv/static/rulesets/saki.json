@@ -11,6 +11,7 @@
   "saki_ver": "v13",
   "saki_deck": [
     "aislinn-wishart",
+    "anetai-toyone",
     "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
@@ -683,7 +684,22 @@
     {
       "display_name": "Takimi Haru",
       "value": 1,
-      "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}]
+      "when": [{"name": "status", "opts": ["takimi-haru"]}, {"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}]
+    },
+    {
+      "display_name": "Chasing Riichi",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "status", "opts": ["chasing"]}]
+    },
+    {
+      "display_name": "Chasing Riichi",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "status", "opts": ["chasing"]}, {"name": "discarder_status", "opts": ["riichi"]}]
+    },
+    {
+      "display_name": "Shiiaru Raotai",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}]
     }
   ],
   "yakuman": [
@@ -1173,7 +1189,7 @@
     [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["kakura-kurumi"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached", "kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "needed_for_hand", "opts": ["kakura_kurumi_tenpai"]}]],
-    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
+    [["any"], ["just_called", {"name": "status_missing", "opts": ["anetai-toyone"]}, {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
     [["any"], [{"name": "has_attr", "opts": ["tile", "no_discard"]}]],
     [["any"], [{"name": "status", "opts": ["amae-koromo"]}, "just_discarded"]],
     [["any"], [{"name": "status", "opts": ["matano-seiko", "pon"]}]]
@@ -1309,7 +1325,18 @@
                   [["set_status", "furiten"]]
                 ],
                 ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
-                ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]]
+                ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
+                ["when", [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}], [
+                  ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
+                  ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
+                  ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
+                  ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
+                  ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
+                  ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
+                  ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
+                  ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
+                  ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
+                ]]
                ]
   },
   "play_effects": [
@@ -1921,7 +1948,9 @@
       ],
       "actions": [
         ["big_text", "Riichi"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["set_status", "riichi", "just_reached", "ippatsu"],
+        ["when", [{"name": "others_status", "opts": ["riichi"]}], [["set_status", "chasing"]]],
         ["push_message", "declared riichi"],
         ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
         ["when", [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}], [["set_status_all", "triple_noten_payments"]]],
