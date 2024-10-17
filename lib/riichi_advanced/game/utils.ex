@@ -85,9 +85,9 @@ defmodule Utils do
 
   def has_attr?(tile, attrs) do
     case tile do
-      {tile, existing_attrs} -> Enum.all?(attrs, & &1 in existing_attrs)
+      {_tile, existing_attrs} -> Enum.all?(attrs, & &1 in existing_attrs)
       _ when is_list(tile) -> Enum.any?(tile, &has_attr?(&1, attrs))
-      tile -> false
+      _ -> false
     end
   end
 
@@ -162,7 +162,7 @@ defmodule Utils do
   end
 
   # tile1 must have at least the attributes of tile2
-  def same_tile(tile1, tile2, tile_aliases) do
+  def same_tile(tile1, tile2, tile_aliases \\ %{}) do
     {tile1, attrs1} = to_attr_tile(tile1)
     {tile2, attrs2} = to_attr_tile(tile2)
     l1 = [tile1] ++ adjacent_jokers(tile1, tile_aliases)

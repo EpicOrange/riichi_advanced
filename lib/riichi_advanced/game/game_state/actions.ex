@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       tile = Utils.add_attr(tile, ["discard"])
 
       state = update_player(state, seat, &%Player{ &1 |
-        hand: List.delete_at(&1.hand ++ &1.draw, index),
+        hand: List.delete_at(&1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), index),
         pond: &1.pond ++ [tile],
         discards: &1.discards ++ [tile],
         draw: [],

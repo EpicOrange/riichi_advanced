@@ -1199,12 +1199,12 @@ defmodule RiichiAdvanced.GameState do
         ordering = cxt_player.tile_ordering
         ordering_r = cxt_player.tile_ordering_r
         tile_aliases = cxt_player.tile_aliases
-        pair_waits = Enum.flat_map(wait_definitions, fn definition -> Riichi.remove_match_definition(hand, calls, definition, ordering, ordering_r, tile_aliases) end)
+        waits = Enum.flat_map(wait_definitions, fn definition -> Riichi.remove_match_definition(hand, calls, definition, ordering, ordering_r, tile_aliases) end)
         |> Enum.flat_map(fn {hand, _calls} -> hand end)
         visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
         visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
-        ukeire = Riichi.count_ukeire(pair_waits, hand, visible_ponds, visible_calls, Map.get(context, :winning_tile, nil), tile_aliases)
-        # IO.puts("Pair waits: #{inspect(pair_waits)}, ukeire: #{inspect(ukeire)}")
+        ukeire = Riichi.count_ukeire(waits, hand, visible_ponds, visible_calls, Map.get(context, :winning_tile, nil), tile_aliases)
+        # IO.puts("Waits: #{inspect(waits)}, ukeire: #{inspect(ukeire)}")
         ukeire == 1
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)

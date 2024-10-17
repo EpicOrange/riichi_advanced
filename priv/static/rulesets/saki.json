@@ -12,6 +12,7 @@
   "saki_deck": [
     "aislinn-wishart",
     "anetai-toyone",
+    "arakawa-kei",
     "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
@@ -1406,7 +1407,8 @@
       ["when", [{"name": "status", "opts": ["miyanaga-teru"]}], [["set_status", "multiply_honba_with_han"]]],
       ["when", [{"name": "status", "opts": ["senoo-kaori"]}], [["set_tile_ordering", ["1z", "2z", "3z", "4z"]], ["set_tile_ordering", ["5z", "6z", "7z"]]]],
       ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_tile_ordering", ["9m", "1m"]], ["set_tile_ordering", ["9p", "1p"]], ["set_tile_ordering", ["9s", "1s"]]]],
-      ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}], [["set_tile_ordering", ["4z", "1z"]], ["set_tile_ordering", ["7z", "5z"]]]]
+      ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}], [["set_tile_ordering", ["4z", "1z"]], ["set_tile_ordering", ["7z", "5z"]]]],
+      ["when", [{"name": "status", "opts": ["arakawa-kei"]}], [["set_status_all", "use_arakawa_kei_scoring"]]]
     ]
   },
   "before_win": {

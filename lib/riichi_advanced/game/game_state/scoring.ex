@@ -259,8 +259,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
             {0, 0}
           end
 
-          honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
-          honba_payment = if "triple_noten_payments" in state.players[winner.seat].status do honba_payment * 3 else honba_payment end
+          winner_player = state.players[winner.seat]
+          honba_payment = if "multiply_honba_with_han" in winner_player.status do honba_payment * winner.points else honba_payment end
+          honba_payment = if "triple_noten_payments" in winner_player.status do honba_payment * 3 else honba_payment end
 
           # calculate some parameters that change if pao exists
           {delta_scores, basic_score, payer, direct_hit} =
@@ -283,7 +284,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               {delta_scores, winner.score, winner.payer, winner.payer != nil}
             end
 
-          if direct_hit do
+          delta_scores = if direct_hit do
             # either ron, or tsumo pao, or remaining ron pao payment
             delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
             delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
@@ -304,6 +305,37 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 delta_scores
             end
           end
+
+          # handle arakawa kei's scoring quirk
+          delta_scores = if "use_arakawa_kei_scoring" in winner_player.status do
+            hand = winner_player.hand
+            calls = winner_player.calls
+            win_definitions = translate_match_definitions(state, ["win"])
+            ordering = winner_player.tile_ordering
+            ordering_r = winner_player.tile_ordering_r
+            tile_aliases = winner_player.tile_aliases
+            visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
+            visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
+            visible_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &Riichi.call_to_tiles/1)
+            waits = Riichi.get_waits_and_ukeire(state.all_tiles, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+            if "arakawa-kei" in winner_player.status do
+              # everyone pays winner 100 points per live out
+              ukeire = waits |> Map.values() |> Enum.sum()
+              delta_scores
+              |> Map.new(fn {seat, score} -> {seat, score - 100 * ukeire} end)
+              |> Map.update!(winner.seat, & &1 + 400 * ukeire)
+            else
+              # winner pays arakawa kei 1000 points per waiting tile in her hand
+              {arakawa_kei_seat, arakawa_kei} = Enum.find(state.players, fn {_seat, player} -> "arakawa-kei" in player.status end)
+              waiting_tiles = Map.keys(waits)
+              num = Enum.count(arakawa_kei.hand, fn hand_tile -> Enum.any?(waiting_tiles, &Utils.same_tile(hand_tile, &1)) end)
+              delta_scores
+              |> Map.update!(winner.seat, & &1 - 1000 * num)
+              |> Map.update!(arakawa_kei_seat, & &1 + 1000 * num)
+            end
+          end
+
+          delta_scores
         end
       "hk" ->
         self_pick = winner.payer == nil

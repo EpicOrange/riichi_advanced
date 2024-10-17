@@ -7,6 +7,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   @card_names %{
     "aislinn-wishart" => "Aislinn Wishart",
     "anetai-toyone" => "Anetai Toyone",
+    "arakawa-kei" => "Arakawa Kei",
     "amae-koromo" => "Amae Koromo",
     "atarashi-ako" => "Atarashi Ako",
     "choe-myeonghwa" => "Choe Myeonghwa",
