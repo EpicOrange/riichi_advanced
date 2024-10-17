@@ -286,8 +286,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
           delta_scores = if direct_hit do
             # either ron, or tsumo pao, or remaining ron pao payment
-            delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
-            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
+            negate_tsumo_pao = winner.payer == nil && winner.pao_seat != nil && "atago_hiroe_no_tsumo_payment" in state.players[winner.pao_seat].status
+            delta_scores = if not negate_tsumo_pao do
+              delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
+              delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
+              delta_scores
+            else
+              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} is damaten, and immune to tsumo payments (Atago Hiroe)"}])
+              delta_scores
+            end
             delta_scores
           else
             # first give the winner their riichi sticks
@@ -300,6 +307,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
             for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
               delta_scores ->
                 payment = if payer == dealer_seat do oya_payment else ko_payment end
+                payment = if "atago_hiroe_no_tsumo_payment" in state.players[payer].status do
+                  push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} is damaten, and immune to tsumo payments (Atago Hiroe)"}])
+                  0
+                else payment end
                 delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
                 delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + honba_payment)
                 delta_scores
@@ -321,6 +332,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if "arakawa-kei" in winner_player.status do
               # everyone pays winner 100 points per live out
               ukeire = waits |> Map.values() |> Enum.sum()
+              push_message(state, [%{text: "Everybody pays player #{winner.seat} #{state.players[winner.seat].nickname} #{100 * ukeire} for #{ukeire} live outs (Arakawa Kei)"}])
               delta_scores
               |> Map.new(fn {seat, score} -> {seat, score - 100 * ukeire} end)
               |> Map.update!(winner.seat, & &1 + 400 * ukeire)
@@ -329,11 +341,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
               {arakawa_kei_seat, arakawa_kei} = Enum.find(state.players, fn {_seat, player} -> "arakawa-kei" in player.status end)
               waiting_tiles = Map.keys(waits)
               num = Enum.count(arakawa_kei.hand, fn hand_tile -> Enum.any?(waiting_tiles, &Utils.same_tile(hand_tile, &1)) end)
+              push_message(state, [%{text: "Winner pays player #{arakawa_kei_seat} #{state.players[arakawa_kei_seat].nickname} #{1000 * num} for having #{num} waits in hand (Arakawa Kei)"}])
               delta_scores
               |> Map.update!(winner.seat, & &1 - 1000 * num)
               |> Map.update!(arakawa_kei_seat, & &1 + 1000 * num)
             end
-          end
+          else delta_scores end
 
           delta_scores
         end

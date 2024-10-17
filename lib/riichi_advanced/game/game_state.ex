@@ -396,7 +396,7 @@ defmodule RiichiAdvanced.GameState do
     }
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
 
-    state = push_message(state, [
+    push_message(state, [
       %{text: "Player #{seat} #{state.players[seat].nickname} called "},
       %{bold: true, text: "#{String.downcase(winning_tile_text)}"},
       %{text: " on "},
@@ -605,7 +605,7 @@ defmodule RiichiAdvanced.GameState do
   def exhaustive_draw(state) do
     state = Map.put(state, :round_result, :draw)
 
-    state = push_message(state, [%{text: "Game ended by exhaustive draw"}])
+    push_message(state, [%{text: "Game ended by exhaustive draw"}])
 
     # run before_exhaustive_draw actions
     state = if Map.has_key?(state.rules, "before_exhaustive_draw") do
@@ -633,7 +633,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :round_result, :draw)
     IO.puts("Abort")
 
-    state = push_message(state, [%{text: "Game ended by abortive draw (#{draw_name})"}])
+    push_message(state, [%{text: "Game ended by abortive draw (#{draw_name})"}])
 
     # run before_abortive_draw actions
     state = if Map.has_key?(state.rules, "before_abortive_draw") do
@@ -1085,7 +1085,7 @@ defmodule RiichiAdvanced.GameState do
         placements = state.players
         |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)
         |> Enum.map(fn {seat, _player} -> seat end)
-        Enum.at(placements, Enum.at(opts, 0, 1) - 1) == context.seat
+        Enum.any?(opts, &Enum.at(placements, &1 - 1) == context.seat)
       "last_discard_matches_existing" -> 
         if last_discard_action != nil do
           tile = last_discard_action.tile
@@ -1267,7 +1267,6 @@ defmodule RiichiAdvanced.GameState do
       # IO.puts("Sending to #{inspect(messages_state)} the message #{inspect(message)}")
       GenServer.cast(messages_state, {:add_message, message})
     end
-    state
   end
 
   def push_messages(state, messages) do
@@ -1275,7 +1274,6 @@ defmodule RiichiAdvanced.GameState do
       # IO.puts("Sending to #{inspect(messages_state)} the messages #{inspect(messages)}")
       GenServer.cast(messages_state, {:add_messages, messages})
     end
-    state
   end
 
   def broadcast_state_change(state) do
@@ -1312,7 +1310,7 @@ defmodule RiichiAdvanced.GameState do
       else state end
 
       # tell everyone else
-      state = push_message(state, %{text: "Player #{socket.assigns.nickname} joined as #{seat}"})
+      push_message(state, %{text: "Player #{socket.assigns.nickname} joined as #{seat}"})
 
       # initialize the player
       state = Map.put(state, seat, socket.id)
@@ -1338,7 +1336,7 @@ defmodule RiichiAdvanced.GameState do
     IO.puts("Player #{seat} exited")
 
     # tell everyone else
-    state = push_message(state, %{text: "Player #{seat} #{state.players[seat].nickname} exited"})
+    push_message(state, %{text: "Player #{seat} #{state.players[seat].nickname} exited"})
 
     state = if Enum.all?([:east, :south, :west, :north], fn dir -> Map.get(state, dir) == nil || is_pid(Map.get(state, dir)) end) do
       # all players have left, shutdown
@@ -1441,7 +1439,7 @@ defmodule RiichiAdvanced.GameState do
     tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
     playable = is_playable?(state, seat, tile, tile_source)
     if not playable do
-      IO.puts("#{seat} tried to play an unplayable tile: #{tile} from #{tile_source}")
+      IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}} from #{tile_source}")
     end
     state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
       state = Actions.temp_disable_play_tile(state, seat)

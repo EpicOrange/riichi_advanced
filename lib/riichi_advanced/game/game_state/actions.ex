@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         last_discard: {tile, index}
       })
       state = update_action(state, seat, :discard, %{tile: tile})
-      state = push_message(state, [
+      push_message(state, [
         %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
         Utils.pt(tile)
       ])
@@ -202,7 +202,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
 
     # messages and log
-    state = if called_tile != nil do
+    if called_tile != nil do
       push_message(state, [
         %{text: "Player #{seat} #{state.players[seat].nickname} called "},
         %{bold: true, text: "#{call_name}"},
@@ -344,7 +344,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     marked_objects = state.marking[context.seat]
     state = case action do
       "noop"                  -> state
-      "push_message"          -> push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
+      "push_message"          ->
+        push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
+        state
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil))
       "call"                  -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
@@ -424,6 +426,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "random"                -> run_actions(state, [Enum.random(Enum.at(opts, 0, ["noop"]))], context)
       "when"                  -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
+      "unless"                -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
       "ite"                   -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
       "when_anyone"           ->
         for dir <- [:east, :south, :west, :north], check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do

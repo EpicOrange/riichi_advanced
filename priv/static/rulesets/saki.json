@@ -13,6 +13,7 @@
     "aislinn-wishart",
     "anetai-toyone",
     "arakawa-kei",
+    "atago-hiroe",
     "atarashi-ako",
     "choe-myeonghwa",
     "haramura-nodoka",
@@ -701,6 +702,11 @@
       "display_name": "Shiiaru Raotai",
       "value": 2,
       "when": [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}]
+    },
+    {
+      "display_name": "Furiten Tsumo",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["atago-hiroe", "riichi", "furiten"]}, "won_by_draw"]
     }
   ],
   "yakuman": [
@@ -1205,7 +1211,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
                 ["unset_status", "just_reached", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn", "onjouji-toki_drew"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+                ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
                   ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
                     ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
@@ -1226,13 +1232,49 @@
                     ]]
                   ]]
                 ]],
-                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+                ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["unset_status", "tenpai"],
-                  ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
+                  ["when", [{"name": "not_status_missing", "opts": ["takei-hisa", "atago-hiroe"]}], [
                     ["clear_tile_aliases"],
                     ["set_tile_alias", ["0m"], ["5m"]],
                     ["set_tile_alias", ["0p"], ["5p"]],
                     ["set_tile_alias", ["0s"], ["5s"]]
+                  ]]
+                ]],
+                ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [
+                  // check if our placement is not the same as the one we are tagged with
+                  ["unless", [[
+                    [{"name": "placement", "opts": [1]}, {"name": "status", "opts": ["1st_place"]}],
+                    [{"name": "placement", "opts": [2]}, {"name": "status", "opts": ["2nd_place"]}],
+                    [{"name": "placement", "opts": [3]}, {"name": "status", "opts": ["3rd_place"]}],
+                    [{"name": "placement", "opts": [4]}, {"name": "status", "opts": ["4th_place"]}]
+                  ]], [
+                    // tag with placement for future update checks
+                    ["unset_status", "1st_place", "2nd_place", "3rd_place", "4th_place"],
+                    ["when", [{"name": "placement", "opts": [1]}], [["push_message", "is 1st place"], ["set_status", "1st_place"]]],
+                    ["when", [{"name": "placement", "opts": [2]}], [["push_message", "is 2nd place"], ["set_status", "2nd_place"]]],
+                    ["when", [{"name": "placement", "opts": [3]}], [["push_message", "is 3rd place"], ["set_status", "3rd_place"]]],
+                    ["when", [{"name": "placement", "opts": [4]}], [["push_message", "is 4th place"], ["set_status", "4th_place"]]],
+                    // reset tile aliases
+                    ["clear_tile_aliases"],
+                    ["set_tile_alias", ["0m"], ["5m"]],
+                    ["set_tile_alias", ["0p"], ["5p"]],
+                    ["set_tile_alias", ["0s"], ["5s"]],
+                    ["when", [{"name": "placement", "opts": [2, 3, 4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "1st_place"]], [
+                      "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+                      "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+                      "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+                      "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+                    ["when", [{"name": "placement", "opts": [3, 4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "2nd_place"]], [
+                      "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+                      "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+                      "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+                      "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+                    ["when", [{"name": "placement", "opts": [4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "3rd_place"]], [
+                      "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+                      "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+                      "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+                      "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]]
                   ]]
                 ]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
@@ -1280,7 +1322,14 @@
                   ["set_status", "about_to_draw"],
                   ["about_to_draw"],
                   ["unset_status", "about_to_draw"],
-                  ["draw"]
+                  ["draw"],
+                  ["when", [{"name": "status", "opts": ["ippatsu"]}], [
+                    // for atago hiroe
+                    ["when", [{"name": "placement", "opts": [1]}], [["add_attr_drawn_tile", "1st_place"]]],
+                    ["when", [{"name": "placement", "opts": [2]}], [["add_attr_drawn_tile", "2nd_place"]]],
+                    ["when", [{"name": "placement", "opts": [3]}], [["add_attr_drawn_tile", "3rd_place"]]],
+                    ["add_attr_drawn_tile", "ippatsu"]
+                  ]]
                 ]],
                 ["when", ["no_tiles_remaining"], [["add_attr_drawn_tile", "haitei"]]],
                 ["when", [
@@ -1416,6 +1465,9 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["set_status", "riichi"]]],
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["ura_revealed"]}], [
                   ["set_status_all", "ura_revealed"],
@@ -1441,7 +1493,8 @@
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_3"]}], [["reveal_tile", "1x"]]],
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_4"]}], [["reveal_tile", "1x"]]],
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
-                  ]]
+                  ]],
+                ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [["set_status", "atago_hiroe_no_tsumo_payment"]]]
                ]
   },
   "before_abortive_draw": {
@@ -1963,6 +2016,12 @@
           ["pause", 1000],
           ["abortive_draw", "Suucha Riichi"]
         ]],
+        ["when", [{"name": "status", "opts": ["atago-hiroe"]}], [
+          ["clear_tile_aliases"],
+          ["set_tile_alias", ["0m"], ["5m"]],
+          ["set_tile_alias", ["0p"], ["5p"]],
+          ["set_tile_alias", ["0s"], ["5s"]]
+        ]],
         ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
       ]
     },
@@ -1970,7 +2029,11 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "status_missing", "opts": ["furiten", "just_reached"]},
+        {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "status_missing", "opts": ["furiten"]},
+          {"name": "status", "opts": ["atago-hiroe", "riichi"]}
+        ],
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "someone_else_just_discarded",
         "last_discard_exists",
@@ -2033,11 +2096,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-        ["win_by_discard"]
+        ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -2045,8 +2104,11 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "not_status", "opts": ["furiten"]},
-        {"name": "not_status", "opts": ["just_reached"]},
+        {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "status_missing", "opts": ["furiten"]},
+          {"name": "status", "opts": ["atago-hiroe", "riichi"]}
+        ],
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         [
           [
@@ -2101,11 +2163,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["about_to_ron"], ["reveal_hand"],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "last_called_tile"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-        ["win_by_call"]
+        ["big_text", "Ron"], ["pause", 1000], ["about_to_ron"], ["reveal_hand"], ["win_by_call"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -2183,11 +2241,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-        ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-        ["win_by_draw"]
+        ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },

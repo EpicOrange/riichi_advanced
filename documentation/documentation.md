@@ -414,6 +414,7 @@ Other:
 - `["press_button", button_id]`: Press a given button by id, does nothing if the button doesn't exist. Useful as an auto button.
 - `["random", [action1, action2, ...]]`: Run one of the given actions at random.
 - `["when", cond, actions]`: If `cond` evaluates to true, run the given actions.
+- `["unless", cond, actions]`: If `cond` evaluates to false, run the given actions.
 - `["ite", cond, actions1, actions2]`: If `cond` evaluates to true, run `actions1`, otherwise run `actions2`.
 - `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player.
 - `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player.
