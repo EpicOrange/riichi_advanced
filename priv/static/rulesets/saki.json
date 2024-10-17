@@ -1657,7 +1657,7 @@
       ]
     },
     "shibuya_takami": {
-      "display_name": "Set aside a discard as next draw",
+      "display_name": "Draw from your discards",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Shibuya Takami: set aside!"],
