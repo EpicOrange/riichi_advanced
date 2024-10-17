@@ -281,7 +281,7 @@ defmodule Riichi do
         hand = if from_hand do List.delete(hand, tile) else hand end
         for choice <- [tile] ++ Map.get(tile_mappings, tile, []), reduce: [] do
           choices ->
-            target_tiles = Enum.map(call_spec, &offset_tile(choice, &1, ordering, ordering_r))
+            target_tiles = Enum.map(call_spec, &offset_tile(Utils.strip_attrs(choice), &1, ordering, ordering_r))
             possible_removals = try_remove_all_tiles(hand, target_tiles, tile_aliases)
             choices ++ Enum.map(possible_removals, fn remaining -> hand -- remaining end)
         end |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end) |> Enum.uniq()
