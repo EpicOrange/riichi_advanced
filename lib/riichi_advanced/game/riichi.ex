@@ -514,9 +514,9 @@ defmodule Riichi do
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
       cond do
-        length(hand) == 1 && Enum.at(hand, 0) in winning_tiles -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
-        length(hand) == 2 && num_pairs == 1                    -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
-        length(hand) == 4 && num_pairs == 2                    ->
+        length(hand) == 1 && Enum.any?(winning_tiles, &Utils.same_tile(&1, Enum.at(hand, 0), tile_aliases)) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
+        length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
+        length(hand) == 4 && num_pairs == 2 ->
           [tile1, tile2] = Enum.uniq(hand)
           tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
@@ -531,6 +531,8 @@ defmodule Riichi do
         true                                                   -> []
       end
     end)
+
+    # IO.inspect(fus)
 
     fu = if Enum.empty?(fus) do 0 else Enum.max(fus) end
 
