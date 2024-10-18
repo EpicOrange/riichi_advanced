@@ -91,7 +91,7 @@ defmodule Riichi do
   end
 
   defp remove_exact_tile(hand, tile) do
-    ix = Enum.find_index(hand, &Utils.same_tile(&1, tile, %{}))
+    ix = Enum.find_index(hand, &Utils.same_tile(&1, tile))
     if ix != nil do List.delete_at(hand, ix) else hand end
   end
 
@@ -100,9 +100,11 @@ defmodule Riichi do
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, _initial) do
     # t = System.os_time(:millisecond)
     ret = for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
-      removed = remove_exact_tile(hand, t)
-      if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases, false) end
-    end |> Enum.concat()
+      hand
+      |> Enum.with_index()
+      |> Enum.filter(fn {hand_tile, _ix} -> Utils.same_tile(hand_tile, t) end)
+      |> Enum.flat_map(fn {_hand_tile, ix} -> try_remove_all_tiles(List.delete_at(hand, ix), tiles, tile_aliases, false) end)
+    end |> Enum.concat() |> Enum.uniq()
     # elapsed_time = System.os_time(:millisecond) - t
     # if initial && elapsed_time > 10 do
     #   IO.puts("try_remove_all_tiles: #{inspect(hand)} #{inspect(tile)} #{inspect(elapsed_time)} ms")
@@ -176,7 +178,7 @@ defmodule Riichi do
       is_binary(group) -> try_remove_call(hand, calls, group)
       true ->
         IO.puts("Unhandled group #{inspect(group)}")
-        []
+        [{hand, calls}]
     end
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do

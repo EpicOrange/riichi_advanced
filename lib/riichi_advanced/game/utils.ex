@@ -48,6 +48,7 @@ defmodule Utils do
   def to_tile(tile_spec) do
     case tile_spec do
       [tile_spec | attrs] -> {@to_tile[tile_spec], attrs}
+      %{"tile" => tile_spec, "attrs" => attrs} -> {@to_tile[tile_spec], attrs}
       _ -> @to_tile[tile_spec]
     end
   end

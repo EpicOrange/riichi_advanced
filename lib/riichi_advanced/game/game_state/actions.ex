@@ -615,6 +615,19 @@ defmodule RiichiAdvanced.GameState.Actions do
         # TODO generalize to add_attr
         state = update_player(state, context.seat, &%Player{ &1 | draw: Utils.add_attr(&1.draw, opts) })
         state
+      "add_attr_tile"   ->
+        # TODO generalize to add_attr
+        tile = Enum.at(opts, 0, :"1x") |> Utils.to_tile()
+        attrs = Enum.drop(opts, 1)
+        ix = Enum.find_index(state.players[context.seat].hand ++ state.players[context.seat].draw, fn t -> Utils.same_tile(t, tile) end)
+        hand_len = length(state.players[context.seat].hand)
+        cond do
+          ix == nil -> state
+          ix < hand_len ->
+            update_player(state, context.seat, &%Player{ &1 | hand: List.update_at(&1.hand, ix, fn t -> Utils.add_attr(t, attrs) end) })
+          true ->
+            update_player(state, context.seat, &%Player{ &1 | draw: List.update_at(&1.draw, ix - hand_len, fn t -> Utils.add_attr(t, attrs) end) })
+        end
       "remove_attr_all"   ->
         # TODO generalize to remove_attr
         state = update_player(state, context.seat, &%Player{ &1 | hand: Utils.remove_attr(&1.hand, opts), draw: Utils.remove_attr(&1.draw, opts), aside: Utils.remove_attr(&1.aside, opts) })

@@ -21,6 +21,7 @@
     "haramura-nodoka",
     "ikeda-kana",
     "inoue-jun",
+    "iwadate-yuan",
     "jindai-komaki",
     "amae-koromo",
     "kakura-kurumi",
@@ -236,6 +237,13 @@
   ],
   "一色三步高_definition": [
     [ "exhaustive", [[[[0,1,2],[1,2,3],[2,3,4]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
+  ],
+  "golden_chun_77z_win_definition": [
+    [ "exhaustive", [["chun_pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["chun_pair"], 1], [["pair"], 6] ]
+  ],
+  "golden_chun_777z_win_definition": [
+    [ "exhaustive", [["chun"], 1], [["pair"], 1], [["shuntsu", "koutsu"], 3] ]
   ],
   "yaku": [
     {
@@ -822,6 +830,24 @@
         {"name": "status", "opts": ["hao-huiyu"]},
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}
+      ]
+    },
+    {
+      "display_name": "Chun as Five",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["golden_chun"]},
+        [
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["7z"], -1]]]]},
+          [
+            {"name": "status", "opts": ["77z"]},
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
+          ],
+          [
+            {"name": "status", "opts": ["777z"]},
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
+          ]
+        ]
       ]
     }
   ],
@@ -1465,6 +1491,14 @@
                   ["about_to_draw"],
                   ["unset_status", "about_to_draw"],
                   ["draw_from_aside"]
+                ]],
+                ["when", [
+                  {"name": "status", "opts": ["iwadate-yuan"]},
+                  {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+                ], [
+                  ["remove_attr_all", "golden"],
+                  ["add_attr_tile", "7z", "golden"],
+                  ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
                 ]]
                ]
   },
@@ -1578,7 +1612,14 @@
       ["when", [{"name": "status", "opts": ["senoo-kaori"]}], [["set_tile_ordering", ["1z", "2z", "3z", "4z"]], ["set_tile_ordering", ["5z", "6z", "7z"]]]],
       ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_tile_ordering", ["9m", "1m"]], ["set_tile_ordering", ["9p", "1p"]], ["set_tile_ordering", ["9s", "1s"]]]],
       ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}], [["set_tile_ordering", ["4z", "1z"]], ["set_tile_ordering", ["7z", "5z"]]]],
-      ["when", [{"name": "status", "opts": ["arakawa-kei"]}], [["set_status_all", "use_arakawa_kei_scoring"]]]
+      ["when", [{"name": "status", "opts": ["arakawa-kei"]}], [["set_status_all", "use_arakawa_kei_scoring"]]],
+      ["when", [
+        {"name": "status", "opts": ["iwadate-yuan"]},
+        {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+      ], [
+        ["add_attr_tile", "7z", "golden"],
+        ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
+      ]]
     ]
   },
   "before_win": {
@@ -1586,9 +1627,12 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "last_discard"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1]]]]}], [["set_status", "golden_chun"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun_pair"], -1], [["chun"], 1]]]]}], [["set_status", "777z"]]],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["set_status", "riichi"]]],
                 ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["ura_revealed"]}], [
                   ["set_status_all", "ura_revealed"],
@@ -1971,6 +2015,7 @@
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available"
       ],
@@ -1992,6 +2037,7 @@
       "display_name": "Pon",
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
@@ -2019,6 +2065,7 @@
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
         "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
@@ -2059,10 +2106,13 @@
       "display_name": "Ankan",
       "call": [[0, 0, 0]],
       "call_style": {"self": ["1x", 0, 1, "1x"]},
-      "call_conditions": [[
-        {"name": "not_status", "opts": ["riichi"]},
-        {"name": "not_call_changes_waits", "opts": ["win"]}
-      ]],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]},
+        [
+          {"name": "not_status", "opts": ["riichi"]},
+          {"name": "not_call_changes_waits", "opts": ["win"]}
+        ]
+      ],
       "show_when": [
         "our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
         [
@@ -2108,6 +2158,7 @@
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": ["our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],

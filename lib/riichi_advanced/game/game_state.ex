@@ -948,6 +948,13 @@ defmodule RiichiAdvanced.GameState do
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
+          "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
+          "revealed_tiles" ->
+            revealed_tiles = for tile_spec <- state.revealed_tiles do
+              {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
+              tile
+            end
+            [{hand ++ revealed_tiles, calls}]
           _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()
