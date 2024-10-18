@@ -20,6 +20,7 @@
     "hao-huiyu",
     "haramura-nodoka",
     "ikeda-kana",
+    "inoue-jun",
     "jindai-komaki",
     "amae-koromo",
     "kakura-kurumi",
@@ -1326,7 +1327,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "extra_turn", "onjouji-toki_drew"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "inoue_jun_broke_ippatsu"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -1368,10 +1369,10 @@
                   ]], [
                     // tag with placement for future update checks
                     ["unset_status", "1st_place", "2nd_place", "3rd_place", "4th_place"],
-                    ["when", [{"name": "placement", "opts": [1]}], [["push_message", "is 1st place"], ["set_status", "1st_place"]]],
-                    ["when", [{"name": "placement", "opts": [2]}], [["push_message", "is 2nd place"], ["set_status", "2nd_place"]]],
-                    ["when", [{"name": "placement", "opts": [3]}], [["push_message", "is 3rd place"], ["set_status", "3rd_place"]]],
-                    ["when", [{"name": "placement", "opts": [4]}], [["push_message", "is 4th place"], ["set_status", "4th_place"]]],
+                    ["when", [{"name": "placement", "opts": [1]}], [["set_status", "1st_place"]]],
+                    ["when", [{"name": "placement", "opts": [2]}], [["set_status", "2nd_place"]]],
+                    ["when", [{"name": "placement", "opts": [3]}], [["set_status", "3rd_place"]]],
+                    ["when", [{"name": "placement", "opts": [4]}], [["set_status", "4th_place"]]],
                     // reset tile aliases
                     ["clear_tile_aliases"],
                     ["set_tile_alias", ["0m"], ["5m"]],
@@ -1398,7 +1399,11 @@
                 ["when", [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "match", "opts": [["hand", "calls", "any_discard"], ["kakura_kurumi_win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
                 ["remove_attr_all", "rinshan"],
-                ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]]
+                ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
+                ["ite", [{"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
+                  ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+                  ["change_turn", "kamicha"]
+                ], [["unset_status", "extra_turn", "extra_turn_taken"]]]
                ]
   },
   "after_turn_change": {
@@ -1530,26 +1535,20 @@
     ]]]],
     ["tanyaohai", [["unset_status", "nagashi"]]],
     ["any", [["unset_status", "discards_empty"]]],
-    ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+    ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takami Haru: extra turn!"],
-      ["push_message", "took an extra turn by discarding 2 (Takimi Haru)"],
-      ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-      ["change_turn", "kamicha"]
+      ["push_message", "took an extra turn by discarding 2 (Takimi Haru)"]
     ]]]],
-    ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+    ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takami Haru: extra turn!"],
-      ["push_message", "took an extra turn by discarding 8 (Takimi Haru)"],
-      ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-      ["change_turn", "kamicha"]
+      ["push_message", "took an extra turn by discarding 8 (Takimi Haru)"]
     ]]]],
-    ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+    ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Aislinn Wishart: extra turn!"],
-      ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"],
-      ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-      ["change_turn", "kamicha"]
+      ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"]
     ]]]]
   ],
   "after_start": {
@@ -1711,12 +1710,13 @@
     },
     "haramura_nodoka": {
       "display_name": "Discard facedown",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}, {"name": "status", "opts": ["haramura-nodoka"]}, "has_draw", "not_just_discarded"],
+      "show_when": ["our_turn", {"name": "status", "opts": ["haramura-nodoka"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
       "actions": [
         ["big_text", "Haramura Nodoka: discard!"],
         ["set_status", "haramura-nodoka_exhausted", "discard_facedown"],
         ["push_message", "discarded facedown (Haramura Nodoka)"]
-      ]
+      ],
+      "no_interrupt": true
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
@@ -1822,7 +1822,7 @@
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "onjouji-toki_exhausted"]}, {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: set aside!"],
-        ["set_status", "onjouji-toki_exhausted", "onjouji-toki_drew"],
+        ["set_status", "onjouji-toki_exhausted", "onjouji_toki_drew"],
         ["draw"],
         ["set_aside_draw"],
         ["push_message", "drew and set aside an extra tile (Onjouji Toki)"],
@@ -1832,27 +1832,27 @@
     },
     "onjouji_toki_draw": {
       "display_name": "Draw aside tile",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: draw!"],
         ["draw_from_aside"],
         ["push_message", "drew the tile they set aside (Onjouji Toki)"],
-        ["set_status", "onjouji-toki_drew"]
+        ["set_status", "onjouji_toki_drew"]
       ],
       "unskippable": true
     },
     "onjouji_toki_nodraw": {
       "display_name": "Draw from wall",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["draw"],
-        ["set_status", "onjouji-toki_drew"]
+        ["set_status", "onjouji_toki_drew"]
       ],
       "unskippable": true
     },
     "onjouji_toki_swap": {
       "display_name": "Swap tile with aside",
-      "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji-toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
         ["mark", [["hand", 1, []]]],
@@ -1978,7 +1978,14 @@
         ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
         ["set_status", "chii"],
-        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
+        ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+          ["set_status", "extra_turn"],
+          ["big_text", "Inoue Jun: extra turn!"],
+          ["add_score", 500],
+          ["add_score", -500, "last_discarder"],
+          ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+          ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+        ]]
       ]
     },
     "pon": {
@@ -1997,7 +2004,14 @@
       "actions": [
         ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
         ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
-        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
+        ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+          ["set_status", "extra_turn"],
+          ["big_text", "Inoue Jun: extra turn!"],
+          ["add_score", 500],
+          ["add_score", -500, "last_discarder"],
+          ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+          ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+        ]]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -2030,7 +2044,14 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
         ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
+        ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+          ["set_status", "extra_turn"],
+          ["big_text", "Inoue Jun: extra turn!"],
+          ["add_score", 500],
+          ["add_score", -500, "last_discarder"],
+          ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+          ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+        ]]
       ],
       "precedence_over": ["chii", "pon", "daiminkan"]
     },
@@ -2080,8 +2101,7 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
+        ["add_attr_drawn_tile", "rinshan"]
       ]
     },
     "kakan": {
@@ -2103,8 +2123,7 @@
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
         ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
+        ["add_attr_drawn_tile", "rinshan"]
       ]
     },
     "riichi": {
@@ -2160,8 +2179,7 @@
           ["set_tile_alias", ["0m"], ["5m"]],
           ["set_tile_alias", ["0p"], ["5p"]],
           ["set_tile_alias", ["0s"], ["5s"]]
-        ]],
-        ["when", [{"name": "status", "opts": ["haramura-nodoka"]}], [["noop"]]]
+        ]]
       ]
     },
     "ron": {
@@ -2424,15 +2442,20 @@
     },
     "extra_turn": {
       "display_name": "Take extra turn",
-      "show_when": ["our_turn", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
       "actions": [["set_status", "extra_turn_taken"], ["draw"]],
       "unskippable": true
     },
     "extra_turn_skip": {
       "display_name": "Skip extra turn",
-      "show_when": ["our_turn", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
       "actions": [["unset_status", "extra_turn"], ["advance_turn"]],
       "unskippable": true
+    },
+    "extra_turn_skip_inoue_jun": {
+      "display_name": "Skip extra turn to discard facedown",
+      "show_when": ["our_turn", "not_just_discarded", {"name": "status", "opts": ["extra_turn", "inoue_jun_broke_ippatsu"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "actions": [["unset_status", "extra_turn", "inoue_jun_broke_ippatsu"], ["set_status", "discard_facedown"]]
     }
   },
   "auto_buttons": {

@@ -48,24 +48,27 @@ defmodule Riichi do
                :"11z", :"12z", :"13z", :"14z", :"15z", :"10z", :"16z", :"17z", :"25z", :"26z", :"27z"]
   @terminal   [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s",
                :"11m", :"19m", :"11p", :"19p", :"11s", :"19s"]
+  @tanyaohai  [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m",
+               :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p",
+               :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s"]
   @yaochuuhai [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z", 
                :"11m", :"19m", :"11p", :"19p", :"11s", :"19s", :"11z", :"12z", :"13z", :"14z", :"15z", :"16z", :"17z"]
   @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q"]
   @joker      [:"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j", :"10j"]
 
-  def is_manzu?(tile), do: tile in @manzu
-  def is_pinzu?(tile), do: tile in @pinzu
-  def is_souzu?(tile), do: tile in @souzu
-  def is_jihai?(tile), do: tile in @jihai
+  def is_manzu?(tile), do: Enum.any?(@manzu, &Utils.same_tile(tile, &1))
+  def is_pinzu?(tile), do: Enum.any?(@pinzu, &Utils.same_tile(tile, &1))
+  def is_souzu?(tile), do: Enum.any?(@souzu, &Utils.same_tile(tile, &1))
+  def is_jihai?(tile), do: Enum.any?(@jihai, &Utils.same_tile(tile, &1))
   def is_suited?(tile), do: is_manzu?(tile) || is_pinzu?(tile) || is_souzu?(tile)
-  def is_terminal?(tile), do: tile in @terminal
-  def is_yaochuuhai?(tile), do: tile in @yaochuuhai
-  def is_tanyaohai?(tile), do: tile not in @yaochuuhai
-  def is_flower?(tile), do: tile in @flower
-  def is_joker?(tile), do: tile in @joker
+  def is_terminal?(tile), do: Enum.any?(@terminal, &Utils.same_tile(tile, &1))
+  def is_yaochuuhai?(tile), do: Enum.any?(@yaochuuhai, &Utils.same_tile(tile, &1))
+  def is_tanyaohai?(tile), do: Enum.any?(@tanyaohai, &Utils.same_tile(tile, &1))
+  def is_flower?(tile), do: Enum.any?(@flower, &Utils.same_tile(tile, &1))
+  def is_joker?(tile), do: Enum.any?(@joker, &Utils.same_tile(tile, &1))
 
   def is_num?(tile, num) do
-    tile in case num do
+    Enum.any?(case num do
       1 -> [:"1m", :"1p", :"1s", :"11m", :"11p", :"11s"]
       2 -> [:"2m", :"2p", :"2s", :"12m", :"12p", :"12s"]
       3 -> [:"3m", :"3p", :"3s", :"13m", :"13p", :"13s"]
@@ -75,7 +78,7 @@ defmodule Riichi do
       7 -> [:"7m", :"7p", :"7s", :"17m", :"17p", :"17s"]
       8 -> [:"8m", :"8p", :"8s", :"18m", :"18p", :"18s"]
       9 -> [:"9m", :"9p", :"9s", :"19m", :"19p", :"19s"]
-    end
+    end, &Utils.same_tile(tile, &1))
   end
   def same_suit?(tile, tile2) do
     cond do
