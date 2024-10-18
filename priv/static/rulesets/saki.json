@@ -2117,12 +2117,27 @@
       "show_when": [
         {"name": "status", "opts": ["kunihiro-hajime"]},
         {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_draw"]},
+        "our_turn",
+        {"name": "status_missing", "opts": ["kunihiro-hajime_exhausted"]},
+        "not_just_discarded"
+      ],
+      "actions": [
+        ["big_text", "Kunihiro Hajime: swap!"],
+        ["set_status", "kunihiro_hajime_swapped", "kunihiro-hajime_exhausted"],
+        ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
+        ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
+        ["swap_marked_hand_and_discard"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["noop"] // allow tsumo to pop up
+      ],
+      "no_interrupt": true
+    },
+    "kunihiro_hajime_interrupt": {
+      "display_name": "Swap a number tile with any same number discard",
+      "show_when": [
+        {"name": "status", "opts": ["kunihiro-hajime"]},
+        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_draw"]},
         [
-          [
-            "our_turn",
-            {"name": "status_missing", "opts": ["kunihiro-hajime_exhausted"]},
-            "not_just_discarded"
-          ],
           {"name": "others_status", "opts": ["just_reached"]},
           {"name": "others_status", "opts": ["kan"]}
         ]
