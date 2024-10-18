@@ -187,7 +187,6 @@ defmodule Riichi do
   def filter_irrelevant_tile_aliases(tile_aliases, all_tiles) do
     # filter out irrelevant tile aliases
     tile_aliases
-    |> Enum.filter(fn {tile, _aliases} -> Enum.any?(all_tiles, &Utils.same_tile(&1, tile)) end)
     |> Enum.map(fn {tile, aliases} -> {tile, Enum.filter(aliases, fn t -> Enum.any?(all_tiles, &Utils.same_tile(&1, t)) end)} end)
     |> Enum.reject(fn {_tile, aliases} -> Enum.empty?(aliases) end)
     |> Map.new()
