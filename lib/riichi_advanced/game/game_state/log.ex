@@ -45,8 +45,9 @@ defmodule RiichiAdvanced.GameState.Log do
     modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :possible_calls, possible_calls) } end)
   end
 
-  def add_call(state, seat, call_name, call_choice) do
-    call = %{player: seat, type: call_name, tiles: call_choice}
+  def add_call(state, seat, call_name, call_choice, called_tile) do
+    tiles = Utils.strip_attrs(call_choice ++ if called_tile != nil do [called_tile] else [] end)
+    call = %{player: seat, type: call_name, tiles: tiles}
     modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
   end
 
@@ -82,6 +83,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def output(state) do
+    state = finalize_kyoku(state)
     out = %{
       ver: "v1",
       players: Enum.map(state.players, fn {seat, player} -> %{

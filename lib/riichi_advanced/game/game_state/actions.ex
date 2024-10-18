@@ -42,7 +42,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ])
       tsumogiri = index >= length(state.players[seat].hand)
       riichi = "just_reached" in state.players[seat].status
-      state = Log.log(state, seat, :discard, %{tile: tile, tsumogiri: tsumogiri, riichi: riichi})
+      state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
 
       click_sounds = [
         "/audio/tile1.mp3",
@@ -93,19 +93,16 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = Map.put(state, :wall_index, wall_index)
           state = update_action(state, seat, :draw, %{tile: tile})
           kan_draw = "kan" in state.players[seat].status
-          state = Log.log(state, seat, :draw, %{tile: tile, kan_draw: kan_draw})
+          state = Log.log(state, seat, :draw, %{tile: Utils.strip_attrs(tile), kan_draw: kan_draw})
           state
         else
-          state = update_player(state, seat, &%Player{ &1 |
-            hand: &1.hand,
-            aside: [tile | &1.aside]
-          })
+          state = update_player(state, seat, &%Player{ &1 | aside: [tile | &1.aside] })
           state = Map.put(state, :wall_index, wall_index)
           state
         end
 
         # IO.puts("wall index is now #{get_state().wall_index}")
-        draw_tile(state, seat, num - 1, tile_spec)
+        draw_tile(state, seat, num - 1, tile_spec, to_aside)
       end
     else state end
   end
@@ -227,7 +224,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         %{text: " on "}
       ] ++ Utils.ph(call_choice))
     end
-    state = Log.add_call(state, seat, call_name, call_choice)
+    state = Log.add_call(state, seat, call_name, call_choice, called_tile)
     click_sounds = [
       "/audio/call1.mp3",
       "/audio/call2.mp3",
@@ -686,7 +683,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             # if there's a winner, never display buttons
             update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
           else
-            Buttons.recalculate_buttons(state)
+            Buttons.recalculate_buttons(state, true)
           end
           buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
           # IO.puts("buttons_before: #{inspect(buttons_before)}")
