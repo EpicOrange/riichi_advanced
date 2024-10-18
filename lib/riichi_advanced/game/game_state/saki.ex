@@ -20,6 +20,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "iwadate-yuan" => "Iwadate Yuan",
     "jindai-komaki" => "Jindai Komaki",
     "kakura-kurumi" => "Kakura Kurumi",
+    "karijuku-tomoe" => "Karijuku Tomoe",
     "kataoka-yuuki" => "Kataoka Yuuki",
     "mase-yuuko" => "Mase Yuuko",
     "matano-seiko" => "Matano Seiko",

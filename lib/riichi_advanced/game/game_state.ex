@@ -1386,7 +1386,7 @@ defmodule RiichiAdvanced.GameState do
     our_turn = seat == state.turn
     last_discard_action = get_last_discard_action(state)
     turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
-    extra_turn = "extra_turn" in state.players[state.turn].status
+    extra_turn = "extra_turn_taken" in state.players[state.turn].status
     {:reply, our_turn && (not turn_just_discarded || extra_turn), state}
   end
 

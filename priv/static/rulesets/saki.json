@@ -25,6 +25,7 @@
     "jindai-komaki",
     "amae-koromo",
     "kakura-kurumi",
+    "karijuku-tomoe",
     "kataoka-yuuki",
     "mase-yuuko",
     "matano-seiko",
@@ -849,6 +850,15 @@
           ]
         ]
       ]
+    },
+    {
+      "display_name": "Haku Tsumo",
+      "value": 2,
+      "when": [
+        {"name": "status", "opts": ["karijuku-tomoe"]},
+        "won_by_draw",
+        {"name": "match", "opts": [["winning_tile"], [[[["5z"], 1]]]]}
+      ]
     }
   ],
   "yakuman": [
@@ -1426,81 +1436,84 @@
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
                 ["remove_attr_all", "rinshan"],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
-                ["ite", [{"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
-                  ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-                  ["change_turn", "kamicha"]
-                ], [["unset_status", "extra_turn", "extra_turn_taken"]]]
+                ["ite", [{"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+                  [["set_status", "extra_turn_prompt"]],
+                  [["unset_status", "extra_turn", "extra_turn_taken"]]]
                ]
   },
   "after_turn_change": {
-    "actions": [["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-                ["when_anyone",
-                  [[
-                    {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-                    [
-                      {"name": "last_call_is", "opts": ["kakan"]},
-                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-                    ],
-                    [
-                      {"name": "last_call_is", "opts": ["ankan"]},
-                      {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-                    ],
-                    [
-                      {"name": "status", "opts": ["kakura-kurumi"]},
-                      {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]},
-                      {"name": "match", "opts": [["hand", "last_discard"], ["kakura_kurumi_win"]]}
-                    ],
-                    [
-                      {"name": "status", "opts": ["kakura-kurumi"]},
-                      {"name": "last_call_is", "opts": ["kakan"]},
-                      {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]},
-                      {"name": "match", "opts": [["hand", "last_called_tile"], ["kakura_kurumi_win"]]}
-                    ]
-                  ]],
-                  [["set_status", "furiten"]]
-                ],
-                ["when", [
-                  "not_no_tiles_remaining",
-                  [
-                    {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
-                    "not_has_aside"
-                  ]
+    "actions": [["ite", [{"name": "kamicha_status", "opts": ["extra_turn_prompt"]}], [
+                  ["change_turn", "kamicha"]
                 ], [
-                  ["set_status", "about_to_draw"],
-                  ["about_to_draw"],
-                  ["unset_status", "about_to_draw"],
-                  ["draw"],
-                  ["when", [{"name": "status", "opts": ["ippatsu"]}], [
-                    // for atago hiroe
-                    ["when", [{"name": "placement", "opts": [1]}], [["add_attr_drawn_tile", "1st_place"]]],
-                    ["when", [{"name": "placement", "opts": [2]}], [["add_attr_drawn_tile", "2nd_place"]]],
-                    ["when", [{"name": "placement", "opts": [3]}], [["add_attr_drawn_tile", "3rd_place"]]],
-                    ["add_attr_drawn_tile", "ippatsu"]
-                  ]]
-                ]],
-                ["when", ["no_tiles_remaining"], [["add_attr_drawn_tile", "haitei"]]],
-                ["when", [
-                  [
-                    {"name": "status", "opts": ["shibuya-takami"]},
-                    {"name": "status", "opts": ["matano-seiko"]}
+                  ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+                  ["when_anyone",
+                    [[
+                      {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+                      [
+                        {"name": "last_call_is", "opts": ["kakan"]},
+                        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+                      ],
+                      [
+                        {"name": "last_call_is", "opts": ["ankan"]},
+                        {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+                        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+                      ],
+                      [
+                        {"name": "status", "opts": ["kakura-kurumi"]},
+                        {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]},
+                        {"name": "match", "opts": [["hand", "last_discard"], ["kakura_kurumi_win"]]}
+                      ],
+                      [
+                        {"name": "status", "opts": ["kakura-kurumi"]},
+                        {"name": "last_call_is", "opts": ["kakan"]},
+                        {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]},
+                        {"name": "match", "opts": [["hand", "last_called_tile"], ["kakura_kurumi_win"]]}
+                      ]
+                    ]],
+                    [["set_status", "furiten"]]
                   ],
-                  "has_aside"
-                ], [
-                  ["set_status", "about_to_draw"],
-                  ["about_to_draw"],
-                  ["unset_status", "about_to_draw"],
-                  ["draw_from_aside"]
-                ]],
-                ["when", [
-                  {"name": "status", "opts": ["iwadate-yuan"]},
-                  {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
-                ], [
-                  ["remove_attr_all", "golden"],
-                  ["add_attr_tile", "7z", "golden"],
-                  ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
-                ]]
-               ]
+                  ["when", [
+                    "not_no_tiles_remaining",
+                    [
+                      {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
+                      "not_has_aside"
+                    ]
+                  ], [
+                    ["set_status", "about_to_draw"],
+                    ["about_to_draw"],
+                    ["unset_status", "about_to_draw"],
+                    ["draw"],
+                    ["when", [{"name": "status", "opts": ["ippatsu"]}], [
+                      // for atago hiroe
+                      ["when", [{"name": "placement", "opts": [1]}], [["add_attr_drawn_tile", "1st_place"]]],
+                      ["when", [{"name": "placement", "opts": [2]}], [["add_attr_drawn_tile", "2nd_place"]]],
+                      ["when", [{"name": "placement", "opts": [3]}], [["add_attr_drawn_tile", "3rd_place"]]],
+                      ["add_attr_drawn_tile", "ippatsu"]
+                    ]]
+                  ]],
+                  ["when", ["no_tiles_remaining"], [["add_attr_drawn_tile", "haitei"]]],
+                  ["when", [
+                    [
+                      {"name": "status", "opts": ["shibuya-takami"]},
+                      {"name": "status", "opts": ["matano-seiko"]}
+                    ],
+                    "has_aside"
+                  ], [
+                    ["set_status", "about_to_draw"],
+                    ["about_to_draw"],
+                    ["unset_status", "about_to_draw"],
+                    ["draw_from_aside"]
+                  ]],
+                  ["when", [
+                    {"name": "status", "opts": ["iwadate-yuan"]},
+                    {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+                  ], [
+                    ["remove_attr_all", "golden"],
+                    ["add_attr_tile", "7z", "golden"],
+                    ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
+                  ]]
+                 ]
+               ]]
   },
   "before_call": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
@@ -1571,18 +1584,23 @@
     ["any", [["unset_status", "discards_empty"]]],
     ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
-      ["big_text", "Takami Haru: extra turn!"],
+      ["big_text", "Takimi Haru: extra turn!"],
       ["push_message", "took an extra turn by discarding 2 (Takimi Haru)"]
     ]]]],
     ["8", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
-      ["big_text", "Takami Haru: extra turn!"],
+      ["big_text", "Takimi Haru: extra turn!"],
       ["push_message", "took an extra turn by discarding 8 (Takimi Haru)"]
     ]]]],
     ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Aislinn Wishart: extra turn!"],
       ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"]
+    ]]]],
+    ["5z", [["when", [{"name": "status", "opts": ["karijuku-tomoe"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Karijuku Tomoe: extra turn!"],
+      ["push_message", "took an extra turn by discarding haku (Karijuku Tomoe)"]
     ]]]]
   ],
   "after_start": {
@@ -2229,6 +2247,13 @@
           ["set_tile_alias", ["0m"], ["5m"]],
           ["set_tile_alias", ["0p"], ["5p"]],
           ["set_tile_alias", ["0s"], ["5s"]]
+        ]],
+        ["when", [{"name": "status", "opts": ["karijuku-tomoe"]}], [
+          ["set_tile_alias", [["5z", "discard"], ["5z", "draw"]], [
+            "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+            "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+            "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+            "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]
         ]]
       ]
     },
@@ -2492,14 +2517,23 @@
     },
     "extra_turn": {
       "display_name": "Take extra turn",
-      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
-      "actions": [["set_status", "extra_turn_taken"], ["draw"]],
+      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "actions": [
+        ["unset_status", "extra_turn", "extra_turn_prompt"],
+        ["set_status", "extra_turn_taken"],
+        ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["draw"]
+      ],
       "unskippable": true
     },
     "extra_turn_skip": {
       "display_name": "Skip extra turn",
-      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
-      "actions": [["unset_status", "extra_turn"], ["advance_turn"]],
+      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "actions": [
+        ["unset_status", "extra_turn", "extra_turn_prompt"],
+        ["push_message", "skipped their extra turn"],
+        ["advance_turn"]
+      ],
       "unskippable": true
     },
     "extra_turn_skip_inoue_jun": {

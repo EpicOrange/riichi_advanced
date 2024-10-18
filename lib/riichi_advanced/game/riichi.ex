@@ -90,11 +90,6 @@ defmodule Riichi do
     end
   end
 
-  defp remove_exact_tile(hand, tile) do
-    ix = Enum.find_index(hand, &Utils.same_tile(&1, tile))
-    if ix != nil do List.delete_at(hand, ix) else hand end
-  end
-
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, _initial \\ true)
   def try_remove_all_tiles(hand, [], _tile_aliases, _initial), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, _initial) do
@@ -376,7 +371,7 @@ defmodule Riichi do
       _   ->
         # "1m", "2z" are also specs
         if Utils.to_tile(&1) != nil do
-          context.tile == Utils.to_tile(&1)
+          Utils.same_tile(context.tile, Utils.to_tile(&1))
         else
           IO.puts("Unhandled tile spec #{inspect(&1)}")
           true
@@ -385,12 +380,14 @@ defmodule Riichi do
   end
 
   def needed_for_hand(hand, calls, tile, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.all?(match_definitions, fn match_definition ->
-      case try_remove_all_tiles(hand, [tile], tile_aliases) do
-        [] -> false
-        hands -> Enum.all?(hands, fn hand -> Enum.empty?(remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)) end)
-      end
-    end)
+    tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
+      remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)
+    end) |> Enum.unzip()
+    leftover_tiles = leftover_tiles
+    |> Enum.concat()
+    |> Enum.uniq()
+    tile not in leftover_tiles
   end
 
   def call_to_tiles({_name, call}) do

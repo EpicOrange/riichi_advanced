@@ -45,7 +45,11 @@ defmodule RiichiAdvanced.AIPlayer do
         # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
         Process.sleep(trunc(1200 / @ai_speed))
         GenServer.cast(state.game_state, {:play_tile, state.seat, index})
+      else
+        IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
       end
+    else
+      IO.puts(" >> #{state.seat}: You said it's my turn to play a tile, but I am not in a state in which I can discard")
     end
     {:noreply, state}
   end
