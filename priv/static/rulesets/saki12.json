@@ -2098,6 +2098,7 @@
     }
   },
   "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "noop", "draw_from_aside", "about_to_draw", "about_to_ron"],
+  "shown_statuses": ["furiten"],
   "display_riichi_sticks": true,
   "display_honba": true,
   "initial_score": 30000,
