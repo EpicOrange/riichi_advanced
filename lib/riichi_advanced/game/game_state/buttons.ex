@@ -71,7 +71,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
     end
   end
 
-  def recalculate_buttons(state) do
+  def recalculate_buttons(state, interrupt \\ false) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -83,9 +83,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
           else
             button_choices = state.rules["buttons"]
               |> Enum.filter(fn {name, button} ->
-                   calls_spec = if Map.has_key?(button, "call") do button["call"] else [] end
-                   upgrades = if Map.has_key?(button, "upgrades") do button["upgrades"] else [] end
-                   check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                   calls_spec = Map.get(button, "call", [])
+                   upgrades = Map.get(button, "upgrades", [])
+                   no_interrupt = Map.get(button, "no_interrupt", false)
+                   (not interrupt || not no_interrupt) && check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
                  end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->

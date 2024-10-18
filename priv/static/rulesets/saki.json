@@ -1838,8 +1838,7 @@
         {"name": "status", "opts": ["atago-kinue", "tenpai"]},
         {"name": "status_missing", "opts": ["atago_kinue_aside_waits"]},
         "not_just_discarded",
-        "has_aside",
-        ["just_called", "has_draw"]
+        "has_aside"
       ],
       "actions": [
         ["big_text", "Atago Kinue: change waits!"],
@@ -1851,7 +1850,8 @@
           "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
           "1z", "2z", "3z", "4z", "5z", "6z", "7z"]],
         ["push_message", "bet 1000 to wait on aside tiles (Atago Kinue)"]
-      ]
+      ],
+      "no_interrupt": true
     },
     "chii": {
       "display_name": "Chii",
@@ -2231,7 +2231,10 @@
         ],
         [
           {"name": "not_status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
-          {"name": "match", "opts": [["aside_unique", "draw"], [["nojoker", [["pair"], 1]]]]}
+          [
+            {"name": "status_missing", "opts": ["just_changed_atago_kinue_aside_waits"]},
+            {"name": "match", "opts": [["aside_unique", "draw"], [["nojoker", [["pair"], 1]]]]}
+          ]
         ],
         {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]},
         [

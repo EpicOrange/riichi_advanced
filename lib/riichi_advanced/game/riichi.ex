@@ -92,9 +92,9 @@ defmodule Riichi do
     if ix != nil do List.delete_at(hand, ix) else hand end
   end
 
-  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, initial \\ true)
+  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, _initial \\ true)
   def try_remove_all_tiles(hand, [], _tile_aliases, _initial), do: [hand]
-  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, initial) do
+  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, _initial) do
     # t = System.os_time(:millisecond)
     ret = for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
       removed = remove_exact_tile(hand, t)
