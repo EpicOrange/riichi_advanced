@@ -286,15 +286,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
           delta_scores = if direct_hit do
             # either ron, or tsumo pao, or remaining ron pao payment
-            negate_tsumo_pao = winner.payer == nil && winner.pao_seat != nil && "atago_hiroe_no_tsumo_payment" in state.players[winner.pao_seat].status
-            delta_scores = if not negate_tsumo_pao do
-              delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
-              delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
-              delta_scores
-            else
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} is damaten, and immune to tsumo payments (Atago Hiroe)"}])
-              delta_scores
-            end
+            delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
             delta_scores
           else
             # first give the winner their riichi sticks
