@@ -17,6 +17,7 @@
     "atago-kinue",
     "atarashi-ako",
     "choe-myeonghwa",
+    "hao-huiyu",
     "haramura-nodoka",
     "ikeda-kana",
     "jindai-komaki",
@@ -223,6 +224,17 @@
   ],
   "kakura_kurumi_win_definition": [
     [ [["koutsu"], -1], [["pair"], 6] ]
+  ],
+  "雜龍_definition": [
+    [ "exhaustive", [[[[0,1,2],[13,14,15],[26,27,28]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,1,2],[23,24,25],[16,17,18]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
+  ],
+  "三色三步高_definition": [
+    [ "exhaustive", [[[[0,1,2],[11,12,13],[22,23,24]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,1,2],[21,22,23],[12,13,14]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
+  ],
+  "一色三步高_definition": [
+    [ "exhaustive", [[[[0,1,2],[1,2,3],[2,3,4]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "yaku": [
     {
@@ -708,6 +720,108 @@
       "display_name": "Furiten Tsumo",
       "value": 1,
       "when": [{"name": "status", "opts": ["atago-hiroe", "riichi", "furiten"]}, "won_by_draw"]
+    },
+    {
+      "display_name": "All Fives",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]}
+      ]
+    },
+    {
+      "display_name": "All Fives",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]}
+      ]
+    },
+    {
+      "display_name": "Upper Four",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "winning_hand_consists_of", "opts": ["6m","7m","8m","9m","6p","7p","8p","9p","6s","7s","8s","9s"]}
+      ]
+    },
+    {
+      "display_name": "Upper Four",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "winning_hand_consists_of", "opts": ["6m","7m","8m","9m","6p","7p","8p","9p","6s","7s","8s","9s"]}
+      ]
+    },
+    {
+      "display_name": "Lower Four",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","1p","2p","3p","4p","1s","2s","3s","4s"]}
+      ]
+    },
+    {
+      "display_name": "Lower Four",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","1p","2p","3p","4p","1s","2s","3s","4s"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Straight",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雜龍"]]}
+      ]
+    },
+    {
+      "display_name": "Mixed Straight",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雜龍"]]}
+      ]
+    },
+    {
+      "display_name": "Mixed Shifted Chows",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色三步高"]]}
+      ]
+    },
+    {
+      "display_name": "Mixed Shifted Chows",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色三步高"]]}
+      ]
+    },
+    {
+      "display_name": "Pure Shifted Chows",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}
+      ]
+    },
+    {
+      "display_name": "Pure Shifted Chows",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["hao-huiyu"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}
+      ]
     }
   ],
   "yakuman": [

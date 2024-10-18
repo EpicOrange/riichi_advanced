@@ -13,6 +13,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "amae-koromo" => "Amae Koromo",
     "atarashi-ako" => "Atarashi Ako",
     "choe-myeonghwa" => "Choe Myeonghwa",
+    "hao-huiyu" => "Hao Huiyu",
     "haramura-nodoka" => "Haramura Nodoka",
     "ikeda-kana" => "Ikeda Kana",
     "jindai-komaki" => "Jindai Komaki",
