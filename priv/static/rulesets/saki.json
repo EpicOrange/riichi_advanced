@@ -1867,12 +1867,11 @@
       "actions": [
         ["big_text", "Onjouji Toki: set aside!"],
         ["set_status", "onjouji-toki_exhausted", "onjouji_toki_drew"],
-        ["draw"],
-        ["set_aside_draw"],
-        ["push_message", "drew and set aside an extra tile (Onjouji Toki)"],
-        ["draw"]
+        ["draw_aside"],
+        ["push_message", "drew and set aside an extra tile (Onjouji Toki)"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "no_interrupt": true
     },
     "onjouji_toki_draw": {
       "display_name": "Draw aside tile",
