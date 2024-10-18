@@ -92,13 +92,19 @@ defmodule Riichi do
     if ix != nil do List.delete_at(hand, ix) else hand end
   end
 
-  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{})
-  def try_remove_all_tiles(hand, [], _tile_aliases), do: [hand]
-  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases) do
-    for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
+  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, initial \\ true)
+  def try_remove_all_tiles(hand, [], _tile_aliases, _initial), do: [hand]
+  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, initial) do
+    # t = System.os_time(:millisecond)
+    ret = for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
       removed = remove_exact_tile(hand, t)
-      if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases) end
+      if length(removed) == length(hand) do [] else try_remove_all_tiles(removed, tiles, tile_aliases, false) end
     end |> Enum.concat()
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if initial && elapsed_time > 10 do
+    #   IO.puts("try_remove_all_tiles: #{inspect(hand)} #{inspect(tile)} #{inspect(elapsed_time)} ms")
+    # end
+    ret
   end
 
   def remove_from_hand_calls(hand, tiles, calls, tile_aliases \\ %{}) do
@@ -131,7 +137,8 @@ defmodule Riichi do
 
   def remove_group(hand, calls, group, ordering, ordering_r, tile_aliases \\ %{}) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
-    cond do
+    # t = System.os_time(:millisecond)
+    ret = cond do
       is_list(group) && not Enum.empty?(group) ->
         cond do
           Enum.all?(group, &Kernel.is_integer/1) ->
@@ -168,11 +175,26 @@ defmodule Riichi do
         IO.puts("Unhandled group #{inspect(group)}")
         []
     end
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("remove_group: #{inspect(hand)} #{inspect(group)} #{inspect(elapsed_time)} ms")
+    # end
+    ret
   end
 
   @match_keywords ["exhaustive", "unique", "nojoker", "debug"]
 
+  def filter_irrelevant_tile_aliases(tile_aliases, all_tiles) do
+    # filter out irrelevant tile aliases
+    tile_aliases
+    |> Enum.filter(fn {tile, _aliases} -> Enum.any?(all_tiles, &Utils.same_tile(&1, tile)) end)
+    |> Enum.map(fn {tile, aliases} -> {tile, Enum.filter(aliases, fn t -> Enum.any?(all_tiles, &Utils.same_tile(&1, t)) end)} end)
+    |> Enum.reject(fn {_tile, aliases} -> Enum.empty?(aliases) end)
+    |> Map.new()
+  end
+
   defp _remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases) do
+    # t = System.os_time(:millisecond)
     exhaustive = "exhaustive" in match_definition
     unique = "unique" in match_definition
     no_jokers = "nojoker" in match_definition
@@ -181,8 +203,8 @@ defmodule Riichi do
       IO.puts("Match definition: #{inspect(match_definition)}")
       IO.puts("Tile aliases: #{inspect(tile_aliases)}")
     end
-    tile_aliases = if no_jokers do %{} else tile_aliases end
-    for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
+    tile_aliases = if no_jokers do %{} else filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1)) end
+    ret = for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
       hand_calls ->
         [groups, num] = match_definition_elem
         if num == 0 do
@@ -230,6 +252,11 @@ defmodule Riichi do
           end
         end
     end
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("_remove_match_definition: #{inspect(hand)} #{inspect(match_definition)} #{inspect(elapsed_time)} ms")
+    # end
+    ret
   end
 
   def remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases \\ %{}) do
@@ -246,6 +273,7 @@ defmodule Riichi do
 
   # check if hand contains all groups in each definition in match_definitions
   defp _match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do
+    tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
     Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)) end)
   end
 

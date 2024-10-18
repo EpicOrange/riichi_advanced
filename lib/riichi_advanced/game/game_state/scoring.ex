@@ -38,7 +38,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {state, assigned_winning_tile}
   end
 
-  def seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source) do
+  def _seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, state.players[seat].hand ++ [winning_tile], state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
@@ -66,7 +66,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     yaku_names = Enum.map(yaku_list, fn yaku -> yaku["display_name"] end)
     case RiichiAdvanced.ETSCache.get({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}) do
       [] -> 
-        result = seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source)
+        result = _seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source)
         RiichiAdvanced.ETSCache.put({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}, result)
         result
       [result] -> result
