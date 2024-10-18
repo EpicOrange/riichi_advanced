@@ -9,13 +9,13 @@ defmodule RiichiAdvanced.ETSCache do
 
   def init(:ok) do
     # Cache for function calls
-    :ets.new(:cache, [:named_table, :set, :public, read_concurrency: true, write_concurrency: true])
+    :ets.new(:cache, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
     
     # Cache for mods
-    :ets.new(:cache_mods, [:named_table, :set, :public, read_concurrency: true, write_concurrency: true])
+    :ets.new(:cache_mods, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
 
     # Cache for custom rulesets
-    :ets.new(:cache_rulesets, [:named_table, :set, :public, read_concurrency: true, write_concurrency: true])
+    :ets.new(:cache_rulesets, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
 
     {:ok, %{}}
   end
@@ -29,12 +29,12 @@ defmodule RiichiAdvanced.ETSCache do
 
   def put(key, value, table \\ :cache) do
     if :ets.info(table, :size) >= @max_size do
-      remove_random_entry(table)
+      remove_last_entry(table)
     end
     :ets.insert(table, {key, value})
   end
 
-  defp remove_random_entry(table) do
-    :ets.delete(table, :ets.first(table))
+  defp remove_last_entry(table) do
+    :ets.delete(table, :ets.last(table))
   end
 end
