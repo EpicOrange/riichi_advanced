@@ -356,7 +356,7 @@ defmodule Riichi do
       waits -> cond do
         tile in waits -> waits
         is_waiting_on(tile, hand, calls, decomposed_match_definitions, ordering, ordering_r, tile_aliases) ->
-          other_waits = [tile | tile_aliases[tile]] |> Utils.strip_attrs()
+          other_waits = [tile | Map.get(tile_aliases, tile, [])] |> Utils.strip_attrs()
           waits ++ other_waits
         true -> waits
       end |> Enum.uniq()

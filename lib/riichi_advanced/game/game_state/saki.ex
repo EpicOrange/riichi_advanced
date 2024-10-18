@@ -28,6 +28,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "matano-seiko" => "Matano Seiko",
     "matsumi-kuro" => "Matsumi Kuro",
     "matsumi-yuu" => "Matsumi Yuu",
+    "maya-yukiko" => "Maya Yukiko",
     "miyanaga-saki" => "Miyanaga Saki",
     "miyanaga-teru" => "Miyanaga Teru",
     "nanpo-kazue" => "Nanpo Kazue",

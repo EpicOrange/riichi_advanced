@@ -179,10 +179,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  def trigger_call(state, seat, call_name, call_choice, called_tile, call_source) do
-    call_style = if Map.has_key?(state.rules["buttons"][call_name], "call_style") do
-      state.rules["buttons"][call_name]["call_style"]
-    else Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end) end
+  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
+    call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
+    call_style = Map.get(state.rules["buttons"][button_name], "call_style", Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end))
 
     # style the call
     call = if called_tile != nil do
@@ -394,6 +393,18 @@ defmodule RiichiAdvanced.GameState.Actions do
       "unset_callee_status"   -> update_player(state, context.callee, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "set_caller_status"     -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_caller_status"   -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_status_chii_victims" -> 
+        chii_victims = for {"chii", tiles} <- state.players[context.seat].calls do
+          case tiles do
+            [{_, false}, {_, false}, {_, true}] -> [:shimocha]
+            [{_, false}, {_, true}, {_, false}] -> [:toimen]
+            [{_, true}, {_, false}, {_, false}] -> [:kamicha]
+            _ -> []
+          end
+        end |> Enum.concat() |> Enum.uniq()
+        for dir <- chii_victims, reduce: state do
+          state -> update_player(state, Utils.get_seat(context.seat, dir), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+        end
       "add_counter"           -> add_counter(state, context.seat, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
         seat = case Enum.at(opts, 1) do

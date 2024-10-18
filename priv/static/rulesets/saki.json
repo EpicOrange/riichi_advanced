@@ -32,6 +32,7 @@
     "mase-yuuko",
     "matano-seiko",
     "matsumi-yuu",
+    "maya-yukiko",
     "miyanaga-saki",
     "miyanaga-teru",
     "nanpo-kazue",
@@ -1761,7 +1762,8 @@
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_4"]}], [["reveal_tile", "1x"]]],
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
                   ]],
-                ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [["set_status", "atago_hiroe_no_tsumo_payment"]]]
+                ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [["set_status", "atago_hiroe_no_tsumo_payment"]]],
+                ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["set_status_chii_victims", "double_tsumo_payment"]]]
                ]
   },
   "before_abortive_draw": {
@@ -1938,7 +1940,22 @@
         ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
       ],
-      "precedence_over": ["choe_myeonghwa", "chii", "mase_yuuko", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+    },
+    "maya_yukiko": {
+      "display_name": "Chii with priority",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_name": "chii",
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
+      "show_when": ["not_our_turn", {"name": "status", "opts": ["maya-yukiko"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [
+        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+        ["big_text", "Maya Yukiko: chii!"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["push_message", "called chii with priority (Maya Yukiko)"],
+        ["set_status", "chii"]
+      ],
+      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
     "nanpo_kazue_nonskippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",

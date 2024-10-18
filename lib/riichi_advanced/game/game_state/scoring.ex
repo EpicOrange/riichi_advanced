@@ -304,6 +304,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
                   push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} is damaten, and immune to tsumo payments (Atago Hiroe)"}])
                   0
                 else payment end
+                payment = if "double_tsumo_payment" in state.players[payer].status do
+                  push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double for tsumo (Maya Yukiko)"}])
+                  payment * 2
+                else payment end
                 delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
                 delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + honba_payment)
                 delta_scores
