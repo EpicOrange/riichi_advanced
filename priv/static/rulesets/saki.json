@@ -28,6 +28,7 @@
     "karijuku-tomoe",
     "kataoka-yuuki",
     "kosegawa-shiromi",
+    "kunihiro-hajime",
     "mase-yuuko",
     "matano-seiko",
     "matsumi-yuu",
@@ -1431,7 +1432,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "inoue_jun_broke_ippatsu"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "inoue_jun_broke_ippatsu", "kunihiro_hajime_swapped"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -1785,8 +1786,8 @@
         ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]],
         ["push_message", "swapped a discard with a same-suit tile from hand (Atarashi Ako)"],
         ["swap_marked_hand_and_discard"],
-        ["noop"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["noop"] // allow tsumo to pop up
       ]
     },
     "atarashi_ako_dora": {
@@ -1798,8 +1799,8 @@
         ["mark", [["hand", 1, ["match_suit"]], ["revealed_tile", 1, ["match_suit"]]]],
         ["push_message", "swapped a dora indicator with a same-suit tile from hand (Atarashi Ako)"],
         ["swap_marked_hand_and_dora_indicator"],
-        ["noop"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["noop"] // allow tsumo to pop up
       ]
     },
     "choe_myeonghwa": {
@@ -2110,6 +2111,31 @@
         ["push_message", "bet 1000 to wait on aside tiles (Atago Kinue)"]
       ],
       "no_interrupt": true
+    },
+    "kunihiro_hajime": {
+      "display_name": "Swap a number tile with any same number discard",
+      "show_when": [
+        {"name": "status", "opts": ["kunihiro-hajime"]},
+        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_draw"]},
+        [
+          [
+            "our_turn",
+            {"name": "status_missing", "opts": ["kunihiro-hajime_exhausted"]},
+            "not_just_discarded"
+          ],
+          {"name": "others_status", "opts": ["just_reached"]},
+          {"name": "others_status", "opts": ["kan"]}
+        ]
+      ],
+      "actions": [
+        ["big_text", "Kunihiro Hajime: swap!"],
+        ["set_status", "kunihiro_hajime_swapped", "kunihiro-hajime_exhausted"],
+        ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
+        ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
+        ["swap_marked_hand_and_discard"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["noop"] // allow tsumo to pop up
+      ]
     },
     "chii": {
       "display_name": "Chii",

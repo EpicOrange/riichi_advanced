@@ -71,7 +71,10 @@ defmodule RiichiAdvanced.GameState.Actions do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end
-    else state end
+    else
+      IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
+      state
+    end
   end
 
   def draw_tile(state, seat, num, tile_spec \\ nil, to_aside \\ false) do

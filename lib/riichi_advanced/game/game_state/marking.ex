@@ -76,11 +76,26 @@ defmodule RiichiAdvanced.GameState.Marking do
             |> Enum.concat()
             |> Enum.all?(fn {tile2, _, _} -> Riichi.same_suit?(tile, tile2) end)
           else false end
+        "match_number"        ->
+          if Riichi.is_suited?(tile) do
+            IO.inspect(Map.values(state.marking[marking_player]))
+            Map.values(state.marking[marking_player])
+            |> Enum.filter(&Kernel.is_map/1)
+            |> Enum.map(fn mark_info -> mark_info.marked end)
+            |> Enum.concat()
+            |> Enum.all?(fn {tile2, _, _} -> Riichi.same_number?(tile, tile2) end)
+          else false end
         "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
         "others"            -> marking_player != seat
         "current_turn"      -> seat == state.turn
         "7z"                -> tile == :"7z"
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
+        "not_riichi"        -> 
+          case source do
+            :discard -> "riichi" not in state.players[marking_player].status || index >= length(state.players[marking_player].hand)
+            _        -> true
+          end
+
         "last_discard"      ->
           case source do
             :discard ->

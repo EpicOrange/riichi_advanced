@@ -89,6 +89,20 @@ defmodule Riichi do
       true            -> false
     end
   end
+  def same_number?(tile, tile2) do
+    cond do
+      is_num?(tile, 1) -> is_num?(tile2, 1) 
+      is_num?(tile, 2) -> is_num?(tile2, 2) 
+      is_num?(tile, 3) -> is_num?(tile2, 3) 
+      is_num?(tile, 4) -> is_num?(tile2, 4) 
+      is_num?(tile, 5) -> is_num?(tile2, 5) 
+      is_num?(tile, 6) -> is_num?(tile2, 6) 
+      is_num?(tile, 7) -> is_num?(tile2, 7) 
+      is_num?(tile, 8) -> is_num?(tile2, 8) 
+      is_num?(tile, 9) -> is_num?(tile2, 9) 
+      true            -> false
+    end
+  end
 
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, _initial \\ true)
   def try_remove_all_tiles(hand, [], _tile_aliases, _initial), do: [hand]
@@ -403,8 +417,8 @@ defmodule Riichi do
       "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
       "kuikae" ->
         potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], ["hand"])
-        triplet = remove_group(potential_set, [], [0,0,0], context.players[context.seat].ordering, context.players[context.seat].ordering_r, context.players[context.seat].tile_aliases)
-        sequence = remove_group(potential_set, [], [0,1,2], context.players[context.seat].ordering, context.players[context.seat].ordering_r, context.players[context.seat].tile_aliases)
+        triplet = remove_group(potential_set, [], [0,0,0], context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
+        sequence = remove_group(potential_set, [], [0,1,2], context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
         not Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs
