@@ -27,6 +27,7 @@
     "kakura-kurumi",
     "karijuku-tomoe",
     "kataoka-yuuki",
+    "kosegawa-shiromi",
     "mase-yuuko",
     "matano-seiko",
     "matsumi-yuu",
@@ -117,7 +118,53 @@
     "7s": ["8s"],
     "8s": ["9s"],
     "9s": ["1s"],
-    "0s": ["6s"]
+    "0s": ["6s"],
+    "1z": ["2z"],
+    "2z": ["3z"],
+    "3z": ["4z"],
+    "4z": ["1z"],
+    "5z": ["6z"],
+    "6z": ["7z"],
+    "7z": ["5z"]
+  },
+  "reverse_dora_indicators": {
+    "1m": ["9m"],
+    "2m": ["1m"],
+    "3m": ["2m"],
+    "4m": ["3m"],
+    "5m": ["4m"],
+    "6m": ["5m"],
+    "7m": ["6m"],
+    "8m": ["7m"],
+    "9m": ["8m"],
+    "0m": ["4m"],
+    "1p": ["9p"],
+    "2p": ["1p"],
+    "3p": ["2p"],
+    "4p": ["3p"],
+    "5p": ["4p"],
+    "6p": ["5p"],
+    "7p": ["6p"],
+    "8p": ["7p"],
+    "9p": ["8p"],
+    "0p": ["4p"],
+    "1s": ["9s"],
+    "2s": ["1s"],
+    "3s": ["2s"],
+    "4s": ["3s"],
+    "5s": ["4s"],
+    "6s": ["5s"],
+    "7s": ["6s"],
+    "8s": ["7s"],
+    "9s": ["8s"],
+    "0s": ["4s"],
+    "1z": ["4z"],
+    "2z": ["1z"],
+    "3z": ["2z"],
+    "4z": ["3z"],
+    "5z": ["7z"],
+    "6z": ["5z"],
+    "7z": ["6z"]
   },
   "max_revealed_tiles": 5,
   "set_definitions": {
@@ -1020,7 +1067,28 @@
     {"display_name": "Ura", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": ["uraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 1]}]},
     {"display_name": "Ura", "value": 2, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": ["uraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 2]}]},
     {"display_name": "Ura", "value": 3, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": ["uraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": ["uraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 4]}]}
+    {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": ["uraindicator_5"]}, {"name": "winning_dora_count", "opts": ["uraindicator_5", 4]}]},
+    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_1", 1]}]},
+    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_1", 2]}]},
+    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_1", 3]}]},
+    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_1", 4]}]},
+    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_2", 1]}]},
+    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_2", 2]}]},
+    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_2", 3]}]},
+    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_2", 4]}]},
+    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_3", 1]}]},
+    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_3", 2]}]},
+    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_3", 3]}]},
+    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_3", 4]}]},
+    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_4", 1]}]},
+    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_4", 2]}]},
+    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_4", 3]}]},
+    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_4", 4]}]},
+    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_5", 1]}]},
+    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_5", 2]}]},
+    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_5", 3]}]},
+    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": ["doraindicator_5"]}, {"name": "winning_reverse_dora_count", "opts": ["doraindicator_5", 4]}]}
+    
   ],
   "meta_yaku": [
     {
@@ -1363,7 +1431,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "inoue_jun_broke_ippatsu"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "inoue_jun_broke_ippatsu"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -1438,7 +1506,7 @@
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
                 ["ite", [{"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
                   [["set_status", "extra_turn_prompt"]],
-                  [["unset_status", "extra_turn", "extra_turn_taken"]]]
+                  [["unset_status", "extra_turn", "extra_turn_taken", "discard_facedown"]]]
                ]
   },
   "after_turn_change": {
@@ -1601,6 +1669,21 @@
       ["set_status", "extra_turn"],
       ["big_text", "Karijuku Tomoe: extra turn!"],
       ["push_message", "took an extra turn by discarding haku (Karijuku Tomoe)"]
+    ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "shimocha_status", "opts": ["riichi"]}, "genbutsu_shimocha", {"name": "status_missing", "opts": ["extra_turn", "extra_turn_taken"]}], [
+      ["set_status", "extra_turn", "discard_facedown"],
+      ["big_text", "Kosegawa Shiromi: extra turn!"],
+      ["push_message", "took an extra turn by discarding genbutsu against riichi (Kosegawa Shiromi)"]
+    ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "toimen_status", "opts": ["riichi"]}, "genbutsu_toimen", {"name": "status_missing", "opts": ["extra_turn", "extra_turn_taken"]}], [
+      ["set_status", "extra_turn", "discard_facedown"],
+      ["big_text", "Kosegawa Shiromi: extra turn!"],
+      ["push_message", "took an extra turn by discarding genbutsu against riichi (Kosegawa Shiromi)"]
+    ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "kamicha_status", "opts": ["riichi"]}, "genbutsu_kamicha", {"name": "status_missing", "opts": ["extra_turn", "extra_turn_taken"]}], [
+      ["set_status", "extra_turn", "discard_facedown"],
+      ["big_text", "Kosegawa Shiromi: extra turn!"],
+      ["push_message", "took an extra turn by discarding genbutsu against riichi (Kosegawa Shiromi)"]
     ]]]]
   ],
   "after_start": {
@@ -2530,7 +2613,7 @@
       "display_name": "Skip extra turn",
       "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
       "actions": [
-        ["unset_status", "extra_turn", "extra_turn_prompt"],
+        ["unset_status", "extra_turn", "extra_turn_prompt", "discard_facedown"],
         ["push_message", "skipped their extra turn"],
         ["advance_turn"]
       ],

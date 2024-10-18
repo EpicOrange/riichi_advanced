@@ -423,10 +423,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
         end
-      "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + Enum.at(opts, 0, 1)) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true })
+      "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + Enum.at(opts, 0, 1)) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
       "bet_points"            -> state |> Map.update!(:riichi_sticks, & Utils.try_integer(&1 + Enum.at(opts, 0, 1000) / 1000)) |> update_player(context.seat, &%Player{ &1 | score: &1.score + Enum.at(opts, 0, 1000) })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
+      "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || seat != context.seat } end)
       "discard_draw"          ->
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])

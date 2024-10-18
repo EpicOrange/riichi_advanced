@@ -171,6 +171,12 @@ defmodule Utils do
     attrs_match = has_attr?(tile1, attrs2)
     same_id && attrs_match
   end
+
+  def count_tiles(hand, tiles, tile_aliases \\ %{}) do
+    for hand_tile <- hand do
+      if Enum.any?(tiles, &same_tile(hand_tile, &1, tile_aliases)) do 1 else 0 end
+    end |> Enum.sum()
+  end
   
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)

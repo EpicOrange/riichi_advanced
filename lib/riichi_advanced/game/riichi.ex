@@ -365,11 +365,22 @@ defmodule Riichi do
     end
   end
 
+  def get_safe_tiles_against(seat, players, turn \\ nil) do
+    riichi_safe = if players[seat].riichi_discard_indices != nil do
+      for {dir, ix} <- players[seat].riichi_discard_indices do
+        discards = Enum.drop(players[dir].discards, ix)
+        # last discard is not safe
+        if turn == dir do Enum.drop(discards, -1) else discards end
+      end |> Enum.concat()
+    else [] end
+    players[seat].discards ++ riichi_safe |> Utils.strip_attrs() |> Enum.uniq()
+  end
+
   def tile_matches(tile_specs, context) do
     Enum.any?(tile_specs, &case &1 do
       "any" -> true
-      "same" ->  Utils.same_tile(context.tile, context.tile2, context.tile_aliases)
-      "not_same" -> not Utils.same_tile(context.tile, context.tile2, context.tile_aliases)
+      "same" ->  Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_aliases)
+      "not_same" -> not Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_aliases)
       "manzu" -> is_manzu?(context.tile)
       "pinzu" -> is_pinzu?(context.tile)
       "souzu" -> is_souzu?(context.tile)
@@ -392,8 +403,8 @@ defmodule Riichi do
       "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
       "kuikae" ->
         potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], ["hand"])
-        triplet = remove_group(potential_set, [], [0,0,0], context.ordering, context.ordering_r, context.tile_aliases)
-        sequence = remove_group(potential_set, [], [0,1,2], context.ordering, context.ordering_r, context.tile_aliases)
+        triplet = remove_group(potential_set, [], [0,0,0], context.players[context.seat].ordering, context.players[context.seat].ordering_r, context.players[context.seat].tile_aliases)
+        sequence = remove_group(potential_set, [], [0,1,2], context.players[context.seat].ordering, context.players[context.seat].ordering_r, context.players[context.seat].tile_aliases)
         not Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs
@@ -643,7 +654,7 @@ defmodule Riichi do
   def count_ukeire(waits, hand, visible_ponds, visible_calls, winning_tile, tile_aliases \\ %{}) do
     all_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &call_to_tiles/1) -- [winning_tile]
     waits
-    |> Enum.map(fn wait -> 4 - Enum.count(all_tiles, fn tile -> Utils.same_tile(tile, wait, tile_aliases) end) end)
+    |> Enum.map(fn wait -> 4 - Utils.count_tiles(all_tiles, [wait], tile_aliases) end)
     |> Enum.sum()
   end
 

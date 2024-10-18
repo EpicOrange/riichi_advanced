@@ -22,6 +22,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "kakura-kurumi" => "Kakura Kurumi",
     "karijuku-tomoe" => "Karijuku Tomoe",
     "kataoka-yuuki" => "Kataoka Yuuki",
+    "kosegawa-shiromi" => "Kosegawa Shiromi",
     "mase-yuuko" => "Mase Yuuko",
     "matano-seiko" => "Matano Seiko",
     "matsumi-kuro" => "Matsumi Kuro",

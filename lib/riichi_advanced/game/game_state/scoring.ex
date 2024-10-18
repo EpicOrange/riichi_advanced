@@ -333,7 +333,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               # winner pays arakawa kei 1000 points per waiting tile in her hand
               {arakawa_kei_seat, arakawa_kei} = Enum.find(state.players, fn {_seat, player} -> "arakawa-kei" in player.status end)
               waiting_tiles = Map.keys(waits)
-              num = Enum.count(arakawa_kei.hand, fn hand_tile -> Enum.any?(waiting_tiles, &Utils.same_tile(hand_tile, &1)) end)
+              num = Utils.count_tiles(arakawa_kei.hand, waiting_tiles)
               push_message(state, [%{text: "Winner pays player #{arakawa_kei_seat} #{state.players[arakawa_kei_seat].nickname} #{1000 * num} for having #{num} waits in hand (Arakawa Kei)"}])
               delta_scores
               |> Map.update!(winner.seat, & &1 - 1000 * num)
