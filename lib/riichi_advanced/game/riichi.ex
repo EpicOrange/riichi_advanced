@@ -317,9 +317,36 @@ defmodule Riichi do
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
+  def decompose_match_definitions(match_definitions) do
+    # take out one copy of each group to process last
+    for match_definition <- match_definitions do
+      for {[groups, num], i} <- Enum.with_index(match_definition), num >= 1 do
+        {List.replace_at(match_definition, i, [groups, num-1]), [[groups, 1]]}
+      end
+    end |> Enum.concat()
+  end
+
+  def is_waiting_on(tile, hand, calls, decomposed_match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+    Enum.any?(decomposed_match_definitions, fn {def1, def2} ->
+      Enum.any?(remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases), fn {hand, calls} ->
+        match_hand(hand ++ [tile], calls, [def2], ordering, ordering_r, tile_aliases)
+      end)
+    end)
+  end
+
   # TODO move wall to front, remove @all_tiles
   def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles) do
-    Enum.filter(Enum.uniq(wall), fn tile -> match_hand(hand ++ [tile], calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+    decomposed_match_definitions = decompose_match_definitions(match_definitions)
+    wall = Enum.uniq(wall)
+    for tile <- wall, reduce: [] do
+      waits -> cond do
+        tile in waits -> waits
+        is_waiting_on(tile, hand, calls, decomposed_match_definitions, ordering, ordering_r, tile_aliases) ->
+          other_waits = [tile | tile_aliases[tile]] |> Utils.strip_attrs()
+          waits ++ other_waits
+        true -> waits
+      end |> Enum.uniq()
+    end
   end
 
   def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do
