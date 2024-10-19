@@ -69,7 +69,6 @@ defmodule RiichiAdvanced.GameState.Marking do
       case restriction do
         "match_suit"        ->
           if Riichi.is_suited?(tile) do
-            IO.inspect(Map.values(state.marking[marking_player]))
             Map.values(state.marking[marking_player])
             |> Enum.filter(&Kernel.is_map/1)
             |> Enum.map(fn mark_info -> mark_info.marked end)
@@ -78,7 +77,6 @@ defmodule RiichiAdvanced.GameState.Marking do
           else false end
         "match_number"        ->
           if Riichi.is_suited?(tile) do
-            IO.inspect(Map.values(state.marking[marking_player]))
             Map.values(state.marking[marking_player])
             |> Enum.filter(&Kernel.is_map/1)
             |> Enum.map(fn mark_info -> mark_info.marked end)

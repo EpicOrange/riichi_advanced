@@ -31,6 +31,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "maya-yukiko" => "Maya Yukiko",
     "miyanaga-saki" => "Miyanaga Saki",
     "miyanaga-teru" => "Miyanaga Teru",
+    "motouchi-naruka" => "Motouchi Naruka",
     "nanpo-kazue" => "Nanpo Kazue",
     "onjouji-toki" => "Onjouji Toki",
     "sagimori-arata" => "Sagimori Arata",

@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
-  @debug_actions false
+  @debug_actions true
 
   def temp_disable_play_tile(state, seat) do
     state = Map.update!(state, :play_tile_debounce, &Map.put(&1, seat, true))
@@ -25,7 +25,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     if is_playable?(state, seat, tile, tile_source) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
-      tile = if "discard_facedown" in state.players[seat].status do :"1x" else tile end
+      tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
       tile = Utils.add_attr(tile, ["discard"])
 
       state = update_player(state, seat, &%Player{ &1 |
@@ -128,7 +128,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # erase previous turn's deferred actions
     state = if prev_turn != nil do
-      update_player(state, prev_turn, &%Player{ &1 | deferred_actions: [] })
+      update_player(state, prev_turn, &%Player{ &1 | deferred_actions: [], deferred_context: %{} })
     else state end
 
     # IO.puts("Changing turn from #{prev_turn} to #{seat}")
@@ -314,7 +314,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         :toimen -> [["charleston_across"]]
         :shimocha -> [["charleston_right"]]
       end
-      schedule_actions(state, seat, actions)
+      schedule_actions(state, seat, actions, %{seat: seat})
     else
       {hand_tile1, hand_seat, hand_index1} = Enum.at(marked_objects.hand.marked, 0)
       {hand_tile2, _, hand_index2} = Enum.at(marked_objects.hand.marked, 1)
@@ -576,8 +576,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
         state = put_in(state.marking[context.seat].done, true)
         state
-      "about_to_draw"         -> state # no-op
-      "about_to_ron"          -> state # no-op
+      "clear_marking"         -> put_in(state.marking[context.seat].done, true)
       "set_tile_alias"        ->
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
@@ -662,6 +661,20 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state)
         state
+      "flip_last_discard_faceup"  ->
+        case get_last_discard_action(state).tile do
+          {:"1x", attrs} ->
+            tile_attr = Enum.find(attrs, &Utils.to_tile/1)
+            tile = Utils.to_tile([tile_attr, attrs -- [tile_attr]])
+            if tile != nil do
+              last_discarder = get_last_discard_action(state).seat
+              state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
+              state = update_action(state, last_discarder, :discard, %{tile: tile})
+              state = Buttons.recalculate_buttons(state)
+              state
+            else state end
+          _ -> state
+        end
       "set_aside_draw"     -> update_player(state, context.seat, &%Player{ &1 | draw: [], aside: &1.aside ++ &1.draw })
       "draw_from_aside"    ->
         state = case state.players[context.seat].aside do
@@ -689,7 +702,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
       "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
       "shift_dead_wall_index" -> Map.update!(state, :dead_wall_index, & &1 + Enum.at(opts, 0, 1))
-      "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [] } end)
+      "resume_deferred_actions" ->
+        IO.inspect("resuming deferred actions")
+        resume_deferred_actions(state)
+      "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
@@ -748,7 +764,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       if @debug_actions do
         IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
       end
-      state = schedule_actions(state, context.seat, deferred_actions)
+      state = schedule_actions(state, context.seat, deferred_actions, context)
       state
     else state end
     state = Map.update!(state, :actions_cv, & &1 - 1)
@@ -765,10 +781,14 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  def schedule_actions(state, seat, actions, context) do
+    update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions, deferred_context: context })
+  end
+
   def run_deferred_actions(state, context) do
     actions = state.players[context.seat].deferred_actions
     if state.game_active && not Enum.empty?(actions) do
-      state = update_player(state, context.seat, &%Player{ &1 | choice: nil, chosen_actions: nil, deferred_actions: [] })
+      state = update_player(state, context.seat, &%Player{ &1 | choice: nil, chosen_actions: nil, deferred_actions: [], deferred_context: %{} })
       if @debug_actions do
         IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       end
@@ -778,8 +798,18 @@ defmodule RiichiAdvanced.GameState.Actions do
     else state end
   end
 
-  def schedule_actions(state, seat, actions) do
-    update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions })
+  def resume_deferred_actions(state) do
+    for {seat, player} <- state.players, not Enum.empty?(player.deferred_actions), reduce: state do
+      state ->
+        if @debug_actions do
+          IO.puts("Resuming deferred actions for #{seat}")
+        end
+        state = run_deferred_actions(state, player.deferred_context)
+        state = if not Enum.empty?(state.marking[seat]) && state.marking[seat].done do
+          Marking.reset_marking(state, seat)
+        else state end
+        state
+    end
   end
 
   def get_superceded_buttons(state, button_name) do
@@ -841,25 +871,40 @@ defmodule RiichiAdvanced.GameState.Actions do
                 if length(flattened_call_choices) == 1 do
                   # if there's only one choice, automatically choose it
                   {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
+                  if @debug_actions do
+                    IO.puts("Running actions due to there being only one call choice for #{seat}: #{inspect(actions)}")
+                  end
                   state = run_actions(state, actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
                   state
                 else
                   # otherwise, defer all actions and display call choices
-                  state = schedule_actions(state, seat, actions)
+                  if @debug_actions do
+                    IO.puts("Scheduling call actions for #{seat}: #{inspect(actions)}")
+                  end
+                  state = schedule_actions(state, seat, actions, %{seat: seat, call_name: button_name})
                   state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: button_name } end)
                   notify_ai_call_buttons(state, seat)
                   state
                 end
               {:mark, mark_spec, pre_actions} ->
                 # run pre-mark actions
+                if @debug_actions do
+                  IO.puts("Running pre-mark actions for #{seat}: #{inspect(pre_actions)}")
+                end
                 state = run_actions(state, pre_actions, %{seat: seat})
                 # setup marking
                 state = Marking.setup_marking(state, seat, mark_spec)
-                state = schedule_actions(state, seat, actions)
+                if @debug_actions do
+                  IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
+                end
+                state = schedule_actions(state, seat, actions, %{seat: seat})
                 notify_ai_marking(state, seat)
                 state
               nil ->
                 # just run all button actions as normal
+                if @debug_actions do
+                  IO.puts("Running actions for #{seat}: #{inspect(actions)}")
+                end
                 state = run_actions(state, actions, %{seat: seat})
                 state
             end
@@ -929,12 +974,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         if Enum.all?(state.players, fn {_seat, player} -> player.choice == "skip" end) do
           if state.game_active do
             # IO.puts("All choices are no-ops, running deferred actions")
-            state = for {seat, _player} <- state.players, reduce: state do
-              state ->
-                state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-                state = run_deferred_actions(state, %{seat: seat})
-                state
-            end
+            state = resume_deferred_actions(state)
+            state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
             notify_ai(state)
             state
           else state end

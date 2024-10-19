@@ -35,6 +35,7 @@
     "maya-yukiko",
     "miyanaga-saki",
     "miyanaga-teru",
+    "motouchi-naruka",
     "nanpo-kazue",
     "onjouji-toki",
     "sagimori-arata",
@@ -1433,7 +1434,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "inoue_jun_broke_ippatsu", "kunihiro_hajime_swapped"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "inoue_jun_broke_ippatsu", "kunihiro_hajime_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -1550,7 +1551,7 @@
                     ]
                   ], [
                     ["set_status", "about_to_draw"],
-                    ["about_to_draw"],
+                    ["noop"], // allow interrupting draw
                     ["unset_status", "about_to_draw"],
                     ["draw"],
                     ["when", [{"name": "status", "opts": ["ippatsu"]}], [
@@ -1570,7 +1571,7 @@
                     "has_aside"
                   ], [
                     ["set_status", "about_to_draw"],
-                    ["about_to_draw"],
+                    ["noop"], // allow interrupting draw
                     ["unset_status", "about_to_draw"],
                     ["draw_from_aside"]
                   ]],
@@ -1620,6 +1621,7 @@
                   ["draw_aside"],
                   ["push_message", "drew a tile aside (Atago Kinue)"]
                 ]],
+                ["unset_status_all", "motouchi_naruka_skip_interrupt"],
                 ["when", [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}], [
                   ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
                   ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
@@ -1686,7 +1688,8 @@
       ["set_status", "extra_turn", "discard_facedown"],
       ["big_text", "Kosegawa Shiromi: extra turn!"],
       ["push_message", "took an extra turn by discarding genbutsu against riichi (Kosegawa Shiromi)"]
-    ]]]]
+    ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["noop"]]]]] // allow interrupting facedown discards\
   ],
   "after_start": {
     "actions": [
@@ -1781,34 +1784,44 @@
     },
     "atarashi_ako": {
       "display_name": "Swap a discard with same suit in hand",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "about_to_swap", "swap_interrupted"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
         ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]],
         ["push_message", "swapped a discard with a same-suit tile from hand (Atarashi Ako)"],
-        ["swap_marked_hand_and_discard"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["noop"] // allow tsumo to pop up
+        ["set_status", "about_to_swap"],
+        ["noop"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+          ["swap_marked_hand_and_discard"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["noop"] // allow tsumo to pop up
+        ]]
       ]
     },
     "atarashi_ako_dora": {
       "display_name": "Swap dora indicator with same suit in hand",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "about_to_swap", "swap_interrupted"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
         ["mark", [["hand", 1, ["match_suit"]], ["revealed_tile", 1, ["match_suit"]]]],
         ["push_message", "swapped a dora indicator with a same-suit tile from hand (Atarashi Ako)"],
-        ["swap_marked_hand_and_dora_indicator"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["noop"] // allow tsumo to pop up
+        ["set_status", "about_to_swap"],
+        ["noop"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+          ["swap_marked_hand_and_dora_indicator"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["noop"] // allow tsumo to pop up
+        ]]
       ]
     },
     "choe_myeonghwa": {
       "display_name": "Swap last discard with tile in hand",
       "show_when": [
-        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "status_missing", "opts": ["match_start", "about_to_swap"]},
         "someone_else_just_discarded",
         [
           [
@@ -1851,9 +1864,14 @@
         ["unset_status", "just_called"],
         ["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]],
         ["push_message", "swapped a tile in hand with the last discard (Choe Myeonghwa)"],
-        ["swap_marked_hand_and_discard"],
-        ["advance_turn"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ["set_status", "about_to_swap"],
+        ["noop"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+          ["swap_marked_hand_and_discard"],
+          ["advance_turn"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
+        ]]
       ]
     },
     "haramura_nodoka": {
@@ -1939,21 +1957,6 @@
         ["cancel_deferred_actions"],
         ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
-      ],
-      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
-    },
-    "maya_yukiko": {
-      "display_name": "Chii with priority",
-      "call": [[-2, -1], [-1, 1], [1, 2]],
-      "call_name": "chii",
-      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
-      "show_when": ["not_our_turn", {"name": "status", "opts": ["maya-yukiko"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
-      "actions": [
-        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
-        ["big_text", "Maya Yukiko: chii!"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["push_message", "called chii with priority (Maya Yukiko)"],
-        ["set_status", "chii"]
       ],
       "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
@@ -2133,7 +2136,7 @@
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
         {"name": "status", "opts": ["kunihiro-hajime"]},
-        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_draw"]},
+        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_swap"]},
         "our_turn",
         {"name": "status_missing", "opts": ["kunihiro-hajime_exhausted"]},
         "not_just_discarded"
@@ -2143,9 +2146,14 @@
         ["set_status", "kunihiro_hajime_swapped", "kunihiro-hajime_exhausted"],
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
-        ["swap_marked_hand_and_discard"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["noop"] // allow tsumo to pop up
+        ["set_status", "about_to_swap"],
+        ["noop"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+          ["swap_marked_hand_and_discard"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["noop"] // allow tsumo to pop up
+        ]]
       ],
       "no_interrupt": true
     },
@@ -2153,7 +2161,7 @@
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
         {"name": "status", "opts": ["kunihiro-hajime"]},
-        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_draw"]},
+        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_swap"]},
         [
           {"name": "others_status", "opts": ["just_reached"]},
           {"name": "others_status", "opts": ["kan"]}
@@ -2164,10 +2172,132 @@
         ["set_status", "kunihiro_hajime_swapped", "kunihiro-hajime_exhausted"],
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
-        ["swap_marked_hand_and_discard"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["noop"] // allow tsumo to pop up
+        ["set_status", "about_to_swap"],
+        ["noop"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+          ["swap_marked_hand_and_discard"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["noop"] // allow tsumo to pop up
+        ]]
       ]
+    },
+    "motouchi_naruka_interrupt_call": {
+      "display_name": "Interrupt call",
+      "show_when": [
+        {"name": "status", "opts": ["motouchi-naruka"]},
+        "just_discarded",
+        [
+          {"name": "others_status", "opts": ["about_to_call", "chii"]},
+          {"name": "others_status", "opts": ["about_to_call", "pon"]},
+          {"name": "others_status", "opts": ["about_to_call", "daiminkan"]}
+        ],
+        {"name": "not_others_status", "opts": ["call_interrupted"]},
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+      ],
+      "actions": [
+        ["big_text", "Motouchi Naruka: interrupt!"],
+        ["bet_points", -1000],
+        ["push_message", "bet 1000 points to prevent discard being called (Motouchi Naruka)"],
+        ["when_anyone", [{"name": "status", "opts": ["about_to_call"]}], [["set_status", "call_interrupted"]]],
+        ["advance_turn"]
+      ],
+      "unskippable": true
+    },
+    "motouchi_naruka_interrupt_swap": {
+      "display_name": "Interrupt swap",
+      "show_when": [
+        {"name": "status", "opts": ["motouchi-naruka"]},
+        {"name": "others_status", "opts": ["about_to_swap"]},
+        {"name": "not_others_status", "opts": ["swap_interrupted"]},
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+      ],
+      "actions": [
+        ["big_text", "Motouchi Naruka: interrupt!"],
+        ["bet_points", -1000],
+        ["push_message", "bet 1000 points to prevent a tile swap (Motouchi Naruka)"],
+        ["when_anyone", [{"name": "status", "opts": ["about_to_swap"]}], [["set_status", "swap_interrupted"]]],
+        ["resume_deferred_actions"]
+      ],
+      "unskippable": true
+    },
+    "motouchi_naruka_interrupt_facedown": {
+      "display_name": "Interrupt facedown discard",
+      "show_when": [
+        {"name": "status", "opts": ["motouchi-naruka"]},
+        "someone_else_just_discarded",
+        {"name": "others_status", "opts": ["discard_facedown"]},
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+      ],
+      "actions": [
+        ["big_text", "Motouchi Naruka: interrupt!"],
+        ["bet_points", -1000],
+        ["push_message", "bet 1000 points to prevent a facedown discard (Motouchi Naruka)"],
+        ["flip_last_discard_faceup"],
+        ["resume_deferred_actions"]
+      ],
+      "unskippable": true
+    },
+    "motouchi_naruka_interrupt_call_skip": {
+      "display_name": "Skip",
+      "show_when": [
+        {"name": "status", "opts": ["motouchi-naruka"]},
+        "just_discarded",
+        [
+          {"name": "others_status", "opts": ["about_to_call", "chii"]},
+          {"name": "others_status", "opts": ["about_to_call", "pon"]},
+          {"name": "others_status", "opts": ["about_to_call", "daiminkan"]}
+        ],
+        {"name": "not_others_status", "opts": ["call_interrupted"]},
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+      ],
+      "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"], ["noop"]],
+      "unskippable": true
+    },
+    "motouchi_naruka_interrupt_swap_facedown_skip": {
+      "display_name": "Skip",
+      "show_when": [
+        {"name": "status", "opts": ["motouchi-naruka"]},
+        [
+          {"name": "others_status", "opts": ["about_to_swap"]},
+          [
+            "someone_else_just_discarded",
+            {"name": "others_status", "opts": ["discard_facedown"]}
+          ]
+        ],
+        {"name": "not_others_status", "opts": ["swap_interrupted"]},
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+      ],
+      "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"], ["noop"]],
+      "unskippable": true
+    },
+    "maya_yukiko": {
+      "display_name": "Chii with priority",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_name": "chii",
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
+      "show_when": [
+        "not_our_turn",
+        {"name": "status", "opts": ["maya-yukiko"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "someone_else_just_discarded",
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        "call_available"
+      ],
+      "actions": [
+        ["big_text", "Maya Yukiko: chii!"],
+        ["set_status", "about_to_call", "chii"],
+        ["noop"], // allow interrupt
+        ["unset_status", "about_to_call"],
+        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
+          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+          ["push_message", "called chii with priority (Maya Yukiko)"]
+        ]]
+      ],
+      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
     "chii": {
       "display_name": "Chii",
@@ -2175,19 +2305,29 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available"
+        "not_our_turn",
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "kamicha_discarded",
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        "call_available"
       ],
       "actions": [
-        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
-        ["big_text", "Chii"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["set_status", "chii"],
-        ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
-          ["set_status", "extra_turn"],
-          ["big_text", "Inoue Jun: extra turn!"],
-          ["add_score", 500],
-          ["add_score", -500, "last_discarder"],
-          ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
-          ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+        ["big_text", "Chii"],
+        ["set_status", "about_to_call", "chii"],
+        ["noop"], // allow interrupting call
+        ["unset_status", "about_to_call"],
+        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
+          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+          ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+            ["set_status", "extra_turn"],
+            ["big_text", "Inoue Jun: extra turn!"],
+            ["add_score", 500],
+            ["add_score", -500, "last_discarder"],
+            ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+            ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+          ]]
         ]]
       ]
     },
@@ -2197,7 +2337,11 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available",
+        "not_our_turn",
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining", "someone_else_just_discarded",
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
@@ -2206,15 +2350,21 @@
         ]
       ],
       "actions": [
-        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
-        ["big_text", "Pon"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
-        ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
-          ["set_status", "extra_turn"],
-          ["big_text", "Inoue Jun: extra turn!"],
-          ["add_score", 500],
-          ["add_score", -500, "last_discarder"],
-          ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
-          ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+        ["big_text", "Pon"],
+        ["set_status", "about_to_call", "pon"],
+        ["noop"], // allow interrupting call
+        ["unset_status", "about_to_call"],
+        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
+          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+          ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+            ["set_status", "extra_turn"],
+            ["big_text", "Inoue Jun: extra turn!"],
+            ["add_score", 500],
+            ["add_score", -500, "last_discarder"],
+            ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+            ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+          ]]
         ]]
       ],
       "precedence_over": ["chii", "pon"]
@@ -2225,7 +2375,12 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
-        "not_our_turn", {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits"]}, "call_available",
+        "not_our_turn",
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "someone_else_just_discarded",
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "call_interrupted"]},
+        "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
@@ -2234,28 +2389,34 @@
         ]
       ],
       "actions": [
-        ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
-        ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
-        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
-        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
-        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-        ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [
-          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
-          ["draw", 1, "kandraw_4_lazy"]
-        ]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
-        ["add_attr_drawn_tile", "rinshan"],
-        ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
-          ["set_status", "extra_turn"],
-          ["big_text", "Inoue Jun: extra turn!"],
-          ["add_score", 500],
-          ["add_score", -500, "last_discarder"],
-          ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
-          ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+        ["big_text", "Kan"],
+        ["set_status", "about_to_call", "daiminkan"],
+        ["noop"], // allow interrupting call
+        ["unset_status", "about_to_call"],
+        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
+          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
+          ["set_status", "kan"],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_3_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4_lazy"]}], [
+            ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+            ["draw", 1, "kandraw_4_lazy"]
+          ]],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_2_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3_lazy"]}], [["draw", 1, "kandraw_3_lazy"]]],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_1_lazy"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2_lazy"]}], [["draw", 1, "kandraw_2_lazy"]]],
+          ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1_lazy"]}], [["draw", 1, "kandraw_1_lazy"]]],
+          ["add_attr_drawn_tile", "rinshan"],
+          ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+            ["set_status", "extra_turn"],
+            ["big_text", "Inoue Jun: extra turn!"],
+            ["add_score", 500],
+            ["add_score", -500, "last_discarder"],
+            ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+            ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+          ]]
         ]]
       ],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -2396,7 +2557,8 @@
             "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
             "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]
         ]]
-      ]
+      ],
+      "no_interrupt": true
     },
     "ron": {
       "display_name": "Ron",
@@ -2475,7 +2637,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["about_to_ron"], ["reveal_hand"], ["win_by_discard"]
+        ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["noop"], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -2549,7 +2711,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["about_to_ron"], ["reveal_hand"], ["win_by_call"]
+        ["big_text", "Ron"], ["pause", 1000], ["noop"], ["reveal_hand"], ["win_by_call"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -2637,7 +2799,8 @@
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"],
+      "no_interrupt": true
     },
     "kyuushu_kyuuhai": {
       "display_name": "Kyuushu Kyuuhai",
@@ -2713,7 +2876,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "advance_turn", "call", "self_call", "upgrade_call", "noop", "draw_from_aside", "about_to_draw", "about_to_ron"],
+  "interruptible_actions": ["noop", "play_tile", "advance_turn", "call", "self_call", "upgrade_call", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
   "shown_statuses": ["furiten"],
   "display_riichi_sticks": true,
   "display_honba": true,

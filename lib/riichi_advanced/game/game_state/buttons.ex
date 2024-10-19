@@ -10,19 +10,34 @@ defmodule RiichiAdvanced.GameState.Buttons do
     unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
     if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end
   end
-      
+
+  def extract_choice_actions([]), do: []
+  def extract_choice_actions([action | actions]) do
+    choice_actions = 
+    choice_actions = case action do
+      [action_name | _opts] when action_name in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark"] -> [action]
+      ["when", _condition, subactions] -> extract_choice_actions(subactions)
+      ["unless", _condition, subactions] -> extract_choice_actions(subactions)
+      ["ite", _condition, subactions1, subactions2] -> extract_choice_actions(subactions1) ++ extract_choice_actions(subactions2)
+      _ -> []
+    end
+    choice_actions ++ extract_choice_actions(actions)
+  end
+
   def make_button_choices(state, seat, button_name, button) do
     actions = button["actions"]
     # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
     # check if a call action exists, if it's a call and multiple call choices are available
+    choice_actions = extract_choice_actions(actions)
+    IO.inspect(choice_actions)
     cond do
-      Enum.any?(actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end) ->
+      Enum.any?(choice_actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end) ->
         # call button choices logic
         # if there is a call action, check if there are multiple call choices
-        is_call = Enum.any?(actions, fn [action | _opts] -> action == "call" end)
-        is_upgrade = Enum.any?(actions, fn [action | _opts] -> action == "upgrade_call" end)
-        is_flower = Enum.any?(actions, fn [action | _opts] -> action == "flower" end)
-        is_saki_card = Enum.any?(actions, fn [action | _opts] -> action == "draft_saki_card" end)
+        is_call = Enum.any?(choice_actions, fn [action | _opts] -> action == "call" end)
+        is_upgrade = Enum.any?(choice_actions, fn [action | _opts] -> action == "upgrade_call" end)
+        is_flower = Enum.any?(choice_actions, fn [action | _opts] -> action == "flower" end)
+        is_saki_card = Enum.any?(choice_actions, fn [action | _opts] -> action == "draft_saki_card" end)
         hand = Utils.add_attr(state.players[seat].hand, ["hand"])
         draw = Utils.add_attr(state.players[seat].draw, ["hand"])
         ordering = state.players[seat].tile_ordering
@@ -40,13 +55,13 @@ defmodule RiichiAdvanced.GameState.Buttons do
               |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
             {state, call_choices}
           is_flower ->
-            flowers = Enum.flat_map(actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
+            flowers = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
             flowers_in_hand = Enum.filter(state.players[seat].hand ++ state.players[seat].draw, fn tile -> tile in flowers end)
             call_choices = %{nil => Enum.map(flowers_in_hand, fn tile -> [tile] end)}
             {state, call_choices}
           is_saki_card ->
             # TODO use Enum.drop_while instead to get num
-            [num] = Enum.flat_map(actions, fn [action | opts] -> if action == "draft_saki_card" do [Enum.at(opts, 0, 4)] else [] end end)
+            [num] = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "draft_saki_card" do [Enum.at(opts, 0, 4)] else [] end end)
             {state, cards} = Saki.draw_saki_cards(state, num)
             call_choices = %{"saki" => Enum.map(cards, fn card -> [card] end)}
             {state, call_choices}
@@ -63,8 +78,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
           end |> Map.new()
         else call_choices end
         {state, {:call, call_choices}}
-      Enum.any?(actions, fn [action | _opts] -> action == "mark" end) ->
-        [_ | opts] = Enum.filter(actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
+      Enum.any?(choice_actions, fn [action | _opts] -> action == "mark" end) ->
+        [_ | opts] = Enum.filter(choice_actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
         mark_spec = Enum.at(opts, 0, []) |> Enum.map(fn [target, needed, restrictions] -> {target, needed, restrictions} end)
         {state, {:mark, mark_spec, Enum.at(opts, 1, [])}}
       true -> {state, nil}

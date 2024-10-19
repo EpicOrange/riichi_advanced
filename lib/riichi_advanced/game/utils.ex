@@ -57,6 +57,13 @@ defmodule Utils do
     tile |> strip_attrs() |> Atom.to_string()
   end
 
+  def tile_to_attrs(tile) do
+    case tile do
+      {tile, attrs} -> [Atom.to_string(tile) | attrs]
+      tile          -> [Atom.to_string(tile)]
+    end
+  end
+
   defp to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}

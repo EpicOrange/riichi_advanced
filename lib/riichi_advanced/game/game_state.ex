@@ -26,6 +26,7 @@ defmodule Player do
     choice: nil,
     chosen_actions: nil,
     deferred_actions: [],
+    deferred_context: %{},
     big_text: "",
     status: [],
     counters: %{},
@@ -1498,7 +1499,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:cancel_call_buttons, seat}, state) do
     # go back to button clicking phase
-    state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [] } end)
+    state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
     notify_ai(state)
 
     state = broadcast_state_change(state)
@@ -1555,14 +1556,7 @@ defmodule RiichiAdvanced.GameState do
 
       # if we're still going, run deferred actions for everyone and then notify ai
       state = if state.game_active do
-        state = for {seat, _player} <- state.players, reduce: state do
-          state ->
-            state = Actions.run_deferred_actions(state, %{seat: seat})
-            state = if not Enum.empty?(state.marking[seat]) && state.marking[seat].done do
-              Marking.reset_marking(state, seat)
-            else state end
-            state
-        end
+        Actions.resume_deferred_actions(state)
         notify_ai(state)
         state
       else state end
@@ -1584,7 +1578,7 @@ defmodule RiichiAdvanced.GameState do
 
     # go back to button clicking phase
     state = Buttons.recalculate_buttons(state)
-    state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [] } end)
+    state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
     notify_ai(state)
 
     state = broadcast_state_change(state)
