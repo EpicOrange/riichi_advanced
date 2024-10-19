@@ -96,6 +96,7 @@ div.hand, div.tiles, div.calls, div.call, div.draws, div.buttons, div.call-butto
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-end;
+  position: relative;
 }
 div.hand {
   position: absolute;
@@ -150,7 +151,31 @@ div.hand.kamicha {
   transform: rotate(90deg);
   transform-origin: top left;
 }
-
+div.draws::before {
+  content: "";
+  position: absolute;
+  top: calc(-0.25 * var(--tile-size));
+  left: calc(-0.25 * var(--tile-size));
+  background: #0f6f2f;
+  border-radius: calc(0.25 * var(--tile-size));
+  width: calc(100% + 0.5 * var(--tile-size));
+  height: calc(100% + 0.5 * var(--tile-size));
+  z-index: -1;
+}
+div.calls:hover {
+  z-index: 10;
+}
+div.calls:hover::before {
+  content: "";
+  position: absolute;
+  top: calc(-0.625 * var(--tile-size));
+  left: calc(-0.125 * var(--tile-size));
+  background: #0f4f1f;
+  border-radius: calc(0.25 * var(--tile-size));
+  width: calc(100% + 0.5 * var(--tile-size));
+  height: calc(100% + 1 * var(--tile-size));
+  z-index: -1;
+}
 
 /* ponds */
 div.pond {

@@ -96,15 +96,15 @@ defmodule RiichiAdvancedWeb.HandComponent do
               <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>
-          <%= for tile <- @aside do %>
-            <div class="call">
+          <div class="call">
+            <%= for tile <- @aside do %>
               <%= if @your_hand? do %>
                 <div class={["tile", Utils.strip_attrs(tile)]}></div>
               <% else %>
                 <div class={["tile", "1x"]}></div>
               <% end %>
-            </div>
-          <% end %>
+            <% end %>
+          </div>
       </div>
     </div>
     """
