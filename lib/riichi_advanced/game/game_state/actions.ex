@@ -387,6 +387,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
       "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_status_others"     -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status ++ opts) end } end)
+      "unset_status_others"   -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status -- opts) end } end)
       "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_status_all"      -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "set_callee_status"     -> update_player(state, context.callee, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
@@ -438,7 +440,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
         end
       "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + Enum.at(opts, 0, 1)) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
-      "bet_points"            -> state |> Map.update!(:riichi_sticks, & Utils.try_integer(&1 + Enum.at(opts, 0, 1000) / 1000)) |> update_player(context.seat, &%Player{ &1 | score: &1.score + Enum.at(opts, 0, 1000) })
+      "bet_points"            -> state |> Map.update!(:riichi_sticks, & Utils.try_integer(&1 + Enum.at(opts, 0, 1000) / 1000)) |> update_player(context.seat, &%Player{ &1 | score: &1.score - Enum.at(opts, 0, 1000) })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || seat != context.seat } end)
@@ -706,6 +708,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect("resuming deferred actions")
         resume_deferred_actions(state)
       "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
+      "recalculate_buttons" -> Buttons.recalculate_buttons(state, false)
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

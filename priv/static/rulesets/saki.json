@@ -1551,7 +1551,7 @@
                     ]
                   ], [
                     ["set_status", "about_to_draw"],
-                    ["noop"], // allow interrupting draw
+                    ["recalculate_buttons"], // allow interrupting draw
                     ["unset_status", "about_to_draw"],
                     ["draw"],
                     ["when", [{"name": "status", "opts": ["ippatsu"]}], [
@@ -1571,7 +1571,7 @@
                     "has_aside"
                   ], [
                     ["set_status", "about_to_draw"],
-                    ["noop"], // allow interrupting draw
+                    ["recalculate_buttons"], // allow interrupting draw
                     ["unset_status", "about_to_draw"],
                     ["draw_from_aside"]
                   ]],
@@ -1689,7 +1689,7 @@
       ["big_text", "Kosegawa Shiromi: extra turn!"],
       ["push_message", "took an extra turn by discarding genbutsu against riichi (Kosegawa Shiromi)"]
     ]]]],
-    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["noop"]]]]] // allow interrupting facedown discards\
+    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {
     "actions": [
@@ -1719,6 +1719,7 @@
       ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_tile_ordering", ["9m", "1m"]], ["set_tile_ordering", ["9p", "1p"]], ["set_tile_ordering", ["9s", "1s"]]]],
       ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}], [["set_tile_ordering", ["4z", "1z"]], ["set_tile_ordering", ["7z", "5z"]]]],
       ["when", [{"name": "status", "opts": ["arakawa-kei"]}], [["set_status_all", "use_arakawa_kei_scoring"]]],
+      ["when", [{"name": "status", "opts": ["motouchi-naruka"]}], [["set_status", "motouchi_naruka_increase_tsumo_payment"], ["set_status_others", "motouchi_naruka_decrease_tsumo_payment"]]],
       ["when", [
         {"name": "status", "opts": ["iwadate-yuan"]},
         {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
@@ -1791,12 +1792,12 @@
         ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]],
         ["push_message", "swapped a discard with a same-suit tile from hand (Atarashi Ako)"],
         ["set_status", "about_to_swap"],
-        ["noop"], // allow interrupting swap
+        ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
           ["swap_marked_hand_and_discard"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-          ["noop"] // allow tsumo to pop up
+          ["recalculate_buttons"] // allow tsumo to pop up
         ]]
       ]
     },
@@ -1809,12 +1810,12 @@
         ["mark", [["hand", 1, ["match_suit"]], ["revealed_tile", 1, ["match_suit"]]]],
         ["push_message", "swapped a dora indicator with a same-suit tile from hand (Atarashi Ako)"],
         ["set_status", "about_to_swap"],
-        ["noop"], // allow interrupting swap
+        ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
           ["swap_marked_hand_and_dora_indicator"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-          ["noop"] // allow tsumo to pop up
+          ["recalculate_buttons"] // allow tsumo to pop up
         ]]
       ]
     },
@@ -1865,7 +1866,7 @@
         ["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]],
         ["push_message", "swapped a tile in hand with the last discard (Choe Myeonghwa)"],
         ["set_status", "about_to_swap"],
-        ["noop"], // allow interrupting swap
+        ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
           ["swap_marked_hand_and_discard"],
@@ -2023,7 +2024,7 @@
         ["mark", [["hand", 1, []]]],
         ["swap_marked_with_aside"],
         ["push_message", "swapped a tile from hand with the tile they set aside (Onjouji Toki)"],
-        ["noop"]
+        ["recalculate_buttons"] // allow tsumo to pop up
       ]
     },
     "sawamura_tomoki": {
@@ -2147,12 +2148,12 @@
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
         ["set_status", "about_to_swap"],
-        ["noop"], // allow interrupting swap
+        ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
           ["swap_marked_hand_and_discard"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-          ["noop"] // allow tsumo to pop up
+          ["recalculate_buttons"] // allow tsumo to pop up
         ]]
       ],
       "no_interrupt": true
@@ -2173,12 +2174,12 @@
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
         ["set_status", "about_to_swap"],
-        ["noop"], // allow interrupting swap
+        ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
           ["swap_marked_hand_and_discard"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-          ["noop"] // allow tsumo to pop up
+          ["recalculate_buttons"] // allow tsumo to pop up
         ]]
       ]
     },
@@ -2193,13 +2194,14 @@
           {"name": "others_status", "opts": ["about_to_call", "daiminkan"]}
         ],
         {"name": "not_others_status", "opts": ["call_interrupted"]},
-        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]},
+        {"name": "has_score", "opts": [1000]}
       ],
       "actions": [
         ["big_text", "Motouchi Naruka: interrupt!"],
-        ["bet_points", -1000],
+        ["bet_points", 1000],
         ["push_message", "bet 1000 points to prevent discard being called (Motouchi Naruka)"],
-        ["when_anyone", [{"name": "status", "opts": ["about_to_call"]}], [["set_status", "call_interrupted"]]],
+        ["when_anyone", [{"name": "status", "opts": ["about_to_call"]}], [["set_status", "call_interrupted"], ["unset_status", "about_to_call"]]],
         ["advance_turn"]
       ],
       "unskippable": true
@@ -2210,11 +2212,12 @@
         {"name": "status", "opts": ["motouchi-naruka"]},
         {"name": "others_status", "opts": ["about_to_swap"]},
         {"name": "not_others_status", "opts": ["swap_interrupted"]},
-        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]},
+        {"name": "has_score", "opts": [1000]}
       ],
       "actions": [
         ["big_text", "Motouchi Naruka: interrupt!"],
-        ["bet_points", -1000],
+        ["bet_points", 1000],
         ["push_message", "bet 1000 points to prevent a tile swap (Motouchi Naruka)"],
         ["when_anyone", [{"name": "status", "opts": ["about_to_swap"]}], [["set_status", "swap_interrupted"]]],
         ["resume_deferred_actions"]
@@ -2227,11 +2230,12 @@
         {"name": "status", "opts": ["motouchi-naruka"]},
         "someone_else_just_discarded",
         {"name": "others_status", "opts": ["discard_facedown"]},
-        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
+        {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]},
+        {"name": "has_score", "opts": [1000]}
       ],
       "actions": [
         ["big_text", "Motouchi Naruka: interrupt!"],
-        ["bet_points", -1000],
+        ["bet_points", 1000],
         ["push_message", "bet 1000 points to prevent a facedown discard (Motouchi Naruka)"],
         ["flip_last_discard_faceup"],
         ["resume_deferred_actions"]
@@ -2251,7 +2255,7 @@
         {"name": "not_others_status", "opts": ["call_interrupted"]},
         {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
       ],
-      "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"], ["noop"]],
+      "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"]],
       "unskippable": true
     },
     "motouchi_naruka_interrupt_swap_facedown_skip": {
@@ -2268,7 +2272,7 @@
         {"name": "not_others_status", "opts": ["swap_interrupted"]},
         {"name": "status_missing", "opts": ["motouchi_naruka_skip_interrupt"]}
       ],
-      "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"], ["noop"]],
+      "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"]],
       "unskippable": true
     },
     "maya_yukiko": {
@@ -2289,7 +2293,7 @@
       "actions": [
         ["big_text", "Maya Yukiko: chii!"],
         ["set_status", "about_to_call", "chii"],
-        ["noop"], // allow interrupt
+        ["recalculate_buttons"], // allow interrupt
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
           ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
@@ -2315,7 +2319,7 @@
       "actions": [
         ["big_text", "Chii"],
         ["set_status", "about_to_call", "chii"],
-        ["noop"], // allow interrupting call
+        ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
           ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
@@ -2352,7 +2356,7 @@
       "actions": [
         ["big_text", "Pon"],
         ["set_status", "about_to_call", "pon"],
-        ["noop"], // allow interrupting call
+        ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
           ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
@@ -2391,7 +2395,7 @@
       "actions": [
         ["big_text", "Kan"],
         ["set_status", "about_to_call", "daiminkan"],
-        ["noop"], // allow interrupting call
+        ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
           ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
@@ -2637,7 +2641,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["noop"], ["reveal_hand"], ["win_by_discard"]
+        ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["recalculate_buttons"], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -2711,7 +2715,7 @@
         ]
       ],
       "actions": [
-        ["big_text", "Ron"], ["pause", 1000], ["noop"], ["reveal_hand"], ["win_by_call"]
+        ["big_text", "Ron"], ["pause", 1000], ["recalculate_buttons"], ["reveal_hand"], ["win_by_call"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
@@ -2876,7 +2880,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["noop", "play_tile", "advance_turn", "call", "self_call", "upgrade_call", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
+  "interruptible_actions": ["recalculate_buttons", "play_tile", "advance_turn", "call", "self_call", "upgrade_call", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
   "shown_statuses": ["furiten"],
   "display_riichi_sticks": true,
   "display_honba": true,

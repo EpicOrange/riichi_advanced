@@ -292,11 +292,24 @@ defmodule RiichiAdvanced.GameState.Scoring do
           else
             # first give the winner their riichi sticks
             delta_scores = Map.update!(delta_scores, winner.seat, & &1 + riichi_payment)
+            
             # reverse-calculate the ko and oya parts of the total points
             is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
             {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer)
-            dealer_seat = Riichi.get_east_player_seat(state.kyoku)
+
+            # handle motouchi naruka's scoring quirk
+            motouchi_naruka_delta = 100 * trunc(state.riichi_sticks)
+            {ko_payment, oya_payment} = if "motouchi_naruka_increase_tsumo_payment" in state.players[winner.seat].status do
+              push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} has tsumo payments increased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
+              {ko_payment + motouchi_naruka_delta, oya_payment + motouchi_naruka_delta}
+            else {ko_payment, oya_payment} end
+            {ko_payment, oya_payment} = if "motouchi_naruka_decrease_tsumo_payment" in state.players[winner.seat].status do
+              push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} has tsumo payments decreased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
+              {max(0, ko_payment - motouchi_naruka_delta), max(0, oya_payment - motouchi_naruka_delta)}
+            else {ko_payment, oya_payment} end
+
             # have each payer pay their allotted share
+            dealer_seat = Riichi.get_east_player_seat(state.kyoku)
             for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
               delta_scores ->
                 payment = if payer == dealer_seat do oya_payment else ko_payment end
@@ -329,7 +342,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if "arakawa-kei" in winner_player.status do
               # everyone pays winner 100 points per live out
               ukeire = waits |> Map.values() |> Enum.sum()
-              push_message(state, [%{text: "Everybody pays player #{winner.seat} #{state.players[winner.seat].nickname} #{100 * ukeire} for #{ukeire} live outs (Arakawa Kei)"}])
+              push_message(state, [%{text: "Everybody pays player #{winner.seat} #{state.players[winner.seat].nickname} #{100 * ukeire} for #{ukeire} live out(s) (Arakawa Kei)"}])
               delta_scores
               |> Map.new(fn {seat, score} -> {seat, score - 100 * ukeire} end)
               |> Map.update!(winner.seat, & &1 + 400 * ukeire)
@@ -338,7 +351,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               {arakawa_kei_seat, arakawa_kei} = Enum.find(state.players, fn {_seat, player} -> "arakawa-kei" in player.status end)
               waiting_tiles = Map.keys(waits)
               num = Utils.count_tiles(arakawa_kei.hand, waiting_tiles)
-              push_message(state, [%{text: "Winner pays player #{arakawa_kei_seat} #{state.players[arakawa_kei_seat].nickname} #{1000 * num} for having #{num} waits in hand (Arakawa Kei)"}])
+              push_message(state, [%{text: "Winner pays player #{arakawa_kei_seat} #{state.players[arakawa_kei_seat].nickname} #{1000 * num} for having #{num} wait(s) in hand (Arakawa Kei)"}])
               delta_scores
               |> Map.update!(winner.seat, & &1 - 1000 * num)
               |> Map.update!(arakawa_kei_seat, & &1 + 1000 * num)

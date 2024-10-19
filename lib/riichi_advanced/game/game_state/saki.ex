@@ -98,7 +98,9 @@ defmodule RiichiAdvanced.GameState.Saki do
 
       # run after_saki_start actions
       state = if Map.has_key?(state.rules, "after_saki_start") do
-        Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: state.turn})
+        for {seat, _player} <- state.players, reduce: state do
+          state -> Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: seat})
+        end
       else state end
 
       state = Buttons.recalculate_buttons(state)

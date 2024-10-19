@@ -13,7 +13,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def extract_choice_actions([]), do: []
   def extract_choice_actions([action | actions]) do
-    choice_actions = 
     choice_actions = case action do
       [action_name | _opts] when action_name in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark"] -> [action]
       ["when", _condition, subactions] -> extract_choice_actions(subactions)
@@ -97,12 +96,12 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, [{seat, %{}} | new_button_choices]}
           else
             button_choices = state.rules["buttons"]
-              |> Enum.filter(fn {name, button} ->
-                   calls_spec = Map.get(button, "call", [])
-                   upgrades = Map.get(button, "upgrades", [])
-                   no_interrupt = Map.get(button, "no_interrupt", false)
-                   (not interrupt || not no_interrupt) && check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
-                 end)
+            |> Enum.filter(fn {name, button} ->
+                 calls_spec = Map.get(button, "call", [])
+                 upgrades = Map.get(button, "upgrades", [])
+                 no_interrupt = Map.get(button, "no_interrupt", false)
+                 (not interrupt || not no_interrupt) && check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+               end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
                 {state, spec} = make_button_choices(state, seat, name, button)
