@@ -39,6 +39,7 @@
     "nanpo-kazue",
     "nelly-virsaladze",
     "onjouji-toki",
+    "ryuumonbuchi-touka",
     "sagimori-arata",
     "sawamura-tomoki",
     "senoo-kaori",
@@ -1754,7 +1755,8 @@
       ], [
         ["add_attr_tile", "7z", "golden"],
         ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
-      ]]
+      ]],
+      ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}, {"name": "seat_is", "opts": ["east"]}], [["set_status", "score_limit_one_tier_higher"]]]
     ]
   },
   "before_win": {
@@ -2593,7 +2595,8 @@
             "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
             "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]
         ]],
-        ["when", [{"name": "status", "opts": ["nelly-virsaladze"]}, "dealt_in_last_round"], [["add_counter", "riichi_turn", 1], ["add_counter", "riichi_turn", "num_discards"]]]
+        ["when", [{"name": "status", "opts": ["nelly-virsaladze"]}, "dealt_in_last_round"], [["add_counter", "riichi_turn", 1], ["add_counter", "riichi_turn", "num_discards"]]],
+        ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}], [["set_status", "score_as_dealer"]]]
       ],
       "no_interrupt": true
     },

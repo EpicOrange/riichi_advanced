@@ -439,7 +439,16 @@ defmodule RiichiAdvanced.GameState do
             Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, minipoints, yaku)
           else yaku end
           yakuman = Scoring.get_yaku(state, state.rules["yakuman"], seat, assigned_winning_tile, win_source, minipoints)
-          {score, points, yakuman_mult} = Scoring.score_yaku(state, seat, yaku, yakuman, win_source == :draw, minipoints)
+          is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+
+          # handle ryuumonbuchi touka's scoring quirk
+          score_as_dealer = "score_as_dealer" in state.players[winner.seat].status
+          if score_as_dealer do
+            push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"}])
+          end
+          is_dealer = is_dealer || score_as_dealer
+          
+          {score, points, yakuman_mult} = Scoring.score_yaku(state, seat, yaku, yakuman, is_dealer, win_source == :draw, minipoints)
           IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}")
           han = Integer.to_string(points)
           fu = Integer.to_string(minipoints)
@@ -492,6 +501,7 @@ defmodule RiichiAdvanced.GameState do
         state
       "hk" ->
         # find the maximum yaku obtainable across all joker assignments
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
         {joker_assignment, yaku, score, fan} = for joker_assignment <- joker_assignments do
           # replace 5z with 0z
           joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
@@ -502,7 +512,7 @@ defmodule RiichiAdvanced.GameState do
           yaku = if Map.has_key?(state.rules, "meta_yaku") do
             Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, yaku)
           else yaku end
-          {score, fan, _} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+          {score, fan, _} = Scoring.score_yaku(state, seat, yaku, [], is_dealer, win_source == :draw)
 
           {joker_assignment, yaku, score, fan}
         end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(-1)
@@ -532,7 +542,8 @@ defmodule RiichiAdvanced.GameState do
       "sichuan" -> # TODO this is same as hk
         # add a winner
         yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, winning_tile, win_source)
-        {score, points, _} = Scoring.score_yaku(state, seat, yaku, [], win_source == :draw)
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+        {score, points, _} = Scoring.score_yaku(state, seat, yaku, [], is_dealer, win_source == :draw)
         payer = case win_source do
           :draw    -> nil
           :discard -> get_last_discard_action(state).seat
@@ -560,7 +571,8 @@ defmodule RiichiAdvanced.GameState do
           phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
             Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, mun_yaku ++ phan_yaku)
           else phan_yaku end -- mun_yaku
-          {score, phan, mun} = Scoring.score_yaku(state, seat, phan_yaku, mun_yaku, win_source == :draw)
+          is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+          {score, phan, mun} = Scoring.score_yaku(state, seat, phan_yaku, mun_yaku, is_dealer, win_source == :draw)
 
           {joker_assignment, phan_yaku, mun_yaku, score, phan, mun}
         end |> Enum.sort_by(fn {_, _, _, score, _, _} -> score end) |> Enum.at(-1)

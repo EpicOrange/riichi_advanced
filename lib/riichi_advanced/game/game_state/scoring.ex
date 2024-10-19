@@ -147,16 +147,37 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  def score_yaku(state, seat, yaku, yakuman, is_self_draw, minipoints \\ 0) do
+  def score_yaku(state, seat, yaku, yakuman, is_dealer, is_self_draw, minipoints \\ 0) do
     scoring_table = state.rules["score_calculation"]
     case scoring_table["method"] do
       "riichi" ->
-        is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         yakuman_mult = Enum.reduce(yakuman, 0, fn {_name, value}, acc -> acc + value end)
+
+        # handle ryuumonbuchi touka's scoring quirk
+        IO.inspect({seat, state.players[seat].status})
+        new_points = if "score_limit_one_tier_higher" in state.players[seat].status do
+          case points do
+            3 when minipoints >= 70 -> 6
+            4 when minipoints >= 40 -> 6
+            5 -> 6
+            6 -> 8
+            7 -> 8
+            8 -> 11
+            9 -> 11
+            10 -> 11
+            11 -> 13
+            12 -> 13
+            _ -> points
+          end
+        else points end
+        if new_points > points do
+          push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} scores their limit hand one tier higher (Ryuumonbuchi Touka)"}])
+        end
+        points = new_points
+
         han = Integer.to_string(points)
         fu = Integer.to_string(minipoints)
-
         oya_han_table = if is_self_draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
         ko_han_table = if is_self_draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
         oya_fu_table = if yakuman_mult > 0 do oya_han_table["max"] else Map.get(oya_han_table, han, oya_han_table["max"]) end
@@ -196,7 +217,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         {score, points, yakuman_mult}
       "hk" ->
-        is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         fan = Integer.to_string(points)
 
@@ -241,11 +261,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     case scoring_table["method"] do
       "riichi" ->
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+
+        # handle ryuumonbuchi touka's scoring quirk
+        is_dealer = is_dealer || "score_as_dealer" in state.players[winner.seat].status
+
         {pao_yakuman, non_pao_yakuman} = Enum.split_with(winner.yakuman, fn {name, _value} -> name == "Daisangen" || name == "Daisuushii" end)
         if winner.pao_seat != nil && length(pao_yakuman) > 0 && length(non_pao_yakuman) > 0 do
           # split the calculation if both pao and non-pao yakuman exist
-          {basic_score_pao, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, winner.win_source == :draw, winner.minipoints)
-          {basic_score_non_pao, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, winner.win_source == :draw, winner.minipoints)
+          {basic_score_pao, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, is_dealer, winner.win_source == :draw, winner.minipoints)
+          {basic_score_non_pao, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, is_dealer, winner.win_source == :draw, winner.minipoints)
           delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yakuman: pao_yakuman }, collect_sticks)
           delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yakuman: non_pao_yakuman }, collect_sticks)
           delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
@@ -294,7 +319,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
             delta_scores = Map.update!(delta_scores, winner.seat, & &1 + riichi_payment)
             
             # reverse-calculate the ko and oya parts of the total points
-            is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
             {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer)
 
             # handle motouchi naruka's scoring quirk
@@ -611,7 +635,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 possible_yaku = get_yaku(state2, state.rules["yaku"], seat, winning_tile, :discard)
                 {winning_tile, possible_yaku}
               end |> Enum.max_by(fn {_winning_tile, possible_yaku} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
-              {score, points, _} = score_yaku(state, seat, best_yaku, [], false)
+              is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
+              {score, points, _} = score_yaku(state, seat, best_yaku, [], is_dealer, false)
               call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
               winning_hand = state.players[seat].hand ++ call_tiles ++ [winning_tile]
               winner = %{

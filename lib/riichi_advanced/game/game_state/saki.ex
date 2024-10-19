@@ -35,6 +35,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "nanpo-kazue" => "Nanpo Kazue",
     "nelly-virsaladze" => "Nelly Virsaladze",
     "onjouji-toki" => "Onjouji Toki",
+    "ryuumonbuchi-touka" => "Ryuumonbuchi Touka",
     "sagimori-arata" => "Sagimori Arata",
     "sawamura-tomoki" => "Sawamura Tomoki",
     "senoo-kaori" => "Senoo Kaori",
