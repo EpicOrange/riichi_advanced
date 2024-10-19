@@ -40,13 +40,15 @@ defmodule RiichiAdvanced.GameState.Saki do
     "sawamura-tomoki" => "Sawamura Tomoki",
     "senoo-kaori" => "Senoo Kaori",
     "shibuya-takami" => "Shibuya Takami",
+    "shirouzu-mairu" => "Shirouzu Mairu",
     "takakamo-shizuno" => "Takakamo Shizuno",
     "takei-hisa" => "Takei Hisa",
     "takimi-haru" => "Takimi Haru",
     "toyouko-mokmoko" => "Toyouko Mokmoko",
     "toyouko-momoko" => "Toyouko Momoko",
-    "usuzawa-sae" => "Usuzawa Sae",
-    "usuzumi-hatsumi" => "Usuzumi Hatsumi",
+    "tsuruta-himeko" => "Tsuruta Himeko",
+    # "usuzawa-sae" => "Usuzawa Sae",
+    # "usuzumi-hatsumi" => "Usuzumi Hatsumi",
     "yumeno-maho" => "Yumeno Maho",
   }
 

@@ -155,7 +155,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         yakuman_mult = Enum.reduce(yakuman, 0, fn {_name, value}, acc -> acc + value end)
 
         # handle ryuumonbuchi touka's scoring quirk
-        IO.inspect({seat, state.players[seat].status})
         new_points = if "score_limit_one_tier_higher" in state.players[seat].status do
           case points do
             3 when minipoints >= 70 -> 6

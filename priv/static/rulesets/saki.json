@@ -44,6 +44,7 @@
     "sawamura-tomoki",
     "senoo-kaori",
     "shibuya-takami",
+    "shirouzu-mairu",
     "takakamo-shizuno",
     "takei-hisa",
     "takimi-haru",
@@ -938,6 +939,46 @@
         {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
         {"name": "counter_at_most", "opts": ["riichi_turn", 10]}
       ]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["tsuruta-himeko"]},
+        {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}
+      ]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["tsuruta-himeko"]},
+        {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}
+      ]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["tsuruta-himeko"]},
+        {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}
+      ]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["tsuruta-himeko"]},
+        {"name": "counter_at_least", "opts": ["facedown_tiles", 7]}
+      ]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["tsuruta-himeko"]},
+        {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}
+      ]
     }
   ],
   "yakuman": [
@@ -1463,7 +1504,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "inoue_jun_broke_ippatsu", "kunihiro_hajime_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "kunihiro_hajime_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -1538,7 +1579,8 @@
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
                 ["ite", [{"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
                   [["set_status", "extra_turn_prompt"]],
-                  [["unset_status", "extra_turn", "extra_turn_taken", "discard_facedown"]]]
+                  [["unset_status", "extra_turn", "extra_turn_taken", "discard_facedown"]]],
+                ["when", [{"name": "not_status_missing", "opts": ["shirouzu-mairu", "tsuruta-himeko"]}], [["remove_attr_all", "revealed"]]]
                ]
   },
   "after_turn_change": {
@@ -1574,6 +1616,7 @@
                   ],
                   ["when", [
                     "not_no_tiles_remaining",
+                    "all_saki_cards_drafted",
                     [
                       {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
                       "not_has_aside"
@@ -1661,6 +1704,11 @@
                   ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
                   ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
                   ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
+                ]],
+                ["when_anyone", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "status_missing", "opts": ["riichi"]}], [
+                  ["big_text", "Tsuruta Himeko: switch out!"],
+                  ["unset_status", "tsuruta-himeko"],
+                  ["set_status", "shirouzu-mairu"]
                 ]]
                ]
   },
@@ -1718,6 +1766,34 @@
       ["big_text", "Kosegawa Shiromi: extra turn!"],
       ["push_message", "took an extra turn by discarding genbutsu against riichi (Kosegawa Shiromi)"]
     ]]]],
+    ["manzu", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 2]]]]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Tsuruta Himeko: switch out!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
+      ["unset_status", "tsuruta-himeko"],
+      ["set_status", "shirouzu-mairu"]
+    ]]]],
+    ["pinzu", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 2]]]]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Tsuruta Himeko: switch out!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
+      ["unset_status", "tsuruta-himeko"],
+      ["set_status", "shirouzu-mairu"]
+    ]]]],
+    ["souzu", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 2]]]]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Tsuruta Himeko: switch out!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
+      ["unset_status", "tsuruta-himeko"],
+      ["set_status", "shirouzu-mairu"]
+    ]]]],
+    ["jihai", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1z","2z","3z","4z","5z","6z","7z"], 2]]]]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Tsuruta Himeko: switch out!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
+      ["unset_status", "tsuruta-himeko"],
+      ["set_status", "shirouzu-mairu"]
+    ]]]],
     ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {
@@ -1756,7 +1832,13 @@
         ["add_attr_tile", "7z", "golden"],
         ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
       ]],
-      ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}, {"name": "seat_is", "opts": ["east"]}], [["set_status", "score_limit_one_tier_higher"]]]
+      ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}, {"name": "seat_is", "opts": ["east"]}], [["set_status", "score_limit_one_tier_higher"]]],
+      ["when", [{"name": "seat_is", "opts": ["east"]}], [
+        ["set_status", "about_to_draw"],
+        ["recalculate_buttons"], // allow interrupting draw
+        ["unset_status", "about_to_draw"],
+        ["draw"]
+      ]]
     ]
   },
   "before_win": {
@@ -1799,7 +1881,8 @@
                 ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [["set_status", "atago_hiroe_no_tsumo_payment"]]],
                 ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["set_status_chii_victims", "double_tsumo_payment"]]],
                 ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["nelly-virsaladze"]}], [["set_discarder_status", "nelly_virsaladze_take_bets"]]],
-                ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["set_caller_status", "nelly_virsaladze_take_bets"]]]
+                ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["set_caller_status", "nelly_virsaladze_take_bets"]]],
+                ["when", [{"name": "status", "opts": ["tsuruta-himeko"]}], [["add_counter", "facedown_tiles", "num_facedown_tiles"]]]
                ]
   },
   "before_abortive_draw": {
@@ -2337,6 +2420,74 @@
       ],
       "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
+    "shirouzu_mairu_1_manzu": {
+      "display_name": "Manzu",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "actions": [
+        ["set_status", "shirouzu_mairu_drew"],
+        ["draw"],
+        ["add_attr_drawn_tile", "revealed"],
+        ["when", [{"name": "match", "opts": [["draw"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 1]]]]}], [
+          ["push_message", "correctly predicted that their next draw is manzu (Shirouzu Mairu)"],
+          ["big_text", "Shirouzu Mairu: switch out!"],
+          ["flip_first_visible_discard_facedown"],
+          ["unset_status", "shirouzu-mairu"],
+          ["set_status", "tsuruta-himeko"]
+        ]]
+      ],
+      "unskippable": true
+    },
+    "shirouzu_mairu_2_pinzu": {
+      "display_name": "Pinzu",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "actions": [
+        ["set_status", "shirouzu_mairu_drew"],
+        ["draw"],
+        ["add_attr_drawn_tile", "revealed"],
+        ["when", [{"name": "match", "opts": [["draw"], [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1]]]]}], [
+          ["push_message", "correctly predicted that their next draw is pinzu (Shirouzu Mairu)"],
+          ["big_text", "Shirouzu Mairu: switch out!"],
+          ["flip_first_visible_discard_facedown"],
+          ["unset_status", "shirouzu-mairu"],
+          ["set_status", "tsuruta-himeko"]
+        ]]
+      ],
+      "unskippable": true
+    },
+    "shirouzu_mairu_3_souzu": {
+      "display_name": "Souzu",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "actions": [
+        ["set_status", "shirouzu_mairu_drew"],
+        ["draw"],
+        ["add_attr_drawn_tile", "revealed"],
+        ["when", [{"name": "match", "opts": [["draw"], [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]]]}], [
+          ["push_message", "correctly predicted that their next draw is souzu (Shirouzu Mairu)"],
+          ["big_text", "Shirouzu Mairu: switch out!"],
+          ["flip_first_visible_discard_facedown"],
+          ["unset_status", "shirouzu-mairu"],
+          ["set_status", "tsuruta-himeko"]
+        ]]
+      ],
+      "unskippable": true
+    },
+    "shirouzu_mairu_4_jihai": {
+      "display_name": "Jihai",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "actions": [
+        ["set_status", "shirouzu_mairu_drew"],
+        ["draw"],
+        ["add_attr_drawn_tile", "revealed"],
+        ["when", [{"name": "match", "opts": [["draw"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}], [
+          ["push_message", "correctly predicted that their next draw is jihai (Shirouzu Mairu)"],
+          ["big_text", "Shirouzu Mairu: switch out!"],
+          ["flip_first_visible_discard_facedown"],
+          ["unset_status", "shirouzu-mairu"],
+          ["set_status", "tsuruta-himeko"]
+        ]]
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -2596,7 +2747,18 @@
             "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]
         ]],
         ["when", [{"name": "status", "opts": ["nelly-virsaladze"]}, "dealt_in_last_round"], [["add_counter", "riichi_turn", 1], ["add_counter", "riichi_turn", "num_discards"]]],
-        ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}], [["set_status", "score_as_dealer"]]]
+        ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}], [["set_status", "score_as_dealer"]]],
+        ["when", [{"name": "status", "opts": ["shirouzu-mairu"]}], [
+          ["flip_first_visible_discard_facedown"],
+          ["flip_first_visible_discard_facedown"],
+          ["unset_status", "shirouzu-mairu"],
+          ["set_status", "tsuruta-himeko"]
+        ]],
+        ["when_anyone", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "status_missing", "opts": ["riichi"]}], [
+          ["big_text", "Tsuruta Himeko: switch out!"],
+          ["unset_status", "tsuruta-himeko"],
+          ["set_status", "shirouzu-mairu"]
+        ]]
       ],
       "no_interrupt": true
     },
@@ -2866,7 +3028,7 @@
         ["unset_status", "extra_turn", "extra_turn_prompt"],
         ["set_status", "extra_turn_taken"],
         ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["draw"]
+        ["when", [{"name": "status_missing", "opts": ["shirouzu-mairu"]}], [["draw"]]]
       ],
       "unskippable": true
     },

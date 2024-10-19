@@ -141,14 +141,19 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def hide_tiles(tiles, assigns) do
-    if assigns.revealed? do tiles else Enum.map(tiles, fn _tile -> :"1x" end) end
+    if assigns.revealed? do tiles else Enum.map(tiles, fn tile ->
+      case tile do
+        {_, attrs} -> if "revealed" in attrs do tile else :"1x" end
+        _ -> :"1x"
+      end
+    end) end
   end
 
   def prepare_hand(assigns) do
     # map tiles to [{index, tile, is_last_discard}]
     assigns.hand
       |> hide_tiles(assigns)
-      |> Enum.with_index
+      |> Enum.with_index()
       |> Enum.map(fn {tile, i} -> {if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end, tile, i == assigns.played_tile_index} end)
   end
 

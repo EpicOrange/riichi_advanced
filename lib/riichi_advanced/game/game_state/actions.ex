@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
-  @debug_actions true
+  @debug_actions false
 
   def temp_disable_play_tile(state, seat) do
     state = Map.update!(state, :play_tile_debounce, &Map.put(&1, seat, true))
@@ -297,6 +297,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
       ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index
       ["num_discards" | _opts] -> length(state.players[seat].discards)
+      ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[seat].pond, [:"1x"])
       [amount | _opts] when is_integer(amount) -> amount
     end
   end
@@ -681,6 +682,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             else state end
           _ -> state
         end
+      "flip_first_visible_discard_facedown" -> 
+        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") && not Utils.same_tile(tile, :"2x") end)
+        if ix != nil do
+          update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+        else state end
       "set_aside_draw"     -> update_player(state, context.seat, &%Player{ &1 | draw: [], aside: &1.aside ++ &1.draw })
       "draw_from_aside"    ->
         state = case state.players[context.seat].aside do

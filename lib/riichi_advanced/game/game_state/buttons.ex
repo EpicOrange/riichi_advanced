@@ -28,7 +28,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
     # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
     # check if a call action exists, if it's a call and multiple call choices are available
     choice_actions = extract_choice_actions(actions)
-    IO.inspect(choice_actions)
     cond do
       Enum.any?(choice_actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end) ->
         # call button choices logic

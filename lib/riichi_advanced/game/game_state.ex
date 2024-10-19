@@ -1077,7 +1077,6 @@ defmodule RiichiAdvanced.GameState do
         dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
         num = Enum.at(opts, 1, 1)
         doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-        IO.inspect({cxt_player.winning_hand, doras, Utils.count_tiles(cxt_player.winning_hand, doras)})
         Utils.count_tiles(cxt_player.winning_hand, doras) == num
       "winning_reverse_dora_count" ->
         dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
