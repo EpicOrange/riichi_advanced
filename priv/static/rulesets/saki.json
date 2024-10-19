@@ -2426,9 +2426,9 @@
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
-        ["add_attr_drawn_tile", "revealed"],
         ["when", [{"name": "match", "opts": [["draw"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 1]]]]}], [
           ["push_message", "correctly predicted that their next draw is manzu (Shirouzu Mairu)"],
+          ["add_attr_drawn_tile", "revealed"],
           ["big_text", "Shirouzu Mairu: switch out!"],
           ["flip_first_visible_discard_facedown"],
           ["unset_status", "shirouzu-mairu"],
@@ -2443,9 +2443,9 @@
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
-        ["add_attr_drawn_tile", "revealed"],
         ["when", [{"name": "match", "opts": [["draw"], [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1]]]]}], [
           ["push_message", "correctly predicted that their next draw is pinzu (Shirouzu Mairu)"],
+          ["add_attr_drawn_tile", "revealed"],
           ["big_text", "Shirouzu Mairu: switch out!"],
           ["flip_first_visible_discard_facedown"],
           ["unset_status", "shirouzu-mairu"],
@@ -2460,9 +2460,9 @@
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
-        ["add_attr_drawn_tile", "revealed"],
         ["when", [{"name": "match", "opts": [["draw"], [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]]]}], [
           ["push_message", "correctly predicted that their next draw is souzu (Shirouzu Mairu)"],
+          ["add_attr_drawn_tile", "revealed"],
           ["big_text", "Shirouzu Mairu: switch out!"],
           ["flip_first_visible_discard_facedown"],
           ["unset_status", "shirouzu-mairu"],
@@ -2477,9 +2477,9 @@
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
-        ["add_attr_drawn_tile", "revealed"],
         ["when", [{"name": "match", "opts": [["draw"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}], [
           ["push_message", "correctly predicted that their next draw is jihai (Shirouzu Mairu)"],
+          ["add_attr_drawn_tile", "revealed"],
           ["big_text", "Shirouzu Mairu: switch out!"],
           ["flip_first_visible_discard_facedown"],
           ["unset_status", "shirouzu-mairu"],
