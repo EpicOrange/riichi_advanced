@@ -1085,6 +1085,7 @@ defmodule RiichiAdvanced.GameState do
           :self     -> draws_left >= 4
         end
       "has_score"                -> state.players[context.seat].score >= Enum.at(opts, 0, 0)
+      "has_score_below"          -> state.players[context.seat].score < Enum.at(opts, 0, 0)
       "round_wind_is"            ->
         round_wind = Riichi.get_round_wind(state.kyoku)
         case Enum.at(opts, 0, "east") do

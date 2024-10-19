@@ -1773,7 +1773,7 @@
       ["big_text", "Takimi Haru: extra turn!"],
       ["push_message", "took an extra turn by discarding 8 (Takimi Haru)"]
     ]]]],
-    ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
+    ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "has_score_below", "opts": [30000]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Aislinn Wishart: extra turn!"],
       ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"]
@@ -2600,7 +2600,7 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
         "someone_else_just_discarded",
-        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [

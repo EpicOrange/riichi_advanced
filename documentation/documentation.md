@@ -502,6 +502,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "tiles_remaining", "opts": [num]}`: At least `num` tiles remain in the wall.
 - `"next_draw_possible"`: The player whose turn it is has at least one draw remaining (after their current draw).
 - `{"name": "has_score", "opts": [score]}`: The current player has at least `score` score.
+- `{"name": "has_score_below", "opts": [score]}`: The current player has less than `score` score.
 - `{"name": "round_wind_is", "opts": [direction]}`: The current round wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
 - `{"name": "seat_wind_is", "opts": [direction]}`: The current player's seat wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
 - `{"name": "winning_dora_count", "opts": [dora_indicator, num]}`: The current player has `num` dora tiles of the given dora indicator.
