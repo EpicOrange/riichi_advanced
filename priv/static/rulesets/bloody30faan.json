@@ -127,7 +127,43 @@
     [ "unique", [["pair"], 1], [["3m","6m","9m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
     [ "unique", [["pair"], 1], [["3m","6m","9m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
     [ "unique", [["pair"], 1], [["3m","6m","9m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["pair"], 1], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ]
+    [ "unique", [["pair"], 1], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
+    ]
+  ],
+  "iishanten_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
+  ],
+  "ryanshanten_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
+    [ [["pair"], 4] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
+  ],
+  "sanshanten_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
+    [ [["pair"], 3] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
   ],
   "joker_tanki_tenpai_definition": [
     [ "exhaustive", [["12j", "13j"], 1], [["shuntsu", "koutsu"], 4] ],
@@ -225,9 +261,6 @@
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
-    ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13]
     ]
   ],
   "kokushi_definition": [
@@ -1868,10 +1901,33 @@
     }
   },
   "auto_buttons": {
-    "auto_sort": {
+    "1_auto_sort": {
       "display_name": "A",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
+    },
+    "2_auto_ron": {
+      "display_name": "R",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
+        ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "3_auto_no_call": {
+      "display_name": "C",
+      "actions": [
+        ["when", [
+            {"name": "buttons_include", "opts": ["skip"]},
+            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan"]}
+          ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "4_auto_discard": {
+      "display_name": "D",
+      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
     }
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],

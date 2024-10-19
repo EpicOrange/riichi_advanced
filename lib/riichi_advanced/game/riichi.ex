@@ -431,15 +431,24 @@ defmodule Riichi do
     end)
   end
 
-  def needed_for_hand(hand, calls, tile, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+  def get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+    # t = System.os_time(:millisecond)
     tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
       remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)
     end) |> Enum.unzip()
-    leftover_tiles = leftover_tiles
+    ret = leftover_tiles
     |> Enum.concat()
     |> Enum.uniq()
-    tile not in leftover_tiles
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
+    # end
+    ret
+  end
+
+  def needed_for_hand(hand, calls, tile, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+    tile not in get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
   end
 
   def call_to_tiles({_name, call}) do
@@ -670,6 +679,41 @@ defmodule Riichi do
     waits
     |> Enum.map(fn wait -> 4 - Utils.count_tiles(all_tiles, [wait], tile_aliases) end)
     |> Enum.sum()
+  end
+
+  def test_tiles(hand, tiles, tile_aliases) do
+    not Enum.empty?(try_remove_all_tiles(hand, tiles, tile_aliases))
+  end
+
+  def get_disconnected_tiles(hand, ordering, ordering_r, tile_aliases \\ %{}) do
+    hand
+    |> Enum.uniq()
+    |> Enum.filter(fn tile ->
+      cond do
+        Utils.count_tiles(hand, [tile], tile_aliases) >= 2 -> false
+        Utils.count_tiles(hand, [Utils.strip_attrs(tile)], tile_aliases) >= 2 -> false
+        is_jihai?(tile) -> true
+        true ->
+          past_suji_left = test_tiles(hand, [offset_tile(tile, -4, ordering, ordering_r), tile], tile_aliases)
+          suji_left = test_tiles(hand, [offset_tile(tile, -3, ordering, ordering_r), tile], tile_aliases)
+          jump_left = test_tiles(hand, [offset_tile(tile, -2, ordering, ordering_r), tile], tile_aliases)
+          adjacent_left = test_tiles(hand, [offset_tile(tile, -1, ordering, ordering_r), tile], tile_aliases)
+          adjacent_right = test_tiles(hand, [offset_tile(tile, 1, ordering, ordering_r), tile], tile_aliases)
+          jump_right = test_tiles(hand, [offset_tile(tile, 2, ordering, ordering_r), tile], tile_aliases)
+          suji_right = test_tiles(hand, [offset_tile(tile, 3, ordering, ordering_r), tile], tile_aliases)
+          past_suji_right = test_tiles(hand, [offset_tile(tile, 4, ordering, ordering_r), tile], tile_aliases)
+          arr = [past_suji_left, suji_left, jump_left, adjacent_left, true, adjacent_right, jump_right, suji_right, past_suji_right]
+          # IO.inspect({tile, arr})
+          case arr do
+            [_, _, false, false, _t, false, false, _, _] -> true
+            [_, _, false, false, _t, _, _, true, false] -> true # 14 or 134 or 124 -> toss 1
+            [false, true, _, _, _t, false, false, _, _] -> true # 69 or 679 or 689 -> toss 9
+            # [_, _, _, _, _t, true, _, _, _] -> false
+            _ -> false
+          end
+      end
+    end)
+    # |> IO.inspect(label: "result")
   end
 
 end
