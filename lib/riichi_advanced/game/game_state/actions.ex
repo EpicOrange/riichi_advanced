@@ -200,7 +200,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # remove called tiles from its source
     {state, to_remove} = case call_source do
       :discards -> {update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) }), call_choice}
-      :hand     -> {state, [called_tile | call_choice]}
+      :hand     -> {state, if called_tile != nil do [called_tile | call_choice] else call_choice end}
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
     hand = Utils.add_attr(state.players[seat].hand, ["hand"])

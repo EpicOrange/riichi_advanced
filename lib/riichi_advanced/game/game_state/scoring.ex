@@ -147,7 +147,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  def score_yaku(state, seat, yaku, yakuman, is_dealer, is_self_draw, minipoints \\ 0) do
+  def score_yaku(state, seat, yaku, yakuman, is_dealer, is_self_draw, minipoints \\ 0, opponents_remaining \\ 3) do
     scoring_table = state.rules["score_calculation"]
     case scoring_table["method"] do
       "riichi" ->
@@ -234,7 +234,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         fan_table = scoring_table[if is_self_draw do "score_table_draw" else "score_table" end]
         score = Map.get(fan_table, fan, fan_table["max"])
-        score = if is_self_draw do 3 * score else score end
+        score = if is_self_draw do opponents_remaining * score else score end
         {score, points, 0}
       "vietnamese" ->
         phan = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
@@ -404,8 +404,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 delta_scores = Map.update!(delta_scores, winner.seat, & &1 + winner.score)
                 delta_scores
             else
-              payment = trunc(winner.score / 3)
-              for payer <- [:east, :south, :west, :north] -- [winner.seat], reduce: delta_scores do
+              payment = trunc(winner.score / length(winner.opponents))
+              for payer <- winner.opponents, reduce: delta_scores do
                 delta_scores ->
                   delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
                   delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)

@@ -57,7 +57,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
 
     socket = if Map.has_key?(assigns, :winners) do
       if not Enum.empty?(assigns.winners) do
-        {_seat, winner} = Enum.at(assigns.winners, assigns.winner_index)
+        {_seat, winner} = Enum.at(assigns.winners, assigns.winner_index, {nil, nil})
         socket = assign(socket, :winner, winner)
         socket
       else

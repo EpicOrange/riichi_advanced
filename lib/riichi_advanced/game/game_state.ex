@@ -540,10 +540,33 @@ defmodule RiichiAdvanced.GameState do
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
       "sichuan" -> # TODO this is same as hk
-        # add a winner
-        yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, winning_tile, win_source)
+        # find the maximum yaku obtainable across all joker assignments
         is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
-        {score, points, _} = Scoring.score_yaku(state, seat, yaku, [], is_dealer, win_source == :draw)
+        opponents = Enum.reject([:east, :south, :west, :north], fn dir -> Map.has_key?(state.winners, dir) || dir == winner.seat end)
+        {joker_assignment, yaku, score, fan} = for joker_assignment <- joker_assignments do
+          # replace 5z with 0z
+          joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
+
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          {state, assigned_winning_tile} = Scoring.apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+          yaku = Scoring.get_yaku(state, state.rules["yaku"], seat, assigned_winning_tile, win_source)
+          yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            Scoring.get_yaku(state, state.rules["meta_yaku"], seat, assigned_winning_tile, win_source, 0, yaku)
+          else yaku end
+          {score, fan, _} = Scoring.score_yaku(state, seat, yaku, [], is_dealer, win_source == :draw, 0, length(opponents))
+
+          {joker_assignment, yaku, score, fan}
+        end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(-1)
+
+        # sort jokers into the hand for hand display
+        orig_hand = state.players[seat].hand
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        IO.inspect(joker_hand, label: "joker_hand")
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        # restore original hand
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
         payer = case win_source do
           :draw    -> nil
           :discard -> get_last_discard_action(state).seat
@@ -552,9 +575,10 @@ defmodule RiichiAdvanced.GameState do
         winner = Map.merge(winner, %{
           yaku: yaku,
           yakuman: [],
-          points: points,
+          points: fan,
           score: score,
-          payer: payer
+          payer: payer,
+          opponents: opponents
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         state
@@ -683,6 +707,10 @@ defmodule RiichiAdvanced.GameState do
 
         state
       state.visible_screen == :winner -> # need to see score exchange screen
+        # next time we're on the winner screen, show the next winner
+        state = Map.update!(state, :winner_index, & &1 + 1)
+
+        # show score exchange screen
         state = Map.put(state, :visible_screen, :scores)
 
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
@@ -770,9 +798,16 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp fill_empty_seats_with_ai(state) do
+    shanten_definitions = %{
+      win: translate_match_definitions(state, Map.get(state.rules, "win_definition", [])),
+      tenpai: translate_match_definitions(state, Map.get(state.rules, "tenpai_definition", [])),
+      iishanten: translate_match_definitions(state, Map.get(state.rules, "iishanten_definition", [])),
+      ryanshanten: translate_match_definitions(state, Map.get(state.rules, "ryanshanten_definition", [])),
+      sanshanten: translate_match_definitions(state, Map.get(state.rules, "sanshanten_definition", []))
+    }
     for dir <- [:east, :south, :west, :north], Map.get(state, dir) == nil, reduce: state do
       state ->
-        {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir]}})
+        {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}})
         IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
         state = Map.put(state, dir, ai_pid)
 

@@ -70,8 +70,8 @@ defmodule RiichiAdvanced.GameState.Log do
         haipai: state.haipai[dir]
       } end),
       kyoku: state.kyoku,
-      honba: state.honba,
-      riichi_sticks: Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]),
+      honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else nil end,
+      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]) else nil end,
       doras: ["todo"],
       uras: ["todo"],
       kan_tiles: ["todo"],
@@ -83,17 +83,17 @@ defmodule RiichiAdvanced.GameState.Log do
       result: for {seat, winner} <- state.winners do
         %{
           seat: to_seat(seat),
-          pao: to_seat(winner.pao_seat),
+          pao: to_seat(Map.get(winner, :pao_seat, nil)),
           won_from: to_seat(winner.payer),
           hand: state.players[seat].winning_hand,
           tile: winner.winning_tile,
           yaku: Enum.map(winner.yaku, fn {name, value} -> [name, value] end),
-          yakuman: Enum.map(winner.yakuman, fn {name, value} -> [name, value] end),
+          yakuman: Enum.map(Map.get(winner, :yakuman, []), fn {name, value} -> [name, value] end),
           han: winner.points,
-          fu: winner.minipoints,
-          yakuman_mult: winner.yakuman_mult,
+          fu: Map.get(winner, :minipoints, 0),
+          yakuman_mult: Map.get(winner, :yakuman_mult, 0),
           points: winner.score,
-          delta_points: "todo"
+          delta_points: ["todo"]
         }
       end
     } | kyokus] end)
