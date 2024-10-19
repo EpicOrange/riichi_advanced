@@ -91,10 +91,6 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   def draft_saki_card(state, seat, choice) do
     state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
-    push_message(state, [
-      %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
-      %{bold: true, text: "#{@card_names[choice]}"}
-    ])
     state = Log.log(state, seat, :saki_card, %{card: choice})
 
     state = if check_if_all_drafted(state) do
@@ -103,7 +99,12 @@ defmodule RiichiAdvanced.GameState.Saki do
       # run after_saki_start actions
       state = if Map.has_key?(state.rules, "after_saki_start") do
         for {seat, _player} <- state.players, reduce: state do
-          state -> Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: seat})
+          state ->
+            push_message(state, [
+              %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
+              %{bold: true, text: "#{Enum.find_value(Enum.reverse(state.players[seat].status), &@card_names[&1])}"}
+            ])
+            Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: seat})
         end
       else state end
 
