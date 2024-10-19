@@ -20,8 +20,18 @@ defmodule RiichiAdvanced.GameState.Log do
     state
   end
 
+  def to_seat(seat) do
+    case seat do
+      :east  -> 0
+      :south -> 1
+      :west  -> 2
+      :north -> 3
+      _      -> nil
+    end
+  end
+
   def log(state, seat, event_type, params) do
-    update_in(state.log_state.log, &[%GameEvent{ seat: seat, event_type: event_type, params: params } | &1])
+    update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
   end
 
   defp modify_last_draw_discard(state, fun) do
@@ -38,7 +48,7 @@ defmodule RiichiAdvanced.GameState.Log do
     possible_calls = for {seat, player} <- state.players do
       for {name, {:call, choices}} <- player.button_choices do
         for choice <- Map.values(choices) |> Enum.concat() do
-          %{player: seat, type: name, tiles: choice}
+          %{player: to_seat(seat), type: name, tiles: choice}
         end
       end |> Enum.concat()
     end |> Enum.concat()
@@ -47,7 +57,7 @@ defmodule RiichiAdvanced.GameState.Log do
 
   def add_call(state, seat, call_name, call_choice, called_tile) do
     tiles = Utils.strip_attrs(call_choice ++ if called_tile != nil do [called_tile] else [] end)
-    call = %{player: seat, type: call_name, tiles: tiles}
+    call = %{player: to_seat(seat), type: call_name, tiles: tiles}
     modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
   end
 
@@ -61,7 +71,7 @@ defmodule RiichiAdvanced.GameState.Log do
       } end),
       kyoku: state.kyoku,
       honba: state.honba,
-      riichi_sticks: state.riichi_sticks,
+      riichi_sticks: Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]),
       doras: ["todo"],
       uras: ["todo"],
       kan_tiles: ["todo"],
@@ -70,7 +80,22 @@ defmodule RiichiAdvanced.GameState.Log do
         |> Enum.reverse()
         |> Enum.with_index()
         |> Enum.map(&format_event/1),
-      result: "todo"
+      result: for {seat, winner} <- state.winners do
+        %{
+          seat: to_seat(seat),
+          pao: to_seat(winner.pao_seat),
+          won_from: to_seat(winner.payer),
+          hand: state.players[seat].winning_hand,
+          tile: winner.winning_tile,
+          yaku: Enum.map(winner.yaku, fn {name, value} -> [name, value] end),
+          yakuman: Enum.map(winner.yakuman, fn {name, value} -> [name, value] end),
+          han: winner.points,
+          fu: winner.minipoints,
+          yakuman_mult: winner.yakuman_mult,
+          points: winner.score,
+          delta_points: "todo"
+        }
+      end
     } | kyokus] end)
     state = put_in(state.log_state.log, [])
     state

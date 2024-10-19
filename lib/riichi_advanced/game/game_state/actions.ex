@@ -295,7 +295,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering_r = state.players[seat].tile_ordering_r
         tile_aliases = state.players[seat].tile_aliases
         binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
-      _ when is_integer(amt_spec) -> amt_spec
+      ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index
+      ["num_discards" | _opts] -> length(state.players[seat].discards)
+      [amount | _opts] when is_integer(amount) -> amount
     end
   end
 
@@ -391,10 +393,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       "unset_status_others"   -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status -- opts) end } end)
       "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_status_all"      -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_callee_status"     -> update_player(state, context.callee, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_callee_status"   -> update_player(state, context.callee, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_caller_status"     -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_caller_status"   -> update_player(state, context.caller, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_callee_status"     -> update_player(state, Map.get(context, :callee, get_last_call_action(state).from), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_callee_status"   -> update_player(state, Map.get(context, :callee, get_last_call_action(state).from), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_caller_status"     -> update_player(state, Map.get(context, :caller, get_last_call_action(state).seat), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_caller_status"   -> update_player(state, Map.get(context, :caller, get_last_call_action(state).seat), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_discarder_status"   -> update_player(state, get_last_discard_action(state).seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_discarder_status" -> update_player(state, get_last_discard_action(state).seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "set_status_chii_victims" -> 
         chii_victims = for {"chii", tiles} <- state.players[context.seat].calls do
           case tiles do
@@ -439,8 +443,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
         end
-      "put_down_riichi_stick" -> state |> Map.update!(:riichi_sticks, & &1 + Enum.at(opts, 0, 1)) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
-      "bet_points"            -> state |> Map.update!(:riichi_sticks, & Utils.try_integer(&1 + Enum.at(opts, 0, 1000) / 1000)) |> update_player(context.seat, &%Player{ &1 | score: &1.score - Enum.at(opts, 0, 1000) })
+      "put_down_riichi_stick" -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"]) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
+      "bet_points"            -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1000)) |> update_player(context.seat, &%Player{ &1 | score: &1.score - Enum.at(opts, 0, 1000) })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || seat != context.seat } end)

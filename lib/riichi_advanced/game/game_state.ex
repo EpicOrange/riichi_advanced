@@ -83,7 +83,7 @@ defmodule Game do
     wall: [],
     kyoku: 0,
     honba: 0,
-    riichi_sticks: 0,
+    pot: 0,
     tags: %{},
     log_state: %{},
 
@@ -692,13 +692,13 @@ defmodule RiichiAdvanced.GameState do
           :win when state.next_dealer == :self ->
             state
               |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:riichi_sticks, 0)
+              |> Map.put(:pot, 0)
               |> Map.put(:visible_screen, nil)
           :win ->
             state
               |> Map.update!(:kyoku, & &1 + 1)
               |> Map.put(:honba, 0)
-              |> Map.put(:riichi_sticks, 0)
+              |> Map.put(:pot, 0)
               |> Map.put(:visible_screen, nil)
           :draw when state.next_dealer == :self ->
             state
@@ -1014,6 +1014,7 @@ defmodule RiichiAdvanced.GameState do
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
       "discarder_status"         -> last_action.action == :discard && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
+      "caller_status"            -> last_action.action == :call && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
       "shimocha_status"          -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :shimocha)].status end)
       "toimen_status"            -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :toimen)].status end)
       "kamicha_status"           -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :kamicha)].status end)
@@ -1235,6 +1236,15 @@ defmodule RiichiAdvanced.GameState do
       "genbutsu_kamicha"    ->
         tiles = (Utils.get_seat(context.seat, :kamicha) |> Riichi.get_safe_tiles_against(state.players, state.turn))
         last_discard_action != nil && Utils.count_tiles(tiles, [Utils.strip_attrs(last_discard_action.tile)]) >= 1
+      "dealt_in_last_round" ->
+        case state.log_state.kyokus do
+          [] -> false
+          [kyoku | _] ->
+            case kyoku.result do
+              [] -> false
+              [win | _] -> win.won_from == Log.to_seat(context.seat)
+            end
+        end
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

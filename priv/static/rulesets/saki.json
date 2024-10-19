@@ -37,6 +37,7 @@
     "miyanaga-teru",
     "motouchi-naruka",
     "nanpo-kazue",
+    "nelly-virsaladze",
     "onjouji-toki",
     "sagimori-arata",
     "sawamura-tomoki",
@@ -909,6 +910,33 @@
         "won_by_draw",
         {"name": "match", "opts": [["winning_tile"], [[[["5z"], 1]]]]}
       ]
+    },
+    {
+      "display_name": "Nelly Virsaladze",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["nelly-virsaladze"]},
+        {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
+        {"name": "counter_at_most", "opts": ["riichi_turn", 6]}
+      ]
+    },
+    {
+      "display_name": "Nelly Virsaladze",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["nelly-virsaladze"]},
+        {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
+        {"name": "counter_at_most", "opts": ["riichi_turn", 8]}
+      ]
+    },
+    {
+      "display_name": "Nelly Virsaladze",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["nelly-virsaladze"]},
+        {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
+        {"name": "counter_at_most", "opts": ["riichi_turn", 10]}
+      ]
     }
   ],
   "yakuman": [
@@ -1767,14 +1795,18 @@
                   ["when", [{"name": "tile_not_revealed", "opts": ["uraindicator_5"]}], [["reveal_tile", "1x"]]]
                   ]],
                 ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [["set_status", "atago_hiroe_no_tsumo_payment"]]],
-                ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["set_status_chii_victims", "double_tsumo_payment"]]]
+                ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["set_status_chii_victims", "double_tsumo_payment"]]],
+                ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["nelly-virsaladze"]}], [["set_discarder_status", "nelly_virsaladze_take_bets"]]],
+                ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["set_caller_status", "nelly_virsaladze_take_bets"]]]
                ]
   },
   "before_abortive_draw": {
     "actions": []
   },
   "before_exhaustive_draw": {
-    "actions": []
+    "actions": [
+      ["when_anyone", [{"name": "status", "opts": ["nelly-virsaladze"]}], [["set_status", "nelly_virsaladze_take_bets"]]]
+    ]
   },
   "buttons": {
     "draft": {
@@ -2560,7 +2592,8 @@
             "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
             "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
             "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]
-        ]]
+        ]],
+        ["when", [{"name": "status", "opts": ["nelly-virsaladze"]}, "dealt_in_last_round"], [["add_counter", "riichi_turn", 1], ["add_counter", "riichi_turn", "num_discards"]]]
       ],
       "no_interrupt": true
     },

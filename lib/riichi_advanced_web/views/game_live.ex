@@ -149,7 +149,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles) - @state.dead_wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
-        riichi_sticks={@state.riichi_sticks}
+        riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
         riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
         score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
         display_riichi_sticks={@display_riichi_sticks}
@@ -224,6 +224,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
+          <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
         </div>
       <% else %>
         <%= if @state.players[@viewer] != nil do %>

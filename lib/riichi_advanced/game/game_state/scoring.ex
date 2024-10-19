@@ -252,7 +252,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           delta_scores
         else
           {riichi_payment, honba_payment} = if collect_sticks do
-            riichi_payment = scoring_table["riichi_value"] * state.riichi_sticks
+            riichi_payment = state.pot
             honba_payment = scoring_table["honba_value"] * state.honba
             {riichi_payment, honba_payment}
           else
@@ -298,7 +298,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer)
 
             # handle motouchi naruka's scoring quirk
-            motouchi_naruka_delta = 100 * trunc(state.riichi_sticks)
+            motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, scoring_table["riichi_value"])
             {ko_payment, oya_payment} = if "motouchi_naruka_increase_tsumo_payment" in state.players[winner.seat].status do
               push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} has tsumo payments increased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
               {ko_payment + motouchi_naruka_delta, oya_payment + motouchi_naruka_delta}
@@ -408,7 +408,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  defp calculate_delta_scores(state) do
+  defp calculate_delta_scores(state, delta_scores) do
     scoring_table = state.rules["score_calculation"]
     closest_winner = case scoring_table["method"] do
       "riichi" ->
@@ -429,8 +429,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
       _ -> nil
     end
+
     # sum the individual delta scores for each winner, skipping winners already marked as processed
-    for {seat, winner} <- state.winners, not Map.has_key?(winner, :processed), reduce: Map.new(state.players, fn {seat, _player} -> {seat, 0} end) do
+    for {seat, winner} <- state.winners, not Map.has_key?(winner, :processed), reduce: delta_scores do
       delta_scores_acc ->
         delta_scores = calculate_delta_scores_for_single_winner(state, winner, seat == closest_winner)
         delta_scores_acc = Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + delta_scores[seat]} end)
@@ -440,9 +441,24 @@ defmodule RiichiAdvanced.GameState.Scoring do
   
   def adjudicate_win_scoring(state) do
     scoring_table = state.rules["score_calculation"]
+    delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     {state, delta_scores, delta_scores_reason, next_dealer} = case scoring_table["method"] do
       "riichi" ->
-        delta_scores = calculate_delta_scores(state)
+        # handle nelly virsaladze's scoring quirk
+        {state, delta_scores} = for {seat, player} <- state.players, reduce: {state, delta_scores} do
+          {state, delta_scores} ->
+            if "nelly_virsaladze_take_bets" in player.status do
+              push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} takes all bets on the table (#{state.pot}) and is paid 1500 by every player (Nelly Virsaladze)"}])
+              delta_scores = Map.update!(delta_scores, seat, & &1 + state.pot + 4500)
+              delta_scores = for {dir, _player} <- state.players, dir != seat, reduce: delta_scores do
+                delta_scores -> Map.update!(delta_scores, dir, & &1 - 1500)
+              end
+              state = Map.put(state, :pot, 0)
+              {state, delta_scores}
+            else {state, delta_scores} end
+        end
+        
+        delta_scores = calculate_delta_scores(state, delta_scores)
 
         {_seat, some_winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
@@ -464,7 +480,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         next_dealer = if Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do :self else :shimocha end
         {state, delta_scores, delta_scores_reason, next_dealer}
       "hk" ->
-        delta_scores = calculate_delta_scores(state)
+        delta_scores = calculate_delta_scores(state, delta_scores)
         {_seat, winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
             winner.payer == nil          -> "Zimo"
@@ -478,7 +494,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # this function will calculate the next dealer every time,
         # but only the first result will be used
 
-        delta_scores = calculate_delta_scores(state)
+        delta_scores = calculate_delta_scores(state, delta_scores)
         winners = Enum.filter(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end)
         {_seat, winner} = Enum.at(state.winners, -1)
         has_payer = Map.has_key?(winner, :payer)
@@ -507,7 +523,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         {state, delta_scores, delta_scores_reason, next_dealer}
       "vietnamese" ->
-        delta_scores = calculate_delta_scores(state)
+        delta_scores = calculate_delta_scores(state, delta_scores)
         {_seat, winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
             winner.payer == nil          -> "Tự ù"
@@ -518,7 +534,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {state, delta_scores, delta_scores_reason, :shimocha}
       _ ->
         GenServer.cast(self(), {:show_error, "Unknown scoring method #{inspect(scoring_table["method"])}"})
-        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         state = Map.update!(state, :kyoku, & &1 + 1)
         {state, delta_scores, "", :shimocha}
     end
