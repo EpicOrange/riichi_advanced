@@ -108,7 +108,7 @@ defmodule RiichiAdvanced.GameState.Saki do
         end
       else state end
 
-      state = Buttons.recalculate_buttons(state)
+      state = Buttons.recalculate_buttons(state, 0)
       notify_ai(state)
       state
     else state end

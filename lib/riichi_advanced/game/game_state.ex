@@ -79,6 +79,7 @@ defmodule Game do
     # persistent game state (not reset on new round)
     players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
     rules: %{},
+    interruptible_actions: %{},
     all_tiles: [],
     wall: [],
     kyoku: 0,
@@ -228,6 +229,11 @@ defmodule RiichiAdvanced.GameState do
 
     state = Map.put(state, :rules, rules)
     state = Log.init_log(state)
+
+    # initialize interruptible actions
+    interruptible_actions = Map.get(rules, "interrupt_levels", %{})
+    |> Map.merge(Map.new(Map.get(rules, "interruptible_actions", []), fn action -> {action, 100} end))
+    state = Map.put(state, :interruptible_actions, interruptible_actions)
 
     initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
 

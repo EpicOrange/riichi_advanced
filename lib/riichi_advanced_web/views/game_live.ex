@@ -165,7 +165,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <% end %>
       <%= if @viewer != :spectator do %>
         <div class="buttons">
-          <%= if not Enum.empty?(@state.marking[@seat]) do %>
+          <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects">Cancel</button>
           <% else %>

@@ -358,6 +358,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     marked_objects = state.marking[context.seat]
     state = case action do
       "noop"                  -> state
+      "print"                 ->
+        IO.inspect(opts)
+        state
       "push_message"          ->
         push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
         state
@@ -666,7 +669,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         tile = Utils.to_tile(Enum.at(opts, 0, "0m"))
         state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
         state = update_action(state, last_discarder, :discard, %{tile: tile})
-        state = Buttons.recalculate_buttons(state)
+        state = Buttons.recalculate_buttons(state) # TODO remove
         state
       "flip_last_discard_faceup"  ->
         case get_last_discard_action(state).tile do
@@ -677,7 +680,7 @@ defmodule RiichiAdvanced.GameState.Actions do
               last_discarder = get_last_discard_action(state).seat
               state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
               state = update_action(state, last_discarder, :discard, %{tile: tile})
-              state = Buttons.recalculate_buttons(state)
+              state = Buttons.recalculate_buttons(state) # TODO remove
               state
             else state end
           _ -> state
@@ -718,7 +721,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect("resuming deferred actions")
         resume_deferred_actions(state)
       "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
-      "recalculate_buttons" -> Buttons.recalculate_buttons(state, false)
+      "recalculate_buttons" -> Buttons.recalculate_buttons(state, Enum.at(opts, 0, 0))
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
@@ -735,12 +738,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       _ ->
         # if our action updates state, then we need to recalculate buttons
         # this is so other players can react to certain actions
-        if Map.has_key?(state.rules, "interruptible_actions") && action in state.rules["interruptible_actions"] do
+        if Map.has_key?(state.interruptible_actions, action) do
           state = if not Enum.empty?(state.winners) do
             # if there's a winner, never display buttons
             update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
           else
-            Buttons.recalculate_buttons(state, true)
+            Buttons.recalculate_buttons(state, state.interruptible_actions[action])
           end
           buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
           # IO.puts("buttons_before: #{inspect(buttons_before)}")
@@ -927,7 +930,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # done with all choices
       state = if not performing_intermediate_action?(state) do
         state = if Buttons.no_buttons_remaining?(state) do
-          Buttons.recalculate_buttons(state)
+          Buttons.recalculate_buttons(state, 0)
         else state end
         notify_ai(state)
         state

@@ -1536,7 +1536,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "kunihiro_hajime_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
+                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
                   ["set_status", "tenpai"],
@@ -2032,7 +2032,7 @@
         ["set_status", "haramura-nodoka_exhausted", "discard_facedown"],
         ["push_message", "discarded facedown (Haramura Nodoka)"]
       ],
-      "no_interrupt": true
+      "interrupt_level": 0
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
@@ -2143,7 +2143,7 @@
         ["push_message", "drew and set aside an extra tile (Onjouji Toki)"]
       ],
       "unskippable": true,
-      "no_interrupt": true
+      "interrupt_level": 0
     },
     "onjouji_toki_draw": {
       "display_name": "Draw aside tile",
@@ -2280,20 +2280,20 @@
           "1z", "2z", "3z", "4z", "5z", "6z", "7z"]],
         ["push_message", "bet 1000 to wait on aside tiles (Atago Kinue)"]
       ],
-      "no_interrupt": true
+      "interrupt_level": 0
     },
     "kunihiro_hajime": {
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
         {"name": "status", "opts": ["kunihiro-hajime"]},
-        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_swap"]},
+        {"name": "status_missing", "opts": ["match_start", "discards_empty", "just_swapped", "kunihiro-hajime_exhausted", "just_reached", "about_to_swap"]},
         "our_turn",
-        {"name": "status_missing", "opts": ["kunihiro-hajime_exhausted"]},
-        "not_just_discarded"
+        "not_just_discarded",
+        ["has_draw", "just_called"]
       ],
       "actions": [
         ["big_text", "Kunihiro Hajime: swap!"],
-        ["set_status", "kunihiro_hajime_swapped", "kunihiro-hajime_exhausted"],
+        ["set_status", "just_swapped", "kunihiro-hajime_exhausted"],
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
         ["set_status", "about_to_swap"],
@@ -2304,14 +2304,13 @@
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
-      ],
-      "no_interrupt": true
+      ]
     },
     "kunihiro_hajime_interrupt": {
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
         {"name": "status", "opts": ["kunihiro-hajime"]},
-        {"name": "status_missing", "opts": ["match_start", "discards_empty", "kunihiro_hajime_swapped", "just_reached", "about_to_swap"]},
+        {"name": "status_missing", "opts": ["match_start", "discards_empty", "just_swapped", "just_reached", "about_to_swap"]},
         [
           {"name": "others_status", "opts": ["just_reached"]},
           {"name": "others_status", "opts": ["kan"]}
@@ -2319,7 +2318,7 @@
       ],
       "actions": [
         ["big_text", "Kunihiro Hajime: swap!"],
-        ["set_status", "kunihiro_hajime_swapped", "kunihiro-hajime_exhausted"],
+        ["set_status", "just_swapped", "kunihiro-hajime_exhausted"],
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
         ["set_status", "about_to_swap"],
@@ -2791,8 +2790,7 @@
           ["unset_status", "tsuruta-himeko"],
           ["set_status", "shirouzu-mairu"]
         ]]
-      ],
-      "no_interrupt": true
+      ]
     },
     "ron": {
       "display_name": "Ron",
@@ -3033,8 +3031,7 @@
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"],
-      "no_interrupt": true
+      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "kyuushu_kyuuhai": {
       "display_name": "Kyuushu Kyuuhai",
@@ -3110,7 +3107,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["recalculate_buttons", "play_tile", "advance_turn", "call", "self_call", "upgrade_call", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
+  "interruptible_actions": ["recalculate_buttons", "play_tile", "advance_turn", "call", "self_call", "upgrade_call", "draw", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
   "shown_statuses": ["furiten"],
   "display_riichi_sticks": true,
   "display_honba": true,

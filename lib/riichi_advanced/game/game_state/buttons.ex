@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
     end
   end
 
-  def recalculate_buttons(state, interrupt \\ false) do
+  def recalculate_buttons(state, interrupt_level \\ 100) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -98,8 +98,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             |> Enum.filter(fn {name, button} ->
                  calls_spec = Map.get(button, "call", [])
                  upgrades = Map.get(button, "upgrades", [])
-                 no_interrupt = Map.get(button, "no_interrupt", false)
-                 (not interrupt || not no_interrupt) && check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                 Map.get(button, "interrupt_level", 100) >= interrupt_level && check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
                end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
@@ -130,7 +129,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_button_choices)}")
-      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
+      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
       state = Log.add_buttons(state)
       state
     else state end
