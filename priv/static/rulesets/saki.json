@@ -585,16 +585,16 @@
       "value": 2,
       "when": [[
         // 0-1 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
         // 0 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         [
           "won_by_draw",
           [
             // 0-1 open triplet tsumo, hand must be 3 triplets and 2 pairs
             {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["pair"], 2]]]]},
             // 0 open triplet tsumo, hand must be 2 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 1], [["pair"], 2]]]]}
+            {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]}
           ]
         ]
       ]]
@@ -1998,7 +1998,7 @@
       "actions": [
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
-        ["mark", [["hand", 1, ["match_suit"]], ["revealed_tile", 1, ["match_suit"]]]],
+        ["mark", [["hand", 1, ["match_suit", "not_riichi"]], ["revealed_tile", 1, ["match_suit"]]]],
         ["push_message", "swapped a dora indicator with a same-suit tile from hand (Atarashi Ako)"],
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
@@ -2054,7 +2054,7 @@
       "actions": [
         ["big_text", "Choe Myeonghwa: swap!"],
         ["unset_status", "just_called"],
-        ["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]],
+        ["mark", [["hand", 1, ["terminal_honor", "not_riichi"]], ["discard", 1, ["last_discard"]]]],
         ["push_message", "swapped a tile in hand with the last discard (Choe Myeonghwa)"],
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
@@ -2165,7 +2165,7 @@
     },
     "nanpo_kazue_skippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2", "riichi"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted2"],
@@ -2207,10 +2207,10 @@
     },
     "onjouji_toki_swap": {
       "display_name": "Swap tile with aside",
-      "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji-toki", "onjouji_toki_drew"]}, {"name": "status_missing", "opts": ["just_reached"]}, "has_aside"],
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
-        ["mark", [["hand", 1, []]]],
+        ["mark", [["hand", 1, ["not_riichi"]]]],
         ["swap_marked_with_aside"],
         ["push_message", "swapped a tile from hand with the tile they set aside (Onjouji Toki)"],
         ["recalculate_buttons"] // allow tsumo to pop up
