@@ -45,6 +45,7 @@
     "senoo-kaori",
     "shibuya-takami",
     "shirouzu-mairu",
+    "someya-mako",
     "suehara-kyouko",
     "takakamo-shizuno",
     "takei-hisa",
@@ -502,7 +503,10 @@
       "display_name": "Chanta",
       "value": 1,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "status", "opts": ["someya-mako"]}
+        ],
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6", "ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]
@@ -525,7 +529,10 @@
       "display_name": "Ittsu",
       "value": 1,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "status", "opts": ["someya-mako"]}
+        ],
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
           [["ittsu"], 1],
@@ -550,7 +557,10 @@
       "display_name": "Sanshoku",
       "value": 1,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "status", "opts": ["someya-mako"]}
+        ],
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
           [["sanshoku_doujun"], 1],
@@ -629,7 +639,10 @@
       "display_name": "Junchan",
       "value": 1,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "status", "opts": ["someya-mako"]}
+        ],
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
@@ -651,7 +664,10 @@
       "display_name": "Honitsu",
       "value": 1,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "status", "opts": ["someya-mako"]}
+        ],
         [
           {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]},
           {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
@@ -674,7 +690,10 @@
       "display_name": "Chinitsu",
       "value": 1,
       "when": [
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "status", "opts": ["someya-mako"]}
+        ],
         [
           {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
           {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
@@ -1739,6 +1758,11 @@
         ["unset_status", "tsuruta-himeko"],
         ["set_status", "shirouzu-mairu"]
       ]],
+      ["when", [{"name": "status", "opts": ["someya-mako"]}, {"name": "match", "opts": [["last_called_tile"], [[[["2s","3s","4s","6s","8s","6z"], 1]]]]}], [
+        ["set_status", "extra_turn"],
+        ["big_text", "Someya Mako: extra turn!"],
+        ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
+      ]],
       // set tenpai status
       ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
         ["set_status", "tenpai"],
@@ -1894,6 +1918,11 @@
       ["set_status", "shirouzu-mairu"]
     ]]]],
     ["any", [["when", [{"name": "status", "opts": ["suehara-kyouko"]}], [["unset_status", "suehara_kyouko_set_aside"]]]]],
+    [["2s","3s","4s","6s","8s","6z"], [["when", [{"name": "status", "opts": ["someya-mako"]}], [
+      ["set_status", "extra_turn"],
+      ["big_text", "Someya Mako: extra turn!"],
+      ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
+    ]]]],
     ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {

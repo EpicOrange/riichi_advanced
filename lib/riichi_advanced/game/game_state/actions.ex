@@ -66,7 +66,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # trigger play effects
       if Map.has_key?(state.rules, "play_effects") do
-        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches([tile_spec], %{tile: tile}), reduce: state do
+        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile}), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end

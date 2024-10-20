@@ -41,6 +41,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "senoo-kaori" => "Senoo Kaori",
     "shibuya-takami" => "Shibuya Takami",
     "shirouzu-mairu" => "Shirouzu Mairu",
+    "someya-mako" => "Someya Mako",
     "suehara-kyouko" => "Suehara Kyouko",
     "takakamo-shizuno" => "Takakamo Shizuno",
     "takei-hisa" => "Takei Hisa",
