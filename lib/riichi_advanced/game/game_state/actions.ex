@@ -107,7 +107,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         # IO.puts("wall index is now #{get_state().wall_index}")
         draw_tile(state, seat, num - 1, tile_spec, to_aside)
       end
-    else state end
+    else
+      # run after_draw actions            
+      state = if Map.has_key?(state.rules, "after_draw") do
+        run_actions(state, state.rules["after_draw"]["actions"], %{seat: seat})
+      else state end
+
+      state
+    end
   end
 
   def run_on_no_valid_tiles(state, seat, gas \\ 100) do

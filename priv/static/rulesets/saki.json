@@ -1536,38 +1536,8 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
+                ["unset_status", "ready", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
-                ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
-                  ["set_status", "tenpai"],
-                  ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
-                    ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
-                      ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
-                      ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
-                      ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
-                      ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
-                      ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
-                      ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
-                      ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
-                      ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
-                      ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
-                    ], [
-                      ["clear_tile_aliases"],
-                      ["set_tile_alias", ["0m"], ["5m"]],
-                      ["set_tile_alias", ["0p"], ["5p"]],
-                      ["set_tile_alias", ["0s"], ["5s"]]
-                    ]]
-                  ]]
-                ]],
-                ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
-                  ["unset_status", "tenpai"],
-                  ["when", [{"name": "not_status_missing", "opts": ["takei-hisa", "atago-hiroe"]}], [
-                    ["clear_tile_aliases"],
-                    ["set_tile_alias", ["0m"], ["5m"]],
-                    ["set_tile_alias", ["0p"], ["5p"]],
-                    ["set_tile_alias", ["0s"], ["5s"]]
-                  ]]
-                ]],
                 ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [
                   // check if our placement is not the same as the one we are tagged with
                   ["unless", [[
@@ -1691,58 +1661,130 @@
                ]]
   },
   "before_call": {
-    "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
-                ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
-                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
-                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
-                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
-                ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi"],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
-               ]
+    "actions": [
+      ["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
+      ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+      ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_4"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_5"]}], [["reveal_tile", "doraindicator_5"]]],
+      ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
+      ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
+      ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
+      ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi"],
+      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
+    ]
   },
   "after_call": {
-    "actions": [["when_anyone",
-                  [[
-                    {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-                    [
-                      {"name": "last_call_is", "opts": ["kakan"]},
-                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-                    ],
-                    [
-                      {"name": "last_call_is", "opts": ["ankan"]},
-                      {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-                    ]
-                  ]],
-                  [["set_status", "furiten"]]
-                ],
-                ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
-                ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
-                ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-                ["when_anyone", [{"name": "status", "opts": ["atago-kinue"]}, "not_no_tiles_remaining"], [
-                  ["draw_aside"],
-                  ["push_message", "drew a tile aside (Atago Kinue)"]
-                ]],
-                ["unset_status_all", "motouchi_naruka_skip_interrupt"],
-                ["when", [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}], [
-                  ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
-                  ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
-                  ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
-                  ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
-                  ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
-                  ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
-                  ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
-                  ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
-                  ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
-                ]],
-                ["when_anyone", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "status_missing", "opts": ["riichi"]}], [
-                  ["big_text", "Tsuruta Himeko: switch out!"],
-                  ["unset_status", "tsuruta-himeko"],
-                  ["set_status", "shirouzu-mairu"]
-                ]]
-               ]
+    "actions": [
+      ["when_anyone",
+        [[
+          {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+          [
+            {"name": "last_call_is", "opts": ["kakan"]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ],
+          [
+            {"name": "last_call_is", "opts": ["ankan"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ]
+        ]],
+        [["set_status", "furiten"]]
+      ],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
+      ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+      ["when_anyone", [{"name": "status", "opts": ["atago-kinue"]}, "not_no_tiles_remaining"], [
+        ["draw_aside"],
+        ["push_message", "drew a tile aside (Atago Kinue)"]
+      ]],
+      ["unset_status_all", "motouchi_naruka_skip_interrupt"],
+      ["when", [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}], [
+        ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
+        ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
+        ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
+        ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
+        ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
+        ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
+        ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
+        ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
+        ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
+      ]],
+      ["when_anyone", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "status_missing", "opts": ["riichi"]}], [
+        ["big_text", "Tsuruta Himeko: switch out!"],
+        ["unset_status", "tsuruta-himeko"],
+        ["set_status", "shirouzu-mairu"]
+      ]],
+      // set tenpai status
+      ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+        ["set_status", "tenpai"],
+        ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
+          ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
+            ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
+            ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
+            ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
+            ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
+            ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
+            ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
+            ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
+            ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
+            ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
+          ], [
+            ["clear_tile_aliases"],
+            ["set_tile_alias", ["0m"], ["5m"]],
+            ["set_tile_alias", ["0p"], ["5p"]],
+            ["set_tile_alias", ["0s"], ["5s"]]
+          ]]
+        ]]
+      ]],
+      // unset tenpai status
+      ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+        ["unset_status", "tenpai"],
+        ["when", [{"name": "not_status_missing", "opts": ["takei-hisa", "atago-hiroe"]}], [
+          ["clear_tile_aliases"],
+          ["set_tile_alias", ["0m"], ["5m"]],
+          ["set_tile_alias", ["0p"], ["5p"]],
+          ["set_tile_alias", ["0s"], ["5s"]]
+        ]]
+      ]],
+      ["unless", [{"name": "status", "opts": ["kan"]}], [["set_status", "ready"]]]
+    ]
+  },
+  "after_draw": {
+    "actions": [
+      // set tenpai status
+      ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+        ["set_status", "tenpai"],
+        ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
+          ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
+            ["set_tile_alias", [["1m", "draw"], ["1p", "draw"], ["1s", "draw"], ["1m", "discard"], ["1p", "discard"], ["1s", "discard"]], ["1m", "1p", "1s"]],
+            ["set_tile_alias", [["2m", "draw"], ["2p", "draw"], ["2s", "draw"], ["2m", "discard"], ["2p", "discard"], ["2s", "discard"]], ["2m", "2p", "2s"]],
+            ["set_tile_alias", [["3m", "draw"], ["3p", "draw"], ["3s", "draw"], ["3m", "discard"], ["3p", "discard"], ["3s", "discard"]], ["3m", "3p", "3s"]],
+            ["set_tile_alias", [["4m", "draw"], ["4p", "draw"], ["4s", "draw"], ["4m", "discard"], ["4p", "discard"], ["4s", "discard"]], ["4m", "4p", "4s"]],
+            ["set_tile_alias", [["5m", "draw"], ["5p", "draw"], ["5s", "draw"], ["5m", "discard"], ["5p", "discard"], ["5s", "discard"]], ["5m", "5p", "5s"]],
+            ["set_tile_alias", [["6m", "draw"], ["6p", "draw"], ["6s", "draw"], ["6m", "discard"], ["6p", "discard"], ["6s", "discard"]], ["6m", "6p", "6s"]],
+            ["set_tile_alias", [["7m", "draw"], ["7p", "draw"], ["7s", "draw"], ["7m", "discard"], ["7p", "discard"], ["7s", "discard"]], ["7m", "7p", "7s"]],
+            ["set_tile_alias", [["8m", "draw"], ["8p", "draw"], ["8s", "draw"], ["8m", "discard"], ["8p", "discard"], ["8s", "discard"]], ["8m", "8p", "8s"]],
+            ["set_tile_alias", [["9m", "draw"], ["9p", "draw"], ["9s", "draw"], ["9m", "discard"], ["9p", "discard"], ["9s", "discard"]], ["9m", "9p", "9s"]]
+          ], [
+            ["clear_tile_aliases"],
+            ["set_tile_alias", ["0m"], ["5m"]],
+            ["set_tile_alias", ["0p"], ["5p"]],
+            ["set_tile_alias", ["0s"], ["5s"]]
+          ]]
+        ]]
+      ]],
+      // unset tenpai status
+      ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+        ["unset_status", "tenpai"],
+        ["when", [{"name": "not_status_missing", "opts": ["takei-hisa", "atago-hiroe"]}], [
+          ["clear_tile_aliases"],
+          ["set_tile_alias", ["0m"], ["5m"]],
+          ["set_tile_alias", ["0p"], ["5p"]],
+          ["set_tile_alias", ["0s"], ["5s"]]
+        ]]
+      ]],
+      ["when", ["our_turn"], [["set_status", "ready"]]]
+    ]
   },
   "play_effects": [
     ["1z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [
@@ -1938,7 +1980,7 @@
       "actions": [
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
-        ["mark", [["hand", 1, ["match_suit"]], ["discard", 1, ["match_suit"]]]],
+        ["mark", [["hand", 1, ["match_suit", "not_riichi"]], ["discard", 1, ["match_suit"]]]],
         ["push_message", "swapped a discard with a same-suit tile from hand (Atarashi Ako)"],
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
@@ -2026,13 +2068,12 @@
     },
     "haramura_nodoka": {
       "display_name": "Discard facedown",
-      "show_when": ["our_turn", {"name": "status", "opts": ["haramura-nodoka"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
+      "show_when": ["our_turn", {"name": "status", "opts": ["haramura-nodoka", "ready"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
       "actions": [
         ["big_text", "Haramura Nodoka: discard!"],
         ["set_status", "haramura-nodoka_exhausted", "discard_facedown"],
         ["push_message", "discarded facedown (Haramura Nodoka)"]
-      ],
-      "interrupt_level": 0
+      ]
     },
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
@@ -2135,15 +2176,14 @@
     },
     "onjouji_toki_start": {
       "display_name": "Draw an extra tile and set it aside",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "onjouji-toki_exhausted"]}, {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "onjouji-toki_exhausted"]}, {"name": "status", "opts": ["onjouji-toki", "ready"]}],
       "actions": [
         ["big_text", "Onjouji Toki: set aside!"],
         ["set_status", "onjouji-toki_exhausted", "onjouji_toki_drew"],
         ["draw_aside"],
         ["push_message", "drew and set aside an extra tile (Onjouji Toki)"]
       ],
-      "unskippable": true,
-      "interrupt_level": 0
+      "unskippable": true
     },
     "onjouji_toki_draw": {
       "display_name": "Draw aside tile",
@@ -2264,7 +2304,7 @@
       "display_name": "Bet 1000 to change wait to aside tiles",
       "show_when": ["our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
-        {"name": "status", "opts": ["atago-kinue", "tenpai"]},
+        {"name": "status", "opts": ["atago-kinue", "tenpai", "ready"]},
         {"name": "status_missing", "opts": ["atago_kinue_aside_waits"]},
         "not_just_discarded",
         "has_aside"
@@ -2279,17 +2319,15 @@
           "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
           "1z", "2z", "3z", "4z", "5z", "6z", "7z"]],
         ["push_message", "bet 1000 to wait on aside tiles (Atago Kinue)"]
-      ],
-      "interrupt_level": 0
+      ]
     },
     "kunihiro_hajime": {
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
-        {"name": "status", "opts": ["kunihiro-hajime"]},
+        {"name": "status", "opts": ["kunihiro-hajime", "ready"]},
         {"name": "status_missing", "opts": ["match_start", "discards_empty", "just_swapped", "kunihiro-hajime_exhausted", "just_reached", "about_to_swap"]},
         "our_turn",
-        "not_just_discarded",
-        ["has_draw", "just_called"]
+        "not_just_discarded"
       ],
       "actions": [
         ["big_text", "Kunihiro Hajime: swap!"],
@@ -2660,10 +2698,12 @@
         ],
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
+          {"name": "not_round_wind_is", "opts": ["east"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
         ],
         [
           {"name": "not_status", "opts": ["nanpo-kazue"]},
+          {"name": "not_round_wind_is", "opts": ["south"]},
           {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
         ],
         [
@@ -2738,10 +2778,12 @@
         ],
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
+          {"name": "not_round_wind_is", "opts": ["east"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
         ],
         [
           {"name": "not_status", "opts": ["nanpo-kazue"]},
+          {"name": "not_round_wind_is", "opts": ["south"]},
           {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
         ],
         [
@@ -2796,7 +2838,7 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "status_missing", "opts": ["just_reached"]},
+        {"name": "status_missing", "opts": ["just_reached", "about_to_call"]},
         [
           {"name": "status_missing", "opts": ["furiten"]},
           {"name": "status", "opts": ["atago-hiroe", "riichi"]},
@@ -2877,7 +2919,7 @@
       "display_name": "Ron",
       "show_when": [
         "not_our_turn",
-        {"name": "status_missing", "opts": ["just_reached"]},
+        {"name": "status_missing", "opts": ["just_reached", "about_to_call"]},
         [
           {"name": "status_missing", "opts": ["furiten"]},
           {"name": "status", "opts": ["atago-hiroe", "riichi"]}
@@ -2952,7 +2994,7 @@
       "show_when": [
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
-        {"name": "not_status", "opts": ["just_reached"]},
+        {"name": "not_status", "opts": ["just_reached", "about_to_call"]},
         [
           {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
           {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
@@ -3017,10 +3059,12 @@
         ],
         [
           {"name": "not_status", "opts": ["kataoka-yuuki"]},
+          {"name": "not_round_wind_is", "opts": ["east"]},
           {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
         ],
         [
           {"name": "not_status", "opts": ["nanpo-kazue"]},
+          {"name": "not_round_wind_is", "opts": ["south"]},
           {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
         ],
         [
