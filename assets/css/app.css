@@ -107,7 +107,7 @@ div.self { z-index: 1; } /* your stuff goes above other people's stuff */
 div.hand, div.draws { z-index: 2; } /* so if they overlap with calls, the hand goes on top */
 div.hand.self, div.draws.self { z-index: 3; } /* your stuff goes above other people's stuff */
 div.tiles {
-  padding-left: calc(2 * var(--tile-size));
+  margin-left: calc(2 * var(--tile-size));
 }
 div.calls {
   position: absolute;
@@ -162,20 +162,22 @@ div.draws::before {
   height: calc(100% + 0.5 * var(--tile-size));
   z-index: -1;
 }
-div.calls:hover {
-  z-index: 10;
-}
-div.calls:hover::before {
+div.calls:hover { z-index: 100; }
+div.tiles:hover::before, div.calls:hover::before {
   content: "";
   position: absolute;
   top: calc(-0.625 * var(--tile-size));
   left: calc(-0.125 * var(--tile-size));
-  background: #0f4f1f;
+  background: #0f6f2f;
   border-radius: calc(0.25 * var(--tile-size));
   width: calc(100% + 0.5 * var(--tile-size));
   height: calc(100% + 1 * var(--tile-size));
-  z-index: -1;
+  z-index: -100;
 }
+/* toimen's hand covers shimo's calls */
+/* but if we lower its z-index, then toimen's calls are covered by kami */
+/* best way to make shimo's discards clickable is to z-fight */
+div.hand.toimen:hover { z-index: -1; }
 
 /* ponds */
 div.pond {
