@@ -89,7 +89,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         tile = from_tile_name(state, tile_name) |> Utils.add_attr(["draw"])
         state = if not to_aside do
           state = update_player(state, seat, &%Player{ &1 |
-            hand: &1.hand ++ &1.draw,
+            hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]),
             draw: [tile]
           })
           state = Map.put(state, :wall_index, wall_index)
@@ -303,6 +303,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
       ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index
       ["num_discards" | _opts] -> length(state.players[seat].discards)
+      ["num_aside" | _opts] -> length(state.players[seat].aside)
       ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[seat].pond, [:"1x"])
       [amount | _opts] when is_integer(amount) -> amount
     end
@@ -340,7 +341,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
       end
       # send them according to dir
-      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ &1.draw, draw: [hand_tile1, hand_tile2, hand_tile3] })
+      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: [hand_tile1, hand_tile2, hand_tile3] })
       state = put_in(state.marking[seat].done, true)
       state
     end
@@ -380,18 +381,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice)
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)
-      "change_turn"           -> 
-        seat = case Enum.at(opts, 0, "self") do
-          "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east)
-          "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south)
-          "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west)
-          "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north)
-          "shimocha" -> Utils.get_seat(context.seat, :shimocha)
-          "toimen" -> Utils.get_seat(context.seat, :toimen)
-          "kamicha" -> Utils.get_seat(context.seat, :kamicha)
-          _ -> context.seat
-        end
-        change_turn(state, seat, true)
+      "change_turn"           -> change_turn(state, from_seat_spec(state, context.seat, Enum.at(opts, 0, "self")), true)
       "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
       "win_by_call"           -> win(state, context.seat, get_last_call_action(state).called_tile, :call)
       "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
@@ -441,6 +431,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
         state
       "add_score"             ->
+        # TODO change from_seat_spec to include multiple outputs
         recipients = case Enum.at(opts, 1) do
           "shimocha" -> [Utils.get_seat(context.seat, :shimocha)]
           "toimen" -> [Utils.get_seat(context.seat, :toimen)]
@@ -592,6 +583,27 @@ defmodule RiichiAdvanced.GameState.Actions do
 
         state = put_in(state.marking[context.seat].done, true)
         state
+      "draw_marked_aside" ->
+        {_, aside_seat, _} = Enum.at(marked_objects.aside.marked, 0)
+        {aside_tiles, aside_indices} = marked_objects.aside.marked
+        |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+        |> Enum.unzip()
+
+        # remove specified tiles from aside (rightmost first)
+        state = for ix <- Enum.sort_by(aside_indices, fn ix -> -ix end), reduce: state do
+          state -> update_player(state, aside_seat, &%Player{ &1 | aside: List.delete_at(&1.aside, ix) })
+        end
+
+        # draw aside tiles
+        state = update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: &1.draw ++ Utils.add_attr(aside_tiles, ["draw"]) })
+        state = put_in(state.marking[context.seat].done, true)
+
+        # run after_draw actions            
+        state = if Map.has_key?(state.rules, "after_draw") do
+          run_actions(state, state.rules["after_draw"]["actions"], %{seat: context.seat})
+        else state end
+
+        state
       "clear_marking"         -> put_in(state.marking[context.seat].done, true)
       "set_tile_alias"        ->
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
@@ -658,6 +670,10 @@ defmodule RiichiAdvanced.GameState.Actions do
           true ->
             update_player(state, context.seat, &%Player{ &1 | draw: List.update_at(&1.draw, ix - hand_len, fn t -> Utils.add_attr(t, attrs) end) })
         end
+      "add_attr_aside"   ->
+        # TODO generalize to add_attr
+        state = update_player(state, context.seat, &%Player{ &1 | aside: Utils.add_attr(&1.aside, opts) })
+        state
       "remove_attr_all"   ->
         # TODO generalize to remove_attr
         state = update_player(state, context.seat, &%Player{ &1 | hand: Utils.remove_attr(&1.hand, opts), draw: Utils.remove_attr(&1.draw, opts), aside: Utils.remove_attr(&1.aside, opts) })

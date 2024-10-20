@@ -32,6 +32,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
         case target do
           "hand"          -> Map.put(marked, :hand, mark_spec)
+          "aside"         -> Map.put(marked, :aside, mark_spec)
           "discard"       -> Map.put(marked, :discard, mark_spec)
           "revealed_tile" -> Map.put(marked, :revealed_tile, mark_spec)
           _               ->
@@ -49,6 +50,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   defp get_tile(state, seat, index, source) do
     case source do
       :hand          -> state.players[seat].hand ++ state.players[seat].draw |> Enum.at(index)
+      :aside         -> state.players[seat].aside |> Enum.at(index)
       :discard       -> state.players[seat].pond |> Enum.at(index)
       :revealed_tile ->
         tile_spec = Enum.at(state.revealed_tiles, index)
@@ -84,7 +86,11 @@ defmodule RiichiAdvanced.GameState.Marking do
             |> Enum.all?(fn {tile2, _, _} -> Riichi.same_number?(tile, tile2) end)
           else false end
         "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
+        "self"              -> marking_player == seat
         "others"            -> marking_player != seat
+        "shimocha"          -> Utils.get_relative_seat(marking_player, seat) == :shimocha
+        "toimen"            -> Utils.get_relative_seat(marking_player, seat) == :toimen
+        "kamicha"           -> Utils.get_relative_seat(marking_player, seat) == :kamicha
         "current_turn"      -> seat == state.turn
         "7z"                -> tile == :"7z"
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
@@ -105,7 +111,6 @@ defmodule RiichiAdvanced.GameState.Marking do
               else false end
             _        -> false
           end
-        "self"              -> seat == marking_player
         _                   ->
           GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
           true
@@ -116,6 +121,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   def is_marked?(state, marking_player, seat, index, source) do
     case source do
       :hand          -> Map.has_key?(state.marking[marking_player], :hand) && Enum.any?(state.marking[marking_player].hand.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :aside         -> Map.has_key?(state.marking[marking_player], :aside) && Enum.any?(state.marking[marking_player].aside.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
       :discard       -> Map.has_key?(state.marking[marking_player], :discard) && Enum.any?(state.marking[marking_player].discard.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
       :revealed_tile -> Map.has_key?(state.marking[marking_player], :revealed_tile) && Enum.any?(state.marking[marking_player].revealed_tile.marked, fn {_tile, _, index2} -> index == index2 end)
       _        ->
@@ -127,6 +133,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   def mark_tile(state, marking_player, seat, index, source) do
     case source do
       :hand          -> update_in(state.marking[marking_player].hand.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
+      :aside         -> update_in(state.marking[marking_player].aside.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
       :discard       -> update_in(state.marking[marking_player].discard.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
       :revealed_tile -> update_in(state.marking[marking_player].revealed_tile.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), nil, index}] end)
       _              ->

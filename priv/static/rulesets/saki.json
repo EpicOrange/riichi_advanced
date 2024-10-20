@@ -45,6 +45,7 @@
     "senoo-kaori",
     "shibuya-takami",
     "shirouzu-mairu",
+    "suehara-kyouko",
     "takakamo-shizuno",
     "takei-hisa",
     "takimi-haru",
@@ -1011,6 +1012,30 @@
         {"name": "status", "opts": ["tsuruta-himeko"]},
         {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}
       ]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["suehara-kyouko"]},
+        {"name": "counter_at_least", "opts": ["aside_tiles", 3]}
+      ]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["suehara-kyouko"]},
+        {"name": "counter_at_least", "opts": ["aside_tiles", 6]}
+      ]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["suehara-kyouko"]},
+        {"name": "counter_at_least", "opts": ["aside_tiles", 9]}
+      ]
     }
   ],
   "yakuman": [
@@ -1536,7 +1561,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-                ["unset_status", "ready", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt"],
+                ["unset_status", "ready", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [
                   // check if our placement is not the same as the one we are tagged with
@@ -1668,7 +1693,7 @@
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_3"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_4"]}], [["reveal_tile", "doraindicator_4"]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_2"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_3"]}], [["reveal_tile", "doraindicator_3"]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": ["doraindicator_1"]}, {"name": "tile_not_revealed", "opts": ["doraindicator_2"]}], [["reveal_tile", "doraindicator_2"]]],
-      ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi"],
+      ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi", "suehara_kyouko_set_aside"],
       ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
       ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
     ]
@@ -1868,6 +1893,7 @@
       ["unset_status", "tsuruta-himeko"],
       ["set_status", "shirouzu-mairu"]
     ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["suehara-kyouko"]}], [["unset_status", "suehara_kyouko_set_aside"]]]]],
     ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {
@@ -1956,7 +1982,8 @@
                 ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["set_status_chii_victims", "double_tsumo_payment"]]],
                 ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["nelly-virsaladze"]}], [["set_discarder_status", "nelly_virsaladze_take_bets"]]],
                 ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["set_caller_status", "nelly_virsaladze_take_bets"]]],
-                ["when", [{"name": "status", "opts": ["tsuruta-himeko"]}], [["add_counter", "facedown_tiles", "num_facedown_tiles"]]]
+                ["when", [{"name": "status", "opts": ["tsuruta-himeko"]}], [["add_counter", "facedown_tiles", "num_facedown_tiles"]]],
+                ["when", [{"name": "status", "opts": ["suehara-kyouko"]}], [["add_counter", "aside_tiles", "num_aside"]]]
                ]
   },
   "before_abortive_draw": {
@@ -2555,6 +2582,127 @@
           ["set_status", "tsuruta-himeko"]
         ]]
       ],
+      "unskippable": true
+    },
+    "suehara_kyouko": {
+      "display_name": "Reveal and set aside 3 tiles",
+      "show_when": [
+        {"name": "status", "opts": ["suehara-kyouko"]},
+        ["not_our_turn", "not_just_discarded", ["just_discarded", {"name": "status", "opts": ["ippatsu"]}]],
+        {"name": "status_missing", "opts": ["suehara_kyouko_set_aside"]},
+        [
+          {"name": "status", "opts": ["call_made"]},
+          {"name": "anyone_status", "opts": ["just_reached"]},
+          {"name": "anyone_status", "opts": ["discard_facedown"]}
+        ]
+      ],
+      "actions": [
+        ["set_status", "suehara_kyouko_set_aside"],
+        ["draw_aside", 3],
+        ["add_attr_aside", "revealed"],
+        // if we just riichied, we interrupted the turn change after our discard, so we need to resume play
+        ["when", ["just_discarded", {"name": "status", "opts": ["ippatsu"]}], [["advance_turn"]]]
+      ]
+    },
+    "draw_from_suehara_kyouko_self": {
+      "display_name": "Draw from aside",
+      "show_when": [
+        "our_turn",
+        "not_just_discarded",
+        ["not_just_called", {"name": "status", "opts": ["kan"]}],
+        {"name": "status", "opts": ["suehara-kyouko"]},
+        {"name": "has_aside", "opts": ["self"]},
+        "not_has_draw"
+      ],
+      "actions": [
+        ["mark", [["aside", 1, ["self"]]]],
+        ["unset_status", "kan"],
+        ["push_message", "drew from their aside tiles (Suehara Kyouko)"],
+        ["draw_marked_aside"]
+      ],
+      "unskippable": true
+    },
+    "draw_from_suehara_kyouko_shimocha": {
+      "display_name": "Draw from Suehara Kyouko's aside",
+      "show_when": [
+        "our_turn",
+        "not_just_discarded",
+        ["not_just_called", {"name": "status", "opts": ["kan"]}],
+        {"name": "shimocha_status", "opts": ["suehara-kyouko"]},
+        {"name": "has_aside", "opts": ["shimocha"]},
+        "not_has_draw"
+      ],
+      "actions": [
+        ["mark", [["aside", 1, ["shimocha"]]]],
+        ["unset_status", "kan"],
+        ["push_message", "drew from shimocha's aside tiles (Suehara Kyouko)"],
+        ["draw_marked_aside"]
+      ],
+      "unskippable": true
+    },
+    "draw_from_suehara_kyouko_toimen": {
+      "display_name": "Draw from Suehara Kyouko's aside",
+      "show_when": [
+        "our_turn",
+        "not_just_discarded",
+        ["not_just_called", {"name": "status", "opts": ["kan"]}],
+        {"name": "toimen_status", "opts": ["suehara-kyouko"]},
+        {"name": "has_aside", "opts": ["toimen"]},
+        "not_has_draw"
+      ],
+      "actions": [
+        ["mark", [["aside", 1, ["toimen"]]]],
+        ["unset_status", "kan"],
+        ["push_message", "drew from toimen's aside tiles (Suehara Kyouko)"],
+        ["draw_marked_aside"]
+      ],
+      "unskippable": true
+    },
+    "draw_from_suehara_kyouko_kamicha": {
+      "display_name": "Draw from Suehara Kyouko's aside",
+      "show_when": [
+        "our_turn",
+        "not_just_discarded",
+        ["not_just_called", {"name": "status", "opts": ["kan"]}],
+        {"name": "kamicha_status", "opts": ["suehara-kyouko"]},
+        {"name": "has_aside", "opts": ["kamicha"]},
+        "not_has_draw"
+      ],
+      "actions": [
+        ["mark", [["aside", 1, ["kamicha"]]]],
+        ["unset_status", "kan"],
+        ["push_message", "drew from kamicha's aside tiles (Suehara Kyouko)"],
+        ["draw_marked_aside"]
+      ],
+      "unskippable": true
+    },
+    "draw_from_suehara_kyouko_skip": {
+      "display_name": "Draw from wall",
+      "show_when": [
+        "our_turn",
+        "not_just_discarded",
+        ["not_just_called", {"name": "status", "opts": ["kan"]}],
+        [
+          [
+            {"name": "status", "opts": ["suehara-kyouko"]},
+            {"name": "has_aside", "opts": ["self"]}
+          ],
+          [
+            {"name": "shimocha_status", "opts": ["suehara-kyouko"]},
+            {"name": "has_aside", "opts": ["shimocha"]}
+          ],
+          [
+            {"name": "toimen_status", "opts": ["suehara-kyouko"]},
+            {"name": "has_aside", "opts": ["toimen"]}
+          ],
+          [
+            {"name": "kamicha_status", "opts": ["suehara-kyouko"]},
+            {"name": "has_aside", "opts": ["kamicha"]}
+          ]
+        ],
+        "not_has_draw"
+      ],
+      "actions": [["draw"]],
       "unskippable": true
     },
     "chii": {

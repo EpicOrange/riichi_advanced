@@ -874,7 +874,7 @@ defmodule RiichiAdvanced.GameState do
     if state.game_active do
       if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
         # IO.puts("Notifying #{seat} AI about marking")
-        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], marked_objects: state.marking[seat]}})
+        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, marked_objects: state.marking[seat]}})
       end
     end
   end
@@ -1013,6 +1013,19 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def from_seat_spec(state, seat, seat_spec) do
+    case seat_spec do
+      "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east)
+      "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south)
+      "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west)
+      "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north)
+      "shimocha" -> Utils.get_seat(seat, :shimocha)
+      "toimen" -> Utils.get_seat(seat, :toimen)
+      "kamicha" -> Utils.get_seat(seat, :kamicha)
+      _ -> seat
+    end
+  end
+
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
     negated = String.starts_with?(cond_spec, "not_")
     cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
@@ -1048,9 +1061,9 @@ defmodule RiichiAdvanced.GameState do
           call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
           Riichi.can_call?(context.calls_spec, call_tiles, cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings)
         end)
-      "has_draw"                 -> not Enum.empty?(cxt_player.draw)
-      "has_aside"                -> not Enum.empty?(cxt_player.aside)
-      "has_calls"                -> not Enum.empty?(cxt_player.calls)
+      "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))].draw)
+      "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))].aside)
+      "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))].calls)
       "has_call_named"           -> Enum.all?(cxt_player.calls, fn {name, _call} -> name in opts end)
       "has_no_call_named"        -> Enum.all?(cxt_player.calls, fn {name, _call} -> name not in opts end)
       "won_by_call"              -> context.win_source == :call

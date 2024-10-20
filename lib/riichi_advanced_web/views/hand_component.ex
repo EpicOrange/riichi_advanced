@@ -91,20 +91,28 @@ defmodule RiichiAdvancedWeb.HandComponent do
         </div>
       <% end %>
       <div class="calls">
-          <%= for {_name, call} <- @calls do %>
-            <div class="call">
-              <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
-            </div>
-          <% end %>
+        <%= for {_name, call} <- @calls do %>
           <div class="call">
-            <%= for tile <- @aside do %>
-              <%= if @your_hand? do %>
-                <div class={["tile", Utils.strip_attrs(tile)]}></div>
-              <% else %>
-                <div class={["tile", "1x"]}></div>
-              <% end %>
-            <% end %>
+            <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
           </div>
+        <% end %>
+        <div class="call">
+          <%= for {tile, i} <- prepare_aside(assigns) do %>
+            <%= if not Enum.empty?(@marking) do %>
+              <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :aside}) do %>
+                <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile_aside" phx-target={@myself} phx-value-index={i}></div>
+              <% else %>
+                <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :aside}) do %>
+                  <div class={["tile", Utils.strip_attrs(tile), "marked"]}></div>
+                <% else %>
+                  <div class={["tile", Utils.strip_attrs(tile)]}></div>
+                <% end %>
+              <% end %>
+            <% else %>
+              <div class={["tile", Utils.strip_attrs(tile)]}></div>
+            <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
     """
@@ -140,8 +148,14 @@ defmodule RiichiAdvancedWeb.HandComponent do
     {:noreply, socket}
   end
 
-  def hide_tiles(tiles, assigns) do
-    if assigns.revealed? do tiles else Enum.map(tiles, fn tile ->
+  def handle_event("mark_tile_aside", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :aside})
+    {:noreply, socket}
+  end
+
+  def hide_tiles(tiles, revealed?) do
+    if revealed? do tiles else Enum.map(tiles, fn tile ->
       case tile do
         {_, attrs} -> if "revealed" in attrs do tile else :"1x" end
         _ -> :"1x"
@@ -152,17 +166,25 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def prepare_hand(assigns) do
     # map tiles to [{index, tile, is_last_discard}]
     assigns.hand
-      |> hide_tiles(assigns)
-      |> Enum.with_index()
-      |> Enum.map(fn {tile, i} -> {if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end, tile, i == assigns.played_tile_index} end)
+    |> hide_tiles(assigns.revealed?)
+    |> Enum.with_index()
+    |> Enum.map(fn {tile, i} -> {if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end, tile, i == assigns.played_tile_index} end)
   end
 
   def prepare_draw(assigns) do
-    # map tiles to [{index, tile}]
+    # map tiles to [{tile, index}]
     # this function is necessary since we need phoenix to update draws when anything in assigns changes
     assigns.draw
-      |> hide_tiles(assigns)
-      |> Enum.with_index
+    |> hide_tiles(assigns.revealed?)
+    |> Enum.with_index()
+  end
+
+  def prepare_aside(assigns) do
+    # map tiles to [{tile, index}]
+    # this function is necessary since we need phoenix to update draws when anything in assigns changes
+    assigns.aside
+    |> hide_tiles(assigns.revealed?)
+    |> Enum.with_index()
   end
 
   def update(assigns, socket) do
