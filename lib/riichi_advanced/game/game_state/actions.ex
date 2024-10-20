@@ -21,8 +21,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def play_tile(state, seat, tile, index) do
-    tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
-    if is_playable?(state, seat, tile, tile_source) do
+    if is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
       tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
@@ -119,8 +118,8 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def run_on_no_valid_tiles(state, seat, gas \\ 100) do
     if gas > 0 do
-      if not Enum.any?(state.players[seat].hand, fn tile -> is_playable?(state, seat, tile, :hand) end) &&
-         not Enum.any?(state.players[seat].draw, fn tile -> is_playable?(state, seat, tile, :draw) end) do
+      if not Enum.any?(state.players[seat].hand, fn tile -> is_playable?(state, seat, tile) end) &&
+         not Enum.any?(state.players[seat].draw, fn tile -> is_playable?(state, seat, tile) end) do
         state = run_actions(state, state.rules["on_no_valid_tiles"]["actions"], %{seat: seat})
         if Map.has_key?(state.rules["on_no_valid_tiles"], "recurse") && state.rules["on_no_valid_tiles"]["recurse"] do
           run_on_no_valid_tiles(state, seat, gas - 1)

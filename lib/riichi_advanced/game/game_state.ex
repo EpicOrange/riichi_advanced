@@ -825,11 +825,11 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def is_playable?(state, seat, tile, tile_source) do
+  def is_playable?(state, seat, tile) do
     have_unskippable_button = Enum.any?(state.players[seat].buttons, fn button_name -> state.rules["buttons"][button_name] != nil && Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
     not have_unskippable_button && not Utils.has_attr?(tile, ["no_discard"]) && if Map.has_key?(state.rules, "play_restrictions") do
       Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
-        not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) || not check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile, tile_source: tile_source})
+        not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) || not check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
       end)
     else true end
   end
@@ -1063,7 +1063,7 @@ defmodule RiichiAdvanced.GameState do
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile, players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.tile_aliases)
-      "is_drawn_tile"            -> context.tile_source == :draw
+      "is_drawn_tile"            -> Utils.has_attr?(context.tile, ["draw"])
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
       "discarder_status"         -> last_action.action == :discard && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
@@ -1437,7 +1437,7 @@ defmodule RiichiAdvanced.GameState do
     {:reply, :ok, state}
   end
 
-  def handle_call({:is_playable, seat, tile, tile_source}, _from, state), do: {:reply, is_playable?(state, seat, tile, tile_source), state}
+  def handle_call({:is_playable, seat, tile}, _from, state), do: {:reply, is_playable?(state, seat, tile), state}
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
 
@@ -1446,8 +1446,7 @@ defmodule RiichiAdvanced.GameState do
       {:reply, get_visible_waits(state, seat, nil), state}
     else
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
-      tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
-      playable = is_playable?(state, seat, tile, tile_source)
+      playable = is_playable?(state, seat, tile)
       if not playable || not Map.has_key?(state.rules, "show_waits") do
         {:reply, %{}, state}
       else
@@ -1469,8 +1468,8 @@ defmodule RiichiAdvanced.GameState do
 
   # marking calls
   def handle_call({:needs_marking?, seat}, _from, state), do: {:reply, Marking.needs_marking?(state, seat), state}
-  def handle_call({:is_marked?, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.is_marked?(state, marking_player, seat, index, tile_source), state}
-  def handle_call({:can_mark?, marking_player, seat, index, tile_source}, _from, state), do: {:reply, Marking.can_mark?(state, marking_player, seat, index, tile_source), state}
+  def handle_call({:is_marked?, marking_player, seat, index, source}, _from, state), do: {:reply, Marking.is_marked?(state, marking_player, seat, index, source), state}
+  def handle_call({:can_mark?, marking_player, seat, index, source}, _from, state), do: {:reply, Marking.can_mark?(state, marking_player, seat, index, source), state}
 
   # debugging only
   def handle_call(:get_log, _from, state) do
@@ -1522,10 +1521,9 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:play_tile, seat, index}, state) do
     tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
-    tile_source = if index < length(state.players[seat].hand) do :hand else :draw end
-    playable = is_playable?(state, seat, tile, tile_source)
+    playable = is_playable?(state, seat, tile)
     if not playable do
-      IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}} from #{tile_source}")
+      IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
     end
     state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
       state = Actions.temp_disable_play_tile(state, seat)
@@ -1608,8 +1606,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   # marking calls
-  def handle_cast({:mark_tile, marking_player, seat, index, tile_source}, state) do
-    state = Marking.mark_tile(state, marking_player, seat, index, tile_source)
+  def handle_cast({:mark_tile, marking_player, seat, index, source}, state) do
+    state = Marking.mark_tile(state, marking_player, seat, index, source)
     state = if not Marking.needs_marking?(state, marking_player) do
       state = Actions.run_deferred_actions(state, %{seat: marking_player})
       # only reset marking if the mark action states that it is done

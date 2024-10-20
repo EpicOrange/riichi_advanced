@@ -60,7 +60,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
               <%= if removed do %>
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
-                <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :hand}) do %>
+                <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile}) do %>
                   <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
                 <% else %>
                   <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
@@ -70,7 +70,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
           <div class="draws">
             <%= for {tile, i} <- prepare_draw(assigns) do %>
-              <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile, :draw}) do %>
+              <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile}) do %>
                 <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != (length(assigns.hand) + i) && "facedown"]}></div>
               <% else %>
                 <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != (length(assigns.hand) + i) && "facedown"]} data-id={i}></div>

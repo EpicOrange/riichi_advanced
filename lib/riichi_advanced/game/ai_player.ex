@@ -79,13 +79,12 @@ defmodule RiichiAdvanced.AIPlayer do
     if state.initialized && GenServer.call(state.game_state, {:can_discard, state.seat}) do
       state = %{ state | player: player }
       playable_hand = player.hand
-        |> Enum.with_index()
-        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile, :hand}) end)
+      |> Enum.with_index()
       playable_draw = player.draw
-        |> Enum.with_index()
-        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile, :draw}) end)
-        |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
+      |> Enum.with_index()
+      |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
       playables = playable_hand ++ playable_draw
+      |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
 
       if not Enum.empty?(playables) do
         # pick a random tile
@@ -96,16 +95,21 @@ defmodule RiichiAdvanced.AIPlayer do
         # {_tile, index} = Enum.at(playables, -1)
         # use our rudimentary AI for discarding
         # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
-        {{tile, index}, shanten} = case choose_discard(state, player, playables) do
-          {nil, _} ->
-            # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
-            Enum.at(playables, -1) # tsumogiri
-          t -> t
+        {{_tile, index}, shanten} = if RiichiAdvanced.GameState.Debug.debug() do
+          {Enum.at(playables, -1), 6}
+        else
+          case choose_discard(state, player, playables) do
+            {nil, _} ->
+              # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
+              Enum.at(playables, -1) # tsumogiri
+            t -> t
+          end
         end
+        state = Map.put(state, :shanten, shanten)
         # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
         Process.sleep(trunc(1200 / @ai_speed))
         GenServer.cast(state.game_state, {:play_tile, state.seat, index})
-        {:noreply, Map.put(state, :shanten, shanten)}
+        {:noreply, state}
       else
         IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
         {:noreply, state}
