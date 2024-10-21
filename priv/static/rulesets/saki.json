@@ -838,7 +838,7 @@
       "value": 1,
       "when": [
         {"name": "status", "opts": ["hao-huiyu"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]]}
       ]
     },
     {
@@ -847,7 +847,7 @@
       "when": [
         {"name": "status", "opts": ["hao-huiyu"]},
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]]}
       ]
     },
     {
@@ -2064,7 +2064,8 @@
         ["recalculate_buttons"], // allow interrupting draw
         ["unset_status", "about_to_draw"],
         ["draw"]
-      ]]
+      ]],
+      ["when", [{"name": "status", "opts": ["hanada-kirame"]}, {"name": "status_missing", "opts": ["hanada-kirame_exhausted"]}], [["set_status", "hanada_kirame_score_protection"]]]
     ]
   },
   "before_win": {
@@ -3554,6 +3555,7 @@
   },
   "interruptible_actions": ["recalculate_buttons", "play_tile", "advance_turn", "call", "self_call", "upgrade_call", "draw", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
   "shown_statuses": ["furiten"],
+  "persistent_statuses": ["hanada-kirame_exhausted"],
   "display_riichi_sticks": true,
   "display_honba": true,
   "initial_score": 30000,

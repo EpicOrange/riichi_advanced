@@ -255,6 +255,23 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
+  def hanada_kirame_score_protection(state, delta_scores) do
+    case Enum.find(state.players, fn {_seat, player} -> "hanada-kirame" in player.status end) do
+      {hanada_kirame_seat, hanada_kirame} ->
+        if "hanada_kirame_score_protection" in hanada_kirame.status && hanada_kirame.score + delta_scores[hanada_kirame_seat] < 0 do
+          push_message(state, [%{text: "Player #{hanada_kirame_seat} #{hanada_kirame.nickname} stays at zero points, and receives 8000 points from first place (Hanada Kirame)"}])
+          scores = Enum.map(state.players, fn {seat, player} -> {seat, player.score + delta_scores[seat]} end)
+          {first_seat, _} = Enum.max_by(scores, fn {_seat, score} -> score end)
+          state = update_player(state, hanada_kirame_seat, fn player -> %Player{ player | status: player.status ++ ["hanada-kirame_exhausted"] } end)
+          delta_scores = delta_scores
+          |> Map.put(hanada_kirame_seat, 8000 - hanada_kirame.score)
+          |> Map.update!(first_seat, & &1 - 8000)
+          {state, delta_scores}
+        else {state, delta_scores} end
+      _ -> {state, delta_scores}
+    end
+  end
+
   defp calculate_delta_scores_for_single_winner(state, winner, collect_sticks) do
     scoring_table = state.rules["score_calculation"]
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
@@ -374,7 +391,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               {arakawa_kei_seat, arakawa_kei} = Enum.find(state.players, fn {_seat, player} -> "arakawa-kei" in player.status end)
               waiting_tiles = Map.keys(waits)
               num = Utils.count_tiles(arakawa_kei.hand, waiting_tiles)
-              push_message(state, [%{text: "Winner pays player #{arakawa_kei_seat} #{state.players[arakawa_kei_seat].nickname} #{1000 * num} for having #{num} wait(s) in hand (Arakawa Kei)"}])
+              push_message(state, [%{text: "Winner pays player #{arakawa_kei_seat} #{arakawa_kei.nickname} #{1000 * num} for having #{num} wait(s) in hand (Arakawa Kei)"}])
               delta_scores
               |> Map.update!(winner.seat, & &1 - 1000 * num)
               |> Map.update!(arakawa_kei_seat, & &1 + 1000 * num)
@@ -480,8 +497,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
               {state, delta_scores}
             else {state, delta_scores} end
         end
-        
+
         delta_scores = calculate_delta_scores(state, delta_scores)
+
+        # handle hanada kirame's scoring quirk
+        {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
 
         {_seat, some_winner} = Enum.at(state.winners, 0)
         delta_scores_reason = cond do
@@ -594,6 +614,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
           end
           {state, delta_scores}
         end
+
+        # handle hanada kirame's scoring quirk
+        {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
+
         # reveal hand for those players that are tenpai or nagashi
         state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: tenpai[seat] || nagashi[seat] } end)
 

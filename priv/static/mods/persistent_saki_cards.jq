@@ -1,1 +1,1 @@
-.persistent_statuses = .saki_deck
+.persistent_statuses += .saki_deck
