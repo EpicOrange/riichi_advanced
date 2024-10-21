@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
@@ -297,7 +298,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp interpret_amount(state, seat, amt_spec) do
     case amt_spec do
       ["count_matches" | opts] ->
-        hand_calls = get_hand_calls_spec(state, %{seat: seat}, Enum.at(opts, 0, []))
+        hand_calls = Conditions.get_hand_calls_spec(state, %{seat: seat}, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
         ordering = state.players[seat].tile_ordering
         ordering_r = state.players[seat].tile_ordering_r
@@ -400,7 +401,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice)
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)
-      "change_turn"           -> change_turn(state, from_seat_spec(state, context.seat, Enum.at(opts, 0, "self")), true)
+      "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0, "self")), true)
       "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
       "win_by_call"           -> win(state, context.seat, get_last_call_action(state).called_tile, :call)
       "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
@@ -490,15 +491,15 @@ defmodule RiichiAdvanced.GameState.Actions do
         :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
         state
       "random"                -> run_actions(state, [Enum.random(Enum.at(opts, 0, ["noop"]))], context)
-      "when"                  -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
-      "unless"                -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
-      "ite"                   -> if check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
+      "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
+      "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
+      "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
       "when_anyone"           ->
-        for dir <- [:east, :south, :west, :north], check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
+        for dir <- [:east, :south, :west, :north], Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
           state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
         end
       "when_everyone"           ->
-        if Enum.all?([:east, :south, :west, :north], fn dir -> check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+        if Enum.all?([:east, :south, :west, :north], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
       "mark" -> state # no-op

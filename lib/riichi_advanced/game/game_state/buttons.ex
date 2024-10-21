@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
@@ -72,7 +73,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
         call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
           conditions = state.rules["buttons"][button_name]["call_conditions"]
           for {called_tile, choices} <- call_choices do
-            {called_tile, Enum.filter(choices, fn call_choice -> check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
+            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
           end |> Map.new()
         else call_choices end
         {state, {:call, call_choices}}
@@ -98,7 +99,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             |> Enum.filter(fn {name, button} ->
                  calls_spec = Map.get(button, "call", [])
                  upgrades = Map.get(button, "upgrades", [])
-                 Map.get(button, "interrupt_level", 100) >= interrupt_level && check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                 Map.get(button, "interrupt_level", 100) >= interrupt_level && Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
                end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
