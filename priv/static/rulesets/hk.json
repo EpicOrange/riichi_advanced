@@ -539,5 +539,6 @@
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
+  "initial_dead_wall_length": 14,
   "max_rounds": 0
 }

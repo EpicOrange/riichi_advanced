@@ -92,7 +92,6 @@ defmodule Game do
     # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
     turn: :east,
     wall_index: 0,
-    dead_wall_index: 0,
     haipai: [],
     actions: [],
     dead_wall: [],
@@ -286,11 +285,12 @@ defmodule RiichiAdvanced.GameState do
     else Map.new([:east, :south, :west, :north], &{&1, []}) end
     hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
 
-    # reserve some tiles (dead wall)
-    state = if Map.has_key?(rules, "reserved_tiles") and length(rules["reserved_tiles"]) > 0 do
-      reserved_tile_names = rules["reserved_tiles"]
-      {wall, dead_wall} = Enum.split(wall, -length(reserved_tile_names))
-      reserved_tiles = Enum.zip(reserved_tile_names, dead_wall)
+    # reserve some tiles in the dead wall
+    reserved_tile_names = Map.get(rules, "reserved_tiles", [])
+    dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
+    state = if length(reserved_tile_names) > 0 && length(reserved_tile_names) <= dead_wall_length do
+      {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
+      reserved_tiles = reserved_tile_names
       revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
       max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
       state 
@@ -303,7 +303,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
     else
-      state
+      state = state
       |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:dead_wall, [])
@@ -311,6 +311,9 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:revealed_tiles, [])
       |> Map.put(:max_revealed_tiles, 0)
       |> Map.put(:drawn_reserved_tiles, [])
+      if length(reserved_tile_names) > dead_wall_length do
+        show_error(state, "length of \"reserved_tiles\" should not exceed \"initial_dead_wall_length\"!")
+      else state end
     end
     state = state
     |> Map.put(:round_result, nil)
@@ -331,7 +334,6 @@ defmodule RiichiAdvanced.GameState do
 
     state = state
      |> Map.put(:wall_index, starting_tiles*4)
-     |> Map.put(:dead_wall_index, 0)
      |> update_all_players(&%Player{
           score: &2.score,
           nickname: &2.nickname,
@@ -840,19 +842,14 @@ defmodule RiichiAdvanced.GameState do
     l2 ++ [tile] ++ r2
   end
 
-  def from_tile_name(state, tile_name) do
+  def from_named_tile(state, tile_name) do
     cond do
-      is_binary(tile_name) && List.keymember?(state.reserved_tiles, tile_name, 0) ->
-        if String.ends_with?(tile_name, "_lazy") do
-          # draw from dead wall, which might change over the course of the game
-          reverse_ix = Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end) - length(state.reserved_tiles)
-          # IO.inspect({tile_name, Enum.find_index(state.reserved_tiles, fn {name, _tile} -> name == tile_name end), length(state.reserved_tiles)})
-          Enum.at(state.dead_wall, reverse_ix)
-        else
-          {_, tile} = List.keyfind(state.reserved_tiles, tile_name, 0)
-          tile
-        end
+      is_binary(tile_name) && tile_name in state.reserved_tiles ->
+        ix = Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end)
+        IO.inspect({tile_name,-ix-1})
+        Enum.at(state.dead_wall, -ix-1)
       is_binary(tile_name) && Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
+      is_integer(tile_name) -> Enum.at(state.dead_wall, tile_name)
       is_atom(tile_name) -> tile_name
       true ->
         IO.puts("Unknown tile name #{inspect(tile_name)}")
@@ -974,6 +971,17 @@ defmodule RiichiAdvanced.GameState do
     end |> Enum.reverse() |> Enum.concat()
   end
 
+  def get_revealed_tiles(state) do
+    for tile_spec <- state.revealed_tiles do
+      cond do
+        is_integer(tile_spec) -> Enum.at(state.dead_wall, tile_spec, :"1m")
+        true ->
+          {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
+          tile
+      end
+    end
+  end
+
   def get_hand_calls_spec(state, context, hand_calls_spec) do
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)
@@ -1001,12 +1009,7 @@ defmodule RiichiAdvanced.GameState do
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
-          "revealed_tiles" ->
-            revealed_tiles = for tile_spec <- state.revealed_tiles do
-              {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
-              tile
-            end
-            [{hand ++ revealed_tiles, calls}]
+          "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
           _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()
@@ -1093,8 +1096,8 @@ defmodule RiichiAdvanced.GameState do
       "tile_not_drawn"           -> Enum.all?(opts, fn tile -> tile not in state.drawn_reserved_tiles end)
       "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
       "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
-      "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index <= 0
-      "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index >= Enum.at(opts, 0, 0)
+      "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index <= 0
+      "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->
         draws_left = length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
         case Utils.get_relative_seat(context.seat, state.turn) do
@@ -1129,12 +1132,12 @@ defmodule RiichiAdvanced.GameState do
         end
       "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
       "winning_dora_count"       ->
-        dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         num = Enum.at(opts, 1, 1)
         doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
         Utils.count_tiles(cxt_player.winning_hand, doras) == num
       "winning_reverse_dora_count" ->
-        dora_indicator = from_tile_name(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         num = Enum.at(opts, 1, 1)
         doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
         Utils.count_tiles(cxt_player.winning_hand, doras) == num
@@ -1453,6 +1456,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:is_playable, seat, tile}, _from, state), do: {:reply, is_playable?(state, seat, tile), state}
   def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
   def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
+  def handle_call(:get_revealed_tiles, _from, state), do: {:reply, get_revealed_tiles(state), state}
 
   def handle_call({:get_visible_waits, seat, index}, _from, state) do
     if index == nil do

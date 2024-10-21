@@ -83,10 +83,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts("Tried to draw a nil tile!")
         state
       else
-        state = if is_binary(tile_name) && List.keymember?(state.reserved_tiles, tile_name, 0) do
-            Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
-          else state end
-        tile = from_tile_name(state, tile_name) |> Utils.add_attr(["draw"])
+        state = if is_binary(tile_name) && tile_name in state.reserved_tiles do
+          Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
+        else state end
+        tile = from_named_tile(state, tile_name) |> Utils.add_attr(["draw"])
         state = if not to_aside do
           state = update_player(state, seat, &%Player{ &1 |
             hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]),
@@ -303,12 +303,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering_r = state.players[seat].tile_ordering_r
         tile_aliases = state.players[seat].tile_aliases
         binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
-      ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index - state.dead_wall_index
+      ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[seat].discards)
       ["num_aside" | _opts] -> length(state.players[seat].aside)
       ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[seat].pond, [:"1x"])
       ["num_revealed_tiles_all" | _opts] ->
-        for {seat, player} <- state.players do
+        for {_seat, player} <- state.players do
           Utils.count_tiles(player.hand ++ player.draw, [{:any, ["revealed"]}])
         end |> Enum.sum()
       ["num_matching_melded_tiles_all" | opts] ->
@@ -445,8 +445,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
         state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
-        state = if String.starts_with?(tile_name, "doraindicator") do
-          Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_tile_name(state, tile_name)})
+        state = if is_integer(tile_name) do
+          Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_named_tile(state, tile_name)})
         else state end
         state
       "add_score"             ->
@@ -756,7 +756,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       "charleston_left" -> do_charleston(state, :kamicha, context.seat, marked_objects)
       "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
       "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
-      "shift_dead_wall_index" -> Map.update!(state, :dead_wall_index, & &1 + Enum.at(opts, 0, 1))
+      "shift_tile_to_dead_wall" -> 
+        {wall, tiles} = Enum.split(state.wall, -Enum.at(opts, 0, 1))
+        state
+        |> Map.put(:wall, wall)
+        |> Map.put(:dead_wall, tiles ++ state.dead_wall)
       "resume_deferred_actions" ->
         IO.inspect("resuming deferred actions")
         resume_deferred_actions(state)

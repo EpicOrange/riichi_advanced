@@ -2,9 +2,9 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
+    socket = assign(socket, :game_state, nil)
     socket = assign(socket, :revealed_tiles, [])
     socket = assign(socket, :max_revealed_tiles, 0)
-    socket = assign(socket, :reserved_tiles, [])
     socket = assign(socket, :marking, %{})
     {:ok, socket}
   end
@@ -13,9 +13,9 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
     ~H"""
     <div class={[@id]}>
       <%= if Enum.empty?(@marking) do %>
-        <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- prepare_revealed_tiles(@revealed_tiles, @reserved_tiles, @marking)}></div>
+        <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- prepare_revealed_tiles(@game_state, @revealed_tiles, @marking)}></div>
       <% else %>
-        <%= for {tile, i} <- prepare_revealed_tiles(@revealed_tiles, @reserved_tiles, @marking) do %>
+        <%= for {tile, i} <- prepare_revealed_tiles(@game_state, @revealed_tiles, @marking) do %>
           <%= if GenServer.call(@game_state, {:can_mark?, @viewer, nil, i, :revealed_tile}) do %>
             <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
@@ -32,12 +32,12 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
     """
   end
 
-  def prepare_revealed_tiles(revealed_tiles, reserved_tiles, _marking) do
-    # need to pass in the marking arg, so that this updates when marking updates
-    for tile_spec <- revealed_tiles do
-      {_, tile} = List.keyfind(reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
-      tile
-    end |> Enum.with_index()
+  def prepare_revealed_tiles(game_state, _revealed_tiles, _marking) do
+    # need to pass in the revealed_tiles and marking args, so that this updates when revealed_tiles/marking updates
+    if game_state != nil do
+      GenServer.call(game_state, :get_revealed_tiles)
+      |> Enum.with_index()
+    else [] end
   end
 
   def handle_event("mark_tile", %{"index" => index}, socket) do

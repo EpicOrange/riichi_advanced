@@ -146,7 +146,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         seat={@seat}
         viewer={@viewer}
         turn={@state.turn}
-        tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles) - @state.dead_wall_index}
+        tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
         kyoku={@state.kyoku}
         honba={@state.honba}
         riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
@@ -218,7 +218,6 @@ defmodule RiichiAdvancedWeb.GameLive do
         viewer={@viewer}
         revealed_tiles={@state.revealed_tiles}
         max_revealed_tiles={@state.max_revealed_tiles}
-        reserved_tiles={@state.reserved_tiles}
         marking={@state.marking[@seat]} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
