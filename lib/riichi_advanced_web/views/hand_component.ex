@@ -156,47 +156,57 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def hide_tiles(tiles, revealed?) do
     if revealed? do tiles else Enum.map(tiles, fn tile ->
-      case tile do
-        {_, attrs} -> if "revealed" in attrs do tile else :"1x" end
-        _ -> :"1x"
-      end
+      if Utils.has_attr?(tile, ["revealed"]) do tile else :"1x" end
     end) end
+  end
+
+  def sort_value_by_visibility({tile, i}, assigns) do
+    visible = not assigns.revealed? && Utils.has_attr?(tile, ["revealed"]) && Map.get(assigns, :played_tile_index, nil) == i
+    if visible do i + 100 else i end
   end
 
   def prepare_hand(assigns) do
     # map tiles to [{index, tile, is_last_discard}]
+    # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.hand
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()
+    |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
     |> Enum.map(fn {tile, i} -> {if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end, tile, i == assigns.played_tile_index} end)
   end
 
   def prepare_draw(assigns) do
     # map tiles to [{tile, index}]
-    # this function is necessary since we need phoenix to update draws when anything in assigns changes
+    # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.draw
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()
+    |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
   end
 
   def prepare_aside(assigns) do
     # map tiles to [{tile, index}]
-    # this function is necessary since we need phoenix to update draws when anything in assigns changes
+    # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.aside
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()
+    |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
   end
 
   def update(assigns, socket) do
     # randomize position of played tile (if tedashi)
     no_played_tile_yet? = socket.assigns.played_tile_index == nil
-    assigns = if not socket.assigns.revealed? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil && assigns.played_tile_index < length(socket.assigns.hand) do
-      if no_played_tile_yet? do
-        Map.put(assigns, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
-      else
-        Map.put(assigns, :played_tile_index, socket.assigns.played_tile_index)
-      end
+    assigns = if not socket.assigns.revealed? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil do
+      not_visible = assigns.played_tile_index < length(socket.assigns.hand) && not Utils.has_attr?(Enum.at(socket.assigns.hand, assigns.played_tile_index), ["revealed"])
+      if not_visible do
+        if no_played_tile_yet? do
+          Map.put(assigns, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
+        else
+          Map.put(assigns, :played_tile_index, socket.assigns.played_tile_index)
+        end
+      else assigns end
     else assigns end
+
 
     # animate incoming calls
     socket = if Map.has_key?(assigns, :calls) && length(assigns.calls) > length(socket.assigns.calls) do

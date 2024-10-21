@@ -432,8 +432,8 @@ Other:
 - `["shift_dead_wall_index", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
 - `["add_counter", counter_name, amount or spec, ...opts]`: Add `amount` to the current player's counter `counter_name`. In place of `amount` you can also put one of the following strings followed by some options:
   + `"count_matches", to_match, [match_spec1, match_spec2, ...]` Counts the number of times the given match specs matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
-- `["add_attr_last_discard", attr1, attr2, ...]`: Add the given attributes to the last discard
-- `["add_attr_drawn_tile", attr1, attr2, ...]`: Add the given attributes to all drawn tiles for the current player.
+- `["add_attr", [target1, ...], [attr1, ...], [tile_spec1...]]`: Add the given attributes to the given targets that match all given tile specs.
+- `["remove_attr_hand", attr1, attr2, ...]`: Remove the given attributes from all tiles in the current player's hand.
 - `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
 - `["mark", mark_spec, pre_mark_actions]`: First runs the `pre_mark_actions` before asking the player to mark a tile. Like `"call"` this happens before any of the actions in the current action list, so it doesn't matter where you put the mark action. For examples of `mark_spec` look at example usages in the `saki.json` ruleset.
 - `["swap_marked_hand_and_discard"]` Swap the first marked hand tile with the first marked discard tile. Must be preceded by a `"mark"` action that marks a hand tile and a discard tile.

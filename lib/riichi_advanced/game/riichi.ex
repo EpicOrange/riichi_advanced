@@ -434,6 +434,10 @@ defmodule Riichi do
         end
     end)
   end
+  def tile_matches_all(tile_specs, context) do
+    Enum.all?(tile_specs, &tile_matches([&1], context))
+  end
+
 
   def get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # t = System.os_time(:millisecond)
@@ -455,14 +459,20 @@ defmodule Riichi do
     tile not in get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
   end
 
+  def flip_faceup(tile) do
+    case tile do
+      {:"1x", attrs} ->
+        tile_attr = Enum.find(attrs, &Utils.to_tile/1)
+        if tile_attr != nil do
+          Utils.to_tile([tile_attr, attrs -- [tile_attr]])
+        else tile end
+      tile -> tile
+    end
+  end
+
   def call_to_tiles({_name, call}) do
-    if {:"1x", false} in call do
-      # TODO support more than just ankan
-      {red, _} = Enum.at(call, 1)
-      {nored, _} = Enum.at(call, 2)
-      [red, nored, nored, nored]
-    else
-      Enum.map(call, fn {tile, _sideways} -> tile end)
+    for {tile, _sideways} <- call do
+      flip_faceup(tile)
     end
   end
 

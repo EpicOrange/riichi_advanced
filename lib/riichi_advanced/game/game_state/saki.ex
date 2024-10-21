@@ -36,10 +36,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "ikeda-kana" => "Ikeda Kana",
     "inoue-jun" => "Inoue Jun",
     "iwadate-yuan" => "Iwadate Yuan",
-
-    # TODO
-    # "iwato-kasumi" => "Iwato Kasumi",
-
+    "iwato-kasumi" => "Iwato Kasumi",
     "jindai-komaki" => "Jindai Komaki",
 
     # need to implement marking (and swapping) open melds

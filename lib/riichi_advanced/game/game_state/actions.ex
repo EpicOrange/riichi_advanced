@@ -173,10 +173,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       for style_spec <- style, reduce: [] do
         acc ->
           tile = case style_spec do
-            "call"                 -> {called_tile, false}
-            "call_sideways"        -> {called_tile, true}
-            ix when is_integer(ix) -> {Enum.at(tiles, ix), false}
-            tile                   -> {Utils.to_tile(tile), false}
+            "call"                         -> {called_tile, false}
+            "call_sideways"                -> {called_tile, true}
+            ix when is_integer(ix)         -> {Enum.at(tiles, ix), false}
+            ["1x", ix] when is_integer(ix) -> {{:"1x", [Enum.at(tiles, ix)]}, false}
+            ["1x", tile]                   -> {{:"1x", [Utils.to_tile(tile)]}, false}
+            tile                           -> {Utils.to_tile(tile), false}
           end
           [tile | acc]
       end |> Enum.reverse()
@@ -305,6 +307,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["num_discards" | _opts] -> length(state.players[seat].discards)
       ["num_aside" | _opts] -> length(state.players[seat].aside)
       ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[seat].pond, [:"1x"])
+      ["num_revealed_tiles_all" | _opts] ->
+        for {seat, player} <- state.players do
+          Utils.count_tiles(player.hand ++ player.draw, [{:any, ["revealed"]}])
+        end |> Enum.sum()
+      ["num_matching_melded_tiles_all" | opts] ->
+        for {_seat, player} <- state.players do
+          player.calls
+          |> Enum.flat_map(&Riichi.call_to_tiles/1)
+          |> Enum.count(&Riichi.tile_matches(opts, %{tile: &1}))
+        end |> Enum.sum()
       [amount | _opts] when is_integer(amount) -> amount
     end
   end
@@ -349,7 +361,6 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp translate_tile_alias(state, context, tile_alias) do
     ret = case tile_alias do
-      "any" -> state.all_tiles
       "draw" -> state.players[context.seat].draw
       "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
       "last_called_tile" -> if get_last_call_action(state) != nil do [get_last_call_action(state).called_tile] else [] end
@@ -357,6 +368,14 @@ defmodule RiichiAdvanced.GameState.Actions do
       _      -> [Utils.to_tile(tile_alias)]
     end
     ret
+  end
+
+  def add_attr_matching(tiles, attrs, tile_specs) do
+    for tile <- tiles do
+      if Riichi.tile_matches_all(tile_specs, %{tile: tile}) do
+        Utils.add_attr(tile, attrs)
+      else tile end
+    end
   end
 
   defp _run_actions(state, [], _context), do: {state, []}
@@ -648,19 +667,25 @@ defmodule RiichiAdvanced.GameState.Actions do
           tile_ordering_r: Map.merge(player.tile_ordering_r, ordering_r)
         } end)
         state
-      "add_attr_last_discard"   ->
-        # TODO generalize to add_attr
-        last_discarder = get_last_discard_action(state).seat
-        state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ (Enum.at(pond, -1) |> Utils.add_attr(opts)) end)
-        state
-      "add_attr_drawn_tile"   ->
-        # TODO generalize to add_attr
-        state = update_player(state, context.seat, &%Player{ &1 | draw: Utils.add_attr(&1.draw, opts) })
-        state
-      "add_attr_tile"   ->
-        # TODO generalize to add_attr
+      "add_attr" ->
+        targets = Enum.at(opts, 0, [])
+        attrs = Enum.at(opts, 1, [])
+        tile_specs = Enum.at(opts, 2, [])
+        for target <- targets, reduce: state do
+          state ->
+            case target do
+              "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs))
+              "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs))
+              "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs))
+              "last_discard" -> update_in(state.players[context.seat].pond, fn pond -> Enum.drop(pond, -1) ++ add_attr_matching([Enum.at(pond, -1)], attrs, tile_specs) end)
+              _      ->
+                IO.inspect("Unhandled add_attr target #{inspect(target)}")
+                state
+            end
+        end
+      "add_attr_first_tile"   ->
         tile = Enum.at(opts, 0, :"1x") |> Utils.to_tile()
-        attrs = Enum.drop(opts, 1)
+        attrs = Enum.at(opts, 1, [])
         ix = Enum.find_index(state.players[context.seat].hand ++ state.players[context.seat].draw, fn t -> Utils.same_tile(t, tile) end)
         hand_len = length(state.players[context.seat].hand)
         cond do
@@ -670,9 +695,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           true ->
             update_player(state, context.seat, &%Player{ &1 | draw: List.update_at(&1.draw, ix - hand_len, fn t -> Utils.add_attr(t, attrs) end) })
         end
-      "add_attr_aside"   ->
-        # TODO generalize to add_attr
-        state = update_player(state, context.seat, &%Player{ &1 | aside: Utils.add_attr(&1.aside, opts) })
+      "remove_attr_hand"   ->
+        # TODO generalize to remove_attr
+        state = update_player(state, context.seat, &%Player{ &1 | hand: Utils.remove_attr(&1.hand, opts) })
         state
       "remove_attr_all"   ->
         # TODO generalize to remove_attr
@@ -694,19 +719,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = Buttons.recalculate_buttons(state) # TODO remove
         state
       "flip_last_discard_faceup"  ->
-        case get_last_discard_action(state).tile do
-          {:"1x", attrs} ->
-            tile_attr = Enum.find(attrs, &Utils.to_tile/1)
-            tile = Utils.to_tile([tile_attr, attrs -- [tile_attr]])
-            if tile != nil do
-              last_discarder = get_last_discard_action(state).seat
-              state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
-              state = update_action(state, last_discarder, :discard, %{tile: tile})
-              state = Buttons.recalculate_buttons(state) # TODO remove
-              state
-            else state end
-          _ -> state
-        end
+        last_discarder = get_last_discard_action(state).seat
+        tile = Riichi.flip_faceup(get_last_discard_action(state).tile)
+        state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
+        state = update_action(state, last_discarder, :discard, %{tile: tile})
+        state = Buttons.recalculate_buttons(state) # TODO remove
+        state
       "flip_first_visible_discard_facedown" -> 
         ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") && not Utils.same_tile(tile, :"2x") end)
         if ix != nil do

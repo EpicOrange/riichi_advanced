@@ -346,7 +346,7 @@
     "ankan": {
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
-      "call_style": {"self": ["1x", 0, 1, "1x"]},
+      "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
       "call_conditions": [
         [
           {"name": "not_status", "opts": ["void_manzu"]},
