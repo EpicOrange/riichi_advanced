@@ -517,7 +517,7 @@ defmodule Riichi do
   end
 
   defp calculate_pair_fu(tile, seat_wind, round_wind) do
-    fu = case tile do
+    fu = case Utils.strip_attrs(tile) do
       :"1z" -> if :east in [seat_wind, round_wind] do 2 else 0 end
       :"2z" -> if :south in [seat_wind, round_wind] do 2 else 0 end
       :"3z" -> if :west in [seat_wind, round_wind] do 2 else 0 end
@@ -569,7 +569,7 @@ defmodule Riichi do
     all_tiles = middle_tiles ++ [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"4z", :"5z", :"7z"]
     kanchan_tiles = if wraps do all_tiles else middle_tiles end
     possible_kanchan_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
-      if winning_tile in kanchan_tiles do
+      if Utils.count_tiles(kanchan_tiles, [winning_tile], tile_aliases) >= 1 do
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, ordering, ordering_r), offset_tile(winning_tile, 1, ordering, ordering_r)], tile_aliases)
         |> Enum.map(fn hand -> {hand, fu+2} end)
       else [] end
@@ -614,7 +614,7 @@ defmodule Riichi do
         end) |> Enum.uniq()
     end
 
-    # IO.inspect(hands_fu)
+    IO.inspect(hands_fu)
 
     # standard hands should either have:
     # - one tile remaining (tanki)
@@ -625,15 +625,15 @@ defmodule Riichi do
     # - four tiles (including pair) remaining (sticking)
     # - four tiles (no pair) remaining (headless)
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
-      num_pairs = Enum.frequencies(hand) |> Map.values |> Enum.count(& &1 == 2)
+      num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
       cond do
-        length(hand) == 1 && Enum.any?(winning_tiles, &Utils.same_tile(&1, Enum.at(hand, 0), tile_aliases)) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
+        length(hand) == 1 && Utils.count_tiles(hand, winning_tiles, tile_aliases) >= 1 -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
         length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
         length(hand) == 4 && num_pairs == 2 ->
           [tile1, tile2] = Enum.uniq(hand)
           tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          if tile1 in winning_tiles do [tile1_fu] else [] end ++ if tile2 in winning_tiles do [tile2_fu] else [] end
+          if Utils.count_tiles([tile1], winning_tiles, tile_aliases) == 1 do [tile1_fu] else [] end ++ if Utils.count_tiles([tile2], winning_tiles, tile_aliases) == 1 do [tile2_fu] else [] end
         length(starting_hand) == 12 && length(hand) == 4 && num_pairs == 0 -> [fu]
         length(starting_hand) == 12 && length(hand) == 7 && num_pairs == 1 ->
           pair_fu = Enum.frequencies(hand)
@@ -645,7 +645,8 @@ defmodule Riichi do
       end
     end)
 
-    # IO.inspect(fus)
+    IO.inspect(winning_tiles)
+    IO.inspect(fus, charlists: :as_lists)
 
     fu = if Enum.empty?(fus) do 0 else Enum.max(fus) end
 

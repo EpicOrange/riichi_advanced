@@ -11,12 +11,14 @@
   "saki_ver": "v13",
   "saki_deck": [
     "aislinn-wishart",
+    "amae-koromo",
     "anetai-toyone",
     "arakawa-kei",
     "atago-hiroe",
     "atago-kinue",
     "atarashi-ako",
     "choe-myeonghwa",
+    "fukuji-mihoko",
     "hanada-kirame",
     "hao-huiyu",
     "haramura-nodoka",
@@ -25,7 +27,6 @@
     "iwadate-yuan",
     "iwato-kasumi",
     "jindai-komaki",
-    "amae-koromo",
     "kakura-kurumi",
     "karijuku-tomoe",
     "kataoka-yuuki",
@@ -838,7 +839,7 @@
       "value": 1,
       "when": [
         {"name": "status", "opts": ["hao-huiyu"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]]}
       ]
     },
     {
@@ -847,7 +848,7 @@
       "when": [
         {"name": "status", "opts": ["hao-huiyu"]},
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["exhaustive", [[[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4]]]]}
       ]
     },
     {
@@ -1674,42 +1675,57 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
                 ["unset_status", "ready", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
-                ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [
-                  // check if our placement is not the same as the one we are tagged with
-                  ["unless", [[
-                    [{"name": "placement", "opts": [1]}, {"name": "status", "opts": ["1st_place"]}],
-                    [{"name": "placement", "opts": [2]}, {"name": "status", "opts": ["2nd_place"]}],
-                    [{"name": "placement", "opts": [3]}, {"name": "status", "opts": ["3rd_place"]}],
-                    [{"name": "placement", "opts": [4]}, {"name": "status", "opts": ["4th_place"]}]
-                  ]], [
-                    // tag with placement for future update checks
-                    ["unset_status", "1st_place", "2nd_place", "3rd_place", "4th_place"],
-                    ["when", [{"name": "placement", "opts": [1]}], [["set_status", "1st_place"]]],
-                    ["when", [{"name": "placement", "opts": [2]}], [["set_status", "2nd_place"]]],
-                    ["when", [{"name": "placement", "opts": [3]}], [["set_status", "3rd_place"]]],
-                    ["when", [{"name": "placement", "opts": [4]}], [["set_status", "4th_place"]]],
-                    // reset tile aliases
-                    ["clear_tile_aliases"],
-                    ["set_tile_alias", ["0m"], ["5m"]],
-                    ["set_tile_alias", ["0p"], ["5p"]],
-                    ["set_tile_alias", ["0s"], ["5s"]],
-                    ["when", [{"name": "placement", "opts": [2, 3, 4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "1st_place"]], [
-                      "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
-                      "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
-                      "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
-                      "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
-                    ["when", [{"name": "placement", "opts": [3, 4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "2nd_place"]], [
-                      "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
-                      "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
-                      "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
-                      "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
-                    ["when", [{"name": "placement", "opts": [4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "3rd_place"]], [
-                      "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
-                      "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
-                      "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
-                      "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]]
+                // check if anyone's placement is not the same as the one they are tagged with
+                ["when_anyone", [[
+                  [{"name": "placement", "opts": [1]}, {"name": "status_missing", "opts": ["1st_place"]}],
+                  [{"name": "placement", "opts": [2]}, {"name": "status_missing", "opts": ["2nd_place"]}],
+                  [{"name": "placement", "opts": [3]}, {"name": "status_missing", "opts": ["3rd_place"]}],
+                  [{"name": "placement", "opts": [4]}, {"name": "status_missing", "opts": ["4th_place"]}]
+                ]], [
+                  // tag with placement for future update checks
+                  ["unset_status", "1st_place", "2nd_place", "3rd_place", "4th_place"],
+                  ["when", [{"name": "placement", "opts": [1]}], [["set_status", "1st_place"]]],
+                  ["when", [{"name": "placement", "opts": [2]}], [["set_status", "2nd_place"]]],
+                  ["when", [{"name": "placement", "opts": [3]}], [["set_status", "3rd_place"]]],
+                  ["when", [{"name": "placement", "opts": [4]}], [["set_status", "4th_place"]]],
+                  ["set_status", "placement_updated"]
+                ]],
+                // for damaten atago hiroe, if placement updates they can only use wildcard ippatsu draw from new higher placements
+                ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai", "placement_updated"]}, {"name": "status_missing", "opts": ["riichi"]}], [
+                  // reset tile aliases
+                  ["clear_tile_aliases"],
+                  ["set_tile_alias", ["0m"], ["5m"]],
+                  ["set_tile_alias", ["0p"], ["5p"]],
+                  ["set_tile_alias", ["0s"], ["5s"]],
+                  ["when", [{"name": "placement", "opts": [2, 3, 4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "1st_place"]], [
+                    "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+                    "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+                    "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+                    "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+                  ["when", [{"name": "placement", "opts": [3, 4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "2nd_place"]], [
+                    "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+                    "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+                    "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+                    "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]],
+                  ["when", [{"name": "placement", "opts": [4]}], [["set_tile_alias", [["any", "ippatsu", "draw", "3rd_place"]], [
+                    "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m",
+                    "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p",
+                    "1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s",
+                    "1z", "2z", "3z", "4z", "5z", "6z", "7z"]]]]
+                ]],
+                // for fukuji mihoko, if no longer fourth (and no one else is 4th place mihoko) then hide other players' hands; if fourth then open other players' hands
+                ["when_anyone", [{"name": "status", "opts": ["fukuji-mihoko", "placement_updated"]}], [
+                  ["when", [{"name": "status", "opts": ["4th_place"]}], [
+                    // open other players' hands
+                    ["set_status_others", "reveal_all"],
+                    ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
+                  ]],
+                  ["when", [{"name": "status_missing", "opts": ["4th_place"]}, {"name": "not_others_status", "opts": ["fukuji-mihoko", "4th_place"]}], [
+                    // hide other players' hands
+                    ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["unset_status", "reveal_all"], ["remove_attr_hand", "revealed"]]]
                   ]]
                 ]],
+                ["unset_status", "placement_updated"],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "status", "opts": ["kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "match", "opts": [["hand", "calls", "any_discard"], ["kakura_kurumi_win"]]}], [["set_status", "furiten"]]],
                 ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "not_anyone_status", "opts": ["suukantsu"]}], [["pause", 1000], ["abortive_draw", "Suukaikan"]]],
@@ -1719,10 +1735,11 @@
                   [["set_status", "extra_turn_prompt"]],
                   [["unset_status", "extra_turn", "extra_turn_taken", "discard_facedown"]]],
                 ["when", [{"name": "not_status_missing", "opts": ["shirouzu-mairu", "tsuruta-himeko"]}], [["remove_attr_all", "revealed"]]],
-                ["when", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand"], ["revealed"], ["manzu"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand"], ["revealed"], ["pinzu"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand"], ["revealed"], ["souzu"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand"], ["revealed"], ["jihai"]]]]
+                ["when", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["manzu"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["pinzu"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["souzu"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["jihai"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
                ]
   },
   "after_turn_change": {
@@ -1939,6 +1956,7 @@
       ["when", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["draw"], ["revealed"], ["pinzu"]]]],
       ["when", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["draw"], ["revealed"], ["souzu"]]]],
       ["when", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["draw"], ["revealed"], ["jihai"]]]],
+      ["when", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["draw"], ["revealed"]]]],
       ["when", ["our_turn"], [["set_status", "ready"]]]
     ]
   },
@@ -2059,13 +2077,18 @@
         ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
       ]],
       ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}, {"name": "seat_is", "opts": ["east"]}], [["set_status", "score_limit_one_tier_higher"]]],
+      ["when", [{"name": "status", "opts": ["hanada-kirame"]}, {"name": "status_missing", "opts": ["hanada-kirame_exhausted"]}], [["set_status", "hanada_kirame_score_protection"]]],
+      ["when", [{"name": "status", "opts": ["fukuji-mihoko"]}, {"name": "placement", "opts": [4]}], [
+        ["set_status_others", "reveal_all"],
+        ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
+      ]],
+      // first draw of the game
       ["when", [{"name": "seat_is", "opts": ["east"]}], [
         ["set_status", "about_to_draw"],
         ["recalculate_buttons"], // allow interrupting draw
         ["unset_status", "about_to_draw"],
         ["draw"]
-      ]],
-      ["when", [{"name": "status", "opts": ["hanada-kirame"]}, {"name": "status_missing", "opts": ["hanada-kirame_exhausted"]}], [["set_status", "hanada_kirame_score_protection"]]]
+      ]]
     ]
   },
   "before_win": {
@@ -2163,7 +2186,7 @@
     },
     "atarashi_ako": {
       "display_name": "Swap a discard with same suit in hand",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "about_to_swap", "swap_interrupted"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", {"name": "status_missing", "opts": ["match_start", "about_to_swap", "swap_interrupted"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
@@ -2181,7 +2204,7 @@
     },
     "atarashi_ako_dora": {
       "display_name": "Swap dora indicator with same suit in hand",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "about_to_swap", "swap_interrupted"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", {"name": "status_missing", "opts": ["match_start", "about_to_swap", "swap_interrupted"]}, {"name": "status", "opts": ["atarashi-ako", "just_called"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Atarashi Ako: swap!"],
         ["unset_status", "just_called"],
@@ -2200,6 +2223,7 @@
     "choe_myeonghwa": {
       "display_name": "Swap last discard with tile in hand",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status_missing", "opts": ["match_start", "about_to_swap"]},
         "someone_else_just_discarded",
         [
@@ -2255,7 +2279,7 @@
     },
     "haramura_nodoka": {
       "display_name": "Discard facedown",
-      "show_when": ["our_turn", {"name": "status", "opts": ["haramura-nodoka", "ready"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["haramura-nodoka", "ready"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
       "actions": [
         ["big_text", "Haramura Nodoka: discard!"],
         ["set_status", "haramura-nodoka_exhausted", "discard_facedown"],
@@ -2265,6 +2289,7 @@
     "ikeda_kana": {
       "display_name": "Inazuma Riichi",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
@@ -2295,7 +2320,7 @@
     },
     "kataoka_yuuki": {
       "display_name": "Place 4 tiles at the end of the live wall (last selection is haitei)",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "kataoka-yuuki_exhausted"]}, {"name": "status", "opts": ["kataoka-yuuki"]}, {"name": "round_wind_is", "opts": ["east"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "kataoka-yuuki_exhausted"]}, {"name": "status", "opts": ["kataoka-yuuki"]}, {"name": "round_wind_is", "opts": ["east"]}],
       "actions": [
         ["big_text", "Kataoka Yuuki: mulligan!"],
         ["set_status", "kataoka-yuuki_exhausted"],
@@ -2308,7 +2333,7 @@
     },
     "matano_seiko": {
       "display_name": "Set aside 4th tile from discards",
-      "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
       "actions": [
         ["big_text", "Matano Seiko: set aside!"],
         ["unset_status", "pon"],
@@ -2320,13 +2345,13 @@
     },
     "matano_seiko_skip": {
       "display_name": "Skip",
-      "show_when": ["our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["matano-seiko", "pon"]}, "called_tile_matches_any_discard"],
       "actions": [["unset_status", "pon"]],
       "unskippable": true
     },
     "matsumi_yuu": {
       "display_name": "Pon red dragon with priority",
-      "show_when": ["not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
       "actions": [
         ["big_text", "Matsumi Yuu: pon!"],
         ["mark", [["discard", 1, ["current_turn", "7z"]]]],
@@ -2340,7 +2365,7 @@
     },
     "nanpo_kazue_nonskippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted"],
@@ -2352,7 +2377,7 @@
     },
     "nanpo_kazue_skippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2", "riichi"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
+      "show_when": ["all_saki_cards_drafted", {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2", "riichi"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
         ["set_status", "nanpo-kazue_exhausted2"],
@@ -2363,7 +2388,7 @@
     },
     "onjouji_toki_start": {
       "display_name": "Draw an extra tile and set it aside",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "onjouji-toki_exhausted"]}, {"name": "status", "opts": ["onjouji-toki", "ready"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "onjouji-toki_exhausted"]}, {"name": "status", "opts": ["onjouji-toki", "ready"]}],
       "actions": [
         ["big_text", "Onjouji Toki: set aside!"],
         ["set_status", "onjouji-toki_exhausted", "onjouji_toki_drew"],
@@ -2374,7 +2399,7 @@
     },
     "onjouji_toki_draw": {
       "display_name": "Draw aside tile",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: draw!"],
         ["draw_from_aside"],
@@ -2385,7 +2410,7 @@
     },
     "onjouji_toki_nodraw": {
       "display_name": "Draw from wall",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["draw"],
         ["set_status", "onjouji_toki_drew"]
@@ -2394,7 +2419,7 @@
     },
     "onjouji_toki_swap": {
       "display_name": "Swap tile with aside",
-      "show_when": ["our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji-toki", "onjouji_toki_drew"]}, {"name": "status_missing", "opts": ["just_reached"]}, "has_aside"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "has_draw", "not_just_discarded", "not_just_called", {"name": "status", "opts": ["onjouji-toki", "onjouji_toki_drew"]}, {"name": "status_missing", "opts": ["just_reached"]}, "has_aside"],
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
         ["mark", [["hand", 1, ["not_riichi"]]]],
@@ -2405,7 +2430,7 @@
     },
     "sawamura_tomoki": {
       "display_name": "Discard facedown",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discard_facedown"]}, {"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "others_status", "opts": ["ippatsu"]}, "has_draw", "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discard_facedown"]}, {"name": "status", "opts": ["sawamura-tomoki"]}, {"name": "others_status", "opts": ["ippatsu"]}, "has_draw", "not_just_discarded"],
       "actions": [
         ["big_text", "Sawamura Tomoki: discard!"],
         ["set_status", "discard_facedown"],
@@ -2414,7 +2439,7 @@
     },
     "shibuya_takami": {
       "display_name": "Draw from your discards",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Shibuya Takami: set aside!"],
         ["unset_status", "about_to_draw"],
@@ -2428,7 +2453,7 @@
     },
     "shibuya_takami": {
       "display_name": "Set aside a discard as next draw",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Shibuya Takami: set aside!"],
         ["unset_status", "about_to_draw"],
@@ -2442,13 +2467,13 @@
     },
     "shibuya_takami_skip": {
       "display_name": "Skip",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
       "actions": [["unset_status", "about_to_draw"], ["draw", 1]],
       "unskippable": true
     },
     "takimi_haru": {
       "display_name": "Discard facedown",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start", "discard_facedown"]}, {"name": "status", "opts": ["takimi-haru", "chii"]}, "not_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discard_facedown"]}, {"name": "status", "opts": ["takimi-haru", "chii"]}, "not_just_discarded"],
       "actions": [
         ["big_text", "Takimi Haru: discard!"],
         ["set_status", "discard_facedown"],
@@ -2457,7 +2482,9 @@
     },
     "amae_koromo": {
       "display_name": "Move haitei tile from live wall to dead wall",
-      "show_when": ["our_turn",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "status", "opts": ["amae-koromo"]},
         "just_discarded",
@@ -2472,7 +2499,9 @@
     },
     "amae_koromo_2": {
       "display_name": "Move two tiles instead",
-      "show_when": ["our_turn",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "status", "opts": ["amae-koromo"]},
         {"name": "not_status_missing", "opts": ["riichi", "just_reached"]},
@@ -2489,7 +2518,9 @@
     },
     "atago_kinue": {
       "display_name": "Bet 1000 to change wait to aside tiles",
-      "show_when": ["our_turn",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "status", "opts": ["atago-kinue", "tenpai", "ready"]},
         {"name": "status_missing", "opts": ["atago_kinue_aside_waits"]},
@@ -2506,6 +2537,7 @@
     "kunihiro_hajime": {
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["kunihiro-hajime", "ready"]},
         {"name": "status_missing", "opts": ["match_start", "discards_empty", "just_swapped", "kunihiro-hajime_exhausted", "just_reached", "about_to_swap"]},
         "our_turn",
@@ -2529,6 +2561,7 @@
     "kunihiro_hajime_interrupt": {
       "display_name": "Swap a number tile with any same number discard",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["kunihiro-hajime"]},
         {"name": "status_missing", "opts": ["match_start", "discards_empty", "just_swapped", "just_reached", "about_to_swap"]},
         [
@@ -2554,6 +2587,7 @@
     "motouchi_naruka_interrupt_call": {
       "display_name": "Interrupt call",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["motouchi-naruka"]},
         "just_discarded",
         [
@@ -2577,6 +2611,7 @@
     "motouchi_naruka_interrupt_swap": {
       "display_name": "Interrupt swap",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["motouchi-naruka"]},
         {"name": "others_status", "opts": ["about_to_swap"]},
         {"name": "not_others_status", "opts": ["swap_interrupted"]},
@@ -2595,6 +2630,7 @@
     "motouchi_naruka_interrupt_facedown": {
       "display_name": "Interrupt facedown discard",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["motouchi-naruka"]},
         "someone_else_just_discarded",
         {"name": "others_status", "opts": ["discard_facedown"]},
@@ -2613,6 +2649,7 @@
     "motouchi_naruka_interrupt_call_skip": {
       "display_name": "Skip",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["motouchi-naruka"]},
         "just_discarded",
         [
@@ -2629,6 +2666,7 @@
     "motouchi_naruka_interrupt_swap_facedown_skip": {
       "display_name": "Skip",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["motouchi-naruka"]},
         [
           {"name": "others_status", "opts": ["about_to_swap"]},
@@ -2650,6 +2688,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
+        "all_saki_cards_drafted",
         "not_our_turn",
         {"name": "status", "opts": ["maya-yukiko"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
@@ -2673,7 +2712,7 @@
     },
     "shirouzu_mairu_1_manzu": {
       "display_name": "Manzu",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -2690,7 +2729,7 @@
     },
     "shirouzu_mairu_2_pinzu": {
       "display_name": "Pinzu",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -2707,7 +2746,7 @@
     },
     "shirouzu_mairu_3_souzu": {
       "display_name": "Souzu",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -2724,7 +2763,7 @@
     },
     "shirouzu_mairu_4_jihai": {
       "display_name": "Jihai",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -2742,6 +2781,7 @@
     "suehara_kyouko": {
       "display_name": "Reveal and set aside 3 tiles",
       "show_when": [
+        "all_saki_cards_drafted",
         {"name": "status", "opts": ["suehara-kyouko"]},
         ["not_our_turn", "not_just_discarded", ["just_discarded", {"name": "status", "opts": ["ippatsu"]}]],
         {"name": "status_missing", "opts": ["suehara_kyouko_set_aside"]},
@@ -2762,6 +2802,7 @@
     "draw_from_suehara_kyouko_self": {
       "display_name": "Draw from aside",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         "not_just_discarded",
         ["not_just_called", {"name": "status", "opts": ["kan"]}],
@@ -2780,6 +2821,7 @@
     "draw_from_suehara_kyouko_shimocha": {
       "display_name": "Draw from Suehara Kyouko's aside",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         "not_just_discarded",
         ["not_just_called", {"name": "status", "opts": ["kan"]}],
@@ -2798,6 +2840,7 @@
     "draw_from_suehara_kyouko_toimen": {
       "display_name": "Draw from Suehara Kyouko's aside",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         "not_just_discarded",
         ["not_just_called", {"name": "status", "opts": ["kan"]}],
@@ -2816,6 +2859,7 @@
     "draw_from_suehara_kyouko_kamicha": {
       "display_name": "Draw from Suehara Kyouko's aside",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         "not_just_discarded",
         ["not_just_called", {"name": "status", "opts": ["kan"]}],
@@ -2834,6 +2878,7 @@
     "draw_from_suehara_kyouko_skip": {
       "display_name": "Draw from wall",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         "not_just_discarded",
         ["not_just_called", {"name": "status", "opts": ["kan"]}],
@@ -2863,6 +2908,7 @@
     "iwato_kasumi_1_manzu": {
       "display_name": "Manzu",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "status", "opts": ["iwato-kasumi", "ready"]},
         {"name": "status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
@@ -2877,6 +2923,7 @@
     "iwato_kasumi_2_pinzu": {
       "display_name": "Pinzu",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "status", "opts": ["iwato-kasumi", "ready"]},
         {"name": "status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
@@ -2891,6 +2938,7 @@
     "iwato_kasumi_3_souzu": {
       "display_name": "Souzu",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "status", "opts": ["iwato-kasumi", "ready"]},
         {"name": "status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
@@ -2905,6 +2953,7 @@
     "iwato_kasumi_4_jihai": {
       "display_name": "Jihai",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "status", "opts": ["iwato-kasumi", "ready"]},
         {"name": "status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
@@ -2919,6 +2968,7 @@
     "hanada_kirame": {
       "display_name": "Bet half of points to flip 3 dora indicators",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "status", "opts": ["hanada-kirame", "hanada_kirame_choice"]},
         {"name": "has_score_below", "opts": [10000]},
@@ -2941,6 +2991,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
+        "all_saki_cards_drafted",
         "not_our_turn",
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
@@ -2973,6 +3024,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
+        "all_saki_cards_drafted",
         "not_our_turn",
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining", "someone_else_just_discarded",
@@ -3011,6 +3063,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
+        "all_saki_cards_drafted",
         "not_our_turn",
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
@@ -3071,6 +3124,7 @@
         ]
       ],
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
         [
           {"name": "not_status", "opts": ["riichi"]},
@@ -3127,7 +3181,7 @@
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],
           ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
@@ -3150,6 +3204,7 @@
     "riichi": {
       "display_name": "Riichi",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
@@ -3225,6 +3280,7 @@
     "ron": {
       "display_name": "Ron",
       "show_when": [
+        "all_saki_cards_drafted",
         "not_our_turn",
         {"name": "status_missing", "opts": ["just_reached", "about_to_call"]},
         [
@@ -3306,6 +3362,7 @@
     "chankan": {
       "display_name": "Ron",
       "show_when": [
+        "all_saki_cards_drafted",
         "not_our_turn",
         {"name": "status_missing", "opts": ["just_reached", "about_to_call"]},
         [
@@ -3390,6 +3447,7 @@
     "tsumo": {
       "display_name": "Tsumo",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "status", "opts": ["ready"]},
@@ -3482,6 +3540,7 @@
     "kyuushu_kyuuhai": {
       "display_name": "Kyuushu Kyuuhai",
       "show_when": [
+        "all_saki_cards_drafted",
         "our_turn",
         "has_draw",
         {"name": "not_status", "opts": ["match_start"]},
@@ -3498,7 +3557,7 @@
     },
     "extra_turn": {
       "display_name": "Take extra turn",
-      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
       "actions": [
         ["unset_status", "extra_turn", "extra_turn_prompt"],
         ["set_status", "extra_turn_taken"],
@@ -3509,7 +3568,7 @@
     },
     "extra_turn_skip": {
       "display_name": "Skip extra turn",
-      "show_when": ["our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
       "actions": [
         ["unset_status", "extra_turn", "extra_turn_prompt", "discard_facedown"],
         ["push_message", "skipped their extra turn"],
@@ -3519,7 +3578,7 @@
     },
     "extra_turn_skip_inoue_jun": {
       "display_name": "Skip extra turn to discard facedown",
-      "show_when": ["our_turn", "not_just_discarded", {"name": "status", "opts": ["extra_turn", "inoue_jun_broke_ippatsu"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "not_just_discarded", {"name": "status", "opts": ["extra_turn", "inoue_jun_broke_ippatsu"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
       "actions": [["unset_status", "extra_turn", "inoue_jun_broke_ippatsu"], ["set_status", "discard_facedown"]]
     }
   },

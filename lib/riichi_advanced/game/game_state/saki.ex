@@ -17,8 +17,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     # need to know what constitutes "higher value tenpai"
     # "ezaki-hitomi" => "Ezaki Hitomi",
 
-    # TODO
-    # "fukuji-mihoko" => "Fukuji Mihoko",
+    "fukuji-mihoko" => "Fukuji Mihoko",
 
     # need to implement marking players
     # also if they decline the swap do they get to try again?
