@@ -25,6 +25,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
+          "self_last_discard" -> [{hand ++ Enum.take(state.players[context.seat].pond, -1), calls}]
+          "shimocha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :shimocha)].pond, -1), calls}]
+          "toimen_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :toimen)].pond, -1), calls}]
+          "kamicha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :kamicha)].pond, -1), calls}]
+          "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "winning_tile" ->
             winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
             [{hand ++ [winning_tile], calls}]

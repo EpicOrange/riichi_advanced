@@ -2048,7 +2048,7 @@
       ["big_text", "Someya Mako: extra turn!"],
       ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
     ]]]],
-    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
+    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["unset_status", "discard_facedown"], ["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {
     "actions": [
@@ -2279,7 +2279,7 @@
     },
     "haramura_nodoka": {
       "display_name": "Discard facedown",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["haramura-nodoka", "ready"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "not_just_discarded", {"name": "status", "opts": ["haramura-nodoka", "ready"]}, {"name": "status_missing", "opts": ["match_start", "haramura-nodoka_exhausted", "discard_facedown"]}],
       "actions": [
         ["big_text", "Haramura Nodoka: discard!"],
         ["set_status", "haramura-nodoka_exhausted", "discard_facedown"],
@@ -2984,6 +2984,22 @@
         ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8], ["reveal_tile", -10], ["reveal_tile", -12]]]
       ],
       "unskippable": true
+    },
+    "fukuji_mihoko": {
+      "display_name": "Discard facedown",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["fukuji-mihoko", "ready"]},
+        {"name": "status_missing", "opts": ["match_start", "discard_facedown"]},
+        {"name": "match", "opts": [["self_last_discard", "kamicha_last_discard"], [["debug", [[[0, 0]], 1]]]]}
+      ],
+      "actions": [
+        ["big_text", "Fukuji Mihoko: extra turn!"],
+        ["set_status", "discard_facedown", "extra_turn"],
+        ["push_message", "discards facedown and gets an extra turn due to someone discarding the same tile (Fukuji Mihoko)"]
+      ]
     },
     "chii": {
       "display_name": "Chii",
