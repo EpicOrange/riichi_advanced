@@ -6,51 +6,121 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   @card_names %{
     "aislinn-wishart" => "Aislinn Wishart",
+    "amae-koromo" => "Amae Koromo",
     "anetai-toyone" => "Anetai Toyone",
     "arakawa-kei" => "Arakawa Kei",
     "atago-hiroe" => "Atago Hiroe",
     "atago-kinue" => "Atago Kinue",
-    "amae-koromo" => "Amae Koromo",
     "atarashi-ako" => "Atarashi Ako",
     "choe-myeonghwa" => "Choe Myeonghwa",
+
+    # need to know what constitutes "higher value tenpai"
+    # "ezaki-hitomi" => "Ezaki Hitomi",
+
+    # TODO
+    # "fukuji-mihoko" => "Fukuji Mihoko",
+
+    # need to implement marking players
+    # also if they decline the swap do they get to try again?
+    # "funakubo-hiroko" => "Funakubo Hiroko",
+
+    # TODO
+    # "hanada-kirame" => "Hanada Kirame",
+
     "hao-huiyu" => "Hao Huiyu",
     "haramura-nodoka" => "Haramura Nodoka",
+
+    # need to figure out how to detect when no one calls a tile
+    # "hirose-sumire" => "Hirose Sumire",
+
     "ikeda-kana" => "Ikeda Kana",
     "inoue-jun" => "Inoue Jun",
     "iwadate-yuan" => "Iwadate Yuan",
+
+    # TODO
+    # "iwato-kasumi" => "Iwato Kasumi",
+
     "jindai-komaki" => "Jindai Komaki",
+
+    # need to implement marking (and swapping) open melds
+    # "kajiki-yumi" => "Kajiki Yumi",
+
+    # need to figure out how to detect when no one calls a tile
+    # "kainou-yoshiko" => "Kainou Yoshiko",
+
     "kakura-kurumi" => "Kakura Kurumi",
+
+    # need to implement seeing which player has the end of the wall
+    # "kanbara-satomi" => "Kanbara Satomi",
+
     "karijuku-tomoe" => "Karijuku Tomoe",
     "kataoka-yuuki" => "Kataoka Yuuki",
     "kosegawa-shiromi" => "Kosegawa Shiromi",
     "kunihiro-hajime" => "Kunihiro Hajime",
     "mase-yuuko" => "Mase Yuuko",
     "matano-seiko" => "Matano Seiko",
-    "matsumi-kuro" => "Matsumi Kuro",
+
+    # need to track dora across rounds
+    # "matsumi-kuro" => "Matsumi Kuro",
+
     "matsumi-yuu" => "Matsumi Yuu",
     "maya-yukiko" => "Maya Yukiko",
+
+    # need to implement marking players
+    # "megan-davin" => "Megan Davin",
+
     "miyanaga-saki" => "Miyanaga Saki",
     "miyanaga-teru" => "Miyanaga Teru",
     "motouchi-naruka" => "Motouchi Naruka",
     "nanpo-kazue" => "Nanpo Kazue",
     "nelly-virsaladze" => "Nelly Virsaladze",
     "onjouji-toki" => "Onjouji Toki",
+
+    # need to implement swapping with uradora indicators
+    # "oohoshi-awai" => "Oohoshi Awai",
+
     "ryuumonbuchi-touka" => "Ryuumonbuchi Touka",
     "sagimori-arata" => "Sagimori Arata",
     "sawamura-tomoki" => "Sawamura Tomoki",
     "senoo-kaori" => "Senoo Kaori",
     "shibuya-takami" => "Shibuya Takami",
+
+    # need some UI for selecting yaku
+    # "shimizudani-ryuuka" => "Shimizudani Ryuuka",
+
     "shirouzu-mairu" => "Shirouzu Mairu",
+
+    # TODO
+    # "shishihara-sawaya" => "Shishihara Sawaya",
+
     "someya-mako" => "Someya Mako",
     "suehara-kyouko" => "Suehara Kyouko",
     "takakamo-shizuno" => "Takakamo Shizuno",
     "takei-hisa" => "Takei Hisa",
     "takimi-haru" => "Takimi Haru",
-    "toyouko-mokmoko" => "Toyouko Mokmoko",
     "toyouko-momoko" => "Toyouko Momoko",
+
+    # need to implement a place to put scryed tiles (probably just use aside tiles)
+    # TODO
+    # "tsujigaito-satoha" => "Tsujigaito Satoha",
+
     "tsuruta-himeko" => "Tsuruta Himeko",
+
+    # TODO
+    # "ueshige-suzu" => "Ueshige Suzu",
+
+    # need to implement marking players and disabling abilities
     # "usuzawa-sae" => "Usuzawa Sae",
+
+    # TODO
     # "usuzumi-hatsumi" => "Usuzumi Hatsumi",
+
+    # TODO
+    # "yae-kobashiri" => "Yae Kobashiri",
+    
+    # TODO
+    # "yoshitome-miharu => "Yoshitome Miharu",
+    
     "yumeno-maho" => "Yumeno Maho",
   }
 

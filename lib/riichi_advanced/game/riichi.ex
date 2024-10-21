@@ -153,6 +153,9 @@ defmodule Riichi do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     # t = System.os_time(:millisecond)
     ret = cond do
+      # tile
+      Utils.is_tile(group) -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
+      # group of tiles
       is_list(group) && not Enum.empty?(group) ->
         cond do
           Enum.all?(group, &Kernel.is_integer/1) ->
@@ -160,7 +163,7 @@ defmodule Riichi do
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
             all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-              tiles = Enum.map(group, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
+              tiles = Enum.map(group, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
               remove_from_hand_calls(hand, tiles, calls, tile_aliases)
             end)
           Enum.all?(group, &Kernel.is_list/1) && Enum.all?(group, &Enum.all?(&1, fn item -> Kernel.is_integer(item) end)) ->
@@ -171,18 +174,19 @@ defmodule Riichi do
               for set <- group, reduce: [{hand, calls}] do
                 hand_calls -> 
                   for {hand, calls} <- hand_calls do
-                    tiles = Enum.map(set, fn tile_or_offset -> if Utils.to_tile(tile_or_offset) != nil do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
+                    tiles = Enum.map(set, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
                     remove_from_hand_calls(hand, tiles, calls, tile_aliases)
                   end |> Enum.concat()
               end
             end)
-          true ->
+          Enum.all?(group, &Utils.is_tile/1) ->
             # list of tiles
             tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
             remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+          true ->
+            IO.puts("Unhandled group #{inspect(group)}")
+            [{hand, calls}]
         end
-      # tile
-      Utils.to_tile(group) != nil -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
       # call
       is_binary(group) -> try_remove_call(hand, calls, group)
       true ->
@@ -422,7 +426,7 @@ defmodule Riichi do
         not Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs
-        if Utils.to_tile(&1) != nil do
+        if Utils.is_tile(&1) do
           Utils.same_tile(context.tile, Utils.to_tile(&1))
         else
           IO.puts("Unhandled tile spec #{inspect(&1)}")

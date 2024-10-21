@@ -1800,6 +1800,7 @@
   },
   "after_draw": {
     "actions": [
+      ["remove_attr_hand", "rinshan", "haitei"],
       // set tenpai status
       ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
         ["set_status", "tenpai"],
