@@ -464,7 +464,20 @@ defmodule RiichiAdvanced.GameState.Actions do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
         end
       "put_down_riichi_stick" -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"]) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
-      "bet_points"            -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1000)) |> update_player(context.seat, &%Player{ &1 | score: &1.score - Enum.at(opts, 0, 1000) })
+      "bet_points"            ->
+        amount = Enum.at(opts, 0, 1000)
+        amount = case amount do
+          "half" ->
+            # half rounded up to the nearest 100
+            nominal = Integer.floor_div(state.players[context.seat].score, 100)
+            # floor_div rounds towards -infinity, so this is effectively ceil(nominal/2) * 100
+            -Integer.floor_div(-nominal, 2) * 100
+          _ when is_integer(amount) -> amount
+          _ ->
+            IO.inspect("Unknown amount #{inspect(amount)}")
+            0
+        end
+        state |> Map.update!(:pot, & &1 + amount) |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || seat != context.seat } end)

@@ -24,9 +24,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     # also if they decline the swap do they get to try again?
     # "funakubo-hiroko" => "Funakubo Hiroko",
 
-    # TODO
-    # "hanada-kirame" => "Hanada Kirame",
-
+    "hanada-kirame" => "Hanada Kirame",
     "hao-huiyu" => "Hao Huiyu",
     "haramura-nodoka" => "Haramura Nodoka",
 
