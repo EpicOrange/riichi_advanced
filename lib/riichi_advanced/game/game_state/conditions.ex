@@ -84,6 +84,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "no_calls_yet"                -> last_call_action == nil
       "last_call_is"                -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
       "kamicha_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
+      "anyone_just_discarded"       -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn
       "someone_else_just_discarded" -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
       "just_discarded"              -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
       "just_called"                 -> last_action != nil && last_action.action == :call

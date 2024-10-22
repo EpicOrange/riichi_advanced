@@ -33,6 +33,7 @@ defmodule Player do
     riichi_stick: false,
     riichi_discard_indices: nil,
     hand_revealed: false,
+    num_scryed_tiles: 0,
     last_discard: nil, # for animation purposes only
     winning_hand: nil,
     ready: false
@@ -1269,8 +1270,11 @@ defmodule RiichiAdvanced.GameState do
 
       # if we're still going, run deferred actions for everyone and then notify ai
       state = if state.game_active do
-        Actions.resume_deferred_actions(state)
-        notify_ai(state)
+        state = Actions.resume_deferred_actions(state)
+        # TODO for some reason it doesn't work if we notify immediately
+        # notify_ai(state)
+        # situation is tsujigaito satoha's swap after chii; chii ai player doesn't resume play
+        :timer.apply_after(200, GenServer, :cast, [self(), :notify_ai])
         state
       else state end
 

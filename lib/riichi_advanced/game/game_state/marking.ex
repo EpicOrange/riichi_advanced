@@ -35,6 +35,7 @@ defmodule RiichiAdvanced.GameState.Marking do
           "aside"         -> Map.put(marked, :aside, mark_spec)
           "discard"       -> Map.put(marked, :discard, mark_spec)
           "revealed_tile" -> Map.put(marked, :revealed_tile, mark_spec)
+          "scry"          -> Map.put(marked, :scry, mark_spec)
           _               ->
             GenServer.cast(self(), {:show_error, "Unknown mark target: #{inspect(target)}"})
             marked
@@ -56,6 +57,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         tile_spec = Enum.at(state.revealed_tiles, index)
         {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
         tile
+      :scry          -> state.wall |> Enum.at(state.wall_index + index)
       _              ->
         GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
         nil
@@ -127,6 +129,7 @@ defmodule RiichiAdvanced.GameState.Marking do
       :aside         -> Map.has_key?(state.marking[marking_player], :aside) && Enum.any?(state.marking[marking_player].aside.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
       :discard       -> Map.has_key?(state.marking[marking_player], :discard) && Enum.any?(state.marking[marking_player].discard.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
       :revealed_tile -> Map.has_key?(state.marking[marking_player], :revealed_tile) && Enum.any?(state.marking[marking_player].revealed_tile.marked, fn {_tile, _, index2} -> index == index2 end)
+      :scry          -> Map.has_key?(state.marking[marking_player], :scry) && Enum.any?(state.marking[marking_player].scry.marked, fn {_tile, _, index2} -> index == index2 end)
       _        ->
         GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
         false
@@ -139,6 +142,7 @@ defmodule RiichiAdvanced.GameState.Marking do
       :aside         -> update_in(state.marking[marking_player].aside.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
       :discard       -> update_in(state.marking[marking_player].discard.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
       :revealed_tile -> update_in(state.marking[marking_player].revealed_tile.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), nil, index}] end)
+      :scry          -> update_in(state.marking[marking_player].scry.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), nil, index}] end)
       _              ->
         GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
         state

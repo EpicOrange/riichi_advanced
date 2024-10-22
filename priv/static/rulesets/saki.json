@@ -56,6 +56,7 @@
     "takei-hisa",
     "takimi-haru",
     "toyouko-momoko",
+    "tsujigaito-satoha",
     "usuzumi-hatsumi",
     "yae-kobashiri",
     "yoshitome-miharu"
@@ -1799,8 +1800,8 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-                ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
-                ["unset_status_all", "yae_kobashiri_skip"],
+                ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
+                ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 // check if anyone's placement is not the same as the one they are tagged with
                 ["when_anyone", [[
@@ -2189,7 +2190,7 @@
       ["draw"],
       ["advance_turn"]
     ]]]],
-    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["unset_status", "discard_facedown"], ["recalculate_buttons"]]]]] // allow interrupting facedown discards
+    ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {
     "actions": [
@@ -2317,7 +2318,8 @@
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_manzu"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "manzu"]]],
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_pinzu"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "pinzu"]]],
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_souzu"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "souzu"]]],
-                ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_jihai"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "jihai"]]]
+                ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_jihai"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "jihai"]]],
+                ["when", [{"name": "status", "opts": ["tsujigaito-satoha"]}, {"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "tsujigaito_satoha_double_score"]]]
                ]
   },
   "before_abortive_draw": {
@@ -3405,6 +3407,99 @@
       ],
       "actions": [["set_status", "kainou_yoshiko_discard"]]
     },
+    "tsujigaito_satoha": {
+      "display_name": "Look at next two tiles in the wall",
+      "show_when": [
+        "all_saki_cards_drafted",
+        {"name": "status", "opts": ["tsujigaito-satoha"]},
+        {"name": "status_missing", "opts": ["match_start", "just_scryed", "tsujigaito_satoha_scryed"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        [
+          [
+            "someone_else_just_discarded",
+            {"name": "discarder_status", "opts": ["discard_facedown"]},
+            {"name": "not_discarder_status", "opts": ["discard_passed"]}
+          ],
+          [
+            "anyone_just_discarded",
+            {"name": "discarder_status", "opts": ["just_reached"]},
+            {"name": "not_discarder_status", "opts": ["discard_passed"]}
+          ],
+          {"name": "anyone_status", "opts": ["chii", "ready"]}
+        ]
+      ],
+      "actions": [
+        ["set_status", "just_scryed", "tsujigaito_satoha_scryed"],
+        ["when", ["anyone_just_discarded"], [["set_status", "need_to_advance_turn"]]],
+        ["scry", 2],
+        ["push_message", "looks at the next two tiles in the wall (Tsujigaito Satoha)"],
+        // allow swap to pop up, but only if we aren't in riichi
+        ["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["recalculate_buttons"]]]
+      ]
+    },
+    "tsujigaito_satoha_swap_0": {
+      "display_name": "No swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        {"name": "status", "opts": ["tsujigaito-satoha", "just_scryed"]},
+        {"name": "status_missing", "opts": ["match_start", "just_swapped"]}
+      ],
+      "actions": [
+        ["unset_status", "just_scryed"],
+        ["clear_scry"],
+        ["push_message", "swapped no tiles with the wall (Tsujigaito Satoha)"],
+        ["when", [{"name": "status", "opts": ["need_to_advance_turn"]}], [["unset_status", "need_to_advance_turn"], ["advance_turn"]]]
+      ],
+      "unskippable": true
+    },
+    "tsujigaito_satoha_swap_1": {
+      "display_name": "Swap 1",
+      "show_when": [
+        "all_saki_cards_drafted",
+        {"name": "status", "opts": ["tsujigaito-satoha", "just_scryed"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "just_swapped"]}
+      ],
+      "actions": [
+        ["unset_status", "just_scryed"],
+        ["clear_scry"],
+        ["mark", [["hand", 1, ["not_riichi"]], ["scry", 1, []]]],
+        ["push_message", "swapped one tile with the wall (Tsujigaito Satoha)"],
+        ["set_status", "about_to_swap"],
+        ["recalculate_buttons"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
+          ["swap_marked_hand_and_scry"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["recalculate_buttons"] // allow tsumo to pop up
+        ]],
+        ["when", [{"name": "status", "opts": ["need_to_advance_turn"]}], [["unset_status", "need_to_advance_turn"], ["advance_turn"]]]
+      ],
+      "unskippable": true
+    },
+    "tsujigaito_satoha_swap_2": {
+      "display_name": "Swap 2",
+      "show_when": [
+        "all_saki_cards_drafted",
+        {"name": "status", "opts": ["tsujigaito-satoha", "just_scryed"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "just_swapped"]}
+      ],
+      "actions": [
+        ["unset_status", "just_scryed"],
+        ["clear_scry"],
+        ["mark", [["hand", 2, ["not_riichi"]], ["scry", 2, []]]],
+        ["push_message", "swapped one tile with the wall (Tsujigaito Satoha)"],
+        ["set_status", "about_to_swap"],
+        ["recalculate_buttons"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
+          ["swap_marked_hand_and_scry"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["recalculate_buttons"] // allow tsumo to pop up
+        ]],
+        ["when", [{"name": "status", "opts": ["need_to_advance_turn"]}], [["unset_status", "need_to_advance_turn"], ["advance_turn"]]]
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -3417,7 +3512,7 @@
         "not_no_tiles_remaining",
         "kamicha_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted"]},
         "call_available"
       ],
       "actions": [
@@ -3450,7 +3545,7 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining", "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
@@ -3491,7 +3586,7 @@
         "not_no_tiles_remaining",
         "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
@@ -3633,7 +3728,7 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
         {"name": "status", "opts": ["ready"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "inazuma_riichi", "about_to_call"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "inazuma_riichi", "just_scryed", "about_to_call", "about_to_swap"]},
         {"name": "has_score", "opts": [1000]},
         "next_draw_possible",
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
@@ -3705,7 +3800,7 @@
       "show_when": [
         "all_saki_cards_drafted",
         "not_our_turn",
-        {"name": "status_missing", "opts": ["just_reached", "about_to_call"]},
+        {"name": "status_missing", "opts": ["just_reached", "just_scryed", "about_to_call", "about_to_swap"]},
         [
           {"name": "status_missing", "opts": ["furiten"]},
           {"name": "status", "opts": ["atago-hiroe", "riichi"]},

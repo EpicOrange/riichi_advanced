@@ -843,7 +843,7 @@ div.hand.just-drew > div.draws > div.tile {
   }
   100% {}
 }
-div.hand.just-called > div.calls > div.call:last-child {
+div.hand.just-called > div.calls > div.call:nth-last-child(2) {
   animation: slideRight 0.4s ease forwards;
 }
 
@@ -998,13 +998,39 @@ div.visible-waits > div.visible-wait {
 }
 
 /* revealed tiles */
-
 div.revealed-tiles {
   display: flex;
   position: absolute;
   font-size: calc(0.5 * var(--tile-size));
   top: calc(-1.5 * var(--tile-size));
   left: 0;
+}
+
+/* scryed tiles */
+div.scryed-tiles-container {
+  display: flex;
+  position: absolute;
+  font-size: calc(0.5 * var(--tile-size));
+  bottom: calc(1.5 * var(--tile-size));
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+div.scryed-tiles {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  position: relative;
+}
+div.scryed-tiles::before {
+  content: "";
+  background: #0000001F;
+  position: absolute;
+  border-radius: calc(0.25 * var(--tile-size));
+  top: calc(-0.5 * var(--tile-size));
+  width: calc(100% + 1 * var(--tile-size));
+  height: calc(100% + 0.75 * var(--tile-size));
 }
 
 /* win/draw windows */

@@ -88,10 +88,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "takei-hisa" => "Takei Hisa",
     "takimi-haru" => "Takimi Haru",
     "toyouko-momoko" => "Toyouko Momoko",
-
-    # need to implement a place to put scryed tiles (probably just use aside tiles)
-    # "tsujigaito-satoha" => "Tsujigaito Satoha",
-
+    "tsujigaito-satoha" => "Tsujigaito Satoha",
     "tsuruta-himeko" => "Tsuruta Himeko",
 
     # need to figure out how to display scryed tiles

@@ -543,6 +543,37 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {revealed_tile, nil, revealed_tile_index, :discard}})
         state = put_in(state.marking[context.seat].done, true)
         state
+      "swap_marked_hand_and_scry" ->
+        {_, hand_seat, _} = Enum.at(marked_objects.hand.marked, 0)
+        {hand_tiles, hand_indices} = marked_objects.hand.marked
+        |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+        |> Enum.unzip()
+        {scry_tiles, scry_indices} = marked_objects.scry.marked
+        |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+        |> Enum.unzip()
+
+        zip1 = Enum.zip(hand_tiles, scry_indices)
+        zip2 = Enum.zip(scry_tiles, hand_indices)
+
+        # replace wall tiles with hand tiles
+        state = for {hand_tile, scry_index} <- zip1, reduce: state do
+          state -> update_in(state.wall, &List.replace_at(&1, state.wall_index + scry_index, hand_tile))
+        end
+
+        # replace hand tiles with wall tiles
+        hand_length = length(state.players[hand_seat].hand)
+        state = for {{scry_tile, hand_index}, {hand_tile, scry_index}} <- Enum.zip(zip2, zip1), reduce: state do
+          state ->
+            state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {scry_tile, nil, scry_index, :discard}})
+            if hand_index < hand_length do
+              update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, scry_tile) })
+            else
+              update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, scry_tile) })
+            end
+        end
+
+        state = put_in(state.marking[context.seat].done, true)
+        state
       "extend_live_wall_with_marked" ->
         {_, hand_seat, _} = Enum.at(marked_objects.hand.marked, 0)
         {hand_tiles, hand_indices} = marked_objects.hand.marked
@@ -783,7 +814,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         resume_deferred_actions(state)
       "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
       "recalculate_buttons" -> Buttons.recalculate_buttons(state, Enum.at(opts, 0, 0))
-      "draw_last_discard" -> 
+      "draw_last_discard" ->
         last_discard_action = get_last_discard_action(state)
         if last_discard_action != nil do
           state = update_player(state, context.seat, &%Player{ &1 | draw: &1.draw ++ [Utils.add_attr(last_discard_action.tile, ["draw"])] })
@@ -795,6 +826,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         if last_action != nil && last_action.action == :discard && Map.has_key?(state.rules, "after_discard_passed") do
           run_actions(state, state.rules["after_discard_passed"]["actions"], %{seat: context.seat})
         else state end
+      "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
+      "clear_scry"      -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: 0 })
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

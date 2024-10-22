@@ -219,6 +219,15 @@ defmodule RiichiAdvancedWeb.GameLive do
         revealed_tiles={@state.revealed_tiles}
         max_revealed_tiles={@state.max_revealed_tiles}
         marking={@state.marking[@seat]} />
+      <.live_component module={RiichiAdvancedWeb.ScryedTilesComponent}
+        id="scryed-tiles"
+        game_state={@game_state}
+        viewer={@viewer}
+        wall={@state.wall}
+        wall_index={@state.wall_index}
+        num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
+        marking={@state.marking[@seat]}
+        :if={@state.players[@seat].num_scryed_tiles > 0} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>

@@ -344,12 +344,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
             else payment end
 
             delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
-            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + riichi_payment)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment)
             delta_scores
           else
-            # first give the winner their riichi sticks
-            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + riichi_payment)
-            
             # reverse-calculate the ko and oya parts of the total points
             {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer)
 
@@ -386,6 +383,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 delta_scores
             end
           end
+
+          # handle tsujigaito satoha's scoring quirk
+          delta_scores = if "tsujigaito_satoha_double_score" in state.players[winner.seat].status do
+            push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
+            Map.new(delta_scores, fn {seat, delta} -> {seat, delta * 2} end)
+          else delta_scores end
+
+          # award riichi sticks
+          delta_scores = Map.update!(delta_scores, winner.seat, & &1 + riichi_payment)
 
           # handle arakawa kei's scoring quirk
           delta_scores = if "use_arakawa_kei_scoring" in winner_player.status do
