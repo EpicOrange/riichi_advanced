@@ -46,6 +46,8 @@ defmodule Riichi do
                :"11s", :"12s", :"13s", :"14s", :"15s", :"16s", :"17s", :"18s", :"19s"]
   @jihai      [:"1z", :"2z", :"3z", :"4z", :"5z", :"0z", :"6z", :"7z",
                :"11z", :"12z", :"13z", :"14z", :"15z", :"10z", :"16z", :"17z", :"25z", :"26z", :"27z"]
+  @wind       [:"1z", :"2z", :"3z", :"4z", :"11z", :"12z", :"13z", :"14z"]
+  @dragon     [:"5z", :"0z", :"6z", :"7z", :"15z", :"10z", :"16z", :"17z", :"25z", :"26z", :"27z"]
   @terminal   [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s",
                :"11m", :"19m", :"11p", :"19p", :"11s", :"19s"]
   @tanyaohai  [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m",
@@ -61,6 +63,8 @@ defmodule Riichi do
   def is_souzu?(tile), do: Enum.any?(@souzu, &Utils.same_tile(tile, &1))
   def is_jihai?(tile), do: Enum.any?(@jihai, &Utils.same_tile(tile, &1))
   def is_suited?(tile), do: is_manzu?(tile) || is_pinzu?(tile) || is_souzu?(tile)
+  def is_wind?(tile), do: Enum.any?(@wind, &Utils.same_tile(tile, &1))
+  def is_dragon?(tile), do: Enum.any?(@dragon, &Utils.same_tile(tile, &1))
   def is_terminal?(tile), do: Enum.any?(@terminal, &Utils.same_tile(tile, &1))
   def is_yaochuuhai?(tile), do: Enum.any?(@yaochuuhai, &Utils.same_tile(tile, &1))
   def is_tanyaohai?(tile), do: Enum.any?(@tanyaohai, &Utils.same_tile(tile, &1))

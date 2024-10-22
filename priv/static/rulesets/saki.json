@@ -53,7 +53,8 @@
     "takakamo-shizuno",
     "takei-hisa",
     "takimi-haru",
-    "toyouko-momoko"
+    "toyouko-momoko",
+    "usuzumi-hatsumi"
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -2195,7 +2196,7 @@
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
-        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
           ["swap_marked_hand_and_discard"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
@@ -2213,7 +2214,7 @@
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
-        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
           ["swap_marked_hand_and_dora_indicator"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
@@ -2270,7 +2271,7 @@
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
-        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
           ["swap_marked_hand_and_discard"],
           ["advance_turn"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
@@ -2551,7 +2552,7 @@
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
-        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
           ["swap_marked_hand_and_discard"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
@@ -2577,7 +2578,7 @@
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
-        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"]], [
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
           ["swap_marked_hand_and_discard"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
@@ -2993,12 +2994,39 @@
         "not_just_discarded",
         {"name": "status", "opts": ["fukuji-mihoko", "ready"]},
         {"name": "status_missing", "opts": ["match_start", "discard_facedown"]},
-        {"name": "match", "opts": [["self_last_discard", "kamicha_last_discard"], [["debug", [[[0, 0]], 1]]]]}
+        {"name": "match", "opts": [["self_last_discard", "kamicha_last_discard"], [[[[[0, 0]], 1]]]]}
       ],
       "actions": [
         ["big_text", "Fukuji Mihoko: extra turn!"],
         ["set_status", "discard_facedown", "extra_turn"],
         ["push_message", "discards facedown and gets an extra turn due to someone discarding the same tile (Fukuji Mihoko)"]
+      ]
+    },
+    "usuzumi_hatsumi": {
+      "display_name": "Swap a number tile with any discarded wind tile",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        "just_called",
+        {"name": "status", "opts": ["usuzumi-hatsumi", "ready"]},
+        {"name": "status_missing", "opts": ["match_start", "just_swapped", "just_reached", "about_to_swap"]},
+        {"name": "match", "opts": [["all_discards"], [[[["1z","2z","3z","4z"], 1]]]]},
+        {"name": "match", "opts": [["hand"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]]]}
+      ],
+      "actions": [
+        ["big_text", "Usuzumi Hatsumi: swap!"],
+        ["set_status", "just_swapped"],
+        ["mark", [["hand", 1, ["suited", "not_riichi"]], ["discard", 1, ["wind"]]]],
+        ["push_message", "swapped a discarded wind tile with a number tile from hand (Usuzumi Hatsumi)"],
+        ["set_status", "about_to_swap"],
+        ["recalculate_buttons"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
+          ["swap_marked_hand_and_discard"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["recalculate_buttons"] // allow tsumo to pop up
+        ]]
       ]
     },
     "chii": {

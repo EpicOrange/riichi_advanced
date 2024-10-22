@@ -1603,9 +1603,9 @@ div.saki-card.v13.takimi-haru, div.saki-card.v13.takimi-haru:hover::before { bac
 div.saki-card.v13.toyouko-momoko, div.saki-card.v13.toyouko-momoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.saki-card.v13.tsujigaito-satoha, div.saki-card.v13.tsujigaito-satoha:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.saki-card.v13.tsuruta-himeko, div.saki-card.v13.tsuruta-himeko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.usuzawa-sae, div.saki-card.v13.usuzawa-sae:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.usuzumi-hatsumi, div.saki-card.v13.usuzumi-hatsumi:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.xzueshige-suzu, div.saki-card.v13.xzueshige-suzu:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.ueshige-suzu, div.saki-card.v13.ueshige-suzu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.usuzawa-sae, div.saki-card.v13.usuzawa-sae:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.usuzumi-hatsumi, div.saki-card.v13.usuzumi-hatsumi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.saki-card.v13.yae-kobashiri, div.saki-card.v13.yae-kobashiri:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.saki-card.v13.yoshitome-miharu, div.saki-card.v13.yoshitome-miharu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.saki-card.v13.yumeno-maho, div.saki-card.v13.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }

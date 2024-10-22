@@ -69,6 +69,7 @@ defmodule RiichiAdvanced.GameState.Marking do
     already_marked = is_marked?(state, marking_player, seat, index, source)
     mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
+        "suited"            -> Riichi.is_suited?(tile)
         "match_suit"        ->
           if Riichi.is_suited?(tile) do
             Map.values(state.marking[marking_player])
@@ -93,6 +94,8 @@ defmodule RiichiAdvanced.GameState.Marking do
         "kamicha"           -> Utils.get_relative_seat(marking_player, seat) == :kamicha
         "current_turn"      -> seat == state.turn
         "7z"                -> tile == :"7z"
+        "wind"              -> Riichi.is_wind?(tile)
+        "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
         "not_riichi"        -> 
           case source do
