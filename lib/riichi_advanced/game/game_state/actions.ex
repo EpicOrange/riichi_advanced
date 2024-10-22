@@ -780,6 +780,13 @@ defmodule RiichiAdvanced.GameState.Actions do
         resume_deferred_actions(state)
       "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
       "recalculate_buttons" -> Buttons.recalculate_buttons(state, Enum.at(opts, 0, 0))
+      "draw_last_discard" -> 
+        last_discard_action = get_last_discard_action(state)
+        if last_discard_action != nil do
+          state = update_player(state, context.seat, &%Player{ &1 | draw: &1.draw ++ [Utils.add_attr(last_discard_action.tile, ["draw"])] })
+          state = update_in(state.players[last_discard_action.seat].pond, &Enum.drop(&1, -1))
+          state
+        else state end
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

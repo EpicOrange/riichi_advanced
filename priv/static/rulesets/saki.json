@@ -54,7 +54,8 @@
     "takei-hisa",
     "takimi-haru",
     "toyouko-momoko",
-    "usuzumi-hatsumi"
+    "usuzumi-hatsumi",
+    "yae-kobashiri"
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -236,7 +237,11 @@
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["koutsu"], -1], [["pair"], 6] ]
+    [ [["koutsu"], -1], [["pair"], 6] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
   ],
   "iishanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
@@ -273,7 +278,11 @@
   "tenpai_14_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ]
+    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
   ],
   "pair_wait_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
@@ -1085,6 +1094,13 @@
       "display_name": "Winds",
       "value": 1,
       "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 4]]]]}]
+    },
+    {
+      "display_name": "Riichi",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["yae_kobashiri_double_riichi"]}
+      ]
     }
   ],
   "yakuman": [
@@ -1629,10 +1645,12 @@
   "play_restrictions": [
     [["any"], ["not_all_saki_cards_drafted"]],
     [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
+    [["any"], [{"name": "status", "opts": ["iishanten"]}, {"name": "status_missing", "opts": ["just_iishantened"]}, "not_is_drawn_tile"]],
     [["any"], [{"name": "status", "opts": ["atago_kinue_aside_waits"]}, {"name": "status_missing", "opts": ["just_changed_atago_kinue_aside_waits"]}, "not_is_drawn_tile"]],
-    [["any"], [{"name": "status", "opts": ["atago_kinue_aside_waits", "just_changed_atago_kinue_aside_waits"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
-    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["kakura-kurumi"]}, {"name": "needed_for_hand", "opts": ["tenpai", "kokushi_tenpai"]}]],
+    [["any"], [{"name": "status", "opts": ["atago_kinue_aside_waits", "just_changed_atago_kinue_aside_waits"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]],
+    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "status_missing", "opts": ["kakura-kurumi"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]],
     [["any"], [{"name": "status", "opts": ["riichi", "just_reached", "kakura-kurumi"]}, {"name": "match", "opts": [["hand"], ["kakura_kurumi_tenpai"]]}, {"name": "needed_for_hand", "opts": ["kakura_kurumi_tenpai"]}]],
+    [["any"], [{"name": "status", "opts": ["iishanten", "just_iishantened"]}, {"name": "needed_for_hand", "opts": ["tenpai", "iishanten"]}]],
     [["any"], ["just_called", {"name": "status_missing", "opts": ["anetai-toyone"]}, {"name": "last_called_tile_matches", "opts": ["kuikae"]}]],
     [["any"], [{"name": "has_attr", "opts": ["tile", "no_discard"]}]],
     [["any"], [{"name": "status", "opts": ["amae-koromo"]}, "just_discarded"]],
@@ -1649,7 +1667,8 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-                ["unset_status", "ready", "just_reached", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
+                ["unset_status", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
+                ["unset_status_all", "yae_kobashiri_skip"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 // check if anyone's placement is not the same as the one they are tagged with
                 ["when_anyone", [[
@@ -1805,8 +1824,8 @@
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
       ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi", "suehara_kyouko_set_aside"],
-      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
+      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
     ]
   },
   "after_call": {
@@ -1856,7 +1875,7 @@
         ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
       ]],
       // set tenpai status
-      ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+      ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [
         ["set_status", "tenpai"],
         ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
           ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
@@ -1878,7 +1897,7 @@
         ]]
       ]],
       // unset tenpai status
-      ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+      ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [
         ["unset_status", "tenpai"],
         ["when", [{"name": "not_status_missing", "opts": ["takei-hisa", "atago-hiroe"]}], [
           ["clear_tile_aliases"],
@@ -1895,7 +1914,7 @@
       ["remove_attr_hand", "rinshan", "haitei"],
       ["when", [{"name": "status", "opts": ["kan"]}], [["add_attr", ["draw"], ["rinshan"]]]],
       // set tenpai status
-      ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+      ["when", [{"name": "status_missing", "opts": ["tenpai"]}, {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [
         ["set_status", "tenpai"],
         ["when", [{"name": "status", "opts": ["takei-hisa"]}], [
           ["ite", [{"name": "has_hell_wait", "opts": ["pair_wait"]}], [
@@ -1917,7 +1936,7 @@
         ]]
       ]],
       // unset tenpai status
-      ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [
+      ["when", [{"name": "status", "opts": ["tenpai"]}, {"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [
         ["unset_status", "tenpai"],
         ["when", [{"name": "not_status_missing", "opts": ["takei-hisa", "atago-hiroe"]}], [
           ["clear_tile_aliases"],
@@ -2275,7 +2294,7 @@
         {"name": "has_score", "opts": [5000]},
         "next_draw_possible",
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}
       ],
       "actions": [
         ["big_text", "Inazuma Riichi"],
@@ -3004,6 +3023,103 @@
         ]]
       ]
     },
+    "yae_kobashiri_iishanten": {
+      "display_name": "Declare iishanten",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status", "opts": ["yae-kobashiri", "ready"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "iishanten"]},
+        {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["iishanten"]]}
+      ],
+      "actions": [
+        ["big_text", "Yae Kobashiri: iishanten!"],
+        ["set_status", "iishanten", "just_iishantened"],
+        ["push_message", "declared iishanten (Yae Kobashiri)"]
+      ]
+    },
+    "yae_kobashiri_self_riichi": {
+      "display_name": "Riichi",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status", "opts": ["yae-kobashiri", "ready", "iishanten"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi"]},
+        {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "has_score", "opts": [1000]},
+        "next_draw_possible",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}
+      ],
+      "actions": [
+        ["big_text", "Riichi"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["unset_status", "iishanten"],
+        ["set_status", "riichi", "yae_kobashiri_double_riichi", "just_reached", "ippatsu"],
+        ["when", [{"name": "others_status", "opts": ["riichi"]}], [["set_status", "chasing"]]],
+        ["push_message", "declared riichi"],
+        ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
+          ["add_score", -1000],
+          ["put_down_riichi_stick"],
+          ["pause", 1000],
+          ["abortive_draw", "Suucha Riichi"]
+        ]]
+      ]
+    },
+    "yae_kobashiri_call_riichi": {
+      "display_name": "Steal tile and declare riichi",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        "someone_else_just_discarded",
+        {"name": "status", "opts": ["yae-kobashiri", "iishanten"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "yae_kobashiri_skip"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "has_score", "opts": [1000]},
+        "next_draw_possible",
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["tenpai_14"]]}
+      ],
+      "actions": [
+        ["big_text", "Riichi"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["unset_status", "iishanten"],
+        ["draw_last_discard"],
+        ["set_discarder_status", "double_payment"],
+        ["change_turn", "self"],
+        ["set_status", "ready", "riichi", "just_reached", "ippatsu"],
+        ["when", [{"name": "others_status", "opts": ["riichi"]}], [["set_status", "chasing"]]],
+        ["push_message", "declared riichi"],
+        ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
+          ["add_score", -1000],
+          ["put_down_riichi_stick"],
+          ["pause", 1000],
+          ["abortive_draw", "Suucha Riichi"]
+        ]]
+      ],
+      "unskippable": true
+    },
+    "yae_kobashiri_call_riichi_skip": {
+      "display_name": "Skip",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        "someone_else_just_discarded",
+        {"name": "status", "opts": ["yae-kobashiri", "iishanten"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "yae_kobashiri_skip"]},
+        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "has_score", "opts": [1000]},
+        "next_draw_possible",
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["tenpai_14"]]}
+      ],
+      "actions": [["set_status", "yae_kobashiri_skip"], ["resume_deferred_actions"]],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -3015,7 +3131,7 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
         "kamicha_discarded",
-        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
         "call_available"
       ],
       "actions": [
@@ -3047,7 +3163,7 @@
         "not_our_turn",
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining", "someone_else_just_discarded",
-        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
@@ -3087,7 +3203,7 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
         "someone_else_just_discarded",
-        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
@@ -3229,12 +3345,12 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
         {"name": "status", "opts": ["ready"]},
-        {"name": "status_missing", "opts": ["riichi", "inazuma_riichi", "about_to_call"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "inazuma_riichi", "about_to_call"]},
         {"name": "has_score", "opts": [1000]},
         "next_draw_possible",
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         [
-          {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]},
+          {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]},
           [
             {"name": "status", "opts": ["kakura-kurumi"]},
             {"name": "match", "opts": [["hand", "calls", "draw"], ["kakura_kurumi_tenpai"]]}

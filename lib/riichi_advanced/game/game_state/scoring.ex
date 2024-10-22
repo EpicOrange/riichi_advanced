@@ -328,8 +328,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
           delta_scores = if direct_hit do
             # either ron, or tsumo pao, or remaining ron pao payment
-            delta_scores = Map.update!(delta_scores, payer, & &1 - basic_score - honba_payment * 3)
-            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + basic_score + honba_payment * 3 + riichi_payment)
+            payment = basic_score + honba_payment * 3
+
+            payment = if "double_payment" in state.players[payer].status do
+              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
+              payment * 2
+            else payment end
+
+            delta_scores = Map.update!(delta_scores, payer, & &1 - payment)
+            delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + riichi_payment)
             delta_scores
           else
             # first give the winner their riichi sticks
@@ -360,6 +367,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 else payment end
                 payment = if "double_tsumo_payment" in state.players[payer].status do
                   push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double for tsumo (Maya Yukiko)"}])
+                  payment * 2
+                else payment end
+                payment = if "double_payment" in state.players[payer].status do
+                  push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
                   payment * 2
                 else payment end
                 delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)

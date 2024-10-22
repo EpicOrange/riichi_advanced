@@ -847,7 +847,6 @@ defmodule RiichiAdvanced.GameState do
     cond do
       is_binary(tile_name) && tile_name in state.reserved_tiles ->
         ix = Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end)
-        IO.inspect({tile_name,-ix-1})
         Enum.at(state.dead_wall, -ix-1)
       is_binary(tile_name) && Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
       is_integer(tile_name) -> Enum.at(state.dead_wall, tile_name)
