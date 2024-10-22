@@ -468,11 +468,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "bet_points"            ->
         amount = Enum.at(opts, 0, 1000)
         amount = case amount do
-          "half" ->
-            # half rounded up to the nearest 100
-            nominal = Integer.floor_div(state.players[context.seat].score, 100)
-            # floor_div rounds towards -infinity, so this is effectively ceil(nominal/2) * 100
-            -Integer.floor_div(-nominal, 2) * 100
+          "half" -> Utils.half_rounded_up(state.players[context.seat].score)
           _ when is_integer(amount) -> amount
           _ ->
             IO.inspect("Unknown amount #{inspect(amount)}")

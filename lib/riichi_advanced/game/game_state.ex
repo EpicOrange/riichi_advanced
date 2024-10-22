@@ -398,7 +398,7 @@ defmodule RiichiAdvanced.GameState do
     winner = %{
       seat: seat,
       player: state.players[seat],
-      winning_tile: winning_tile, # for display use only
+      winning_tile: winning_tile,
       winning_tile_text: winning_tile_text, # for display use only
       win_source: win_source,
       point_name: Map.get(state.rules, "point_name", ""),

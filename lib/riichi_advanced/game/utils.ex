@@ -260,4 +260,11 @@ defmodule Utils do
     if value == trunc(value) do trunc(value) else value end
   end
 
+  def half_rounded_up(value) do
+    # half rounded up to the nearest 100
+    nominal = Integer.floor_div(value, 100)
+    # floor_div rounds towards -infinity, so this is effectively ceil(nominal/2) * 100
+    -Integer.floor_div(-nominal, 2) * 100
+  end
+
 end

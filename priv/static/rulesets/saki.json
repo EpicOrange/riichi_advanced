@@ -55,7 +55,8 @@
     "takimi-haru",
     "toyouko-momoko",
     "usuzumi-hatsumi",
-    "yae-kobashiri"
+    "yae-kobashiri",
+    "yoshitome-miharu"
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -1101,6 +1102,48 @@
       "when": [
         {"name": "status", "opts": ["yae_kobashiri_double_riichi"]}
       ]
+    },
+    {
+      "display_name": "Voided Suit",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["yoshitome-miharu"]},
+        [
+          [
+            {"name": "status", "opts": ["yoshitome_miharu_manzu"]},
+            {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+          ],
+          [
+            {"name": "status", "opts": ["yoshitome_miharu_pinzu"]},
+            {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+          ],
+          [
+            {"name": "status", "opts": ["yoshitome_miharu_souzu"]},
+            {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]}
+          ]
+        ]
+      ]
+    },
+    {
+      "display_name": "Voided Suit",
+      "value": 1,
+      "when": [
+        {"name": "status", "opts": ["yoshitome-miharu", "yoshitome_miharu_double"]},
+        [
+          [
+            {"name": "status", "opts": ["yoshitome_miharu_manzu"]},
+            {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+          ],
+          [
+            {"name": "status", "opts": ["yoshitome_miharu_pinzu"]},
+            {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+          ],
+          [
+            {"name": "status", "opts": ["yoshitome_miharu_souzu"]},
+            {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]}
+          ]
+        ]
+      ]
     }
   ],
   "yakuman": [
@@ -2043,6 +2086,7 @@
       ["big_text", "Someya Mako: extra turn!"],
       ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
     ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["yoshitome-miharu"]}], [["add_counter", "num_discards", 1]]]]],
     ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["unset_status", "discard_facedown"], ["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
   "after_start": {
@@ -3119,6 +3163,57 @@
       ],
       "actions": [["set_status", "yae_kobashiri_skip"], ["resume_deferred_actions"]],
       "unskippable": true
+    },
+    "yoshitome_miharu_manzu": {
+      "display_name": "Manzu",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["yoshitome-miharu", "ready"]},
+        {"name": "status_missing", "opts": ["match_start", "yoshitome_miharu_manzu", "yoshitome_miharu_pinzu", "yoshitome_miharu_souzu"]},
+        {"name": "counter_at_most", "opts": ["num_discards", 6]}
+      ],
+      "actions": [
+        ["big_text", "Yoshitome Miharu: manzu!"],
+        ["set_status", "yoshitome_miharu_manzu"],
+        ["when", [{"name": "status", "opts": ["discards_empty"]}], [["set_status", "yoshitome_miharu_double"]]],
+        ["push_message", "declared manzu as their void suit (Yoshitome Miharu)"]
+      ]
+    },
+    "yoshitome_miharu_pinzu": {
+      "display_name": "Pinzu",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["yoshitome-miharu", "ready"]},
+        {"name": "status_missing", "opts": ["match_start", "yoshitome_miharu_manzu", "yoshitome_miharu_pinzu", "yoshitome_miharu_souzu"]},
+        {"name": "counter_at_most", "opts": ["num_discards", 6]}
+      ],
+      "actions": [
+        ["big_text", "Yoshitome Miharu: pinzu!"],
+        ["set_status", "yoshitome_miharu_pinzu"],
+        ["when", [{"name": "status", "opts": ["discards_empty"]}], [["set_status", "yoshitome_miharu_double"]]],
+        ["push_message", "declared pinzu as their void suit (Yoshitome Miharu)"]
+      ]
+    },
+    "yoshitome_miharu_souzu": {
+      "display_name": "Souzu",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["yoshitome-miharu", "ready"]},
+        {"name": "status_missing", "opts": ["match_start", "yoshitome_miharu_manzu", "yoshitome_miharu_pinzu", "yoshitome_miharu_souzu"]},
+        {"name": "counter_at_most", "opts": ["num_discards", 6]}
+      ],
+      "actions": [
+        ["big_text", "Yoshitome Miharu: souzu!"],
+        ["set_status", "yoshitome_miharu_souzu"],
+        ["when", [{"name": "status", "opts": ["discards_empty"]}], [["set_status", "yoshitome_miharu_double"]]],
+        ["push_message", "declared souzu as their void suit (Yoshitome Miharu)"]
+      ]
     },
     "chii": {
       "display_name": "Chii",

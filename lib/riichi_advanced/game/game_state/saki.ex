@@ -108,10 +108,7 @@ defmodule RiichiAdvanced.GameState.Saki do
 
     "usuzumi-hatsumi" => "Usuzumi Hatsumi",
     "yae-kobashiri" => "Yae Kobashiri",
-    
-    # TODO
-    # "yoshitome-miharu => "Yoshitome Miharu",
-    
+    "yoshitome-miharu" => "Yoshitome Miharu",
     "yumeno-maho" => "Yumeno Maho",
   }
 
