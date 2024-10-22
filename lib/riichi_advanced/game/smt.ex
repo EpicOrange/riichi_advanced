@@ -1,5 +1,5 @@
 defmodule RiichiAdvanced.SMT do
-  @print_smt true
+  @print_smt false
 
   @boilerplate """
                (set-logic QF_FD)

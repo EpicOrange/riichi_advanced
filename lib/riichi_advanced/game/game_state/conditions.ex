@@ -36,6 +36,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
+          "all_calls" -> [{hand, calls ++ Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)}]
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
           _ -> [{[context.tile], []}]

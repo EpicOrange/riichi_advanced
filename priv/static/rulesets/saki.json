@@ -994,122 +994,97 @@
     {
       "display_name": "Facedown tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["tsuruta-himeko"]},
-        {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}
-      ]
+      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}]
     },
     {
       "display_name": "Facedown tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["tsuruta-himeko"]},
-        {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}
-      ]
+      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}]
     },
     {
       "display_name": "Facedown tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["tsuruta-himeko"]},
-        {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}
-      ]
+      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}]
     },
     {
       "display_name": "Facedown tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["tsuruta-himeko"]},
-        {"name": "counter_at_least", "opts": ["facedown_tiles", 7]}
-      ]
+      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 7]}]
     },
     {
       "display_name": "Facedown tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["tsuruta-himeko"]},
-        {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}
-      ]
+      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}]
     },
     {
       "display_name": "Aside tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["suehara-kyouko"]},
-        {"name": "counter_at_least", "opts": ["aside_tiles", 3]}
-      ]
+      "when": [{"name": "status", "opts": ["suehara-kyouko"]}, {"name": "counter_at_least", "opts": ["aside_tiles", 3]}]
     },
     {
       "display_name": "Aside tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["suehara-kyouko"]},
-        {"name": "counter_at_least", "opts": ["aside_tiles", 6]}
-      ]
+      "when": [{"name": "status", "opts": ["suehara-kyouko"]}, {"name": "counter_at_least", "opts": ["aside_tiles", 6]}]
     },
     {
       "display_name": "Aside tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["suehara-kyouko"]},
-        {"name": "counter_at_least", "opts": ["aside_tiles", 9]}
-      ]
+      "when": [{"name": "status", "opts": ["suehara-kyouko"]}, {"name": "counter_at_least", "opts": ["aside_tiles", 9]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 5]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 5]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 10]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 10]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 15]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 15]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 20]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 20]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 25]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 25]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 30]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 30]}]
     },
     {
       "display_name": "Revealed tiles",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["iwato-kasumi"]},
-        {"name": "counter_at_least", "opts": ["revealed_suit", 35]}
-      ]
+      "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 35]}]
+    },
+    {
+      "display_name": "Winds",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}]
+    },
+    {
+      "display_name": "Winds",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 2]]]]}]
+    },
+    {
+      "display_name": "Winds",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 3]]]]}]
+    },
+    {
+      "display_name": "Winds",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 4]]]]}]
     }
   ],
   "yakuman": [
