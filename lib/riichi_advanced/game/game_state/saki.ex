@@ -26,10 +26,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "hanada-kirame" => "Hanada Kirame",
     "hao-huiyu" => "Hao Huiyu",
     "haramura-nodoka" => "Haramura Nodoka",
-
-    # need to figure out how to detect when no one calls a tile
-    # "hirose-sumire" => "Hirose Sumire",
-
+    "hirose-sumire" => "Hirose Sumire",
     "ikeda-kana" => "Ikeda Kana",
     "inoue-jun" => "Inoue Jun",
     "iwadate-yuan" => "Iwadate Yuan",
@@ -95,7 +92,6 @@ defmodule RiichiAdvanced.GameState.Saki do
     "toyouko-momoko" => "Toyouko Momoko",
 
     # need to implement a place to put scryed tiles (probably just use aside tiles)
-    # TODO
     # "tsujigaito-satoha" => "Tsujigaito Satoha",
 
     "tsuruta-himeko" => "Tsuruta Himeko",

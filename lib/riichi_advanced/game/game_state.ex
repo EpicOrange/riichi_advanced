@@ -1181,7 +1181,7 @@ defmodule RiichiAdvanced.GameState do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
       state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "" })
-      actions = [["play_tile", tile, index], ["advance_turn"]]
+      actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
       state = Actions.submit_actions(state, seat, "play_tile", actions)
       state = broadcast_state_change(state)
       state

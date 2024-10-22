@@ -405,6 +405,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
       "win_by_call"           -> win(state, context.seat, get_last_call_action(state).called_tile, :call)
       "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
+      "win_by_second_visible_discard" ->
+        seat = get_last_discard_action(state).seat
+        tile = state.players[seat].pond
+        |> Enum.reverse()
+        |> Enum.drop(1)
+        |> Enum.find(fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
+        win(state, context.seat, tile, :discard)
       "ryuukyoku"             -> exhaustive_draw(state)
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
       "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
@@ -782,6 +789,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = update_player(state, context.seat, &%Player{ &1 | draw: &1.draw ++ [Utils.add_attr(last_discard_action.tile, ["draw"])] })
           state = update_in(state.players[last_discard_action.seat].pond, &Enum.drop(&1, -1))
           state
+        else state end
+      "check_discard_passed" ->
+        last_action = get_last_action(state)
+        if last_action != nil && last_action.action == :discard && Map.has_key?(state.rules, "after_discard_passed") do
+          run_actions(state, state.rules["after_discard_passed"]["actions"], %{seat: context.seat})
         else state end
       _                 ->
         IO.puts("Unhandled action #{action}")
