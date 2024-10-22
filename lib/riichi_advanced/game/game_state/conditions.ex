@@ -30,6 +30,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "toimen_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :toimen)].pond, -1), calls}]
           "kamicha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :kamicha)].pond, -1), calls}]
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
+          "tile" -> [{hand ++ [context.tile], calls}]
           "winning_tile" ->
             winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
             [{hand ++ [winning_tile], calls}]
@@ -39,6 +40,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_calls" -> [{hand, calls ++ Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)}]
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
+          "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
           _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()

@@ -36,9 +36,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     # need to implement marking (and swapping) open melds
     # "kajiki-yumi" => "Kajiki Yumi",
 
-    # need to figure out how to detect when no one calls a tile
-    # "kainou-yoshiko" => "Kainou Yoshiko",
-
+    "kainou-yoshiko" => "Kainou Yoshiko",
     "kakura-kurumi" => "Kakura Kurumi",
 
     # need to implement seeing which player has the end of the wall
