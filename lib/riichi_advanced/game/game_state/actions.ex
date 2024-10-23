@@ -326,6 +326,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
       ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[context.seat].pond, [:"1x"])
+      ["num_facedown_tiles_others" | _opts] ->
+        for {seat, player} <- state.players, seat != context.seat do
+          Utils.count_tiles(player.pond, [:"1x"])
+        end |> Enum.sum()
       ["num_revealed_tiles_all" | _opts] ->
         for {_seat, player} <- state.players do
           Utils.count_tiles(player.hand ++ player.draw, [{:any, ["revealed"]}])
@@ -671,7 +675,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = Marking.mark_done(state, context.seat)
         state
       "pon_marked_discard" ->
-        {called_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
+        {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
         # replace pond tile with blank
         state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, :"2x") })
@@ -683,10 +687,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         # make call
         call_style = %{kamicha: ["call_sideways", 0, 1], toimen: [0, "call_sideways", 1], shimocha: [0, 1, "call_sideways"]}
         style = call_style[Utils.get_relative_seat(context.seat, discard_seat)]
-        call = style_call(style, call_choice, called_tile)
+        call = style_call(style, call_choice, discard_tile)
         call = {"pon", call}
         state = update_player(state, context.seat, &%Player{ &1 | calls: &1.calls ++ [call] })
-        state = update_action(state, context.seat, :call,  %{from: discard_seat, called_tile: called_tile, other_tiles: call_choice, call_name: "pon"})
+        state = update_action(state, context.seat, :call,  %{from: discard_seat, called_tile: discard_tile, other_tiles: call_choice, call_name: "pon"})
         state = if Map.has_key?(state.rules, "after_call") do
           run_actions(state, state.rules["after_call"]["actions"], %{seat: context.seat, callee: discard_seat, caller: context.seat, call: call})
         else state end
@@ -713,6 +717,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = if Map.has_key?(state.rules, "after_draw") do
           run_actions(state, state.rules["after_draw"]["actions"], %{seat: context.seat})
         else state end
+
+        state
+      "flip_marked_discard_facedown" -> 
+        {_discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
+
+        state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+
+        state = Marking.mark_done(state, context.seat)
 
         state
       "clear_marking"         -> Marking.mark_done(state, context.seat)

@@ -1034,6 +1034,71 @@
       "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}]
     },
     {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 10]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 12]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 14]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 16]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 18]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 20]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 22]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 24]}]
+    },
+    {
+      "display_name": "Facedown tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 26]}]
+    },
+    {
       "display_name": "Aside tiles",
       "value": 1,
       "when": [{"name": "status", "opts": ["suehara-kyouko"]}, {"name": "counter_at_least", "opts": ["aside_tiles", 3]}]
@@ -2004,7 +2069,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-                ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
+                ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done"],
                 ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 // check if anyone's placement is not the same as the one they are tagged with
@@ -2166,7 +2231,7 @@
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
       ["unset_status", "nagashi"],
-      ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
+      ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done"],
       ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
       ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
       ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
@@ -2542,6 +2607,7 @@
                 ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["nelly-virsaladze"]}], [["set_discarder_status", "nelly_virsaladze_take_bets"]]],
                 ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["set_caller_status", "nelly_virsaladze_take_bets"]]],
                 ["when", [{"name": "status", "opts": ["tsuruta-himeko"]}], [["add_counter", "facedown_tiles", "num_facedown_tiles"]]],
+                ["when", [{"name": "status", "opts": ["kajiki-yumi"]}], [["add_counter", "facedown_tiles", "num_facedown_tiles_others"]]],
                 ["when", [{"name": "status", "opts": ["suehara-kyouko"]}], [["add_counter", "aside_tiles", "num_aside"]]],
                 ["when", [{"name": "status", "opts": ["iwato-kasumi"]}], [["add_counter", "revealed_suit", "num_revealed_tiles_all"]]],
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_manzu"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "manzu"]]],
@@ -3632,7 +3698,8 @@
             {"name": "discarder_status", "opts": ["just_reached"]},
             {"name": "not_discarder_status", "opts": ["discard_passed"]}
           ],
-          {"name": "anyone_status", "opts": ["chii", "ready"]}
+          {"name": "anyone_status", "opts": ["chii", "ready"]},
+          {"name": "anyone_status", "opts": ["kajiki_yumi_facedown_done"]}
         ]
       ],
       "actions": [
@@ -3818,6 +3885,7 @@
       "show_when": [
         "all_saki_cards_drafted",
         "our_turn",
+        "not_just_discarded",
         {"name": "status", "opts": ["kajiki-yumi", "just_called", "ready"]},
         {"name": "status_missing", "opts": ["just_swapped"]},
         {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
@@ -3835,9 +3903,29 @@
           ["swap_marked_calls"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
-        ]]
+        ]],
+        ["when", [{"name": "status_missing", "opts": ["kajiki_yumi_facedown_done"]}], [["recalculate_buttons"]]] // allow facedown to pop up
+      ]
+    },
+    "kajiki_yumi_facedown": {
+      "display_name": "Flip any discard facedown",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["kajiki-yumi", "just_called", "ready"]},
+        {"name": "status_missing", "opts": ["kajiki_yumi_facedown_done"]},
+        "visible_discard_exists"
       ],
-      "unskippable": true // temp
+      "actions": [
+        ["big_text", "Kajiki Yumi: facedown!"],
+        ["mark", [["discard", 1, ["visible"]]]],
+        ["push_message", "flipped a discard facedown (Kajiki Yumi)"],
+        ["flip_marked_discard_facedown"],
+        ["set_status", "kajiki_yumi_facedown_done"],
+        ["when", [{"name": "status_missing", "opts": ["just_swapped"]}], [["recalculate_buttons"]]] // allow swap to pop up
+      ],
+      "unskippable": true
     },
     "chii": {
       "display_name": "Chii",
@@ -3874,7 +3962,7 @@
         ]]
       ]
     },
-    "maya_yukiko": {
+    "maya_yukiko_chii": {
       "display_name": "Chii with priority",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_name": "chii",

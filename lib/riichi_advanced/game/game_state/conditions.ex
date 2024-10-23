@@ -222,6 +222,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
         else false end
       "last_discard_exists" ->
         last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
+      "visible_discard_exists" ->
+        last_discard_action != nil && Enum.any?(state.players, fn {_seat, player} -> Enum.any?(player.pond, fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end) end)
       "second_last_visible_discard_exists" ->
         last_discard_action != nil && Enum.any?(Enum.drop(state.players[last_discard_action.seat].pond, -1), fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
       "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards

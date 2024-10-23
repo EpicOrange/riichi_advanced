@@ -116,16 +116,16 @@ defmodule RiichiAdvanced.GameState.Marking do
             # TODO don't hardcode these
             call_type in ["chii", "pon", "daiminkan", "kakan"]
           end
-        "7z"                -> tile == :"7z"
+        "7z"                -> Utils.same_tile(tile, :"7z")
         "wind"              -> Riichi.is_wind?(tile)
         "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
+        "visible"           -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0
         "not_riichi"        -> 
           case source do
             :discard -> "riichi" not in state.players[marking_player].status || index >= length(state.players[marking_player].hand)
             _        -> true
           end
-
         "last_discard"      ->
           case source do
             :discard ->
