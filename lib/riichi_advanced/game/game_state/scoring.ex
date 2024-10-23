@@ -52,14 +52,22 @@ defmodule RiichiAdvanced.GameState.Scoring do
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
       minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, assigned_winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases)
-      points = for yaku <- yaku_list, reduce: 0 do
-        points when points >= min_points -> points
-        points -> case get_yaku(state, [yaku], seat, assigned_winning_tile, win_source, minipoints) do
-          []             -> points
-          [{_name, pts}] -> points + pts
-        end
+      case min_points do
+        :declared ->
+          yakus = get_yaku(state, yaku_list, seat, assigned_winning_tile, win_source, minipoints)
+          |> Enum.map(fn {name, _value} -> name end)
+          IO.inspect(yakus)
+          Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in yakus end)
+        _ -> 
+          points = for yaku <- yaku_list, reduce: 0 do
+            points when points >= min_points -> points
+            points -> case get_yaku(state, [yaku], seat, assigned_winning_tile, win_source, minipoints) do
+              []               -> points
+              [{_name, value}] -> points + value
+            end
+          end
+          points >= min_points
       end
-      points >= min_points
     end)
   end
 

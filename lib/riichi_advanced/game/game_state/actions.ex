@@ -863,6 +863,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
         state = update_in(state.wall_index, & &1 + length(tiles))
         state
+      "choose_yaku"     ->
+        state = update_player(state, context.seat, &%Player{ &1 | declared_yaku: [] })
+        notify_ai_declare_yaku(state, context.seat)
+        state
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

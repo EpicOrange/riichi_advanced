@@ -164,7 +164,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
-        <div class="buttons">
+        <div class="buttons" :if={@state.players[@seat].declared_yaku != []}>
           <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects">Cancel</button>
@@ -228,6 +228,12 @@ defmodule RiichiAdvancedWeb.GameLive do
         num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
         marking={@state.marking[@seat]}
         :if={@state.players[@seat].num_scryed_tiles > 0} />
+      <.live_component module={RiichiAdvancedWeb.DeclareYakuComponent}
+        id="declare-yaku"
+        game_state={@game_state}
+        viewer={@viewer}
+        yakus={Map.get(@state.rules, "declarable_yaku", [])}
+        :if={@state.players[@seat].declared_yaku == []} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>

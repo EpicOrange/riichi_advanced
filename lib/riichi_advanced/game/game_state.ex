@@ -34,6 +34,7 @@ defmodule Player do
     riichi_discard_indices: nil,
     hand_revealed: false,
     num_scryed_tiles: 0,
+    declared_yaku: nil,
     last_discard: nil, # for animation purposes only
     winning_hand: nil,
     ready: false
@@ -858,6 +859,14 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def notify_ai_declare_yaku(state, seat) do
+    if state.game_active do
+      if is_pid(Map.get(state, seat)) do
+        send(Map.get(state, seat), {:declare_yaku, %{player: state.players[seat]}})
+      end
+    end
+  end
+
   def notify_ai_call_buttons(state, seat) do
     if state.game_active do
       call_choices = state.players[seat].call_buttons
@@ -872,7 +881,7 @@ defmodule RiichiAdvanced.GameState do
     if state.game_active do
       if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
         # IO.puts("Notifying #{seat} AI about marking")
-        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, marked_objects: state.marking[seat]}})
+        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
       end
     end
   end
@@ -1311,6 +1320,17 @@ defmodule RiichiAdvanced.GameState do
     state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
     notify_ai(state)
 
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:declare_yaku, seat, yakus}, state) do
+    state = update_player(state, seat, &%Player{ &1 | declared_yaku: yakus })
+    prefix = %{text: "Player #{seat} #{state.players[seat].nickname} declared that they will win with at least the following yaku:"}
+    yaku_string = Enum.map(yakus, fn yaku -> %{bold: true, text: yaku} end)
+    suffix = %{text: "(Shimizudani Ryuuka)"}
+    push_message(state, [prefix] ++ yaku_string ++ [suffix])
+    state = Buttons.recalculate_buttons(state)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

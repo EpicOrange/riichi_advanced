@@ -73,10 +73,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "sawamura-tomoki" => "Sawamura Tomoki",
     "senoo-kaori" => "Senoo Kaori",
     "shibuya-takami" => "Shibuya Takami",
-
-    # need some UI for selecting yaku
-    # "shimizudani-ryuuka" => "Shimizudani Ryuuka",
-
+    "shimizudani-ryuuka" => "Shimizudani Ryuuka",
     "shirouzu-mairu" => "Shirouzu Mairu",
     "shishihara-sawaya" => "Shishihara Sawaya",
     "someya-mako" => "Someya Mako",

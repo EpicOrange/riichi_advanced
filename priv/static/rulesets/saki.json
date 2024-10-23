@@ -49,6 +49,7 @@
     "sawamura-tomoki",
     "senoo-kaori",
     "shibuya-takami",
+    "shimizudani-ryuuka",
     "shirouzu-mairu",
     "shishihara-sawaya",
     "someya-mako",
@@ -1385,6 +1386,11 @@
       "display_name": "Aside tiles",
       "value": 1,
       "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 18]}]
+    },
+    {
+      "display_name": "Ryuuka Tsumo",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shimizudani-ryuuka"]}, "won_by_draw"]
     }
   ],
   "yakuman": [
@@ -1821,6 +1827,51 @@
       "value": 1,
       "when": [{"name": "status", "opts": ["senoo-kaori"]}, "has_no_yaku"]
     }
+  ],
+  "declarable_yaku": [
+    "Riichi",
+    "Tsumo",
+    "Ippatsu",
+    "Chankan",
+    "Rinshan",
+    "Haitei",
+    "Houtei",
+    "Pinfu",
+    "Tanyao",
+    "Iipeikou",
+    "Seat Wind",
+    "Round Wind",
+    "Haku",
+    "Hatsu",
+    "Chun",
+    "Double Riichi",
+    "Chiitoitsu",
+    "Chanta",
+    "Ittsu",
+    "Sanshoku",
+    "Sanshoku Doukou",
+    "Sankantsu",
+    "Toitoi",
+    "Sanankou",
+    "Shousangen",
+    "Honroutou",
+    "Ryanpeikou",
+    "Junchan",
+    "Honitsu",
+    "Chinitsu",
+    "Tenhou",
+    "Chiihou",
+    "Renhou",
+    "Daisangen",
+    "Suuankou",
+    "Tsuuiisou",
+    "Ryuuiisou",
+    "Chinroutou",
+    "Chuurenpoutou",
+    "Kokushi Musou",
+    "Daisuushii",
+    "Shousuushii",
+    "Suukantsu"
   ],
   "yaku_alt_names": {
     "Riichi": "立直",
@@ -3153,7 +3204,8 @@
         ["mark", [["aside", 1, ["self"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from their aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"]
+        ["draw_marked_aside"],
+        ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
     },
@@ -3172,7 +3224,8 @@
         ["mark", [["aside", 1, ["shimocha"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from shimocha's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"]
+        ["draw_marked_aside"],
+        ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
     },
@@ -3191,7 +3244,8 @@
         ["mark", [["aside", 1, ["toimen"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from toimen's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"]
+        ["draw_marked_aside"],
+        ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
     },
@@ -3210,7 +3264,8 @@
         ["mark", [["aside", 1, ["kamicha"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from kamicha's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"]
+        ["draw_marked_aside"],
+        ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
     },
@@ -3736,6 +3791,56 @@
       ],
       "unskippable": true
     },
+    "shimizudani_ryuuka_1": {
+      "display_name": "Set 10 tiles aside faceup",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status", "opts": ["shimizudani-ryuuka"]},
+        {"name": "status_missing", "opts": ["match_start", "shimizudani-ryuuka_exhausted"]}
+      ],
+      "actions": [
+        ["draw_aside", 10],
+        ["add_attr", ["aside"], ["revealed"]],
+        ["set_status", "shimizudani-ryuuka_exhausted"],
+        ["push_message", "set ten tiles aside (Shimizudani Ryuuka)"]
+      ],
+      "unskippable": true
+    },
+    "shimizudani_ryuuka_2": {
+      "display_name": "Declare yaku",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status", "opts": ["shimizudani-ryuuka", "shimizudani-ryuuka_exhausted"]},
+        {"name": "status_missing", "opts": ["match_start", "shimizudani-ryuuka_exhausted2"]}
+      ],
+      "actions": [
+        ["set_status", "shimizudani-ryuuka_exhausted2"],
+        ["push_message", "is choosing yaku (Shimizudani Ryuuka)"],
+        ["choose_yaku"]
+      ],
+      "unskippable": true
+    },
+    "shimizudani_ryuuka_draw": {
+      "display_name": "Draw from aside",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["shimizudani-ryuuka", "shimizudani-ryuuka_exhausted2"]},
+        ["not_just_called", {"name": "status", "opts": ["kan"]}],
+        "has_aside",
+        "not_has_draw"
+      ],
+      "actions": [
+        ["mark", [["aside", 1, ["self"]]]],
+        ["unset_status", "kan"],
+        ["draw_marked_aside"],
+        ["recalculate_buttons"] // riichi, tsumo, etc
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -4069,7 +4174,15 @@
           {"name": "match", "opts": [["aside_unique", "last_discard"], [["nojoker", [["pair"], 1]]]]}
         ],
         [
-          {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]},
+          [
+            {"name": "status_missing", "opts": ["shimizudani-ryuuka"]},
+            {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]}
+          ],
+          [
+            {"name": "status", "opts": ["shimizudani-ryuuka"]},
+            "not_has_aside",
+            {"name": "has_declared_yaku_with_discard", "opts": ["yaku", "yakuman"]}
+          ],
           {"name": "status", "opts": ["senoo-kaori"]}
         ],
         [
@@ -4158,6 +4271,14 @@
           {"name": "match", "opts": [["aside_unique", "last_called_tile"], [["nojoker", [["pair"], 1]]]]}
         ],
         [
+          {"name": "status_missing", "opts": ["shimizudani-ryuuka"]},
+          [
+            {"name": "status", "opts": ["shimizudani-ryuuka"]},
+            "not_has_aside",
+            {"name": "has_declared_yaku_with_call", "opts": ["yaku", "yakuman"]}
+          ]
+        ],
+        [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
            [
              {"name": "seat_is", "opts": ["east"]},
@@ -4231,7 +4352,18 @@
             {"name": "match", "opts": [["aside_unique", "draw"], [["nojoker", [["pair"], 1]]]]}
           ]
         ],
-        {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]},
+        [
+          [
+            {"name": "status_missing", "opts": ["shimizudani-ryuuka"]},
+            {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]}
+          ],
+          [
+            {"name": "status", "opts": ["shimizudani-ryuuka"]},
+            "not_has_aside",
+            {"name": "has_declared_yaku_with_hand", "opts": ["yaku", "yakuman"]}
+          ],
+          {"name": "status", "opts": ["senoo-kaori"]}
+        ],
         [
            {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
            [

@@ -186,7 +186,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {:noreply, state}
   end
 
-  def handle_info({:mark_tiles, %{player: player, players: players, marked_objects: marked_objects}}, state) do
+  def handle_info({:mark_tiles, %{player: player, players: players, revealed_tiles: revealed_tiles, wall: wall, marked_objects: marked_objects}}, state) do
     if state.initialized do
       state = %{ state | player: player }
       IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
@@ -195,29 +195,49 @@ defmodule RiichiAdvanced.AIPlayer do
       # TODO support marking other players' hand and/or discards
       Process.sleep(trunc(500 / @ai_speed))
       if Map.has_key?(marked_objects, :hand) do
-        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, &1}) end)
-        |> Enum.with_index()
+        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, &1}) |> Enum.with_index() end)
         |> Enum.filter(fn {{seat, _tile}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, :hand}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.hand.needed)
         |> Enum.each(fn {{seat, _tile}, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, :hand}) end)
       end
       if Map.has_key?(marked_objects, :discard) do
-        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, &1}) end)
-        |> Enum.with_index()
+        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, &1}) |> Enum.with_index() end)
         |> Enum.filter(fn {{seat, _tile}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, :discard}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.discard.needed)
         |> Enum.each(fn {{seat, _tile}, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, :discard}) end)
       end
       if Map.has_key?(marked_objects, :aside) do
-        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, &1}) end)
-        |> Enum.with_index()
+        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, &1}) |> Enum.with_index() end)
         |> Enum.filter(fn {{seat, _tile}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, :aside}) end)
         |> Enum.shuffle()
         |> Enum.take(marked_objects.aside.needed)
         |> Enum.each(fn {{seat, _tile}, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, :aside}) end)
       end
+      if Map.has_key?(marked_objects, :revealed_tile) do
+        revealed_tiles |> Enum.with_index()
+        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, state.seat, i, :revealed_tile}) end)
+        |> Enum.shuffle()
+        |> Enum.take(marked_objects.revealed_tile.needed)
+        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :revealed_tile}) end)
+      end
+      if Map.has_key?(marked_objects, :scry) do
+        wall |> Enum.take(player.num_scryed_tiles) |> Enum.with_index()
+        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, state.seat, i, :scry}) end)
+        |> Enum.shuffle()
+        |> Enum.take(marked_objects.scry.needed)
+        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :scry}) end)
+      end
+    end
+    {:noreply, state}
+  end
+
+  def handle_info({:declare_yaku, %{player: player}}, state) do
+    if state.initialized do
+      state = %{ state | player: player }
+      IO.puts(" >> #{state.seat}: It's my turn to declare yaku!")
+      GenServer.cast(state.game_state, {:declare_yaku, state.seat, ["Riichi"]})
     end
     {:noreply, state}
   end
