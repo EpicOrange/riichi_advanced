@@ -27,6 +27,7 @@
     "inoue-jun",
     "iwadate-yuan",
     "iwato-kasumi",
+    "kajiki-yumi",
     "jindai-komaki",
     "kainou-yoshiko",
     "kakura-kurumi",
@@ -2249,7 +2250,8 @@
           ["set_tile_alias", ["0s"], ["5s"]]
         ]]
       ]],
-      ["unless", [{"name": "status", "opts": ["kan"]}], [["set_status", "ready"]]]
+      ["unless", [{"name": "status", "opts": ["kan"]}], [["set_status", "ready"]]],
+      ["recalculate_buttons"] // allow kajiki yumi's ability to pop up
     ]
   },
   "after_draw": {
@@ -3069,36 +3071,6 @@
       "actions": [["set_status", "motouchi_naruka_skip_interrupt"], ["resume_deferred_actions"]],
       "unskippable": true
     },
-    "maya_yukiko": {
-      "display_name": "Chii with priority",
-      "call": [[-2, -1], [-1, 1], [1, 2]],
-      "call_name": "chii",
-      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
-      "show_when": [
-        "all_saki_cards_drafted",
-        "not_our_turn",
-        {"name": "status", "opts": ["maya-yukiko"]},
-        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
-        "not_no_tiles_remaining",
-        "someone_else_just_discarded",
-        {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
-        "call_available"
-      ],
-      "actions": [
-        ["big_text", "Maya Yukiko: chii!"],
-        ["set_status", "about_to_call", "chii"],
-        ["recalculate_buttons"], // allow interrupt
-        ["unset_status", "about_to_call"],
-        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
-          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
-          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
-          ["push_message", "called chii with priority (Maya Yukiko)"]
-        ]]
-      ],
-      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
-    },
     "shirouzu_mairu_1_manzu": {
       "display_name": "Manzu",
       "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
@@ -3841,6 +3813,32 @@
       ],
       "unskippable": true
     },
+    "kajiki_yumi_swap": {
+      "display_name": "Swap open melds",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status", "opts": ["kajiki-yumi", "just_called", "ready"]},
+        {"name": "status_missing", "opts": ["just_swapped"]},
+        {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+        {"name": "anyone", "opts": ["not_our_turn", {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]}
+      ],
+      "actions": [
+        ["big_text", "Kajiki Yumi: swap!"],
+        ["set_status", "just_swapped"],
+        ["mark", [["call", 1, ["self", "open"]], ["call", 1, ["others", "open"]]]],
+        ["push_message", "swapped one of their open melds with another's (Kajiki Yumi)"],
+        ["set_status", "about_to_swap"],
+        ["recalculate_buttons"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
+          ["swap_marked_calls"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["recalculate_buttons"] // allow tsumo to pop up
+        ]]
+      ],
+      "unskippable": true // temp
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -3849,6 +3847,7 @@
       "show_when": [
         "all_saki_cards_drafted",
         "not_our_turn",
+        {"name": "not_anyone_status", "opts": ["about_to_call"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
         "kamicha_discarded",
@@ -3875,6 +3874,37 @@
         ]]
       ]
     },
+    "maya_yukiko": {
+      "display_name": "Chii with priority",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_name": "chii",
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "status", "opts": ["maya-yukiko"]},
+        {"name": "not_anyone_status", "opts": ["about_to_call"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "someone_else_just_discarded",
+        {"name": "not_discarder_status", "opts": ["discard_passed"]},
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        "call_available"
+      ],
+      "actions": [
+        ["big_text", "Maya Yukiko: chii!"],
+        ["set_status", "about_to_call", "chii"],
+        ["recalculate_buttons"], // allow interrupt
+        ["unset_status", "about_to_call"],
+        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
+          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+          ["push_message", "called chii with priority (Maya Yukiko)"]
+        ]]
+      ],
+      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+    },
     "pon": {
       "display_name": "Pon",
       "call": [[0, 0]],
@@ -3883,6 +3913,7 @@
       "show_when": [
         "all_saki_cards_drafted",
         "not_our_turn",
+        {"name": "not_anyone_status", "opts": ["about_to_call"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining", "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
@@ -3923,6 +3954,7 @@
       "show_when": [
         "all_saki_cards_drafted",
         "not_our_turn",
+        {"name": "not_anyone_status", "opts": ["about_to_call"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
         "someone_else_just_discarded",

@@ -18,7 +18,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {:ok, state}
   end
 
-  def choose_playable_tile(tiles, playables) do
+  defp choose_playable_tile(tiles, playables) do
     # prefer outer discards
     {yaochuuhai, rest} = Enum.split_with(tiles, &Riichi.is_yaochuuhai?/1)
     {tiles28, rest} = Enum.split_with(rest, &Riichi.is_num?(&1, 2) || Riichi.is_num?(&1, 8)) 
@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  def choose_discard(state, player, playables) do
+  defp choose_discard(state, player, playables) do
     hand = player.hand ++ player.draw
     calls = player.calls
     ordering = player.tile_ordering
@@ -67,6 +67,21 @@ defmodule RiichiAdvanced.AIPlayer do
       |> choose_playable_tile(playables)
       {ret, 6}
     else {ret, shanten} end
+  end
+
+  defp get_mark_choices(source, players, revealed_tiles, num_scryed_tiles, wall) do
+    case source do
+      :done          -> []
+      :hand          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, source, &1}) |> Enum.with_index() end)
+      :call          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.calls, &{seat, source, &1}) |> Enum.with_index() end)
+      :discard       -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, source, &1}) |> Enum.with_index() end)
+      :aside         -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, source, &1}) |> Enum.with_index() end)
+      :revealed_tile -> revealed_tiles |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
+      :scry          -> wall |> Enum.take(num_scryed_tiles) |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
+      _              ->
+        IO.puts("AI does not recognize the mark source #{inspect(source)}")
+        {nil, nil, nil}
+    end 
   end
 
   def handle_info(:initialize, state) do
@@ -145,6 +160,7 @@ defmodule RiichiAdvanced.AIPlayer do
       else
         # pick these (in order of precedence)
         cond do
+          "chii" in player.buttons -> "chii"
           "ron" in player.buttons -> "ron"
           "tsumo" in player.buttons -> "tsumo"
           "hu" in player.buttons -> "hu"
@@ -159,8 +175,10 @@ defmodule RiichiAdvanced.AIPlayer do
       # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
       Process.sleep(trunc(500 / @ai_speed))
       GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
+      {:noreply, state}
+    else
+      {:noreply, state}
     end
-    {:noreply, state}
   end
 
   def handle_info({:call_buttons, %{player: player}}, state) do
@@ -182,55 +200,33 @@ defmodule RiichiAdvanced.AIPlayer do
         Process.sleep(trunc(500 / @ai_speed))
         GenServer.cast(state.game_state, {:run_deferred_actions, %{seat: state.seat, choice: choice}})
       end
+      {:noreply, state}
+    else
+      {:noreply, state}
     end
-    {:noreply, state}
   end
 
   def handle_info({:mark_tiles, %{player: player, players: players, revealed_tiles: revealed_tiles, wall: wall, marked_objects: marked_objects}}, state) do
     if state.initialized do
       state = %{ state | player: player }
       IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
-      # for each source, generate all possible choices and pick n of them
-      # note: we only support marking our own hand and discards, for now
-      # TODO support marking other players' hand and/or discards
+      # for each source, generate all possible choices and pick one of them
       Process.sleep(trunc(500 / @ai_speed))
-      if Map.has_key?(marked_objects, :hand) do
-        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, &1}) |> Enum.with_index() end)
-        |> Enum.filter(fn {{seat, _tile}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, :hand}) end)
-        |> Enum.shuffle()
-        |> Enum.take(marked_objects.hand.needed)
-        |> Enum.each(fn {{seat, _tile}, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, :hand}) end)
+      choices = marked_objects
+      |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(source, players, revealed_tiles, player.num_scryed_tiles, wall) end)
+      choice = choices
+      |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
+      |> Enum.shuffle()
+      case choice do
+        [{{seat, source, _obj}, i} | _] -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
+        _ ->
+          IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything: #{inspect(choice)}")
+          IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
       end
-      if Map.has_key?(marked_objects, :discard) do
-        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, &1}) |> Enum.with_index() end)
-        |> Enum.filter(fn {{seat, _tile}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, :discard}) end)
-        |> Enum.shuffle()
-        |> Enum.take(marked_objects.discard.needed)
-        |> Enum.each(fn {{seat, _tile}, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, :discard}) end)
-      end
-      if Map.has_key?(marked_objects, :aside) do
-        Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, &1}) |> Enum.with_index() end)
-        |> Enum.filter(fn {{seat, _tile}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, :aside}) end)
-        |> Enum.shuffle()
-        |> Enum.take(marked_objects.aside.needed)
-        |> Enum.each(fn {{seat, _tile}, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, :aside}) end)
-      end
-      if Map.has_key?(marked_objects, :revealed_tile) do
-        revealed_tiles |> Enum.with_index()
-        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, state.seat, i, :revealed_tile}) end)
-        |> Enum.shuffle()
-        |> Enum.take(marked_objects.revealed_tile.needed)
-        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :revealed_tile}) end)
-      end
-      if Map.has_key?(marked_objects, :scry) do
-        wall |> Enum.take(player.num_scryed_tiles) |> Enum.with_index()
-        |> Enum.filter(fn {_tile, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, state.seat, i, :scry}) end)
-        |> Enum.shuffle()
-        |> Enum.take(marked_objects.scry.needed)
-        |> Enum.each(fn {_tile, i} -> GenServer.cast(state.game_state, {:mark_tile, state.seat, state.seat, i, :scry}) end)
-      end
+      {:noreply, state}
+    else
+      {:noreply, state}
     end
-    {:noreply, state}
   end
 
   def handle_info({:declare_yaku, %{player: player}}, state) do
@@ -238,7 +234,9 @@ defmodule RiichiAdvanced.AIPlayer do
       state = %{ state | player: player }
       IO.puts(" >> #{state.seat}: It's my turn to declare yaku!")
       GenServer.cast(state.game_state, {:declare_yaku, state.seat, ["Riichi"]})
+      {:noreply, state}
+    else
+      {:noreply, state}
     end
-    {:noreply, state}
   end
 end

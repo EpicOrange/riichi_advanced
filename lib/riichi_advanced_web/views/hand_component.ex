@@ -91,12 +91,32 @@ defmodule RiichiAdvancedWeb.HandComponent do
         </div>
       <% end %>
       <div class="calls">
-        <%= for {_name, call} <- @calls do %>
-          <div class="call">
-            <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
-          </div>
+        <%= if not Enum.empty?(@marking) do %>
+          <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
+            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :call}) do %>
+              <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
+                <div class={["tile", Utils.strip_attrs(tile), "markable", sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+              </div>
+            <% else %>
+              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :call}) do %>
+                <div class="call">
+                  <div class={["tile", Utils.strip_attrs(tile), "marked", sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+                </div>
+              <% else %>
+                <div class="call">
+                  <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= for {{_name, call}, _i} <- prepare_calls(assigns) do %>
+            <div class="call">
+              <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+            </div>
+          <% end %>
         <% end %>
-        <div class="call">
+        <div class="call aside">
           <%= for {tile, i} <- prepare_aside(assigns) do %>
             <%= if not Enum.empty?(@marking) do %>
               <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :aside}) do %>
@@ -148,6 +168,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
     {:noreply, socket}
   end
 
+  def handle_event("mark_call", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :call})
+    {:noreply, socket}
+  end
+
   def handle_event("mark_tile_aside", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
     GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :aside})
@@ -182,6 +208,13 @@ defmodule RiichiAdvancedWeb.HandComponent do
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()
     |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
+  end
+
+  def prepare_calls(assigns) do
+    # map calls to [{call, index}]
+    # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
+    assigns.calls
+    |> Enum.with_index()
   end
 
   def prepare_aside(assigns) do

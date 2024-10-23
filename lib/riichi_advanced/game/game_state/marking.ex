@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   def initialize_marking(state) do
     state = Map.put(state, :marking, %{
       # for example: 
-      # east: {
+      # east: [
       #   done: false,
       #   hand: {
       #     marked: [{:"2m", :east, 4}],
@@ -16,41 +16,43 @@ defmodule RiichiAdvanced.GameState.Marking do
       #     marked: [],
       #     needed: 1,
       #     restrictions: ["same_suit_as_marked_hand"]
-      #   },
-      # }
-      east: %{},
-      south: %{},
-      west: %{},
-      north: %{}
+      #   }
+      # ]
+      east: [],
+      south: [],
+      west: [],
+      north: []
     })
     state
   end
 
   def setup_marking(state, seat, to_mark) do
-    state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: %{done: false} do
-      marked ->
+    state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: [done: false] do
+      marked_objects ->
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
         case target do
-          "hand"          -> Map.put(marked, :hand, mark_spec)
-          "aside"         -> Map.put(marked, :aside, mark_spec)
-          "discard"       -> Map.put(marked, :discard, mark_spec)
-          "revealed_tile" -> Map.put(marked, :revealed_tile, mark_spec)
-          "scry"          -> Map.put(marked, :scry, mark_spec)
+          "hand"          -> marked_objects ++ [{:hand, mark_spec}]
+          "call"          -> marked_objects ++ [{:call, mark_spec}]
+          "aside"         -> marked_objects ++ [{:aside, mark_spec}]
+          "discard"       -> marked_objects ++ [{:discard, mark_spec}]
+          "revealed_tile" -> marked_objects ++ [{:revealed_tile, mark_spec}]
+          "scry"          -> marked_objects ++ [{:scry, mark_spec}]
           _               ->
             GenServer.cast(self(), {:show_error, "Unknown mark target: #{inspect(target)}"})
-            marked
+            marked_objects
         end
     end)
     state
   end
 
   def needs_marking?(state, seat) do
-    Enum.any?(state.marking[seat], fn {source, mark_info} -> not (source == :done) && length(mark_info.marked) < mark_info.needed end)
+    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source != :done) && length(mark_info.marked) < mark_info.needed end)
   end
 
-  defp get_tile(state, seat, index, source) do
+  defp get_object(state, seat, index, source) do
     case source do
       :hand          -> state.players[seat].hand ++ state.players[seat].draw |> Enum.at(index)
+      :call          -> state.players[seat].calls |> Enum.at(index)
       :aside         -> state.players[seat].aside |> Enum.at(index)
       :discard       -> state.players[seat].pond |> Enum.at(index)
       :revealed_tile -> Enum.at(get_revealed_tiles(state), index)
@@ -61,12 +63,29 @@ defmodule RiichiAdvanced.GameState.Marking do
     end
   end
 
-  def can_mark?(state, marking_player, seat, index, source) do
-    tile = get_tile(state, seat, index, source)
-    mark_info = state.marking[marking_player][source]
-    marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
-    already_marked = is_marked?(state, marking_player, seat, index, source)
-    mark_info != nil && not marked_enough && not already_marked && Enum.all?(mark_info.restrictions, fn restriction ->
+  defp get_mark_infos(marked_objects, source) do
+    Enum.filter(marked_objects, fn {src, _mark_info} -> src == source end)
+  end
+
+  def get_marked(marked_objects, source) do
+    get_mark_infos(marked_objects, source)
+    |> Enum.flat_map(fn {_src, mark_info} -> mark_info.marked end)
+  end
+
+  def is_done?(state, marking_player) do
+    get_mark_infos(state.marking[marking_player], :done)
+    |> Enum.any?()
+  end
+
+  def mark_done(state, marking_player) do
+    update_in(state.marking[marking_player], &Enum.map(&1, fn {src, mark_info} ->
+      if src == :done do {src, true} else {src, mark_info} end
+    end))
+  end
+
+  defp _can_mark?(state, marking_player, seat, index, source, mark_info) do
+    tile = get_object(state, seat, index, source)
+    Enum.all?(mark_info.restrictions, fn restriction ->
       case restriction do
         "suited"            -> Riichi.is_suited?(tile)
         "match_suit"        ->
@@ -92,6 +111,11 @@ defmodule RiichiAdvanced.GameState.Marking do
         "toimen"            -> Utils.get_relative_seat(marking_player, seat) == :toimen
         "kamicha"           -> Utils.get_relative_seat(marking_player, seat) == :kamicha
         "current_turn"      -> seat == state.turn
+        "open"              ->
+          with {call_type, _call} <- tile do
+            # TODO don't hardcode these
+            call_type in ["chii", "pon", "daiminkan", "kakan"]
+          end
         "7z"                -> tile == :"7z"
         "wind"              -> Riichi.is_wind?(tile)
         "dragon"            -> Riichi.is_dragon?(tile)
@@ -120,38 +144,44 @@ defmodule RiichiAdvanced.GameState.Marking do
     end)
   end
 
+  def can_mark?(state, marking_player, seat, index, source) do
+    mark_infos = get_mark_infos(state.marking[marking_player], source)
+    Enum.any?(mark_infos, fn {_src, mark_info} ->
+      marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
+      already_marked = is_marked?(state, marking_player, seat, index, source)
+      mark_info != nil && not marked_enough && not already_marked && _can_mark?(state, marking_player, seat, index, source, mark_info)
+    end)
+  end
+
   def is_marked?(state, marking_player, seat, index, source) do
-    case source do
-      :hand          -> Map.has_key?(state.marking[marking_player], :hand) && Enum.any?(state.marking[marking_player].hand.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :aside         -> Map.has_key?(state.marking[marking_player], :aside) && Enum.any?(state.marking[marking_player].aside.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :discard       -> Map.has_key?(state.marking[marking_player], :discard) && Enum.any?(state.marking[marking_player].discard.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :revealed_tile -> Map.has_key?(state.marking[marking_player], :revealed_tile) && Enum.any?(state.marking[marking_player].revealed_tile.marked, fn {_tile, _, index2} -> index == index2 end)
-      :scry          -> Map.has_key?(state.marking[marking_player], :scry) && Enum.any?(state.marking[marking_player].scry.marked, fn {_tile, _, index2} -> index == index2 end)
+    get_mark_infos(state.marking[marking_player], source)
+    |> Enum.any?(fn {_src, mark_info} -> case source do
+      :hand          -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :call          -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :aside         -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :discard       -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
+      :revealed_tile -> Enum.any?(mark_info.marked, fn {_tile, _, index2} -> index == index2 end)
+      :scry          -> Enum.any?(mark_info.marked, fn {_tile, _, index2} -> index == index2 end)
       _        ->
         GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
         false
-    end
+    end end)
   end
 
   def mark_tile(state, marking_player, seat, index, source) do
-    case source do
-      :hand          -> update_in(state.marking[marking_player].hand.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
-      :aside         -> update_in(state.marking[marking_player].aside.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
-      :discard       -> update_in(state.marking[marking_player].discard.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), seat, index}] end)
-      :revealed_tile -> update_in(state.marking[marking_player].revealed_tile.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), nil, index}] end)
-      :scry          -> update_in(state.marking[marking_player].scry.marked, fn marked -> marked ++ [{get_tile(state, seat, index, source), nil, index}] end)
-      _              ->
-        GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
-        state
-    end
+    valid_mark_info_ix = state.marking[marking_player]
+    |> Enum.find_index(fn {src, mark_info} -> src == source && _can_mark?(state, marking_player, seat, index, source, mark_info) end)
+    update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
+      {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
+    end))
   end
 
   def clear_marked_objects(state, seat) do
-    update_in(state.marking[seat], &Map.new(&1, fn {source, mark_info} -> {source, if source == :done do false else Map.put(mark_info, :marked, []) end} end))
+    update_in(state.marking[seat], &Enum.map(&1, fn {source, mark_info} -> {source, if source == :done do false else Map.put(mark_info, :marked, []) end} end))
   end
 
   def reset_marking(state, marking_player) do
-    state = put_in(state.marking[marking_player], %{})
+    state = put_in(state.marking[marking_player], [])
     state
   end
 end

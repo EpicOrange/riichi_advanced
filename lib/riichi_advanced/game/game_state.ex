@@ -859,56 +859,18 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def notify_ai_declare_yaku(state, seat) do
-    if state.game_active do
-      if is_pid(Map.get(state, seat)) do
-        send(Map.get(state, seat), {:declare_yaku, %{player: state.players[seat]}})
-      end
-    end
+  # TODO replace these calls
+  def notify_ai(_state) do
+    GenServer.cast(self(), :notify_ai)
   end
-
-  def notify_ai_call_buttons(state, seat) do
-    if state.game_active do
-      call_choices = state.players[seat].call_buttons
-      if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
-        # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
-        send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
-      end
-    end
+  def notify_ai_marking(_state, seat) do
+    GenServer.cast(self(), {:notify_ai_marking, seat})
   end
-
-  def notify_ai_marking(state, seat) do
-    if state.game_active do
-      if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
-        # IO.puts("Notifying #{seat} AI about marking")
-        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
-      end
-    end
+  def notify_ai_call_buttons(_state, seat) do
+    GenServer.cast(self(), {:notify_ai_call_buttons, seat})
   end
-
-  def notify_ai(state) do
-    # IO.puts("Notifying ai")
-    # IO.inspect(Process.info(self(), :current_stacktrace))
-    if state.game_active do
-      # if there are any new buttons for any AI players, notify them
-      # otherwise, just tell the current player it's their turn
-      if Buttons.no_buttons_remaining?(state) do
-        if is_pid(Map.get(state, state.turn)) do
-          # IO.puts("Notifying #{state.turn} AI that it's their turn")
-          send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn]}})
-        end
-      else
-        Enum.each([:east, :south, :west, :north], fn seat ->
-          has_buttons = not Enum.empty?(state.players[seat].buttons)
-          has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
-          has_marking_ui = not Enum.empty?(state.marking[seat])
-          if is_pid(Map.get(state, seat)) && has_buttons && not has_call_buttons && not has_marking_ui do
-            # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-            send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
-          end
-        end)
-      end
-    end
+  def notify_ai_declare_yaku(_state, seat) do
+    GenServer.cast(self(), {:notify_ai_declare_yaku, seat})
   end
 
   defp translate_sets_in_match_definitions(match_definitions, set_definitions) do
@@ -1242,11 +1204,67 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  # clicking the compass will send this
-  # ai also sends this once they initialize
   def handle_cast(:notify_ai, state) do
-    notify_ai(state)
-    state = broadcast_state_change(state)
+    # IO.puts("Notifying ai")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
+    if state.game_active do
+      # if there are any new buttons for any AI players, notify them
+      # otherwise, just tell the current player it's their turn
+      if Buttons.no_buttons_remaining?(state) do
+        if is_pid(Map.get(state, state.turn)) do
+          # IO.puts("Notifying #{state.turn} AI that it's their turn")
+          send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn]}})
+        end
+      else
+        Enum.each([:east, :south, :west, :north], fn seat ->
+          has_buttons = not Enum.empty?(state.players[seat].buttons)
+          has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
+          has_marking_ui = not Enum.empty?(state.marking[seat])
+          if is_pid(Map.get(state, seat)) && has_buttons && not has_call_buttons && not has_marking_ui do
+            # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
+            send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
+          end
+        end)
+      end
+    else
+      :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
+    end
+    {:noreply, state}
+  end
+
+  def handle_cast({:notify_ai_marking, seat}, state) do
+    if state.game_active do
+      if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
+        # IO.puts("Notifying #{seat} AI about marking")
+        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
+      end
+    else
+      :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_marking, seat}])
+    end
+    {:noreply, state}
+  end
+
+  def handle_cast({:notify_ai_call_buttons, seat}, state) do
+    if state.game_active do
+      call_choices = state.players[seat].call_buttons
+      if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
+        # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+        send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
+      end
+    else
+      :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_call_buttons, seat}])
+    end
+    {:noreply, state}
+  end
+
+  def handle_cast({:notify_ai_declare_yaku, seat}, state) do
+    if state.game_active do
+      if is_pid(Map.get(state, seat)) do
+        send(Map.get(state, seat), {:declare_yaku, %{player: state.players[seat]}})
+      end
+    else
+      :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_declare_yaku, seat}])
+    end
     {:noreply, state}
   end
 
@@ -1286,7 +1304,7 @@ defmodule RiichiAdvanced.GameState do
     state = if not Marking.needs_marking?(state, marking_player) do
       state = Actions.run_deferred_actions(state, %{seat: marking_player})
       # only reset marking if the mark action states that it is done
-      state = if state.marking[marking_player].done do
+      state = if Marking.is_done?(state, seat) do
         Marking.reset_marking(state, marking_player)
       else state end
 
@@ -1302,6 +1320,7 @@ defmodule RiichiAdvanced.GameState do
 
       state
     else state end
+    notify_ai_marking(state, marking_player)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

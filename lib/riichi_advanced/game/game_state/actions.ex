@@ -374,9 +374,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       schedule_actions(state, seat, actions, %{seat: seat})
     else
-      {hand_tile1, hand_seat, hand_index1} = Enum.at(marked_objects.hand.marked, 0)
-      {hand_tile2, _, hand_index2} = Enum.at(marked_objects.hand.marked, 1)
-      {hand_tile3, _, hand_index3} = Enum.at(marked_objects.hand.marked, 2)
+      marked = Marking.get_marked(marked_objects, :hand)
+      {hand_tile1, hand_seat, hand_index1} = Enum.at(marked, 0)
+      {hand_tile2, _, hand_index2} = Enum.at(marked, 1)
+      {hand_tile3, _, hand_index3} = Enum.at(marked, 2)
       hand_length = length(state.players[hand_seat].hand)
       # remove specified tiles from hand
       state = for ix <- Enum.sort([-hand_index1, -hand_index2, -hand_index3]), reduce: state do
@@ -390,7 +391,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # send them according to dir
       state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: [hand_tile1, hand_tile2, hand_tile3] })
-      state = put_in(state.marking[seat].done, true)
+      state = Marking.mark_done(state, seat)
       state
     end
   end
@@ -536,8 +537,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
       "mark" -> state # no-op
       "swap_marked_hand_and_discard" ->
-        {hand_tile, hand_seat, hand_index} = Enum.at(marked_objects.hand.marked, 0)
-        {discard_tile, discard_seat, discard_index} = Enum.at(marked_objects.discard.marked, 0)
+        {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
+        {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
         # replace pond tile with hand tile
         state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, hand_tile) })
@@ -551,11 +552,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
 
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "swap_marked_hand_and_dora_indicator" ->
-        {hand_tile, hand_seat, hand_index} = Enum.at(marked_objects.hand.marked, 0)
-        {revealed_tile, _, revealed_tile_index} = Enum.at(marked_objects.revealed_tile.marked, 0)
+        {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
+        {revealed_tile, _, revealed_tile_index} = Marking.get_marked(marked_objects, :revealed_tile) |> Enum.at(0)
 
         # replace revealed tile with hand tile
         state = replace_revealed_tile(state, revealed_tile_index, hand_tile)
@@ -569,14 +570,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
 
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {revealed_tile, nil, revealed_tile_index, :discard}})
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "swap_marked_hand_and_scry" ->
-        {_, hand_seat, _} = Enum.at(marked_objects.hand.marked, 0)
-        {hand_tiles, hand_indices} = marked_objects.hand.marked
+        marked_hand = Marking.get_marked(marked_objects, :hand)
+        marked_scry = Marking.get_marked(marked_objects, :scry)
+        {_, hand_seat, _} = Enum.at(marked_hand, 0)
+        {hand_tiles, hand_indices} = marked_hand
         |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
         |> Enum.unzip()
-        {scry_tiles, scry_indices} = marked_objects.scry.marked
+        {scry_tiles, scry_indices} = marked_scry
         |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
         |> Enum.unzip()
 
@@ -600,11 +603,22 @@ defmodule RiichiAdvanced.GameState.Actions do
             end
         end
 
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
+        state
+      "swap_marked_calls" ->
+        marked_calls = Marking.get_marked(marked_objects, :call)
+        {call1, call_seat1, call_index1} = Enum.at(marked_calls, 0)
+        {call2, call_seat2, call_index2} = Enum.at(marked_calls, 1)
+
+        state = update_player(state, call_seat1, &%Player{ &1 | calls: List.replace_at(&1.calls, call_index1, call2) })
+        state = update_player(state, call_seat2, &%Player{ &1 | calls: List.replace_at(&1.calls, call_index2, call1) })
+
+        state = Marking.mark_done(state, context.seat)
         state
       "extend_live_wall_with_marked" ->
-        {_, hand_seat, _} = Enum.at(marked_objects.hand.marked, 0)
-        {hand_tiles, hand_indices} = marked_objects.hand.marked
+        marked_hand = Marking.get_marked(marked_objects, :hand)
+        {_, hand_seat, _} = Enum.at(marked_hand, 0)
+        {hand_tiles, hand_indices} = marked_hand
         |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
         |> Enum.unzip()
         # remove specified tiles from hand (rightmost first)
@@ -621,11 +635,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = for tile <- hand_tiles, reduce: state do
           state -> Map.update!(state, :wall, fn wall -> List.insert_at(wall, -1, tile) end)
         end
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "extend_dead_wall_with_marked" ->
-        {_, hand_seat, _} = Enum.at(marked_objects.hand.marked, 0)
-        {hand_tiles, hand_indices} = marked_objects.hand.marked
+        marked_hand = Marking.get_marked(marked_objects, :hand)
+        {_, hand_seat, _} = Enum.at(marked_hand, 0)
+        {hand_tiles, hand_indices} = marked_hand
         |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
         |> Enum.unzip()
         # remove specified tiles from hand (rightmost first)
@@ -642,10 +657,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = for tile <- hand_tiles, reduce: state do
           state -> Map.update!(state, :dead_wall, fn dead_wall -> List.insert_at(dead_wall, -1, tile) end)
         end
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "set_aside_marked" ->
-        {discard_tile, discard_seat, discard_index} = Enum.at(marked_objects.discard.marked, 0)
+        {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
         # replace pond tile with blank
         state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, :"2x") })
@@ -653,10 +668,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         # set discard_tile aside
         state = update_player(state, context.seat, &%Player{ &1 | aside: &1.aside ++ [discard_tile] })
 
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "pon_marked_discard" ->
-        {called_tile, discard_seat, discard_index} = Enum.at(marked_objects.discard.marked, 0)
+        {called_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
         # replace pond tile with blank
         state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, :"2x") })
@@ -676,11 +691,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           run_actions(state, state.rules["after_call"]["actions"], %{seat: context.seat, callee: discard_seat, caller: context.seat, call: call})
         else state end
 
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "draw_marked_aside" ->
-        {_, aside_seat, _} = Enum.at(marked_objects.aside.marked, 0)
-        {aside_tiles, aside_indices} = marked_objects.aside.marked
+        marked_aside = Marking.get_marked(marked_objects, :aside)
+        {_, aside_seat, _} = Enum.at(marked_aside, 0)
+        {aside_tiles, aside_indices} = marked_aside
         |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
         |> Enum.unzip()
 
@@ -691,7 +707,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
         # draw aside tiles
         state = update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: &1.draw ++ Utils.add_attr(aside_tiles, ["draw"]) })
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
 
         # run after_draw actions            
         state = if Map.has_key?(state.rules, "after_draw") do
@@ -699,7 +715,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
 
         state
-      "clear_marking"         -> put_in(state.marking[context.seat].done, true)
+      "clear_marking"         -> Marking.mark_done(state, context.seat)
       "set_tile_alias"        ->
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
@@ -827,7 +843,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         
         state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {aside_tile, hand_seat, 0, :aside}})
-        state = put_in(state.marking[context.seat].done, true)
+        state = Marking.mark_done(state, context.seat)
         state
       "charleston_left" -> do_charleston(state, :kamicha, context.seat, marked_objects)
       "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
@@ -965,13 +981,15 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def resume_deferred_actions(state) do
-    for {seat, player} <- state.players, not Enum.empty?(player.deferred_actions), reduce: state do
+    for {seat, player} <- state.players, reduce: state do
       state ->
-        if @debug_actions do
-          IO.puts("Resuming deferred actions for #{seat}")
-        end
-        state = run_deferred_actions(state, player.deferred_context)
-        state = if not Enum.empty?(state.marking[seat]) && state.marking[seat].done do
+        state = if not Enum.empty?(player.deferred_actions) do
+          if @debug_actions do
+            IO.puts("Resuming deferred actions for #{seat}")
+          end
+          run_deferred_actions(state, player.deferred_context)
+        else state end
+        state = if not Enum.empty?(state.marking[seat]) && Marking.is_done?(state, seat) do
           Marking.reset_marking(state, seat)
         else state end
         state
