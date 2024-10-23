@@ -2673,10 +2673,11 @@
       ]
     },
     "choe_myeonghwa": {
-      "display_name": "Swap last discard with tile in hand",
+      "display_name": "Swap last discard with a terminal/honor",
       "show_when": [
         "all_saki_cards_drafted",
-        {"name": "status_missing", "opts": ["match_start", "about_to_swap"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "about_to_swap"]},
+        {"name": "status", "opts": ["choe-myeonghwa"]},
         "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
         [
@@ -2713,12 +2714,12 @@
             {"name": "match", "opts": [["last_discard"], [[[[["4z"]], 1]]]]}
           ]
         ],
-        {"name": "status", "opts": ["choe-myeonghwa"]}
+        {"name": "match", "opts": [["hand"], [[[["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]]]]}
       ],
       "actions": [
         ["big_text", "Choe Myeonghwa: swap!"],
         ["unset_status", "just_called"],
-        ["mark", [["hand", 1, ["terminal_honor", "not_riichi"]], ["discard", 1, ["last_discard"]]]],
+        ["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]],
         ["push_message", "swapped a tile in hand with the last discard (Choe Myeonghwa)"],
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
@@ -2777,7 +2778,7 @@
       "actions": [
         ["big_text", "Kataoka Yuuki: mulligan!"],
         ["set_status", "kataoka-yuuki_exhausted"],
-        ["mark", [["hand", 4, []]]],
+        ["mark", [["hand", 4, ["self"]]]],
         ["push_message", "added four tiles from hand to the end of the live wall, before drawing four more tiles (Kataoka Yuuki)"],
         ["extend_live_wall_with_marked"],
         ["draw", 4]
@@ -2818,25 +2819,39 @@
     },
     "nanpo_kazue_nonskippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}],
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted"]},
+        {"name": "status", "opts": ["nanpo-kazue", "ready"]},
+        {"name": "round_wind_is", "opts": ["south"]}
+      ],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
-        ["set_status", "nanpo-kazue_exhausted"],
-        ["mark", [["hand", 2, []]], [["draw", 2]]],
+        ["mark", [["hand", 2, ["self", "not_riichi"]]], [["set_status", "nanpo-kazue_exhausted"], ["draw", 2]]],
         ["push_message", "drew two tiles and added two tiles from hand at the end of the dead wall (Nanpo Kazue)"],
-        ["extend_dead_wall_with_marked"]
+        ["extend_dead_wall_with_marked"],
+        ["recalculate_buttons"] // allow tsumo
       ],
       "unskippable": true
     },
     "nanpo_kazue_skippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
-      "show_when": ["all_saki_cards_drafted", {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2", "riichi"]}, {"name": "status", "opts": ["nanpo-kazue"]}, {"name": "round_wind_is", "opts": ["south"]}, "first_time_finished_second_row_discards"],
+      "show_when": [
+        "all_saki_cards_drafted",
+        "anyone_just_discarded",
+        {"name": "status_missing", "opts": ["match_start", "nanpo-kazue_exhausted2"]},
+        {"name": "status", "opts": ["nanpo-kazue"]},
+        {"name": "round_wind_is", "opts": ["south"]},
+        {"name": "anyone", "opts": [{"name": "match", "opts": [["pond"], [[[["faceup"], 12]]]]}]}
+      ],
       "actions": [
         ["big_text", "Nanpo Kazue: mulligan!"],
-        ["set_status", "nanpo-kazue_exhausted2"],
-        ["mark", [["hand", 2, []]], [["draw", 2]]],
+        ["mark", [["hand", 2, ["self", "not_riichi"]]], [["set_status", "nanpo-kazue_exhausted2"], ["draw", 2]]],
         ["push_message", "drew two tiles and added two tiles from hand at the end of the dead wall (Nanpo Kazue)"],
-        ["extend_dead_wall_with_marked"]
+        ["extend_dead_wall_with_marked"],
+        ["recalculate_buttons"], // allow tsumo
+        ["advance_turn"]
       ]
     },
     "onjouji_toki_start": {
@@ -4187,8 +4202,8 @@
         "our_turn",
         {"name": "not_status", "opts": ["match_start"]},
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
-        {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
         {"name": "status", "opts": ["ready"]},
+        {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
         {"name": "status_missing", "opts": ["riichi", "iishanten", "inazuma_riichi", "just_scryed", "about_to_call", "about_to_swap"]},
         {"name": "has_score", "opts": [1000]},
         "next_draw_possible",
@@ -4445,9 +4460,9 @@
       "show_when": [
         "all_saki_cards_drafted",
         "our_turn",
-        {"name": "not_status", "opts": ["match_start"]},
         {"name": "status", "opts": ["ready"]},
-        {"name": "not_status", "opts": ["just_reached", "about_to_call"]},
+        {"name": "status_missing", "opts": ["match_start", "just_reached", "about_to_call"]},
+        {"name": "hand_tile_count", "opts": [2, 5, 8, 11, 14]},
         [
           {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]},
           {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},

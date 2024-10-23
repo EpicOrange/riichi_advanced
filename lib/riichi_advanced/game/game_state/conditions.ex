@@ -106,10 +106,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_draw"              -> context.win_source == :draw
       "won_by_discard"           -> context.win_source == :discard
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
-      "has_yaku_with_hand"       -> not Enum.empty?(cxt_player.draw) && Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0), :draw)
+      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_yaku_with_discard"    -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
       "has_yaku_with_call"       -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
-      "has_declared_yaku_with_hand"    -> not Enum.empty?(cxt_player.draw) && Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, Enum.at(cxt_player.draw, 0), :draw)
+      "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_declared_yaku_with_discard" -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, last_action.tile, :discard)
       "has_declared_yaku_with_call"    -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, last_action.tile, :call)
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile, players: state.players, seat: context.seat})
@@ -226,7 +226,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
         last_discard_action != nil && Enum.any?(state.players, fn {_seat, player} -> Enum.any?(player.pond, fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end) end)
       "second_last_visible_discard_exists" ->
         last_discard_action != nil && Enum.any?(Enum.drop(state.players[last_discard_action.seat].pond, -1), fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
-      "first_time_finished_second_row_discards" -> state.saki.just_finished_second_row_discards
       "call_would_change_waits" ->
         win_definitions = translate_match_definitions(state, opts)
         hand = Utils.add_attr(cxt_player.hand, ["hand"])

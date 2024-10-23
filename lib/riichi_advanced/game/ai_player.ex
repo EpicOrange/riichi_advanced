@@ -160,7 +160,6 @@ defmodule RiichiAdvanced.AIPlayer do
       else
         # pick these (in order of precedence)
         cond do
-          "chii" in player.buttons -> "chii"
           "ron" in player.buttons -> "ron"
           "tsumo" in player.buttons -> "tsumo"
           "hu" in player.buttons -> "hu"

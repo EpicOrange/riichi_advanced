@@ -540,6 +540,8 @@ defmodule Riichi do
   end
 
   def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}) do
+    # t = System.os_time(:millisecond)
+    
     IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
     starting_hand = starting_hand
     standard_length = length(starting_hand) in [1, 4, 7, 10, 13]
@@ -674,7 +676,7 @@ defmodule Riichi do
 
     # closed pinfu is 20 tsumo/30 ron, open pinfu is 30, chiitoitsu is 25
     num_pairs = Enum.frequencies(starting_hand) |> Map.values |> Enum.count(& &1 == 2)
-    cond do
+    ret = cond do
       fu == 22 && win_source == :draw && Enum.empty?(calls) -> 20
       fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30
       fu == 20 && not Enum.empty?(calls)                    -> 30
@@ -685,6 +687,13 @@ defmodule Riichi do
         remainder = rem(fu, 10)
         if remainder == 0 do fu else fu - remainder + 10 end
     end
+
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 4 do
+    #   IO.puts("calculate_fu: #{inspect(elapsed_time)} ms")
+    # end
+
+    ret
   end
 
   def calc_ko_oya_points(score, is_dealer) do

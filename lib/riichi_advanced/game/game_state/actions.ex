@@ -53,18 +53,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       ]
       play_sound(state, Enum.random(click_sounds))
 
-      # check if it completes second row discards
-      state = if Map.has_key?(state, :saki) do
-        if length(state.players[seat].pond) == 1 && not state.saki.already_finished_second_row_discards do
-          state = put_in(state.saki.just_finished_second_row_discards, true)
-          state = put_in(state.saki.already_finished_second_row_discards, true)
-          state
-        else
-          state = put_in(state.saki.just_finished_second_row_discards, false)
-          state
-        end
-      else state end
-
       # trigger play effects
       if Map.has_key?(state.rules, "play_effects") do
         doras = Enum.flat_map(state.revealed_tiles, fn named_tile ->
@@ -93,10 +81,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
         tile = from_named_tile(state, tile_name) |> Utils.add_attr(["draw"])
         state = if not to_aside do
-          state = update_player(state, seat, &%Player{ &1 |
-            hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]),
-            draw: [tile]
-          })
+          state = update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
           state = Map.put(state, :wall_index, wall_index)
           state = update_action(state, seat, :draw, %{tile: tile})
           kan_draw = "kan" in state.players[seat].status

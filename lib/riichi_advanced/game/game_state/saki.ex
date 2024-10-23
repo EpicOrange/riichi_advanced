@@ -52,7 +52,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "matsumi-yuu" => "Matsumi Yuu",
     "maya-yukiko" => "Maya Yukiko",
 
-    # need to implement marking players
+    # need to implement marking players and disabling abilities
     # "megan-davin" => "Megan Davin",
 
     "miyanaga-saki" => "Miyanaga Saki",
@@ -115,8 +115,6 @@ defmodule RiichiAdvanced.GameState.Saki do
       version: state.rules["saki_ver"],
       saki_deck: Enum.shuffle(state.rules["saki_deck"]),
       saki_deck_index: 0,
-      just_finished_second_row_discards: false,
-      already_finished_second_row_discards: false
     })
 
     state
