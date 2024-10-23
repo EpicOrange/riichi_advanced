@@ -2001,6 +2001,7 @@ div.menu-buttons-container {
   display: flex;
   flex-direction: row-reverse;
   column-gap: calc(0.25 * var(--tile-size));
+  z-index: -1; /* behind revealed tiles */
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {

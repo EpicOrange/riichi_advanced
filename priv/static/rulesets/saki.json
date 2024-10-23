@@ -50,6 +50,7 @@
     "senoo-kaori",
     "shibuya-takami",
     "shirouzu-mairu",
+    "shishihara-sawaya",
     "someya-mako",
     "suehara-kyouko",
     "takakamo-shizuno",
@@ -1233,6 +1234,66 @@
       "display_name": "Uumensai",
       "value": 2,
       "when": [{"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [2000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [4000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [6000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [8000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [10000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [12000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [14000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [16000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [18000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [20000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [22000]}]
+    },
+    {
+      "display_name": "Bets",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [24000]}]
     }
   ],
   "yakuman": [
@@ -2181,14 +2242,32 @@
       ["big_text", "Someya Mako: extra turn!"],
       ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
     ]]]],
-    ["any", [["when", [{"name": "status", "opts": ["yoshitome-miharu"]}], [["add_counter", "num_discards", 1]]]]],
+    ["any", [["when", [{"name": "not_status_missing", "opts": ["yoshitome-miharu", "shishihara-sawaya"]}], [["add_counter", "num_discards", 1]]]]],
     ["any", [["when", [{"name": "status", "opts": ["kainou-yoshiko", "kainou_yoshiko_discard"]}], [
       ["big_text", "Kainou Yoshiko: discard!"],
       ["push_message", "discarded an identical tile and drew (Kainou Yoshiko)"],
       ["unset_status", "kainou_yoshiko_discard"],
-      ["set_status", "discard_passed"],
+      ["set_status", "discard_passed"], // immune to calling/ron
       ["draw"],
       ["advance_turn"]
+    ]]]],
+    ["yaochuuhai", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
+      ["scry_all", 1],
+      ["push_message", "discarded an honor/terminal, revealing the next tile in the wall (Shishihara Sawaya)"],
+      ["pause", 1000],
+      ["when", [{"name": "match", "opts": [["scry"], [[[["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"], 1]]]]}], [
+        ["set_status", "extra_turn"],
+        ["big_text", "Shishihara Sawaya: extra turn!"],
+        ["push_message", "revealed a tanyao tile, and takes an extra turn (Shishihara Sawaya)"]
+      ]],
+      ["clear_scry"]
+    ]]]],
+    ["tanyaohai", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
+      ["when_anyone", ["not_our_turn"], [["bet_points", "100_times_tile_number"]]],
+      ["push_message", "discarded a tanyao tile, making other players bet 100 times the tile number (Shishihara Sawaya)"]
+    ]]]],
+    ["dora", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
+      ["set_status", "shishihara_sawaya_swap"]
     ]]]],
     ["any", [["when", [{"name": "status", "opts": ["discard_facedown"]}], [["recalculate_buttons"]]]]] // allow interrupting facedown discards
   ],
@@ -3135,7 +3214,7 @@
       ],
       "actions": [
         ["unset_status", "hanada_kirame_choice"],
-        ["bet_points", "half"],
+        ["bet_points", "half_score"],
         ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["reveal_tile", -16], ["reveal_tile", -18], ["reveal_tile", -20]]],
         ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14], ["reveal_tile", -16], ["reveal_tile", -18]]],
         ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12], ["reveal_tile", -14], ["reveal_tile", -16]]],
@@ -3497,6 +3576,32 @@
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
         ["when", [{"name": "status", "opts": ["need_to_advance_turn"]}], [["unset_status", "need_to_advance_turn"], ["advance_turn"]]]
+      ],
+      "unskippable": true
+    },
+    "shishihara_sawaya_swap": {
+      "display_name": "Swap out dora indicator",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "just_discarded",
+        {"name": "status", "opts": ["shishihara-sawaya", "shishihara_sawaya_swap"]},
+        {"name": "status_missing", "opts": ["match_start", "just_swapped"]}
+      ],
+      "actions": [
+        ["big_text", "Shishihara Sawaya: swap!"],
+        ["set_status", "just_swapped"],
+        ["unset_status", "shishihara_sawaya_swap"],
+        ["mark", [["hand", 1, ["not_riichi"]], ["revealed_tile", 1, []]]],
+        ["push_message", "discarded dora, and must swap out a dora indicator (Shishihara Sawaya)"],
+        ["set_status", "about_to_swap"],
+        ["recalculate_buttons"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
+          ["swap_marked_hand_and_dora_indicator"],
+          ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+          ["recalculate_buttons"] // allow tsumo to pop up
+        ]],
+        ["advance_turn"]
       ],
       "unskippable": true
     },

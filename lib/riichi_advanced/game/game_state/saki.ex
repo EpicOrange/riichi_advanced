@@ -78,10 +78,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     # "shimizudani-ryuuka" => "Shimizudani Ryuuka",
 
     "shirouzu-mairu" => "Shirouzu Mairu",
-
-    # need to figure out how to display scryed tiles
-    # "shishihara-sawaya" => "Shishihara Sawaya",
-
+    "shishihara-sawaya" => "Shishihara Sawaya",
     "someya-mako" => "Someya Mako",
     "suehara-kyouko" => "Suehara Kyouko",
     "takakamo-shizuno" => "Takakamo Shizuno",

@@ -67,7 +67,11 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # trigger play effects
       if Map.has_key?(state.rules, "play_effects") do
-        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile}), reduce: state do
+        doras = Enum.flat_map(state.revealed_tiles, fn named_tile ->
+          dora_indicator = from_named_tile(state, named_tile)
+          Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+        end)
+        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile, doras: doras}), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end
@@ -164,7 +168,12 @@ defmodule RiichiAdvanced.GameState.Actions do
   def advance_turn(state) do
     # this action is called after playing a tile
     # it should trigger on_turn_change, so don't mark the turn change as via_action
-    change_turn(state, if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end)
+    if state.game_active do
+      change_turn(state, if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end)
+    else
+      # reschedule this turn change
+      schedule_actions(state, state.turn, [["advance_turn"]], %{seat: state.turn})
+    end
   end
 
   defp style_call(style, call_choice, called_tile) do
@@ -295,19 +304,19 @@ defmodule RiichiAdvanced.GameState.Actions do
     else l end 
   end
 
-  defp interpret_amount(state, seat, amt_spec) do
+  defp interpret_amount(state, context, amt_spec) do
     case amt_spec do
       ["count_matches" | opts] ->
-        hand_calls = Conditions.get_hand_calls_spec(state, %{seat: seat}, Enum.at(opts, 0, []))
+        hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        ordering = state.players[seat].tile_ordering
-        ordering_r = state.players[seat].tile_ordering_r
-        tile_aliases = state.players[seat].tile_aliases
-        binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+        ordering = state.players[context.seat].tile_ordering
+        ordering_r = state.players[context.seat].tile_ordering_r
+        tile_aliases = state.players[context.seat].tile_aliases
+        binary_search_count_matches(state, context.seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
       ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
-      ["num_discards" | _opts] -> length(state.players[seat].discards)
-      ["num_aside" | _opts] -> length(state.players[seat].aside)
-      ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[seat].pond, [:"1x"])
+      ["num_discards" | _opts] -> length(state.players[context.seat].discards)
+      ["num_aside" | _opts] -> length(state.players[context.seat].aside)
+      ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[context.seat].pond, [:"1x"])
       ["num_revealed_tiles_all" | _opts] ->
         for {_seat, player} <- state.players do
           Utils.count_tiles(player.hand ++ player.draw, [{:any, ["revealed"]}])
@@ -318,14 +327,31 @@ defmodule RiichiAdvanced.GameState.Actions do
           |> Enum.flat_map(&Riichi.call_to_tiles/1)
           |> Enum.count(&Riichi.tile_matches(opts, %{tile: &1}))
         end |> Enum.sum()
+      ["half_score" | _opts] -> Utils.half_rounded_up(state.players[context.seat].score)
+      ["100_times_tile_number" | _opts] ->
+        cond do
+          Riichi.is_num?(context.tile, 1) -> 100
+          Riichi.is_num?(context.tile, 2) -> 200
+          Riichi.is_num?(context.tile, 3) -> 300
+          Riichi.is_num?(context.tile, 4) -> 400
+          Riichi.is_num?(context.tile, 5) -> 500
+          Riichi.is_num?(context.tile, 6) -> 600
+          Riichi.is_num?(context.tile, 7) -> 700
+          Riichi.is_num?(context.tile, 8) -> 800
+          Riichi.is_num?(context.tile, 9) -> 900
+          true                            -> 0
+        end
       [amount | _opts] when is_integer(amount) -> amount
+      _ ->
+        IO.inspect("Unknown amount spec #{inspect(amt_spec)}")
+        0
     end
   end
 
-  defp add_counter(state, seat, counter_name, amt_spec) do
-    amount = interpret_amount(state, seat, amt_spec)
-    new_ctr = amount + Map.get(state.players[seat].counters, counter_name, 0)
-    state = put_in(state.players[seat].counters[counter_name], new_ctr)
+  defp add_counter(state, context, counter_name, amt_spec) do
+    amount = interpret_amount(state, context, amt_spec)
+    new_ctr = amount + Map.get(state.players[context.seat].counters, counter_name, 0)
+    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
     state
   end
 
@@ -438,7 +464,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         for dir <- chii_victims, reduce: state do
           state -> update_player(state, Utils.get_seat(context.seat, dir), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
         end
-      "add_counter"           -> add_counter(state, context.seat, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
         seat = case Enum.at(opts, 1) do
           "shimocha" -> Utils.get_seat(context.seat, :shimocha)
@@ -468,19 +494,13 @@ defmodule RiichiAdvanced.GameState.Actions do
           "others" -> [:east, :south, :west, :north] -- [context.seat]
           _ -> [context.seat]
         end
+        amount = interpret_amount(state, context, [Enum.at(opts, 0, 0)])
         for recipient <- recipients, reduce: state do
-          state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + Enum.at(opts, 0, 0) } end)
+          state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
         end
       "put_down_riichi_stick" -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"]) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
       "bet_points"            ->
-        amount = Enum.at(opts, 0, 1000)
-        amount = case amount do
-          "half" -> Utils.half_rounded_up(state.players[context.seat].score)
-          _ when is_integer(amount) -> amount
-          _ ->
-            IO.inspect("Unknown amount #{inspect(amount)}")
-            0
-        end
+        amount = interpret_amount(state, context, opts)
         state |> Map.update!(:pot, & &1 + amount) |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
@@ -529,8 +549,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         {revealed_tile, _, revealed_tile_index} = Enum.at(marked_objects.revealed_tile.marked, 0)
 
         # replace revealed tile with hand tile
-        tile_spec = Enum.at(state.revealed_tiles, revealed_tile_index)
-        state = update_in(state.reserved_tiles, &List.keyreplace(&1, tile_spec, 0, {tile_spec, hand_tile}))
+        state = replace_revealed_tile(state, revealed_tile_index, hand_tile)
 
         # replace hand tile with revealed tile
         hand_length = length(state.players[hand_seat].hand)
@@ -827,7 +846,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           run_actions(state, state.rules["after_discard_passed"]["actions"], %{seat: context.seat})
         else state end
       "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
-      "clear_scry"      -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: 0 })
+      "scry_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: Enum.at(opts, 0, 1) } end)
+      "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
@@ -836,7 +856,8 @@ defmodule RiichiAdvanced.GameState.Actions do
     case action do
       "pause" ->
         # schedule an unpause after the given delay
-        :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, actions, context}])
+        state = schedule_actions_before(state, context.seat, actions, context)
+        :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, context}])
         if @debug_actions do
           IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
         end
@@ -903,8 +924,12 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  def schedule_actions_before(state, seat, actions, context) do
+    update_player(state, seat, &%Player{ &1 | deferred_actions: actions ++ &1.deferred_actions, deferred_context: Map.merge(&1.deferred_context, context) })
+  end
+
   def schedule_actions(state, seat, actions, context) do
-    update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions, deferred_context: context })
+    update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions, deferred_context: Map.merge(&1.deferred_context, context) })
   end
 
   def run_deferred_actions(state, context) do

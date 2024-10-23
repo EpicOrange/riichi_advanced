@@ -425,6 +425,7 @@ defmodule Riichi do
       "9" -> is_num?(context.tile, 9)
       "tedashi" -> not Utils.has_attr?(context.tile, ["draw"])
       "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
+      "dora" -> Utils.count_tiles([context.tile], context.doras) >= 1
       "kuikae" ->
         potential_set = Utils.add_attr(context.call.other_tiles ++ [context.tile2], ["hand"])
         triplet = remove_group(potential_set, [], [0,0,0], context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)

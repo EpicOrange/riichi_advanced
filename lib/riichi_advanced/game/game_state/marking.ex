@@ -53,10 +53,7 @@ defmodule RiichiAdvanced.GameState.Marking do
       :hand          -> state.players[seat].hand ++ state.players[seat].draw |> Enum.at(index)
       :aside         -> state.players[seat].aside |> Enum.at(index)
       :discard       -> state.players[seat].pond |> Enum.at(index)
-      :revealed_tile ->
-        tile_spec = Enum.at(state.revealed_tiles, index)
-        {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
-        tile
+      :revealed_tile -> Enum.at(get_revealed_tiles(state), index)
       :scry          -> state.wall |> Enum.at(state.wall_index + index)
       _              ->
         GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})

@@ -975,11 +975,23 @@ defmodule RiichiAdvanced.GameState do
   def get_revealed_tiles(state) do
     for tile_spec <- state.revealed_tiles do
       cond do
-        is_integer(tile_spec) -> Enum.at(state.dead_wall, tile_spec, :"1m")
-        true ->
-          {_, tile} = List.keyfind(state.reserved_tiles, tile_spec, 0, {tile_spec, Utils.to_tile(tile_spec)})
-          tile
+        is_integer(tile_spec)    -> Enum.at(state.dead_wall, tile_spec, :"1x")
+        Utils.is_tile(tile_spec) -> Utils.to_tile(tile_spec)
+        true                     ->
+          GenServer.cast(self(), {:show_error, "Unknown revealed tile spec: #{inspect(tile_spec)}"})
+          state
       end
+    end
+  end
+
+  def replace_revealed_tile(state, index, tile) do
+    tile_spec = Enum.at(state.revealed_tiles, index)
+    cond do
+      is_integer(tile_spec)    -> update_in(state.dead_wall, &List.replace_at(&1, tile_spec, tile))
+      Utils.is_tile(tile_spec) -> update_in(state.revealed_tiles, &List.replace_at(&1, index, tile))
+      true                     ->
+        GenServer.cast(self(), {:show_error, "Unknown revealed tile spec: #{inspect(tile_spec)}"})
+        state
     end
   end
 
@@ -1143,7 +1155,8 @@ defmodule RiichiAdvanced.GameState do
     state = broadcast_state_change(state)
     {:noreply, state}
   end
-  def handle_cast({:unpause, actions, context}, state) do
+  def handle_cast({:unpause, context}, state) do
+    actions = state.players[context.seat].deferred_actions
     IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
     state = Map.put(state, :game_active, true)
     state = Actions.run_actions(state, actions, context)

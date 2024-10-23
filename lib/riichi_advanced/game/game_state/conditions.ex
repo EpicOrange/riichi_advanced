@@ -41,6 +41,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
           "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
+          "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
           _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()
@@ -327,7 +328,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
-      "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) == Enum.at(opts, 1, 0)
+      "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) in Enum.drop(opts, 1)
       "counter_at_least"    -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) >= Enum.at(opts, 1, 0)
       "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Enum.at(opts, 1, 0)
       "genbutsu_shimocha"   ->
@@ -348,6 +349,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
               [win | _] -> win.won_from == Log.to_seat(context.seat)
             end
         end
+      "bet_at_least"        -> state.pot >= Enum.at(opts, 0, 0)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
