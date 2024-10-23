@@ -4477,6 +4477,7 @@
             {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]}
           ],
           [
+            {"name": "status", "opts": ["kakura-kurumi", "riichi"]},
             {"name": "match", "opts": [["hand", "calls", "draw"], ["kakura_kurumi_win"]]}
           ]
         ],
