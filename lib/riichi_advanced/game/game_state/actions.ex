@@ -307,12 +307,21 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp interpret_amount(state, context, amt_spec) do
     case amt_spec do
       ["count_matches" | opts] ->
+        # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
         ordering = state.players[context.seat].tile_ordering
         ordering_r = state.players[context.seat].tile_ordering_r
         tile_aliases = state.players[context.seat].tile_aliases
         binary_search_count_matches(state, context.seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+      ["count_matching_ways" | opts] ->
+        # count how many given hand-calls combinations matches the given match definition
+        hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
+        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        ordering = state.players[context.seat].tile_ordering
+        ordering_r = state.players[context.seat].tile_ordering_r
+        tile_aliases = state.players[context.seat].tile_aliases
+        Enum.count(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
       ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
@@ -848,6 +857,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
       "scry_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: Enum.at(opts, 0, 1) } end)
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
+      "set_aside_scry"  ->
+        tiles = state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)
+        state = update_player(state, context.seat, &%Player{ &1 | aside: &1.aside ++ tiles })
+        state = update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
+        state = update_in(state.wall_index, & &1 + length(tiles))
+        state
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
@@ -1129,7 +1144,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         else
           adjudicate_actions(state)
         end
-      else state end
+      else
+        # when we interrupt the current turn AI with our button choice, they fail to make a choice
+        # this rectifies that
+        notify_ai(state)
+        state
+      end
     else state end
   end
 

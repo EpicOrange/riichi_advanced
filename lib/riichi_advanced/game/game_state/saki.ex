@@ -87,9 +87,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "toyouko-momoko" => "Toyouko Momoko",
     "tsujigaito-satoha" => "Tsujigaito Satoha",
     "tsuruta-himeko" => "Tsuruta Himeko",
-
-    # need to figure out how to display scryed tiles
-    # "ueshige-suzu" => "Ueshige Suzu",
+    "ueshige-suzu" => "Ueshige Suzu",
 
     # need to implement marking players and disabling abilities
     # "usuzawa-sae" => "Usuzawa Sae",

@@ -58,6 +58,7 @@
     "takimi-haru",
     "toyouko-momoko",
     "tsujigaito-satoha",
+    "ueshige-suzu",
     "usuzumi-hatsumi",
     "yae-kobashiri",
     "yoshitome-miharu"
@@ -609,9 +610,9 @@
       "value": 2,
       "when": [[
         // 0-1 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
         // 0 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         [
           "won_by_draw",
           [
@@ -1294,6 +1295,96 @@
       "display_name": "Bets",
       "value": 1,
       "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [24000]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 1]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 2]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 3]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 4]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 5]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 6]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 7]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 8]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 9]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 10]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 11]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 12]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 13]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 14]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 15]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 16]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 17]}]
+    },
+    {
+      "display_name": "Aside tiles",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 18]}]
     }
   ],
   "yakuman": [
@@ -1862,7 +1953,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
                 ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
-                ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed"],
+                ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 // check if anyone's placement is not the same as the one they are tagged with
                 ["when_anyone", [[
@@ -2022,7 +2113,9 @@
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-      ["unset_status", "just_reached", "just_changed_atago_kinue_aside_waits", "call_made", "chii", "pon", "kan", "nagashi", "suehara_kyouko_set_aside"],
+      ["unset_status", "nagashi"],
+      ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside"],
+      ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
       ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
       ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
     ]
@@ -2277,6 +2370,10 @@
       ["set_tile_alias_all", ["0m"], ["5m"]],
       ["set_tile_alias_all", ["0p"], ["5p"]],
       ["set_tile_alias_all", ["0s"], ["5s"]],
+      ["when", [{"name": "placement", "opts": [1]}], [["set_status", "1st_place"]]],
+      ["when", [{"name": "placement", "opts": [2]}], [["set_status", "2nd_place"]]],
+      ["when", [{"name": "placement", "opts": [3]}], [["set_status", "3rd_place"]]],
+      ["when", [{"name": "placement", "opts": [4]}], [["set_status", "4th_place"]]],
       ["when", ["not_all_saki_cards_drafted"], [["set_status_all", "match_start"]]]
     ]
   },
@@ -2398,7 +2495,11 @@
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_pinzu"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "pinzu"]]],
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_souzu"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "souzu"]]],
                 ["when", [{"name": "status", "opts": ["iwato-kasumi", "declare_jihai"]}], [["add_counter", "revealed_suit", "num_matching_melded_tiles_all", "jihai"]]],
-                ["when", [{"name": "status", "opts": ["tsujigaito-satoha"]}, {"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "tsujigaito_satoha_double_score"]]]
+                ["when", [{"name": "status", "opts": ["tsujigaito-satoha"]}, {"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "tsujigaito_satoha_double_score"]]],
+                ["when", [{"name": "status", "opts": ["ueshige-suzu"]}, "has_aside"], [
+                  ["add_counter", "num_matches", "count_matching_ways", ["hand_any", "aside_unique"], [[[[[0, 0]], 1]]]],
+                  ["add_counter", "num_matches", "count_matching_ways", ["winning_tile", "aside_unique"], [[[[[0, 0]], 1]]]]
+                ]]
                ]
   },
   "before_abortive_draw": {
@@ -3602,6 +3703,36 @@
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
         ["advance_turn"]
+      ],
+      "unskippable": true
+    },
+    "ueshige_suzu": {
+      "display_name": "Reveal next tile from wall",
+      "show_when": [
+        "all_saki_cards_drafted",
+        {"name": "status", "opts": ["ueshige-suzu"]},
+        {"name": "status_missing", "opts": ["match_start", "just_scryed"]},
+        [
+          {"name": "others_status", "opts": ["just_called", "ready"]},
+          [
+            "anyone_just_discarded",
+            {"name": "discarder_status", "opts": ["just_reached"]},
+            {"name": "not_discarder_status", "opts": ["discard_passed"]}
+          ]
+        ]
+      ],
+      "actions": [
+        ["set_status", "just_scryed"],
+        ["scry_all", 1],
+        ["push_message", "reveals the next tile in the wall (Ueshige Suzu)"],
+        ["pause", 1000],
+        ["when", [{"name": "match", "opts": [["hand_any", "scry"], [[[[[0, 0]], 1]]]]}], [
+          ["set_aside_scry"],
+          ["big_text", "Ueshige Suzu: set aside!"],
+          ["push_message", "has a copy of the revealed tile in hand, and so sets it aside (Ueshige Suzu)"]
+        ]],
+        ["clear_scry"],
+        ["when", ["anyone_just_discarded"], [["advance_turn"]]]
       ],
       "unskippable": true
     },
