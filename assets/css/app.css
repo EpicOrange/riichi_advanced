@@ -172,7 +172,6 @@ div.tiles:hover::before, div.calls:hover::before {
   border-radius: calc(0.25 * var(--tile-size));
   width: calc(100% + 0.5 * var(--tile-size));
   height: calc(100% + 1 * var(--tile-size));
-  z-index: -100;
 }
 /* toimen's hand covers shimo's calls */
 /* but if we lower its z-index, then toimen's calls are covered by kami */
