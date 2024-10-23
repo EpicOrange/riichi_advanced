@@ -35,7 +35,9 @@ defmodule RiichiAdvancedWeb.DeclareYakuComponent do
   end
 
   def handle_event("submit", assigns, socket) do
-    GenServer.cast(socket.assigns.game_state, {:declare_yaku, socket.assigns.viewer, Map.keys(assigns)})
+    if not Enum.empty?(assigns) do
+      GenServer.cast(socket.assigns.game_state, {:declare_yaku, socket.assigns.viewer, Map.keys(assigns)})
+    end
     {:noreply, socket}
   end
 
