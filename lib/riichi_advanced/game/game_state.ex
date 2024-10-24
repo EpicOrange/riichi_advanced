@@ -96,6 +96,7 @@ defmodule Game do
     die1: 3,
     die2: 4,
     wall_index: 0,
+    dead_wall_offset: 0,
     haipai: [],
     actions: [],
     dead_wall: [],
@@ -341,6 +342,7 @@ defmodule RiichiAdvanced.GameState do
 
     state = state
      |> Map.put(:wall_index, starting_tiles*4)
+     |> Map.put(:dead_wall_offset, 0)
      |> update_all_players(&%Player{
           score: &2.score,
           nickname: &2.nickname,

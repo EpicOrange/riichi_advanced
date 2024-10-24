@@ -130,8 +130,18 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "buttons_exclude"          -> Enum.all?(opts, fn button_name -> button_name not in cxt_player.buttons end)
       "tile_drawn"               -> Enum.all?(opts, fn tile -> tile in state.drawn_reserved_tiles end)
       "tile_not_drawn"           -> Enum.all?(opts, fn tile -> tile not in state.drawn_reserved_tiles end)
-      "tile_revealed"            -> Enum.all?(opts, fn tile -> tile in state.revealed_tiles end)
-      "tile_not_revealed"        -> Enum.all?(opts, fn tile -> tile not in state.revealed_tiles end)
+      "tile_revealed"            ->
+        Enum.all?(opts, fn tile ->
+          tile in state.revealed_tiles || if is_integer(tile) do
+            (tile - length(state.dead_wall)) in state.revealed_tiles
+          else false end
+        end)
+      "tile_not_revealed"        ->
+        Enum.all?(opts, fn tile ->
+          tile not in state.revealed_tiles && if is_integer(tile) do
+            (tile - length(state.dead_wall)) not in state.revealed_tiles
+          else true end
+        end)
       "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index <= 0
       "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->

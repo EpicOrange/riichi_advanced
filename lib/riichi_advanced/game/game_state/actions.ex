@@ -71,10 +71,19 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def draw_tile(state, seat, num, tile_spec \\ nil, to_aside \\ false) do
     if num > 0 do
-      {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index), state.wall_index + 1} end
+      {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index, nil), state.wall_index + 1} end
       if tile_name == nil do
-        IO.puts("Tried to draw a nil tile!")
-        state
+        # move a dead wall tile over
+        if not Enum.empty?(state.dead_wall) do
+          {wall_tiles, dead_wall} = Enum.split(state.dead_wall, 1)
+          state = Map.put(state, :wall, state.wall ++ wall_tiles)
+          state = Map.put(state, :dead_wall, dead_wall)
+          state = Map.put(state, :dead_wall_offset, state.dead_wall_offset + 1)
+          draw_tile(state, seat, num, tile_spec, to_aside)
+        else
+          IO.puts("#{seat} tried to draw a nil tile!")
+          state
+        end
       else
         state = if is_binary(tile_name) && tile_name in state.reserved_tiles do
           Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
