@@ -31,11 +31,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "kajiki-yumi" => "Kajiki Yumi",
     "kainou-yoshiko" => "Kainou Yoshiko",
     "kakura-kurumi" => "Kakura Kurumi",
-
-    # need to implement seeing which player has the end of the wall
-    # TODO
-    # "kanbara-satomi" => "Kanbara Satomi",
-
+    "kanbara-satomi" => "Kanbara Satomi",
     "karijuku-tomoe" => "Karijuku Tomoe",
     "kataoka-yuuki" => "Kataoka Yuuki",
     "kosegawa-shiromi" => "Kosegawa Shiromi",

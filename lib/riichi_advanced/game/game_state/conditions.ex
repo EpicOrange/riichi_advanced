@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "tile" -> [{hand ++ [context.tile], calls}]
           "winning_tile" ->
-            winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
+            winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [winning_tile], calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
@@ -59,6 +59,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "kamicha" -> Utils.get_seat(seat, :kamicha)
       _ -> seat
     end
+  end
+
+  def get_placements(state) do
+    state.players
+    |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)
+    |> Enum.map(fn {seat, _player} -> seat end)
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
@@ -212,9 +218,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end end)
       "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
       "placement"               ->
-        placements = state.players
-        |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)
-        |> Enum.map(fn {seat, _player} -> seat end)
+        placements = get_placements(state)
         Enum.any?(opts, &Enum.at(placements, &1 - 1) == context.seat)
       "last_discard_matches_existing" -> 
         if last_discard_action != nil do
@@ -363,6 +367,29 @@ defmodule RiichiAdvanced.GameState.Conditions do
               [win | _] -> win.won_from == Log.to_seat(context.seat)
             end
         end
+      "wall_is_here"        ->
+        dice_roll = state.die1 + state.die2
+        break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat)
+        end_dir = cond do
+          state.wall_index < 2*(17 - dice_roll) -> break_dir
+          state.wall_index < 2*(34 - dice_roll) -> Utils.prev_turn(break_dir)
+          state.wall_index < 2*(51 - dice_roll) -> Utils.prev_turn(break_dir, 2)
+          state.wall_index < 2*(68 - dice_roll) -> Utils.prev_turn(break_dir, 3)
+          true                                  -> break_dir
+        end
+        end_dir == :self
+      "dead_wall_ends_here"        ->
+        dice_roll = state.die1 + state.die2
+        break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat)
+        wall_length = length(state.wall) + length(state.dead_wall)
+        end_dir = cond do
+          wall_length < 2*(17 - dice_roll) -> break_dir
+          wall_length < 2*(34 - dice_roll) -> Utils.prev_turn(break_dir)
+          wall_length < 2*(51 - dice_roll) -> Utils.prev_turn(break_dir, 2)
+          wall_length < 2*(68 - dice_roll) -> Utils.prev_turn(break_dir, 3)
+          true                             -> break_dir
+        end
+        end_dir == :self
       "bet_at_least"        -> state.pot >= Enum.at(opts, 0, 0)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"

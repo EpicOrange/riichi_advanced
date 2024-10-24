@@ -7,7 +7,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :dead_wall, [])
     socket = assign(socket, :wall_index, 0)
     socket = assign(socket, :dead_wall_offset, 0)
-    socket = assign(socket, :minimized, false)
+    socket = assign(socket, :minimized, true)
     socket = assign(socket, :revealed_tiles, [])
     socket = assign(socket, :reserved_tiles, [])
     socket = assign(socket, :drawn_reserved_tiles, [])
@@ -82,20 +82,14 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     final_wall = live_wall_chunks ++ dead_wall_chunks
     
     # figure out where the wall break is relative to our seat
-    wall_dir = cond do
-      assigns.dice_roll in [2, 6, 10] -> :south
-      assigns.dice_roll in [3, 7, 11] -> :west
-      assigns.dice_roll in [4, 8, 12] -> :north
-      true                            -> :east
-    end
-    our_dir = if assigns.viewer == :spectator do :east else assigns.viewer end
-    break_dir = Riichi.get_seat_wind(assigns.kyoku, our_dir) |> Utils.get_relative_seat(wall_dir)
+    seat = if assigns.viewer == :spectator do :east else assigns.viewer end
+    break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, seat)
     offset = -assigns.dice_roll - Integer.floor_div(-assigns.dead_wall_offset, 2)
     wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, 17 - assigns.dice_roll)
     wall2 = final_wall |> Enum.drop(17 - assigns.dice_roll) |> Enum.take(17)
     wall3 = final_wall |> Enum.drop(34 - assigns.dice_roll) |> Enum.take(17)
     wall4 = final_wall |> Enum.drop(51 + offset) |> Enum.take(17)
-    IO.inspect({length(assigns.dead_wall), dead_wall_chunks, wall4, wall1})
+    # IO.inspect({length(assigns.dead_wall), dead_wall_chunks, wall4, wall1})
     # IO.inspect({length(assigns.dead_wall), length(wall4), length(wall1)})
 
     # insert spacer for dead wall

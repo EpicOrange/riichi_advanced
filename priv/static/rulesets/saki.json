@@ -32,6 +32,7 @@
     "jindai-komaki",
     "kainou-yoshiko",
     "kakura-kurumi",
+    "kanbara-satomi",
     "karijuku-tomoe",
     "kataoka-yuuki",
     "kosegawa-shiromi",
@@ -2145,7 +2146,8 @@
     "actions": [["ite", [{"name": "kamicha_status", "opts": ["extra_turn_prompt"]}], [
                   ["change_turn", "kamicha"]
                 ], [
-                  ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+                  ["when", ["no_tiles_remaining", {"name": "not_anyone_status", "opts": ["kanbara-satomi"]}], [["pause", 1000], ["ryuukyoku"]]],
+                  ["when", [{"name": "tile_revealed", "opts": [0]}, {"name": "anyone_status", "opts": ["kanbara-satomi"]}], [["pause", 1000], ["ryuukyoku"]]],
                   ["when_anyone",
                     [[
                       {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
@@ -2173,8 +2175,12 @@
                     [["set_status", "furiten"]]
                   ],
                   ["when", [
-                    "not_no_tiles_remaining",
                     "all_saki_cards_drafted",
+                    [
+                      "not_no_tiles_remaining",
+                      {"name": "anyone_status", "opts": ["kanbara-satomi"]}
+                    ],
+                    {"name": "tile_not_revealed", "opts": [0]},
                     [
                       {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
                       "not_has_aside"
@@ -2555,6 +2561,30 @@
                     [["5z","6z","7z"], 1]
                   ]]]}
                 ], [["set_status", "uumensai"]]],
+                ["when", [
+                  {"name": "status", "opts": ["kanbara-satomi"]},
+                  [
+                    [{"name": "has_attr", "opts": ["winning_tile", "rinshan"]}, "dead_wall_ends_here"],
+                    [{"name": "not_has_attr", "opts": ["winning_tile", "rinshan"]}, "wall_is_here"]
+                  ]
+                ], [
+                  // flip 2 dora
+                  ["when", [{"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["ensure_dead_wall_2"], ["reveal_tile", -18]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["ensure_dead_wall_2"], ["reveal_tile", -16]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["ensure_dead_wall_2"], ["reveal_tile", -18]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["ensure_dead_wall_2"], ["reveal_tile", -16]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
+                  ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]]
+                ]],
+                // reveal ura
                 ["when", [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "status_missing", "opts": ["ura_revealed"]}], [
                   ["set_status_all", "ura_revealed"],
                   ["when", [{"name": "tile_not_revealed", "opts": [-6]}], [["reveal_tile", "1x"]]],
@@ -2621,15 +2651,23 @@
                 ["when", [{"name": "status", "opts": ["ueshige-suzu"]}, "has_aside"], [
                   ["add_counter", "num_matches", "count_matching_ways", ["hand_any", "aside_unique"], [[[[[0, 0]], 1]]]],
                   ["add_counter", "num_matches", "count_matching_ways", ["winning_tile", "aside_unique"], [[[[[0, 0]], 1]]]]
+                ]],
+                ["ite", [{"name": "has_attr", "opts": ["winning_tile", "rinshan"]}], [
+                  ["when_anyone", [{"name": "others_status", "opts": ["kanbara-satomi"]}, "dead_wall_ends_here"], [["set_status", "kanbara_satomi_double_loss"]]]
+                ], [
+                  ["when_anyone", [{"name": "others_status", "opts": ["kanbara-satomi"]}, "wall_is_here"], [["set_status", "kanbara_satomi_double_loss"]]]
                 ]]
                ]
   },
   "before_abortive_draw": {
-    "actions": []
+    "actions": [
+      ["when_anyone", ["wall_is_here", {"name": "others_status", "opts": ["kanbara-satomi"]}], [["set_status", "kanbara_satomi_double_loss"]]]
+    ]
   },
   "before_exhaustive_draw": {
     "actions": [
-      ["when_anyone", [{"name": "status", "opts": ["nelly-virsaladze"]}], [["set_status", "nelly_virsaladze_take_bets"]]]
+      ["when_anyone", [{"name": "status", "opts": ["nelly-virsaladze"]}], [["set_status", "nelly_virsaladze_take_bets"]]],
+      ["when_anyone", ["wall_is_here", {"name": "others_status", "opts": ["kanbara-satomi"]}], [["set_status", "kanbara_satomi_double_loss"]]]
     ]
   },
   "buttons": {

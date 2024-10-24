@@ -384,8 +384,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
             # either ron, or tsumo pao, or remaining ron pao payment
             payment = basic_score + honba_payment * 3
 
+            # handle yae kobashiri's scoring quirk
             payment = if "double_payment" in state.players[payer].status do
               push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
+              payment * 2
+            else payment end
+
+            # handle kanbara satomi's scoring quirk
+            payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
+              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
               payment * 2
             else payment end
 
@@ -430,6 +437,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 else payment end
                 payment = if "double_payment" in state.players[payer].status do
                   push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
+                  payment * 2
+                else payment end
+                payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
+                  push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
                   payment * 2
                 else payment end
                 delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
@@ -678,6 +689,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
               oya_payment = 4000
               ko_payment = if Riichi.get_east_player_seat(state.kyoku) == seat do 4000 else 2000 end
               payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
+
+              # handle kanbara satomi's scoring quirk
+              payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
+                push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
+                payment * 2
+              else payment end
+
               state
                 |> update_player(seat, &%Player{ &1 | score: &1.score + payment })
                 |> update_player(payer, &%Player{ &1 | score: &1.score - payment })
@@ -691,6 +709,26 @@ defmodule RiichiAdvanced.GameState.Scoring do
             2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
             3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
             4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+          end
+          # handle kanbara satomi's scoring quirk
+          delta_scores = case Enum.find(state.players, fn {_seat, player} -> "kanbara_satomi_double_loss" in player.status end) do
+            nil -> delta_scores
+            {payer, _payer_player} ->
+              delta = delta_scores[payer]
+              if delta < 0 do
+                payment = -delta
+                push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
+                delta_scores = Map.put(delta_scores, payer, delta * 2)
+                case num_tenpai do
+                  2 -> 
+                    # player with lower standing gets the doubled payment
+                    lower_tenpai = Conditions.get_placements(state)
+                    |> Enum.reverse()
+                    |> Enum.find(&tenpai[&1])
+                    Map.put(delta_scores, lower_tenpai, delta_scores[lower_tenpai] * 2)
+                  _ -> Map.new(tenpai, fn {seat, tenpai} -> {seat, delta_scores[seat] + if tenpai do Integer.floor_div(payment, num_tenpai) else 0 end} end)
+                end
+              else delta_scores end
           end
           {state, delta_scores}
         end

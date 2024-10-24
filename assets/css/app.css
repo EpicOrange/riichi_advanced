@@ -1198,7 +1198,9 @@ div.display-wall > div.wall > div.tile-stack > div.tile.top { z-index: 2; }
 div.display-wall > div.wall > div.tile-stack > div.tile.bottom { z-index: 1; transform: translateY(calc(0.75 * var(--tile-size))); }
 div.display-wall > div.wall > div.tile-stack > div.tile:first-child:last-child { transform: translateY(calc(-0.25 * var(--tile-size))); }
 div.display-wall > div.wall.shimocha > div.tile-stack > div.tile.bottom { transform: translateX(calc(-0.25 * var(--tile-size))) translateY(calc(1 * var(--tile-size))); }
+div.display-wall > div.wall.shimocha > div.tile-stack > div.tile:first-child:last-child { transform: translateX(calc(-0.25 * var(--tile-size))); }
 div.display-wall > div.wall.kamicha > div.tile-stack > div.tile.bottom { transform: translateX(calc(0.25 * var(--tile-size))) translateY(calc(1 * var(--tile-size))); }
+div.display-wall > div.wall.kamicha > div.tile-stack > div.tile:first-child:last-child { transform: translateX(calc(0.25 * var(--tile-size))); }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(1) { z-index: -1; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(2) { z-index: -2; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(3) { z-index: -3; }

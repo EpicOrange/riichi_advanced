@@ -513,6 +513,16 @@ defmodule Riichi do
     end
   end
 
+  def get_break_direction(dice_roll, kyoku, seat) do
+    wall_dir = cond do
+      dice_roll in [2, 6, 10] -> :south
+      dice_roll in [3, 7, 11] -> :west
+      dice_roll in [4, 8, 12] -> :north
+      true                    -> :east
+    end
+    get_seat_wind(kyoku, seat) |> Utils.get_relative_seat(wall_dir)
+  end
+
   defp calculate_call_fu({name, call}) do
     {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
     case name do
