@@ -91,46 +91,52 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info({:your_turn, %{player: player}}, state) do
-    if state.initialized && GenServer.call(state.game_state, {:can_discard, state.seat}) do
-      state = %{ state | player: player }
-      playable_hand = player.hand
-      |> Enum.with_index()
-      playable_draw = player.draw
-      |> Enum.with_index()
-      |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
-      playables = playable_hand ++ playable_draw
-      |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
+    if state.initialized do
+      if GenServer.call(state.game_state, {:can_discard, state.seat}) do
+        state = %{ state | player: player }
+        playable_hand = player.hand
+        |> Enum.with_index()
+        playable_draw = player.draw
+        |> Enum.with_index()
+        |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
+        playables = playable_hand ++ playable_draw
+        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
 
-      if not Enum.empty?(playables) do
-        # pick a random tile
-        # {_tile, index} = Enum.random(playables)
-        # pick the first playable tile
-        # {_tile, index} = Enum.at(playables, 0)
-        # pick the last playable tile (the draw)
-        # {_tile, index} = Enum.at(playables, -1)
-        # use our rudimentary AI for discarding
-        # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
-        {{_tile, index}, shanten} = if RiichiAdvanced.GameState.Debug.debug() do
-          {Enum.at(playables, -1), 6}
-        else
-          case choose_discard(state, player, playables) do
-            {nil, _} ->
-              # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
-              Enum.at(playables, -1) # tsumogiri
-            t -> t
+        if not Enum.empty?(playables) do
+          # pick a random tile
+          # {_tile, index} = Enum.random(playables)
+          # pick the first playable tile
+          # {_tile, index} = Enum.at(playables, 0)
+          # pick the last playable tile (the draw)
+          # {_tile, index} = Enum.at(playables, -1)
+          # use our rudimentary AI for discarding
+          # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
+          {{_tile, index}, shanten} = if RiichiAdvanced.GameState.Debug.debug() do
+            {Enum.at(playables, -1), 6}
+          else
+            case choose_discard(state, player, playables) do
+              {nil, _} ->
+                # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
+                Enum.at(playables, -1) # tsumogiri
+              t -> t
+            end
           end
+          state = Map.put(state, :shanten, shanten)
+          # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
+          Process.sleep(trunc(1200 / @ai_speed))
+          GenServer.cast(state.game_state, {:play_tile, state.seat, index})
+          {:noreply, state}
+        else
+          IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
+          {:noreply, state}
         end
-        state = Map.put(state, :shanten, shanten)
-        # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
-        Process.sleep(trunc(1200 / @ai_speed))
-        GenServer.cast(state.game_state, {:play_tile, state.seat, index})
-        {:noreply, state}
       else
-        IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
+        IO.puts(" >> #{state.seat}: You said it's my turn to play a tile, but I am not in a state in which I can discard")
         {:noreply, state}
       end
     else
-      IO.puts(" >> #{state.seat}: You said it's my turn to play a tile, but I am not in a state in which I can discard")
+      # reschedule this for after we initialize
+      :timer.apply_after(1000, Kernel, :send, [self(), {:your_turn, %{player: player}}])
       {:noreply, state}
     end
   end
@@ -160,6 +166,7 @@ defmodule RiichiAdvanced.AIPlayer do
       else
         # pick these (in order of precedence)
         cond do
+          "funakubo_hiroko_allow_swap" in player.buttons -> "funakubo_hiroko_allow_swap"
           "ron" in player.buttons -> "ron"
           "tsumo" in player.buttons -> "tsumo"
           "hu" in player.buttons -> "hu"
@@ -176,6 +183,8 @@ defmodule RiichiAdvanced.AIPlayer do
       GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
       {:noreply, state}
     else
+      # reschedule this for after we initialize
+      :timer.apply_after(1000, Kernel, :send, [self(), {:buttons, %{player: player}}])
       {:noreply, state}
     end
   end

@@ -1322,10 +1322,7 @@ defmodule RiichiAdvanced.GameState do
       # if we're still going, run deferred actions for everyone and then notify ai
       state = if state.game_active do
         state = Actions.resume_deferred_actions(state)
-        # TODO for some reason it doesn't work if we notify immediately
-        # notify_ai(state)
-        # situation is tsujigaito satoha's swap after chii; chii ai player doesn't resume play
-        :timer.apply_after(200, GenServer, :cast, [self(), :notify_ai])
+        notify_ai(state)
         state
       else state end
 

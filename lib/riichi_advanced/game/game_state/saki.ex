@@ -18,11 +18,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     # "ezaki-hitomi" => "Ezaki Hitomi",
 
     "fukuji-mihoko" => "Fukuji Mihoko",
-
-    # need to implement marking players
-    # also if they decline the swap do they get to try again?
-    # "funakubo-hiroko" => "Funakubo Hiroko",
-
+    "funakubo-hiroko" => "Funakubo Hiroko",
     "hanada-kirame" => "Hanada Kirame",
     "hao-huiyu" => "Hao Huiyu",
     "haramura-nodoka" => "Haramura Nodoka",
@@ -37,6 +33,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "kakura-kurumi" => "Kakura Kurumi",
 
     # need to implement seeing which player has the end of the wall
+    # TODO
     # "kanbara-satomi" => "Kanbara Satomi",
 
     "karijuku-tomoe" => "Karijuku Tomoe",
@@ -52,7 +49,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "matsumi-yuu" => "Matsumi Yuu",
     "maya-yukiko" => "Maya Yukiko",
 
-    # need to implement marking players and disabling abilities
+    # need to implement disabling abilities
     # "megan-davin" => "Megan Davin",
 
     "miyanaga-saki" => "Miyanaga Saki",
@@ -83,7 +80,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "tsuruta-himeko" => "Tsuruta Himeko",
     "ueshige-suzu" => "Ueshige Suzu",
 
-    # need to implement marking players and disabling abilities
+    # need to implement disabling abilities
     # "usuzawa-sae" => "Usuzawa Sae",
 
     "usuzumi-hatsumi" => "Usuzumi Hatsumi",

@@ -441,6 +441,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
       "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
       "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_shimocha_status"   -> update_player(state, Utils.get_seat(context.seat, :shimocha), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_shimocha_status" -> update_player(state, Utils.get_seat(context.seat, :shimocha), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_toimen_status"     -> update_player(state, Utils.get_seat(context.seat, :toimen), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_toimen_status"   -> update_player(state, Utils.get_seat(context.seat, :toimen), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
+      "set_kamicha_status"    -> update_player(state, Utils.get_seat(context.seat, :kamicha), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
+      "unset_kamicha_status"  -> update_player(state, Utils.get_seat(context.seat, :kamicha), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
       "set_status_others"     -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status ++ opts) end } end)
       "unset_status_others"   -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status -- opts) end } end)
       "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
@@ -990,7 +996,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           Marking.reset_marking(state, seat)
         else state end
         state
-    end
+    end |> evaluate_choices(true)
   end
 
   def get_superceded_buttons(state, button_name) do
@@ -1118,6 +1124,53 @@ defmodule RiichiAdvanced.GameState.Actions do
     not no_call_buttons || made_choice || marking
   end
 
+  def evaluate_choices(state, from_deferred_actions \\ false) do
+    # for the current turn's player, if they just acted (have deferred actions) and have no buttons, their choice is "skip"
+    # for other players who have no buttons and have not made a choice yet, their choice is "skip"
+    # also for other players who have made a choice, if their choice is superceded by others then set it to "skip"
+    last_action = get_last_action(state)
+    turn_just_acted = last_action != nil && not Enum.empty?(state.players[state.turn].deferred_actions) && last_action.seat == state.turn
+    last_discard_action = get_last_discard_action(state)
+    turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
+    extra_turn = "extra_turn" in state.players[state.turn].status
+    state = for {seat, player} <- state.players, reduce: state do
+      state -> cond do
+        seat == state.turn && (turn_just_acted || (turn_just_discarded && not extra_turn)) && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->
+          # IO.puts("Player #{seat} must skip due to having just discarded")
+          update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
+        seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->
+          # IO.puts("Player #{seat} must skip due to having no buttons")
+          update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
+        seat != state.turn && player.choice != nil && player.choice in get_all_superceded_buttons(state, seat) && player.choice not in get_superceded_buttons(state, player.choice) ->
+          # IO.puts("Player #{seat} must skip due to having buttons superceded")
+          update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
+        true -> state
+      end
+    end
+
+    # check if nobody else needs to make choices
+    if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
+      # if every action is skip, we need to resume deferred actions for all players
+      # otherwise, adjudicate actions as normal
+      if Enum.all?(state.players, fn {_seat, player} -> player.choice == "skip" end) do
+        if state.game_active && not from_deferred_actions do
+          # IO.puts("All choices are no-ops, running deferred actions")
+          state = resume_deferred_actions(state)
+          state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+          notify_ai(state)
+          state
+        else state end
+      else
+        adjudicate_actions(state)
+      end
+    else
+      # when we interrupt the current turn AI with our button choice, they fail to make a choice
+      # this rectifies that
+      notify_ai(state)
+      state
+    end
+  end
+
   def submit_actions(state, seat, choice, actions) do
     if state.game_active && state.players[seat].choice == nil do
       # IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
@@ -1125,50 +1178,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
       state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
 
-      # for the current turn's player, if they just acted (have deferred actions) and have no buttons, their choice is "skip"
-      # for other players who have no buttons and have not made a choice yet, their choice is "skip"
-      # also for other players who have made a choice, if their choice is superceded by others then set it to "skip"
-      last_action = get_last_action(state)
-      turn_just_acted = last_action != nil && not Enum.empty?(state.players[state.turn].deferred_actions) && last_action.seat == state.turn
-      last_discard_action = get_last_discard_action(state)
-      turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
-      extra_turn = "extra_turn" in state.players[state.turn].status
-      state = for {seat, player} <- state.players, reduce: state do
-        state -> cond do
-          seat == state.turn && (turn_just_acted || (turn_just_discarded && not extra_turn)) && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->
-            # IO.puts("Player #{seat} must skip due to having just discarded")
-            update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-          seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->
-            # IO.puts("Player #{seat} must skip due to having no buttons")
-            update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-          seat != state.turn && player.choice != nil && player.choice in get_all_superceded_buttons(state, seat) && player.choice not in get_superceded_buttons(state, player.choice) ->
-            # IO.puts("Player #{seat} must skip due to having buttons superceded")
-            update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-          true -> state
-        end
-      end
-
-      # check if nobody else needs to make choices
-      if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
-        # if every action is skip, we need to resume deferred actions for all players
-        # otherwise, adjudicate actions as normal
-        if Enum.all?(state.players, fn {_seat, player} -> player.choice == "skip" end) do
-          if state.game_active do
-            # IO.puts("All choices are no-ops, running deferred actions")
-            state = resume_deferred_actions(state)
-            state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-            notify_ai(state)
-            state
-          else state end
-        else
-          adjudicate_actions(state)
-        end
-      else
-        # when we interrupt the current turn AI with our button choice, they fail to make a choice
-        # this rectifies that
-        notify_ai(state)
-        state
-      end
+      evaluate_choices(state)
     else state end
   end
 

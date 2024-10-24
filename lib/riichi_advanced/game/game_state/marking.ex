@@ -10,12 +10,12 @@ defmodule RiichiAdvanced.GameState.Marking do
       #   hand: {
       #     marked: [{:"2m", :east, 4}],
       #     needed: 1,
-      #     restrictions: ["same_suit_as_marked_discard"]
+      #     restrictions: ["match_suit"]
       #   },
       #   discard: {
       #     marked: [],
       #     needed: 1,
-      #     restrictions: ["same_suit_as_marked_hand"]
+      #     restrictions: ["match_suit"]
       #   }
       # ]
       east: [],
@@ -73,8 +73,8 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def is_done?(state, marking_player) do
-    get_mark_infos(state.marking[marking_player], :done)
-    |> Enum.any?()
+    [{_done, val}] = get_mark_infos(state.marking[marking_player], :done)
+    val
   end
 
   def mark_done(state, marking_player) do

@@ -19,6 +19,7 @@
     "atarashi-ako",
     "choe-myeonghwa",
     "fukuji-mihoko",
+    "funakubo-hiroko",
     "hanada-kirame",
     "hao-huiyu",
     "haramura-nodoka",
@@ -2056,7 +2057,8 @@
     [["any"], [{"name": "has_attr", "opts": ["tile", "no_discard"]}]],
     [["any"], [{"name": "status", "opts": ["amae-koromo"]}, "just_discarded"]],
     [["any"], [{"name": "status", "opts": ["matano-seiko", "pon"]}]],
-    [["any"], [{"name": "status", "opts": ["kainou-yoshiko", "kainou_yoshiko_discard"]}, {"name": "not_match", "opts": [["last_discard", "tile"], [[[[[0, 0]], 1]]]]}]]
+    [["any"], [{"name": "status", "opts": ["kainou-yoshiko", "kainou_yoshiko_discard"]}, {"name": "not_match", "opts": [["last_discard", "tile"], [[[[[0, 0]], 1]]]]}]],
+    [["any"], [{"name": "status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]}]]
   ],
   "before_turn_change": {
     "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
@@ -2203,6 +2205,7 @@
                     ["unset_status", "about_to_draw"],
                     ["draw_from_aside"]
                   ]],
+                  ["unset_status", "funakubo-hiroko_exhausted"],
                   ["when", [
                     {"name": "status", "opts": ["iwadate-yuan"]},
                     {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
@@ -2453,7 +2456,7 @@
       ["big_text", "Someya Mako: extra turn!"],
       ["push_message", "took an extra turn by calling an all green tile (Someya Mako)"]
     ]]]],
-    ["any", [["when", [{"name": "not_status_missing", "opts": ["yoshitome-miharu", "shishihara-sawaya"]}], [["add_counter", "num_discards", 1]]]]],
+    ["any", [["when", [{"name": "not_status_missing", "opts": ["yoshitome-miharu", "shishihara-sawaya", "funakubo-hiroko"]}], [["add_counter", "num_discards", 1]]]]],
     ["any", [["when", [{"name": "status", "opts": ["kainou-yoshiko", "kainou_yoshiko_discard"]}], [
       ["big_text", "Kainou Yoshiko: discard!"],
       ["push_message", "discarded an identical tile and drew (Kainou Yoshiko)"],
@@ -3942,6 +3945,281 @@
       ],
       "unskippable": true
     },
+    "funakubo_hiroko_start": {
+      "display_name": "Announce swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready"]},
+        {"name": "status_missing", "opts": ["funakubo-hiroko_exhausted", "funakubo_hiroko_choosing_players"]},
+        {"name": "counter_equals", "opts": ["num_discards", 0, 6]}
+      ],
+      "actions": [
+        ["set_status", "funakubo_hiroko_choosing_players"],
+        ["big_text", "Funakubo Hiroko: ability!"],
+        ["push_message", "will select two non-riichi players. The two players will swap three tiles with each other. Pay Hiroko 1500 to decline the swap. (Funakubo Hiroko)"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_wait": {
+      // we need hiroko to do some action while it's their turn, so make it this action
+      "display_name": "Choose players to swap tiles",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready", "funakubo_hiroko_choosing_players"]},
+        {"name": "not_anyone_status", "opts": ["funakubo_hiroko_no_swap"]},
+        {"name": "not_anyone_status", "opts": ["funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["set_status_others", "funakubo_hiroko_swapping"],
+        ["when_anyone", [{"name": "status", "opts": ["riichi"]}], [["set_status", "funakubo_hiroko_no_swap"]]]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_refuse_swap_shimocha": {
+      "display_name": "Pay 1500 to decline the swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "shimocha_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status_missing", "opts": ["riichi", "funakubo_hiroko_no_swap", "funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["big_text", "No swap"],
+        ["push_message", "paid 1500 to decline the swap"],
+        ["set_status", "funakubo_hiroko_no_swap"],
+        ["add_score", -1500],
+        ["add_score", 1500, "shimocha"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_refuse_swap_toimen": {
+      "display_name": "Pay 1500 to decline the swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "toimen_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status_missing", "opts": ["riichi", "funakubo_hiroko_no_swap", "funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["big_text", "No swap"],
+        ["push_message", "paid 1500 to decline the swap"],
+        ["set_status", "funakubo_hiroko_no_swap"],
+        ["add_score", -1500],
+        ["add_score", 1500, "toimen"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_refuse_swap_kamicha": {
+      "display_name": "Pay 1500 to decline the swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "kamicha_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status_missing", "opts": ["riichi", "funakubo_hiroko_no_swap", "funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["big_text", "No swap"],
+        ["push_message", "paid 1500 to decline the swap"],
+        ["set_status", "funakubo_hiroko_no_swap"],
+        ["add_score", -1500],
+        ["add_score", 1500, "kamicha"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_allow_swap": {
+      "display_name": "Allow the swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "others_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status_missing", "opts": ["riichi", "funakubo_hiroko_no_swap", "funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["push_message", "can be swapped"],
+        ["set_status", "funakubo_hiroko_can_swap"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_swap_shimocha_toimen": {
+      "display_name": "Tell shimocha/toimen to swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready", "funakubo_hiroko_choosing_players"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_shimocha"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_toimen"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_kamicha"]},
+        {"name": "not_others_status", "opts": ["swap_shimocha"]},
+        {"name": "not_others_status", "opts": ["swap_toimen"]},
+        {"name": "not_others_status", "opts": ["swap_kamicha"]},
+        {"name": "shimocha_status", "opts": ["funakubo_hiroko_can_swap"]},
+        {"name": "toimen_status", "opts": ["funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["set_status", "funakubo_hiroko_swapping"],
+        ["set_shimocha_status", "swap_shimocha"],
+        ["set_toimen_status", "swap_kamicha"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "ordered south and west to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "ordered west and north to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "ordered north and east to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "ordered east and south to swap three tiles with each other (Funakubo Hiroko)"]]]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_swap_shimocha_kamicha": {
+      "display_name": "Tell shimocha/kamicha to swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready", "funakubo_hiroko_choosing_players"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_shimocha"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_toimen"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_kamicha"]},
+        {"name": "not_others_status", "opts": ["swap_shimocha"]},
+        {"name": "not_others_status", "opts": ["swap_toimen"]},
+        {"name": "not_others_status", "opts": ["swap_kamicha"]},
+        {"name": "shimocha_status", "opts": ["funakubo_hiroko_can_swap"]},
+        {"name": "kamicha_status", "opts": ["funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["set_status", "funakubo_hiroko_swapping"],
+        ["set_shimocha_status", "swap_toimen"],
+        ["set_kamicha_status", "swap_toimen"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "ordered south and north to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "ordered west and east to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "ordered north and south to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "ordered east and west to swap three tiles with each other (Funakubo Hiroko)"]]]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_swap_toimen_kamicha": {
+      "display_name": "Tell toimen/kamicha to swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready", "funakubo_hiroko_choosing_players"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_shimocha"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_toimen"]},
+        {"name": "not_others_status", "opts": ["funakubo_hiroko_swapping_kamicha"]},
+        {"name": "not_others_status", "opts": ["swap_shimocha"]},
+        {"name": "not_others_status", "opts": ["swap_toimen"]},
+        {"name": "not_others_status", "opts": ["swap_kamicha"]},
+        {"name": "toimen_status", "opts": ["funakubo_hiroko_can_swap"]},
+        {"name": "kamicha_status", "opts": ["funakubo_hiroko_can_swap"]}
+      ],
+      "actions": [
+        ["set_status", "funakubo_hiroko_swapping"],
+        ["set_toimen_status", "swap_shimocha"],
+        ["set_kamicha_status", "swap_kamicha"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "ordered west and north to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "ordered north and east to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "ordered east and south to swap three tiles with each other (Funakubo Hiroko)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "ordered south and west to swap three tiles with each other (Funakubo Hiroko)"]]]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_do_swap_shimocha": {
+      "display_name": "Swap with shimocha",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "others_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status", "opts": ["funakubo_hiroko_can_swap", "swap_shimocha"]}
+      ],
+      "actions": [
+        ["mark", [["hand", 3, ["self"]]]],
+        ["charleston_right"],
+        ["unset_status", "swap_shimocha", "funakubo_hiroko_swapping"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_do_swap_toimen": {
+      "display_name": "Swap with toimen",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "others_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status", "opts": ["funakubo_hiroko_can_swap", "swap_toimen"]}
+      ],
+      "actions": [
+        ["mark", [["hand", 3, ["self"]]]],
+        ["charleston_across"],
+        ["unset_status", "swap_toimen", "funakubo_hiroko_swapping"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_do_swap_kamicha": {
+      "display_name": "Swap with kamicha",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "others_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        {"name": "status", "opts": ["funakubo_hiroko_can_swap", "swap_kamicha"]}
+      ],
+      "actions": [
+        ["mark", [["hand", 3, ["self"]]]],
+        ["charleston_left"],
+        ["unset_status", "swap_kamicha", "funakubo_hiroko_swapping"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_swap_abort": {
+      "display_name": "No swap is possible",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready", "funakubo_hiroko_choosing_players"]},
+        [
+          [
+            {"name": "shimocha_status", "opts": ["funakubo_hiroko_no_swap"]},
+            {"name": "toimen_status", "opts": ["funakubo_hiroko_no_swap"]}
+          ],
+          [
+            {"name": "shimocha_status", "opts": ["funakubo_hiroko_no_swap"]},
+            {"name": "kamicha_status", "opts": ["funakubo_hiroko_no_swap"]}
+          ],
+          [
+            {"name": "toimen_status", "opts": ["funakubo_hiroko_no_swap"]},
+            {"name": "kamicha_status", "opts": ["funakubo_hiroko_no_swap"]}
+          ]
+        ]
+      ],
+      "actions": [
+        ["unset_status", "funakubo_hiroko_choosing_players", "funakubo_hiroko_swapping"],
+        ["unset_status_others", "funakubo_hiroko_no_swap", "funakubo_hiroko_can_swap"],
+        ["set_status", "funakubo-hiroko_exhausted"]
+      ],
+      "unskippable": true
+    },
+    "funakubo_hiroko_finalize": {
+      // again, we need hiroko to do some action while it's their turn, so make it this action
+      "display_name": "Perform swap",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["funakubo-hiroko", "ready", "funakubo_hiroko_choosing_players"]},
+        [
+          {"name": "anyone_status", "opts": ["swap_shimocha"]},
+          {"name": "anyone_status", "opts": ["swap_toimen"]},
+          {"name": "anyone_status", "opts": ["swap_kamicha"]}
+        ]
+      ],
+      "actions": [
+        ["unset_status", "funakubo_hiroko_choosing_players", "funakubo_hiroko_swapping"],
+        ["unset_status_others", "funakubo_hiroko_no_swap", "funakubo_hiroko_can_swap"],
+        ["set_status", "funakubo-hiroko_exhausted"]
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -4142,6 +4420,7 @@
           {"name": "status_missing", "opts": ["iwato-kasumi"]},
           {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
         ],
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -4232,7 +4511,8 @@
         [
           {"name": "status_missing", "opts": ["iwato-kasumi"]},
           {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
-        ]
+        ],
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]}
       ],
       "actions": [
         ["big_text", "Riichi"],
@@ -4553,7 +4833,8 @@
         [
           {"name": "status_missing", "opts": ["iwato-kasumi"]},
           {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
-        ]
+        ],
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]}
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
