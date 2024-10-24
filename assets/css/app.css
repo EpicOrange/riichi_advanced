@@ -1118,6 +1118,175 @@ div.declare-yaku button.declare-yaku-button:active {
   filter: none;
 }
 
+/* display wall */
+div.display-wall-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+div.display-wall-container > input.display-wall-minimize { display: none; }
+div.display-wall-container > label.display-wall-minimize-label {
+  background: gray;
+  position: absolute;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
+  bottom: calc(-1.25 * var(--tile-size));
+  right: 0;
+}
+div.display-wall-container > input.display-wall-minimize:checked + label.display-wall-minimize-label { background: var(--tile-back); }
+div.display-wall {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+div.display-wall::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  background: #0000007F;
+  border-radius: calc(0.25 * var(--tile-size));
+  width: 100%;
+  height: 100%;
+}
+div.display-wall.minimized {
+  display: none;
+}
+div.display-wall > div.wall {
+  display: flex;
+  flex-flow: row-reverse wrap;  
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  position: absolute;
+  width: calc(100% - 2.5 * var(--tile-size));
+}
+div.display-wall > div.wall.toimen {
+  top: calc(0.5 * var(--tile-size));
+  left: calc(1.5 * var(--tile-size));
+  transform: rotate(180deg);
+}
+div.display-wall > div.wall.shimocha {
+  right: calc(1.5 * var(--tile-size));
+  top: calc(1.5 * var(--tile-size));
+  transform: rotate(270deg);
+  transform-origin: top right;
+}
+div.display-wall > div.wall.self {
+  flex-direction: row;
+  bottom: calc(0.5 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
+  transform: rotate(180deg);
+}
+div.display-wall > div.wall.kamicha {
+  left: calc(0.5 * var(--tile-size));
+  top: calc(1 * var(--tile-size));
+  transform: rotate(90deg);
+  transform-origin: calc(0.5 * var(--tile-size)) calc(0.5 * var(--tile-size));
+}
+div.display-wall > div.wall > div.tile-stack {
+  display: flex;
+  flex-direction: column-reverse;
+}
+div.display-wall > div.wall > div.spacer {
+  width: calc(0.5 * var(--tile-size));
+}
+div.display-wall > div.wall > div.tile-stack > div.tile.top { z-index: 2; }
+div.display-wall > div.wall > div.tile-stack > div.tile.bottom { z-index: 1; margin-bottom: calc(-0.75 * var(--tile-size)); }
+div.display-wall > div.wall.shimocha > div.tile-stack > div.tile.bottom { margin-bottom: calc(-1 * var(--tile-size)); margin-left: calc(-0.25 * var(--tile-size)); }
+div.display-wall > div.wall.kamicha > div.tile-stack > div.tile.bottom { margin-bottom: calc(-1 * var(--tile-size)); margin-left: calc(0.25 * var(--tile-size)); }
+div.display-wall > div.wall.kamicha > div.tile-stack { margin-left: calc(-0.25 * var(--tile-size)); }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(1) { z-index: -1; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(2) { z-index: -2; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(3) { z-index: -3; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(4) { z-index: -4; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(5) { z-index: -5; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(6) { z-index: -6; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(7) { z-index: -7; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(8) { z-index: -8; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(9) { z-index: -9; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(10) { z-index: -10; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(11) { z-index: -11; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(12) { z-index: -12; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(13) { z-index: -13; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(14) { z-index: -14; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(15) { z-index: -15; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(16) { z-index: -16; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(17) { z-index: -17; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(18) { z-index: -18; }
+div.display-wall > div.dice {
+  position: absolute;
+  width: calc(1.75 * var(--tile-size));
+  height: calc(1.5 * var(--tile-size));
+  left: calc(50% - 0.875 * var(--tile-size));
+  top: calc(50% + 2 * var(--tile-size));
+  column-gap: calc(0.25 * var(--tile-size));
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+div.display-wall > div.dice > div.die {
+  background: white;
+  width: calc(0.75 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  position: relative;
+}
+div.display-wall > div.dice > div.die::before,
+div.display-wall > div.dice > div.die::after {
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  top: calc(0.13 * var(--tile-size));
+  left: calc(0.13 * var(--tile-size));
+  width: calc(0.17 * var(--tile-size));
+  height: calc(0.17 * var(--tile-size));
+  z-index: 1;
+}
+div.display-wall > div.dice > div.die::before {
+  content: "";
+}
+div.display-wall > div.dice > div.die.one::before {
+  background: red;
+  top: calc(0.25 * var(--tile-size));
+  left: calc(0.25 * var(--tile-size));
+  width: calc(0.25 * var(--tile-size));
+  height: calc(0.25 * var(--tile-size));
+}
+div.display-wall > div.dice > div.die.two::before {
+  filter: drop-shadow(calc(0.32 * var(--tile-size)) calc(0.32 * var(--tile-size)) 0 black);
+}
+div.display-wall > div.dice > div.die.three::before {
+  filter:
+    drop-shadow(calc(0.16 * var(--tile-size)) calc(0.16 * var(--tile-size)) 0 black)
+    drop-shadow(calc(0.16 * var(--tile-size)) calc(0.16 * var(--tile-size)) 0 black);
+}
+div.display-wall > div.dice > div.die.four::before {
+  background: red;
+  filter:
+    drop-shadow(calc(0 * var(--tile-size)) calc(0.32 * var(--tile-size)) 0 red)
+    drop-shadow(calc(0.32 * var(--tile-size)) calc(0 * var(--tile-size)) 0 red);
+}
+div.display-wall > div.dice > div.die.five::before {
+  filter:
+    drop-shadow(calc(0 * var(--tile-size)) calc(0.32 * var(--tile-size)) 0 black)
+    drop-shadow(calc(0.32 * var(--tile-size)) calc(0 * var(--tile-size)) 0 black);
+}
+div.display-wall > div.dice > div.die.five::after {
+  content: "";
+  filter: drop-shadow(calc(0.16 * var(--tile-size)) calc(0.16 * var(--tile-size)) 0 black);
+}
+div.display-wall > div.dice > div.die.six::before {
+  top: calc(0.09 * var(--tile-size));
+  filter:
+    drop-shadow(calc(0.32 * var(--tile-size)) calc(0 * var(--tile-size)) 0 black)
+    drop-shadow(calc(0 * var(--tile-size)) calc(0.21 * var(--tile-size)) 0 black)
+    drop-shadow(calc(0 * var(--tile-size)) calc(0.21 * var(--tile-size)) 0 black);
+}
 
 /* win/draw windows */
 div.game-end-window {

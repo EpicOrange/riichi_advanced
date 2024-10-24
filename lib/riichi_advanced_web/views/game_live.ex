@@ -234,6 +234,19 @@ defmodule RiichiAdvancedWeb.GameLive do
         viewer={@viewer}
         yakus={Map.get(@state.rules, "declarable_yaku", [])}
         :if={@state.players[@seat].declared_yaku == []} />
+      <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
+        id="display-wall"
+        game_state={@game_state}
+        viewer={@viewer}
+        kyoku={@state.kyoku}
+        wall={@state.wall}
+        dead_wall={@state.dead_wall}
+        die1={@state.die1}
+        die2={@state.die2}
+        dice_roll={@state.die1 + @state.die2}
+        wall_index={@state.wall_index}
+        revealed_tiles={@state.revealed_tiles}
+        :if={Map.get(@state.rules, "display_wall", false)} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>

@@ -394,7 +394,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             souzu = "yoshitome_miharu_souzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s"]) == 1
             payment = if winner.pao_seat == nil && (manzu || pinzu || souzu) do
               push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays half due to dealing in with their voided suit (Yoshitome Miharu)"}])
-              Utils.half_rounded_up(payment)
+              Utils.half_score_rounded_up(payment)
             else payment end
 
             delta_scores = Map.update!(delta_scores, payer, & &1 - payment)

@@ -93,6 +93,8 @@ defmodule Game do
     # working game state (reset on new round)
     # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
     turn: :east,
+    die1: 3,
+    die2: 4,
     wall_index: 0,
     haipai: [],
     actions: [],
@@ -319,6 +321,8 @@ defmodule RiichiAdvanced.GameState do
       else state end
     end
     state = state
+    |> Map.put(:die1, :rand.uniform(6))
+    |> Map.put(:die2, :rand.uniform(6))
     |> Map.put(:round_result, nil)
     |> Map.put(:winners, %{})
     |> Map.put(:winner_index, 0)

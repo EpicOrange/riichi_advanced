@@ -200,20 +200,28 @@ defmodule Utils do
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = cond do
-      seat == :east  -> :south
-      seat == :south -> :west
-      seat == :west  -> :north
-      seat == :north -> :east
+      seat == :east     -> :south
+      seat == :south    -> :west
+      seat == :west     -> :north
+      seat == :north    -> :east
+      seat == :self     -> :shimocha
+      seat == :shimocha -> :toimen
+      seat == :toimen   -> :kamicha
+      seat == :kamicha  -> :self
     end
     if iterations <= 0 do seat else next_turn(next, iterations - 1) end
   end
   def prev_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     prev = cond do
-      seat == :east  -> :north
-      seat == :south -> :east
-      seat == :west  -> :south
-      seat == :north -> :west
+      seat == :east     -> :north
+      seat == :south    -> :east
+      seat == :west     -> :south
+      seat == :north    -> :west
+      seat == :self     -> :kamicha
+      seat == :shimocha -> :self
+      seat == :toimen   -> :shimocha
+      seat == :kamicha  -> :toimen
     end
     if iterations <= 0 do seat else prev_turn(prev, iterations - 1) end
   end
@@ -262,7 +270,7 @@ defmodule Utils do
     if value == trunc(value) do trunc(value) else value end
   end
 
-  def half_rounded_up(value) do
+  def half_score_rounded_up(value) do
     # half rounded up to the nearest 100
     nominal = Integer.floor_div(value, 100)
     # floor_div rounds towards -infinity, so this is effectively ceil(nominal/2) * 100

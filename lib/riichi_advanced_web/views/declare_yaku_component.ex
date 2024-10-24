@@ -12,8 +12,8 @@ defmodule RiichiAdvancedWeb.DeclareYakuComponent do
   def render(assigns) do
     ~H"""
     <div class="declare-yaku-container">
-      <input id="minimize" type="checkbox" class="declare-yaku-minimize">
-      <label for="minimize" class="declare-yaku-minimize-label" phx-cancellable-click="minimize" phx-target={@myself}><%= if @minimized do "+" else "–" end %></label>
+      <input id="declare-yaku-minimize" type="checkbox" class="declare-yaku-minimize">
+      <label for="declare-yaku-minimize" class="declare-yaku-minimize-label" phx-cancellable-click="minimize" phx-target={@myself}><%= if @minimized do "+" else "–" end %></label>
       <div class={[@id, @minimized && "minimized"]}>
         <form phx-submit="submit" phx-target={@myself}>
           <div class="declarable-yakus">
