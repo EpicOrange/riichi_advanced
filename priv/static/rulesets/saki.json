@@ -65,6 +65,7 @@
     "toyouko-momoko",
     "tsujigaito-satoha",
     "ueshige-suzu",
+    "usuzawa-sae",
     "usuzumi-hatsumi",
     "yae-kobashiri",
     "yoshitome-miharu"
@@ -4371,10 +4372,10 @@
         ["disable_saki_card", "shimocha"],
         ["big_text", "Megan Davin: duel!"],
         ["big_text", "Megan Davin: duel!", "shimocha"],
-        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with south (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with west (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with north (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with east (Megan Davin)"]]]
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with south, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with west, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with north, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with east, disabling their ability (Megan Davin)"]]]
       ],
       "unskippable": true
     },
@@ -4393,10 +4394,10 @@
         ["disable_saki_card", "toimen"],
         ["big_text", "Megan Davin: duel!"],
         ["big_text", "Megan Davin: duel!", "toimen"],
-        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with west (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with north (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with east (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with south (Megan Davin)"]]]
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with west, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with north, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with east, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with south, disabling their ability (Megan Davin)"]]]
       ],
       "unskippable": true
     },
@@ -4415,10 +4416,76 @@
         ["disable_saki_card", "kamicha"],
         ["big_text", "Megan Davin: duel!"],
         ["big_text", "Megan Davin: duel!", "kamicha"],
-        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with north (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with east (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with south (Megan Davin)"]]],
-        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with west (Megan Davin)"]]]
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with north, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with east, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with south, disabling their ability (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with west, disabling their ability (Megan Davin)"]]]
+      ],
+      "unskippable": true
+    },
+    "usuzawa_sae_shimocha": {
+      "display_name": "Choose shimocha",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["usuzawa-sae", "just_reached"]},
+        {"name": "status_missing", "opts": ["usuzawa-sae_exhausted"]}
+      ],
+      "actions": [
+        ["set_status", "usuzawa-sae_exhausted"],
+        ["disable_saki_card", "others"],
+        ["set_shimocha_status", "usuzawa_sae_opponent"],
+        ["big_text", "Usuzawa Sae: opponent!"],
+        ["big_text", "Usuzawa Sae: opponent!", "shimocha"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose south as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose west as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "disabled everyone else's ability and chose east as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]]
+      ],
+      "unskippable": true
+    },
+    "usuzawa_sae_toimen": {
+      "display_name": "Choose toimen",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["usuzawa-sae", "just_reached"]},
+        {"name": "status_missing", "opts": ["usuzawa-sae_exhausted"]}
+      ],
+      "actions": [
+        ["set_status", "usuzawa-sae_exhausted"],
+        ["disable_saki_card", "others"],
+        ["set_toimen_status", "usuzawa_sae_opponent"],
+        ["big_text", "Usuzawa Sae: opponent!"],
+        ["big_text", "Usuzawa Sae: opponent!", "toimen"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose west as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "disabled everyone else's ability and chose east as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "disabled everyone else's ability and chose south as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]]
+      ],
+      "unskippable": true
+    },
+    "usuzawa_sae_kamicha": {
+      "display_name": "Choose kamicha",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["usuzawa-sae", "just_reached"]},
+        {"name": "status_missing", "opts": ["usuzawa-sae_exhausted"]}
+      ],
+      "actions": [
+        ["set_status", "usuzawa-sae_exhausted"],
+        ["disable_saki_card", "others"],
+        ["set_kamicha_status", "usuzawa_sae_opponent"],
+        ["big_text", "Usuzawa Sae: opponent!"],
+        ["big_text", "Usuzawa Sae: opponent!", "kamicha"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose east as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "disabled everyone else's ability and chose south as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "disabled everyone else's ability and chose west as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]]
       ],
       "unskippable": true
     },
@@ -4435,7 +4502,7 @@
         "not_no_tiles_remaining",
         "kamicha_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
         "call_available"
       ],
       "actions": [
@@ -4472,7 +4539,7 @@
         "not_no_tiles_remaining",
         "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted", "usuzawa_sae_opponent"]},
         "call_available"
       ],
       "actions": [
@@ -4500,7 +4567,7 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining", "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
@@ -4542,7 +4609,7 @@
         "not_no_tiles_remaining",
         "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
-        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted"]},
+        {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
         "call_available",
         {"name": "status_missing", "opts": ["mase-yuuko"]},
         [
@@ -4599,7 +4666,17 @@
       ],
       "show_when": [
         "all_saki_cards_drafted",
-        "our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]},
+        "our_turn",
+        {"name": "not_status", "opts": ["match_start"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "has_draw",
+        "self_call_available",
+        {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "status_missing", "opts": ["usuzawa_sae_opponent"]},
+          {"name": "status", "opts": ["riichi"]}
+        ],
         [
           {"name": "not_status", "opts": ["riichi"]},
           {"name": "not_call_would_change_waits", "opts": ["win"]}
@@ -4660,7 +4737,20 @@
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "not_status", "opts": ["match_start"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "not_status", "opts": ["match_start"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "has_draw",
+        "can_upgrade_call",
+        {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "status_missing", "opts": ["usuzawa_sae_opponent"]},
+          {"name": "status", "opts": ["riichi"]}
+        ]
+      ],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],
           ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
@@ -4771,6 +4861,10 @@
           {"name": "status_missing", "opts": ["furiten"]},
           {"name": "status", "opts": ["atago-hiroe", "riichi"]},
           {"name": "status", "opts": ["atago-kinue", "atago_kinue_aside_waits"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["usuzawa_sae_opponent"]},
+          {"name": "status", "opts": ["riichi"]}
         ],
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "someone_else_just_discarded",

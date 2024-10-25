@@ -70,10 +70,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "tsujigaito-satoha" => "Tsujigaito Satoha",
     "tsuruta-himeko" => "Tsuruta Himeko",
     "ueshige-suzu" => "Ueshige Suzu",
-
-    # need to implement disabling abilities
-    # "usuzawa-sae" => "Usuzawa Sae",
-
+    "usuzawa-sae" => "Usuzawa Sae",
     "usuzumi-hatsumi" => "Usuzumi Hatsumi",
     "yae-kobashiri" => "Yae Kobashiri",
     "yoshitome-miharu" => "Yoshitome Miharu",
