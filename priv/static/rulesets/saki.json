@@ -42,6 +42,7 @@
     "matsumi-kuro",
     "matsumi-yuu",
     "maya-yukiko",
+    "megan-davin",
     "miyanaga-saki",
     "miyanaga-teru",
     "motouchi-naruka",
@@ -2256,28 +2257,40 @@
                     ]],
                     [["set_status", "furiten"]]
                   ],
-                  ["when", [
-                    "all_saki_cards_drafted",
-                    [
-                      "not_no_tiles_remaining",
-                      {"name": "anyone_status", "opts": ["kanbara-satomi"]}
-                    ],
-                    {"name": "tile_not_revealed", "opts": [0]},
-                    [
-                      {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
-                      "not_has_aside"
-                    ]
+                  // draw a tile
+                  // but only when you're not about to skip your turn due to a duel
+                  ["ite", [
+                    {"name": "status_missing", "opts": ["megan-davin", "duelist"]},
+                    {"name": "others_status", "opts": ["megan-davin", "riichi"]},
+                    {"name": "others_status", "opts": ["duelist", "riichi"]}
                   ], [
-                    ["set_status", "about_to_draw"],
-                    ["recalculate_buttons"], // allow interrupting draw
-                    ["unset_status", "about_to_draw"],
-                    ["draw"],
-                    ["when", [{"name": "status", "opts": ["ippatsu"]}], [
-                      // for atago hiroe
-                      ["when", [{"name": "placement", "opts": [1]}], [["add_attr", ["draw"], ["1st_place"]]]],
-                      ["when", [{"name": "placement", "opts": [2]}], [["add_attr", ["draw"], ["2nd_place"]]]],
-                      ["when", [{"name": "placement", "opts": [3]}], [["add_attr", ["draw"], ["3rd_place"]]]],
-                      ["add_attr", ["draw"], ["ippatsu"]]
+                    // skip your turn
+                    ["advance_turn"]
+                  ], [
+                    // draw a tile
+                    ["when", [
+                      "all_saki_cards_drafted",
+                      [
+                        "not_no_tiles_remaining",
+                        {"name": "anyone_status", "opts": ["kanbara-satomi"]}
+                      ],
+                      {"name": "tile_not_revealed", "opts": [0]},
+                      [
+                        {"name": "status_missing", "opts": ["shibuya-takami", "matano-seiko", "onjouji-toki"]},
+                        "not_has_aside"
+                      ]
+                    ], [
+                      ["set_status", "about_to_draw"],
+                      ["recalculate_buttons"], // allow interrupting draw
+                      ["unset_status", "about_to_draw"],
+                      ["draw"],
+                      ["when", [{"name": "status", "opts": ["ippatsu"]}], [
+                        // for atago hiroe
+                        ["when", [{"name": "placement", "opts": [1]}], [["add_attr", ["draw"], ["1st_place"]]]],
+                        ["when", [{"name": "placement", "opts": [2]}], [["add_attr", ["draw"], ["2nd_place"]]]],
+                        ["when", [{"name": "placement", "opts": [3]}], [["add_attr", ["draw"], ["3rd_place"]]]],
+                        ["add_attr", ["draw"], ["ippatsu"]]
+                      ]]
                     ]]
                   ]],
                   ["when", ["no_tiles_remaining"], [["add_attr", ["draw"], ["haitei"]]]],
@@ -4343,6 +4356,72 @@
       ],
       "unskippable": true
     },
+    "megan_davin_duel_shimocha": {
+      "display_name": "Duel shimocha",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["megan-davin", "ready"]},
+        {"name": "status_missing", "opts": ["megan-davin_exhausted"]}
+      ],
+      "actions": [
+        ["set_status", "megan-davin_exhausted", "megan_davin_double_payment"],
+        ["set_shimocha_status", "duelist", "megan_davin_double_payment"],
+        ["disable_saki_card", "shimocha"],
+        ["big_text", "Megan Davin: duel!"],
+        ["big_text", "Megan Davin: duel!", "shimocha"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with south (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with west (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with north (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with east (Megan Davin)"]]]
+      ],
+      "unskippable": true
+    },
+    "megan_davin_duel_toimen": {
+      "display_name": "Duel toimen",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["megan-davin", "ready"]},
+        {"name": "status_missing", "opts": ["megan-davin_exhausted"]}
+      ],
+      "actions": [
+        ["set_status", "megan-davin_exhausted", "megan_davin_double_payment"],
+        ["set_toimen_status", "duelist", "megan_davin_double_payment"],
+        ["disable_saki_card", "toimen"],
+        ["big_text", "Megan Davin: duel!"],
+        ["big_text", "Megan Davin: duel!", "toimen"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with west (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with north (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with east (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with south (Megan Davin)"]]]
+      ],
+      "unskippable": true
+    },
+    "megan_davin_duel_kamicha": {
+      "display_name": "Duel kamicha",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["megan-davin", "ready"]},
+        {"name": "status_missing", "opts": ["megan-davin_exhausted"]}
+      ],
+      "actions": [
+        ["set_status", "megan-davin_exhausted", "megan_davin_double_payment"],
+        ["set_kamicha_status", "duelist", "megan_davin_double_payment"],
+        ["disable_saki_card", "kamicha"],
+        ["big_text", "Megan Davin: duel!"],
+        ["big_text", "Megan Davin: duel!", "kamicha"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with north (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with east (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with south (Megan Davin)"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["push_message", "initiated a duel with west (Megan Davin)"]]]
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -4544,6 +4623,10 @@
           {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
         ],
         {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        [
+          {"name": "status_missing", "opts": ["megan-davin"]},
+          {"name": "status", "opts": ["megan-davin_exhausted"]}
+        ],
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -4635,7 +4718,11 @@
           {"name": "status_missing", "opts": ["iwato-kasumi"]},
           {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
         ],
-        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]}
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        [
+          {"name": "status_missing", "opts": ["megan-davin"]},
+          {"name": "status", "opts": ["megan-davin_exhausted"]}
+        ]
       ],
       "actions": [
         ["big_text", "Riichi"],
@@ -4957,7 +5044,11 @@
           {"name": "status_missing", "opts": ["iwato-kasumi"]},
           {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
         ],
-        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]}
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        [
+          {"name": "status_missing", "opts": ["megan-davin"]},
+          {"name": "status", "opts": ["megan-davin_exhausted"]}
+        ]
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]

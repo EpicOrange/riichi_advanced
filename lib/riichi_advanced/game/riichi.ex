@@ -371,6 +371,7 @@ defmodule Riichi do
         true -> waits
       end |> Enum.uniq()
     end
+    # TODO remove wait if you have four of the tile in hand or calls
   end
 
   def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do

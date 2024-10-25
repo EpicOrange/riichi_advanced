@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
@@ -41,10 +42,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "matsumi-kuro" => "Matsumi Kuro",
     "matsumi-yuu" => "Matsumi Yuu",
     "maya-yukiko" => "Maya Yukiko",
-
-    # need to implement disabling abilities
-    # "megan-davin" => "Megan Davin",
-
+    "megan-davin" => "Megan Davin",
     "miyanaga-saki" => "Miyanaga Saki",
     "miyanaga-teru" => "Miyanaga Teru",
     "motouchi-naruka" => "Motouchi Naruka",
@@ -111,6 +109,11 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def draw_saki_cards(state, num) do
+    debug_card = Debug.debug_saki_card()
+    state = if debug_card != nil do
+      update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 3, debug_card) end)
+    else state end
+
     ix = state.saki.saki_deck_index
     cards = Enum.slice(state.saki.saki_deck, ix..ix+num-1)
     state = Map.update!(state, :saki, &Map.put(&1, :saki_deck_index, ix + num))

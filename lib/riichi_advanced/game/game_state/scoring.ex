@@ -384,6 +384,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
             # either ron, or tsumo pao, or remaining ron pao payment
             payment = basic_score + honba_payment * 3
 
+            # handle megan davin's scoring quirk
+            payment = if "megan_davin_double_payment" in state.players[winner.seat].status && "megan_davin_double_payment" in state.players[payer].status do
+              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double to their duelist (Megan Davin)"}])
+              payment * 2
+            else payment end
+
             # handle yae kobashiri's scoring quirk
             payment = if "double_payment" in state.players[payer].status do
               push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
@@ -437,6 +443,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 else payment end
                 payment = if "double_payment" in state.players[payer].status do
                   push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
+                  payment * 2
+                else payment end
+                payment = if "megan_davin_double_payment" in state.players[winner.seat].status && "megan_davin_double_payment" in state.players[payer].status do
+                  push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double to their duelist (Megan Davin)"}])
                   payment * 2
                 else payment end
                 payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
