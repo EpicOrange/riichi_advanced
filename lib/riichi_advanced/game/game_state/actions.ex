@@ -177,12 +177,17 @@ defmodule RiichiAdvanced.GameState.Actions do
       for style_spec <- style, reduce: [] do
         acc ->
           tile = case style_spec do
-            "call"                         -> {called_tile, false}
-            "call_sideways"                -> {called_tile, true}
-            ix when is_integer(ix)         -> {Enum.at(tiles, ix), false}
-            ["1x", ix] when is_integer(ix) -> {{:"1x", [Enum.at(tiles, ix)]}, false}
-            ["1x", tile]                   -> {{:"1x", [Utils.to_tile(tile)]}, false}
-            tile                           -> {Utils.to_tile(tile), false}
+            "call"                                  -> {called_tile, false}
+            "call_sideways"                         -> {called_tile, true}
+            ix when is_integer(ix)                  -> {Enum.at(tiles, ix), false}
+            ["sideways", ix] when is_integer(ix)    -> {Enum.at(tiles, ix), true}
+            ["1x", ix] when is_integer(ix)          -> {{:"1x", [Enum.at(tiles, ix)]}, false}
+            ["1x", "call"]                          -> {{:"1x", [called_tile]}, false}
+            ["1x", tile]                            -> {{:"1x", [Utils.to_tile(tile)]}, false}
+            ["1x_sideways", ix] when is_integer(ix) -> {{:"1x", [Enum.at(tiles, ix)]}, true}
+            ["1x_sideways", "call"]                 -> {{:"1x", [called_tile]}, true}
+            ["1x_sideways", tile]                   -> {{:"1x", [Utils.to_tile(tile)]}, true}
+            tile                                    -> {Utils.to_tile(tile), false}
           end
           [tile | acc]
       end |> Enum.reverse()
@@ -191,9 +196,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
-    call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
-    call_style = Map.get(state.rules["buttons"][button_name], "call_style", Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end))
+  def trigger_call(state, seat, call_name, call_choice, called_tile, call_source) do
+    call_name = Map.get(state.rules["buttons"][call_name], "call_name", call_name)
+    default_call_style = Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end)
+    call_style = Map.merge(default_call_style, Map.get(state.rules["buttons"][call_name], "call_style", %{}))
 
     # style the call
     call = if called_tile != nil do
@@ -266,10 +272,22 @@ defmodule RiichiAdvanced.GameState.Actions do
     # upgrade that call
     {_name, call} = Enum.at(state.players[seat].calls, index)
 
-    # find the index of the sideways tile
+    # find the index of the sideways tile to determine the direction
     sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
-    sideways_index = if sideways_index == nil do -1 else sideways_index end
-    upgraded_call = {call_name, List.insert_at(call, sideways_index, {called_tile, true})}
+    dir = case sideways_index do
+      0 -> :kamicha
+      1 -> :toimen
+      2 -> :shimocha
+      _ -> :self
+    end
+
+    # style the call
+    default_call_style = Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end)
+    call_style = Map.merge(default_call_style, Map.get(state.rules["buttons"][call_name], "call_style", %{}))
+    style = call_style[Atom.to_string(dir)]
+    call = style_call(style, Utils.strip_attrs(call_choice), Utils.strip_attrs(called_tile))
+
+    upgraded_call = {call_name, call}
     state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand"]), [called_tile]) |> Enum.at(0) |> Utils.remove_attr(["hand"]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })

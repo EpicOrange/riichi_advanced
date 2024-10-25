@@ -4502,9 +4502,9 @@
         "our_turn",
         "not_just_discarded",
         {"name": "status", "opts": ["oohoshi-awai"]},
-        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place", "oohoshi_awai_done"]},
+        {"name": "status_missing", "opts": ["just_reached", "oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place", "oohoshi_awai_done"]},
         [
-          {"name": "status", "opts": ["just_reached"]},
+          {"name": "status", "opts": ["ippatsu"]},
           {"name": "status", "opts": ["kan"]}
         ]
       ],
@@ -4621,6 +4621,133 @@
         ["recalculate_buttons"] // allow for tsumo, also pass control to ueshige suzu if needed
       ],
       "unskippable": true
+    },
+    "oohoshi_awai_daiminkan": {
+      "display_name": "Kan (closed)",
+      "call": [[0, 0, 0]],
+      "call_style": {"kamicha": [["1x_sideways", "call"], 0, 1, 2], "toimen": [["1x", 0], "call_sideways", 1, ["1x", 2]], "shimocha": [["1x", 0], 1, 2, ["1x_sideways", "call"]]},
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]},
+        [
+          {"name": "not_status", "opts": ["riichi"]},
+          {"name": "not_call_changes_waits", "opts": ["win"]}
+        ]
+      ],
+      "show_when": [
+        "all_saki_cards_drafted",
+        "not_our_turn",
+        {"name": "status", "opts": ["oohoshi-awai"]},
+        {"name": "not_anyone_status", "opts": ["about_to_call"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "someone_else_just_discarded",
+        {"name": "not_discarder_status", "opts": ["discard_passed"]},
+        {"name": "status_missing", "opts": ["about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
+        "call_available",
+        {"name": "status_missing", "opts": ["mase-yuuko"]}
+      ],
+      "actions": [
+        ["big_text", "Kan"],
+        ["set_status", "about_to_call", "daiminkan"],
+        ["recalculate_buttons"], // allow interrupting call
+        ["unset_status", "about_to_call"],
+        ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
+          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
+          ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["ensure_dead_wall_2"], ["reveal_tile", -18]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["ensure_dead_wall_2"], ["reveal_tile", -16]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
+          ["set_status", "kan"],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [
+            ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+            ["draw", 1, "kandraw_4"]
+          ]],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+          ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]],
+          ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
+            ["set_status", "extra_turn"],
+            ["big_text", "Inoue Jun: extra turn!"],
+            ["add_score", 500],
+            ["add_score", -500, "last_discarder"],
+            ["push_message", "took 500 points and an extra turn by calling (Inoue Jun)"],
+            ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
+          ]]
+        ]]
+      ],
+      "precedence_over": ["chii", "pon", "daiminkan"]
+    },
+    "oohoshi_awai_kakan": {
+      "display_name": "Kan (closed)",
+      "call_style": {
+        "kamicha": [["1x_sideways", 0], "call_sideways", 1, ["1x", 2]],
+        "toimen": [["1x", 0], ["sideways", 1], "call_sideways", ["1x", 2]],
+        "shimocha": [["1x", 0], 1, ["1x_sideways", 2], "call_sideways"]
+      },
+      "call": [[0, 0, 0]],
+      "upgrades": "pon",
+      "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        {"name": "status", "opts": ["oohoshi-awai"]},
+        {"name": "not_status", "opts": ["match_start"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
+        "not_no_tiles_remaining",
+        "has_draw",
+        "can_upgrade_call",
+        {"name": "status_missing", "opts": ["just_reached"]},
+        [
+          {"name": "status_missing", "opts": ["usuzawa_sae_opponent"]},
+          {"name": "status", "opts": ["riichi"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["kataoka-yuuki"]},
+          {"name": "not_round_wind_is", "opts": ["east"]},
+          {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["nanpo-kazue"]},
+          {"name": "not_round_wind_is", "opts": ["south"]},
+          {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["onjouji-toki"]},
+          {"name": "status", "opts": ["onjouji-toki_exhausted"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["iwato-kasumi"]},
+          {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
+        ],
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        [
+          {"name": "status_missing", "opts": ["megan-davin"]},
+          {"name": "status", "opts": ["megan-davin_exhausted"]}
+        ],
+        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place"]}
+      ],
+      "actions": [
+        ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["ensure_dead_wall_2"], ["reveal_tile", -18]]],
+          ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["ensure_dead_wall_2"], ["reveal_tile", -16]]],
+        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
+        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
+        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
+        ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
+        ["set_status", "kan"],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [
+          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+          ["draw", 1, "kandraw_4"]
+        ]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+      ]
     },
     "chii": {
       "display_name": "Chii",
@@ -4744,7 +4871,7 @@
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
         {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
         "call_available",
-        {"name": "status_missing", "opts": ["mase-yuuko"]},
+        {"name": "status_missing", "opts": ["mase-yuuko", "oohoshi-awai"]},
         [
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
           {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
@@ -4871,6 +4998,11 @@
     "kakan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
+      "call_style": {
+        "kamicha": [["sideways", 0], "call_sideways", 1, 2],
+        "toimen": [0, ["sideways", 1], "call_sideways", 2],
+        "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
+      },
       "upgrades": "pon",
       "call_conditions": [{"name": "not_call_contains", "opts": [[["7z", "golden"]], 1]}],
       "show_when": [
@@ -4880,8 +5012,8 @@
         {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "not_no_tiles_remaining",
         "has_draw",
+        {"name": "status_missing", "opts": ["just_reached", "mase-yuuko", "oohoshi-awai"]},
         "can_upgrade_call",
-        {"name": "status_missing", "opts": ["just_reached"]},
         [
           {"name": "status_missing", "opts": ["usuzawa_sae_opponent"]},
           {"name": "status", "opts": ["riichi"]}
