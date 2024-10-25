@@ -103,6 +103,7 @@ defmodule Game do
     reversed_turn_order: false,
     reserved_tiles: [],
     revealed_tiles: [],
+    saved_revealed_tiles: [],
     max_revealed_tiles: 0,
     drawn_reserved_tiles: [],
     marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
@@ -306,6 +307,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:dead_wall, dead_wall)
       |> Map.put(:reserved_tiles, reserved_tiles)
       |> Map.put(:revealed_tiles, revealed_tiles)
+      |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
     else
@@ -315,6 +317,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:dead_wall, [])
       |> Map.put(:reserved_tiles, [])
       |> Map.put(:revealed_tiles, [])
+      |> Map.put(:saved_revealed_tiles, [])
       |> Map.put(:max_revealed_tiles, 0)
       |> Map.put(:drawn_reserved_tiles, [])
       if length(reserved_tile_names) > dead_wall_length do
@@ -1321,7 +1324,7 @@ defmodule RiichiAdvanced.GameState do
     state = if not Marking.needs_marking?(state, marking_player) do
       state = Actions.run_deferred_actions(state, %{seat: marking_player})
       # only reset marking if the mark action states that it is done
-      state = if Marking.is_done?(state, seat) do
+      state = if Marking.is_done?(state, marking_player) do
         Marking.reset_marking(state, marking_player)
       else state end
 

@@ -49,10 +49,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "nanpo-kazue" => "Nanpo Kazue",
     "nelly-virsaladze" => "Nelly Virsaladze",
     "onjouji-toki" => "Onjouji Toki",
-
-    # need to implement swapping with uradora indicators
-    # "oohoshi-awai" => "Oohoshi Awai",
-
+    "oohoshi-awai" => "Oohoshi Awai",
     "ryuumonbuchi-touka" => "Ryuumonbuchi Touka",
     "sagimori-arata" => "Sagimori Arata",
     "sawamura-tomoki" => "Sawamura Tomoki",
@@ -109,6 +106,14 @@ defmodule RiichiAdvanced.GameState.Saki do
     debug_card = Debug.debug_saki_card()
     state = if debug_card != nil do
       update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 3, debug_card) end)
+    else state end
+
+    debug_card_2 = Debug.debug_saki_card_2()
+    state = if debug_card_2 != nil do
+      state = update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 4, debug_card_2) end)
+      state = update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 5, debug_card_2) end)
+      state = update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 6, debug_card_2) end)
+      update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 7, debug_card_2) end)
     else state end
 
     ix = state.saki.saki_deck_index

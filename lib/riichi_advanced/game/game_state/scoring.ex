@@ -357,7 +357,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
           winner_player = state.players[winner.seat]
           honba_payment = if "multiply_honba_with_han" in winner_player.status do honba_payment * winner.points else honba_payment end
-          honba_payment = if "triple_noten_payments" in winner_player.status do honba_payment * 3 else honba_payment end
 
           # calculate some parameters that change if pao exists
           {delta_scores, basic_score, payer, direct_hit} =
@@ -742,6 +741,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
           end
           {state, delta_scores}
         end
+
+        # handle ikeda kana's scoring quirk
+        delta_scores = if Enum.any?(state.players, fn {_seat, player} -> "triple_noten_payments" in player.status end) do
+          push_message(state, [%{text: "Noten payments are tripled (Ikeda Kana)"}])
+          Map.new(delta_scores, fn {seat, delta} -> {seat, delta * 3} end)
+        else delta_scores end
 
         # handle hanada kirame's scoring quirk
         {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)

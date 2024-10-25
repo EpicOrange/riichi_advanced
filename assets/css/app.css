@@ -1019,6 +1019,7 @@ div.scryed-tiles-container {
   width: 100%;
   display: flex;
   justify-content: center;
+  z-index: 1;
 }
 div.scryed-tiles {
   display: flex;

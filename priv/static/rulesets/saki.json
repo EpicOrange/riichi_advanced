@@ -48,6 +48,7 @@
     "motouchi-naruka",
     "nanpo-kazue",
     "nelly-virsaladze",
+    "oohoshi-awai",
     "onjouji-toki",
     "ryuumonbuchi-touka",
     "sagimori-arata",
@@ -2156,7 +2157,7 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-                ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done"],
+                ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done", "oohoshi_awai_done"],
                 ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
                 ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 // check if anyone's placement is not the same as the one they are tagged with
@@ -2336,7 +2337,7 @@
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
       ["unset_status", "nagashi"],
-      ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done"],
+      ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done", "oohoshi_awai_done"],
       ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
       ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
       ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
@@ -3941,7 +3942,7 @@
         ["big_text", "Shishihara Sawaya: swap!"],
         ["set_status", "just_swapped"],
         ["unset_status", "shishihara_sawaya_swap"],
-        ["mark", [["hand", 1, ["not_riichi"]], ["revealed_tile", 1, []]]],
+        ["mark", [["hand", 1, ["not_riichi"]], ["revealed_tile", 1, ["visible"]]]],
         ["push_message", "discarded dora, and must swap out a dora indicator (Shishihara Sawaya)"],
         ["set_status", "about_to_swap"],
         ["recalculate_buttons"], // allow interrupting swap
@@ -3968,6 +3969,11 @@
             {"name": "discarder_status", "opts": ["just_reached"]},
             {"name": "not_discarder_status", "opts": ["discard_passed"]}
           ]
+        ],
+        // awai's ability happens at the same time, but has priority
+        [
+          {"name": "not_others_status", "opts": ["oohoshi-awai"]},
+          {"name": "others_status", "opts": ["oohoshi-awai", "oohoshi_awai_done"]}
         ]
       ],
       "actions": [
@@ -4489,6 +4495,133 @@
       ],
       "unskippable": true
     },
+    "oohoshi_awai_scry": {
+      "display_name": "Reveal three tiles and uradora",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["oohoshi-awai"]},
+        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place", "oohoshi_awai_done"]},
+        [
+          {"name": "status", "opts": ["just_reached"]},
+          {"name": "status", "opts": ["kan"]}
+        ]
+      ],
+      "actions": [
+        ["set_status", "oohoshi_awai_scry"],
+        ["big_text", "Oohoshi Awai: reveal!"],
+        ["save_revealed_tiles"],
+        ["scry_all", 3],
+        // reveal ura if not blocked
+        ["ite", [{"name": "others_status", "opts": ["takakamo-shizuno"]}], [
+          ["push_message", "revealed three tiles from the wall (Oohoshi Awai)"],
+          ["push_message", "may freely swap between these three tiles and the dora indicators (Oohoshi Awai)"]
+        ], [
+          ["push_message", "revealed three tiles from the wall and the ura indicators (Oohoshi Awai)"],
+          ["push_message", "may freely swap between these three tiles, the dora indicators, and the ura indicators (Oohoshi Awai)"],
+          ["when", [{"name": "tile_not_revealed", "opts": [-6]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_revealed", "opts": [-16]}], [["reveal_tile", "1x"]]], // spacer if we have >5 dora indicators
+          ["when", [{"name": "tile_revealed", "opts": [-6]}], [["reveal_tile", -5]]],
+          ["when", [{"name": "tile_revealed", "opts": [-8]}], [["reveal_tile", -7]]],
+          ["when", [{"name": "tile_revealed", "opts": [-10]}], [["reveal_tile", -9]]],
+          ["when", [{"name": "tile_revealed", "opts": [-12]}], [["reveal_tile", -11]]],
+          ["when", [{"name": "tile_revealed", "opts": [-14]}], [["reveal_tile", -13]]],
+          ["when", [{"name": "tile_revealed", "opts": [-16]}], [["reveal_tile", -15]]],
+          ["when", [{"name": "tile_revealed", "opts": [-18]}], [["reveal_tile", -17]]],
+          ["when", [{"name": "tile_revealed", "opts": [-20]}], [["reveal_tile", -19]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-5]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-7]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-9]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-11]}], [["reveal_tile", "1x"]]],
+          ["when", [{"name": "tile_not_revealed", "opts": [-13]}], [["reveal_tile", "1x"]]]
+        ]],
+        ["set_status", "about_to_swap"],
+        ["recalculate_buttons"], // allow interrupting swap
+        ["unset_status", "about_to_swap"],
+        ["when", [{"name": "status", "opts": ["swap_interrupted"]}], [
+          ["unset_status", "oohoshi_awai_scry"],
+          ["set_status", "oohoshi_awai_draw"],
+          ["recalculate_buttons"]
+        ]]
+      ],
+      "unskippable": true
+    },
+    "oohoshi_awai_1_swap": {
+      "display_name": "Swap two tiles",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["oohoshi-awai", "oohoshi_awai_scry"]},
+        {"name": "status_missing", "opts": ["about_to_swap"]}
+      ],
+      "actions": [
+        ["mark", [["scry", 1, []], ["revealed_tile", 1, ["visible"]]]],
+        ["swap_marked_scry_and_dora_indicator"],
+        ["when", [{"name": "status_missing", "opts": ["oohoshi_awai_scry_did_swap"]}, {"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        ["set_status", "oohoshi_awai_scry_did_swap"],
+        ["recalculate_buttons"] // allow another swap
+      ],
+      "unskippable": true
+    },
+    "oohoshi_awai_2_done": {
+      "display_name": "Done swapping",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["oohoshi-awai", "oohoshi_awai_scry"]},
+        {"name": "status_missing", "opts": ["about_to_swap"]}
+      ],
+      "actions": [
+        ["unset_status", "oohoshi_awai_scry", "oohoshi_awai_scry_did_swap"],
+        ["set_status", "oohoshi_awai_draw"],
+        ["load_revealed_tiles"],
+        ["recalculate_buttons"] // show draw button
+      ],
+      "unskippable": true
+    },
+    "oohoshi_awai_draw": {
+      "display_name": "Choose a tile to draw",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["oohoshi-awai", "oohoshi_awai_draw"]}
+      ],
+      "actions": [
+        ["mark", [["scry", 1, []]]],
+        ["draw_marked_scry"],
+        ["unset_status", "oohoshi_awai_draw"],
+        ["set_status", "oohoshi_awai_place"],
+        ["push_message", "draws one of the revealed tiles (Oohoshi Awai)"],
+        ["recalculate_buttons"] // show place button
+      ],
+      "unskippable": true
+    },
+    "oohoshi_awai_place": {
+      "display_name": "Select order to place remaining tiles (second selection is haitei)",
+      "show_when": [
+        "all_saki_cards_drafted",
+        "our_turn",
+        "not_just_discarded",
+        {"name": "status", "opts": ["oohoshi-awai", "oohoshi_awai_place"]}
+      ],
+      "actions": [
+        ["mark", [["scry", 2, []]]],
+        ["extend_live_wall_with_marked"],
+        ["push_message", "adds the remaining two tiles to the end of the live wall (Oohoshi Awai)"],
+        ["unset_status", "oohoshi_awai_place"],
+        ["set_status", "oohoshi_awai_done"],
+        ["recalculate_buttons"] // allow for tsumo, also pass control to ueshige suzu if needed
+      ],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -4704,6 +4837,7 @@
           {"name": "status_missing", "opts": ["megan-davin"]},
           {"name": "status", "opts": ["megan-davin_exhausted"]}
         ],
+        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place"]},
         {"name": "status_missing", "opts": ["mase-yuuko"]}
       ],
       "actions": [
@@ -4723,13 +4857,15 @@
         ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
         ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
         ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [
-          ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
-          ["draw", 1, "kandraw_4"]
-        ]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["unless", [{"name": "status", "opts": ["oohoshi-awai"]}], [
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [
+            ["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]],
+            ["draw", 1, "kandraw_4"]
+          ]],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+          ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+          ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ]]
       ]
     },
     "kakan": {
@@ -4749,7 +4885,31 @@
         [
           {"name": "status_missing", "opts": ["usuzawa_sae_opponent"]},
           {"name": "status", "opts": ["riichi"]}
-        ]
+        ],
+        [
+          {"name": "status_missing", "opts": ["kataoka-yuuki"]},
+          {"name": "not_round_wind_is", "opts": ["east"]},
+          {"name": "status", "opts": ["kataoka-yuuki_exhausted"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["nanpo-kazue"]},
+          {"name": "not_round_wind_is", "opts": ["south"]},
+          {"name": "status", "opts": ["nanpo-kazue_exhausted"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["onjouji-toki"]},
+          {"name": "status", "opts": ["onjouji-toki_exhausted"]}
+        ],
+        [
+          {"name": "status_missing", "opts": ["iwato-kasumi"]},
+          {"name": "not_status_missing", "opts": ["declare_manzu", "declare_pinzu", "declare_souzu", "declare_jihai"]}
+        ],
+        {"name": "not_status", "opts": ["funakubo-hiroko", "funakubo_hiroko_choosing_players"]},
+        [
+          {"name": "status_missing", "opts": ["megan-davin"]},
+          {"name": "status", "opts": ["megan-davin_exhausted"]}
+        ],
+        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place"]}
       ],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"],
@@ -4812,7 +4972,8 @@
         [
           {"name": "status_missing", "opts": ["megan-davin"]},
           {"name": "status", "opts": ["megan-davin_exhausted"]}
-        ]
+        ],
+        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place"]}
       ],
       "actions": [
         ["big_text", "Riichi"],
@@ -5142,7 +5303,8 @@
         [
           {"name": "status_missing", "opts": ["megan-davin"]},
           {"name": "status", "opts": ["megan-davin_exhausted"]}
-        ]
+        ],
+        {"name": "status_missing", "opts": ["oohoshi_awai_scry", "oohoshi_awai_draw", "oohoshi_awai_place"]}
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
