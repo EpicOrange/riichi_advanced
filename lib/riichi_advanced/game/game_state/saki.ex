@@ -38,10 +38,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "kunihiro-hajime" => "Kunihiro Hajime",
     "mase-yuuko" => "Mase Yuuko",
     "matano-seiko" => "Matano Seiko",
-
-    # need to track dora across rounds
-    # "matsumi-kuro" => "Matsumi Kuro",
-
+    "matsumi-kuro" => "Matsumi Kuro",
     "matsumi-yuu" => "Matsumi Yuu",
     "maya-yukiko" => "Maya Yukiko",
 
