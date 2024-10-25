@@ -147,12 +147,43 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def check_if_all_drafted(state) do
-    Enum.all?(state.players, fn {_seat, player} ->
-      Enum.any?(player.status, fn status -> Map.has_key?(@card_names, status) end)
-    end)
+    Enum.all?(state.players, fn {_seat, player} -> Enum.any?(player.status, &is_saki_card?/1) end)
   end
 
   def filter_cards(statuses) do
-    Enum.filter(statuses, fn status -> Map.has_key?(@card_names, status) end)
+    Enum.filter(statuses, &is_saki_card?/1)
+  end
+
+  def is_saki_card?(status) do
+    Map.has_key?(@card_names, status) || is_disabled_saki_card?(status)
+  end
+
+  def is_disabled_saki_card?(status) do
+    if String.ends_with?(status, "-disabled") do
+      new_status = String.slice(status, 0..-10//1)
+      Map.has_key?(@card_names, new_status)
+    else false end
+  end
+
+  def disable_saki_card(state, targets) do
+    for seat <- targets, reduce: state do
+      state ->
+        update_in(state.players[seat].status, &Enum.map(&1, fn status ->
+          if Map.has_key?(@card_names, status) do
+            status <> "-disabled"
+          else status end
+        end))
+    end
+  end
+
+  def enable_saki_card(state, targets) do
+    for seat <- targets, reduce: state do
+      state ->
+        update_in(state.players[seat].status, &Enum.map(&1, fn status ->
+          if is_disabled_saki_card?(status) do
+            String.slice(status, 0..-10//1)
+          else status end
+        end))
+    end
   end
 end

@@ -480,13 +480,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
-        seat = case Enum.at(opts, 1) do
-          "shimocha" -> Utils.get_seat(context.seat, :shimocha)
-          "toimen" -> Utils.get_seat(context.seat, :toimen)
-          "kamicha" -> Utils.get_seat(context.seat, :kamicha)
-          "last_discarder" -> get_last_discard_action(state).seat
-          _ -> context.seat
-        end
+        seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
       "pause"                 -> Map.put(state, :game_active, false)
       "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
@@ -498,16 +492,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
         state
       "add_score"             ->
-        # TODO change from_seat_spec to include multiple outputs
-        recipients = case Enum.at(opts, 1) do
-          "shimocha" -> [Utils.get_seat(context.seat, :shimocha)]
-          "toimen" -> [Utils.get_seat(context.seat, :toimen)]
-          "kamicha" -> [Utils.get_seat(context.seat, :kamicha)]
-          "last_discarder" -> [get_last_discard_action(state).seat]
-          "all" -> [:east, :south, :west, :north]
-          "others" -> [:east, :south, :west, :north] -- [context.seat]
-          _ -> [context.seat]
-        end
+        recipients = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 1, "self"))
         amount = interpret_amount(state, context, [Enum.at(opts, 0, 0)])
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
@@ -811,6 +796,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         tag = Enum.at(opts, 0, "missing_tag")
         state = put_in(state.tags[tag], Enum.at(state.players[context.seat].draw, 0, :"1x"))
         state
+      "tag_last_discard"      ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        state = put_in(state.tags[tag], get_last_discard_action(state).tile)
+        state
       "untag"                 ->
         tag = Enum.at(opts, 0, "missing_tag")
         {_, state} = pop_in(state.tags[tag])
@@ -894,6 +883,14 @@ defmodule RiichiAdvanced.GameState.Actions do
       "choose_yaku"     ->
         state = update_player(state, context.seat, &%Player{ &1 | declared_yaku: [] })
         notify_ai_declare_yaku(state, context.seat)
+        state
+      "disable_saki_card"     ->
+        targets = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        state = Saki.disable_saki_card(state, targets)
+        state
+      "enable_saki_card"     ->
+        targets = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        state = Saki.enable_saki_card(state, targets)
         state
       _                 ->
         IO.puts("Unhandled action #{action}")

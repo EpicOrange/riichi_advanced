@@ -1895,6 +1895,7 @@ div.saki-card.v13.yumeno-maho, div.saki-card.v13.yumeno-maho:hover::before { bac
 div.shimocha div.saki-card:hover::before { transform: rotate(90deg) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size))); }
 div.toimen div.saki-card:hover::before { transform: rotate(180deg) translateY(calc(5 * var(--tile-size))); }
 div.kamicha div.saki-card:hover::before { transform: rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size))); }
+div.saki-card.disabled, div.saki-card.disabled:hover::before { filter: saturate(0%); }
 
 
 

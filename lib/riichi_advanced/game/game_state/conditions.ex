@@ -61,6 +61,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
     end
   end
 
+  def from_seats_spec(state, seat, seat_spec) do
+    case seat_spec do
+      "all" -> [:east, :south, :west, :north]
+      "others" -> [:east, :south, :west, :north] -- [seat]
+      _ -> [from_seat_spec(state, seat, seat_spec)]
+    end
+  end
+
   def get_placements(state) do
     state.players
     |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)

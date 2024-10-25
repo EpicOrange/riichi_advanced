@@ -15,11 +15,17 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
       </div>
       <%= if @saki != nil && @all_drafted do %>
         <div class="saki-cards">
-          <div class={["saki-card", @saki.version, card]} :for={card <- Saki.filter_cards(@player.status)}></div>
+          <div class={["saki-card", @saki.version, to_card_class(card), Saki.is_disabled_saki_card?(card) && "disabled"]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>
       <% end %>
     </div>
     """
+  end
+
+  def to_card_class(card) do
+    if Saki.is_disabled_saki_card?(card) do
+      String.slice(card, 0..-10//1)
+    else card end
   end
 
 end
