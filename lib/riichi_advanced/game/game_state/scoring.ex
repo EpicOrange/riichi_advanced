@@ -842,11 +842,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 delta_scores = Map.put(delta_scores, payer, delta * 2)
                 case num_tenpai do
                   2 -> 
-                    # player with lower standing gets the doubled payment
-                    lower_tenpai = Conditions.get_placements(state)
-                    |> Enum.reverse()
-                    |> Enum.find(&tenpai[&1])
-                    Map.put(delta_scores, lower_tenpai, delta_scores[lower_tenpai] * 2)
+                    # player who gets the doubled payment is predetermined:
+                    # always pay to your right, unless right is also paying
+                    recipient = Utils.next_turn(payer)
+                    recipient = if delta_scores[recipient] < 0 do Utils.prev_turn(payer) else recipient end
+                    Map.put(delta_scores, recipient, delta_scores[recipient] * 2)
                   _ -> Map.new(tenpai, fn {seat, tenpai} -> {seat, delta_scores[seat] + if tenpai do Integer.floor_div(payment, num_tenpai) else 0 end} end)
                 end
               else delta_scores end
