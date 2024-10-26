@@ -399,6 +399,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
         end_dir == :self
       "bet_at_least"        -> state.pot >= Enum.at(opts, 0, 0)
+      "is_winner"           -> Map.has_key?(state.winners, context.seat)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

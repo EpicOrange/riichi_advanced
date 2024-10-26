@@ -2754,6 +2754,9 @@
                   ["add_counter", "num_matches", "count_matching_ways", ["hand_any", "aside_unique"], [[[[[0, 0]], 1]]]],
                   ["add_counter", "num_matches", "count_matching_ways", ["winning_tile", "aside_unique"], [[[[[0, 0]], 1]]]]
                 ]],
+                ["when", ["won_by_draw"], [
+                  ["when_anyone", [{"name": "status", "opts": ["ezaki-hitomi", "tenpai"]}, "not_is_winner"], [["set_status", "ezaki_hitomi_bet_instead"]]]
+                ]],
                 ["ite", [{"name": "has_attr", "opts": ["winning_tile", "rinshan"]}], [
                   ["when_anyone", [{"name": "others_status", "opts": ["kanbara-satomi"]}, "dead_wall_ends_here"], [["set_status", "kanbara_satomi_double_loss"]]]
                 ], [

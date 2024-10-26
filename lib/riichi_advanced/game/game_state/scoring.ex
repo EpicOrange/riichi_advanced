@@ -603,90 +603,114 @@ defmodule RiichiAdvanced.GameState.Scoring do
             else {state, delta_scores} end
         end
 
+        {_seat, some_winner} = Enum.at(state.winners, 0)
+        is_tsumo = some_winner.payer == nil
+
         delta_scores_map = calculate_delta_scores_per_player(state)
 
         # handle ezaki hitomi's scoring quirk
-        delta_scores_map = for {winner_seat, delta_scores} <- delta_scores_map do
-          delta_scores = for {seat, player} <- state.players, reduce: delta_scores do
-            delta_scores ->
-              if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
-                # use SMT to determine hitomi's tenpai waits
-                win_definitions = translate_match_definitions(state, ["win"])
-                calls = player.calls
-                ordering = player.tile_ordering
+        delta_scores_map = if not is_tsumo do
+          for {winner_seat, delta_scores} <- delta_scores_map do
+            delta_scores = for {seat, player} <- state.players, reduce: delta_scores do
+              delta_scores ->
+                if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
+                  # use SMT to determine hitomi's tenpai waits
+                  win_definitions = translate_match_definitions(state, ["win"])
+                  calls = player.calls
+                  ordering = player.tile_ordering
 
-                # create an artificial joker in hand that maps to any tile
-                joker = {:"1x", ["winning_tile"]}
-                smt_hand = player.hand ++ [joker]
-                IO.inspect(state.all_tiles)
-                tile_mappings = Map.put(player.tile_mappings, joker, state.all_tiles -- Map.keys(player.tile_mappings))
-                joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, calls, state.all_tiles, win_definitions, ordering, tile_mappings)
-                IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+                  # create an artificial joker in hand that maps to any tile
+                  joker = {:"1x", ["winning_tile"]}
+                  smt_hand = player.hand ++ [joker]
+                  IO.inspect(state.all_tiles)
+                  tile_mappings = Map.put(player.tile_mappings, joker, state.all_tiles -- Map.keys(player.tile_mappings))
+                  joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, calls, state.all_tiles, win_definitions, ordering, tile_mappings)
+                  IO.puts("Joker assignments: #{inspect(joker_assignments)}")
 
-                # if this joker mapped to anything, then the hand is tenpai
-                if not Enum.empty?(joker_assignments) do
-                  # get hitomi's possible win scores
-                  win_source = :discard
-                  winner = %{
-                    seat: seat,
-                    player: player,
-                    winning_tile: nil,
-                    win_source: win_source,
-                    point_name: Map.get(state.rules, "point_name", ""),
-                    limit_point_name: Map.get(state.rules, "limit_point_name", ""),
-                    minipoint_name: Map.get(state.rules, "minipoint_name", ""),
-                  }
-                  state2 = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-                  {worst_yaku, yakuman, score, winning_tile} = for joker_assignment <- joker_assignments do
-                    {state2, assigned_winning_tile} = apply_joker_assignment(state2, seat, joker_assignment)
-                    {winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state2, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
-                    yaku = yaku ++ get_best_yaku(state2, state.rules["extra_yaku"], seat, [assigned_winning_tile], win_source)
-                    {winning_tile2, {_minipoints, yakuman}} = get_best_yaku_and_winning_tile(state2, state.rules["yakuman"], seat, [assigned_winning_tile], win_source)
-                    is_dealer = Riichi.get_east_player_seat(state2.kyoku) == seat
-                    {score, _points, _} = score_yaku(state2, seat, yaku, yakuman, is_dealer, false, minipoints)
-                    {yaku, yakuman, score, if winning_tile == nil do winning_tile2 else winning_tile end}
-                  end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(0)
+                  # if this joker mapped to anything, then the hand is tenpai
+                  if not Enum.empty?(joker_assignments) do
+                    # get hitomi's possible win scores
+                    win_source = :discard
+                    winner = %{
+                      seat: seat,
+                      player: player,
+                      winning_tile: nil,
+                      win_source: win_source,
+                      point_name: Map.get(state.rules, "point_name", ""),
+                      limit_point_name: Map.get(state.rules, "limit_point_name", ""),
+                      minipoint_name: Map.get(state.rules, "minipoint_name", ""),
+                    }
+                    state2 = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+                    {worst_yaku, yakuman, score, winning_tile} = for joker_assignment <- joker_assignments do
+                      {state2, assigned_winning_tile} = apply_joker_assignment(state2, seat, joker_assignment)
+                      {winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state2, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+                      yaku = yaku ++ get_best_yaku(state2, state.rules["extra_yaku"], seat, [assigned_winning_tile], win_source)
+                      {winning_tile2, {_minipoints, yakuman}} = get_best_yaku_and_winning_tile(state2, state.rules["yakuman"], seat, [assigned_winning_tile], win_source)
+                      is_dealer = Riichi.get_east_player_seat(state2.kyoku) == seat
+                      {score, _points, _} = score_yaku(state2, seat, yaku, yakuman, is_dealer, false, minipoints)
+                      {yaku, yakuman, score, if winning_tile == nil do winning_tile2 else winning_tile end}
+                    end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(0)
 
-                  # add honba
-                  score = score + (scoring_table["honba_value"] * state.honba)
+                    # add honba
+                    score = score + (scoring_table["honba_value"] * state.honba)
 
-                  worst_yaku = if Enum.empty?(yakuman) do worst_yaku else yakuman end
-                  if not Enum.empty?(worst_yaku) do
-                    push_message(state, [
-                      %{text: "Player #{seat} #{player.nickname} dealt in while tenpai with hand"},
-                    ] ++ Utils.ph(player.hand |> Utils.sort_tiles())
-                      ++ Utils.ph(player.calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
-                      ++ [
-                      %{text: " which, if won on "},
-                      Utils.pt(winning_tile),
-                      %{text: " scores a minimum value of"},
-                      %{bold: true, text: "#{score}"},
-                      %{text: " via the following yaku: "},
-                      %{text: worst_yaku |> Enum.map(fn {name, value} -> "#{name} (#{value})" end) |> Enum.join(", ")},
-                      %{text: "(Ezaki Hitomi)"}])
-                    # compare score with the amount we will pay out
-                    payment = -delta_scores[seat]
-                    if payment < score do
-                      # reflect the payment
-                      push_message(state, [%{text: "Player #{seat} #{player.nickname} has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"}])
-                      delta_scores
-                      |> Map.put(seat, payment)
-                      |> Map.update!(winner_seat, & &1 - 2 * payment)
-                    else
-                      push_message(state, [%{text: "Player #{seat} #{player.nickname} has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"}])
-                      delta_scores
-                    end
+                    worst_yaku = if Enum.empty?(yakuman) do worst_yaku else yakuman end
+                    if not Enum.empty?(worst_yaku) do
+                      push_message(state, [
+                        %{text: "Player #{seat} #{player.nickname} dealt in while tenpai with hand"},
+                      ] ++ Utils.ph(player.hand |> Utils.sort_tiles())
+                        ++ Utils.ph(player.calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
+                        ++ [
+                        %{text: " which, if won on "},
+                        Utils.pt(winning_tile),
+                        %{text: " scores a minimum value of"},
+                        %{bold: true, text: "#{score}"},
+                        %{text: " via the following yaku: "},
+                        %{text: worst_yaku |> Enum.map(fn {name, value} -> "#{name} (#{value})" end) |> Enum.join(", ")},
+                        %{text: "(Ezaki Hitomi)"}])
+                      # compare score with the amount we will pay out
+                      payment = -delta_scores[seat]
+                      if payment < score do
+                        # reflect the payment
+                        push_message(state, [%{text: "Player #{seat} #{player.nickname} has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"}])
+                        delta_scores
+                        |> Map.put(seat, payment)
+                        |> Map.update!(winner_seat, & &1 - 2 * payment)
+                      else
+                        push_message(state, [%{text: "Player #{seat} #{player.nickname} has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"}])
+                        delta_scores
+                      end
+                    else delta_scores end
                   else delta_scores end
                 else delta_scores end
-              else delta_scores end
-          end
-          {winner_seat, delta_scores}
-        end
+            end
+            {winner_seat, delta_scores}
+          end |> Map.new()
+        else delta_scores_map end
 
         # sum the delta scores
         delta_scores = for {_seat, deltas} <- delta_scores_map, reduce: delta_scores do
           delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
         end
+
+        # handle ezaki hitomi's other scoring quirk
+        {state, delta_scores} = if is_tsumo do
+          for {seat, player} <- state.players, reduce: {state, delta_scores} do
+            {state, delta_scores} ->
+              if "ezaki_hitomi_bet_instead" in player.status do
+                delta = delta_scores[seat]
+                payment = -delta
+                {winner_seat, winner_delta} = Enum.max_by(delta_scores, fn {seat, delta} -> delta end)
+                delta_scores = delta_scores
+                |> Map.put(seat, 0)
+                |> Map.put(winner_seat, winner_delta - payment)
+                push_message(state, [%{text: "Player #{seat} #{player.nickname} bets their tsumo payment instead of paying out (Ezaki Hitomi)"}])
+                state = Map.put(state, :pot, payment)
+                {state, delta_scores}
+              else {state, delta_scores} end
+          end
+        else {state, delta_scores} end
+
 
         # handle hanada kirame's scoring quirk
         {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)

@@ -766,7 +766,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = Marking.mark_done(state, context.seat)
 
         state
-      "flip_marked_discard_facedown" -> 
+      "flip_marked_discard_facedown" ->
         {_discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
         state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))

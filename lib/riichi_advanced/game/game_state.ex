@@ -524,13 +524,11 @@ defmodule RiichiAdvanced.GameState do
           :win when state.next_dealer == :self ->
             state
               |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:pot, 0)
               |> Map.put(:visible_screen, nil)
           :win ->
             state
               |> Map.update!(:kyoku, & &1 + 1)
               |> Map.put(:honba, 0)
-              |> Map.put(:pot, 0)
               |> Map.put(:visible_screen, nil)
           :draw when state.next_dealer == :self ->
             state
@@ -544,6 +542,12 @@ defmodule RiichiAdvanced.GameState do
           :continue ->
             state
           end
+
+        # clear pot
+        # but only if ezaki hitomi hasn't cleared it already and set it to their bet
+        state = if state.round_result == :win && not Enum.any?(state.players, fn {seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
+          Map.put(state, :pot, 0)
+        else state end
 
         # apply delta scores
         state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
