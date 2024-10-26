@@ -18,6 +18,7 @@
     "atago-kinue",
     "atarashi-ako",
     "choe-myeonghwa",
+    "ezaki-hitomi",
     "fukuji-mihoko",
     "funakubo-hiroko",
     "hanada-kirame",
@@ -2623,6 +2624,7 @@
       ]],
       ["when", [{"name": "status", "opts": ["ryuumonbuchi-touka"]}, {"name": "seat_is", "opts": ["east"]}], [["set_status", "score_limit_one_tier_higher"]]],
       ["when", [{"name": "status", "opts": ["hanada-kirame"]}, {"name": "status_missing", "opts": ["hanada-kirame_exhausted"]}], [["set_status", "hanada_kirame_score_protection"]]],
+      ["when", [{"name": "status", "opts": ["ezaki-hitomi"]}], [["set_status", "ezaki_hitomi_reflect"]]],
       ["when", [{"name": "status", "opts": ["fukuji-mihoko"]}, {"name": "placement", "opts": [4]}], [
         ["set_status_others", "reveal_all"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]

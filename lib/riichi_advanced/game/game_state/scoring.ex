@@ -69,7 +69,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     best_yaku
   end
 
-  def apply_joker_assignment(state, seat, joker_assignment, winning_tile) do
+  def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
     orig_hand = state.players[seat].hand
     non_flower_calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
     assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
@@ -121,6 +121,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     yaku_names = Enum.map(yaku_list, fn yaku -> yaku["display_name"] end)
     case RiichiAdvanced.ETSCache.get({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}) do
       [] -> 
+        IO.inspect({min_points, seat, winning_tile, win_source}, label: "asdf")
         result = _seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source)
         RiichiAdvanced.ETSCache.put({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}, result)
         result
@@ -548,7 +549,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  defp calculate_delta_scores(state, delta_scores) do
+  defp calculate_delta_scores_per_player(state) do
     scoring_table = state.rules["score_calculation"]
     closest_winner = case scoring_table["method"] do
       "riichi" ->
@@ -570,12 +571,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
       _ -> nil
     end
 
-    # sum the individual delta scores for each winner, skipping winners already marked as processed
-    for {seat, winner} <- state.winners, not Map.has_key?(winner, :processed), reduce: delta_scores do
-      delta_scores_acc ->
-        delta_scores = calculate_delta_scores_for_single_winner(state, winner, seat == closest_winner)
-        delta_scores_acc = Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + delta_scores[seat]} end)
-        delta_scores_acc
+    # get the individual delta scores for each winner, skipping winners already marked as processed
+    for {seat, winner} <- state.winners, not Map.has_key?(winner, :processed) do
+      {seat, calculate_delta_scores_for_single_winner(state, winner, seat == closest_winner)}
+    end |> Map.new()
+  end
+
+  defp calculate_delta_scores(state, delta_scores) do
+    # sum the individual delta scores for each winner
+    for {_seat, deltas} <- calculate_delta_scores_per_player(state), reduce: delta_scores do
+      delta_scores -> Map.new(delta_scores, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
     end
   end
   
@@ -598,7 +603,90 @@ defmodule RiichiAdvanced.GameState.Scoring do
             else {state, delta_scores} end
         end
 
-        delta_scores = calculate_delta_scores(state, delta_scores)
+        delta_scores_map = calculate_delta_scores_per_player(state)
+
+        # handle ezaki hitomi's scoring quirk
+        delta_scores_map = for {winner_seat, delta_scores} <- delta_scores_map do
+          delta_scores = for {seat, player} <- state.players, reduce: delta_scores do
+            delta_scores ->
+              if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
+                # use SMT to determine hitomi's tenpai waits
+                win_definitions = translate_match_definitions(state, ["win"])
+                calls = player.calls
+                ordering = player.tile_ordering
+
+                # create an artificial joker in hand that maps to any tile
+                joker = {:"1x", ["winning_tile"]}
+                smt_hand = player.hand ++ [joker]
+                IO.inspect(state.all_tiles)
+                tile_mappings = Map.put(player.tile_mappings, joker, state.all_tiles -- Map.keys(player.tile_mappings))
+                joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, calls, state.all_tiles, win_definitions, ordering, tile_mappings)
+                IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+
+                # if this joker mapped to anything, then the hand is tenpai
+                if not Enum.empty?(joker_assignments) do
+                  # get hitomi's possible win scores
+                  win_source = :discard
+                  winner = %{
+                    seat: seat,
+                    player: player,
+                    winning_tile: nil,
+                    win_source: win_source,
+                    point_name: Map.get(state.rules, "point_name", ""),
+                    limit_point_name: Map.get(state.rules, "limit_point_name", ""),
+                    minipoint_name: Map.get(state.rules, "minipoint_name", ""),
+                  }
+                  state2 = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+                  {worst_yaku, yakuman, score, winning_tile} = for joker_assignment <- joker_assignments do
+                    {state2, assigned_winning_tile} = apply_joker_assignment(state2, seat, joker_assignment)
+                    {winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state2, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+                    yaku = yaku ++ get_best_yaku(state2, state.rules["extra_yaku"], seat, [assigned_winning_tile], win_source)
+                    {winning_tile2, {_minipoints, yakuman}} = get_best_yaku_and_winning_tile(state2, state.rules["yakuman"], seat, [assigned_winning_tile], win_source)
+                    is_dealer = Riichi.get_east_player_seat(state2.kyoku) == seat
+                    {score, _points, _} = score_yaku(state2, seat, yaku, yakuman, is_dealer, false, minipoints)
+                    {yaku, yakuman, score, if winning_tile == nil do winning_tile2 else winning_tile end}
+                  end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(0)
+
+                  # add honba
+                  score = score + (scoring_table["honba_value"] * state.honba)
+
+                  worst_yaku = if Enum.empty?(yakuman) do worst_yaku else yakuman end
+                  if not Enum.empty?(worst_yaku) do
+                    push_message(state, [
+                      %{text: "Player #{seat} #{player.nickname} dealt in while tenpai with hand"},
+                    ] ++ Utils.ph(player.hand |> Utils.sort_tiles())
+                      ++ Utils.ph(player.calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
+                      ++ [
+                      %{text: " which, if won on "},
+                      Utils.pt(winning_tile),
+                      %{text: " scores a minimum value of"},
+                      %{bold: true, text: "#{score}"},
+                      %{text: " via the following yaku: "},
+                      %{text: worst_yaku |> Enum.map(fn {name, value} -> "#{name} (#{value})" end) |> Enum.join(", ")},
+                      %{text: "(Ezaki Hitomi)"}])
+                    # compare score with the amount we will pay out
+                    payment = -delta_scores[seat]
+                    if payment < score do
+                      # reflect the payment
+                      push_message(state, [%{text: "Player #{seat} #{player.nickname} has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"}])
+                      delta_scores
+                      |> Map.put(seat, payment)
+                      |> Map.update!(winner_seat, & &1 - 2 * payment)
+                    else
+                      push_message(state, [%{text: "Player #{seat} #{player.nickname} has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"}])
+                      delta_scores
+                    end
+                  else delta_scores end
+                else delta_scores end
+              else delta_scores end
+          end
+          {winner_seat, delta_scores}
+        end
+
+        # sum the delta scores
+        delta_scores = for {_seat, deltas} <- delta_scores_map, reduce: delta_scores do
+          delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
+        end
 
         # handle hanada kirame's scoring quirk
         {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
@@ -834,6 +922,251 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {state, delta_scores, "", false}
     end
     {state, delta_scores, delta_scores_reason, next_dealer}
+  end
+
+  def process_win(state, seat, winning_tile, win_source) do
+    # add winning hand to the winner player (for yaku purposes)
+    call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
+    winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
+    state = update_player(state, seat, fn player -> %Player{ player | winning_hand: winning_hand } end)
+    
+    winner = %{
+      seat: seat,
+      player: state.players[seat],
+      winning_tile: winning_tile,
+      win_source: win_source,
+      point_name: Map.get(state.rules, "point_name", ""),
+      limit_point_name: Map.get(state.rules, "limit_point_name", ""),
+      minipoint_name: Map.get(state.rules, "minipoint_name", ""),
+    }
+    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+
+    state = if Map.has_key?(state.rules, "score_calculation") do
+        if Map.has_key?(state.rules["score_calculation"], "method") do
+          state
+        else
+          show_error(state, "\"score_calculation\" object lacks \"method\" key!")
+        end
+      else
+        show_error(state, "\"score_calculation\" key is missing from rules!")
+      end
+    scoring_table = state.rules["score_calculation"]
+    # deal with jokers
+    joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+      smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
+    end
+    IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+    joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
+    case scoring_table["method"] do
+      "riichi" ->
+        # find the maximum yaku obtainable across all joker assignments
+        {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name, new_winning_tile} = for joker_assignment <- joker_assignments do
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+          IO.inspect(assigned_winning_tile)
+
+          # in saki you can win with 14 tiles all in hand (no draw)
+          # this necessitates choosing a winning tile out of the 14, which is what this does
+          {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, [assigned_winning_tile], win_source)
+          yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            get_best_yaku(state, state.rules["meta_yaku"], seat, [assigned_winning_tile], win_source, yaku)
+          else yaku end
+          yakuman = get_best_yaku(state, state.rules["yakuman"], seat, [assigned_winning_tile], win_source)
+          is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+
+          # handle ryuumonbuchi touka's scoring quirk
+          score_as_dealer = "score_as_dealer" in state.players[winner.seat].status
+          if score_as_dealer do
+            push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"}])
+          end
+          is_dealer = is_dealer || score_as_dealer
+          
+          {score, points, yakuman_mult} = score_yaku(state, seat, yaku, yakuman, is_dealer, win_source == :draw, minipoints)
+          IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}")
+          han = Integer.to_string(points)
+          fu = Integer.to_string(minipoints)
+          score_name = if yakuman_mult > 0 do
+            scoring_table["yakuman_limit_hand_name"]
+          else
+            case Map.get(scoring_table["limit_hand_names"], han, scoring_table["limit_hand_names"]["max"]) do
+              score_name when is_binary(score_name) -> score_name
+              score_name_table                      -> Map.get(score_name_table, fu, score_name_table["max"])
+            end
+          end
+          {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name, new_winning_tile}
+        end |> Enum.sort_by(fn {_, _, _, _, score, _, _, _, _} -> score end) |> Enum.at(-1)
+
+        # IO.inspect({joker_assignment, phan_yaku, mun_yaku, score, phan, mun})
+
+        # sort jokers into the hand for hand display
+        orig_hand = state.players[seat].hand
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        # restore original hand
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        pao_seat = cond do
+          "pao" in state.players[:east].status -> :east
+          "pao" in state.players[:south].status -> :south
+          "pao" in state.players[:west].status -> :west
+          "pao" in state.players[:north].status -> :north
+          true -> nil
+        end
+        winner = Map.merge(winner, %{
+          yaku: if yakuman_mult > 0 do [] else yaku end,
+          yakuman: yakuman,
+          points: if yakuman_mult > 0 do yakuman_mult else points end,
+          yakuman_mult: yakuman_mult,
+          score: score,
+          score_name: score_name,
+          point_name: if yakuman_mult > 0 do winner.limit_point_name else winner.point_name end,
+          minipoints: minipoints,
+          payer: payer,
+          pao_seat: pao_seat,
+          winning_tile: new_winning_tile
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+
+        {state, new_winning_tile}
+      "hk" ->
+        # find the maximum yaku obtainable across all joker assignments
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+        {joker_assignment, yaku, score, fan} = for joker_assignment <- joker_assignments do
+          # replace 5z with 0z
+          joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
+
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+          yaku = get_best_yaku(state, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+          yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            get_best_yaku(state, state.rules["meta_yaku"], seat, [assigned_winning_tile], win_source, yaku)
+          else yaku end
+          {score, fan, _} = score_yaku(state, seat, yaku, [], is_dealer, win_source == :draw)
+
+          {joker_assignment, yaku, score, fan}
+        end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(-1)
+
+        # sort jokers into the hand for hand display
+        orig_hand = state.players[seat].hand
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        # restore original hand
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        winner = Map.merge(winner, %{
+          yaku: yaku,
+          yakuman: [],
+          points: fan,
+          score: score,
+          payer: payer
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+        {state, winning_tile}
+      "sichuan" -> # TODO this is same as hk
+        # find the maximum yaku obtainable across all joker assignments
+        is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+        opponents = Enum.reject([:east, :south, :west, :north], fn dir -> Map.has_key?(state.winners, dir) || dir == winner.seat end)
+        {joker_assignment, yaku, score, fan} = for joker_assignment <- joker_assignments do
+          # replace 5z with 0z
+          joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
+
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+          yaku = get_best_yaku(state, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+          yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            get_best_yaku(state, state.rules["meta_yaku"], seat, [assigned_winning_tile], win_source, yaku)
+          else yaku end
+          {score, fan, _} = score_yaku(state, seat, yaku, [], is_dealer, win_source == :draw, 0, length(opponents))
+
+          {joker_assignment, yaku, score, fan}
+        end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(-1)
+
+        # sort jokers into the hand for hand display
+        orig_hand = state.players[seat].hand
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        IO.inspect(joker_hand, label: "joker_hand")
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        # restore original hand
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        winner = Map.merge(winner, %{
+          yaku: yaku,
+          yakuman: [],
+          points: fan,
+          score: score,
+          payer: payer,
+          opponents: opponents
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+        {state, winning_tile}
+      "vietnamese" ->
+        # find the maximum yaku obtainable across all joker assignments
+        {joker_assignment, phan_yaku, mun_yaku, score, phan, mun} = for joker_assignment <- joker_assignments do
+          # replace 5z with 0z
+          joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
+
+          # temporarily replace winner's hand with joker assignment to determine yaku
+          {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+          phan_yaku = get_best_yaku(state, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+          mun_yaku = get_best_yaku(state, state.rules["yakuman"], seat, [assigned_winning_tile], win_source)
+          phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
+            get_best_yaku(state, state.rules["meta_yaku"], seat, [assigned_winning_tile], win_source, mun_yaku ++ phan_yaku)
+          else phan_yaku end -- mun_yaku
+          is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+          {score, phan, mun} = score_yaku(state, seat, phan_yaku, mun_yaku, is_dealer, win_source == :draw)
+
+          {joker_assignment, phan_yaku, mun_yaku, score, phan, mun}
+        end |> Enum.sort_by(fn {_, _, _, score, _, _} -> score end) |> Enum.at(-1)
+
+        # IO.inspect({joker_assignment, phan_yaku, mun_yaku, score, phan, mun})
+
+        # sort jokers into the hand for hand display
+        orig_hand = state.players[seat].hand
+        joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
+        winner = Map.merge(winner, %{player: state.players[seat]})
+        # restore original hand
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+
+        payer = case win_source do
+          :draw    -> nil
+          :discard -> get_last_discard_action(state).seat
+          :call    -> get_last_call_action(state).seat
+        end
+        winner = Map.merge(winner, %{
+          yaku: phan_yaku,
+          yakuman: mun_yaku,
+          points: phan,
+          yakuman_mult: mun,
+          minipoints: mun,
+          score: score,
+          payer: payer
+        })
+        state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+        {state, winning_tile}
+      _ ->
+        state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")
+        {state, winning_tile}
+    end
   end
 
 end

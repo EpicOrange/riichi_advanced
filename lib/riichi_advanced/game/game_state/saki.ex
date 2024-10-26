@@ -14,10 +14,7 @@ defmodule RiichiAdvanced.GameState.Saki do
     "atago-kinue" => "Atago Kinue",
     "atarashi-ako" => "Atarashi Ako",
     "choe-myeonghwa" => "Choe Myeonghwa",
-
-    # need to know what constitutes "higher value tenpai"
-    # "ezaki-hitomi" => "Ezaki Hitomi",
-
+    "ezaki-hitomi" => "Ezaki Hitomi",
     "fukuji-mihoko" => "Fukuji Mihoko",
     "funakubo-hiroko" => "Funakubo Hiroko",
     "hanada-kirame" => "Hanada Kirame",
