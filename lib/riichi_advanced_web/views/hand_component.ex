@@ -10,6 +10,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :animating_played_tile, false)
     socket = assign(socket, :just_called, false)
     socket = assign(socket, :just_drew, false)
+    socket = assign(socket, :called_tile, nil)
+    socket = assign(socket, :call_choice, nil)
     socket = assign(socket, :status, [])
     socket = assign(socket, :calls, [])
     socket = assign(socket, :aside, [])
@@ -24,7 +26,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <%= if @your_hand? do %>
         <%= if not Enum.empty?(@marking) do %>
           <div class="tiles">
-            <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
+            <%= for {i, tile, removed, _highlight} <- prepare_hand(assigns) do %>
               <%= if removed do %>
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
@@ -56,12 +58,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
         <% else %>
           <div class="tiles" phx-hook="Sortable" id={@id}>
-            <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
+            <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
               <%= if removed do %>
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
                 <%= if not @your_turn? || GenServer.call(@game_state, {:is_playable, @seat, tile}) do %>
-                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
+                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", highlight && "highlight"]} data-id={i}></div>
                 <% else %>
                   <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
                 <% end %>
@@ -80,8 +82,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <% end %>
       <% else %>
         <div class="tiles">
-          <%= for {i, tile, removed} <- prepare_hand(assigns) do %>
-            <div class={["tile", Utils.strip_attrs(tile), removed && "removed"]} data-id={i}></div>
+          <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
+            <div class={["tile", Utils.strip_attrs(tile), removed && "removed", highlight && "highlight"]} data-id={i}></div>
           <% end %>
         </div>
         <div class="draws" :if={not Enum.empty?(@draw)}>
@@ -192,13 +194,30 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def prepare_hand(assigns) do
-    # map tiles to [{index, tile, is_last_discard}]
+    # map tiles to [{index, tile, is_last_discard, is highlighted}]
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
+    highlighted_indices = if assigns.your_hand? && assigns.call_choice != nil do
+      highlighted_tiles = if assigns.your_turn? do [assigns.called_tile | assigns.call_choice] else assigns.call_choice end
+      {indices, _call_choice} = for {tile, i} <- Enum.with_index(assigns.hand), reduce: {[], highlighted_tiles} do
+        {indices, tiles} ->
+          case Enum.find_index(tiles, &Utils.same_tile(&1, tile)) do
+            nil -> {indices, tiles}
+            choice_ix -> {[i | indices], List.delete_at(tiles, choice_ix)}
+          end
+      end
+      indices
+    else [] end
+    IO.inspect({assigns.call_choice, highlighted_indices})
     assigns.hand
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()
     |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
-    |> Enum.map(fn {tile, i} -> {if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end, tile, i == assigns.played_tile_index} end)
+    |> Enum.map(fn {tile, i} -> {
+      if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end,
+      tile,
+      i == assigns.played_tile_index,
+      i in highlighted_indices
+    } end)
   end
 
   def prepare_draw(assigns) do

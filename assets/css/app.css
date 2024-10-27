@@ -181,7 +181,10 @@ div.hand.toimen:hover { z-index: -1; }
 div.hand.shimocha div.tiles:hover::before,
 div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
-
+div.tile.highlight {
+  --tile-brightness: 80%;
+  --tile-saturate: 100%;
+}
 /* ponds */
 div.pond {
   display: flex;
@@ -226,7 +229,7 @@ div.pond.kamicha {
 div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-size))); }
 div.pond.highlight div.tile:last-child {
   --tile-brightness: 80%;
-  --tile-saturate: 100%;;
+  --tile-saturate: 100%;
 }
 /* compass */
 div.compass {

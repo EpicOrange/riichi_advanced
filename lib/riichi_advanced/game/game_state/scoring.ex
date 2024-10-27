@@ -700,7 +700,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               if "ezaki_hitomi_bet_instead" in player.status do
                 delta = delta_scores[seat]
                 payment = -delta
-                {winner_seat, winner_delta} = Enum.max_by(delta_scores, fn {seat, delta} -> delta end)
+                {winner_seat, winner_delta} = Enum.max_by(delta_scores, fn {_seat, delta} -> delta end)
                 delta_scores = delta_scores
                 |> Map.put(seat, 0)
                 |> Map.put(winner_seat, winner_delta - payment)

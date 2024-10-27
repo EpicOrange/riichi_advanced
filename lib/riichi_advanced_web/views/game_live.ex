@@ -21,6 +21,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:marking, false)
     |> assign(:visible_waits, %{})
     |> assign(:show_waits, false)
+    |> assign(:hovered_called_tile, nil)
+    |> assign(:hovered_call_choice, nil)
 
     last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
       [mods] -> mods
@@ -105,6 +107,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         status={player.status}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
+        called_tile={@hovered_called_tile}
+        call_choice={@hovered_call_choice}
         play_tile={&send(self(), {:play_tile, &1})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
@@ -172,7 +176,7 @@ defmodule RiichiAdvancedWeb.GameLive do
             <%= if not Enum.empty?(@state.players[@seat].call_buttons) do %>
               <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
             <% else %>
-              <button class="button" phx-cancellable-click="button_clicked" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+              <button class="button" phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
             <% end %>
           <% end %>
         </div>
@@ -367,6 +371,31 @@ defmodule RiichiAdvancedWeb.GameLive do
       GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
     end
     socket = assign(socket, :timer, 0)
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_button", %{"name" => name}, socket) do
+    player = socket.assigns.state.players[socket.assigns.viewer]
+    {called_tile, call_choice} = case Map.get(player.button_choices, name, nil) do
+      {:call, choices} ->
+        if choices != nil do
+          choices = choices
+          |> Enum.filter(fn {_called_tile, call_choice} -> not Enum.empty?(call_choice) end)
+          case choices do
+            [{called_tile, [call_choice]}] -> {called_tile, call_choice}
+            _                              -> {nil, nil}
+          end
+        else {nil, nil} end
+      _ -> {nil, nil}
+    end
+    socket = assign(socket, :hovered_called_tile, called_tile)
+    socket = assign(socket, :hovered_call_choice, call_choice)
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_off", _assigns, socket) do
+    socket = assign(socket, :hovered_called_tile, nil)
+    socket = assign(socket, :hovered_call_choice, nil)
     {:noreply, socket}
   end
 

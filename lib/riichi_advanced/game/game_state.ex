@@ -545,7 +545,7 @@ defmodule RiichiAdvanced.GameState do
 
         # clear pot
         # but only if ezaki hitomi hasn't cleared it already and set it to their bet
-        state = if state.round_result == :win && not Enum.any?(state.players, fn {seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
+        state = if state.round_result == :win && not Enum.any?(state.players, fn {_seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
           Map.put(state, :pot, 0)
         else state end
 
