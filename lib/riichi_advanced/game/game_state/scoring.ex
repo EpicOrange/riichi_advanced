@@ -121,7 +121,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     yaku_names = Enum.map(yaku_list, fn yaku -> yaku["display_name"] end)
     case RiichiAdvanced.ETSCache.get({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}) do
       [] -> 
-        IO.inspect({min_points, seat, winning_tile, win_source}, label: "asdf")
         result = _seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source)
         RiichiAdvanced.ETSCache.put({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}, result)
         result
@@ -622,7 +621,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
                   # create an artificial joker in hand that maps to any tile
                   joker = {:"1x", ["winning_tile"]}
                   smt_hand = player.hand ++ [joker]
-                  IO.inspect(state.all_tiles)
                   tile_mappings = Map.put(player.tile_mappings, joker, state.all_tiles -- Map.keys(player.tile_mappings))
                   joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, calls, state.all_tiles, win_definitions, ordering, tile_mappings)
                   IO.puts("Joker assignments: #{inspect(joker_assignments)}")
@@ -988,7 +986,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {joker_assignment, yaku, yakuman, minipoints, score, points, yakuman_mult, score_name, new_winning_tile} = for joker_assignment <- joker_assignments do
           # temporarily replace winner's hand with joker assignment to determine yaku
           {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-          IO.inspect(assigned_winning_tile)
 
           # in saki you can win with 14 tiles all in hand (no draw)
           # this necessitates choosing a winning tile out of the 14, which is what this does
@@ -1121,7 +1118,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # sort jokers into the hand for hand display
         orig_hand = state.players[seat].hand
         joker_hand = Utils.sort_tiles(orig_hand, joker_assignment)
-        IO.inspect(joker_hand, label: "joker_hand")
         state = update_player(state, seat, fn player -> %Player{ player | hand: joker_hand } end)
         winner = Map.merge(winner, %{player: state.players[seat]})
         # restore original hand

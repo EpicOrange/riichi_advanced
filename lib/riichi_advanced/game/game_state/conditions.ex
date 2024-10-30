@@ -25,6 +25,15 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
+          "second_last_visible_discard" ->
+            if last_discard_action != nil do 
+              visible_pond = state.players[last_discard_action.seat].pond
+              |> Enum.drop(-1)
+              |> Enum.filter(fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
+              if not Enum.empty?(visible_pond) do
+                [{hand ++ Enum.take(visible_pond, -1), calls}]
+              else [] end
+            else [] end
           "self_last_discard" -> [{hand ++ Enum.take(state.players[context.seat].pond, -1), calls}]
           "shimocha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :shimocha)].pond, -1), calls}]
           "toimen_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :toimen)].pond, -1), calls}]
@@ -99,6 +108,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "no_calls_yet"                -> last_call_action == nil
       "last_call_is"                -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
       "kamicha_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
+      "toimen_discarded"            -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat, 2)
+      "shimocha_discarded"          -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat, 3)
       "anyone_just_discarded"       -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn
       "someone_else_just_discarded" -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
       "just_discarded"              -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat

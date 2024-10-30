@@ -2158,9 +2158,9 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
+                ["when", [[{"name": "status_missing", "opts": ["riichi"]}, {"name": "status", "opts": ["just_reached"]}]], [["unset_status", "furiten"]]],
                 ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done", "oohoshi_awai_done"],
                 ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
-                ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
                 // check if anyone's placement is not the same as the one they are tagged with
                 ["when_anyone", [[
                   [{"name": "placement", "opts": [1]}, {"name": "status_missing", "opts": ["1st_place"]}],
@@ -3778,8 +3778,10 @@
         {"name": "status", "opts": ["hirose-sumire"]},
         {"name": "status_missing", "opts": ["match_start", "tried_to_ron", "about_to_call", "furiten"]},
         {"name": "discarder_status", "opts": ["discard_passed"]},
+        {"name": "not_anyone_status", "opts": ["tried_to_ron"]},
         "someone_else_just_discarded",
         "second_last_visible_discard_exists",
+        {"name": "match", "opts": [["hand", "calls", "second_last_visible_discard"], ["win"]]},
         [
           {"name": "not_others_status", "opts": ["choe-myeonghwa"]},
           [
