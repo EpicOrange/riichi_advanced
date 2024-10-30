@@ -3991,6 +3991,7 @@
         ["pause", 1000],
         ["when", [{"name": "match", "opts": [["hand_any", "scry"], [[[[[0, 0]], 1]]]]}], [
           ["set_aside_scry"],
+          ["add_attr", ["aside"], ["revealed"]],
           ["big_text", "Ueshige Suzu: set aside!"],
           ["push_message", "has a copy of the revealed tile in hand, and so sets it aside (Ueshige Suzu)"]
         ]],
