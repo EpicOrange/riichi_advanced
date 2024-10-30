@@ -378,52 +378,50 @@ div.centerpiece > div.riichi-stick-counter,
 div.centerpiece > div.honba-counter {
   position: absolute;
   font-size: calc(0.25 * var(--tile-size));
+  left: calc(0.075 * var(--tile-size));
   right: calc(0.075 * var(--tile-size));
+  width: calc(100% - 0.15 * var(--tile-size));
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: calc(0.1 * var(--tile-size));
 }
 div.centerpiece > div.riichi-stick-counter { bottom: calc(0.2 * var(--tile-size)); }
 div.centerpiece > div.honba-counter { bottom: calc(-0.05 * var(--tile-size)); }
-div.centerpiece > div.riichi-stick-counter::before {
+div.centerpiece > div.riichi-stick-counter::before,
+div.centerpiece > div.riichi-stick-counter::after,
+div.centerpiece > div.honba-counter::before,
+div.centerpiece > div.honba-counter::after {
   content: "";
-  position: absolute;
-  width: calc(0.6 * var(--tile-size));
-  height: calc(0.15 * var(--tile-size));
-  border-radius: calc(0.0625 * var(--tile-size));
-  left: calc(50% - (0.75 * var(--tile-size)));
-  bottom: calc(50% - (0.075 * var(--tile-size)));
-  background: white;
+  grid-column: 0;
 }
-div.centerpiece > div.riichi-stick-counter::after {
-  content: "";
-  position: absolute;
-  width: calc(0.075 * var(--tile-size));
-  height: calc(0.075 * var(--tile-size));
-  border-radius: 50%;
-  left: calc(50% - (0.4875 * var(--tile-size)));
-  bottom: calc(50% - (0.0375 * var(--tile-size)));
-  background: red;
+div.centerpiece > div.riichi-stick-counter::before,
+div.centerpiece > div.honba-counter::before {
+  width: 100%;
+  height: calc(0.16 * var(--tile-size));
+  border-radius: calc(0.08 * var(--tile-size));
+  background: white;
   z-index: 1;
 }
-div.centerpiece > div.honba-counter::before {
-  content: "";
-  position: absolute;
-  width: calc(0.6 * var(--tile-size));
-  height: calc(0.15 * var(--tile-size));
-  border-radius: calc(0.0625 * var(--tile-size));
-  left: calc(50% - (0.75 * var(--tile-size)));
-  bottom: calc(50% - (0.075 * var(--tile-size)));
-  background: white;
+div.centerpiece > div.riichi-stick-counter::after,
+div.centerpiece > div.honba-counter::after {
+  font-family: Arial;
+  font-size: calc(0.3 * var(--tile-size));
+  height: 0;
+  margin: auto;
+  z-index: 2;
+}
+div.centerpiece > div.riichi-stick-counter::after {
+  content: "•";
+  transform: translateY(calc(-0.34 * var(--tile-size)));
+  color: red;
 }
 div.centerpiece > div.honba-counter::after {
   content: "⣿";
-  font-size: calc(0.3 * var(--tile-size));
-  position: absolute;
-  width: calc(0.05 * var(--tile-size));
-  height: calc(0.05 * var(--tile-size));
-  left: calc(50% - (0.2625 * var(--tile-size)));
-  bottom: calc(50% + (0.045 * var(--tile-size)));
+  transform: translateY(calc(-0.37 * var(--tile-size))) rotate(90deg);
+  transform-origin: 50% calc(0.2 * var(--tile-size));
   color: #182890;
-  transform: rotate(90deg);
-  z-index: 1;
 }
 /* sometimes the compass duplicates itself, remove the duplicate */
 div.compass ~ div.compass {
