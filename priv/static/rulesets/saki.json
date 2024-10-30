@@ -2569,9 +2569,13 @@
       ["draw"],
       ["advance_turn"]
     ]]]],
+    // for sawaya, check dora first so we set the status before yaochuuhai's effect's pause action
+    ["dora", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
+      ["set_status", "shishihara_sawaya_swap"]
+    ]]]],
     ["yaochuuhai", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
-      ["scry_all", 1],
       ["push_message", "discarded an honor/terminal, revealing the next tile in the wall (Shishihara Sawaya)"],
+      ["scry_all", 1],
       ["pause", 1000],
       ["when", [{"name": "match", "opts": [["scry"], [[[["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"], 1]]]]}], [
         ["set_status", "extra_turn"],
@@ -2583,9 +2587,6 @@
     ["tanyaohai", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
       ["when_anyone", ["not_our_turn"], [["bet_points", "100_times_tile_number"]]],
       ["push_message", "discarded a tanyao tile, making other players bet 100 times the tile number (Shishihara Sawaya)"]
-    ]]]],
-    ["dora", [["when", [{"name": "status", "opts": ["shishihara-sawaya"]}, {"name": "counter_equals", "opts": ["num_discards", 1, 7, 13]}], [
-      ["set_status", "shishihara_sawaya_swap"]
     ]]]],
     ["dora", [["when", [{"name": "status", "opts": ["matsumi-kuro"]}], [
       ["set_status", "matsumi_kuro_dora_disabled"]
@@ -3985,8 +3986,8 @@
       ],
       "actions": [
         ["set_status", "just_scryed"],
-        ["scry_all", 1],
         ["push_message", "reveals the next tile in the wall (Ueshige Suzu)"],
+        ["scry_all", 1],
         ["pause", 1000],
         ["when", [{"name": "match", "opts": [["hand_any", "scry"], [[[[[0, 0]], 1]]]]}], [
           ["set_aside_scry"],
@@ -4519,13 +4520,16 @@
         ["set_status", "oohoshi_awai_scry"],
         ["big_text", "Oohoshi Awai: reveal!"],
         ["save_revealed_tiles"],
+        ["ite", [{"name": "others_status", "opts": ["takakamo-shizuno"]}], [
+          ["push_message", "revealed three tiles from the wall (Oohoshi Awai)"]
+        ], [
+          ["push_message", "revealed three tiles from the wall and the ura indicators (Oohoshi Awai)"]
+        ]],
         ["scry_all", 3],
         // reveal ura if not blocked
         ["ite", [{"name": "others_status", "opts": ["takakamo-shizuno"]}], [
-          ["push_message", "revealed three tiles from the wall (Oohoshi Awai)"],
           ["push_message", "may freely swap between these three tiles and the dora indicators (Oohoshi Awai)"]
         ], [
-          ["push_message", "revealed three tiles from the wall and the ura indicators (Oohoshi Awai)"],
           ["push_message", "may freely swap between these three tiles, the dora indicators, and the ura indicators (Oohoshi Awai)"],
           ["when", [{"name": "tile_not_revealed", "opts": [-6]}], [["reveal_tile", "1x"]]],
           ["when", [{"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", "1x"]]],
@@ -5470,7 +5474,7 @@
     },
     "extra_turn": {
       "display_name": "Take extra turn",
-      "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken", "shishihara_sawaya_swap"]}],
       "actions": [
         ["unset_status", "extra_turn", "extra_turn_prompt"],
         ["set_status", "extra_turn_taken"],
@@ -5481,7 +5485,7 @@
     },
     "extra_turn_skip": {
       "display_name": "Skip extra turn",
-      "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken", "shishihara_sawaya_swap"]}],
       "actions": [
         ["unset_status", "extra_turn", "extra_turn_prompt", "discard_facedown"],
         ["push_message", "skipped their extra turn"],

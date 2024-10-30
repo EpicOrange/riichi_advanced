@@ -934,7 +934,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           run_actions(state, state.rules["after_discard_passed"]["actions"], %{seat: context.seat})
         else state end
       "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
-      "scry_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: Enum.at(opts, 0, 1) } end)
+      "scry_all"        ->
+        num = Enum.at(opts, 0, 1)
+        push_message(state, [
+          %{text: "Player #{context.seat} #{state.players[context.seat].nickname} revealed "}
+        ] ++ Utils.ph(state.wall |> Enum.drop(state.wall_index) |> Enum.take(num)))
+        update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
       "set_aside_scry"  ->
         tiles = state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)
