@@ -3017,9 +3017,9 @@
       "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
         ["big_text", "Onjouji Toki: draw!"],
+        ["set_status", "onjouji_toki_drew"],
         ["draw_from_aside"],
-        ["push_message", "drew the tile they set aside (Onjouji Toki)"],
-        ["set_status", "onjouji_toki_drew"]
+        ["push_message", "drew the tile they set aside (Onjouji Toki)"]
       ],
       "unskippable": true
     },
@@ -3027,8 +3027,8 @@
       "display_name": "Draw from wall",
       "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["onjouji_toki_drew"]}, "has_aside", {"name": "status", "opts": ["onjouji-toki"]}],
       "actions": [
-        ["draw"],
-        ["set_status", "onjouji_toki_drew"]
+        ["set_status", "onjouji_toki_drew"],
+        ["draw"]
       ],
       "unskippable": true
     },
