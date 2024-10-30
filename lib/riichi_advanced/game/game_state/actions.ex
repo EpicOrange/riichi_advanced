@@ -1053,6 +1053,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       end
       state = run_actions(state, actions, context)
+      state = Buttons.recalculate_buttons(state)
       notify_ai(state)
       state
     else state end
