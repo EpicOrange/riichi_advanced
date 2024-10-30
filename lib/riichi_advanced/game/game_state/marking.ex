@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "suited"            -> Riichi.is_suited?(tile)
         "match_suit"        ->
           if Riichi.is_suited?(tile) do
-            Map.values(state.marking[marking_player])
+            Keyword.values(state.marking[marking_player])
             |> Enum.filter(&Kernel.is_map/1)
             |> Enum.map(fn mark_info -> mark_info.marked end)
             |> Enum.concat()
@@ -98,7 +98,7 @@ defmodule RiichiAdvanced.GameState.Marking do
           else false end
         "match_number"        ->
           if Riichi.is_suited?(tile) do
-            Map.values(state.marking[marking_player])
+            Keyword.values(state.marking[marking_player])
             |> Enum.filter(&Kernel.is_map/1)
             |> Enum.map(fn mark_info -> mark_info.marked end)
             |> Enum.concat()

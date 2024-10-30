@@ -207,7 +207,6 @@ defmodule RiichiAdvancedWeb.HandComponent do
       end
       indices
     else [] end
-    IO.inspect({assigns.call_choice, highlighted_indices})
     assigns.hand
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()

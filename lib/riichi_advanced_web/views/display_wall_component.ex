@@ -21,7 +21,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="display-wall-container">
+    <div class={["display-wall-container", @minimized && "minimized"]}>
       <input id="display-wall-minimize" type="checkbox" class="display-wall-minimize" checked={not @minimized}>
       <label for="display-wall-minimize" class="display-wall-minimize-label" phx-cancellable-click="minimize" phx-target={@myself}><%= if @minimized do "Show wall" else "Hide wall" end %></label>
       <div class={[@id, @minimized && "minimized"]}>
