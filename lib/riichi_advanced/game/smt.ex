@@ -206,6 +206,7 @@ defmodule RiichiAdvanced.SMT do
     # IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
     # IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
     jokers = Map.keys(tile_mappings)
+    # IO.puts("Jokers are #{inspect(jokers)}")
     all_tiles = all_tiles
     |> Enum.uniq()
     |> Enum.reject(fn tile -> tile in jokers && tile not in tile_mappings[tile] end)
@@ -281,9 +282,10 @@ defmodule RiichiAdvanced.SMT do
     call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
     {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
-    |> Enum.filter(fn {tile, _ix} -> Map.has_key?(tile_mappings, tile) end)
+    |> Enum.filter(fn {tile, _ix} -> Utils.count_tiles([tile], jokers) == 1 end)
     |> Enum.map(fn {tile, ix} ->
-      joker_choices = tile_mappings[tile]
+      {_joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
+      joker_choices = joker_choices
       |> Enum.map(fn tile2 -> "(= joker#{ix} #{to_smt_tile(tile2, encoding)})" end)
       |> Enum.join("\n            ")
       {ix, "(declare-const joker#{ix} (_ BitVec #{len}))\n(assert (or #{joker_choices}))\n"}

@@ -2,6 +2,7 @@ def add_yaku_statuses($actions; $type):
   [
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["26z"], 1]]]]}], [["set_status", "aka_h"]]],
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1]]]]}], [["set_status", "golden_chun"]]],
+    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["7z"], 1]]]]}], [["set_status", "7z"]]],
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun_pair"], -1], [["chun"], 1]]]]}], [["set_status", "777z"]]]
   ] + $actions;
@@ -45,7 +46,7 @@ end
   {"display_name": "Kin", "value": 1, "when": [
     {"name": "status", "opts": ["golden_chun"]},
     [
-      {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["7z"], -1]]]]},
+      {"name": "status_missing", "opts": ["7z"]},
       [
         {"name": "status", "opts": ["77z"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
@@ -70,7 +71,7 @@ end
   {"display_name": "Sangen Pocchi", "value": 1, "when": [
     {"name": "status", "opts": ["shiro_pocchi", "aka_h", "golden_chun"]},
     [
-      {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["7z"], -1]]]]},
+      {"name": "status_missing", "opts": ["7z"]},
       [
         {"name": "status", "opts": ["77z"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}

@@ -223,13 +223,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
-        Enum.all?(winning_hand, fn tile -> Enum.any?([tile] ++ Map.get(tile_mappings, tile, []), fn t -> t in tiles end) end)
+        Enum.all?(winning_hand, fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
       "winning_hand_and_tile_consists_of" ->
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         winning_hand = cxt_player.hand ++ Enum.flat_map(cxt_player.calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Enum.any?([tile] ++ Map.get(tile_mappings, tile, []), fn t -> t in tiles end) end)
+        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)
@@ -321,20 +321,17 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
         called_tiles = [context.called_tile] ++ context.call_choice
-        tile_aliases = cxt_player.tile_aliases
-        Utils.count_tiles(called_tiles, tiles, tile_aliases) >= count
+        Utils.count_tiles(called_tiles, tiles) >= count
       "called_tile_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
         called_tiles = [context.called_tile]
-        tile_aliases = cxt_player.tile_aliases
-        Utils.count_tiles(called_tiles, tiles, tile_aliases) >= count
+        Utils.count_tiles(called_tiles, tiles) >= count
       "call_choice_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
         called_tiles = context.call_choice
-        tile_aliases = cxt_player.tile_aliases
-        Utils.count_tiles(called_tiles, tiles, tile_aliases) >= count
+        Utils.count_tiles(called_tiles, tiles) >= count
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
           "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end

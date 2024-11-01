@@ -990,6 +990,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           # in saki you can win with 14 tiles all in hand (no draw)
           # this necessitates choosing a winning tile out of the 14, which is what this does
           {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules["yaku"] ++ state.rules["extra_yaku"], seat, [assigned_winning_tile], win_source)
+          new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end
           yaku = if Map.has_key?(state.rules, "meta_yaku") do
             get_best_yaku(state, state.rules["meta_yaku"], seat, [assigned_winning_tile], win_source, yaku)
           else yaku end

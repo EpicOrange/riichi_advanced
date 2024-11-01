@@ -23,3 +23,8 @@
     {"name": "match", "opts": [["draw"], [[[["25z"], 1]]]]}
   ], [["set_status", "shiro_pocchi"], ["set_tile_alias", ["25z"], $all_tiles]]]
 ]
+|
+# remove shiro pocchi status on turn change
+.before_turn_change.actions += [
+  ["unset_status", "shiro_pocchi"]
+]

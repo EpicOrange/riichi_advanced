@@ -764,7 +764,7 @@ defmodule RiichiAdvanced.GameState do
     # construct all visible tiles
     visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
     visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
-    visible_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &Riichi.call_to_tiles/1)
+    visible_tiles = state.players[seat].hand ++ state.players[seat].draw ++ visible_ponds ++ Enum.flat_map(visible_calls, &Riichi.call_to_tiles/1)
     Riichi.get_waits_and_ukeire(state.all_tiles, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
   end
 
