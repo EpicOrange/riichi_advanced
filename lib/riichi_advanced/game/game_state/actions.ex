@@ -542,6 +542,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         if Enum.all?([:east, :south, :west, :north], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
+      "when_others"           ->
+        if Enum.all?([:east, :south, :west, :north] -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+          run_actions(state, Enum.at(opts, 1, []), context)
+        else state end
       "mark" -> state # no-op
       "swap_marked_hand_and_discard" ->
         {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)

@@ -2502,9 +2502,11 @@
       ["push_message", "took an extra turn by discarding 8 (Takimi Haru)"]
     ]]]],
     ["tedashi", [["when", [{"name": "status", "opts": ["aislinn-wishart"]}, {"name": "has_score_below", "opts": [30000]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
-      ["set_status", "extra_turn"],
-      ["big_text", "Aislinn Wishart: extra turn!"],
-      ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"]
+      ["when_others", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [
+        ["set_status", "extra_turn"],
+        ["big_text", "Aislinn Wishart: extra turn!"],
+        ["push_message", "took an extra turn by discarding tedashi (Aislinn Wishart)"]
+      ]]
     ]]]],
     ["5z", [["when", [{"name": "status", "opts": ["karijuku-tomoe"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
