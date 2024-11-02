@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:loading, true)
     |> assign(:marking, false)
     |> assign(:visible_waits, %{})
-    |> assign(:show_waits, false)
+    |> assign(:show_waits_index, nil)
     |> assign(:hovered_called_tile, nil)
     |> assign(:hovered_call_choice, nil)
 
@@ -269,9 +269,9 @@ defmodule RiichiAdvancedWeb.GameLive do
           </div>
         <% end %>
       <% end %>
-      <div class="visible-waits-container" :if={@show_waits && not Enum.empty?(@visible_waits)}>
+      <div class="visible-waits-container" :if={@show_waits_index != nil}>
         <div class="visible-waits">
-          <%= for {wait, num} <- Enum.sort_by(@visible_waits, fn {wait, _num} -> Utils.sort_value(wait) end) do %>
+          <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, []), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
             <div class="visible-wait">
               <div class="visible-wait-num"><%= num %></div>
               <div class={["tile", wait]}></div>
@@ -401,8 +401,8 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_info({:play_tile, index}, socket) do
     if socket.assigns.seat == socket.assigns.state.turn do
-      socket = assign(socket, :visible_waits, GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index}))
-      socket = assign(socket, :show_waits, false)
+      socket = assign(socket, :visible_waits, %{})
+      socket = assign(socket, :show_waits_index, nil)
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
       {:noreply, socket}
     else
@@ -411,13 +411,16 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:hover, index}, socket) do
-    socket = assign(socket, :visible_waits, GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index}))
-    socket = assign(socket, :show_waits, true)
+    socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
+      waits = GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index})
+      assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
+    else socket end
+    socket = assign(socket, :show_waits_index, index)
     {:noreply, socket}
   end
 
   def handle_info(:hover_off, socket) do
-    socket = assign(socket, :show_waits, false)
+    socket = assign(socket, :show_waits_index, nil)
     {:noreply, socket}
   end
 
