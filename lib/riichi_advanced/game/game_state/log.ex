@@ -7,6 +7,19 @@ defmodule GameEvent do
   use Accessible
 end
 
+# for encoding tiles with attrs, which are tuples, which Jason doesn't handle unless we do this
+defimpl Jason.Encoder, for: Tuple do
+  def encode(data, opts) when is_tuple(data) do
+    # turn {:"3p", ["hand"]} into its json version, "3p"
+    case Utils.to_tile(data) do
+      # {tile_id, attrs} -> Jason.Encode.map(%{"tile" => Atom.to_string(tile_id), "attrs" => attrs}, opts)
+      # _                -> Jason.Encode.atom(data, opts)
+      {tile_id, _attrs} -> Jason.Encode.atom(tile_id, opts)
+      _                 -> Jason.Encode.atom(data, opts)
+    end
+  end
+end
+
 defmodule RiichiAdvanced.GameState.Log do
   # alias RiichiAdvanced.GameState.Buttons, as: Buttons
   # import RiichiAdvanced.GameState
@@ -39,12 +52,12 @@ defmodule RiichiAdvanced.GameState.Log do
     if ix != nil do
       update_in(state.log_state.log, &List.update_at(&1, ix, fun))
     else
-      IO.inspect("Tried to update last draw/discard of log, but there is none")
+      IO.puts("Tried to update last draw/discard of log, but there is none")
       state
     end
   end
 
-  def add_buttons(state) do
+  def add_possible_calls(state) do
     possible_calls = for {seat, player} <- state.players do
       for {name, {:call, choices}} <- player.button_choices do
         for choice <- Map.values(choices) |> Enum.concat() do
@@ -117,6 +130,7 @@ defmodule RiichiAdvanced.GameState.Log do
         payout: player.score # TODO no uma?
       } end),
       rules: %{
+        ruleset: state.ruleset,
         mods: state.mods
       },
       kyokus: Enum.reverse(state.log_state.kyokus)

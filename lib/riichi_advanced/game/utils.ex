@@ -51,6 +51,7 @@ defmodule Utils do
     case tile_spec do
       [tile_spec | attrs] -> {@to_tile[tile_spec], attrs}
       %{"tile" => tile_spec, "attrs" => attrs} -> {@to_tile[tile_spec], attrs}
+      {tile_spec, attrs} -> {@to_tile[tile_spec], attrs}
       _ -> @to_tile[tile_spec]
     end
   end
@@ -59,6 +60,7 @@ defmodule Utils do
     case tile_spec do
       [tile_spec | _attrs] -> Map.has_key?(@to_tile, tile_spec)
       %{"tile" => tile_spec, "attrs" => _attrs} -> Map.has_key?(@to_tile, tile_spec)
+      {tile_spec, attrs} -> Map.has_key?(@to_tile, tile_spec) && is_list(attrs)
       _ -> Map.has_key?(@to_tile, tile_spec)
     end
   end

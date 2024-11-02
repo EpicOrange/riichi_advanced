@@ -131,7 +131,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
       # IO.puts("Updating buttons after action #{action}: #{inspect(new_button_choices)}")
       state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
-      state = Log.add_buttons(state)
+      state = Log.add_possible_calls(state)
       state
     else state end
   end

@@ -1258,6 +1258,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
         # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       end
+      state = case choice do
+        "skip" -> state
+        "play_tile" -> state
+        _ -> Log.log(state, seat, :button_pressed, %{name: choice})
+      end
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
       state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
 
