@@ -1092,32 +1092,11 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp adjudicate_actions(state) do
     if state.game_active do
       lock = Mutex.await(state.mutex, __MODULE__)
-      # IO.puts("\nAdjudicating actions!")
+      if @debug_actions do
+        IO.puts("\nAdjudicating actions!")
+      end
       # clear last discard
       state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
-      # supercede actions
-      # basically, starting from the current turn player's choice, nil out others' choices
-      seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
-      state = for seat <- seats, reduce: state do
-        state ->
-          choice = state.players[seat].choice
-          if choice not in [nil, "skip", "play_tile"] do
-            superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice) do
-              Map.get(state.rules["buttons"][choice], "precedence_over", [])
-            else [] end
-            # nil out every choice that is superceded by our choice
-            update_all_players(state, fn dir, player ->
-              if seat != dir && player.choice in superceded_choices do
-                %Player{ player | choice: nil, chosen_actions: nil }
-              else player end
-            end)
-          else
-            if choice == "skip" do
-              # always nil out skip
-              update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-            else state end
-          end
-      end
       # trigger all non-nil choices
       state = for {seat, player} <- state.players, reduce: state do
         state ->
@@ -1126,7 +1105,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # don't clear deferred actions here
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
-          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [] } end)
           state = if choice != nil do
             button_choice = if state.players[seat].button_choices != nil do
               Map.get(state.players[seat].button_choices, choice, nil)
@@ -1228,6 +1207,28 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
     end
 
+    # supercede choices
+    # basically, starting from the current turn player's choice, clear out others' choices
+    seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
+    state = for seat <- seats, reduce: state do
+      state ->
+        choice = state.players[seat].choice
+        if choice not in [nil, "skip", "play_tile"] do
+          superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice) do
+            Map.get(state.rules["buttons"][choice], "precedence_over", [])
+          else [] end
+          # replace with "skip" every choice that is superceded by our choice
+          update_all_players(state, fn dir, player ->
+            not_us = seat != dir
+            choice_superceded = player.choice in superceded_choices
+            all_choices_superceded = player.choice == nil && Enum.all?(player.buttons, fn button -> button in superceded_choices end)
+            if not_us && (choice_superceded || all_choices_superceded) do
+              %Player{ player | choice: "skip", chosen_actions: [] }
+            else player end
+          end)
+        else state end
+    end
+
     # check if nobody else needs to make choices
     if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
       # if every action is skip, we need to resume deferred actions for all players
@@ -1253,8 +1254,10 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def submit_actions(state, seat, choice, actions) do
     if state.game_active && state.players[seat].choice == nil do
-      # IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
-      # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
+      if @debug_actions do
+        IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
+        # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
+      end
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
       state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
 
