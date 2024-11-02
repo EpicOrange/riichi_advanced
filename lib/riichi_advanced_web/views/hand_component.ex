@@ -189,7 +189,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def sort_value_by_visibility({tile, i}, assigns) do
-    visible = not assigns.revealed? && Utils.has_attr?(tile, ["revealed"]) && Map.get(assigns, :played_tile_index, nil) == i
+    visible = assigns.revealed? || Utils.has_attr?(tile, ["revealed"]) && Map.get(assigns, :played_tile_index, nil) != i
     if visible do i + 100 else i end
   end
 

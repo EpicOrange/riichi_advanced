@@ -2221,6 +2221,7 @@
                   [["unset_status", "extra_turn", "extra_turn_taken", "discard_facedown"]]],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
                 ["when", [{"name": "not_status_missing", "opts": ["shirouzu-mairu", "tsuruta-himeko"]}], [["remove_attr_all", "revealed"]]],
+                ["when", [{"name": "status", "opts": ["shimizudani-ryuuka"]}], [["remove_attr_hand", "revealed"]]],
                 ["when", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["manzu"]]]],
                 ["when", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["pinzu"]]]],
                 ["when", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["souzu"]]]],

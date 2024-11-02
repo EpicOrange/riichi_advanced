@@ -1107,6 +1107,7 @@ div.declare-yaku button.declare-yaku-button {
   margin: calc(0.25 * var(--tile-size)) 0;
   height: calc(1 * var(--tile-size));
   background: var(--tile-front);
+  font-size: calc(0.5 * var(--tile-size));
   text-decoration: none;
   color: black;
   border-width: 0;
