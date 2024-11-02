@@ -3186,7 +3186,7 @@
       ],
       "actions": [
         ["big_text", "Kunihiro Hajime: swap!"],
-        ["set_status", "just_swapped", "kunihiro-hajime_exhausted"],
+        ["set_status", "just_swapped"],
         ["mark", [["hand", 1, ["match_number", "not_riichi"]], ["discard", 1, ["match_number"]]]],
         ["push_message", "swapped a discard with a same-number tile from hand (Kunihiro Hajime)"],
         ["set_status", "about_to_swap"],
