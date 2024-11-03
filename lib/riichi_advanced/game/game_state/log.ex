@@ -43,6 +43,16 @@ defmodule RiichiAdvanced.GameState.Log do
     end
   end
 
+  def from_seat(seat) do
+    case seat do
+      0 -> :east
+      1 -> :south
+      2 -> :west
+      3 -> :north
+      _ -> nil
+    end
+  end
+
   def log(state, seat, event_type, params) do
     update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
   end
@@ -85,9 +95,9 @@ defmodule RiichiAdvanced.GameState.Log do
       kyoku: state.kyoku,
       honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else nil end,
       riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]) else nil end,
-      doras: ["todo"],
-      uras: ["todo"],
-      kan_tiles: ["todo"],
+      doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end,
+      uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end,
+      kan_tiles: Enum.take(state.dead_wall, -4),
       wall: state.wall |> Enum.drop(52) |> Enum.take(70),
       events: state.log_state.log
         |> Enum.reverse()

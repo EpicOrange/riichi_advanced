@@ -985,7 +985,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         if Map.has_key?(state.interruptible_actions, action) do
           state = if not Enum.empty?(state.winners) do
             # if there's a winner, never display buttons
-            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [] } end)
+            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{} } end)
           else
             Buttons.recalculate_buttons(state, state.interruptible_actions[action])
           end
@@ -1105,7 +1105,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # don't clear deferred actions here
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
-          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [] } end)
+          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [], button_choices: %{} } end)
           state = if choice != nil do
             button_choice = if state.players[seat].button_choices != nil do
               Map.get(state.players[seat].button_choices, choice, nil)

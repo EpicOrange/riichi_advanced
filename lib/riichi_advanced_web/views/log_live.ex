@@ -1,43 +1,62 @@
-defmodule RiichiAdvancedWeb.GameLive do
+defmodule RiichiAdvancedWeb.LogLive do
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, _session, socket) do
     socket = socket
-    |> assign(:session_id, params["id"])
-    |> assign(:ruleset, params["ruleset"])
-    |> assign(:nickname, params["nickname"])
-    |> assign(:seat_param, params["seat"])
+    |> assign(:log_id, params["id"])
     |> assign(:game_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Game{})
+    |> assign(:log, nil)
     |> assign(:seat, :east)
-    |> assign(:shimocha, nil)
-    |> assign(:toimen, nil)
-    |> assign(:kamicha, nil)
+    |> assign(:shimocha, :south)
+    |> assign(:toimen, :west)
+    |> assign(:kamicha, :north)
     |> assign(:viewer, :spectator)
     |> assign(:display_riichi_sticks, false)
     |> assign(:display_honba, false)
     |> assign(:loading, true)
     |> assign(:marking, false)
-    |> assign(:visible_waits, %{})
-    |> assign(:show_waits_index, nil)
-    |> assign(:hovered_called_tile, nil)
-    |> assign(:hovered_call_choice, nil)
 
-    last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
-      [mods] -> mods
-      []     -> []
-    end
-
-    # liveviews mount twice; we only want to init a new player on the second mount
+    # liveviews mount twice
     if socket.root_pid != nil do
-      # start a new game process, if it doesn't exist already
-      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: last_mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
+
+      # read in the log
+      log_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{socket.assigns.log_id <> ".json"}")) do
+        {:ok, log_json} -> log_json
+        {:error, _err}  -> nil
+      end
+
+      # decode the log json
+      log = try do
+        case Jason.decode(log_json) do
+          {:ok, log} -> log
+          {:error, err} ->
+            IO.puts("WARNING: Failed to read log file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+            %{}
+        end
+      rescue
+        ArgumentError -> 
+          IO.puts("WARNING: Log \"#{socket.assigns.log_id}\" doesn't exist!")
+          %{}
+      end
+
+      ruleset = Map.get(log["rules"], "ruleset", "riichi")
+      mods = Map.get(log["rules"], "mods", [])
+
+      socket = socket
+      |> assign(:ruleset, ruleset)
+      |> assign(:session_id, "log") # debug
+      # |> assign(:session_id, socket.id)
+      |> assign(:log, log)
+
+      # start a new game process
+      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.session_id}")
           [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
-          GenServer.cast(game_state, {:initialize_game, nil})
+          GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
           game_state
         {:error, {:shutdown, error}} ->
           IO.puts("Error when starting game session #{socket.assigns.session_id}")
@@ -50,8 +69,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       end
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
+
       # init a new player and get the current state
-      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:new_player, socket})
+      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:spectate, socket})
+
       socket = socket
       |> assign(:game_state, game_state)
       |> assign(:state, state)
@@ -63,7 +84,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
       |> assign(:loading, false)
-      |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, seat))
+      |> assign(:marking, false)
 
       # fetch messages
       messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
@@ -72,15 +93,15 @@ defmodule RiichiAdvancedWeb.GameLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered a "},
+          %{text: "Viewing log for a"},
           %{bold: true, text: socket.assigns.ruleset},
-          %{text: "game, room code"},
-          %{bold: true, text: socket.assigns.session_id}
+          %{text: "game"},
         ] ++ if state.mods != nil && not Enum.empty?(state.mods) do
           [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
         else [] end})
         socket
       else socket end
+
       {:ok, socket}
     else
       {:ok, socket}
@@ -96,7 +117,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
-        revealed?={@viewer == seat || player.hand_revealed}
+        revealed?={true}
         your_hand?={@viewer == seat}
         your_turn?={@seat == @state.turn}
         seat={seat}
@@ -108,12 +129,12 @@ defmodule RiichiAdvancedWeb.GameLive do
         status={player.status}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
-        called_tile={@hovered_called_tile}
-        call_choice={@hovered_call_choice}
-        play_tile={&send(self(), {:play_tile, &1})}
-        hover={&send(self(), {:hover, &1})}
-        hover_off={fn -> send(self(), :hover_off) end}
-        reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
+        called_tile={nil}
+        call_choice={nil}
+        play_tile={fn _ix -> :ok end}
+        hover={fn _ix -> :ok end}
+        hover_off={fn _ix -> :ok end}
+        reindex_hand={fn _from, _to -> :ok end}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.PondComponent}
         id={"pond #{Utils.get_relative_seat(@seat, seat)}"}
@@ -233,12 +254,6 @@ defmodule RiichiAdvancedWeb.GameLive do
         num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
         marking={@state.marking[@seat]}
         :if={@state.players[@seat].num_scryed_tiles > 0} />
-      <.live_component module={RiichiAdvancedWeb.DeclareYakuComponent}
-        id="declare-yaku"
-        game_state={@game_state}
-        viewer={@viewer}
-        yakus={Map.get(@state.rules, "declarable_yaku", [])}
-        :if={@state.players[@seat].declared_yaku == []} />
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
@@ -255,6 +270,11 @@ defmodule RiichiAdvancedWeb.GameLive do
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         :if={Map.get(@state.rules, "display_wall", false)} />
+      <.live_component module={RiichiAdvancedWeb.LogControlComponent}
+        id="log-control"
+        state={@state}
+        log={@log}
+        game_state={@game_state} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
@@ -270,16 +290,6 @@ defmodule RiichiAdvancedWeb.GameLive do
           </div>
         <% end %>
       <% end %>
-      <div class="visible-waits-container" :if={not Enum.empty?(Map.get(@visible_waits, @show_waits_index, []))}>
-        <div class="visible-waits">
-          <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, []), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
-            <div class="visible-wait">
-              <div class="visible-wait-num"><%= num %></div>
-              <div class={["tile", wait]}></div>
-            </div>
-          <% end %>
-        </div>
-      </div>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" log_button={true} />
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
@@ -289,38 +299,23 @@ defmodule RiichiAdvancedWeb.GameLive do
     """
   end
 
-  def skip_or_discard_draw(socket) do
-    # if draw, discard it
-    # otherwise, if buttons, skip
-    player = socket.assigns.state.players[socket.assigns.seat]
-    if socket.assigns.seat == socket.assigns.state.turn && not Enum.empty?(player.draw) do
-      index = length(player.hand)
-      GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
-    else
-      if "skip" in player.buttons do
-        GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
-      end
-    end
-  end
-
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname || ""}")
+    socket = push_navigate(socket, to: ~p"/")
     {:noreply, socket}
   end
 
   def handle_event("log", _assigns, socket) do
-    log = GenServer.call(socket.assigns.game_state, :get_log)
-    socket = push_event(socket, "copy-log", %{log: log})
+    # log button pressed
+    # log = GenServer.call(socket.assigns.game_state, :get_log)
+    # socket = push_event(socket, "copy-log", %{log: log})
     {:noreply, socket}
   end
 
   def handle_event("double_clicked", _assigns, socket) do
-    skip_or_discard_draw(socket)
     {:noreply, socket}
   end
 
   def handle_event("right_clicked", _assigns, socket) do
-    skip_or_discard_draw(socket)
     {:noreply, socket}
   end
 
@@ -375,61 +370,6 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("hover_button", %{"name" => name}, socket) do
-    player = socket.assigns.state.players[socket.assigns.viewer]
-    {called_tile, call_choice} = case Map.get(player.button_choices, name, nil) do
-      {:call, choices} ->
-        if choices != nil do
-          choices = choices
-          |> Enum.filter(fn {_called_tile, call_choice} -> not Enum.empty?(call_choice) end)
-          case choices do
-            [{called_tile, [call_choice]}] -> {called_tile, call_choice}
-            _                              -> {nil, nil}
-          end
-        else {nil, nil} end
-      _ -> {nil, nil}
-    end
-    socket = assign(socket, :hovered_called_tile, called_tile)
-    socket = assign(socket, :hovered_call_choice, call_choice)
-    {:noreply, socket}
-  end
-
-  def handle_event("hover_off", _assigns, socket) do
-    socket = assign(socket, :hovered_called_tile, nil)
-    socket = assign(socket, :hovered_call_choice, nil)
-    {:noreply, socket}
-  end
-
-  def handle_info({:play_tile, index}, socket) do
-    if socket.assigns.seat == socket.assigns.state.turn do
-      socket = assign(socket, :visible_waits, %{})
-      socket = assign(socket, :show_waits_index, nil)
-      GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
-      {:noreply, socket}
-    else
-      {:noreply, socket}
-    end
-  end
-
-  def handle_info({:hover, index}, socket) do
-    socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
-      waits = GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index})
-      assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
-    else socket end
-    socket = assign(socket, :show_waits_index, index)
-    {:noreply, socket}
-  end
-
-  def handle_info(:hover_off, socket) do
-    socket = assign(socket, :show_waits_index, nil)
-    {:noreply, socket}
-  end
-
-  def handle_info({:reindex_hand, from, to}, socket) do
-    GenServer.cast(socket.assigns.game_state, {:reindex_hand, socket.assigns.seat, from, to})
-    {:noreply, socket}
-  end
-
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) do
       # animate new calls
@@ -450,8 +390,6 @@ defmodule RiichiAdvancedWeb.GameLive do
           send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
         end
       end)
-
-
 
       socket = assign(socket, :state, state)
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))

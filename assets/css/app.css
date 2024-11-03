@@ -2294,3 +2294,33 @@ div.menu-buttons-container > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
 }
+
+/* log control */
+
+div.log-control {
+  background: var(--tile-back);
+  position: absolute;
+  bottom: calc(2.25 * var(--tile-size));
+  right: calc(3.5 * var(--tile-size));
+  width: calc(3 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  z-index: 5;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+div.log-control > button.back-button,
+div.log-control > button.play-button,
+div.log-control > button.next-button {
+  height: calc(0.8 * var(--tile-size));
+  background: transparent;
+  border-width: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

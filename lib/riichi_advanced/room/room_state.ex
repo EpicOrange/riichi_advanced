@@ -313,6 +313,8 @@ defmodule RiichiAdvanced.RoomState do
           Map.update!(state, :seats, fn seats -> Map.keys(seats) |> Enum.zip(Map.values(seats) |> Enum.shuffle()) |> Map.new() end)
         else state end
         state = Map.put(state, :started, true)
+        [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.session_id))
+        GenServer.cast(game_state, {:initialize_game, nil})
         state
       {:error, {:shutdown, error}} ->
         IO.puts("Error when starting game session #{state.session_id}")

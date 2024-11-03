@@ -217,7 +217,7 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    # decode the rules json, removing comments first
+    # decode the rules json
     {state, rules} = try do
       case Jason.decode(ruleset_json) do
         {:ok, rules} -> {state, rules}
@@ -244,9 +244,6 @@ defmodule RiichiAdvanced.GameState do
     initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
 
     state = update_players(state, &%Player{ &1 | score: initial_score })
-    state = initialize_new_round(state)
-
-    # Scoring.run_yaku_tests(state)
 
     {:ok, state}
   end
@@ -268,63 +265,121 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  def initialize_new_round(state) do
+  def initialize_new_round(state, kyoku_log \\ nil) do
     rules = state.rules
+    {state, hands} = if kyoku_log == nil do
+      # initialize wall
+      all_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
+      wall = all_tiles
+      
+      # check that there are no nil tiles
+      state = wall
+      |> Enum.zip(Map.get(rules, "wall", []))
+      |> Enum.filter(fn {result, _orig} -> result == nil end)
+      |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
 
-    all_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
-    wall = all_tiles
-    
-    # check that there are no nil tiles
-    state = wall
-    |> Enum.zip(Map.get(rules, "wall", []))
-    |> Enum.filter(fn {result, _orig} -> result == nil end)
-    |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
+      # shuffle wall
+      wall = Enum.shuffle(wall)
+      wall = if Debug.debug() do Debug.set_wall(wall) else wall end
 
-    wall = Enum.shuffle(wall)
-    wall = if Debug.debug() do Debug.set_wall(wall) else wall end
+      # distribute haipai
+      starting_tiles = Map.get(rules, "starting_tiles", 0)
+      hands = if starting_tiles > 0 do
+        %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
+          :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+          :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+          :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
+      else Map.new([:east, :south, :west, :north], &{&1, []}) end
+      hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
 
-    starting_tiles = if Map.has_key?(rules, "starting_tiles") do rules["starting_tiles"] else 0 end
-    hands = if starting_tiles > 0 do
-      %{:east  => Enum.slice(wall, 0..(starting_tiles-1)),
-        :south => Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-        :west  => Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-        :north => Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))}
-    else Map.new([:east, :south, :west, :north], &{&1, []}) end
-    hands = if Debug.debug() do Debug.set_starting_hand(wall) else hands end
+      # reserve some tiles in the dead wall
+      reserved_tile_names = Map.get(rules, "reserved_tiles", [])
+      dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
+      revealed_tiles = Map.get(rules, "revealed_tiles", [])
+      max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+      state = if length(reserved_tile_names) > 0 && length(reserved_tile_names) <= dead_wall_length do
+        {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
+        reserved_tiles = reserved_tile_names
+        revealed_tiles = Map.get(rules, "revealed_tiles", [])
+        max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+        state 
+        |> Map.put(:all_tiles, all_tiles)
+        |> Map.put(:wall, wall)
+        |> Map.put(:haipai, hands)
+        |> Map.put(:dead_wall, dead_wall)
+        |> Map.put(:reserved_tiles, reserved_tiles)
+        |> Map.put(:revealed_tiles, revealed_tiles)
+        |> Map.put(:saved_revealed_tiles, revealed_tiles)
+        |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+        |> Map.put(:drawn_reserved_tiles, [])
+      else
+        state = state
+        |> Map.put(:all_tiles, all_tiles)
+        |> Map.put(:wall, wall)
+        |> Map.put(:dead_wall, [])
+        |> Map.put(:reserved_tiles, [])
+        |> Map.put(:revealed_tiles, [])
+        |> Map.put(:saved_revealed_tiles, [])
+        |> Map.put(:max_revealed_tiles, 0)
+        |> Map.put(:drawn_reserved_tiles, [])
+        if length(reserved_tile_names) > dead_wall_length do
+          show_error(state, "length of \"reserved_tiles\" should not exceed \"initial_dead_wall_length\"!")
+        else state end
+      end
+      {state, hands}
+    else
+      hands = 
+        %{:east  => kyoku_log["haipai"]["east"]  |> Enum.map(&Utils.to_tile/1),
+          :south => kyoku_log["haipai"]["south"] |> Enum.map(&Utils.to_tile/1),
+          :west  => kyoku_log["haipai"]["west"]  |> Enum.map(&Utils.to_tile/1),
+          :north => kyoku_log["haipai"]["north"] |> Enum.map(&Utils.to_tile/1)}
+      wall = hands.east ++ hands.south ++ hands.west ++ hands.north ++ kyoku_log["wall"]
+      |> Enum.map(&Utils.to_tile/1)
 
-    # reserve some tiles in the dead wall
-    reserved_tile_names = Map.get(rules, "reserved_tiles", [])
-    dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
-    state = if length(reserved_tile_names) > 0 && length(reserved_tile_names) <= dead_wall_length do
-      {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
-      reserved_tiles = reserved_tile_names
-      revealed_tiles = if Map.has_key?(rules, "revealed_tiles") do rules["revealed_tiles"] else [] end
-      max_revealed_tiles = if Map.has_key?(rules, "max_revealed_tiles") do rules["max_revealed_tiles"] else 0 end
-      state 
-      |> Map.put(:all_tiles, all_tiles)
+      # reconstruct dead wall
+      dead_wall = Enum.zip(kyoku_log["uras"], kyoku_log["doras"])
+      |> Enum.flat_map(fn {a, b} -> [a, b] end)
+      |> Enum.reverse()
+      dead_wall = dead_wall ++ kyoku_log["kan_tiles"]
+      |> Enum.map(&Utils.to_tile/1)
+      reserved_tiles = Map.get(rules, "reserved_tiles", [])
+      revealed_tiles = Map.get(rules, "revealed_tiles", [])
+      max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+
+      state = state
+      |> Map.put(:all_tiles, Utils.sort_tiles(wall ++ dead_wall))
       |> Map.put(:wall, wall)
-      |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
       |> Map.put(:reserved_tiles, reserved_tiles)
       |> Map.put(:revealed_tiles, revealed_tiles)
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
-    else
-      state = state
-      |> Map.put(:all_tiles, all_tiles)
-      |> Map.put(:wall, wall)
-      |> Map.put(:dead_wall, [])
-      |> Map.put(:reserved_tiles, [])
-      |> Map.put(:revealed_tiles, [])
-      |> Map.put(:saved_revealed_tiles, [])
-      |> Map.put(:max_revealed_tiles, 0)
-      |> Map.put(:drawn_reserved_tiles, [])
-      if length(reserved_tile_names) > dead_wall_length do
-        show_error(state, "length of \"reserved_tiles\" should not exceed \"initial_dead_wall_length\"!")
-      else state end
+
+      {state, hands}
+    end
+
+    # initialize other constants
+    persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
+    persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
+    initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
+      {name, auto_button["enabled_at_start"]}
     end
     state = state
+    |> Map.put(:wall_index, Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum())
+    |> Map.put(:dead_wall_offset, 0)
+    |> update_all_players(&%Player{
+         score: &2.score,
+         nickname: &2.nickname,
+         hand: hands[&1],
+         auto_buttons: initial_auto_buttons,
+         status: Enum.filter(&2.status, fn status -> status in persistent_statuses end),
+         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
+       })
+    |> Map.put(:actions, [])
+    |> Map.put(:reversed_turn_order, false)
+    |> Map.put(:game_active, true)
+    |> Map.put(:turn, nil) # so that change_turn detects a turn change
     |> Map.put(:die1, :rand.uniform(6))
     |> Map.put(:die2, :rand.uniform(6))
     |> Map.put(:round_result, nil)
@@ -334,31 +389,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
 
-    # initialize auto buttons
-    initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
-      {name, auto_button["enabled_at_start"]}
-    end
-
-    # statuses to keep between rounds
-    persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
-    persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
-
-    state = state
-     |> Map.put(:wall_index, starting_tiles*4)
-     |> Map.put(:dead_wall_offset, 0)
-     |> update_all_players(&%Player{
-          score: &2.score,
-          nickname: &2.nickname,
-          hand: hands[&1],
-          auto_buttons: initial_auto_buttons,
-          status: Enum.filter(&2.status, fn status -> status in persistent_statuses end),
-          counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
-        })
-     |> Map.put(:actions, [])
-     |> Map.put(:reversed_turn_order, false)
-     |> Map.put(:game_active, true)
-     |> Map.put(:turn, nil) # so that change_turn detects a turn change
-    
+    # initialize marking
     state = Marking.initialize_marking(state)
 
     # initialize saki if needed
@@ -793,21 +824,9 @@ defmodule RiichiAdvanced.GameState do
   def play_sound(state, path, seat \\ nil) do
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "play_sound", %{"seat" => seat, "path" => path})
   end
-  
-  def handle_call({:new_player, socket}, _from, state) do
-    {seat, spectator} = cond do
-      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
-      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
-      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
-      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
-      Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
-      Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
-      Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
-      Map.get(state, :north) == nil || is_pid(Map.get(state, :north)) -> {:north, false}
-      true                                          -> {:east, true}
-    end
 
-    state = if not spectator do
+  def add_player(state, socket, seat, spectator) do
+    if not spectator do
       # if we're replacing an ai, shutdown the ai
       state = if is_pid(Map.get(state, seat)) do
         IO.puts("Stopping AI for #{seat}: #{inspect(Map.get(state, seat))}")
@@ -830,22 +849,52 @@ defmodule RiichiAdvanced.GameState do
       state = fill_empty_seats_with_ai(state)
       state = broadcast_state_change(state)
       state
-    else state end
-
+    else
+      messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
+      state = put_in(state.messages_states[socket.id], messages_state)
+      GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
+      state
+    end
+  end
+  
+  def handle_call({:new_player, socket}, _from, state) do
+    {seat, spectator} = cond do
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
+      Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
+      Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
+      Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
+      Map.get(state, :north) == nil || is_pid(Map.get(state, :north)) -> {:north, false}
+      true                                          -> {:east, true}
+    end
+    state = add_player(state, socket, seat, spectator)
+    {:reply, [state] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
+  end
+  
+  def handle_call({:spectate, socket}, _from, state) do
+    seat = :east
+    spectator = true
+    state = add_player(state, socket, seat, spectator)
     {:reply, [state] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
   end
 
   def handle_call({:delete_player, seat}, _from, state) do
-    state = Map.put(state, seat, nil)
     state = put_in(state.messages_states[seat], nil)
-    state = update_player(state, seat, &%Player{ &1 | nickname: nil })
-    IO.puts("Player #{seat} exited")
 
-    # tell everyone else
-    push_message(state, %{text: "Player #{seat} #{state.players[seat].nickname} exited"})
+    state = if seat in [:east, :south, :west, :north] do
+      state = Map.put(state, seat, nil)
+      state = update_player(state, seat, &%Player{ &1 | nickname: nil })
+      IO.puts("Player #{seat} exited")
 
-    state = if Enum.all?([:east, :south, :west, :north], fn dir -> Map.get(state, dir) == nil || is_pid(Map.get(state, dir)) end) do
-      # all players have left, shutdown
+      # tell everyone else
+      push_message(state, %{text: "Player #{seat} #{state.players[seat].nickname} exited"})
+      state
+    else state end
+
+    state = if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
+      # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.session_id}")
       DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
       state
@@ -900,6 +949,15 @@ defmodule RiichiAdvanced.GameState do
   # debugging only
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+  def handle_call({:put_state, new_state}, _from, _state) do
+    new_state = broadcast_state_change(new_state)
+    {:reply, :ok, new_state}
+  end
+
+  def handle_cast({:initialize_game, log}, state) do
+    state = initialize_new_round(state, log)
+    {:noreply, state}
   end
 
   def handle_cast({:reset_play_tile_debounce, seat}, state) do
