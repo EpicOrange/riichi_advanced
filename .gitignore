@@ -40,3 +40,4 @@ npm-debug.log
 /config
 /priv/cert
 *.sh
+/priv/static/logs

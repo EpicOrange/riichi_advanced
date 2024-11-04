@@ -83,6 +83,7 @@ defmodule Game do
     log_seeking_mode: false, # disables round change on round end
 
     # persistent game state (not reset on new round)
+    ref: "",
     players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
     rules: %{},
     interruptible_actions: %{},
@@ -251,6 +252,9 @@ defmodule RiichiAdvanced.GameState do
     initial_score = Map.get(rules, "initial_score", 0)
 
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
+
+    # generate a UUID
+    state = Map.put(state, :ref, Ecto.UUID.generate())
 
     {:ok, state}
   end
@@ -583,8 +587,11 @@ defmodule RiichiAdvanced.GameState do
         state = if tobi && Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
 
         # log
+        if not state.log_seeking_mode do
+          Log.output_to_file(state)
+        end
         state = Log.finalize_kyoku(state)
-        state = update_all_players(state, fn seat, player -> %Player{ player | start_score: player.score } end)
+        state = update_all_players(state, fn _seat, player -> %Player{ player | start_score: player.score } end)
         state = Map.put(state, :delta_scores, %{})
 
         # update kyoku and honba
@@ -879,6 +886,9 @@ defmodule RiichiAdvanced.GameState do
       state = update_player(state, seat, &%Player{ &1 | nickname: socket.assigns.nickname })
       GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
+
+      # tell them about the replay UUID
+      GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
 
       # for players with no seats, initialize an ai
       state = fill_empty_seats_with_ai(state)

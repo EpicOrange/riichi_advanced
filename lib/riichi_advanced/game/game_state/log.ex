@@ -134,6 +134,7 @@ defmodule RiichiAdvanced.GameState.Log do
     state = finalize_kyoku(state)
     out = %{
       ver: "v1",
+      ref: state.ref,
       players: Enum.map(state.players, fn {seat, player} -> %{
         name: if player.nickname == nil do Atom.to_string(seat) else player.nickname end,
         score: player.score,
@@ -146,6 +147,11 @@ defmodule RiichiAdvanced.GameState.Log do
       kyokus: Enum.reverse(state.log_state.kyokus)
     }
     Jason.encode!(out)
+  end
+
+  def output_to_file(state) do
+    output_json = output(state)
+    File.write!(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{state.ref <> ".json"}"), output_json)
   end
 
 end
