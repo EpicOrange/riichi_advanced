@@ -73,6 +73,11 @@ defmodule RiichiAdvanced.MessagesState do
     {:noreply, state}
   end
 
+  def handle_cast(:poll_messages, state) do
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
   def handle_cast(:terminate_if_disconnected, state) do
     if state.disconnected do
       DynamicSupervisor.terminate_child(RiichiAdvanced.MessagesSessionSupervisor, state.supervisor)

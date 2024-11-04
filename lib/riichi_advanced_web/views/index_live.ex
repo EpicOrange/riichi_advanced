@@ -40,6 +40,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <br/>
         <button type="submit" class="enter-button">Enter</button>
       </form>
+      <button class="logs" phx-click="goto_logs">Logs</button>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
     </div>
     """
@@ -63,6 +64,11 @@ defmodule RiichiAdvancedWeb.IndexLive do
       {:ok, _, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
       push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
     end
+    {:noreply, socket}
+  end
+  
+  def handle_event("goto_logs", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/log")
     {:noreply, socket}
   end
 

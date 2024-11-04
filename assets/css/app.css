@@ -1914,7 +1914,7 @@ div.saki-card.disabled, div.saki-card.disabled:hover::before { filter: saturate(
 
 
 
-/* index/title screen */
+/* index/title screen and log menu screen */
 div.title {
   text-align: center;
   display: flex;
@@ -1985,6 +1985,16 @@ div#container > form {
 }
 div#container > form, div#container > form * {
   font-size: calc(0.75 * var(--tile-size));
+}
+div#container > form > div.form-error {
+  font-size: calc(0.5 * var(--tile-size));
+  color: white;
+}
+div#container > button.logs {
+  position: absolute;
+  font-size: calc(0.75 * var(--tile-size));
+  right: 0;
+  bottom: 0;
 }
 
 
