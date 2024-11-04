@@ -2,6 +2,7 @@ defmodule Player do
   defstruct [
     # persistent
     score: 0,
+    start_score: 0, # for logging purposes
     nickname: nil,
     # working
     hand: [],
@@ -73,7 +74,7 @@ defmodule Game do
     round_result: nil,
     winners: %{},
     winner_index: 0,
-    delta_scores: nil,
+    delta_scores: %{},
     delta_scores_reason: nil,
     next_dealer: nil,
     timer: 0,
@@ -247,9 +248,9 @@ defmodule RiichiAdvanced.GameState do
     |> Map.merge(Map.new(Map.get(rules, "interruptible_actions", []), fn action -> {action, 100} end))
     state = Map.put(state, :interruptible_actions, interruptible_actions)
 
-    initial_score = if Map.has_key?(rules, "initial_score") do rules["initial_score"] else 0 end
+    initial_score = Map.get(rules, "initial_score", 0)
 
-    state = update_players(state, &%Player{ &1 | score: initial_score })
+    state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
 
     {:ok, state}
   end
@@ -367,6 +368,12 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.with_index()
       |> Map.new(fn {player_obj, ix} -> {Log.from_seat(ix), player_obj["points"]} end)
 
+      # set other variables that log contains
+      state = state
+      |> Map.put(:kyoku, kyoku_log["kyoku"])
+      |> Map.put(:pot, kyoku_log["riichi_sticks"] * 1000)
+      |> Map.put(:honba, kyoku_log["honba"])
+
       {state, hands, scores}
     end
 
@@ -381,6 +388,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:dead_wall_offset, 0)
     |> update_all_players(&%Player{
          score: scores[&1],
+         start_score: scores[&1],
          nickname: &2.nickname,
          hand: hands[&1],
          auto_buttons: initial_auto_buttons,
@@ -396,7 +404,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:round_result, nil)
     |> Map.put(:winners, %{})
     |> Map.put(:winner_index, 0)
-    |> Map.put(:delta_scores, nil)
+    |> Map.put(:delta_scores, %{})
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
 
@@ -561,6 +569,24 @@ defmodule RiichiAdvanced.GameState do
         
         state
       state.visible_screen == :scores -> # finished seeing the score exchange screen
+        # clear pot
+        # but only if ezaki hitomi hasn't cleared it already and set it to their bet
+        state = if state.round_result == :win && not Enum.any?(state.players, fn {_seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
+          Map.put(state, :pot, 0)
+        else state end
+
+        # apply delta scores
+        state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
+
+        # check for tobi
+        tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
+        state = if tobi && Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
+
+        # log
+        state = Log.finalize_kyoku(state)
+        state = update_all_players(state, fn seat, player -> %Player{ player | start_score: player.score } end)
+        state = Map.put(state, :delta_scores, %{})
+
         # update kyoku and honba
         state = case state.round_result do
           :win when state.next_dealer == :self ->
@@ -585,23 +611,6 @@ defmodule RiichiAdvanced.GameState do
             state
           end
 
-        # clear pot
-        # but only if ezaki hitomi hasn't cleared it already and set it to their bet
-        state = if state.round_result == :win && not Enum.any?(state.players, fn {_seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
-          Map.put(state, :pot, 0)
-        else state end
-
-        # apply delta scores
-        state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
-        state = Map.put(state, :delta_scores, nil)
-
-        # check for tobi
-        tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
-        state = if tobi && Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
-
-        # log
-        state = Log.finalize_kyoku(state)
-
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
           if state.round_result == :end_game || Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
@@ -611,6 +620,7 @@ defmodule RiichiAdvanced.GameState do
               initialize_new_round(state)
             else
               if not state.log_loading_mode do
+                # seek to the next round
                 [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", state.ruleset, state.session_id))
                 GenServer.cast(log_control_state, {:seek, state.kyoku + 1, -1})
                 state

@@ -7,7 +7,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def render(assigns) do
     placements = assigns.players
-      |> Enum.map(fn {seat, player} -> {seat, if assigns.delta_scores != nil do player.score + assigns.delta_scores[seat] else player.score end} end)
+      |> Enum.map(fn {seat, player} -> {seat, player.score + Map.get(assigns.delta_scores, seat, 0)} end)
       |> Enum.sort_by(fn {_seat, score} -> -score end)
       |> Enum.zip(["1st", "2nd", "3rd", "4th"])
       |> Enum.map(fn {{seat, _score}, place} -> {seat, place} end)
@@ -15,7 +15,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     assigns = Map.put(assigns, :placements, placements)
     ~H"""
     <div class={["game-end-window", @visible_screen != :scores && "inactive"]}>
-      <%= if @delta_scores != nil do %>
+      <%= if not Enum.empty?(@delta_scores) do %>
         <div class="delta-score-reason"><%= @delta_scores_reason %></div>
         <div class="delta-score self">
           <%= if @delta_scores[@seat] != 0 do %>

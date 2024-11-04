@@ -89,7 +89,7 @@ defmodule RiichiAdvanced.GameState.Log do
       index: length(state.log_state.kyokus),
       haipai: state.haipai,
       players: Enum.map([:east, :south, :west, :north], fn dir -> %{
-        points: state.players[dir].score,
+        points: state.players[dir].start_score,
         haipai: state.haipai[dir]
       } end),
       kyoku: state.kyoku,
@@ -116,7 +116,7 @@ defmodule RiichiAdvanced.GameState.Log do
           fu: Map.get(winner, :minipoints, 0),
           yakuman_mult: Map.get(winner, :yakuman_mult, 0),
           points: winner.score,
-          delta_points: ["todo"]
+          delta_points: Enum.map([:east, :south, :west, :north], fn dir -> state.delta_scores[dir] end),
         }
       end
     } | kyokus] end)
