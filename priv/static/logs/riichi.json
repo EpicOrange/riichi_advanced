@@ -251,5 +251,457 @@
         "doras": ["9m", "9p", "1z", "6z", "5m"],
         "kan_tiles": ["0s", "3m", "6p", "6s"],
         "uras": ["1s", "8s", "3m", "4s", "8s"]
+    },
+
+    {
+        "index": 1,
+        "events": [
+        {
+            "index": 0,
+            "type": "draw",
+            "player": 0,
+            "tile": "2m",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 1,
+            "type": "discard",
+            "riichi": false,
+            "player": 0,
+            "tile": "2m",
+            "possible_calls": [
+            {
+                "type": "chii",
+                "player": 1,
+                "tiles": ["3m", "4m"]
+            }],
+            "tsumogiri": true
+        },
+        {
+            "index": 2,
+            "type": "draw",
+            "player": 1,
+            "tile": "1z",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 3,
+            "type": "discard",
+            "riichi": false,
+            "player": 1,
+            "tile": "1z",
+            "possible_calls": [
+            {
+                "type": "daiminkan",
+                "player": 2,
+                "tiles": ["1z", "1z", "1z"]
+            },
+            {
+                "type": "pon",
+                "player": 2,
+                "tiles": ["1z", "1z"]
+            }],
+            "tsumogiri": true
+        },
+        {
+            "index": 4,
+            "type": "draw",
+            "player": 2,
+            "tile": "3z",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 5,
+            "type": "discard",
+            "riichi": false,
+            "player": 2,
+            "tile": "3z",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 6,
+            "type": "draw",
+            "player": 3,
+            "tile": "3s",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 7,
+            "type": "discard",
+            "riichi": false,
+            "player": 3,
+            "tile": "3s",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 8,
+            "type": "draw",
+            "player": 0,
+            "tile": "5z",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 9,
+            "name": "riichi",
+            "type": "button_pressed",
+            "player": 0
+        },
+        {
+            "index": 10,
+            "type": "discard",
+            "riichi": true,
+            "player": 0,
+            "tile": "5z",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 11,
+            "type": "draw",
+            "player": 1,
+            "tile": "1p",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 12,
+            "type": "discard",
+            "riichi": false,
+            "player": 1,
+            "tile": "1p",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 13,
+            "type": "draw",
+            "player": 2,
+            "tile": "9s",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 14,
+            "type": "discard",
+            "riichi": false,
+            "player": 2,
+            "tile": "9s",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 15,
+            "type": "draw",
+            "player": 3,
+            "tile": "8p",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 16,
+            "type": "discard",
+            "riichi": false,
+            "player": 3,
+            "tile": "8p",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 17,
+            "name": "ron",
+            "type": "button_pressed",
+            "player": 0
+        },
+        {
+            "index": 18,
+            "type": "dora_flip",
+            "player": 0,
+            "dora_count": 6,
+            "dora_indicator": "1m"
+        }],
+        "result": [
+        {
+            "points": 12000,
+            "seat": 0,
+            "hand": ["5m", "6m", "7m", "7m", "8m", "9m", "3p", "4p", "0p", "5p", "6p", "7p", "8p", "8p"],
+            "tile": "8p",
+            "yaku": [
+                ["Riichi", 1],
+                ["Ippatsu", 1],
+                ["Dora", 1],
+                ["Aka", 1]
+            ],
+            "yakuman": [],
+            "yakuman_mult": 0,
+            "delta_points": ["todo"],
+            "fu": 40,
+            "han": 4,
+            "pao": null,
+            "won_from": 3
+        }],
+        "players": [
+        {
+            "points": 24000,
+            "haipai": ["5m", "6m", "7m", "7m", "8m", "9m", "3p", "4p", "0p", "5p", "6p", "7p", "8p"]
+        },
+        {
+            "points": 25000,
+            "haipai": ["3z", "6m", "9p", "4p", "7m", "6p", "2m", "8s", "3m", "7z", "4m", "4p", "8p"]
+        },
+        {
+            "points": 25000,
+            "haipai": ["4z", "8s", "1z", "3p", "9m", "1z", "6m", "3m", "1z", "6z", "5p", "6p", "2z"]
+        },
+        {
+            "points": 25000,
+            "haipai": ["5p", "2z", "4s", "4z", "6p", "6s", "7z", "8m", "2p", "9p", "7p", "9m", "4z"]
+        }],
+        "wall": ["2m", "1z", "3z", "3s", "5z", "1p", "9s", "8p", "2p", "5z", "3z", "6s", "4s", "6z", "1z", "5m", "1p", "1p", "1m", "0s", "4s", "9m", "3m", "7s", "2s", "3p", "9m", "2z", "7m", "8m", "5s", "5m", "7p", "8s", "2m", "6s", "5z", "8p", "9s", "3s", "3z", "9s", "1p", "5z", "4p", "6z", "4p", "2s", "7m", "7z", "2s", "2m", "9s", "9p", "3z", "3s", "7s", "8p", "6p", "6m", "6z", "2z", "4m", "7p", "5s", "3m", "5s", "0m", "1m", "8m"],
+        "kyoku": 0,
+        "honba": 0,
+        "riichi_sticks": 1,
+        "haipai":
+        {
+            "east": ["5m", "6m", "7m", "7m", "8m", "9m", "3p", "4p", "0p", "5p", "6p", "7p", "8p"],
+            "north": ["5p", "2z", "4s", "4z", "6p", "6s", "7z", "8m", "2p", "9p", "7p", "9m", "4z"],
+            "south": ["3z", "6m", "9p", "4p", "7m", "6p", "2m", "8s", "3m", "7z", "4m", "4p", "8p"],
+            "west": ["4z", "8s", "1z", "3p", "9m", "1z", "6m", "3m", "1z", "6z", "5p", "6p", "2z"]
+        },
+        "doras": ["8m", "9p", "1z", "6z", "5m"],
+        "kan_tiles": ["0s", "3m", "6p", "6s"],
+        "uras": ["1s", "8s", "3m", "4s", "8s"]
+    },
+
+    {
+        "index": 2,
+        "events": [
+        {
+            "index": 0,
+            "type": "draw",
+            "player": 0,
+            "tile": "2m",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 1,
+            "type": "discard",
+            "riichi": false,
+            "player": 0,
+            "tile": "2m",
+            "possible_calls": [
+            {
+                "type": "chii",
+                "player": 1,
+                "tiles": ["3m", "4m"]
+            }],
+            "tsumogiri": true
+        },
+        {
+            "index": 2,
+            "type": "draw",
+            "player": 1,
+            "tile": "1z",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 3,
+            "type": "discard",
+            "riichi": false,
+            "player": 1,
+            "tile": "1z",
+            "possible_calls": [
+            {
+                "type": "daiminkan",
+                "player": 2,
+                "tiles": ["1z", "1z", "1z"]
+            },
+            {
+                "type": "pon",
+                "player": 2,
+                "tiles": ["1z", "1z"]
+            }],
+            "tsumogiri": true
+        },
+        {
+            "index": 4,
+            "type": "draw",
+            "player": 2,
+            "tile": "3z",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 5,
+            "type": "discard",
+            "riichi": false,
+            "player": 2,
+            "tile": "3z",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 6,
+            "type": "draw",
+            "player": 3,
+            "tile": "3s",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 7,
+            "type": "discard",
+            "riichi": false,
+            "player": 3,
+            "tile": "3s",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 8,
+            "type": "draw",
+            "player": 0,
+            "tile": "5z",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 9,
+            "name": "riichi",
+            "type": "button_pressed",
+            "player": 0
+        },
+        {
+            "index": 10,
+            "type": "discard",
+            "riichi": true,
+            "player": 0,
+            "tile": "5z",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 11,
+            "type": "draw",
+            "player": 1,
+            "tile": "1p",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 12,
+            "type": "discard",
+            "riichi": false,
+            "player": 1,
+            "tile": "1p",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 13,
+            "type": "draw",
+            "player": 2,
+            "tile": "9s",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 14,
+            "type": "discard",
+            "riichi": false,
+            "player": 2,
+            "tile": "9s",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 15,
+            "type": "draw",
+            "player": 3,
+            "tile": "8p",
+            "possible_calls": [],
+            "kan_draw": false
+        },
+        {
+            "index": 16,
+            "type": "discard",
+            "riichi": false,
+            "player": 3,
+            "tile": "8p",
+            "possible_calls": [],
+            "tsumogiri": true
+        },
+        {
+            "index": 17,
+            "name": "ron",
+            "type": "button_pressed",
+            "player": 0
+        },
+        {
+            "index": 18,
+            "type": "dora_flip",
+            "player": 0,
+            "dora_count": 6,
+            "dora_indicator": "1m"
+        }],
+        "result": [
+        {
+            "points": 12000,
+            "seat": 0,
+            "hand": ["5m", "6m", "7m", "7m", "8m", "9m", "3p", "4p", "0p", "5p", "6p", "7p", "8p", "8p"],
+            "tile": "8p",
+            "yaku": [
+                ["Riichi", 1],
+                ["Ippatsu", 1],
+                ["Dora", 1],
+                ["Aka", 1]
+            ],
+            "yakuman": [],
+            "yakuman_mult": 0,
+            "delta_points": ["todo"],
+            "fu": 40,
+            "han": 4,
+            "pao": null,
+            "won_from": 3
+        }],
+        "players": [
+        {
+            "points": 24000,
+            "haipai": ["5m", "6m", "7m", "7m", "8m", "9m", "3p", "4p", "0p", "5p", "6p", "7p", "8p"]
+        },
+        {
+            "points": 25000,
+            "haipai": ["3z", "6m", "9p", "4p", "7m", "6p", "2m", "8s", "3m", "7z", "4m", "4p", "8p"]
+        },
+        {
+            "points": 25000,
+            "haipai": ["4z", "8s", "1z", "3p", "9m", "1z", "6m", "3m", "1z", "6z", "5p", "6p", "2z"]
+        },
+        {
+            "points": 25000,
+            "haipai": ["5p", "2z", "4s", "4z", "6p", "6s", "7z", "8m", "2p", "9p", "7p", "9m", "4z"]
+        }],
+        "wall": ["2m", "1z", "3z", "3s", "5z", "1p", "9s", "8p", "2p", "5z", "3z", "6s", "4s", "6z", "1z", "5m", "1p", "1p", "1m", "0s", "4s", "9m", "3m", "7s", "2s", "3p", "9m", "2z", "7m", "8m", "5s", "5m", "7p", "8s", "2m", "6s", "5z", "8p", "9s", "3s", "3z", "9s", "1p", "5z", "4p", "6z", "4p", "2s", "7m", "7z", "2s", "2m", "9s", "9p", "3z", "3s", "7s", "8p", "6p", "6m", "6z", "2z", "4m", "7p", "5s", "3m", "5s", "0m", "1m", "8m"],
+        "kyoku": 0,
+        "honba": 0,
+        "riichi_sticks": 1,
+        "haipai":
+        {
+            "east": ["5m", "6m", "7m", "7m", "8m", "9m", "3p", "4p", "0p", "5p", "6p", "7p", "8p"],
+            "north": ["5p", "2z", "4s", "4z", "6p", "6s", "7z", "8m", "2p", "9p", "7p", "9m", "4z"],
+            "south": ["3z", "6m", "9p", "4p", "7m", "6p", "2m", "8s", "3m", "7z", "4m", "4p", "8p"],
+            "west": ["4z", "8s", "1z", "3p", "9m", "1z", "6m", "3m", "1z", "6z", "5p", "6p", "2z"]
+        },
+        "doras": ["7m", "9p", "1z", "6z", "5m"],
+        "kan_tiles": ["0s", "3m", "6p", "6s"],
+        "uras": ["1s", "8s", "3m", "4s", "8s"]
     }]
 }

@@ -5,6 +5,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     socket = socket
     |> assign(:log_id, params["id"])
     |> assign(:game_state, nil)
+    |> assign(:log_control_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Game{})
     |> assign(:log, nil)
@@ -51,30 +52,37 @@ defmodule RiichiAdvancedWeb.LogLive do
       |> assign(:log, log)
 
       # start a new game process
-      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
-      game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+      log_spec = {RiichiAdvanced.LogSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
         {:ok, _pid} ->
-          IO.puts("Starting game session #{socket.assigns.session_id}")
+          IO.puts("Starting log session #{socket.assigns.session_id}")
           [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
           GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
-          game_state
+          GenServer.call(game_state, {:put_log_seeking_mode, true})
+          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.session_id))
+          GenServer.cast(log_control_state, {:put_log, log})
+          GenServer.cast(log_control_state, {:start_walk, 0, 100})
+          {game_state, log_control_state}
         {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting game session #{socket.assigns.session_id}")
+          IO.puts("Error when starting log session #{socket.assigns.session_id}")
           IO.inspect(error)
-          nil
+          {nil, nil}
         {:error, {:already_started, _pid}} ->
-          IO.puts("Already started game session #{socket.assigns.session_id}")
+          IO.puts("Already started log session #{socket.assigns.session_id}")
           [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
-          game_state
+          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.session_id))
+          {game_state, log_control_state}
       end
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
+
 
       # init a new player and get the current state
       [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:spectate, socket})
 
       socket = socket
       |> assign(:game_state, game_state)
+      |> assign(:log_control_state, log_control_state)
       |> assign(:state, state)
       |> assign(:seat, seat)
       |> assign(:shimocha, shimocha)
@@ -274,7 +282,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         id="log-control"
         state={@state}
         log={@log}
-        game_state={@game_state} />
+        log_control_state={@log_control_state} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
@@ -363,9 +371,10 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_event("ready_for_next_round", _assigns, socket) do
-    if socket.assigns.seat != :spectator do
-      GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
-    end
+    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :east})
+    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :south})
+    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :west})
+    GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :north})
     socket = assign(socket, :timer, 0)
     {:noreply, socket}
   end

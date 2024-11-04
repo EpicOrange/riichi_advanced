@@ -1,14 +1,12 @@
 defmodule RiichiAdvancedWeb.LogControlComponent do
-  alias RiichiAdvanced.GameState, as: GameState
-  alias RiichiAdvanced.GameState.Log, as: Log
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
-    socket = assign(socket, :game_state, nil)
+    socket = assign(socket, :log_control_state, nil)
     socket = assign(socket, :state, nil)
     socket = assign(socket, :log, nil)
     socket = assign(socket, :kyoku_index, 0)
-    socket = assign(socket, :event_index, 0)
+    socket = assign(socket, :event_index, -1)
     {:ok, socket}
   end
 
@@ -39,27 +37,27 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
   end
 
   def get_current_event(socket) do
-    get_current_kyoku(socket)["events"] |> Enum.at(socket.assigns.event_index)
+    if socket.assigns.event_index == -1 do
+      nil
+    else
+      get_current_kyoku(socket)["events"] |> Enum.at(socket.assigns.event_index)
+    end
   end
 
   def advance(socket, skip \\ false) do
-    curr_kyoku = get_current_kyoku(socket)
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event["type"] not in ["discard", "button_pressed"] do
+      if curr_event != nil && curr_event["type"] not in ["discard", "button_pressed"] do
         advance(socket, false)
       else socket end
     else
+      curr_kyoku = get_current_kyoku(socket)
       if socket.assigns.event_index + 1 >= length(curr_kyoku["events"]) do
-        if socket.assigns.kyoku_index + 1 >= length(socket.assigns.log["kyokus"]) do
-          socket
-        else
-          socket = socket
-          |> assign(:kyoku_index, socket.assigns.kyoku_index + 1)
-          |> assign(:event_index, 0)
-          advance(socket, true)
-        end
+        overflow = socket.assigns.kyoku_index + 1 >= length(socket.assigns.log["kyokus"])
+        socket
+        |> assign(:kyoku_index, if overflow do 0 else socket.assigns.kyoku_index + 1 end)
+        |> assign(:event_index, -1)
       else
         socket = socket
         |> assign(:event_index, socket.assigns.event_index + 1)
@@ -68,48 +66,53 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     end
   end
 
-  def wait_for_state_change(socket) do
-    assign(socket, :state, GenServer.call(socket.assigns.game_state, :get_state))
+  def rewind(socket, skip \\ false) do
+    if skip do
+      # only proceed if the current event is something we care about
+      curr_event = get_current_event(socket)
+      if curr_event != nil && curr_event["type"] not in ["discard", "button_pressed"] do
+        rewind(socket, false)
+      else socket end
+    else
+      if socket.assigns.event_index - 1 < -1 do
+        underflow = socket.assigns.kyoku_index - 1 < 0
+        socket = assign(socket, :kyoku_index, if underflow do length(socket.assigns.log["kyokus"]) - 1 else socket.assigns.kyoku_index - 1 end)
+        curr_kyoku = get_current_kyoku(socket)
+        socket = assign(socket, :event_index, length(curr_kyoku["events"]) - 1)
+        rewind(socket, true)
+      else
+        socket = socket
+        |> assign(:event_index, socket.assigns.event_index - 1)
+        rewind(socket, true)
+      end
+    end
   end
 
   def handle_event("back", _assigns, socket) do
+    socket = rewind(socket)
+    curr_event = get_current_event(socket) # debug only
+    IO.inspect({socket.assigns.kyoku_index, socket.assigns.event_index, curr_event})
+    GenServer.cast(socket.assigns.log_control_state, {:seek, socket.assigns.kyoku_index, socket.assigns.event_index})
+    state = GenServer.call(socket.assigns.log_control_state, :get_game_state)
+    socket = assign(socket, :state, state)
     {:noreply, socket}
   end
 
   def handle_event("next", _assigns, socket) do
-    curr_kyoku = get_current_kyoku(socket)
-    curr_event = get_current_event(socket)
-    IO.inspect(curr_event)
-    seat = Log.from_seat(curr_event["player"])
-    case curr_event["type"] do
-      "discard" ->
-        hand = socket.assigns.state.players[seat].hand
-        draw = socket.assigns.state.players[seat].draw
-        tile = curr_event["tile"] |> Utils.to_tile()
-        # figure out what index was discarded
-        ix = if not curr_event["tsumogiri"] do
-          Enum.find_index(hand, &Utils.same_tile(&1, tile))
-        else
-          length(hand) + Enum.find_index(draw, &Utils.same_tile(&1, tile))
-        end
-        GenServer.cast(socket.assigns.game_state, {:play_tile, seat, ix})
-        socket = wait_for_state_change(socket)
-        IO.inspect(socket.assigns.state.players.south.buttons)
-        # for all possible calls attached to this event
-        # have players press skip on them if they weren't actually called
-        call = if Map.has_key?(curr_event, "call") do [curr_event["call"]] else [] end
-        possible_calls = Map.get(curr_event, "possible_calls", []) -- call
-        call_seats = Enum.map(call, &Log.from_seat(&1["player"]))
-        possible_call_seats = Enum.map(possible_calls, &Log.from_seat(&1["player"]))
-        for seat <- possible_call_seats -- call_seats do
-          GenServer.cast(socket.assigns.game_state, {:press_button, seat, "skip"})
-        end
-      "button_pressed" ->
-        name = curr_event["name"]
-        GenServer.cast(socket.assigns.game_state, {:press_button, seat, name})
-      _ -> :ok
-    end
     socket = advance(socket)
+    curr_event = get_current_event(socket)
+    IO.inspect({socket.assigns.kyoku_index, socket.assigns.event_index, curr_event})
+    state = if curr_event == nil do
+      GenServer.cast(socket.assigns.log_control_state, {:seek, socket.assigns.kyoku_index, socket.assigns.event_index})
+      GenServer.call(socket.assigns.log_control_state, :get_game_state)
+    else
+      case curr_event["type"] do
+        "discard" -> GenServer.call(socket.assigns.log_control_state, {:send_discard, false, curr_event})
+        "button_pressed" -> GenServer.call(socket.assigns.log_control_state, {:send_button_press, false, curr_event})
+        _ -> socket.assigns.state
+      end
+    end
+    socket = assign(socket, :state, state)
     {:noreply, socket}
   end
 
@@ -117,17 +120,17 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     {:noreply, socket}
   end
 
-  def update(assigns, socket) do
-    prev_log = socket.assigns.log
+  # def update(assigns, socket) do
+  #   prev_log = socket.assigns.log
 
-    socket = assigns
-    |> Map.drop([:flash])
-    |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
+  #   socket = assigns
+  #   |> Map.drop([:flash])
+  #   |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
-    socket = if prev_log == nil && assigns.log != nil do
-      advance(socket, true)
-    else socket end
+  #   socket = if prev_log == nil && assigns.log != nil do
+  #     advance(socket, true)
+  #   else socket end
 
-    {:ok, socket}
-  end
+  #   {:ok, socket}
+  # end
 end

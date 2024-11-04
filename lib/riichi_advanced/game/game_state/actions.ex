@@ -500,7 +500,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "big_text"              ->
         seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
-      "pause"                 -> Map.put(state, :game_active, false)
+      "pause"                 ->
+        if not state.log_loading_mode do
+          Map.put(state, :game_active, false)
+        else state end
       "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
@@ -971,7 +974,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
 
     case action do
-      "pause" ->
+      "pause" when not state.log_loading_mode ->
         # schedule an unpause after the given delay
         state = schedule_actions_before(state, context.seat, actions, context)
         :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, context}])

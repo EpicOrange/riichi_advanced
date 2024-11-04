@@ -64,6 +64,7 @@ defmodule Game do
     west: nil,
     north: nil,
     messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+    # remember to edit :put_state if you change anything above
 
     # control variables
     game_active: false,
@@ -77,6 +78,8 @@ defmodule Game do
     next_dealer: nil,
     timer: 0,
     actions_cv: 0, # condition variable
+    log_loading_mode: false, # disables pause and doesn't notify players on state change
+    log_seeking_mode: false, # disables round change on round end
 
     # persistent game state (not reset on new round)
     players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
@@ -149,7 +152,10 @@ defmodule RiichiAdvanced.GameState do
 
     # lookup pids of the other processes we'll be using
     [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id))
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
+    [{supervisor, _}] = case Registry.lookup(:game_registry, Utils.to_registry_name("log", state.ruleset, state.session_id)) do
+      [{supervisor, _}] -> [{supervisor, nil}]
+      _ -> Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
+    end
     [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
     [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
@@ -194,7 +200,7 @@ defmodule RiichiAdvanced.GameState do
 
     # apply mods
     mods = Map.get(state, :mods, [])
-    ruleset_json = RiichiAdvanced.ModLoader.apply_mods(ruleset_json, mods)
+    ruleset_json = RiichiAdvanced.ModLoader.apply_mods(state.ruleset, ruleset_json, mods)
     if not Enum.empty?(mods) do
       # cache mods
       RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, mods, :cache_mods)
@@ -267,7 +273,7 @@ defmodule RiichiAdvanced.GameState do
 
   def initialize_new_round(state, kyoku_log \\ nil) do
     rules = state.rules
-    {state, hands} = if kyoku_log == nil do
+    {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
       all_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
       wall = all_tiles
@@ -295,8 +301,6 @@ defmodule RiichiAdvanced.GameState do
       # reserve some tiles in the dead wall
       reserved_tile_names = Map.get(rules, "reserved_tiles", [])
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
-      revealed_tiles = Map.get(rules, "revealed_tiles", [])
-      max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
       state = if length(reserved_tile_names) > 0 && length(reserved_tile_names) <= dead_wall_length do
         {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
         reserved_tiles = reserved_tile_names
@@ -326,7 +330,10 @@ defmodule RiichiAdvanced.GameState do
           show_error(state, "length of \"reserved_tiles\" should not exceed \"initial_dead_wall_length\"!")
         else state end
       end
-      {state, hands}
+
+      scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
+
+      {state, hands, scores}
     else
       hands = 
         %{:east  => kyoku_log["haipai"]["east"]  |> Enum.map(&Utils.to_tile/1),
@@ -356,7 +363,11 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
 
-      {state, hands}
+      scores = kyoku_log["players"]
+      |> Enum.with_index()
+      |> Map.new(fn {player_obj, ix} -> {Log.from_seat(ix), player_obj["points"]} end)
+
+      {state, hands, scores}
     end
 
     # initialize other constants
@@ -369,7 +380,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:wall_index, Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum())
     |> Map.put(:dead_wall_offset, 0)
     |> update_all_players(&%Player{
-         score: &2.score,
+         score: scores[&1],
          nickname: &2.nickname,
          hand: hands[&1],
          auto_buttons: initial_auto_buttons,
@@ -596,7 +607,15 @@ defmodule RiichiAdvanced.GameState do
           if state.round_result == :end_game || Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
             finalize_game(state)
           else
-            initialize_new_round(state)
+            if not state.log_seeking_mode do
+              initialize_new_round(state)
+            else
+              if not state.log_loading_mode do
+                [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", state.ruleset, state.session_id))
+                GenServer.cast(log_control_state, {:seek, state.kyoku + 1, -1})
+                state
+              else state end
+            end
           end
         else 
           state = Map.put(state, :visible_screen, nil)
@@ -800,16 +819,20 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def push_message(state, message) do
-    for {_seat, messages_state} <- state.messages_states, messages_state != nil do
-      # IO.puts("Sending to #{inspect(messages_state)} the message #{inspect(message)}")
-      GenServer.cast(messages_state, {:add_message, message})
+    if not state.log_loading_mode do
+      for {_seat, messages_state} <- state.messages_states, messages_state != nil do
+        # IO.puts("Sending to #{inspect(messages_state)} the message #{inspect(message)}")
+        GenServer.cast(messages_state, {:add_message, message})
+      end
     end
   end
 
   def push_messages(state, messages) do
-    for {_seat, messages_state} <- state.messages_states, messages_state != nil do
-      # IO.puts("Sending to #{inspect(messages_state)} the messages #{inspect(messages)}")
-      GenServer.cast(messages_state, {:add_messages, messages})
+    if not state.log_loading_mode do
+      for {_seat, messages_state} <- state.messages_states, messages_state != nil do
+        # IO.puts("Sending to #{inspect(messages_state)} the messages #{inspect(messages)}")
+        GenServer.cast(messages_state, {:add_messages, messages})
+      end
     end
   end
 
@@ -822,7 +845,9 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def play_sound(state, path, seat \\ nil) do
-    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "play_sound", %{"seat" => seat, "path" => path})
+    if not state.log_loading_mode do
+      RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "play_sound", %{"seat" => seat, "path" => path})
+    end
   end
 
   def add_player(state, socket, seat, spectator) do
@@ -941,6 +966,18 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:is_marked?, marking_player, seat, index, source}, _from, state), do: {:reply, Marking.is_marked?(state, marking_player, seat, index, source), state}
   def handle_call({:can_mark?, marking_player, seat, index, source}, _from, state), do: {:reply, Marking.can_mark?(state, marking_player, seat, index, source), state}
 
+  # log control
+  def handle_call({:put_log_loading_mode, mode}, _from, state) do
+    prev_mode = state.log_loading_mode
+    state = Map.put(state, :log_loading_mode, mode)
+    {:reply, prev_mode, state}
+  end
+  def handle_call({:put_log_seeking_mode, mode}, _from, state) do
+    prev_mode = state.log_seeking_mode
+    state = Map.put(state, :log_seeking_mode, mode)
+    {:reply, prev_mode, state}
+  end
+
   # debugging only
   def handle_call(:get_log, _from, state) do
     log = Log.output(state)
@@ -950,13 +987,48 @@ defmodule RiichiAdvanced.GameState do
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
-  def handle_call({:put_state, new_state}, _from, _state) do
+  def handle_call({:put_state, new_state}, _from, state) do
+    new_state = Map.drop(new_state, [
+      :ruleset,
+      :session_id,
+      :ruleset_json,
+      :mods,
+      :supervisor,
+      :mutex,
+      :smt_solver,
+      :ai_supervisor,
+      :exit_monitor,
+      :play_tile_debounce,
+      :play_tile_debouncers,
+      :big_text_debouncers,
+      :timer_debouncer,
+      :east,
+      :south,
+      :west,
+      :north,
+      :messages_states,
+      :log_loading_mode,
+      :log_seeking_mode,
+    ])
+    new_state = Map.merge(new_state, %{
+      game_active: true,
+      visible_screen: nil,
+      error: nil,
+      timer: 0,
+    })
+    new_state = Map.merge(state, new_state)
     new_state = broadcast_state_change(new_state)
-    {:reply, :ok, new_state}
+    {:reply, new_state, new_state}
   end
 
   def handle_cast({:initialize_game, log}, state) do
     state = initialize_new_round(state, log)
+    {:noreply, state}
+  end
+
+  # log control
+  def handle_cast(:sort_hands, state) do
+    state = update_all_players(state, fn _seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
     {:noreply, state}
   end
 
@@ -1005,7 +1077,7 @@ defmodule RiichiAdvanced.GameState do
     if not playable do
       IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
     end
-    state = if state.turn == seat && playable && state.play_tile_debounce[seat] == false do
+    state = if state.turn == seat && playable && (state.play_tile_debounce[seat] == false || state.log_loading_mode) do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
       state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "" })
@@ -1050,63 +1122,71 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast(:notify_ai, state) do
     # IO.puts("Notifying ai")
     # IO.inspect(Process.info(self(), :current_stacktrace))
-    if state.game_active do
-      # if there are any new buttons for any AI players, notify them
-      # otherwise, just tell the current player it's their turn
-      if Buttons.no_buttons_remaining?(state) do
-        if is_pid(Map.get(state, state.turn)) do
-          # IO.puts("Notifying #{state.turn} AI that it's their turn")
-          send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn]}})
+    if not state.log_loading_mode do
+      if state.game_active do
+        # if there are any new buttons for any AI players, notify them
+        # otherwise, just tell the current player it's their turn
+        if Buttons.no_buttons_remaining?(state) do
+          if is_pid(Map.get(state, state.turn)) do
+            # IO.puts("Notifying #{state.turn} AI that it's their turn")
+            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn]}})
+          end
+        else
+          Enum.each([:east, :south, :west, :north], fn seat ->
+            has_buttons = not Enum.empty?(state.players[seat].buttons)
+            has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
+            has_marking_ui = not Enum.empty?(state.marking[seat])
+            if is_pid(Map.get(state, seat)) && has_buttons && not has_call_buttons && not has_marking_ui do
+              # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
+              send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
+            end
+          end)
         end
       else
-        Enum.each([:east, :south, :west, :north], fn seat ->
-          has_buttons = not Enum.empty?(state.players[seat].buttons)
-          has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
-          has_marking_ui = not Enum.empty?(state.marking[seat])
-          if is_pid(Map.get(state, seat)) && has_buttons && not has_call_buttons && not has_marking_ui do
-            # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-            send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
-          end
-        end)
+        :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
       end
-    else
-      :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
     end
     {:noreply, state}
   end
 
   def handle_cast({:notify_ai_marking, seat}, state) do
-    if state.game_active do
-      if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
-        # IO.puts("Notifying #{seat} AI about marking")
-        send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
+    if not state.log_loading_mode do
+      if state.game_active do
+        if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
+          # IO.puts("Notifying #{seat} AI about marking")
+          send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
+        end
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_marking, seat}])
       end
-    else
-      :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_marking, seat}])
     end
     {:noreply, state}
   end
 
   def handle_cast({:notify_ai_call_buttons, seat}, state) do
-    if state.game_active do
-      call_choices = state.players[seat].call_buttons
-      if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
-        # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
-        send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
+    if not state.log_loading_mode do
+      if state.game_active do
+        call_choices = state.players[seat].call_buttons
+        if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
+          # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+          send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
+        end
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_call_buttons, seat}])
       end
-    else
-      :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_call_buttons, seat}])
     end
     {:noreply, state}
   end
 
   def handle_cast({:notify_ai_declare_yaku, seat}, state) do
-    if state.game_active do
-      if is_pid(Map.get(state, seat)) do
-        send(Map.get(state, seat), {:declare_yaku, %{player: state.players[seat]}})
+    if not state.log_loading_mode do
+      if state.game_active do
+        if is_pid(Map.get(state, seat)) do
+          send(Map.get(state, seat), {:declare_yaku, %{player: state.players[seat]}})
+        end
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_declare_yaku, seat}])
       end
-    else
-      :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_declare_yaku, seat}])
     end
     {:noreply, state}
   end
