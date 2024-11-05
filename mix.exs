@@ -60,7 +60,8 @@ defmodule RiichiAdvanced.MixProject do
       {:porcelain, github: "walkr/porcelain"},
       {:temp, "~> 0.4"},
       {:diff_match_patch, github: "pzingg/diff_match_patch"},
-      {:diffy, "~> 1.1"}
+      {:diffy, "~> 1.1"},
+      {:logger_file_backend, "~> 0.0.10"},
     ]
   end
 
