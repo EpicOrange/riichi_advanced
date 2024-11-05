@@ -1105,13 +1105,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         state ->
           choice = player.choice
           actions = player.chosen_actions
+          button_choices = player.button_choices
           # don't clear deferred actions here
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
           state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [], button_choices: %{} } end)
           state = if choice != nil do
-            button_choice = if state.players[seat].button_choices != nil do
-              Map.get(state.players[seat].button_choices, choice, nil)
+            button_choice = if button_choices != nil do
+              Map.get(button_choices, choice, nil)
             else nil end
             case button_choice do
               {:call, call_choices} ->
