@@ -48,7 +48,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event != nil && curr_event["type"] not in ["discard", "button_pressed"] do
+      if curr_event != nil && curr_event["type"] not in ["discard", "buttons_pressed"] do
         advance(socket, false)
       else socket end
     else
@@ -70,7 +70,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event != nil && curr_event["type"] not in ["discard", "button_pressed"] do
+      if curr_event != nil && curr_event["type"] not in ["discard", "buttons_pressed"] do
         rewind(socket, false)
       else socket end
     else
@@ -107,9 +107,9 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
       GenServer.call(socket.assigns.log_control_state, :get_game_state)
     else
       case curr_event["type"] do
-        "discard" -> GenServer.call(socket.assigns.log_control_state, {:send_discard, false, curr_event})
-        "button_pressed" -> GenServer.call(socket.assigns.log_control_state, {:send_button_press, false, curr_event})
-        _ -> socket.assigns.state
+        "discard"         -> GenServer.call(socket.assigns.log_control_state, {:send_discard, false, curr_event})
+        "buttons_pressed" -> GenServer.call(socket.assigns.log_control_state, {:send_button_press, false, curr_event})
+        _                 -> socket.assigns.state
       end
     end
     socket = assign(socket, :state, state)

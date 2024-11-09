@@ -67,6 +67,14 @@ defmodule RiichiAdvanced.GameState.Log do
     end
   end
 
+  defp modify_last_button_press(state, fun) do
+    state = case Enum.at(state.log_state.log, 0) do
+      event when event != nil and event.event_type == :buttons_pressed -> state
+      _ -> log(state, :east, :buttons_pressed, %{buttons: []})
+    end
+    update_in(state.log_state.log, &List.update_at(&1, 0, fun))
+  end
+
   def add_possible_calls(state) do
     possible_calls = for {seat, player} <- state.players do
       for {name, {:call, choices}} <- player.button_choices do
@@ -82,6 +90,10 @@ defmodule RiichiAdvanced.GameState.Log do
     tiles = Utils.strip_attrs(call_choice ++ if called_tile != nil do [called_tile] else [] end)
     call = %{player: to_seat(seat), type: call_name, tiles: tiles}
     modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
+  end
+
+  def add_button_press(state, seat, button_name) do
+    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, & &1 ++ [%{player: to_seat(seat), button: button_name}]) } end)
   end
 
   def finalize_kyoku(state) do

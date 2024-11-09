@@ -86,12 +86,13 @@ defmodule RiichiAdvanced.LogControlState do
   def send_button_press(state, skip_anim, button_press_event) do
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
     seat = Log.from_seat(button_press_event["player"])
-    name = button_press_event["name"]
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
-    GenServer.cast(state.game_state_pid, {:press_button, seat, name})
-    GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
-    GenServer.cast(state.game_state_pid, :sort_hands)
+    for %{"player" => seat_num, "button" => name} <- button_press_event["buttons"], reduce: state do
+      state -> GenServer.cast(state.game_state_pid, {:press_button, Log.from_seat(seat_num), name})
+    end
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
+    GenServer.cast(state.game_state_pid, :sort_hands)
+    GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
     state
   end
 

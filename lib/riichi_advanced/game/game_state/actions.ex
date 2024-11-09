@@ -1244,7 +1244,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       state = case choice do
         "skip" -> state
         "play_tile" -> state
-        _ -> Log.log(state, seat, :button_pressed, %{name: choice})
+        _ -> Log.add_button_press(state, seat, choice)
       end
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
       state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end

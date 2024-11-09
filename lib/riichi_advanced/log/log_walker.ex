@@ -61,9 +61,9 @@ defmodule RiichiAdvanced.LogWalker do
     state = for event <- kyoku_log["events"], reduce: state do
       state ->
         state = case event["type"] do
-          "discard"        -> LogControl.send_discard(state, true, event)
-          "button_pressed" -> LogControl.send_button_press(state, true, event)
-          _                -> state
+          "discard"         -> LogControl.send_discard(state, true, event)
+          "buttons_pressed" -> LogControl.send_button_press(state, true, event)
+          _                 -> state
         end
         state = put_in(state.game_states[kyoku_index][event["index"]], state.game_state)
         state
