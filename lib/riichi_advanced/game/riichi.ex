@@ -146,6 +146,7 @@ defmodule Riichi do
   end
 
   defp apply_tile_aliases(tiles, tile_aliases) do
+    # add all aliases of the given tiles to tiles
     Enum.flat_map(tiles, fn tile ->
       [Utils.strip_attrs(tile), tile] ++ Enum.flat_map(tile_aliases, fn {from, to_tiles} ->
         if Enum.any?(to_tiles, &Utils.same_tile(tile, &1)) do [from] else [] end
@@ -317,6 +318,28 @@ defmodule Riichi do
     ret
   end
 
+  defp multiply_match_definitions(match_definitions, mult) do
+    for match_definition <- match_definitions do
+      for [groups, num] <- match_definition do
+        [groups, if num < 0 do num else num * mult end]
+      end
+    end
+  end
+
+  def binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l \\ -1, r \\ 1) do
+    if l < r do
+      m = if l == -1 do r else Integer.floor_div(l + r + 1, 2) end
+      multiplied_match_def = multiply_match_definitions(match_definitions, m)
+      matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
+      {l, r} = if matched do
+        if l == -1 do {l, r * 2} else {m, r} end
+      else
+        if l == -1 do {0, r} else {l, m - 1} end
+      end
+      binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l, r)
+    else l end 
+  end
+
   # return all possible calls of each tile in called_tiles, given hand
   # includes returning multiple choices for jokers (incl. red fives)
   # if called_tiles is an empty list, then we choose from our hand
@@ -445,7 +468,6 @@ defmodule Riichi do
   def tile_matches_all(tile_specs, context) do
     Enum.all?(tile_specs, &tile_matches([&1], context))
   end
-
 
   def get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # t = System.os_time(:millisecond)
@@ -686,7 +708,7 @@ defmodule Riichi do
     # IO.inspect(fu)
 
     # closed pinfu is 20 tsumo/30 ron, open pinfu is 30, chiitoitsu is 25
-    num_pairs = Enum.frequencies(starting_hand) |> Map.values |> Enum.count(& &1 == 2)
+    num_pairs = binary_search_count_matches([{starting_hand, []}], [[[[[0, 0]], 1]]], ordering, ordering_r, tile_aliases)
     ret = cond do
       fu == 22 && win_source == :draw && Enum.empty?(calls) -> 20
       fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30

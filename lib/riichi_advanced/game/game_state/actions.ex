@@ -28,6 +28,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
       tile = Utils.add_attr(tile, ["discard"])
 
+      tsumogiri = index >= length(state.players[seat].hand)
       state = update_player(state, seat, &%Player{ &1 |
         hand: List.delete_at(&1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), index),
         pond: &1.pond ++ [tile],
@@ -40,7 +41,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
         Utils.pt(tile)
       ])
-      tsumogiri = index >= length(state.players[seat].hand)
       riichi = "just_reached" in state.players[seat].status
       state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
 
@@ -294,28 +294,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  defp multiply_match_definitions(match_definitions, mult) do
-    for match_definition <- match_definitions do
-      for [groups, num] <- match_definition do
-        [groups, if num < 0 do num else num * mult end]
-      end
-    end
-  end
-
-  defp binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l \\ -1, r \\ 1) do
-    if l < r do
-      m = if l == -1 do r else Integer.floor_div(l + r + 1, 2) end
-      multiplied_match_def = multiply_match_definitions(match_definitions, m)
-      matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
-      {l, r} = if matched do
-        if l == -1 do {l, r * 2} else {m, r} end
-      else
-        if l == -1 do {0, r} else {l, m - 1} end
-      end
-      binary_search_count_matches(state, seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l, r)
-    else l end 
-  end
-
   defp interpret_amount(state, context, amt_spec) do
     case amt_spec do
       ["count_matches" | opts] ->
@@ -325,7 +303,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering = state.players[context.seat].tile_ordering
         ordering_r = state.players[context.seat].tile_ordering_r
         tile_aliases = state.players[context.seat].tile_aliases
-        binary_search_count_matches(state, context.seat, hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+        Riichi.binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
       ["count_matching_ways" | opts] ->
         # count how many given hand-calls combinations matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -1109,7 +1087,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           # don't clear deferred actions here
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
-          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [], button_choices: %{} } end)
+          # don't clear button choices either, since they may cancel call choices
+          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [] } end)
           state = if choice != nil do
             button_choice = if button_choices != nil do
               Map.get(button_choices, choice, nil)

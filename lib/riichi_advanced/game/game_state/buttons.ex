@@ -144,7 +144,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = Actions.submit_actions(state, seat, button_name, actions)
       state = broadcast_state_change(state)
       state
-    else state end
+    else
+      IO.inspect("#{seat} tried to press nonexistent button #{button_name}")
+      state
+    end
   end
 
   # returns true if no button choices remain

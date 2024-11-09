@@ -3513,6 +3513,7 @@
       "actions": [
         ["set_status", "declare_manzu"],
         ["set_status_others", "reveal_manzu"],
+        ["push_message", "declared that all manzu must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand"], ["revealed"], ["manzu"]]]]
       ],
       "unskippable": true
@@ -3528,6 +3529,7 @@
       "actions": [
         ["set_status", "declare_pinzu"],
         ["set_status_others", "reveal_pinzu"],
+        ["push_message", "declared that all pinzu must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand"], ["revealed"], ["pinzu"]]]]
       ],
       "unskippable": true
@@ -3543,6 +3545,7 @@
       "actions": [
         ["set_status", "declare_souzu"],
         ["set_status_others", "reveal_souzu"],
+        ["push_message", "declared that all souzu must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand"], ["revealed"], ["souzu"]]]]
       ],
       "unskippable": true
@@ -3558,6 +3561,7 @@
       "actions": [
         ["set_status", "declare_jihai"],
         ["set_status_others", "reveal_jihai"],
+        ["push_message", "declared that all jihai must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand"], ["revealed"], ["jihai"]]]]
       ],
       "unskippable": true

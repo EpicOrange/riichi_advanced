@@ -4,7 +4,7 @@ def add_yaku_statuses($actions; $type):
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1]]]]}], [["set_status", "golden_chun"]]],
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["7z"], 1]]]]}], [["set_status", "7z"]]],
     ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun_pair"], -1], [["chun"], 1]]]]}], [["set_status", "777z"]]]
+    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun"], 1]]]]}], [["set_status", "777z"]]]
   ] + $actions;
 
 # replace a 6z with red hatsu
@@ -82,25 +82,4 @@ end
       ]
     ]
   ]}
-]
-|
-# can't call golden chun
-.buttons.chii.call_conditions += [
-  {"name": "not_call_contains", "opts": [["27z"], 1]}
-]
-|
-.buttons.pon.call_conditions += [
-  {"name": "not_call_contains", "opts": [["27z"], 1]}
-]
-|
-.buttons.daiminkan.call_conditions += [
-  {"name": "not_call_contains", "opts": [["27z"], 1]}
-]
-|
-.buttons.kakan.call_conditions += [
-  {"name": "not_call_contains", "opts": [["27z"], 1]}
-]
-|
-.buttons.ankan.call_conditions += [
-  {"name": "not_call_contains", "opts": [["27z"], 1]}
 ]

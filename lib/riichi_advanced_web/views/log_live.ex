@@ -9,6 +9,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     |> assign(:messages, [])
     |> assign(:state, %Game{})
     |> assign(:log, nil)
+    |> assign(:log_json, "")
     |> assign(:seat, :east)
     |> assign(:shimocha, :south)
     |> assign(:toimen, :west)
@@ -50,6 +51,7 @@ defmodule RiichiAdvancedWeb.LogLive do
       |> assign(:session_id, "log") # debug
       # |> assign(:session_id, socket.id)
       |> assign(:log, log)
+      |> assign(:log_json, log_json)
 
       # start a new game process
       log_spec = {RiichiAdvanced.LogSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.session_id)}}}
@@ -314,8 +316,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
   def handle_event("log", _assigns, socket) do
     # log button pressed
-    # log = GenServer.call(socket.assigns.game_state, :get_log)
-    # socket = push_event(socket, "copy-log", %{log: log})
+    socket = push_event(socket, "copy-log", %{log: socket.assigns.log_json})
     {:noreply, socket}
   end
 
