@@ -946,6 +946,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
       "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
+      "merge_draw"          -> update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: [] })
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
