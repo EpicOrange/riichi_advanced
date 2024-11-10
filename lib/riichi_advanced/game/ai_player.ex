@@ -117,7 +117,7 @@ defmodule RiichiAdvanced.AIPlayer do
             case choose_discard(state, player, playables) do
               {nil, _} ->
                 # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
-                Enum.at(playables, -1) # tsumogiri
+                {Enum.at(playables, -1), 6} # tsumogiri, or last playable tile
               t -> t
             end
           end
