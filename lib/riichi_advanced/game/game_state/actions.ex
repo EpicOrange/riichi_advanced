@@ -511,7 +511,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
         state
-      "random"                -> run_actions(state, [Enum.random(Enum.at(opts, 0, ["noop"]))], context)
       "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
@@ -1055,6 +1054,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           run_deferred_actions(state, player.deferred_context)
         else state end
         state = if not Enum.empty?(state.marking[seat]) && Marking.is_done?(state, seat) do
+          state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})
           Marking.reset_marking(state, seat)
         else state end
         state

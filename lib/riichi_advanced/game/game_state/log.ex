@@ -67,9 +67,12 @@ defmodule RiichiAdvanced.GameState.Log do
     end
   end
 
-  defp modify_last_button_press(state, fun) do
+  defp modify_last_button_press(state, fun, create_at_seat \\ nil) do
     state = case Enum.at(state.log_state.log, 0) do
-      event when event != nil and event.event_type == :buttons_pressed -> state
+      event when (event != nil and event.event_type == :buttons_pressed) ->
+        if create_at_seat != nil && Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
+          log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
+        else state end
       _ -> log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
     end
     update_in(state.log_state.log, &List.update_at(&1, 0, fun))
@@ -93,7 +96,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def add_button_press(state, seat, button_name) do
-    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), %{button: button_name})) } end)
+    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), %{button: button_name})) } end, seat)
   end
 
   def add_button_data(state, seat, data) do
@@ -104,21 +107,61 @@ defmodule RiichiAdvanced.GameState.Log do
     modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end)
   end
 
+  def encode_marking(marking) do
+    # [
+    #   done: true,
+    #   hand: %{
+    #     needed: 3,
+    #     restrictions: ["self"],
+    #     marked: [{:"9s", :east, 12}, {:"7s", :east, 11}, {:"2s", :east, 10}]
+    #   }
+    # ]
+    for {kw, val} <- marking do
+      case kw do
+        :done -> [kw, false]
+        _     ->
+          val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, s, i] end))
+          [kw, val]
+      end
+    end
+  end
+
+  def decode_marking(marking) do
+    # [
+    #   ["done", true],
+    #   ["hand", %{
+    #     "marked" => [["9s", "east", 12], ["7s", "east", 11], ["5s", "east", 10]],
+    #     "needed" => 3,
+    #     "restrictions" => ["self"]
+    #   }]
+    # ]
+    for [kw, val] <- marking do
+      case kw do
+        "done" -> {:done, false}
+        _      ->
+          val = Map.new(val, fn {k, v} -> {String.to_atom(k), v} end)
+          val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_atom(s), i} end))
+          {String.to_atom(kw), val}
+      end
+    end
+  end
+
   def finalize_kyoku(state) do
     state = update_in(state.log_state.kyokus, fn kyokus -> [%{
       index: length(state.log_state.kyokus),
-      haipai: state.haipai,
       players: Enum.map([:east, :south, :west, :north], fn dir -> %{
         points: state.players[dir].start_score,
         haipai: state.haipai[dir]
       } end),
       kyoku: state.kyoku,
-      honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else nil end,
-      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]) else nil end,
-      doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end,
-      uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end,
+      honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else 0 end,
+      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]) else 0 end,
+      doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
+      uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       kan_tiles: Enum.take(state.dead_wall, -4),
       wall: state.wall |> Enum.drop(52) |> Enum.take(70),
+      die1: state.die1,
+      die2: state.die2,
       events: state.log_state.log
         |> Enum.reverse()
         |> Enum.with_index()

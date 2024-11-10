@@ -1051,6 +1051,7 @@
   "shown_statuses": ["furiten"],
   "display_riichi_sticks": true,
   "display_honba": true,
+  "display_wall": true,
   "initial_score": 25000,
   "initial_dead_wall_length": 14,
   "starting_tiles": 13,

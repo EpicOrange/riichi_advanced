@@ -67,6 +67,7 @@ defmodule RiichiAdvanced.LogControlState do
       length(hand) + Enum.find_index(draw, &Utils.same_tile(&1, tile))
     end
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
+
     GenServer.cast(state.game_state_pid, {:play_tile, seat, ix})
     # for all possible calls attached to this event
     # have players press skip on them if they weren't actually called
@@ -77,6 +78,7 @@ defmodule RiichiAdvanced.LogControlState do
     for seat <- possible_call_seats -- call_seats do
       GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
     end
+
     GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
     GenServer.cast(state.game_state_pid, :sort_hands)
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
@@ -86,6 +88,7 @@ defmodule RiichiAdvanced.LogControlState do
   def send_button_press(state, skip_anim, button_press_event) do
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
+
     for {button_data, seat_num} <- Enum.with_index(button_press_event["buttons"]) do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
@@ -105,6 +108,21 @@ defmodule RiichiAdvanced.LogControlState do
         _ -> :ok
       end
     end
+
+    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
+    GenServer.cast(state.game_state_pid, :sort_hands)
+    GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
+    state
+  end
+
+  def send_mark(state, skip_anim, mark_event) do
+    seat = Log.from_seat(mark_event["player"])
+    marking = mark_event["marking"]
+    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
+    prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
+
+    GenServer.cast(state.game_state_pid, {:put_marking, seat, marking})
+
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
     GenServer.cast(state.game_state_pid, :sort_hands)
     GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
@@ -118,6 +136,11 @@ defmodule RiichiAdvanced.LogControlState do
 
   def handle_call({:send_button_press, skip_anim, button_press_event}, _from, state) do
     state = send_button_press(state, skip_anim, button_press_event)
+    {:reply, state.game_state, state}
+  end
+
+  def handle_call({:send_mark, skip_anim, mark_event}, _from, state) do
+    state = send_mark(state, skip_anim, mark_event)
     {:reply, state.game_state, state}
   end
 

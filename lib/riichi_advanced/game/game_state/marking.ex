@@ -1,5 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Marking do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
   def initialize_marking(state) do
@@ -178,6 +180,29 @@ defmodule RiichiAdvanced.GameState.Marking do
 
   def reset_marking(state, marking_player) do
     state = put_in(state.marking[marking_player], [])
+    state
+  end
+
+  def adjudicate_marking(state, marking_player) do
+    state = if not needs_marking?(state, marking_player) do
+      # run actions, including the mark action that marks done
+      state = Actions.run_deferred_actions(state, %{seat: marking_player})
+      # only reset marking once the mark action marks it done
+      state = if is_done?(state, marking_player) do
+        state = Log.log(state, marking_player, :mark, %{marking: Log.encode_marking(state.marking[marking_player])})
+        reset_marking(state, marking_player)
+      else state end
+
+      # if we're still going, run deferred actions for everyone and then notify ai
+      state = if state.game_active do
+        state = Actions.resume_deferred_actions(state)
+        notify_ai(state)
+        state
+      else state end
+
+      state
+    else state end
+    notify_ai_marking(state, marking_player)
     state
   end
 end

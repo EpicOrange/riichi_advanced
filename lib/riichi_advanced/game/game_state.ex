@@ -325,6 +325,7 @@ defmodule RiichiAdvanced.GameState do
         state = state
         |> Map.put(:all_tiles, all_tiles)
         |> Map.put(:wall, wall)
+        |> Map.put(:haipai, hands)
         |> Map.put(:dead_wall, [])
         |> Map.put(:reserved_tiles, [])
         |> Map.put(:revealed_tiles, [])
@@ -338,13 +339,18 @@ defmodule RiichiAdvanced.GameState do
 
       scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
 
+      # roll dice
+      state = state
+      |> Map.put(:die1, :rand.uniform(6))
+      |> Map.put(:die2, :rand.uniform(6))
+
       {state, hands, scores}
     else
       hands = 
-        %{:east  => kyoku_log["haipai"]["east"]  |> Enum.map(&Utils.to_tile/1),
-          :south => kyoku_log["haipai"]["south"] |> Enum.map(&Utils.to_tile/1),
-          :west  => kyoku_log["haipai"]["west"]  |> Enum.map(&Utils.to_tile/1),
-          :north => kyoku_log["haipai"]["north"] |> Enum.map(&Utils.to_tile/1)}
+        %{:east  => Enum.at(kyoku_log["players"], 0)["haipai"] |> Enum.map(&Utils.to_tile/1),
+          :south => Enum.at(kyoku_log["players"], 1)["haipai"] |> Enum.map(&Utils.to_tile/1),
+          :west  => Enum.at(kyoku_log["players"], 2)["haipai"] |> Enum.map(&Utils.to_tile/1),
+          :north => Enum.at(kyoku_log["players"], 3)["haipai"] |> Enum.map(&Utils.to_tile/1)}
       wall = hands.east ++ hands.south ++ hands.west ++ hands.north ++ kyoku_log["wall"]
       |> Enum.map(&Utils.to_tile/1)
 
@@ -361,6 +367,7 @@ defmodule RiichiAdvanced.GameState do
       state = state
       |> Map.put(:all_tiles, Utils.sort_tiles(wall ++ dead_wall))
       |> Map.put(:wall, wall)
+      |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
       |> Map.put(:reserved_tiles, reserved_tiles)
       |> Map.put(:revealed_tiles, revealed_tiles)
@@ -377,6 +384,8 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:kyoku, kyoku_log["kyoku"])
       |> Map.put(:pot, kyoku_log["riichi_sticks"] * 1000)
       |> Map.put(:honba, kyoku_log["honba"])
+      |> Map.put(:die1, kyoku_log["die1"])
+      |> Map.put(:die2, kyoku_log["die2"])
 
       {state, hands, scores}
     end
@@ -403,8 +412,6 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:reversed_turn_order, false)
     |> Map.put(:game_active, true)
     |> Map.put(:turn, nil) # so that change_turn detects a turn change
-    |> Map.put(:die1, :rand.uniform(6))
-    |> Map.put(:die2, :rand.uniform(6))
     |> Map.put(:round_result, nil)
     |> Map.put(:winners, %{})
     |> Map.put(:winner_index, 0)
@@ -1259,23 +1266,7 @@ defmodule RiichiAdvanced.GameState do
   # marking calls
   def handle_cast({:mark_tile, marking_player, seat, index, source}, state) do
     state = Marking.mark_tile(state, marking_player, seat, index, source)
-    state = if not Marking.needs_marking?(state, marking_player) do
-      state = Actions.run_deferred_actions(state, %{seat: marking_player})
-      # only reset marking if the mark action states that it is done
-      state = if Marking.is_done?(state, marking_player) do
-        Marking.reset_marking(state, marking_player)
-      else state end
-
-      # if we're still going, run deferred actions for everyone and then notify ai
-      state = if state.game_active do
-        state = Actions.resume_deferred_actions(state)
-        notify_ai(state)
-        state
-      else state end
-
-      state
-    else state end
-    notify_ai_marking(state, marking_player)
+    state = Marking.adjudicate_marking(state, marking_player)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -1294,6 +1285,14 @@ defmodule RiichiAdvanced.GameState do
     state = update_player(state, seat, fn player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
     notify_ai(state)
 
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  # for log replays only
+  def handle_cast({:put_marking, seat, marking}, state) do
+    state = put_in(state.marking[seat], Log.decode_marking(marking))
+    state = Marking.adjudicate_marking(state, seat)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

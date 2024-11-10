@@ -215,8 +215,9 @@
   ],
   "after_start": {
     "actions": [
-      // ["set_status_all", "charleston_left"]
-      ["random", [["set_status_all", "charleston_left"], ["set_status_all", "charleston_across"], ["set_status_all", "charleston_right"]]]
+      ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
+      ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
+      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
     ]
   },
   "before_turn_change": {
@@ -482,6 +483,7 @@
     }
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call", "charleston_left", "charleston_across", "charleston_right"],
+  "display_wall": true,
   "initial_score": 0,
   "starting_tiles": 13,
   "max_rounds": 4,
