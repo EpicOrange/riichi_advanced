@@ -1990,7 +1990,7 @@ div#container > form > div.form-error {
   font-size: calc(0.5 * var(--tile-size));
   color: white;
 }
-div#container > button.logs {
+div#container > div.index-bottom-buttons {
   position: absolute;
   font-size: calc(0.75 * var(--tile-size));
   right: 0;
