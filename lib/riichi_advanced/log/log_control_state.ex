@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.LogControlState do
     call = if Map.has_key?(discard_event, "call") do [discard_event["call"]] else [] end
     possible_calls = Map.get(discard_event, "possible_calls", []) -- call
     call_seats = Enum.map(call, &Log.from_seat(&1["player"]))
-    possible_call_seats = Enum.map(possible_calls, &Log.from_seat(&1["player"]))
+    possible_call_seats = Enum.map(possible_calls, &Log.from_seat(&1["player"])) |> Enum.uniq()
     for seat <- possible_call_seats -- call_seats do
       GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
     end
@@ -85,10 +85,25 @@ defmodule RiichiAdvanced.LogControlState do
 
   def send_button_press(state, skip_anim, button_press_event) do
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
-    seat = Log.from_seat(button_press_event["player"])
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
-    for %{"player" => seat_num, "button" => name} <- button_press_event["buttons"], reduce: state do
-      state -> GenServer.cast(state.game_state_pid, {:press_button, Log.from_seat(seat_num), name})
+    for {button_data, seat_num} <- Enum.with_index(button_press_event["buttons"]) do
+      seat = Log.from_seat(seat_num)
+      button = button_data["button"]
+      GenServer.cast(state.game_state_pid, {:press_button, seat, button})
+    end
+    # after all buttons have been adjudicated,
+    # may have to press call choice button or saki card
+    for {button_data, seat_num} <- Enum.with_index(button_press_event["buttons"]) do
+      seat = Log.from_seat(seat_num)
+      case button_data do
+        %{"button" => call_name, "call_choice" => call_choice, "called_tile" => called_tile} ->
+          call_choice = Enum.map(call_choice, &Utils.to_tile/1)
+          called_tile = Utils.to_tile(called_tile)
+          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_name, call_choice, called_tile})
+        %{"choice" => choice} ->
+          GenServer.cast(state.game_state_pid, {:press_saki_card, seat, choice})
+        _ -> :ok
+      end
     end
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
     GenServer.cast(state.game_state_pid, :sort_hands)

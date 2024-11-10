@@ -1113,6 +1113,20 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, Buttons.press_button(state, seat, button_name)}
   end
 
+  def handle_cast({:press_call_button, seat, call_name, call_choice, called_tile}, state) do
+    state = Log.add_button_data(state, seat, %{call_choice: call_choice, called_tile: called_tile})
+    state = Actions.run_deferred_actions(state, %{seat: seat, call_name: call_name, call_choice: call_choice, called_tile: called_tile})
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+  
+  def handle_cast({:press_saki_card, seat, choice}, state) do
+    state = Log.add_button_data(state, seat, %{choice: choice})
+    state = Actions.run_deferred_actions(state, %{seat: seat, choice: choice})
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
   def handle_cast({:trigger_auto_button, seat, auto_button_name}, state) do
     state = Actions.run_actions(state, state.rules["auto_buttons"][auto_button_name]["actions"], %{seat: seat, auto: true})
     state = broadcast_state_change(state)
@@ -1133,6 +1147,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:cancel_call_buttons, seat}, state) do
     # go back to button clicking phase
     state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
+    state = Log.remove_button_press(state, seat)
     notify_ai(state)
 
     state = broadcast_state_change(state)

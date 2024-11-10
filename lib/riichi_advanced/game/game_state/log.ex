@@ -70,7 +70,7 @@ defmodule RiichiAdvanced.GameState.Log do
   defp modify_last_button_press(state, fun) do
     state = case Enum.at(state.log_state.log, 0) do
       event when event != nil and event.event_type == :buttons_pressed -> state
-      _ -> log(state, :east, :buttons_pressed, %{buttons: []})
+      _ -> log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
     end
     update_in(state.log_state.log, &List.update_at(&1, 0, fun))
   end
@@ -93,7 +93,15 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def add_button_press(state, seat, button_name) do
-    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, & &1 ++ [%{player: to_seat(seat), button: button_name}]) } end)
+    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), %{button: button_name})) } end)
+  end
+
+  def add_button_data(state, seat, data) do
+    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.update_at(&1, to_seat(seat), fn m -> Map.merge(m, data) end)) } end)
+  end
+
+  def remove_button_press(state, seat) do
+    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end)
   end
 
   def finalize_kyoku(state) do

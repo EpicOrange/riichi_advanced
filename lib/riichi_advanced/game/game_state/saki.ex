@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
   @card_names %{
@@ -121,7 +120,6 @@ defmodule RiichiAdvanced.GameState.Saki do
 
   def draft_saki_card(state, seat, choice) do
     state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
-    state = Log.log(state, seat, :saki_card, %{card: choice})
 
     state = if check_if_all_drafted(state) do
       state = Map.put(state, :game_active, true)
