@@ -274,11 +274,13 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # find the index of the sideways tile to determine the direction
     sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
-    dir = case sideways_index do
-      0 -> :kamicha
-      1 -> :toimen
-      2 -> :shimocha
-      _ -> :self
+    sideways_index_rev = Enum.find_index(Enum.reverse(call), fn {_tile, sideways} -> sideways end)
+    dir = cond do
+      sideways_index == 0 -> :kamicha
+      sideways_index_rev == 0 -> :shimocha # for 2-tile calls
+      sideways_index == 1 -> :toimen
+      sideways_index == 2 -> :shimocha
+      true -> :self
     end
 
     # style the call

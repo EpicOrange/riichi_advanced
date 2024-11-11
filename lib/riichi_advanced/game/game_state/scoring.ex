@@ -230,7 +230,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
         points = new_points
 
-        han = Integer.to_string(points)
+        han = if is_integer(points) do Integer.to_string(points) else Float.to_string(points) end
         fu = Integer.to_string(minipoints)
         oya_han_table = if is_self_draw do scoring_table["score_table_dealer_draw"] else scoring_table["score_table_dealer"] end
         ko_han_table = if is_self_draw do scoring_table["score_table_nondealer_draw"] else scoring_table["score_table_nondealer"] end
@@ -1006,7 +1006,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           
           {score, points, yakuman_mult} = score_yaku(state, seat, yaku, yakuman, is_dealer, win_source == :draw, minipoints)
           IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}")
-          han = Integer.to_string(points)
+          han = if is_integer(points) do Integer.to_string(points) else Float.to_string(points) end
           fu = Integer.to_string(minipoints)
           score_name = if yakuman_mult > 0 do
             scoring_table["yakuman_limit_hand_name"]

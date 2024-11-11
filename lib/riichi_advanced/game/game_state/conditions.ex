@@ -40,6 +40,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "kamicha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :kamicha)].pond, -1), calls}]
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "tile" -> [{hand ++ [context.tile], calls}]
+          "called_tile" -> [{hand ++ [context.called_tile], calls}]
+          "call_choice" -> [{hand ++ [context.call_choice], calls}]
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [winning_tile], calls}]

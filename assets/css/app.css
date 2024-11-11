@@ -517,6 +517,9 @@ div.tile.sideways + div.tile.sideways::before {
   background: inherit;
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
 }
+div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
+  transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-2 * var(--tile-width)));
+}
 div.tile.markable {
   cursor: pointer;
   --border-width: calc(0.05 * var(--tile-size));
@@ -860,8 +863,20 @@ div.hand.just-called > div.calls > div.call:nth-last-child(2) {
     transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
   }
 }
+@keyframes slideDown2 {
+  0% {
+    transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-4 * var(--tile-width)));
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-2 * var(--tile-width)));
+  }
+}
 div.tile.sideways + div.tile.sideways::before {
   animation: slideDown 0.2s ease forwards;
+}
+div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
+  animation: slideDown2 0.2s ease forwards;
 }
 
 
