@@ -1106,6 +1106,9 @@
     "chon": {
       "display_name": "Chon",
       "call": [[10, 20]],
+      "call_conditions": [
+        {"name": "not_match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}
+      ],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
       "actions": [["big_text", "Chon"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"]],
@@ -1115,7 +1118,7 @@
       "display_name": "Chon",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_conditions": [
-        {"name": "match", "opts": [["called_tile"], [["debug", [["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}
       ],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
@@ -1126,7 +1129,7 @@
       "display_name": "Fuun",
       "call": [[1, 2, 3]],
       "call_conditions": [
-        {"name": "match", "opts": [["called_tile"], [["debug", [["1z","2z","3z","4z"], 1]]]]}
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z"], 1]]]]}
       ],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
@@ -1188,7 +1191,7 @@
       "call": [[1, 2, 3]],
       "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
       "call_conditions": [
-        {"name": "match", "opts": [["called_tile"], [["debug", [["1z","2z","3z","4z"], 1]]]]},
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z"], 1]]]]},
         [
           {"name": "not_status", "opts": ["riichi"]},
           {"name": "not_call_changes_waits", "opts": ["win"]}
@@ -1246,7 +1249,7 @@
         "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
       },
       "call_conditions": [
-        {"name": "match", "opts": [["called_tile"], [["debug", [["1z","2z","3z","4z"], 1]]]]}
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z"], 1]]]]}
       ],
       "upgrades": "chon_honors",
       "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
