@@ -229,6 +229,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} scores their limit hand one tier higher (Ryuumonbuchi Touka)"}])
         end
         points = new_points
+        points = Utils.try_integer(points)
 
         han = if is_integer(points) do Integer.to_string(points) else Float.to_string(points) end
         fu = Integer.to_string(minipoints)
@@ -1006,6 +1007,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           
           {score, points, yakuman_mult} = score_yaku(state, seat, yaku, yakuman, is_dealer, win_source == :draw, minipoints)
           IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}")
+          points = Utils.try_integer(points)
           han = if is_integer(points) do Integer.to_string(points) else Float.to_string(points) end
           fu = Integer.to_string(minipoints)
           score_name = if yakuman_mult > 0 do

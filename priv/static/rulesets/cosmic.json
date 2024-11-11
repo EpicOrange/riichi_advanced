@@ -1,7 +1,37 @@
 {
   "default_mods": [
+    "dora", "ura", "kandora", "aka",
+    "ippatsu",
+    "nagashi",
+    "tobi",
+    "suufon_renda",
+    "suucha_riichi",
+    "suukaikan",
+    "kyuushu_kyuuhai",
+    "renhou"
   ],
   "available_mods": [
+    {"id": "dora", "name": "Dora", "desc": "Enables dora."},
+    {"id": "ura", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
+    {"id": "aka", "name": "Aka", "desc": "Enables aka dora (red fives)."},
+    {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
+    {"id": "ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
+    {"id": "nagashi", "name": "Nagashi", "desc": "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."},
+    {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
+    {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
+    {"id": "suucha_riichi", "name": "Suucha Riichi", "desc": "Enable 4 riichi abortive draw."},
+    {"id": "suukaikan", "name": "Suukaikan", "desc": "Enable 4 kan abortive draw."},
+    {"id": "sanchahou", "conflicts": ["head_bump"], "name": "Sanchahou", "desc": "Enable triple ron abortive draw."},
+    // {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
+    // {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
+    // {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
+    // {"id": "tenpaiyame", "deps": ["tenpairenchan"], "name": "Tenpaiyame", "desc": "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."},
+    {"id": "kyuushu_kyuuhai", "name": "Kyuushu Kyuuhai", "desc": "Enable 9 distinct terminal/honor abortive draw."},
+    {"id": "renhou", "name": "Renhou", "desc": "Enable renhou yakuman."},
+    {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
+    {"id": "immediate_kan_dora", "deps": ["kandora", "dora"], "name": "Immediate Kan Dora", "desc": "Flip kan dora immediately after daiminkan and kakan."},
+    {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},
+    {"id": "kuikae_ari", "name": "Kuikae Ari", "desc": "Allow swap-calling."}
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -68,7 +98,7 @@
     "haku": ["5z", "5z", "5z"],
     "hatsu": ["6z", "6z", "6z"],
     "chun": ["7z", "7z", "7z"],
-    "konyakuhai": ["5z", "6z", "7z"],
+    "konyakuhai_dragons": ["5z", "6z", "7z"],
     "ton_pair": ["1z", "1z"],
     "nan_pair": ["2z", "2z"],
     "shaa_pair": ["3z", "3z"],
@@ -519,14 +549,86 @@
       ]
     },
     {
-      "display_name": "Konyakuhai",
+      "display_name": "Mini-Sangen",
       "value": 0.5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["konyakuhai"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["konyakuhai_dragons"], 1]]]]}]
     },
     {
-      "display_name": "Konyakuhai",
+      "display_name": "Mini-Sangen",
       "value": 0.5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["konyakuhai"], 2]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["konyakuhai_dragons"], 2]]]]}]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","3z"]], 1]]]]},
+        {"name": "not_round_wind_is", "opts": ["north"]},
+        {"name": "not_seat_wind_is", "opts": ["north"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","3z"]], 2]]]]},
+        {"name": "not_round_wind_is", "opts": ["north"]},
+        {"name": "not_seat_wind_is", "opts": ["north"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","4z"]], 1]]]]},
+        {"name": "not_round_wind_is", "opts": ["west"]},
+        {"name": "not_seat_wind_is", "opts": ["west"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","4z"]], 2]]]]},
+        {"name": "not_round_wind_is", "opts": ["west"]},
+        {"name": "not_seat_wind_is", "opts": ["west"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","3z","4z"]], 1]]]]},
+        {"name": "not_round_wind_is", "opts": ["south"]},
+        {"name": "not_seat_wind_is", "opts": ["south"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","3z","4z"]], 2]]]]},
+        {"name": "not_round_wind_is", "opts": ["south"]},
+        {"name": "not_seat_wind_is", "opts": ["south"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["2z","3z","4z"]], 1]]]]},
+        {"name": "not_round_wind_is", "opts": ["east"]},
+        {"name": "not_seat_wind_is", "opts": ["east"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["2z","3z","4z"]], 2]]]]},
+        {"name": "not_round_wind_is", "opts": ["east"]},
+        {"name": "not_seat_wind_is", "opts": ["east"]}
+      ]
     },
     {
       "display_name": "Ryandoukon",
@@ -754,9 +856,11 @@
     "Junsei Chuurenpoutou": ["Chuurenpoutou"],
     "Kokushi Musou Juusan Menmachi": ["Kokushi Musou"],
     "Daisuushii": ["Shousuushii"],
-    "Haku": ["Konyakuhai"],
-    "Hatsu": ["Konyakuhai"],
-    "Chun": ["Konyakuhai"]
+    "Seat Wind": ["Mixed Winds"],
+    "Round Wind": ["Mixed Winds"],
+    "Haku": ["Mini-Sangen"],
+    "Hatsu": ["Mini-Sangen"],
+    "Chun": ["Mini-Sangen"]
   },
   "extra_yaku": [],
   "yaku_alt_names": {
