@@ -173,6 +173,7 @@ defmodule RiichiAdvanced.AIPlayer do
           "zimo" in player.buttons -> "zimo"
           "riichi" in player.buttons -> "riichi"
           "ankan" in player.buttons -> "ankan"
+          "anfuun" in player.buttons -> "anfuun"
           "flower" in player.buttons -> "flower"
           "extra_turn" in player.buttons -> "extra_turn"
           "skip" in player.buttons -> "skip"
