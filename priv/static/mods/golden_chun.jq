@@ -83,3 +83,29 @@ end
     ]
   ]}
 ]
+|
+# can't call golden chun unless as a chun
+.buttons.chii.call_conditions += [[
+  {"name": "not_call_contains", "opts": [["27z"], 1]},
+  {"name": "call_contains", "opts": [["7z"], 1]}
+]]
+|
+.buttons.pon.call_conditions += [[
+  {"name": "not_call_contains", "opts": [["27z"], 1]},
+  {"name": "call_contains", "opts": [["7z"], 1]}
+]]
+|
+.buttons.daiminkan.call_conditions += [[
+  {"name": "not_call_contains", "opts": [["27z"], 1]},
+  {"name": "call_contains", "opts": [["7z"], 1]}
+]]
+|
+.buttons.kakan.call_conditions += [[
+  {"name": "not_call_contains", "opts": [["27z"], 1]},
+  {"name": "call_contains", "opts": [["7z"], 1]}
+]]
+|
+.buttons.ankan.call_conditions += [[
+  {"name": "not_call_contains", "opts": [["27z"], 1]},
+  {"name": "call_contains", "opts": [["7z"], 1]}
+]]
