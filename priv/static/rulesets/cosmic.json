@@ -464,14 +464,14 @@
     {
       "display_name": "Ryanpeikou",
       "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iipeikou"], 2], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [["exhaustive", [["iipeikou"], 2], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Ryanpeikou",
       "value": 2,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iipeikou"], 2], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [["exhaustive", [["iipeikou"], 2], [["pair"], 1]]]]}
       ]
     },
     {
@@ -544,14 +544,14 @@
     {
       "display_name": "Iishoku Sanjun",
       "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iishoku_sanjun"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [["exhaustive", [["iishoku_sanjun"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Iishoku Sanjun",
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iishoku_sanjun"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [["exhaustive", [["iishoku_sanjun"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}
       ]
     },
     {
@@ -718,7 +718,7 @@
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234"], 4], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234"], 4], [["pair"], 1]]]]}
       ]
     },
     {
@@ -726,20 +726,20 @@
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ryandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 2], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["ryandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 2], [["pair"], 1]]]]}
       ]
     },
     {
       "display_name": "Sandoukon",
       "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Sandoukon",
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}
       ]
     },
     {
@@ -927,12 +927,12 @@
     {
       "display_name": "Iishoku Yonjun",
       "value": 13,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["iishoku_yonjun"], 1], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [["exhaustive", [["iishoku_yonjun"], 1], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Yondoukon",
       "value": 13,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["yondoukon"], 1], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["yondoukon"], 1], [["pair"], 1]]]]}]
     }
   ],
   "yakuman": [],
