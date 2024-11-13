@@ -1080,7 +1080,12 @@
     ]
   },
   "before_win": {
-    "actions": []
+    "actions": [
+      // tsubame gaeshi awards the riichi bet
+      ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["just_reached"]}],
+        [["when_anyone", ["just_discarded"], [["add_score", -1000], ["put_down_riichi_stick"]]]
+      ]]
+    ]
   },
   "before_abortive_draw": {
     "actions": []
