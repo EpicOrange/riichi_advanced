@@ -554,7 +554,6 @@ defmodule Riichi do
       "ankan"       -> if relevant_tile in @terminal_honors do 32 else 16 end
       "daiminkan"   -> if relevant_tile in @terminal_honors do 16 else 8 end
       "kakan"       -> if relevant_tile in @terminal_honors do 16 else 8 end
-      "ton"         -> calculate_pair_fu(relevant_tile, seat_wind, round_wind)
       "chon"        -> if relevant_tile in @terminal_honors do 2 else 1 end
       "chon_honors" -> 2
       "anfuun"      -> 16
@@ -582,9 +581,15 @@ defmodule Riichi do
 
   def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}, enable_kontsu_fu \\ false) do
     # t = System.os_time(:millisecond)
-    
+
     IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
-    starting_hand = starting_hand
+
+    # first put all ton calls back into the hand
+    ton_tiles = calls
+    |> Enum.filter(fn {name, _call} -> name == "ton" end)
+    |> Enum.flat_map(&call_to_tiles/1)
+    
+    starting_hand = starting_hand ++ ton_tiles
     standard_length = length(starting_hand) in [1, 4, 7, 10, 13]
     winning_tiles = if standard_length do apply_tile_aliases([winning_tile], tile_aliases) else @all_tiles end
     starting_hand = if standard_length do starting_hand else starting_hand ++ [winning_tile] end
