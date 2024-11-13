@@ -3,7 +3,7 @@ defmodule Riichi do
   @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p",
                 :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s",
                 :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m",
-                :"1z"=>:"1z", :"2z"=>:"2z", :"3z"=>:"3z", :"4z"=>:"4z", :"5z"=>:"5z", :"6z"=>:"6z", :"7z"=>:"7z"}
+                :"1z"=>nil, :"2z"=>nil, :"3z"=>nil, :"4z"=>nil, :"5z"=>nil, :"6z"=>nil, :"7z"=>nil}
   def shift_suit(tile), do: @shift_suit[tile]
 
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
@@ -696,6 +696,8 @@ defmodule Riichi do
     # - one tile remaining (tanki)
     # - one pair remaining (standard)
     # - two pairs remaining (shanpon)
+    # cosmic hand can also have
+    # - one pair, one mixed pair remaining
     # shouhai hands should either have:
     # - seven tiles (including pair) remaining (floating/complete)
     # - four tiles (including pair) remaining (sticking)
@@ -710,6 +712,14 @@ defmodule Riichi do
           tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           if Utils.count_tiles([tile1], winning_tiles, tile_aliases) == 1 do [tile1_fu] else [] end ++ if Utils.count_tiles([tile2], winning_tiles, tile_aliases) == 1 do [tile2_fu] else [] end
+        # cosmic hand
+        length(hand) == 4 && num_pairs == 1 ->
+          {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
+          [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
+          pair_fu = calculate_pair_fu(pair_tile, seat_wind, round_wind)
+          kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
+          [fu + pair_fu + kontsu_fu]
+        # shouhai hands
         length(starting_hand) == 12 && length(hand) == 4 && num_pairs == 0 -> [fu]
         length(starting_hand) == 12 && length(hand) == 7 && num_pairs == 1 ->
           pair_fu = Enum.frequencies(hand)

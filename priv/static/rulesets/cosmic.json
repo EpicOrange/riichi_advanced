@@ -76,6 +76,7 @@
   "max_revealed_tiles": 0,
   "set_definitions": {
     "pair": [0, 0],
+    "mixed_pair": [0, 10],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
     "kontsu": [0, 10, 20],
@@ -99,7 +100,11 @@
     "haku": ["5z", "5z", "5z"],
     "hatsu": ["6z", "6z", "6z"],
     "chun": ["7z", "7z", "7z"],
-    "konyakuhai_dragons": ["5z", "6z", "7z"],
+    "kontsu_123": ["1z", "2z", "3z"],
+    "kontsu_124": ["1z", "2z", "4z"],
+    "kontsu_134": ["1z", "3z", "4z"],
+    "kontsu_234": ["2z", "3z", "4z"],
+    "kontsu_dragons": ["5z", "6z", "7z"],
     "ton_pair": ["1z", "1z"],
     "nan_pair": ["2z", "2z"],
     "shaa_pair": ["3z", "3z"],
@@ -129,7 +134,7 @@
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "kontsu"], 3] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 1], [["shuntsu", "koutsu", "kontsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu", "kontsu"], 4] ],
     [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique",
@@ -138,8 +143,8 @@
     ]
   ],
   "iishanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu", "kontsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "kontsu"], 3] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 2], [["shuntsu", "koutsu", "kontsu"], 2] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 1], [["shuntsu", "koutsu", "kontsu"], 3] ],
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
@@ -147,9 +152,9 @@
     ]
   ],
   "ryanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu", "kontsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu", "kontsu"], 2] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "kontsu"], 2] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 3], [["shuntsu", "koutsu", "kontsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 3], [["shuntsu", "koutsu", "kontsu"], 2] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 1], [["shuntsu", "koutsu", "kontsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu", "kontsu"], 3] ],
     [ [["pair"], 4] ],
     [ "unique",
@@ -158,10 +163,10 @@
     ]
   ],
   "sanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu", "kontsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu", "kontsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "kontsu"], 2] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 2], [["shuntsu", "koutsu", "kontsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 4], [["shuntsu", "koutsu", "kontsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 1], [["shuntsu", "koutsu", "kontsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu", "kontsu"], 3] ],
     [ [["pair"], 3] ],
     [ "unique",
@@ -170,7 +175,7 @@
     ]
   ],
   "tenpai_14_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "kontsu"], 3] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "mixed_pair"], 1], [["shuntsu", "koutsu", "kontsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu", "kontsu"], 4] ],
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ]
   ],
@@ -552,18 +557,18 @@
     {
       "display_name": "Mini-Sangen",
       "value": 0.5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["konyakuhai_dragons"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_dragons"], 1]]]]}]
     },
     {
       "display_name": "Mini-Sangen",
       "value": 0.5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["konyakuhai_dragons"], 2]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_dragons"], 2]]]]}]
     },
     {
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","3z"]], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["north"]},
         {"name": "not_seat_wind_is", "opts": ["north"]}
       ]
@@ -572,7 +577,7 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","3z"]], 2]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["north"]},
         {"name": "not_seat_wind_is", "opts": ["north"]}
       ]
@@ -581,7 +586,25 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","4z"]], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 3]]]]},
+        {"name": "not_round_wind_is", "opts": ["north"]},
+        {"name": "not_seat_wind_is", "opts": ["north"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 4]]]]},
+        {"name": "not_round_wind_is", "opts": ["north"]},
+        {"name": "not_seat_wind_is", "opts": ["north"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["west"]},
         {"name": "not_seat_wind_is", "opts": ["west"]}
       ]
@@ -590,7 +613,7 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","2z","4z"]], 2]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["west"]},
         {"name": "not_seat_wind_is", "opts": ["west"]}
       ]
@@ -599,7 +622,25 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","3z","4z"]], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 3]]]]},
+        {"name": "not_round_wind_is", "opts": ["west"]},
+        {"name": "not_seat_wind_is", "opts": ["west"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 4]]]]},
+        {"name": "not_round_wind_is", "opts": ["west"]},
+        {"name": "not_seat_wind_is", "opts": ["west"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["south"]},
         {"name": "not_seat_wind_is", "opts": ["south"]}
       ]
@@ -608,7 +649,7 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1z","3z","4z"]], 2]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["south"]},
         {"name": "not_seat_wind_is", "opts": ["south"]}
       ]
@@ -617,7 +658,25 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["2z","3z","4z"]], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 3]]]]},
+        {"name": "not_round_wind_is", "opts": ["south"]},
+        {"name": "not_seat_wind_is", "opts": ["south"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 4]]]]},
+        {"name": "not_round_wind_is", "opts": ["south"]},
+        {"name": "not_seat_wind_is", "opts": ["south"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["east"]},
         {"name": "not_seat_wind_is", "opts": ["east"]}
       ]
@@ -626,7 +685,25 @@
       "display_name": "Mixed Winds",
       "value": 0.5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["2z","3z","4z"]], 2]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 2]]]]},
+        {"name": "not_round_wind_is", "opts": ["east"]},
+        {"name": "not_seat_wind_is", "opts": ["east"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 3]]]]},
+        {"name": "not_round_wind_is", "opts": ["east"]},
+        {"name": "not_seat_wind_is", "opts": ["east"]}
+      ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 4]]]]},
         {"name": "not_round_wind_is", "opts": ["east"]},
         {"name": "not_seat_wind_is", "opts": ["east"]}
       ]
@@ -634,14 +711,14 @@
     {
       "display_name": "Toikon",
       "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu"], 4], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Toikon",
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu"], 4], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234"], 4], [["pair"], 1]]]]}
       ]
     },
     {
