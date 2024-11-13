@@ -546,13 +546,21 @@ defmodule Riichi do
     get_seat_wind(kyoku, seat) |> Utils.get_relative_seat(wall_dir)
   end
 
-  defp calculate_call_fu({name, call}) do
+  defp calculate_call_fu({name, call}, seat_wind, round_wind) do
     {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
     case name do
-      "chii"  -> 0
-      "pon"   -> if relevant_tile in @terminal_honors do 4 else 2 end
-      "ankan" -> if relevant_tile in @terminal_honors do 32 else 16 end
-      _       -> if relevant_tile in @terminal_honors do 16 else 8 end
+      "chii"        -> 0
+      "pon"         -> if relevant_tile in @terminal_honors do 4 else 2 end
+      "ankan"       -> if relevant_tile in @terminal_honors do 32 else 16 end
+      "daiminkan"   -> if relevant_tile in @terminal_honors do 16 else 8 end
+      "kakan"       -> if relevant_tile in @terminal_honors do 16 else 8 end
+      "ton"         -> calculate_pair_fu(relevant_tile, seat_wind, round_wind)
+      "chon"        -> if relevant_tile in @terminal_honors do 2 else 1 end
+      "chon_honors" -> 2
+      "anfuun"      -> 16
+      "daiminfuun"  -> 8
+      "kafuun"      -> 8
+      _             -> 0
     end
   end
 
@@ -572,7 +580,7 @@ defmodule Riichi do
     fu
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}) do
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}, enable_kontsu_fu \\ false) do
     # t = System.os_time(:millisecond)
     
     IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
@@ -587,7 +595,7 @@ defmodule Riichi do
     end
 
     # add called triplets
-    fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
+    fu = fu + (Enum.map(calls, &calculate_call_fu(&1, seat_wind, round_wind)) |> Enum.sum)
 
     # TODO actually generalize wrapping based on ordering
     # rather than hardcoding
@@ -642,6 +650,32 @@ defmodule Riichi do
           end) |> Enum.uniq()
         end) |> Enum.uniq()
     end
+
+    # if kontsu (mixed triplets) is enabled, remove all kontsu and add the corresponding closed kontsu fu
+    hands_fu = if enable_kontsu_fu do
+      for _ <- 1..4, reduce: hands_fu do
+        all_hands ->
+          Enum.flat_map(all_hands, fn {hand, fu} ->
+            {honors, suited} = hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases)
+            |> Enum.split_with(fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == base_tile end)
+            # remove suited kontsu
+            suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
+              case try_remove_all_tiles(hand, [base_tile, offset_tile(base_tile, 10, ordering, ordering_r), offset_tile(base_tile, 20, ordering, ordering_r)], tile_aliases) do
+                [] -> [{hand, fu}]
+                removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 4 else 2 end} end)
+              end
+            end)
+            # remove honor kontsu
+            honors_hands_fu = Enum.flat_map(honors, fn base_tile ->
+              case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, ordering, ordering_r), base_tile, offset_tile(base_tile, 1, ordering, ordering_r)], tile_aliases) do
+                [] -> [{hand, fu}]
+                removed -> Enum.map(removed, fn hand -> {hand, fu + 4} end)
+              end
+            end)
+            Enum.uniq(suited_hands_fu ++ honors_hands_fu)
+          end) |> Enum.uniq()
+      end
+    else hands_fu end
 
     # now remove all sequences (no increase in fu)
     hands_fu = for _ <- 1..4, reduce: hands_fu do

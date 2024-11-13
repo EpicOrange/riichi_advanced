@@ -30,7 +30,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     scoring_table = state.rules["score_calculation"]
     case scoring_table["method"] do
       "riichi" ->
-        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases)
+        enable_kontsu_fu = Map.get(scoring_table, "enable_kontsu_fu", false)
+        minipoints = Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
         if minipoints == 0 do
           IO.inspect("Warning: 0 minipoints translates into nil score")
         end
