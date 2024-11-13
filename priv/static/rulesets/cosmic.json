@@ -632,6 +632,19 @@
       ]
     },
     {
+      "display_name": "Toikon",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu"], 4], [["pair"], 1]]]]}]
+    },
+    {
+      "display_name": "Toikon",
+      "value": 1,
+      "when": [
+        {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu"], 4], [["pair"], 1]]]]}
+      ]
+    },
+    {
       "display_name": "Ryandoukon",
       "value": 1,
       "when": [
