@@ -2329,6 +2329,9 @@
   },
   "before_call": {
     "actions": [
+      ["set_caller_status", "is_caller"],
+      ["when_anyone", [{"name": "status", "opts": ["is_caller"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["set_status", "was_closed_hand"]]],
+      ["unset_caller_status", "is_caller"],
       ["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
       ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
@@ -2424,6 +2427,18 @@
         ]]
       ]],
       ["unless", [{"name": "status", "opts": ["kan"]}], [["set_status", "ready"]]],
+      ["when", [
+        {"name": "status", "opts": ["was_closed_hand"]},
+        {"name": "others_status", "opts": ["aislinn-wishart"]},
+        {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}
+      ], [
+        ["add_score", -1500],
+        ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"],
+        ["when", [{"name": "shimocha_status", "opts": ["aislinn-wishart"]}], [["add_score", 1500, "shimocha"]]],
+        ["when", [{"name": "toimen_status", "opts": ["aislinn-wishart"]}], [["add_score", 1500, "toimen"]]],
+        ["when", [{"name": "kamicha_status", "opts": ["aislinn-wishart"]}], [["add_score", 1500, "kamicha"]]]
+      ]],
+      ["unset_status", "was_closed_hand"],
       ["recalculate_buttons"] // allow kajiki yumi's ability to pop up
     ]
   },
@@ -2826,7 +2841,7 @@
       "display_name": "Swap last discard with a terminal/honor",
       "show_when": [
         "all_saki_cards_drafted",
-        {"name": "status_missing", "opts": ["match_start", "riichi", "about_to_swap"]},
+        {"name": "status_missing", "opts": ["match_start", "riichi", "about_to_call", "about_to_swap"]},
         {"name": "status", "opts": ["choe-myeonghwa"]},
         "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
@@ -4613,7 +4628,6 @@
         ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
-          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
           ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
           ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
           ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["ensure_dead_wall_2"], ["reveal_tile", -18]]],
@@ -4728,7 +4742,12 @@
         "kamicha_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
         {"name": "status_missing", "opts": ["riichi", "iishanten", "atago_kinue_aside_waits", "just_scryed", "about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
-        "call_available"
+        "call_available",
+        [
+          {"name": "not_others_status", "opts": ["aislinn-wishart"]},
+          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "has_score", "opts": [1500]}
+        ]
       ],
       "actions": [
         ["big_text", "Chii"],
@@ -4736,7 +4755,6 @@
         ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
-          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
           ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
           ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
             ["set_status", "extra_turn"],
@@ -4765,7 +4783,12 @@
         "someone_else_just_discarded",
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
         {"name": "status_missing", "opts": ["riichi", "atago_kinue_aside_waits", "about_to_call", "call_interrupted", "usuzawa_sae_opponent"]},
-        "call_available"
+        "call_available",
+        [
+          {"name": "not_others_status", "opts": ["aislinn-wishart"]},
+          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "has_score", "opts": [1500]}
+        ]
       ],
       "actions": [
         ["big_text", "Maya Yukiko: chii!"],
@@ -4773,7 +4796,6 @@
         ["recalculate_buttons"], // allow interrupt
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
-          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["bet_points", 1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
           ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
           ["push_message", "called chii with priority (Maya Yukiko)"]
         ]]
@@ -4807,7 +4829,6 @@
         ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
-          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
           ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
           ["when", [{"name": "status", "opts": ["inoue-jun"]}, {"name": "not_status", "opts": ["extra_turn"]}], [
             ["set_status", "extra_turn"],
@@ -4849,7 +4870,6 @@
         ["recalculate_buttons"], // allow interrupting call
         ["unset_status", "about_to_call"],
         ["unless", [{"name": "status", "opts": ["call_interrupted"]}], [
-          ["when", [{"name": "others_status", "opts": ["aislinn-wishart"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_score", -1500], ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"]]],
           ["call"], ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["change_turn", "self"],
           ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
           ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["ensure_dead_wall_2"], ["reveal_tile", -18]]],
