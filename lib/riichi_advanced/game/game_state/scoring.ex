@@ -92,7 +92,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
 
-    IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+    IO.puts("Joker assignments (seat_scores_points): #{inspect(joker_assignments)}")
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
@@ -625,7 +625,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
                   smt_hand = player.hand ++ [joker]
                   tile_mappings = Map.put(player.tile_mappings, joker, state.all_tiles -- Map.keys(player.tile_mappings))
                   joker_assignments = RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, calls, state.all_tiles, win_definitions, ordering, tile_mappings)
-                  IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+                  IO.puts("Joker assignments (adjudicate_win_scoring): #{inspect(joker_assignments)}")
 
                   # if this joker mapped to anything, then the hand is tenpai
                   if not Enum.empty?(joker_assignments) do
@@ -980,7 +980,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
     end
-    IO.puts("Joker assignments: #{inspect(joker_assignments)}")
+    IO.puts("Joker assignments (process_win): #{inspect(joker_assignments)}")
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     case scoring_table["method"] do
       "riichi" ->

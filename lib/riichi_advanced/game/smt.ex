@@ -134,6 +134,19 @@ defmodule RiichiAdvanced.SMT do
         |> Map.new(fn {tile, i} -> {Bitwise.<<<(1, acc+i*4), tile} end)
         {acc + suit_len, Map.merge(encoding, new_encoding), Map.merge(encoding_r, new_encoding_r), [new_suit | suits]}
     end
+
+    # preprocess cycles so they start with 1m,1p,1s if possible
+    # so cosmic mahjong can shift suits
+    # (our encoding of 10, 20 offsets assumes 8 digit gap between tiles)
+    # (which requires aligning the three suits)
+    cycles = for cycle <- cycles do
+      one_ix = Enum.find_index(cycle, & &1 in [:"1m", :"1p", :"1s"])
+      if one_ix != nil do
+        {head, tail} = Enum.split(cycle, one_ix)
+        tail ++ head
+      else cycle end
+    end
+
     {_, encoding, encoding_r, suits} = for cycle <- cycles, reduce: {acc, encoding, encoding_r, suits} do
       {acc, encoding, encoding_r, suits} ->
         suit_len = 4 * length(cycle)
@@ -268,7 +281,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     set_definitions = all_sets
     |> Enum.map(&Enum.frequencies/1)
-    |> Enum.map(&Map.values/1)
+    |> Enum.map(&Enum.flat_map(&1, fn {ix, freq} -> if ix < 10 do [freq] else [0, 0, 0, 0, 0, 0, 0, 0, freq] end end))
     |> Enum.map(&Enum.reverse/1) # [[2], [1, 1, 1], [3]]
     |> Enum.map(fn vals -> Enum.map(vals, fn a -> Integer.to_string(a) end) end)
     |> Enum.map(&Enum.join/1) # ["2", "111", "3"]
@@ -311,7 +324,9 @@ defmodule RiichiAdvanced.SMT do
     #     (bvmul hand_indices3 set3)))
     #   (equal_digits zero (bvadd hand_indices1 hand_indices2 hand_indices3))))
     declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end)
-    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (shift_set hand_indices#{i} set#{i})" end) |> Enum.join()
+    # we use bvmul for sets that use different suits
+    # otherwise, use shift_set, which handles wrapping
+    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (#{if 10 not in Enum.at(all_sets, i-1) and 20 not in Enum.at(all_sets, i-1) do 'shift_set' else 'bvmul' end} hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(1..length(all_sets), fn i -> " hand_indices#{i}" end)}))))\n"]
 
     has_calls = length(calls) > 0
