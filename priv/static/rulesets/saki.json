@@ -2432,11 +2432,8 @@
         {"name": "others_status", "opts": ["aislinn-wishart"]},
         {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}
       ], [
-        ["add_score", -1500],
-        ["push_message", "paid 1500 points to open their hand (Aislinn Wishart)"],
-        ["when", [{"name": "shimocha_status", "opts": ["aislinn-wishart"]}], [["add_score", 1500, "shimocha"]]],
-        ["when", [{"name": "toimen_status", "opts": ["aislinn-wishart"]}], [["add_score", 1500, "toimen"]]],
-        ["when", [{"name": "kamicha_status", "opts": ["aislinn-wishart"]}], [["add_score", 1500, "kamicha"]]]
+        ["bet_points", 1500],
+        ["push_message", "bet 1500 points to open their hand (Aislinn Wishart)"]
       ]],
       ["unset_status", "was_closed_hand"],
       ["recalculate_buttons"] // allow kajiki yumi's ability to pop up
