@@ -546,7 +546,7 @@ defmodule Riichi do
     get_seat_wind(kyoku, seat) |> Utils.get_relative_seat(wall_dir)
   end
 
-  defp calculate_call_fu({name, call}, seat_wind, round_wind) do
+  defp calculate_call_fu({name, call}) do
     {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
     case name do
       "chii"        -> 0
@@ -600,7 +600,7 @@ defmodule Riichi do
     end
 
     # add called triplets
-    fu = fu + (Enum.map(calls, &calculate_call_fu(&1, seat_wind, round_wind)) |> Enum.sum)
+    fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
 
     # TODO actually generalize wrapping based on ordering
     # rather than hardcoding

@@ -1090,8 +1090,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           # don't clear deferred actions here
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
-          # don't clear button choices either, since they may cancel call choices
-          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil, buttons: [] } end)
+          # also don't clear buttons here!! buttons are only cleared by player and in evaluate_choices
+          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
           state = if choice != nil do
             button_choice = if button_choices != nil do
               Map.get(button_choices, choice, nil)
@@ -1204,12 +1204,13 @@ defmodule RiichiAdvanced.GameState.Actions do
             Map.get(state.rules["buttons"][choice], "precedence_over", [])
           else [] end
           # replace with "skip" every choice that is superceded by our choice
+
           update_all_players(state, fn dir, player ->
             not_us = seat != dir
             choice_superceded = player.choice in superceded_choices
             all_choices_superceded = player.choice == nil && Enum.all?(player.buttons, fn button -> button in superceded_choices end)
             if not_us && (choice_superceded || all_choices_superceded) do
-              %Player{ player | choice: "skip", chosen_actions: [] }
+              %Player{ player | choice: "skip", chosen_actions: [], buttons: [] }
             else player end
           end)
         else state end
@@ -1251,7 +1252,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
       state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
-
       evaluate_choices(state)
     else state end
   end

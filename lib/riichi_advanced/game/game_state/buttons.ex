@@ -87,8 +87,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def recalculate_buttons(state, interrupt_level \\ 100) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
-      # IO.puts("Regenerating buttons...")
+      IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
+      # IO.puts("Buttons before:")
+      # IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
       {state, new_button_choices} = for {seat, _player} <- state.players, reduce: {state, []} do
         {state, new_button_choices} ->
           if Actions.performing_intermediate_action?(state, seat) do
@@ -129,23 +131,25 @@ defmodule RiichiAdvanced.GameState.Buttons do
       end
 
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
-      # IO.puts("Updating buttons after action #{action}: #{inspect(new_button_choices)}")
       state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
       state = Log.add_possible_calls(state)
+      # IO.puts("Buttons after:")
+      # IO.inspect(buttons)
       state
     else state end
   end
 
   def press_button(state, seat, button_name) do
     if Enum.member?(state.players[seat].buttons, button_name) do
-      # hide all buttons, but not button choices
+      # IO.puts("#{seat} pressed button #{button_name}")
+      # hide all buttons, but keep button choices in case they undo
       state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else state.rules["buttons"][button_name]["actions"] end
       state = Actions.submit_actions(state, seat, button_name, actions)
       state = broadcast_state_change(state)
       state
     else
-      IO.inspect("#{seat} tried to press nonexistent button #{button_name}")
+      IO.puts("#{seat} tried to press nonexistent button #{button_name}")
       state
     end
   end
