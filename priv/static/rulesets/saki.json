@@ -3,6 +3,14 @@
   "available_mods": [
     {"id": "persistent_saki_cards", "name": "Persistent Cards", "desc": "The character card you choose at the beginning is your card for the whole game."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
+    {"id": "sanchahou", "conflicts": ["head_bump"], "name": "Sanchahou", "desc": "Enable triple ron abortive draw."},
+    {"id": "renhou", "name": "Renhou", "desc": "Enable renhou yakuman."},
+    {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
+    {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},
+    {"id": "kuikae_ari", "name": "Kuikae Ari", "desc": "Allow swap-calling."},
+    {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
+    {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
+    {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "saki_yumeno_maho", "name": "Yumeno Maho", "desc": "Adds Yumeno Maho to the game."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],

@@ -7,8 +7,7 @@
     "suufon_renda",
     "suucha_riichi",
     "suukaikan",
-    "kyuushu_kyuuhai",
-    "renhou"
+    "kyuushu_kyuuhai"
   ],
   "available_mods": [
     {"id": "dora", "name": "Dora", "desc": "Enables dora."},
@@ -27,7 +26,6 @@
     // {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
     // {"id": "tenpaiyame", "deps": ["tenpairenchan"], "name": "Tenpaiyame", "desc": "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."},
     {"id": "kyuushu_kyuuhai", "name": "Kyuushu Kyuuhai", "desc": "Enable 9 distinct terminal/honor abortive draw."},
-    {"id": "renhou", "name": "Renhou", "desc": "Enable renhou yakuman."},
     {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
     {"id": "immediate_kan_dora", "deps": ["kandora", "dora"], "name": "Immediate Kan Dora", "desc": "Flip kan dora immediately after daiminkan and kakan."},
     {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},
@@ -835,6 +833,11 @@
       "display_name": "Chiihou",
       "value": 13,
       "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
+    },
+    {
+      "display_name": "Renhou",
+      "value": 13,
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
     },
     {
       "display_name": "Daisangen",
