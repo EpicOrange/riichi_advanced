@@ -1915,8 +1915,57 @@ div.shimocha div.saki-card:hover::before { transform: rotate(90deg) translateX(c
 div.toimen div.saki-card:hover::before { transform: rotate(180deg) translateY(calc(5 * var(--tile-size))); }
 div.kamicha div.saki-card:hover::before { transform: rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size))); }
 div.saki-card.disabled, div.saki-card.disabled:hover::before { filter: saturate(0%); }
-
-
+/* double card view for mairu/himeko */
+div.saki-card:hover::after {
+  position: absolute;
+  background: inherit;
+  width: var(--card-width);
+  height: var(--card-height);
+  pointer-events: none;
+  left: calc(-350% + 0.5 * var(--card-width));
+  top: -700%;
+  transform-origin: 50% 100%;
+  z-index: 10;
+}
+div.saki-card.v12:hover::after {
+  --card-width: calc(7.12 * var(--tile-size));
+  --card-height: calc(10 * var(--tile-size));
+  background-size: auto calc(6 * var(--card-height));
+}
+div.saki-card.v13:hover::after {
+  --card-width: calc(6.92 * var(--tile-size));
+  --card-height: calc(10 * var(--tile-size));
+  background-size: auto calc(7 * var(--card-height));
+}
+div.saki-card.v12.shirouzu-mairu::after { content: ""; background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.tsuruta-himeko::after { content: ""; background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.shirouzu-mairu::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.tsuruta-himeko::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.shirouzu-mairu:hover::before,
+div.saki-card.tsuruta-himeko:hover::before {
+  transform: translateX(calc(-0.5 * var(--card-width)));
+}
+div.shimocha div.saki-card.shirouzu-mairu:hover::before,
+div.shimocha div.saki-card.tsuruta-himeko:hover::before {
+  transform: translateY(calc(-0.5 * var(--card-width))) rotate(90deg) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size)));
+}
+div.toimen div.saki-card.shirouzu-mairu:hover::before,
+div.toimen div.saki-card.tsuruta-himeko:hover::before {
+  transform: translateX(calc(0.5 * var(--card-width))) rotate(180deg) translateY(calc(5 * var(--tile-size)));
+}
+div.kamicha div.saki-card.shirouzu-mairu:hover::before,
+div.kamicha div.saki-card.tsuruta-himeko:hover::before {
+  transform: translateY(calc(0.5 * var(--card-width))) rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size)));
+}
+div.shimocha div.saki-card:hover::after {
+  transform: translateY(calc(0.5 * var(--card-width))) rotate(90deg) translateY(calc(0.5 * var(--card-width))) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size)));
+}
+div.toimen div.saki-card:hover::after {
+  transform: rotate(180deg) translateX(var(--card-width)) translateY(calc(5 * var(--tile-size)));
+}
+div.kamicha div.saki-card:hover::after {
+  transform: translateY(calc(-0.5 * var(--card-width))) rotate(270deg) translateY(calc(-0.5 * var(--card-width))) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size)));
+}
 
 
 
