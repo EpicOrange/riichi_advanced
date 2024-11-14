@@ -2212,10 +2212,12 @@
                   ["when", [{"name": "status", "opts": ["4th_place"]}], [
                     // open other players' hands
                     ["set_status_others", "reveal_all"],
+                    ["push_message", "reveals other players' hands due to being 4th place (Fukuji Mihoko)"],
                     ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
                   ]],
                   ["when", [{"name": "status_missing", "opts": ["4th_place"]}, {"name": "not_others_status", "opts": ["fukuji-mihoko", "4th_place"]}], [
                     // hide other players' hands
+                    ["push_message", "is no longer 4th place, so no longer reveals other players' hands (Fukuji Mihoko)"],
                     ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["unset_status", "reveal_all"], ["remove_attr_hand", "revealed"]]]
                   ]]
                 ]],
@@ -2230,11 +2232,11 @@
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
                 ["when", [{"name": "not_status_missing", "opts": ["shirouzu-mairu", "tsuruta-himeko"]}], [["remove_attr_all", "revealed"]]],
                 ["when", [{"name": "status", "opts": ["shimizudani-ryuuka"]}], [["remove_attr_hand", "revealed"]]],
-                ["when", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["manzu"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["pinzu"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["souzu"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand", "draw"], ["revealed"], ["jihai"]]]],
-                ["when", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
+                ["when", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["manzu"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["pinzu"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["souzu"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["jihai"]]]],
+                ["when", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"]]]]
                ]
   },
   "after_turn_change": {
@@ -2651,6 +2653,7 @@
       ["when", [{"name": "status", "opts": ["ezaki-hitomi"]}], [["set_status", "ezaki_hitomi_reflect"]]],
       ["when", [{"name": "status", "opts": ["fukuji-mihoko"]}, {"name": "placement", "opts": [4]}], [
         ["set_status_others", "reveal_all"],
+        ["push_message", "reveals other players' hands due to being 4th place (Fukuji Mihoko)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
       ]],
       // first draw of the game
@@ -3534,7 +3537,7 @@
         ["set_status", "declare_manzu"],
         ["set_status_others", "reveal_manzu"],
         ["push_message", "declared that all manzu must be revealed (Iwato Kasumi)"],
-        ["when_anyone", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand"], ["revealed"], ["manzu"]]]]
+        ["when_anyone", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["manzu"]]]]
       ],
       "unskippable": true
     },
@@ -3550,7 +3553,7 @@
         ["set_status", "declare_pinzu"],
         ["set_status_others", "reveal_pinzu"],
         ["push_message", "declared that all pinzu must be revealed (Iwato Kasumi)"],
-        ["when_anyone", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand"], ["revealed"], ["pinzu"]]]]
+        ["when_anyone", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["pinzu"]]]]
       ],
       "unskippable": true
     },
@@ -3566,7 +3569,7 @@
         ["set_status", "declare_souzu"],
         ["set_status_others", "reveal_souzu"],
         ["push_message", "declared that all souzu must be revealed (Iwato Kasumi)"],
-        ["when_anyone", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand"], ["revealed"], ["souzu"]]]]
+        ["when_anyone", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["souzu"]]]]
       ],
       "unskippable": true
     },
@@ -3582,7 +3585,7 @@
         ["set_status", "declare_jihai"],
         ["set_status_others", "reveal_jihai"],
         ["push_message", "declared that all jihai must be revealed (Iwato Kasumi)"],
-        ["when_anyone", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand"], ["revealed"], ["jihai"]]]]
+        ["when_anyone", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["jihai"]]]]
       ],
       "unskippable": true
     },

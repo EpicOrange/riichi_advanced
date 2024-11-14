@@ -56,6 +56,7 @@ function inLabelOrButton(elem) {
 
 window.mouseDownElement = null;
 window.hoverElement = null;
+window.ignoreDoubleClick = false;
 Hooks.ClickListener = {
   mounted() {
     this.el.addEventListener('mousedown', e => {
@@ -63,6 +64,8 @@ Hooks.ClickListener = {
       if (target !== null) {
         window.mouseDownElement = target;
       }
+      // prevent double click if the first click was on a button
+      window.ignoreDoubleClick = inLabelOrButton(e.target);
     });
     this.el.addEventListener('mouseup', e => {
       var target = getCancellableClickTarget(e.target);
@@ -86,7 +89,7 @@ Hooks.ClickListener = {
     });
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
-      if (!inLabelOrButton(e.target) && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (!inLabelOrButton(e.target) && !window.ignoreDoubleClick && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
         this.pushEvent("double_clicked");
       }
     });

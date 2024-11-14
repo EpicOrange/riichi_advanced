@@ -290,15 +290,17 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def skip_or_discard_draw(socket) do
-    # if draw, discard it
-    # otherwise, if buttons, skip
-    player = socket.assigns.state.players[socket.assigns.seat]
-    if socket.assigns.seat == socket.assigns.state.turn && not Enum.empty?(player.draw) do
-      index = length(player.hand)
-      GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
-    else
-      if "skip" in player.buttons do
-        GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+    if not socket.assigns.marking do
+      # if draw, discard it
+      # otherwise, if buttons, skip
+      player = socket.assigns.state.players[socket.assigns.seat]
+      if socket.assigns.seat == socket.assigns.state.turn && not Enum.empty?(player.draw) do
+        index = length(player.hand)
+        GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
+      else
+        if "skip" in player.buttons do
+          GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+        end
       end
     end
   end

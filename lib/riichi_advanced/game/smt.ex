@@ -326,7 +326,7 @@ defmodule RiichiAdvanced.SMT do
     declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end)
     # we use bvmul for sets that use different suits
     # otherwise, use shift_set, which handles wrapping
-    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (#{if 10 not in Enum.at(all_sets, i-1) and 20 not in Enum.at(all_sets, i-1) do 'shift_set' else 'bvmul' end} hand_indices#{i} set#{i})" end) |> Enum.join()
+    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (#{if 10 not in Enum.at(all_sets, i-1) and 20 not in Enum.at(all_sets, i-1) do "shift_set" else "bvmul" end} hand_indices#{i} set#{i})" end) |> Enum.join()
     assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(1..length(all_sets), fn i -> " hand_indices#{i}" end)}))))\n"]
 
     has_calls = length(calls) > 0

@@ -879,7 +879,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         state
       "swap_marked_with_aside" ->
-        {hand_tile, hand_seat, hand_index} = Enum.at(marked_objects.hand.marked, 0)
+        {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
         [aside_tile | aside] = state.players[hand_seat].aside
         aside = [hand_tile | aside]
 
