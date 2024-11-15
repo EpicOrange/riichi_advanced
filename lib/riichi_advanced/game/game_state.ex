@@ -825,6 +825,13 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def get_visible_tiles(state, seat) do
+    # construct all visible tiles
+    visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
+    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
+    state.players[seat].hand ++ state.players[seat].draw ++ visible_ponds ++ Enum.flat_map(visible_calls, &Riichi.call_to_tiles/1)
+  end
+
   def get_visible_waits(state, seat, index) do
     hand = state.players[seat].hand ++ state.players[seat].draw
     hand = if index != nil do
@@ -835,10 +842,7 @@ defmodule RiichiAdvanced.GameState do
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
-    # construct all visible tiles
-    visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
-    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
-    visible_tiles = state.players[seat].hand ++ state.players[seat].draw ++ visible_ponds ++ Enum.flat_map(visible_calls, &Riichi.call_to_tiles/1)
+    visible_tiles = get_visible_tiles(state, seat)
     Riichi.get_waits_and_ukeire(state.all_tiles, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
   end
 
@@ -1171,7 +1175,7 @@ defmodule RiichiAdvanced.GameState do
         if Buttons.no_buttons_remaining?(state) do
           if is_pid(Map.get(state, state.turn)) do
             # IO.puts("Notifying #{state.turn} AI that it's their turn")
-            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn]}})
+            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn], all_tiles: state.all_tiles, visible_tiles: get_visible_tiles(state, state.turn)}})
           end
         else
           Enum.each([:east, :south, :west, :north], fn seat ->

@@ -285,7 +285,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
         # %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades, call_wraps: call_wraps})
       "call_changes_waits" ->
         win_definitions = translate_match_definitions(state, opts)
-        decomposed_win_definitions = Riichi.decompose_match_definitions(win_definitions)
         ordering = cxt_player.tile_ordering
         ordering_r = cxt_player.tile_ordering_r
         tile_aliases = cxt_player.tile_aliases
@@ -294,9 +293,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
         calls = cxt_player.calls
         call_tiles = [context.called_tile | context.call_choice]
         call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
+        hand_calls_def_before = Riichi.partially_apply_match_definitions(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+        hand_calls_def_after = Riichi.partially_apply_match_definitions((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, ordering, ordering_r, tile_aliases)
         Enum.any?(state.all_tiles, fn tile ->
-          waits_before = Riichi.is_waiting_on(tile, hand, calls, decomposed_win_definitions, ordering, ordering_r, tile_aliases)
-          waits_after = Riichi.is_waiting_on(tile, (hand ++ draw) -- call_tiles, calls ++ [call], decomposed_win_definitions, ordering, ordering_r, tile_aliases)
+          waits_before = Riichi.is_waiting_on(tile, hand_calls_def_before, ordering, ordering_r, tile_aliases)
+          waits_after = Riichi.is_waiting_on(tile, hand_calls_def_after, ordering, ordering_r, tile_aliases)
           waits_before != waits_after
         end)
       "wait_count_at_least" ->

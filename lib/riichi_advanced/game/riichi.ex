@@ -232,7 +232,7 @@ defmodule Riichi do
       hand_calls ->
         [groups, num] = match_definition_elem
         if num == 0 do
-          hand_calls # no op
+          hand_calls # no op, this is created by decompose_match_definitions
         else
           hand_calls_groups = for _ <- 1..abs(num), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
             [] -> []
@@ -364,37 +364,42 @@ defmodule Riichi do
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
-  def decompose_match_definitions(match_definitions) do
+  def partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # take out one copy of each group to process last
-    for match_definition <- match_definitions do
+    decomposed_match_definitions = for match_definition <- match_definitions do
       for {[groups, num], i} <- Enum.with_index(match_definition), num >= 1 do
         {List.replace_at(match_definition, i, [groups, num-1]), [[groups, 1]]}
       end
     end |> Enum.concat()
+    # remove def1 and defer def2
+    for {def1, def2} <- decomposed_match_definitions do
+      {remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases), def2}
+    end
   end
 
-  def is_waiting_on(tile, hand, calls, decomposed_match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.any?(decomposed_match_definitions, fn {def1, def2} ->
-      Enum.any?(remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases), fn {hand, calls} ->
+  # hand_calls_def is the output of partially_apply_match_definitions
+  def is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases \\ %{}) do
+    Enum.any?(hand_calls_def, fn {hand_calls, def2} ->
+      Enum.any?(hand_calls, fn {hand, calls} ->
         match_hand(hand ++ [tile], calls, [def2], ordering, ordering_r, tile_aliases)
       end)
     end)
   end
 
   # TODO move wall to front, remove @all_tiles
+  # get all unique waits for a given 14-tile match definition, like win
+  # will not remove a wait if you have four of the tile in hand or calls
   def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles) do
-    decomposed_match_definitions = decompose_match_definitions(match_definitions)
-    wall = Enum.uniq(wall)
-    for tile <- wall, reduce: [] do
+    hand_calls_def = partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
+    for tile <- Enum.uniq(wall), reduce: [] do
       waits -> cond do
         tile in waits -> waits
-        is_waiting_on(tile, hand, calls, decomposed_match_definitions, ordering, ordering_r, tile_aliases) ->
+        is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) ->
           other_waits = [tile | Map.get(tile_aliases, tile, [])] |> Utils.strip_attrs()
           waits ++ other_waits
         true -> waits
       end |> Enum.uniq()
     end
-    # TODO remove wait if you have four of the tile in hand or calls
   end
 
   def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do
@@ -469,6 +474,8 @@ defmodule Riichi do
     Enum.all?(tile_specs, &tile_matches([&1], context))
   end
 
+  # given a 14-tile hand, and match definitions for 13-tile hands,
+  # return all the (unique) tiles that are not needed for all match definitions
   def get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # t = System.os_time(:millisecond)
     tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
