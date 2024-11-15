@@ -879,7 +879,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def add_player(state, socket, seat, spectator) do
-    if not spectator do
+    state = if not spectator do
       # if we're replacing an ai, shutdown the ai
       state = if is_pid(Map.get(state, seat)) do
         IO.puts("Stopping AI for #{seat}: #{inspect(Map.get(state, seat))}")
@@ -900,10 +900,6 @@ defmodule RiichiAdvanced.GameState do
 
       # tell them about the replay UUID
       GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
-
-      # for players with no seats, initialize an ai
-      state = fill_empty_seats_with_ai(state)
-      state = broadcast_state_change(state)
       state
     else
       messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
@@ -911,6 +907,11 @@ defmodule RiichiAdvanced.GameState do
       GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
       state
     end
+
+    # for players with no seats, initialize an ai
+    state = fill_empty_seats_with_ai(state)
+    state = broadcast_state_change(state)
+    state
   end
   
   def handle_call({:new_player, socket}, _from, state) do
@@ -919,6 +920,7 @@ defmodule RiichiAdvanced.GameState do
       Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
       Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
       Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
+      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "spectator" -> {:east, true}
       Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
       Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
       Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
