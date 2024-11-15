@@ -669,7 +669,7 @@ defmodule Riichi do
         all_hands ->
           Enum.flat_map(all_hands, fn {hand, fu} ->
             {honors, suited} = hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases)
-            |> Enum.split_with(fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == base_tile end)
+            |> Enum.split_with(fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == nil end)
             # remove suited kontsu
             suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
               case try_remove_all_tiles(hand, [base_tile, offset_tile(base_tile, 10, ordering, ordering_r), offset_tile(base_tile, 20, ordering, ordering_r)], tile_aliases) do
@@ -693,7 +693,12 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile -> 
+          sequence_tiles = hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases)
+          sequence_tiles = if enable_kontsu_fu do
+            # wind sequences are considered mixed triplets, ignore them
+            Enum.reject(sequence_tiles, fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == nil end)
+          else sequence_tiles end
+          sequence_tiles |> Enum.flat_map(fn base_tile -> 
             case try_remove_all_tiles(hand, [offset_tile(base_tile, -1, ordering, ordering_r), base_tile, offset_tile(base_tile, 1, ordering, ordering_r)], tile_aliases) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu} end)

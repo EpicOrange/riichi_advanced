@@ -568,7 +568,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["north"]},
-        {"name": "not_seat_wind_is", "opts": ["north"]}
+        {"name": "not_seat_is", "opts": ["north"]}
       ]
     },
     {
@@ -577,7 +577,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["north"]},
-        {"name": "not_seat_wind_is", "opts": ["north"]}
+        {"name": "not_seat_is", "opts": ["north"]}
       ]
     },
     {
@@ -586,7 +586,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 3]]]]},
         {"name": "not_round_wind_is", "opts": ["north"]},
-        {"name": "not_seat_wind_is", "opts": ["north"]}
+        {"name": "not_seat_is", "opts": ["north"]}
       ]
     },
     {
@@ -595,7 +595,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 4]]]]},
         {"name": "not_round_wind_is", "opts": ["north"]},
-        {"name": "not_seat_wind_is", "opts": ["north"]}
+        {"name": "not_seat_is", "opts": ["north"]}
       ]
     },
     {
@@ -604,7 +604,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["west"]},
-        {"name": "not_seat_wind_is", "opts": ["west"]}
+        {"name": "not_seat_is", "opts": ["west"]}
       ]
     },
     {
@@ -613,7 +613,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["west"]},
-        {"name": "not_seat_wind_is", "opts": ["west"]}
+        {"name": "not_seat_is", "opts": ["west"]}
       ]
     },
     {
@@ -622,7 +622,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 3]]]]},
         {"name": "not_round_wind_is", "opts": ["west"]},
-        {"name": "not_seat_wind_is", "opts": ["west"]}
+        {"name": "not_seat_is", "opts": ["west"]}
       ]
     },
     {
@@ -631,7 +631,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 4]]]]},
         {"name": "not_round_wind_is", "opts": ["west"]},
-        {"name": "not_seat_wind_is", "opts": ["west"]}
+        {"name": "not_seat_is", "opts": ["west"]}
       ]
     },
     {
@@ -640,7 +640,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["south"]},
-        {"name": "not_seat_wind_is", "opts": ["south"]}
+        {"name": "not_seat_is", "opts": ["south"]}
       ]
     },
     {
@@ -649,7 +649,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["south"]},
-        {"name": "not_seat_wind_is", "opts": ["south"]}
+        {"name": "not_seat_is", "opts": ["south"]}
       ]
     },
     {
@@ -658,7 +658,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 3]]]]},
         {"name": "not_round_wind_is", "opts": ["south"]},
-        {"name": "not_seat_wind_is", "opts": ["south"]}
+        {"name": "not_seat_is", "opts": ["south"]}
       ]
     },
     {
@@ -667,7 +667,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 4]]]]},
         {"name": "not_round_wind_is", "opts": ["south"]},
-        {"name": "not_seat_wind_is", "opts": ["south"]}
+        {"name": "not_seat_is", "opts": ["south"]}
       ]
     },
     {
@@ -676,7 +676,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 1]]]]},
         {"name": "not_round_wind_is", "opts": ["east"]},
-        {"name": "not_seat_wind_is", "opts": ["east"]}
+        {"name": "not_seat_is", "opts": ["east"]}
       ]
     },
     {
@@ -685,7 +685,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 2]]]]},
         {"name": "not_round_wind_is", "opts": ["east"]},
-        {"name": "not_seat_wind_is", "opts": ["east"]}
+        {"name": "not_seat_is", "opts": ["east"]}
       ]
     },
     {
@@ -694,7 +694,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 3]]]]},
         {"name": "not_round_wind_is", "opts": ["east"]},
-        {"name": "not_seat_wind_is", "opts": ["east"]}
+        {"name": "not_seat_is", "opts": ["east"]}
       ]
     },
     {
@@ -703,7 +703,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 4]]]]},
         {"name": "not_round_wind_is", "opts": ["east"]},
-        {"name": "not_seat_wind_is", "opts": ["east"]}
+        {"name": "not_seat_is", "opts": ["east"]}
       ]
     },
     {

@@ -505,7 +505,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "has_score", "opts": [score]}`: The current player has at least `score` score.
 - `{"name": "has_score_below", "opts": [score]}`: The current player has less than `score` score.
 - `{"name": "round_wind_is", "opts": [direction]}`: The current round wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
-- `{"name": "seat_wind_is", "opts": [direction]}`: The current player's seat wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
+- `{"name": "seat_is", "opts": [direction]}`: The current player's seat wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
 - `{"name": "winning_dora_count", "opts": [dora_indicator, num]}`: The current player has `num` dora tiles of the given dora indicator.
 - `{"name": "match", "opts": [to_match, [match_spec1, match_spec2, ...]]}`: See the section on match specifications to see how this condition works.
 - `{"name": "winning_hand_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (excluding winning tile) contains only the given tiles (jokers allowed).
