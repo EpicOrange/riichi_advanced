@@ -78,16 +78,30 @@ defmodule RiichiAdvanced.GameState.Log do
     update_in(state.log_state.log, &List.update_at(&1, 0, fun))
   end
 
-  def add_possible_calls(state) do
-    possible_calls = for {seat, player} <- state.players do
-      for {name, {:call, choices}} <- player.button_choices do
-        for choice <- Map.values(choices) |> Enum.concat() do
-          %{player: to_seat(seat), type: name, tiles: choice}
+  def add_call_choices(state, seat, call_name, call_choices) do
+    possible_calls = for {called_tile, choices} <- call_choices do
+      for choice <- choices do
+        if state.turn == seat do
+          # self call
+          %{player: to_seat(seat), type: call_name, tiles: Utils.strip_attrs(choice ++ [called_tile])}
+        else
+          %{player: to_seat(seat), type: call_name, tiles: Utils.strip_attrs(choice)}
         end
-      end |> Enum.concat()
-    end |> Enum.concat()
-    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :possible_calls, possible_calls) } end)
+      end
+    end |> Enum.concat() |> Enum.uniq()
+    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.update(event.params, :possible_calls, possible_calls, &Enum.uniq(&1 ++ possible_calls)) } end)
   end
+
+  # def add_possible_calls(state) do
+  #   possible_calls = for {seat, player} <- state.players do
+  #     for {name, {:call, choices}} <- player.button_choices do
+  #       for choice <- Map.values(choices) |> Enum.concat() do
+  #         %{player: to_seat(seat), type: name, tiles: choice}
+  #       end
+  #     end |> Enum.concat()
+  #   end |> Enum.concat()
+  #   modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :possible_calls, possible_calls) } end)
+  # end
 
   def add_call(state, seat, call_name, call_choice, called_tile) do
     tiles = Utils.strip_attrs(call_choice ++ if called_tile != nil do [called_tile] else [] end)

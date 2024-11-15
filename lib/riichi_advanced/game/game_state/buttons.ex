@@ -52,6 +52,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
                    Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, hand ++ draw, tile_aliases, tile_mappings)
                  end)
               |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> l ++ r end) end)
+              |> Enum.uniq()
             {state, call_choices}
           is_flower ->
             flowers = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
@@ -76,6 +77,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
           end |> Map.new()
         else call_choices end
+        state = Log.add_call_choices(state, seat, button_name, call_choices)
         {state, {:call, call_choices}}
       Enum.any?(choice_actions, fn [action | _opts] -> action == "mark" end) ->
         [_ | opts] = Enum.filter(choice_actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
@@ -132,7 +134,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
       state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
-      state = Log.add_possible_calls(state)
       # IO.puts("Buttons after:")
       # IO.inspect(buttons)
       state

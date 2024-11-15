@@ -84,9 +84,9 @@ defmodule RiichiAdvanced.AIPlayer do
       {nil, _} ->
         ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, ordering, ordering_r, tile_aliases)
         |> choose_playable_tile(playables, player, all_tiles, visible_tiles, win_definition)
-        if ret != nil do
-          IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
-        end
+        # if ret != nil do
+        #   IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
+        # end
         {ret, i}
       ret -> ret
     end

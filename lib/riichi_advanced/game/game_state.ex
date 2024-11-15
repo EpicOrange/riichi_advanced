@@ -668,25 +668,27 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp fill_empty_seats_with_ai(state) do
-    shanten_definitions = %{
-      win: translate_match_definitions(state, Map.get(state.rules, "win_definition", [])),
-      tenpai: translate_match_definitions(state, Map.get(state.rules, "tenpai_definition", [])),
-      iishanten: translate_match_definitions(state, Map.get(state.rules, "iishanten_definition", [])),
-      ryanshanten: translate_match_definitions(state, Map.get(state.rules, "ryanshanten_definition", [])),
-      sanshanten: translate_match_definitions(state, Map.get(state.rules, "sanshanten_definition", []))
-    }
-    for dir <- [:east, :south, :west, :north], Map.get(state, dir) == nil, reduce: state do
-      state ->
-        {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}})
-        IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
-        state = Map.put(state, dir, ai_pid)
+    if not state.log_seeking_mode do
+      shanten_definitions = %{
+        win: translate_match_definitions(state, Map.get(state.rules, "win_definition", [])),
+        tenpai: translate_match_definitions(state, Map.get(state.rules, "tenpai_definition", [])),
+        iishanten: translate_match_definitions(state, Map.get(state.rules, "iishanten_definition", [])),
+        ryanshanten: translate_match_definitions(state, Map.get(state.rules, "ryanshanten_definition", [])),
+        sanshanten: translate_match_definitions(state, Map.get(state.rules, "sanshanten_definition", []))
+      }
+      for dir <- [:east, :south, :west, :north], Map.get(state, dir) == nil, reduce: state do
+        state ->
+          {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}})
+          IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
+          state = Map.put(state, dir, ai_pid)
 
-        # mark the ai as having clicked the timer, if one exists
-        state = update_player(state, dir, fn player -> %Player{ player | ready: true } end)
-        
-        notify_ai(state)
-        state
-    end
+          # mark the ai as having clicked the timer, if one exists
+          state = update_player(state, dir, fn player -> %Player{ player | ready: true } end)
+          
+          notify_ai(state)
+          state
+      end
+    else state end
   end
 
   def is_playable?(state, seat, tile) do
