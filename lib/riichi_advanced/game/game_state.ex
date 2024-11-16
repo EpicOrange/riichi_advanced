@@ -1188,7 +1188,7 @@ defmodule RiichiAdvanced.GameState do
             has_marking_ui = not Enum.empty?(state.marking[seat])
             if is_pid(Map.get(state, seat)) && has_buttons && not has_call_buttons && not has_marking_ui do
               # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-              send(Map.get(state, seat), {:buttons, %{player: state.players[seat]}})
+              send(Map.get(state, seat), {:buttons, %{player: state.players[seat], turn: state.turn}})
             end
           end)
         end
@@ -1236,6 +1236,21 @@ defmodule RiichiAdvanced.GameState do
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_declare_yaku, seat}])
+      end
+    end
+    {:noreply, state}
+  end
+
+  # this is called by current turn ai when they decide to skip buttons
+  def handle_cast({:ai_ignore_buttons, seat}, state) do
+    if not state.log_loading_mode do
+      if state.game_active do
+        if is_pid(Map.get(state, seat)) && seat == state.turn do
+          # IO.puts("Notifying #{seat} AI that it's their turn")
+          send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], all_tiles: state.all_tiles, visible_tiles: get_visible_tiles(state, seat)}})
+        end
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), {:ai_ignore_buttons, seat}])
       end
     end
     {:noreply, state}

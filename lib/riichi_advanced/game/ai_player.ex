@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.AIPlayer do
   def init(state) do
     state = Map.put(state, :initialized, false)
     state = Map.put(state, :shanten, 6)
+    state = Map.put(state, :preselected_flower, nil)
     if RiichiAdvanced.GameState.Debug.debug_fast_ai() do
       :timer.apply_after(100, Kernel, :send, [self(), :initialize])
     else
@@ -142,7 +143,7 @@ defmodule RiichiAdvanced.AIPlayer do
           # {_tile, index} = Enum.at(playables, -1)
           # use our rudimentary AI for discarding
           # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
-          {{_tile, index}, shanten} = if RiichiAdvanced.GameState.Debug.debug() do
+          {{tile, index}, shanten} = if RiichiAdvanced.GameState.Debug.debug() do
             {Enum.at(playables, -1), 6}
           else
             case choose_discard(state, player, playables, all_tiles, visible_tiles) do
@@ -159,7 +160,25 @@ defmodule RiichiAdvanced.AIPlayer do
           if elapsed_time < wait_time do
             Process.sleep(wait_time - elapsed_time)
           end
-          GenServer.cast(state.game_state, {:play_tile, state.seat, index})
+
+          # if we're about to discard a joker/flower, call it instead
+          tile = Utils.strip_attrs(tile)
+          button_name = cond do
+            "flower" in player.buttons -> "flower"
+            "joker" in player.buttons -> "joker"
+            true -> nil
+          end
+          choice = if button_name != nil do
+            {:call, choices} = player.button_choices[button_name]
+            Enum.find(choices[nil], fn [choice] -> Utils.same_tile(choice, tile) end)
+          else nil end
+          state = if choice != nil do
+            GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
+            Map.put(state, :preselected_flower, tile)
+          else
+            GenServer.cast(state.game_state, {:play_tile, state.seat, index})
+            state
+          end
           {:noreply, state}
         else
           IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
@@ -176,7 +195,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  def handle_info({:buttons, %{player: player}}, state) do
+  def handle_info({:buttons, %{player: player, turn: turn}}, state) do
     t = System.os_time(:millisecond)
     if state.initialized do
       state = %{ state | player: player }
@@ -221,7 +240,12 @@ defmodule RiichiAdvanced.AIPlayer do
       if elapsed_time < wait_time do
         Process.sleep(wait_time - elapsed_time)
       end
-      GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
+      if button_name == "skip" && state.seat == turn do
+        GenServer.cast(state.game_state, {:ai_ignore_buttons, state.seat})
+      else
+        GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
+      end
+      state = Map.put(state, :preselected_flower, nil)
       {:noreply, state}
     else
       # reschedule this for after we initialize
@@ -239,7 +263,11 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Enum.filter(fn tile -> not Enum.empty?(player.call_buttons[tile]) end)
         |> Enum.random()
       if called_tile != "saki" do
-        call_choice = Enum.random(player.call_buttons[called_tile])
+        {called_tile, call_choice} = if state.preselected_flower != nil do
+          {nil, [state.preselected_flower]}
+        else
+          {called_tile, Enum.random(player.call_buttons[called_tile])}
+        end
         # IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
         Process.sleep(trunc(500 / @ai_speed))
         GenServer.cast(state.game_state, {:press_call_button, state.seat, player.call_name, call_choice, called_tile})
