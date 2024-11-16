@@ -158,7 +158,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # sort hands if debug mode is on
       state = if Debug.debug() do
-        update_all_players(state, fn seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
+        update_all_players(state, fn _seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       else state end
 
       state

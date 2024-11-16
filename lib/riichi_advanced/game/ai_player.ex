@@ -249,7 +249,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {:noreply, state}
     else
       # reschedule this for after we initialize
-      :timer.apply_after(1000, Kernel, :send, [self(), {:buttons, %{player: player}}])
+      :timer.apply_after(1000, Kernel, :send, [self(), {:buttons, %{player: player, turn: turn}}])
       {:noreply, state}
     end
   end

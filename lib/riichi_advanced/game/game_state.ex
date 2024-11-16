@@ -421,7 +421,7 @@ defmodule RiichiAdvanced.GameState do
 
     # reveal hands if debug mode is on
     state = if Debug.debug() do
-      update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: true } end)
+      update_all_players(state, fn _seat, player -> %Player{ player | hand_revealed: true } end)
     else state end
 
     # initialize marking
@@ -655,6 +655,7 @@ defmodule RiichiAdvanced.GameState do
             Actions.run_actions(state, state.rules["before_continue"]["actions"], %{seat: state.turn})
           else state end
 
+          state = Buttons.recalculate_buttons(state)
           notify_ai(state)
           state
         end
