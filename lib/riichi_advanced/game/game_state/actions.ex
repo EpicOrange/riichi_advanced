@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
@@ -153,6 +154,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       # check if any tiles are playable for this next player
       state = if Map.has_key?(state.rules, "on_no_valid_tiles") do
         run_on_no_valid_tiles(state, seat)
+      else state end
+
+      # sort hands if debug mode is on
+      state = if Debug.debug() do
+        update_all_players(state, fn seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       else state end
 
       state
