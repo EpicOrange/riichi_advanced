@@ -56,7 +56,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, call_choices}
           is_flower ->
             flowers = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
-            flowers_in_hand = Enum.filter(state.players[seat].hand ++ state.players[seat].draw, fn tile -> tile in flowers end)
+            flowers_in_hand = Enum.filter(state.players[seat].hand ++ state.players[seat].draw, fn tile -> Utils.count_tiles([tile], flowers) == 1 end)
             call_choices = %{nil => Enum.map(flowers_in_hand, fn tile -> [tile] end)}
             {state, call_choices}
           is_saki_card ->
