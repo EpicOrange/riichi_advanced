@@ -278,6 +278,9 @@ defmodule RiichiAdvancedWeb.GameLive do
               <div class={["tile", wait]}></div>
             </div>
           <% end %>
+          <div class="visible-waits-total">
+            &nbsp;=&nbsp;<%= Map.get(@visible_waits, @show_waits_index, []) |> Enum.map(fn {_wait, num} -> num end) |> Enum.sum() %>
+          </div>
         </div>
       </div>
       <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" log_button={true} />

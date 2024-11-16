@@ -987,7 +987,6 @@ div.status-line > div.status-text {
 }
 
 /* visible waits */
-
 div.visible-waits-container {
   position: absolute;
   width: calc(100% - 8.25 * var(--tile-size));
@@ -1000,12 +999,13 @@ div.visible-waits-container {
   z-index: 10;
 }
 div.visible-waits {
-  background: #0000001F;
+  background: #0000007F;
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.25 * var(--tile-size));
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
+  align-items: flex-end;
 }
 div.visible-waits > div.visible-wait {
   font-size: calc(0.4 * var(--tile-size));
@@ -1015,6 +1015,11 @@ div.visible-waits > div.visible-wait {
   align-items: center;
   row-gap: calc(0.25 * var(--tile-size));
 }
+div.visible-waits-total {
+  font-size: calc(0.4 * var(--tile-size));
+  color: white;
+}
+
 
 /* revealed tiles */
 div.revealed-tiles {
