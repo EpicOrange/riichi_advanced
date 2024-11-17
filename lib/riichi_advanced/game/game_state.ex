@@ -73,6 +73,7 @@ defmodule Game do
     error: nil,
     round_result: nil,
     winners: %{},
+    winner_keys: [],
     winner_index: 0,
     delta_scores: %{},
     delta_scores_reason: nil,
@@ -414,6 +415,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:turn, nil) # so that change_turn detects a turn change
     |> Map.put(:round_result, nil)
     |> Map.put(:winners, %{})
+    |> Map.put(:winner_keys, [])
     |> Map.put(:winner_index, 0)
     |> Map.put(:delta_scores, %{})
     |> Map.put(:delta_scores_reason, nil)
@@ -473,6 +475,7 @@ defmodule RiichiAdvanced.GameState do
       end
     else "" end
     state = update_in(state.winners[seat], &Map.put(&1, :winning_tile_text, winning_tile_text))
+    state = update_in(state.winner_keys, & &1 ++ [seat])
 
     # correct the winner's hand if the winning tile was taken from hand (for display purposes)
     state = if winning_tile == nil do
@@ -553,7 +556,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp timer_finished(state) do
-    state = cond do
+    cond do
       state.visible_screen == :winner && state.winner_index + 1 < map_size(state.winners) -> # need to see next winner screen
         # show the next winner
         state = Map.update!(state, :winner_index, & &1 + 1)
@@ -664,8 +667,6 @@ defmodule RiichiAdvanced.GameState do
         IO.puts("timer_finished() called; unsure what the timer was for")
         state
     end
-    state = broadcast_state_change(state)
-    state
   end
 
   def finalize_game(state) do
