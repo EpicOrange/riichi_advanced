@@ -1362,12 +1362,12 @@
     {
       "display_name": "Within Seven Tiles",
       "value": 5,
-      "when": [{"name": "tiles_remaining", "opts": [81]}]
+      "when": [{"name": "tiles_remaining", "opts": [70]}]
     },
     {
       "display_name": "Within Ten Tiles",
       "value": 8,
-      "when": [{"name": "tiles_remaining", "opts": [78]}]
+      "when": [{"name": "tiles_remaining", "opts": [67]}]
     },
     {
       "display_name": "Hand of Man",

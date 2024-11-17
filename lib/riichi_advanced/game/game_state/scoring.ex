@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
     orig_hand = state.players[seat].hand
-    non_flower_calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    non_flower_calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
     assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
     assigned_calls = non_flower_calls
     |> Enum.with_index()
