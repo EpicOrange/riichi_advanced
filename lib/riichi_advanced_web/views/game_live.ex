@@ -20,6 +20,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:loading, true)
     |> assign(:marking, false)
     |> assign(:visible_waits, %{})
+    |> assign(:visible_waits_hand, nil)
     |> assign(:show_waits_index, nil)
     |> assign(:hovered_called_tile, nil)
     |> assign(:hovered_call_choice, nil)
@@ -308,6 +309,22 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
+  def get_visible_waits(socket, index) do
+    hand = socket.assigns.state.players[socket.assigns.seat].hand
+    socket = if hand != socket.assigns.visible_waits_hand do
+      socket
+      |> assign(:visible_waits, %{})
+      |> assign(:visible_waits_hand, nil)
+    else socket end
+    socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
+      waits = GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index})
+      socket
+      |> assign(:visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
+      |> assign(:visible_waits_hand, hand)
+    else socket end
+    socket
+  end
+
   def handle_event("back", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname || ""}")
     {:noreply, socket}
@@ -417,10 +434,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:hover, index}, socket) do
-    socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
-      waits = GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index})
-      assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
-    else socket end
+    socket = get_visible_waits(socket, index)
     socket = assign(socket, :show_waits_index, index)
     {:noreply, socket}
   end
@@ -432,6 +446,8 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_info({:reindex_hand, from, to}, socket) do
     GenServer.cast(socket.assigns.game_state, {:reindex_hand, socket.assigns.seat, from, to})
+    socket = assign(socket, :visible_waits, %{})
+    socket = assign(socket, :show_waits_index, nil)
     {:noreply, socket}
   end
 
@@ -455,8 +471,6 @@ defmodule RiichiAdvancedWeb.GameLive do
           send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: player.hand ++ player.draw, played_tile: tile, played_tile_index: index)
         end
       end)
-
-
 
       socket = assign(socket, :state, state)
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
