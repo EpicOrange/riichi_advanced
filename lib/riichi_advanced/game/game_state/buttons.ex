@@ -12,23 +12,11 @@ defmodule RiichiAdvanced.GameState.Buttons do
     if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end
   end
 
-  def extract_choice_actions([]), do: []
-  def extract_choice_actions([action | actions]) do
-    choice_actions = case action do
-      [action_name | _opts] when action_name in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark"] -> [action]
-      ["when", _condition, subactions] -> extract_choice_actions(subactions)
-      ["unless", _condition, subactions] -> extract_choice_actions(subactions)
-      ["ite", _condition, subactions1, subactions2] -> extract_choice_actions(subactions1) ++ extract_choice_actions(subactions2)
-      _ -> []
-    end
-    choice_actions ++ extract_choice_actions(actions)
-  end
-
   def make_button_choices(state, seat, button_name, button) do
     actions = button["actions"]
     # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
     # check if a call action exists, if it's a call and multiple call choices are available
-    choice_actions = extract_choice_actions(actions)
+    choice_actions = Actions.extract_actions(actions, ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark"])
     cond do
       Enum.any?(choice_actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end) ->
         # call button choices logic
@@ -91,8 +79,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
+      buttons_before = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
       # IO.puts("Buttons before:")
-      # IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))
+      # IO.inspect(buttons_before)
       {state, new_button_choices} = for {seat, _player} <- state.players, reduce: {state, []} do
         {state, new_button_choices} ->
           if Actions.performing_intermediate_action?(state, seat) do
@@ -125,17 +114,20 @@ defmodule RiichiAdvanced.GameState.Buttons do
       end
       new_button_choices = Map.new(new_button_choices)
       
-      # play button notify sound
-      for {seat, button_choices} <- new_button_choices do
-        if not Enum.empty?(button_choices) do
-          play_sound(state, "/audio/pop.mp3", seat)
+      # IO.puts("Buttons after:")
+      # IO.inspect(buttons)
+      buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
+      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
+
+      # play button notify sound if buttons changed
+      if not Enum.empty?(buttons) && buttons != buttons_before do
+        for {seat, button_choices} <- new_button_choices do
+          if not Enum.empty?(button_choices) do
+            play_sound(state, "/audio/pop.mp3", seat)
+          end
         end
       end
 
-      buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
-      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
-      # IO.puts("Buttons after:")
-      # IO.inspect(buttons)
       state
     else state end
   end

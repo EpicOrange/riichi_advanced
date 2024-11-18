@@ -1262,4 +1262,17 @@ defmodule RiichiAdvanced.GameState.Actions do
     else state end
   end
 
+  def extract_actions([], _names), do: []
+  def extract_actions([action | actions], names) do
+    case action do
+      ["when", _condition, subactions] -> extract_actions(subactions, names)
+      ["when_anyone", _condition, subactions] -> extract_actions(subactions, names)
+      ["when_everyone", _condition, subactions] -> extract_actions(subactions, names)
+      ["when_others", _condition, subactions] -> extract_actions(subactions, names)
+      ["unless", _condition, subactions] -> extract_actions(subactions, names)
+      ["ite", _condition, subactions1, subactions2] -> extract_actions(subactions1, names) ++ extract_actions(subactions2, names)
+      [action_name | _opts] -> if action_name in names do [action] else [] end
+    end ++ extract_actions(actions, names)
+  end
+
 end
