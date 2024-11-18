@@ -32,7 +32,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="saki">Sakicards v1.3</option>
           <option value="vietnamese">Vietnamese</option>
           <option value="bloody30faan">Bloody 30-Faan Jokers</option>
-          <option value="cosmic">Cosmic Riichi (beta)</option>
+          <option value="cosmic">Cosmic Riichi</option>
           <option value="custom">Custom</option>
         </select>
         <br/>
