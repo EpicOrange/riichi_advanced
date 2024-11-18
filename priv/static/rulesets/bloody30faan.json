@@ -674,7 +674,7 @@
       "value": 2,
       "when": [
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]},
-        {"name": "not_match", "opts": [["jokers"], [[[["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]]]]}
+        {"name": "counter_at_most", "opts": ["jokers", 0]}
       ]
     },
     {
@@ -1897,8 +1897,8 @@
       "show_when": [
         "not_our_turn",
         {"name": "status_missing", "opts": ["match_start", "won"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "draw"], ["joker_tanki_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "not_match", "opts": [["hand", "calls"], ["joker_tanki_tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
@@ -1916,7 +1916,7 @@
       "show_when": [
         "not_our_turn",
         {"name": "status_missing", "opts": ["match_start", "won"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls"], ["tenpai", "kokushi_tenpai"]]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
@@ -1924,7 +1924,7 @@
           ],
           [
             {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+            {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ]
         ]
@@ -1934,7 +1934,7 @@
         ["pause", 1000],
         ["reveal_hand"],
         ["set_status", "won"],
-        ["add_counter", "jokers", "count_matches", ["hand", "calls", "draw"], ["any_joker"]],
+        ["add_counter", "jokers", "count_matches", ["hand", "calls", "last_called_tile"], ["any_joker"]],
         ["win_by_call"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -1945,7 +1945,7 @@
         "our_turn",
         {"name": "not_others_status", "opts": ["call_made"]},
         {"name": "status_missing", "opts": ["match_start", "won"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls"], ["tenpai_14", "kokushi_tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
       "actions": [
