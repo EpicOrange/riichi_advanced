@@ -440,17 +440,6 @@
       ]
     },
     {
-      "display_name": "Four Concealed Triplets",
-      "value": 1,
-      "when": [
-        "won_by_draw",
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 3], [["pair"], 2]]]]},
-        {"name": "not_match", "opts": [["hand", "calls"], [[[["koutsu", "ankan"], 4]]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "ankan"], 4], [["pair"], 1]]]]}
-      ]
-    },
-    {
       "display_name": "Four Quads",
       "value": 4,
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]

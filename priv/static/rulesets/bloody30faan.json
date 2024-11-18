@@ -1,5 +1,5 @@
 {
-  "default_mods": [],
+  "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
@@ -924,12 +924,12 @@
         [
           "won_by_draw",
           [
-            // 0-2 open triplet tsumo, hand must be 3 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -3], [["koutsu"], 3], [["pair"], 2]]]]},
-            // 0-1 open triplet tsumo, hand must be 2 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]},
-            // 0 open triplet tsumo, hand must be 1 triplet and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 1], [["shuntsu"], 1], [["pair"], 2]]]]}
+            // 0-2 open triplet tsumo, hand must be 4 triplets and a pair
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
+            // 0-1 open triplet tsumo, hand must be 3 triplets and a pair
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
+            // 0 open triplet tsumo, hand must be 2 triplets and a pair
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]}
           ]
         ]
       ]]
@@ -945,10 +945,10 @@
         [
           "won_by_draw",
           [
-            // 0-1 open triplet tsumo, hand must be 3 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 3], [["pair"], 2]]]]},
-            // 0 open triplet tsumo, hand must be 2 triplets and 2 pairs
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 1], [["pair"], 2]]]]}
+            // 0-1 open triplet tsumo, hand must be 4 triplets and a pair
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
+            // 0 open triplet tsumo, hand must be 3 triplets and a pair
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]}
           ]
         ]
       ]]
@@ -961,8 +961,8 @@
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
         [
           "won_by_draw",
-          // 0 open triplet tsumo, hand must be 3 triplets and 2 pairs
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 3], [["pair"], 2]]]]}
+          // 0 open triplet tsumo, hand must be 4 triplets and a pair
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "pon_joker", "pon_joker2", "pon_joker3", "daiminkan", "daiminkan_joker", "daiminkan_joker2", "daiminkan_joker3", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]}
         ]
       ]]
     },
