@@ -57,6 +57,13 @@
     "knit_taatsu2": [0, 21],
     "knit_taatsu3": [0, 12],
     "knit_taatsu4": [0, 22],
+    "knit_straight1": [[0,3,6],[11,14,17],[22,25,28]],
+    "knit_straight2": [[0,3,6],[21,24,27],[12,15,18]],
+    "knit_triplets": [[0,3,6],[10,13,16],[20,23,26]],
+    "knit_short_straight1": [[0,3],[11,14],[22,25]],
+    "knit_short_straight2": [[0,3],[21,24],[12,15]],
+    "knit_terminal_seqs1": [[0,6],[11,17],[22,28]],
+    "knit_terminal_seqs2": [[0,6],[21,27],[12,18]],
     "knit_pair": [0, 10],
     "iipeikou": [0, 0, 1, 1, 2, 2],
     "老少順": [[0,1,2],[6,7,8]],
@@ -108,8 +115,8 @@
     [ "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 6] ]
   ],
   "iishanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 2], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 3] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
@@ -117,10 +124,10 @@
     ]
   ],
   "ryanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 3], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 3], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ],
-    [ "exhaustive", [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 3] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ [["pair"], 4] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
@@ -128,11 +135,11 @@
     ]
   ],
   "sanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 2], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 4], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair", "knit_taatsu1", "knit_taatsu2", "knit_taatsu3", "knit_taatsu4", "knit_pair"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ],
-    [ "exhaustive", [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 3] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ [["pair"], 3] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
@@ -158,7 +165,10 @@
     ]
   ],
   "win_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2", "knit_triplets"], 1] ],
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 2], [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1] ],
+    [ "exhaustive", [["pair"], 1], [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ],
     [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
@@ -193,16 +203,22 @@
     [ "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ]
   ],
   "不搭雜龍_definition": [
-    [ [[[[0,3,6],[11,14,17],[22,25,28]],[[0,3,6],[21,24,27],[12,15,18]]], 1] ]
+    [ [["knit_straight1", "knit_straight2"], 1] ]
   ],
   "不搭三相逢_definition": [
-    [ [[[[0,3,6],[10,13,16],[20,23,26]]], 1] ]
+    [ [["knit_triplets"], 1] ]
   ],
   "不搭連六_definition": [
-    [ [[[[0,3],[11,14],[22,25]],[[0,3],[21,24],[12,15]]], 1] ]
+    [ [["knit_short_straight1", "knit_short_straight2"], 1] ]
+  ],
+  "2不搭連六_definition": [
+    [ [["knit_short_straight1", "knit_short_straight2"], 2] ]
   ],
   "不搭老少_definition": [
-    [ [[[[0,6],[11,17],[22,28]],[[0,6],[21,27],[12,18]]], 1] ]
+    [ [["knit_terminal_seqs1", "knit_terminal_seqs2"], 1] ]
+  ],
+  "2不搭老少_definition": [
+    [ [["knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ]
   ],
   "副露九子連環_definition": [
     [ [[[[0,0,0],[0,1,2],[3,4,5],[6,7,8],[8,8]]], 1] ],
@@ -1345,10 +1361,24 @@
       ]
     },
     {
+      "display_name": "Knitted Short Straight",
+      "value": 5,
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], ["2不搭連六"]]}
+      ]
+    },
+    {
       "display_name": "Knitted Terminal Sequences",
       "value": 5,
       "when": [
         {"name": "match", "opts": [["hand", "winning_tile"], ["不搭老少"]]}
+      ]
+    },
+    {
+      "display_name": "Knitted Terminal Sequences",
+      "value": 5,
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], ["2不搭老少"]]}
       ]
     },
     // (9) 其他
