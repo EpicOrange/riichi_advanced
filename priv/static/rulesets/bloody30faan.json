@@ -632,42 +632,42 @@
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["12j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 1]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["13j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 2]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["14j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 3]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["15j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 4]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["16j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 5]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["17j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 6]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["18j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 7]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[[["19j"]], 1]]]]}]
+      "when": [{"name": "counter_at_least", "opts": ["jokers", 8]}]
     },
     {
       "display_name": "No Honors or Flowers",
