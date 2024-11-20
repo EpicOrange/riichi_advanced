@@ -28,23 +28,28 @@ defmodule RiichiAdvanced.AIPlayer do
       ordering = player.tile_ordering
       ordering_r = player.tile_ordering_r
       tile_aliases = player.tile_aliases
-      playable_waits = playables
-      |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
-      |> Enum.map(fn {tile, ix} ->
-        if win_definition != nil do
-          {tile, ix, Riichi.get_waits_and_ukeire(all_tiles, visible_tiles, hand -- [tile], calls, win_definition, ordering, ordering_r, tile_aliases)}
-        else {tile, ix, %{}} end
-      end)
+      # use ukeire (if we don't have wildcard jokers)
+      use_ukeire = map_size(player.tile_aliases) < 34
+      best_playables = if use_ukeire do
+        playable_waits = playables
+        |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
+        |> Enum.map(fn {tile, ix} ->
+          if win_definition != nil do
+            {tile, ix, Riichi.get_waits_and_ukeire(all_tiles, visible_tiles, hand -- [tile], calls, win_definition, ordering, ordering_r, tile_aliases)}
+          else {tile, ix, %{}} end
+        end)
 
-      # prefer highest ukeire
-      ukeires = Enum.map(playable_waits, fn {tile, ix, waits} -> {tile, ix, Map.values(waits) |> Enum.sum()} end)
-      max_ukeire = ukeires
-      |> Enum.map(fn {_tile, _ix, outs} -> outs end)
-      |> Enum.max(&>=/2, fn -> 0 end)
-      best_playables_by_ukeire = for {tile, ix, outs} <- ukeires, outs == max_ukeire do {tile, ix} end
+        # prefer highest ukeire
+        ukeires = Enum.map(playable_waits, fn {tile, ix, waits} -> {tile, ix, Map.values(waits) |> Enum.sum()} end)
+        max_ukeire = ukeires
+        |> Enum.map(fn {_tile, _ix, outs} -> outs end)
+        |> Enum.max(&>=/2, fn -> 0 end)
+        best_playables_by_ukeire = for {tile, ix, outs} <- ukeires, outs == max_ukeire do {tile, ix} end
+        best_playables_by_ukeire
+      else playables end
 
       # prefer outer discards
-      {yaochuuhai, rest} = Enum.split_with(best_playables_by_ukeire, fn {tile, _ix} -> Riichi.is_yaochuuhai?(tile) end)
+      {yaochuuhai, rest} = Enum.split_with(best_playables, fn {tile, _ix} -> Riichi.is_yaochuuhai?(tile) end)
       {tiles28, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 2) || Riichi.is_num?(tile, 8) end) 
       {tiles37, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 3) || Riichi.is_num?(tile, 7) end) 
       for playable_tiles <- [yaochuuhai, tiles28, tiles37, rest], reduce: nil do
