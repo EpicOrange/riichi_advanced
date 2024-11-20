@@ -567,42 +567,42 @@
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 1]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 1]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 2]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 2]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 3]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 3]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 4]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 4]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 5]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 5]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 6]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 6]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 7]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 7]}]
     },
     {
       "display_name": "Flower",
       "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["jokers", 8]}]
+      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 8]}]
     },
     {
       "display_name": "No Honors or Flowers",
@@ -1605,6 +1605,11 @@
   "after_call": {
     "actions": [
       ["set_status", "call_made"]
+    ]
+  },
+  "before_win": {
+    "actions": [
+      ["add_counter", "called_jokers", "count_matches", ["calls"], ["any_joker"]]
     ]
   },
   "before_continue": {
