@@ -210,9 +210,30 @@ defmodule RiichiAdvanced.SMT do
   end
   # RiichiAdvanced.SMT.determine_encoding(%{"1z": :"2z", "2z": :"3z", "3z": :"4z", "4z": :"1z", "5z": :"6z", "6z": :"7z"})
 
+  def set_suit_to_bitvector(set) do
+    # input: [0, 0, 3, 6]
+    # output: "001001002"
+    set
+    |> Enum.frequencies()
+    |> Enum.reduce([0, 0, 0, 0, 0, 0, 0, 0, 0], fn {ix, freq}, acc -> List.replace_at(acc, ix, freq) end)
+    |> Enum.reverse()
+    |> Enum.map(&Integer.to_string/1)
+    |> Enum.join()
+  end
+
+  def set_to_bitvector(set) do
+    # input: [0, 0, 3, 6, 11, 11, 14, 17, 22, 22, 25, 28]
+    # output: "100100200010010020001001002"
+    set
+    |> Enum.group_by(fn i -> trunc(i / 10) end)
+    |> Enum.sort_by(fn {k, _v} -> -k end)
+    |> Enum.map(fn {_k, v} -> set_suit_to_bitvector(Enum.map(v, &rem(&1, 10))) end)
+    |> Enum.join()
+  end
+
   def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
     calls = calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "start_flower", "start_joker"] end)
+    |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
     |> Enum.with_index()
     |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
 
@@ -277,14 +298,12 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.reject(&Kernel.is_binary/1)
     |> Enum.map(fn [groups, _num] -> groups end)
     |> Enum.concat()
-    |> Enum.filter(fn group -> is_list(group) && is_integer(Enum.at(group, 0)) end)
+    |> Enum.reject(fn group -> is_binary(group) end)
+    |> Enum.reject(fn group -> is_list(group) && is_binary(Enum.at(group, 0)) end)
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     set_definitions = all_sets
-    |> Enum.map(&Enum.frequencies/1)
-    |> Enum.map(&Enum.flat_map(&1, fn {ix, freq} -> if ix < 10 do [freq] else [0, 0, 0, 0, 0, 0, 0, 0, freq] end end))
-    |> Enum.map(&Enum.reverse/1) # [[2], [1, 1, 1], [3]]
-    |> Enum.map(fn vals -> Enum.map(vals, fn a -> Integer.to_string(a) end) end)
-    |> Enum.map(&Enum.join/1) # ["2", "111", "3"]
+    |> Enum.map(fn group -> Enum.flat_map(group, fn elem -> if is_list(elem) do elem else [elem] end end) end)
+    |> Enum.map(&set_to_bitvector/1)
     |> Enum.with_index()
     |> Enum.map(fn {str, i} -> "(define-fun set#{i+1} () (_ BitVec #{len}) #x#{String.pad_leading(str, Integer.floor_div(len, 4), "0")})\n" end)
     to_set_fun = 1..length(all_sets)
@@ -437,8 +456,13 @@ defmodule RiichiAdvanced.SMT do
           {assertions, mentioned_set_ixs, tile_groups} ->
             {set_ixs, tiles} = groups
             |> Enum.map(fn group -> {group, Enum.find_index(all_sets, fn set -> set == group end)} end)
-            |> Enum.map(fn {group, ix} -> if is_integer(ix) do ix+1 else
-              if is_binary(group) do Utils.to_tile(group) else Enum.map(group, &Utils.to_tile/1) end
+            |> Enum.map(fn {group, ix} -> cond do
+              is_integer(ix) -> ix+1
+              is_binary(group) -> Utils.to_tile(group) 
+              is_list(group) && is_binary(Enum.at(group, 0)) -> Enum.map(group, &Utils.to_tile/1)
+              true ->
+                IO.puts("Unhandled SMT group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
+                nil
             end end)
             |> Enum.split_with(fn i -> is_integer(i) end)
             # first take care of sets
