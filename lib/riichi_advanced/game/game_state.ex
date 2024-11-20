@@ -999,11 +999,7 @@ defmodule RiichiAdvanced.GameState do
   # (this is since they operate on a delay, so state may have changed between when they were
   # notified and when they decide to act)
   def handle_call({:can_discard, seat}, _from, state) do
-    our_turn = seat == state.turn
-    last_discard_action = get_last_discard_action(state)
-    turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
-    extra_turn = "extra_turn_taken" in state.players[state.turn].status
-    {:reply, our_turn && (not turn_just_discarded || extra_turn), state}
+    {:reply, Actions.can_discard(state, seat), state}
   end
 
   # marking calls
@@ -1122,7 +1118,7 @@ defmodule RiichiAdvanced.GameState do
     if not playable do
       IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
     end
-    state = if state.turn == seat && playable && (state.play_tile_debounce[seat] == false || state.log_loading_mode) do
+    state = if Actions.can_discard(state, seat) && playable && (state.play_tile_debounce[seat] == false || state.log_loading_mode) do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
       state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "" })

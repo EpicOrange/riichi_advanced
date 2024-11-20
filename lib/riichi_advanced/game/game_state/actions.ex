@@ -22,8 +22,17 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  # we use this to ensure no double discarding
+  def can_discard(state, seat) do
+    our_turn = seat == state.turn
+    last_discard_action = get_last_discard_action(state)
+    turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
+    extra_turn = "extra_turn_taken" in state.players[state.turn].status
+    our_turn && (not turn_just_discarded || extra_turn)
+  end
+
   def play_tile(state, seat, tile, index) do
-    if is_playable?(state, seat, tile) do
+    if can_discard(state, seat) && is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
       tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
