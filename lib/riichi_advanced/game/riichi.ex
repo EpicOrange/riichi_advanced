@@ -390,16 +390,28 @@ defmodule Riichi do
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
   def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles) do
+    # t = System.os_time(:millisecond)
+    
+    filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
     hand_calls_def = partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
-    for tile <- Enum.uniq(wall), reduce: [] do
-      waits -> cond do
-        tile in waits -> waits
-        is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) ->
+    ret = for tile <- Enum.uniq(wall), reduce: [] do
+      waits -> if tile in waits do waits else
+        tile_aliases = if tile_aliases[tile] != nil do
+          Map.put(filtered_tile_aliases, tile, tile_aliases[tile])
+        else tile_aliases end
+        if is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) do
           other_waits = [tile | Map.get(tile_aliases, tile, [])] |> Utils.strip_attrs()
           waits ++ other_waits
-        true -> waits
+        else waits end
       end |> Enum.uniq()
     end
+
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("get_waits: #{inspect(elapsed_time)} ms")
+    # end
+
+    ret
   end
 
   def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do
