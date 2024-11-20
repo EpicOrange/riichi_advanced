@@ -16,8 +16,8 @@ defmodule RiichiAdvancedWeb.CompassComponent do
       <%= for {dir, symbol} <- [{:east, "東"}, {:south, "南"}, {:west, "西"}, {:north, "北"}] do %>
         <div class="score-box"></div>
         <div class={["direction", dir]}>
-          <div class={["riichi-tray", Riichi.get_seat_wind(@kyoku, @turn) == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
-          <div class={["wind-marker", Riichi.get_seat_wind(@kyoku, @turn) == dir && "highlighted", @is_bot[dir] && "bot"]}><%= symbol %></div>
+          <div class={["riichi-tray", Riichi.get_seat_wind(@kyoku, @turn) == dir && "highlighted", @riichi[Riichi.get_player_from_seat_wind(@kyoku, dir)] && "riichi"]}></div>
+          <div class={["wind-marker", Riichi.get_seat_wind(@kyoku, @turn) == dir && "highlighted", @is_bot[Riichi.get_player_from_seat_wind(@kyoku, dir)] && "bot"]}><%= symbol %></div>
           <div class="score-counter"><%= @score[Riichi.get_player_from_seat_wind(@kyoku, dir)] %></div>
         </div>
       <% end %>

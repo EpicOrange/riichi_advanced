@@ -408,7 +408,7 @@ Other:
 - `["sort_hand"]`: Sort the current player's hand.
 - `["reveal_tile", tile]`: Show a given tile above the game for the remainder of the round.
 - `["add_score", amount, recipients]`: Add to the score for the current player, or for the `recipients` if specified. Allowed values for `recipients` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`, `"all"`, `"others"`
-- `["put_down_riichi_stick", num]`: Makes the current player put down a riichi stick, or `num` riichi sticks if specified. Does not change their score.
+- `["put_down_riichi_stick", num]`: Makes the current player put down a riichi stick, or `num` riichi sticks if specified. Adds to the pot, but does not change their score.
 - `["add_honba", num]`: Adds the given number of honba. (default 1)
 - `["reveal_hand"]`: Shows the current player's hand to everyone for the remainder of the round.
 - `["discard_draw"]`: Discards the current player's draw. Useful as an auto button.
