@@ -7,7 +7,6 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :dead_wall, [])
     socket = assign(socket, :wall_index, 0)
     socket = assign(socket, :dead_wall_offset, 0)
-    socket = assign(socket, :minimized, true)
     socket = assign(socket, :revealed_tiles, [])
     socket = assign(socket, :reserved_tiles, [])
     socket = assign(socket, :drawn_reserved_tiles, [])
@@ -21,10 +20,8 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["display-wall-container", @minimized && "minimized"]}>
-      <input id="display-wall-minimize" type="checkbox" class="display-wall-minimize" checked={not @minimized}>
-      <label for="display-wall-minimize" class="display-wall-minimize-label" phx-cancellable-click="minimize" phx-target={@myself}><%= if @minimized do "Show wall" else "Hide wall" end %></label>
-      <div class={[@id, @minimized && "minimized"]}>
+    <div class={["display-wall-container"]}>
+      <div class={[@id]}>
         <.live_component module={RiichiAdvancedWeb.DisplayWallWallComponent}
           id="wall toimen"
           wall={@prepared_wall[:toimen]} />
@@ -117,11 +114,6 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
       5 -> "five"
       6 -> "six"
     end
-  end
-
-  def handle_event("minimize", _assigns, socket) do
-    socket = assign(socket, :minimized, not socket.assigns.minimized)
-    {:noreply, socket}
   end
 
   def update(assigns, socket) do

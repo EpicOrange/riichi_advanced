@@ -264,6 +264,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
         marking={@state.marking[@seat]}
         :if={@state.players[@seat].num_scryed_tiles > 0} />
+      <div class="display-wall-hover" :if={Map.get(@state.rules, "display_wall", false)}></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}

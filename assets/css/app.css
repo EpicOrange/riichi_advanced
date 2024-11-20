@@ -1142,14 +1142,8 @@ div.declare-yaku button.declare-yaku-button:active {
 }
 
 /* display wall */
-div.display-wall-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-div.display-wall-container.minimized { z-index: -10; }
-div.display-wall-container > input.display-wall-minimize { display: none; }
-div.display-wall-container > label.display-wall-minimize-label {
+div.display-wall-hover::before {
+  content: "Show wall";
   background: gray;
   position: absolute;
   padding: 0 calc(0.125 * var(--tile-size));
@@ -1158,14 +1152,22 @@ div.display-wall-container > label.display-wall-minimize-label {
   bottom: calc(-1.25 * var(--tile-size));
   right: 0;
 }
-div.display-wall-container > input.display-wall-minimize:checked + label.display-wall-minimize-label { background: var(--tile-back); }
+div.display-wall-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+div.display-wall-hover:not(:hover) + div.display-wall-container {
+  display: none;
+  z-index: -100;
+}
 div.display-wall {
   position: relative;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
 }
 div.display-wall::before {
   position: absolute;
