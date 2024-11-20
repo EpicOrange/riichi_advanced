@@ -5515,8 +5515,9 @@
       "display_name": "C",
       "actions": [
         ["when", [
+            "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan", "riichi", "atarashi_ako", "choe_myeonghwa"]}
+            {"name": "buttons_exclude", "opts": ["ron"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false

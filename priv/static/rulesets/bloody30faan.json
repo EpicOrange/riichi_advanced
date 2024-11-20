@@ -1929,8 +1929,9 @@
       "display_name": "C",
       "actions": [
         ["when", [
+            "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron", "tsumo", "ankan"]}
+            {"name": "buttons_exclude", "opts": ["ron"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -1941,7 +1942,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
