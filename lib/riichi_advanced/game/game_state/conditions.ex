@@ -296,7 +296,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
         call_tiles = [context.called_tile | context.call_choice]
         call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
         hand_calls_def_before = Riichi.partially_apply_match_definitions(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
-        hand_calls_def_after = Riichi.partially_apply_match_definitions((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, ordering, ordering_r, tile_aliases)
+        [call_removed | _] = Riichi.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
+        hand_calls_def_after = Riichi.partially_apply_match_definitions(call_removed, calls ++ [call], win_definitions, ordering, ordering_r, tile_aliases)
         Enum.any?(state.all_tiles, fn tile ->
           waits_before = Riichi.is_waiting_on(tile, hand_calls_def_before, ordering, ordering_r, tile_aliases)
           waits_after = Riichi.is_waiting_on(tile, hand_calls_def_after, ordering, ordering_r, tile_aliases)
