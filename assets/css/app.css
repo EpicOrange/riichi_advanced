@@ -1156,11 +1156,12 @@ div.display-wall-container {
   position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 100;
-}
-div.display-wall-hover:not(:hover) + div.display-wall-container {
   display: none;
   z-index: -100;
+}
+div.display-wall-hover:hover + div.display-wall-container {
+  display: block;
+  z-index: 100;
 }
 div.display-wall {
   position: relative;
