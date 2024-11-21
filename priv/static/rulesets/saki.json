@@ -2156,7 +2156,14 @@
     [["any"], [{"name": "status", "opts": ["funakubo-hiroko", "funakubo_hiroko_swapping"]}]]
   ],
   "before_turn_change": {
-    "actions": [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
+    "actions": [["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
+                  ["add_score", -1000],
+                  ["put_down_riichi_stick"],
+                  ["unset_status", "just_reached"],
+                  ["pause", 1000],
+                  ["abortive_draw", "Suucha Riichi"]
+                ]],
+                ["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
                 ["when", [{"name": "status", "opts": ["just_reached"]}, {"name": "status_missing", "opts": ["inazuma_riichi"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
                 ["when", [{"name": "status", "opts": ["just_reached", "inazuma_riichi"]}], [["add_score", -5000], ["put_down_riichi_stick", 5]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
@@ -2229,6 +2236,12 @@
                 ["ite", [{"name": "status", "opts": ["extra_turn"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}],
                   [["set_status", "extra_turn_prompt"]],
                   [["unset_status", "extra_turn", "extra_turn_taken", "discard_facedown"]]],
+                ["when", [{"name": "status", "opts": ["tsuruta-himeko", "extra_turn_skipped"]}], [
+                  ["big_text", "Tsuruta Himeko: switch out!"],
+                  ["unset_status", "tsuruta-himeko"],
+                  ["set_status", "shirouzu-mairu"]
+                ]],
+                ["unset_status", "extra_turn_skipped"],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, "third_row_discard"], [["set_status", "discard_facedown"]]],
                 ["when", [{"name": "not_status_missing", "opts": ["shirouzu-mairu", "tsuruta-himeko"]}], [["remove_attr_all", "revealed"]]],
                 ["when", [{"name": "status", "opts": ["shimizudani-ryuuka"]}], [["remove_attr_hand", "revealed"]]],
@@ -2553,29 +2566,26 @@
     ]]]],
     ["manzu", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 2]]]]}], [
       ["set_status", "extra_turn"],
-      ["big_text", "Tsuruta Himeko: switch out!"],
-      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
-      ["unset_status", "tsuruta-himeko"],
-      ["set_status", "shirouzu-mairu"]
+      ["big_text", "Tsuruta Himeko: extra turn!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"]
     ]]]],
     ["pinzu", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 2]]]]}], [
       ["set_status", "extra_turn"],
-      ["big_text", "Tsuruta Himeko: switch out!"],
-      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
-      ["unset_status", "tsuruta-himeko"],
-      ["set_status", "shirouzu-mairu"]
+      ["big_text", "Tsuruta Himeko: extra turn!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"]
     ]]]],
     ["souzu", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 2]]]]}], [
       ["set_status", "extra_turn"],
-      ["big_text", "Tsuruta Himeko: switch out!"],
-      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
-      ["unset_status", "tsuruta-himeko"],
-      ["set_status", "shirouzu-mairu"]
+      ["big_text", "Tsuruta Himeko: extra turn!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"]
     ]]]],
     ["jihai", [["when", [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "not_match", "opts": [["pond"], [[[["1z","2z","3z","4z","5z","6z","7z"], 2]]]]}], [
       ["set_status", "extra_turn"],
+      ["big_text", "Tsuruta Himeko: extra turn!"],
+      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"]
+    ]]]],
+    ["any", [["when", [{"name": "status", "opts": ["tsuruta-himeko", "extra_turn_taken"]}], [
       ["big_text", "Tsuruta Himeko: switch out!"],
-      ["push_message", "took an extra turn by discarding a tile of a suit not visible in discards (Tsuruta Himeko)"],
       ["unset_status", "tsuruta-himeko"],
       ["set_status", "shirouzu-mairu"]
     ]]]],
@@ -2976,20 +2986,6 @@
       "actions": [["unset_status", "pon"]],
       "unskippable": true
     },
-    "matsumi_yuu": {
-      "display_name": "Pon red dragon with priority",
-      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
-      "actions": [
-        ["big_text", "Matsumi Yuu: pon!"],
-        ["mark", [["discard", 1, ["current_turn", "7z"]]]],
-        ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
-        ["pon_marked_discard"],
-        ["cancel_deferred_actions"],
-        ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
-        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
-      ],
-      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
-    },
     "nanpo_kazue_nonskippable": {
       "display_name": "Place 2 tiles at the end of the dead wall (last selection is first kan draw)",
       "show_when": [
@@ -3327,7 +3323,7 @@
     },
     "shirouzu_mairu_1_manzu": {
       "display_name": "Manzu",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["shirouzu-mairu"]}, {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "just_called", "extra_turn"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -3344,7 +3340,7 @@
     },
     "shirouzu_mairu_2_pinzu": {
       "display_name": "Pinzu",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["shirouzu-mairu"]}, {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "just_called", "extra_turn"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -3361,7 +3357,7 @@
     },
     "shirouzu_mairu_3_souzu": {
       "display_name": "Souzu",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["shirouzu-mairu"]}, {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "just_called", "extra_turn"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -3378,7 +3374,7 @@
     },
     "shirouzu_mairu_4_jihai": {
       "display_name": "Jihai",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "extra_turn"]}, {"name": "status", "opts": ["shirouzu-mairu"]}],
+      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status", "opts": ["shirouzu-mairu"]}, {"name": "status_missing", "opts": ["shirouzu_mairu_drew", "just_called", "extra_turn"]}, {"name": "not_anyone_status", "opts": ["tried_to_ron"]}],
       "actions": [
         ["set_status", "shirouzu_mairu_drew"],
         ["draw"],
@@ -4628,7 +4624,12 @@
         {"name": "not_discarder_status", "opts": ["discard_passed"]},
         {"name": "status_missing", "opts": ["about_to_call", "about_to_swap", "call_interrupted", "usuzawa_sae_opponent"]},
         "call_available",
-        {"name": "status_missing", "opts": ["mase-yuuko"]}
+        {"name": "status_missing", "opts": ["mase-yuuko"]},
+        [
+          {"name": "status", "opts": ["megan-davin", "duelist"]},
+          {"name": "not_others_status", "opts": ["megan-davin", "riichi"]},
+          {"name": "not_others_status", "opts": ["duelist", "riichi"]}
+        ]
       ],
       "actions": [
         ["big_text", "Kan"],
@@ -4755,6 +4756,11 @@
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
           {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
           {"name": "has_score", "opts": [1500]}
+        ],
+        [
+          {"name": "status", "opts": ["megan-davin", "duelist"]},
+          {"name": "not_others_status", "opts": ["megan-davin", "riichi"]},
+          {"name": "not_others_status", "opts": ["duelist", "riichi"]}
         ]
       ],
       "actions": [
@@ -4796,6 +4802,11 @@
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
           {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
           {"name": "has_score", "opts": [1500]}
+        ],
+        [
+          {"name": "status", "opts": ["megan-davin", "duelist"]},
+          {"name": "not_others_status", "opts": ["megan-davin", "riichi"]},
+          {"name": "not_others_status", "opts": ["duelist", "riichi"]}
         ]
       ],
       "actions": [
@@ -4829,6 +4840,11 @@
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
           {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
           {"name": "has_score", "opts": [1500]}
+        ],
+        [
+          {"name": "status", "opts": ["megan-davin", "duelist"]},
+          {"name": "not_others_status", "opts": ["megan-davin", "riichi"]},
+          {"name": "not_others_status", "opts": ["duelist", "riichi"]}
         ]
       ],
       "actions": [
@@ -4850,6 +4866,30 @@
       ],
       "precedence_over": ["chii", "pon"]
     },
+    "matsumi_yuu_pon": {
+      "display_name": "Pon red dragon with priority",
+      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
+      "actions": [
+        ["big_text", "Matsumi Yuu: pon!"],
+        ["mark", [["discard", 1, ["current_turn", "7z"]]]],
+        ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
+        ["pon_marked_discard"],
+        ["cancel_deferred_actions"],
+        ["unset_status_all", "just_reached"], ["set_status", "just_called"], ["set_status_all", "call_made"], ["set_status", "pon"], ["change_turn", "self"],
+        ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
+        [
+          {"name": "not_others_status", "opts": ["aislinn-wishart"]},
+          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
+          {"name": "has_score", "opts": [1500]}
+        ],
+        [
+          {"name": "status", "opts": ["megan-davin", "duelist"]},
+          {"name": "not_others_status", "opts": ["megan-davin", "riichi"]},
+          {"name": "not_others_status", "opts": ["duelist", "riichi"]}
+        ]
+      ],
+      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+    },
     "daiminkan": {
       "display_name": "Kan",
       "call": [[0, 0, 0]],
@@ -4870,6 +4910,11 @@
           {"name": "not_others_status", "opts": ["aislinn-wishart"]},
           {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
           {"name": "has_score", "opts": [1500]}
+        ],
+        [
+          {"name": "status", "opts": ["megan-davin", "duelist"]},
+          {"name": "not_others_status", "opts": ["megan-davin", "riichi"]},
+          {"name": "not_others_status", "opts": ["duelist", "riichi"]}
         ]
       ],
       "actions": [
@@ -5121,12 +5166,6 @@
         ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
         ["when", [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}], [["set_status_all", "triple_noten_payments"]]],
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
-        ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
-          ["add_score", -1000],
-          ["put_down_riichi_stick"],
-          ["pause", 1000],
-          ["abortive_draw", "Suucha Riichi"]
-        ]],
         ["when", [{"name": "status", "opts": ["atago-hiroe"]}], [
           ["clear_tile_aliases"],
           ["set_tile_alias", ["0m"], ["5m"]],
@@ -5486,6 +5525,7 @@
       "show_when": ["all_saki_cards_drafted", "our_turn", "just_discarded", {"name": "status", "opts": ["extra_turn", "extra_turn_prompt"]}, {"name": "status_missing", "opts": ["extra_turn_taken", "shishihara_sawaya_swap"]}],
       "actions": [
         ["unset_status", "extra_turn", "extra_turn_prompt", "discard_facedown"],
+        ["set_status", "extra_turn_skipped"],
         ["push_message", "skipped their extra turn"],
         ["advance_turn"]
       ],
