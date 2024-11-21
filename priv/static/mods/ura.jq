@@ -24,19 +24,22 @@
 |
 # reveal ura after riichi win
 .before_win.actions += [
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-6]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-6]}], [["reveal_tile", -5]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-8]}], [["reveal_tile", -7]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-10]}], [["reveal_tile", -9]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-12]}], [["reveal_tile", -11]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-14]}], [["reveal_tile", -13]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-5]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-7]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-9]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-11]}], [["reveal_tile", "1x"]]],
-  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "tile_not_revealed", "opts": [-13]}], [["reveal_tile", "1x"]]]
+  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["ura_revealed"]}], [
+    ["when", [{"name": "tile_not_revealed", "opts": [-6]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_revealed", "opts": [-6]}], [["reveal_tile", -5]]],
+    ["when", [{"name": "tile_revealed", "opts": [-8]}], [["reveal_tile", -7]]],
+    ["when", [{"name": "tile_revealed", "opts": [-10]}], [["reveal_tile", -9]]],
+    ["when", [{"name": "tile_revealed", "opts": [-12]}], [["reveal_tile", -11]]],
+    ["when", [{"name": "tile_revealed", "opts": [-14]}], [["reveal_tile", -13]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-5]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-7]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-9]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-11]}], [["reveal_tile", "1x"]]],
+    ["when", [{"name": "tile_not_revealed", "opts": [-13]}], [["reveal_tile", "1x"]]]
+  ]],
+  ["set_status_all", "ura_revealed"]
 ]
