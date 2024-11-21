@@ -491,6 +491,12 @@ defmodule Riichi do
   def get_unneeded_tiles(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # t = System.os_time(:millisecond)
     tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+
+    # filter out negative groups from match definition
+    match_definitions = for match_definition <- match_definitions do
+      Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
+    end
+
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
       remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)
     end) |> Enum.unzip()
