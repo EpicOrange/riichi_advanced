@@ -176,7 +176,9 @@ defmodule RiichiAdvancedWeb.GameLive do
             <button class="button" phx-cancellable-click="cancel_marked_objects">Cancel</button>
           <% else %>
             <%= if not Enum.empty?(@state.players[@seat].call_buttons) do %>
-              <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
+              <%= if Enum.all?(@state.players[@seat].call_buttons, fn {called_tile, _choices} -> called_tile != "saki" end) do %>
+                <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
+              <% end %>
             <% else %>
               <button class="button" phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
             <% end %>

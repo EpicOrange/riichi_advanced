@@ -199,55 +199,6 @@ defmodule RiichiAdvancedWeb.LogLive do
       <%= if @state.error != nil do %>
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
       <% end %>
-      <%= if @viewer != :spectator do %>
-        <div class="buttons" :if={@state.players[@seat].declared_yaku != []}>
-          <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
-            <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
-            <button class="button" phx-cancellable-click="cancel_marked_objects">Cancel</button>
-          <% else %>
-            <%= if not Enum.empty?(@state.players[@seat].call_buttons) do %>
-              <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
-            <% else %>
-              <button class="button" phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
-            <% end %>
-          <% end %>
-        </div>
-        <div class="auto-buttons">
-          <%= for {name, checked} <- @state.players[@seat].auto_buttons do %>
-            <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name}><%= GenServer.call(@game_state, {:get_auto_button_display_name, name}) %></label>
-          <% end %>
-        </div>
-        <div class="call-buttons-container">
-          <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
-            <%= if not Enum.empty?(choices) do %>
-              <div class="call-buttons">
-                <%= if called_tile != "saki" do %>
-                  <%= if called_tile != nil do %>
-                    <div class={["tile", Utils.strip_attrs(called_tile)]}></div>
-                    <div class="call-button-separator"></div>
-                  <% end %>
-                  <%= for choice <- choices do %>
-                    <button class="call-button" phx-cancellable-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={Utils.strip_attrs(called_tile)} phx-value-choice={Enum.join(Utils.strip_attrs(choice), ",")}>
-                    <%= for tile <- choice do %>
-                      <div class={["tile", Utils.strip_attrs(tile)]}></div>
-                    <% end %>
-                    </button>
-                  <% end %>
-                <% else %>
-                  <%= for choice <- choices do %>
-                    <button class="call-button" phx-cancellable-click="saki_card_clicked" phx-value-choice={choice}>
-                    <%= for card <- choice do %>
-                      <div class={["saki-card", @state.saki.version, card]}></div>
-                    <% end %>
-                    </button>
-                  <% end %>
-                <% end %>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      <% end %>
       <.live_component module={RiichiAdvancedWeb.RevealedTilesComponent}
         id="revealed-tiles"
         game_state={@game_state}
