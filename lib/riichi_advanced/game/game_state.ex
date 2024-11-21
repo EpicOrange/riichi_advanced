@@ -631,9 +631,9 @@ defmodule RiichiAdvanced.GameState do
               |> Map.update!(:kyoku, & &1 + 1)
               |> Map.update!(:honba, & &1 + 1)
               |> Map.put(:visible_screen, nil)
-          :continue ->
-            state
-          end
+          :continue -> state
+          :end_game -> state
+        end
 
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do

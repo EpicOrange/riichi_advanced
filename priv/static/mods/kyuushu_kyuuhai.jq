@@ -10,7 +10,7 @@
     "our_turn",
     "has_draw",
     {"name": "status", "opts": ["discards_empty"]},
-    {"name": "status_missing", "opts": ["call_made"]},
+    {"name": "status_missing", "opts": ["just_reached", "call_made"]},
     {"name": "match", "opts": [["hand", "draw"], ["kyuushu_kyuuhai"]]}
   ],
   "actions": [
