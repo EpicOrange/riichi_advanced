@@ -247,7 +247,7 @@ defmodule RiichiAdvanced.AIPlayer do
       if elapsed_time < wait_time do
         Process.sleep(wait_time - elapsed_time)
       end
-      if button_name == "skip" && state.seat == turn do
+      if button_name == "skip" && state.seat == turn && Enum.empty?(player.deferred_actions) do
         GenServer.cast(state.game_state, {:ai_ignore_buttons, state.seat})
       else
         GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
