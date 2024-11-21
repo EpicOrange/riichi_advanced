@@ -256,13 +256,13 @@ defmodule Riichi do
               new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end
               new_hand_calls_groups
           end
-          if num < 0 do
+          if num < 0 do # this is a negative match
             if length(hand_calls_groups) == 0 do
-              hand_calls
+              hand_calls # revert
             else
-              []
+              [] # if we matched anything, no we didn't
             end
-          else 
+          else
             result = hand_calls_groups
             |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
             |> Enum.uniq_by(fn {hand, calls} -> {Enum.sort(hand), calls} end)
@@ -651,13 +651,13 @@ defmodule Riichi do
     possible_left_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
       if offset_tile(winning_tile, -3, ordering, ordering_r) != nil do
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, ordering, ordering_r), offset_tile(winning_tile, -1, ordering, ordering_r)], tile_aliases)
-        |> Enum.map(fn hand -> {hand, fu} end)
+        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu && offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
       else [] end
     end)
     possible_right_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
       if offset_tile(winning_tile, 3, ordering, ordering_r) != nil do
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, ordering, ordering_r), offset_tile(winning_tile, 2, ordering, ordering_r)], tile_aliases)
-        |> Enum.map(fn hand -> {hand, fu} end)
+        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu && offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
       else [] end
     end)
     hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
@@ -707,7 +707,7 @@ defmodule Riichi do
         Enum.flat_map(all_hands, fn {hand, fu} ->
           sequence_tiles = hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases)
           sequence_tiles = if enable_kontsu_fu do
-            # wind sequences are considered mixed triplets, ignore them
+            # honor sequences are considered mixed triplets, ignore them
             Enum.reject(sequence_tiles, fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == nil end)
           else sequence_tiles end
           sequence_tiles |> Enum.flat_map(fn base_tile -> 
