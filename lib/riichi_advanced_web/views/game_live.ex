@@ -349,6 +349,8 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
     GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, name})
+    socket = assign(socket, :hovered_called_tile, nil)
+    socket = assign(socket, :hovered_call_choice, nil)
     {:noreply, socket}
   end
 
