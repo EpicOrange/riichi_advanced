@@ -478,9 +478,11 @@ defmodule RiichiAdvanced.GameState do
     state = update_in(state.winner_keys, & &1 ++ [seat])
 
     # correct the winner's hand if the winning tile was taken from hand (for display purposes)
+    # note that we're taking from the winner object's hand since that has sorted jokers
     state = if winning_tile == nil do
-      ix = Enum.find_index(state.players[seat].hand, fn tile -> tile == new_winning_tile end)
-      update_in(state.winners[seat].player, fn player -> %Player{ player | hand: List.delete_at(state.players[seat].hand, ix), draw: [new_winning_tile] } end)
+      hand = state.winners[seat].player.hand
+      ix = Enum.find_index(hand, &Utils.same_tile(&1, new_winning_tile))
+      update_in(state.winners[seat].player, fn player -> %Player{ player | hand: List.delete_at(hand, ix), draw: [new_winning_tile] } end)
     else state end
 
     push_message(state, [

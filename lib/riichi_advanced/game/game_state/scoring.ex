@@ -72,11 +72,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
     orig_hand = state.players[seat].hand
-    non_flower_calls = Enum.reject(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
+    {flower_calls, non_flower_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
     assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
-    assigned_calls = non_flower_calls
+    assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
     |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile), sideways} end)} end)
+    assigned_calls = flower_calls ++ assigned_non_flower_calls
     assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Riichi.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls, winning_hand: assigned_winning_hand } end)
@@ -1143,13 +1144,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {state, winning_tile}
       "vietnamese" ->
         # find the maximum yaku obtainable across all joker assignments
-        {joker_assignment, phan_yaku, mun_yaku, score, phan, mun} = for joker_assignment <- joker_assignments do
+        {joker_assignment, phan_yaku, mun_yaku, score, phan, mun, new_winning_tile} = for joker_assignment <- joker_assignments do
           # replace 5z with 0z
           joker_assignment = Map.new(joker_assignment, fn {ix, tile} -> if tile == :"5z" do {ix, :"0z"} else {ix, tile} end end)
 
+
           # temporarily replace winner's hand with joker assignment to determine yaku
           {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-          phan_yaku = get_best_yaku(state, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+
+          # if you tenhou, you win with 14 tiles all in hand (no draw)
+          # this necessitates choosing a winning tile out of the 14, which is what this does
+          {new_winning_tile, {_minipoints, phan_yaku}} = get_best_yaku_and_winning_tile(state, state.rules["yaku"], seat, [assigned_winning_tile], win_source)
+          new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end
           mun_yaku = get_best_yaku(state, state.rules["yakuman"], seat, [assigned_winning_tile], win_source)
           phan_yaku = if Map.has_key?(state.rules, "meta_yaku") do
             get_best_yaku(state, state.rules["meta_yaku"], seat, [assigned_winning_tile], win_source, mun_yaku ++ phan_yaku)
@@ -1157,8 +1163,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
           {score, phan, mun} = score_yaku(state, seat, phan_yaku, mun_yaku, is_dealer, win_source == :draw)
 
-          {joker_assignment, phan_yaku, mun_yaku, score, phan, mun}
-        end |> Enum.sort_by(fn {_, _, _, score, _, _} -> score end) |> Enum.at(-1)
+          {joker_assignment, phan_yaku, mun_yaku, score, phan, mun, new_winning_tile}
+        end |> Enum.sort_by(fn {_, _, _, score, _, _, _} -> score end) |> Enum.at(-1)
 
         # IO.inspect({joker_assignment, phan_yaku, mun_yaku, score, phan, mun})
 
@@ -1182,10 +1188,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
           yakuman_mult: mun,
           minipoints: mun,
           score: score,
-          payer: payer
+          payer: payer,
+          winning_tile: new_winning_tile
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-        {state, winning_tile}
+        {state, new_winning_tile}
       _ ->
         state = show_error(state, "Unknown scoring method #{inspect(scoring_table["method"])}")
         {state, winning_tile}

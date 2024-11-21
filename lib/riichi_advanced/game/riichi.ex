@@ -186,13 +186,13 @@ defmodule Riichi do
           Enum.all?(group, &Utils.is_tile/1) ->
             tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
             remove_from_hand_calls(hand, tiles, calls, tile_aliases)
-          # single tile
+          # single tile (with attrs)
           Utils.is_tile(group) -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
           true ->
             IO.puts("Unhandled group #{inspect(group)}")
             [{hand, calls}]
         end
-      # tile
+      # single tile (no attrs)
       Utils.is_tile(group) -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
       # call
       is_binary(group) -> try_remove_call(hand, calls, group)

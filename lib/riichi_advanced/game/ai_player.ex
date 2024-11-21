@@ -234,6 +234,8 @@ defmodule RiichiAdvanced.AIPlayer do
           "ankan" in player.buttons -> "ankan"
           "anfuun" in player.buttons -> "anfuun"
           "flower" in player.buttons -> "flower"
+          "start_flower" in player.buttons -> "start_flower"
+          "start_no_flower" in player.buttons -> "start_no_flower"
           "extra_turn" in player.buttons -> "extra_turn"
           "skip" in player.buttons -> "skip"
           true -> Enum.random(player.buttons)

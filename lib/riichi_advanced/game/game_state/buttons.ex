@@ -63,8 +63,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
           conditions = state.rules["buttons"][button_name]["call_conditions"]
           for {called_tile, choices} <- call_choices do
             {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
-          end |> Map.new()
+          end
         else call_choices end
+        |> Map.new()
         state = Log.add_call_choices(state, seat, button_name, call_choices)
         {state, {:call, call_choices}}
       Enum.any?(choice_actions, fn [action | _opts] -> action == "mark" end) ->
@@ -117,7 +118,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       # IO.puts("Buttons after:")
       # IO.inspect(buttons)
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
-      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: Enum.uniq(player.buttons ++ buttons[seat]), button_choices: Map.merge(player.button_choices, new_button_choices[seat]) } end)
+      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
 
       # play button notify sound if buttons changed
       if not Enum.empty?(buttons) && buttons != buttons_before do
