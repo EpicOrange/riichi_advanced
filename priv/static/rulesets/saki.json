@@ -5203,6 +5203,7 @@
         ["when", [{"name": "status", "opts": ["shirouzu-mairu"]}], [
           ["flip_first_visible_discard_facedown"],
           ["flip_first_visible_discard_facedown"],
+          ["push_message", "flips two visible discards facedown and switches to Himeko (Shirouzu Mairu)"],
           ["unset_status", "shirouzu-mairu"],
           ["set_status", "tsuruta-himeko"]
         ]],
