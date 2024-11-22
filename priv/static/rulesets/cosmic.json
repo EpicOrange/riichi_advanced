@@ -122,6 +122,8 @@
     "junchan_10": ["9m","9m","9m"],
     "junchan_11": ["9p","9p","9p"],
     "junchan_12": ["9s","9s","9s"],
+    "junchan_13": ["1m","1p","1s"],
+    "junchan_14": ["9m","9p","9s"],
     "junchan_pair_1": ["1m","1m"],
     "junchan_pair_2": ["1p","1p"],
     "junchan_pair_3": ["1s","1s"],
@@ -404,7 +406,7 @@
       "value": 1,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
-          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 4],
+          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "junchan_13", "junchan_14", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6", "ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]
         ]]]}
       ]
@@ -415,7 +417,7 @@
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
-          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 4],
+          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "junchan_13", "junchan_14", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6", "ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]
         ]]]}
       ]
@@ -539,7 +541,7 @@
       "value": 2,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
-          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
+          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "junchan_13", "junchan_14"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
         ]]]}
       ]
@@ -550,7 +552,7 @@
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
-          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 4],
+          [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "junchan_13", "junchan_14"], 4],
           [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1]
         ]]]}
       ]
