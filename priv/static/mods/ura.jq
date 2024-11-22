@@ -25,6 +25,7 @@
 # reveal ura after riichi win
 .before_win.actions += [
   ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["ura_revealed"]}], [
+    ["set_status_all", "ura_revealed"],
     ["when", [{"name": "tile_not_revealed", "opts": [-6]}], [["reveal_tile", "1x"]]],
     ["when", [{"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", "1x"]]],
     ["when", [{"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", "1x"]]],
@@ -40,6 +41,5 @@
     ["when", [{"name": "tile_not_revealed", "opts": [-9]}], [["reveal_tile", "1x"]]],
     ["when", [{"name": "tile_not_revealed", "opts": [-11]}], [["reveal_tile", "1x"]]],
     ["when", [{"name": "tile_not_revealed", "opts": [-13]}], [["reveal_tile", "1x"]]]
-  ]],
-  ["set_status_all", "ura_revealed"]
+  ]]
 ]
