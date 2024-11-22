@@ -188,7 +188,6 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp style_call(style, call_choice, called_tile) do
     if called_tile != nil do
       tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
-      tiles = Utils.sort_tiles(tiles)
       for style_spec <- style, reduce: [] do
         acc ->
           tile = case style_spec do
@@ -286,6 +285,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # upgrade that call
     {_name, call} = Enum.at(state.players[seat].calls, index)
+    call_choice = Riichi.call_to_tiles({"", call})
 
     # find the index of the sideways tile to determine the direction
     sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
