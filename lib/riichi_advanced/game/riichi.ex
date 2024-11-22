@@ -666,7 +666,13 @@ defmodule Riichi do
         |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu && offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
       else [] end
     end)
-    hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ [{starting_hand, fu}]
+    possible_kontsu_removed = if enable_kontsu_fu do
+      Enum.flat_map(winning_tiles, fn winning_tile ->
+        try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 10, ordering, ordering_r), offset_tile(winning_tile, 20, ordering, ordering_r)], tile_aliases)
+        |> Enum.map(fn hand -> {hand, fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
+      end)
+    else [] end
+    hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ possible_kontsu_removed ++ [{starting_hand, fu}]
 
     # from these hands, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
