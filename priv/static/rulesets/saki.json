@@ -428,72 +428,72 @@
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
     },
     {
       "display_name": "Round Wind",
       "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
     },
     {
       "display_name": "Haku",
@@ -738,116 +738,6 @@
       "when": [{"name": "status", "opts": ["inazuma_riichi"]}]
     },
     {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 1]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 2]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 3]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 4]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 5]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 6]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 7]]]]}]
-    },
-    {
-      "display_name": "Mase Yuuko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 8]]]]}]
-    },
-    {
-      "display_name": "Matano Seiko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 2]]]]}]
-    },
-    {
-      "display_name": "Matano Seiko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 3]]]]}]
-    },
-    {
-      "display_name": "Matano Seiko",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 9]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 11]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 13]]]]}]
-    },
-    {
-      "display_name": "Warm Tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 14]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 8]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 10]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 13]]]]}]
-    },
-    {
-      "display_name": "Sagimori Arata",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 14]]]]}]
-    },
-    {
-      "display_name": "Three-Sided Wait",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "wait_count_at_least", "opts": [3, ["win"]]}]
-    },
-    {
-      "display_name": "Single Wait",
-      "value": 2,
-      "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}]
-    },
-    {
-      "display_name": "Takimi Haru",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["takimi-haru"]}, {"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}]
-    },
-    {
       "display_name": "Chasing Riichi",
       "value": 2,
       "when": [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "status", "opts": ["chasing"]}]
@@ -863,11 +753,6 @@
       "when": [{"name": "status", "opts": ["anetai-toyone"]}, {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan", "ankan"], 4]]]]}]
     },
     {
-      "display_name": "Furiten Tsumo",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["atago-hiroe", "riichi", "furiten"]}, "won_by_draw"]
-    },
-    {
       "display_name": "All Fives",
       "value": 1,
       "when": [
@@ -969,150 +854,7 @@
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}
       ]
     },
-    {
-      "display_name": "Chun as Five",
-      "value": 1,
-      "when": [
-        {"name": "status", "opts": ["golden_chun"]},
-        [
-          {"name": "status_missing", "opts": ["7z"]},
-          [
-            {"name": "status", "opts": ["77z"]},
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
-          ],
-          [
-            {"name": "status", "opts": ["777z"]},
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
-          ]
-        ]
-      ]
-    },
-    {
-      "display_name": "Haku Tsumo",
-      "value": 2,
-      "when": [
-        {"name": "status", "opts": ["karijuku-tomoe"]},
-        "won_by_draw",
-        {"name": "match", "opts": [["winning_tile"], [[[["5z"], 1]]]]}
-      ]
-    },
-    {
-      "display_name": "Nelly Virsaladze",
-      "value": 1,
-      "when": [
-        {"name": "status", "opts": ["nelly-virsaladze"]},
-        {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
-        {"name": "counter_at_most", "opts": ["riichi_turn", 6]}
-      ]
-    },
-    {
-      "display_name": "Nelly Virsaladze",
-      "value": 1,
-      "when": [
-        {"name": "status", "opts": ["nelly-virsaladze"]},
-        {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
-        {"name": "counter_at_most", "opts": ["riichi_turn", 8]}
-      ]
-    },
-    {
-      "display_name": "Nelly Virsaladze",
-      "value": 1,
-      "when": [
-        {"name": "status", "opts": ["nelly-virsaladze"]},
-        {"name": "not_counter_equals", "opts": ["riichi_turn", 0]},
-        {"name": "counter_at_most", "opts": ["riichi_turn", 10]}
-      ]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 7]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 10]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 12]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 14]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 16]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 18]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 20]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 22]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 24]}]
-    },
-    {
-      "display_name": "Facedown tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 26]}]
-    },
+
     {
       "display_name": "Aside tiles",
       "value": 1,
@@ -1164,22 +906,22 @@
       "when": [{"name": "status", "opts": ["iwato-kasumi"]}, {"name": "counter_at_least", "opts": ["revealed_suit", 35]}]
     },
     {
-      "display_name": "Winds",
+      "display_name": "Any Wind",
       "value": 1,
       "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}]
     },
     {
-      "display_name": "Winds",
+      "display_name": "Any Wind",
       "value": 1,
       "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 2]]]]}]
     },
     {
-      "display_name": "Winds",
+      "display_name": "Any Wind",
       "value": 1,
       "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 3]]]]}]
     },
     {
-      "display_name": "Winds",
+      "display_name": "Any Wind",
       "value": 1,
       "when": [{"name": "status", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["all_calls"], [[[["ton", "nan", "shaa", "pei"], 4]]]]}]
     },
@@ -1190,6 +932,305 @@
         {"name": "status", "opts": ["yae_kobashiri_double_riichi"]}
       ]
     },
+    {
+      "display_name": "Uumensai",
+      "value": 2,
+      "when": [{"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}]
+    }
+  ],
+  "yakuman": [
+    {
+      "display_name": "Renhou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
+    },
+    {
+      "display_name": "Tenhou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
+    },
+    {
+      "display_name": "Chiihou",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
+    },
+    {
+      "display_name": "Daisangen",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}]
+    },
+    {
+      "display_name": "Suuankou",
+      "value": 1,
+      "when": [
+        "won_by_draw",
+        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 3], [["pair"], 2]]]]}
+      ]
+    },
+    {
+      "display_name": "Suuankou Tanki",
+      "value": 2,
+      "when": [
+        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
+        [ // tenhou upgrade
+          "no_discards_yet",
+          {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]}
+        ],
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}
+      ]
+    },
+    {
+      "display_name": "Tsuuiisou",
+      "value": 1,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","5z","6z","7z"]}]
+    },
+    {
+      "display_name": "Ryuuiisou",
+      "value": 1,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","6s","8s","6z"]}]
+    },
+    {
+      "display_name": "Chinroutou",
+      "value": 1,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
+    },
+    {
+      "display_name": "Chuurenpoutou",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
+    },
+    {
+      "display_name": "Junsei Chuurenpoutou",
+      "value": 2,
+      "when": [[
+        {"name": "match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]},
+        [ // tenhou upgrade
+          "no_discards_yet",
+          {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}
+        ]
+      ]]
+    },
+    {
+      "display_name": "Kokushi Musou",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
+    },
+    {
+      "display_name": "Kokushi Musou Juusan Menmachi",
+      "value": 2,
+      "when": [[
+        {"name": "match", "opts": [["hand"], [[[["orphans_all"], 1]]]]},
+        [ // tenhou upgrade
+          "no_discards_yet",
+          {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}
+        ]
+      ]]
+    },
+    {
+      "display_name": "Daisuushii",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}]
+    },
+    {
+      "display_name": "Shousuushii",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]}]
+    },
+    {
+      "display_name": "Suukantsu",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
+    }
+  ],
+  "yaku_precedence": {
+    "Chinitsu": ["Honitsu"],
+    "Chiitoitsu": ["Iipeikou"],
+    "Ryanpeikou": ["Iipeikou", "Chiitoitsu"],
+    "Junchan": ["Chanta"],
+    "Honroutou": ["Chanta", "Junchan"],
+    "Suuankou Tanki": ["Suuankou"],
+    "Junsei Chuurenpoutou": ["Chuurenpoutou"],
+    "Kokushi Musou Juusan Menmachi": ["Kokushi Musou"],
+    "Daisuushii": ["Shousuushii"],
+    "No Dora": ["Dora", "Aka", "Ura"]
+  },
+  "extra_yaku": [
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 4]}] },
+    { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 1]}] },
+    { "display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 2]}] },
+    { "display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 3]}] },
+    { "display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 4]}] },
+    { "display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_m"]}] },
+    { "display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_p"]}] },
+    { "display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_s"]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 4]}] },
+    { "display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 1]}] },
+    { "display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 2]}] },
+    { "display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 3]}] },
+    { "display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 4]}] },
+    { "display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 1]}] },
+    { "display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 2]}] },
+    { "display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 3]}] },
+    { "display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 4]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 1]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 2]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 3]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 4]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 5]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 6]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 7]]]]}] },
+    { "display_name": "Mase Yuuko", "value": 1, "when": [{"name": "status", "opts": ["mase-yuuko"]}, {"name": "match", "opts": [["pond"], [[[["koutsu"], 8]]]]}] },
+    { "display_name": "Matano Seiko", "value": 1, "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 2]]]]}] },
+    { "display_name": "Matano Seiko", "value": 1, "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 3]]]]}] },
+    { "display_name": "Matano Seiko", "value": 1, "when": [{"name": "status", "opts": ["matano-seiko"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Warm Tiles", "value": 1, "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 9]]]]}] },
+    { "display_name": "Warm Tiles", "value": 1, "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 11]]]]}] },
+    { "display_name": "Warm Tiles", "value": 1, "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 13]]]]}] },
+    { "display_name": "Warm Tiles", "value": 1, "when": [{"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1m"],["2m"],["3m"],["4m"],["5m"],["6m"],["7m"],["8m"],["9m"],["1p"],["3p"],["5p"],["6p"],["7p"],["9p"],["1s"],["5s"],["7s"],["9s"],["7z"]], 14]]]]}] },
+    { "display_name": "Sagimori Arata", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 8]]]]}] },
+    { "display_name": "Sagimori Arata", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 10]]]]}] },
+    { "display_name": "Sagimori Arata", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 13]]]]}] },
+    { "display_name": "Sagimori Arata", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[["1p"],["2p"],["3p"],["4p"],["5p"],["8p"],["9p"],["2s"],["4s"],["5s"],["6s"],["8s"],["9s"],["5z"]], 14]]]]}] },
+    { "display_name": "Three-Sided Wait", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "wait_count_at_least", "opts": [3, ["win"]]}] },
+    { "display_name": "Single Wait", "value": 2, "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
+    { "display_name": "Takimi Haru", "value": 1, "when": [{"name": "status", "opts": ["takimi-haru"]}, {"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}] },
+    { "display_name": "Furiten Tsumo", "value": 1, "when": [{"name": "status", "opts": ["atago-hiroe", "riichi", "furiten"]}, "won_by_draw"] },
+    { "display_name": "Haku Tsumo", "value": 2, "when": [{"name": "status", "opts": ["karijuku-tomoe"]}, "won_by_draw", {"name": "match", "opts": [["winning_tile"], [[[["5z"], 1]]]]}] },
+    { "display_name": "Nelly Virsaladze", "value": 1, "when": [{"name": "status", "opts": ["nelly-virsaladze"]}, {"name": "not_counter_equals", "opts": ["riichi_turn", 0]}, {"name": "counter_at_most", "opts": ["riichi_turn", 6]}] },
+    { "display_name": "Nelly Virsaladze", "value": 1, "when": [{"name": "status", "opts": ["nelly-virsaladze"]}, {"name": "not_counter_equals", "opts": ["riichi_turn", 0]}, {"name": "counter_at_most", "opts": ["riichi_turn", 8]}] },
+    { "display_name": "Nelly Virsaladze", "value": 1, "when": [{"name": "status", "opts": ["nelly-virsaladze"]}, {"name": "not_counter_equals", "opts": ["riichi_turn", 0]}, {"name": "counter_at_most", "opts": ["riichi_turn", 10]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 7]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["tsuruta-himeko"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 2]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 4]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 6]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 8]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 10]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 12]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 14]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 16]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 18]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 20]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 22]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 24]}] },
+    { "display_name": "Facedown Tiles", "value": 1, "when": [{"name": "status", "opts": ["kajiki-yumi"]}, {"name": "counter_at_least", "opts": ["facedown_tiles", 26]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [2000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [4000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [6000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [8000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [10000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [12000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [14000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [16000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [18000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [20000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [22000]}] },
+    { "display_name": "Bets", "value": 1, "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [24000]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 1]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 2]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 3]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 4]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 5]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 6]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 7]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 8]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 9]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 10]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 11]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 12]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 13]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 14]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 15]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 16]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 17]}] },
+    { "display_name": "Aside Tiles", "value": 1, "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 18]}] },
+    { "display_name": "Ryuuka Tsumo", "value": 1, "when": [{"name": "status", "opts": ["shimizudani-ryuuka"]}, "won_by_draw"] },
     {
       "display_name": "Voided Suit",
       "value": 1,
@@ -1312,386 +1353,7 @@
           ]]}
         ]
       ]
-    },
-    {
-      "display_name": "Uumensai",
-      "value": 2,
-      "when": [{"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [2000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [4000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [6000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [8000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [10000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [12000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [14000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [16000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [18000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [20000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [22000]}]
-    },
-    {
-      "display_name": "Bets",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shishihara-sawaya", "riichi"]}, {"name": "bet_at_least", "opts": [24000]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 1]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 2]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 3]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 4]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 5]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 6]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 7]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 8]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 9]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 10]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 11]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 12]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 13]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 14]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 15]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 16]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 17]}]
-    },
-    {
-      "display_name": "Aside tiles",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["ueshige-suzu"]}, {"name": "counter_at_least", "opts": ["num_matches", 18]}]
-    },
-    {
-      "display_name": "Ryuuka Tsumo",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["shimizudani-ryuuka"]}, "won_by_draw"]
     }
-  ],
-  "yakuman": [
-    {
-      "display_name": "Renhou",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
-    },
-    {
-      "display_name": "Tenhou",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
-    },
-    {
-      "display_name": "Chiihou",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
-    },
-    {
-      "display_name": "Daisangen",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}]
-    },
-    {
-      "display_name": "Suuankou",
-      "value": 1,
-      "when": [
-        "won_by_draw",
-        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 3], [["pair"], 2]]]]}
-      ]
-    },
-    {
-      "display_name": "Suuankou Tanki",
-      "value": 2,
-      "when": [
-        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
-        [ // tenhou upgrade
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]}
-        ],
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}
-      ]
-    },
-    {
-      "display_name": "Tsuuiisou",
-      "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","5z","6z","7z"]}]
-    },
-    {
-      "display_name": "Ryuuiisou",
-      "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","6s","8s","6z"]}]
-    },
-    {
-      "display_name": "Chinroutou",
-      "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
-    },
-    {
-      "display_name": "Chuurenpoutou",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
-    },
-    {
-      "display_name": "Junsei Chuurenpoutou",
-      "value": 2,
-      "when": [[
-        {"name": "match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]},
-        [ // tenhou upgrade
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}
-        ]
-      ]]
-    },
-    {
-      "display_name": "Kokushi Musou",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
-    },
-    {
-      "display_name": "Kokushi Musou Juusan Menmachi",
-      "value": 2,
-      "when": [[
-        {"name": "match", "opts": [["hand"], [[[["orphans_all"], 1]]]]},
-        [ // tenhou upgrade
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}
-        ]
-      ]]
-    },
-    {
-      "display_name": "Daisuushii",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}]
-    },
-    {
-      "display_name": "Shousuushii",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]}]
-    },
-    {
-      "display_name": "Suukantsu",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
-    }
-  ],
-  "yaku_precedence": {
-    "Chinitsu": ["Honitsu"],
-    "Chiitoitsu": ["Iipeikou"],
-    "Ryanpeikou": ["Iipeikou", "Chiitoitsu"],
-    "Junchan": ["Chanta"],
-    "Honroutou": ["Chanta", "Junchan"],
-    "Suuankou Tanki": ["Suuankou"],
-    "Junsei Chuurenpoutou": ["Chuurenpoutou"],
-    "Kokushi Musou Juusan Menmachi": ["Kokushi Musou"],
-    "Daisuushii": ["Shousuushii"],
-    "No Dora": ["Dora", "Aka", "Ura"]
-  },
-  "extra_yaku": [
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-16]}, {"name": "winning_dora_count", "opts": [-16, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-18]}, {"name": "winning_dora_count", "opts": [-18, 4]}]},
-    {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 1]}]},
-    {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 2]}]},
-    {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 3]}]},
-    {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-20]}, {"name": "winning_dora_count", "opts": [-20, 4]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_m"]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_p"]}]},
-    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_s"]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-5]}, {"name": "winning_dora_count", "opts": [-5, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-7]}, {"name": "winning_dora_count", "opts": [-7, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-9]}, {"name": "winning_dora_count", "opts": [-9, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-11]}, {"name": "winning_dora_count", "opts": [-11, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-13]}, {"name": "winning_dora_count", "opts": [-13, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-15]}, {"name": "winning_dora_count", "opts": [-15, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-17]}, {"name": "winning_dora_count", "opts": [-17, 4]}]},
-    {"display_name": "Ura", "value": 1, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 1]}]},
-    {"display_name": "Ura", "value": 2, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 2]}]},
-    {"display_name": "Ura", "value": 3, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 3]}]},
-    {"display_name": "Ura", "value": 4, "when": [[{"name": "status", "opts": ["riichi"]}, {"name": "status", "opts": ["kainou-yoshiko", "uumensai"]}], {"name": "not_others_status", "opts": ["takakamo-shizuno"]}, {"name": "tile_revealed", "opts": [-19]}, {"name": "winning_dora_count", "opts": [-19, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_reverse_dora_count", "opts": [-6, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_reverse_dora_count", "opts": [-8, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_reverse_dora_count", "opts": [-10, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_reverse_dora_count", "opts": [-12, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_reverse_dora_count", "opts": [-14, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "winning_reverse_dora_count", "opts": [-16, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "winning_reverse_dora_count", "opts": [-18, 4]}]},
-    {"display_name": "Reverse Dora", "value": 1, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 1]}]},
-    {"display_name": "Reverse Dora", "value": 2, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 2]}]},
-    {"display_name": "Reverse Dora", "value": 3, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 3]}]},
-    {"display_name": "Reverse Dora", "value": 4, "when": [{"name": "status", "opts": ["kosegawa-shiromi"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "tile_revealed", "opts": [-20]}, {"name": "winning_reverse_dora_count", "opts": [-20, 4]}]}
-    
   ],
   "meta_yaku": [
     {
@@ -2678,12 +2340,6 @@
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
                 ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1]]]]}], [["set_status", "golden_chun"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun_pair"], -1], [["chun"], 1]]]]}], [["set_status", "777z"]]],
                 ["when", [{"name": "status", "opts": ["toyouko-momoko"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["set_status", "riichi"]]],
                 ["when", [
                   {"name": "status", "opts": ["kainou-yoshiko"]},
@@ -2695,6 +2351,27 @@
                     [["5z","6z","7z"], 1]
                   ]]]}
                 ], [["set_status", "uumensai"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0m"], 1]]]]}], [["set_status", "aka_m"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0p"], 1]]]]}], [["set_status", "aka_p"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["0s"], 1]]]]}], [["set_status", "aka_s"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1]]]]}], [["set_status", "golden_chun"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["7z"], 1]]]]}], [["set_status", "7z"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
+                ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun"], 1]]]]}], [["set_status", "777z"]]],
+                ["when", [
+                  {"name": "status", "opts": ["iwadate-yuan", "golden_chun"]},
+                  [
+                    {"name": "status_missing", "opts": ["7z"]},
+                    [
+                      {"name": "status", "opts": ["77z"]},
+                      {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
+                    ],
+                    [
+                      {"name": "status", "opts": ["777z"]},
+                      {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
+                    ]
+                  ]
+                ], [["set_status", "chun_as_five"]]],
                 ["when", [
                   {"name": "status", "opts": ["kanbara-satomi"]},
                   [
