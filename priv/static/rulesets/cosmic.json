@@ -629,6 +629,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 0]},
         {"name": "not_round_wind_is", "opts": ["north"]},
         {"name": "not_seat_is", "opts": ["north"]}
       ]
@@ -638,6 +639,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 2]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 1]},
         {"name": "not_round_wind_is", "opts": ["north"]},
         {"name": "not_seat_is", "opts": ["north"]}
       ]
@@ -647,6 +649,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 3]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 2]},
         {"name": "not_round_wind_is", "opts": ["north"]},
         {"name": "not_seat_is", "opts": ["north"]}
       ]
@@ -656,6 +659,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_123"], 4]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 3]},
         {"name": "not_round_wind_is", "opts": ["north"]},
         {"name": "not_seat_is", "opts": ["north"]}
       ]
@@ -665,6 +669,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 0]},
         {"name": "not_round_wind_is", "opts": ["west"]},
         {"name": "not_seat_is", "opts": ["west"]}
       ]
@@ -674,6 +679,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 2]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 1]},
         {"name": "not_round_wind_is", "opts": ["west"]},
         {"name": "not_seat_is", "opts": ["west"]}
       ]
@@ -683,6 +689,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 3]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 2]},
         {"name": "not_round_wind_is", "opts": ["west"]},
         {"name": "not_seat_is", "opts": ["west"]}
       ]
@@ -692,6 +699,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_124"], 4]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 3]},
         {"name": "not_round_wind_is", "opts": ["west"]},
         {"name": "not_seat_is", "opts": ["west"]}
       ]
@@ -701,6 +709,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 0]},
         {"name": "not_round_wind_is", "opts": ["south"]},
         {"name": "not_seat_is", "opts": ["south"]}
       ]
@@ -710,6 +719,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 2]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 1]},
         {"name": "not_round_wind_is", "opts": ["south"]},
         {"name": "not_seat_is", "opts": ["south"]}
       ]
@@ -719,6 +729,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 3]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 2]},
         {"name": "not_round_wind_is", "opts": ["south"]},
         {"name": "not_seat_is", "opts": ["south"]}
       ]
@@ -728,6 +739,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_134"], 4]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 3]},
         {"name": "not_round_wind_is", "opts": ["south"]},
         {"name": "not_seat_is", "opts": ["south"]}
       ]
@@ -737,6 +749,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 0]},
         {"name": "not_round_wind_is", "opts": ["east"]},
         {"name": "not_seat_is", "opts": ["east"]}
       ]
@@ -746,6 +759,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 2]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 1]},
         {"name": "not_round_wind_is", "opts": ["east"]},
         {"name": "not_seat_is", "opts": ["east"]}
       ]
@@ -755,6 +769,7 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 3]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 2]},
         {"name": "not_round_wind_is", "opts": ["east"]},
         {"name": "not_seat_is", "opts": ["east"]}
       ]
@@ -764,9 +779,30 @@
       "value": 0.5,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu_234"], 4]]]]},
+        {"name": "counter_at_most", "opts": ["fuun_count", 3]},
         {"name": "not_round_wind_is", "opts": ["east"]},
         {"name": "not_seat_is", "opts": ["east"]}
       ]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [{"name": "counter_at_least", "opts": ["fuun_count", 1]}]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [{"name": "counter_at_least", "opts": ["fuun_count", 2]}]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [{"name": "counter_at_least", "opts": ["fuun_count", 3]}]
+    },
+    {
+      "display_name": "Mixed Winds",
+      "value": 0.5,
+      "when": [{"name": "counter_at_least", "opts": ["fuun_count", 4]}]
     },
     {
       "display_name": "Toikon",
@@ -1342,7 +1378,8 @@
       ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["just_reached"]}, {"name": "not_discarder_status", "opts": ["put_down_riichi_stick"]}],
         [["when_anyone", ["just_discarded"],
           [["add_score", -1000], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]]]
-      ]]
+      ]],
+      ["add_counter", "fuun_count", "count_matches", ["calls"], [[[["anfuun", "daiminkun", "kafuun"], 1]]]]
     ]
   },
   "before_abortive_draw": {
