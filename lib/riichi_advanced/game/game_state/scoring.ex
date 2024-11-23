@@ -1109,7 +1109,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         })
         state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
         {state, winning_tile}
-      "sichuan" -> # TODO this is same as hk
+      "sichuan" ->
         # find the maximum yaku obtainable across all joker assignments
         is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
         opponents = Enum.reject([:east, :south, :west, :north], fn dir -> Map.has_key?(state.winners, dir) || dir == winner.seat end)

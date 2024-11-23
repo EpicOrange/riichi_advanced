@@ -188,13 +188,13 @@ This defines a button with button text "Pair" that shows when every condition in
 
 - chii: `[[-2, -1], [-1, 1], [1, 2]]`. Either two tiles left of the discard, two tiles with one on either side of the discard, or two tiles right of the discard.
 - pon: `[[0, 0]]`. Only one possibility, which is two tiles matching the discard.
-- pair: `[[0]]`. Only one possibility, which is one tiles matching the discard.
+- pair: `[[0]]`. Only one possibility, which is one tile matching the discard.
 
 Call buttons _must_ have `call_available` as one of the conditions in `show_when`. This condition checks whether the last discard matches the call specification. If you don't check that, and click the call button, the game will crash.
 
-The final moving part is the top-level `interruptible_actions` key, which is an array of action names that can be interrupted. Here the internal `play_tile` action is made interruptible, and so after every `play_tile` action, the game will check the `show_when` button condition to see if they should appear. Without this key, `show_when` will only be checked at the start of each game.
+The final moving part is the top-level `interruptible_actions` key, which is an array of action names that can be interrupted. Here the internal `play_tile` action is made interruptible, and so after every `play_tile` action, the game will check the `show_when` button condition for each button to see if it should appear. Without this key, it will only check for buttons at the start of each game.
 
-Even if an action, like `"draw"` is made interruptible by inclusion in the top-level `interruptible_actions` array, one can specify e.g. `"uninterruptible_draw"` instead of `"draw"` to have the engine ignore the interrupt regardless. This is useful because every interrupt requires recalculating all buttons for all players, and sometimes you don't need that.
+Even if an action, like `"draw"`, is made interruptible by inclusion in the top-level `interruptible_actions` array, one can specify the action name `"uninterruptible_draw"` instead of `"draw"` to have the engine ignore the interrupt. This is useful because every interrupt requires recalculating all buttons for all players, and sometimes you don't need or want that.
 
 ## Conditions with arguments and complex conditions
 
@@ -227,7 +227,7 @@ The reason for this is complex conditions. If you have conditions "a" "b" and "c
 
     ["a", "b", "c"]
 
-This is what we've seen earlier above. I defined it as a condition list. But if you want (("a" OR "b") AND "c") you would write
+AND conditions are what we're used to seeing. I defined them as a condition list. But if you want (("a" OR "b") AND "c") you would write
 
     [["a", "b"], "c"]
 
@@ -237,7 +237,7 @@ and if you wanted ("a" OR ("b" AND "c")) you would write
 
 So the first level of array joins all its elements with AND, the second level of array joins with OR, and the third level of array joins with AND, and so on. Because complex conditions are defined by the nesting level of arrays, conditions with arguments cannot be defined using arrays, which is why conditions with arguments look like `{"name": <name>, "opts": [<args>]}` instead.
 
-This concludes the overview of basic concepts in Riichi Advanced rulesets. Note that the last condition in `show_when` is a `match` condition, and it is used extensively in Riichi Advanced to check for tenpai, to check for yaku, and to check for anything involving the hand. It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the full documentation.
+This concludes the overview of basic concepts in Riichi Advanced rulesets. Note that for the riichi button, the last condition in `show_when` is a `match` condition, and it is used extensively in Riichi Advanced to check for tenpai, to check for yaku, and to check for anything involving the hand. It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the full documentation.
 
 ## The `match` condition and match specifications
 
@@ -250,7 +250,7 @@ This concludes the overview of basic concepts in Riichi Advanced rulesets. Note 
     "tenpai_14_definition": [
       [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
       [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-      [ [["koutsu"], -2], [["pair"], 6] ]
+      [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ]
     ],
     "kokushi_tenpai_definition": [
       [ "unique",
@@ -264,7 +264,7 @@ Named match specifications are top-level keys ending in `"_definition"`. Each na
     [
       [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
       [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-      [ [["koutsu"], -2], [["pair"], 6] ],
+      [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
       [ "unique",
         [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
         [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -275,7 +275,7 @@ Let's go over these one by one and see how `match` matches against your 14-tile 
 
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ]
 
-Skipping the `exhaustive` flag for now, the intuition of this one is that it takes a pair out of your 14-tile hand, leaving a 12-tile hand. Then it takes one of either `["ryanmen/penchan", "kanchan", "pair"]` out of the 12-tile hand, leaving a 10-tile hand. Finally, it takes out _three_ of either `shuntsu` or `koutsu` out of the remainder, leaving one tile, which is thrown away. The `exhaustive` flag at the beginning means this entire process exhaustively tries every single possibility of taking out these **groups**, instead of just taking the first one it sees in the given order. The match succeeds if it was able to find each group in your 14-tile hand. Intuitively it means 13 of the 14 tiles in your hand match a standard hand with a ryanmen/penchan/kanchan/pair wait, making you tenpai.
+Skipping the `exhaustive` flag for now, the intuition of this one is that it takes a pair out of your 14-tile hand, leaving a 12-tile hand. Then it takes one of either `["ryanmen/penchan", "kanchan", "pair"]` out of the 12-tile hand, leaving a 10-tile hand. Finally, it takes out _three_ of either `["shuntsu", "koutsu"]` out of the remainder, leaving one tile, which is ignored. The `exhaustive` flag at the beginning means this entire process exhaustively tries every single possibility of taking out these three **groups**, instead of just taking the first one it sees for each group. The match succeeds if it was able to find each group. Intuitively it means 13 of the 14 tiles in your hand match a standard hand with a ryanmen/penchan/kanchan/pair wait, making you tenpai.
 
 Things like `pair`, `ryanmen/penchan`, etc are **sets** defined in the top-level `set_definitions` which for riichi looks like this:
 
@@ -294,18 +294,18 @@ I think that is self-explanatory. Let's move onto the next match definition.
 
       [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
 
-This does the same thing as above, except it just takes four `shuntsu` or `koutsu` out of your hand immediately. If it's able to do that then you are clearly tenpai with a single tile wait, which can be either of the two remaining tiles of your 14-tile hand.
+This does the same thing as above, except it just takes four `shuntsu` or `koutsu` out of your hand immediately. If it's able to do that then you are clearly tenpai with a single tile wait.
 
-      [ [["koutsu"], -2], [["pair"], 6] ],
+      [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
 
-This is the seven pairs check. The negative **count** in this one specifies a negative match. If we're able to take out two `koutsu` from the hand at that point in the check, then the match fails. Otherwise, it proceeds to take six pairs out of the hand, and if it can, then the match succeeds and you are tenpai for seven pairs. (The negative koutsu check takes care of the case where you have 4 pairs and 2 triplets, which is not tenpai for seven pairs.)
+This is the seven pairs check. Although you can check for six pairs via the simpler match definition `[ [["pair"], 6] ]`, we need to filter out the two cases where you have six pairs but are not tenpai for seven pairs. We do this with **negative counts**, which specifies a negative match for a group. Basically, if we're able to take out a `quad` from the hand (indicating two identical pairs), then the match fails. Also if the hand includes two `koutsu`, there's no way to discard one of the two unpaired tiles and wait on a unique pair, so that also fails to match. Otherwise, it proceeds to take six pairs out of the hand, and if it can, then the match succeeds and you are tenpai for seven pairs.
 
       [ "unique",
         [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
         [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
       ],
 
-This is the kokushi check and introduces the `unique` flag. `unique` is useful when you want to ensure that each group specified in the group list `["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]` is taken _at most once_ over the course of taking out twelve of them. So this check takes out 12 unique terminal/honors plus one more, and if it can do that, the match succeeds and you are tenpai for kokushi.
+This is the kokushi check and introduces the `unique` flag. `unique` is useful when you want to ensure that each group specified in the group list `["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]` is taken _at most once_ over the course of taking out twelve of them. (I say "group", but each group consists of one tile, which is a valid definition of a group.) This check removes 12 unique terminal/honors plus one more, and if it can do that, the match succeeds and you are tenpai for kokushi.
 
 That's about it for match specifications.
 
@@ -341,6 +341,7 @@ Rules:
 
 - `display_honba`: Whether to show number of honba in the middle
 - `display_riichi_sticks`: Whether to show number of riichi sticks in the middle
+- `display_wall`: Whether to show the "Show wall" button on the bottom right. (Check the riichi ruleset for an example.)
 - `dora_indicators`: Defines what tile dora indicators indicate
 - `enable_saki_cards`: Set to `true` to enable saki power stuff (may remove this key in the future)
 - `initial_score`: Starting score
@@ -563,11 +564,13 @@ Scoring refers to the exchange of points after a win or a draw. To enable scorin
 
 ## `"method": "riichi"`
 
-Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action.
+Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action. Only the discarder pays in event of a deal in (`"win_by_discard"`, `"win_by_call"`). In case of self-draw (`"win_by_draw"`), all players pay, the dealer pays double.
 
-This method enables fu calculations for a winning hand. Fu calculation is currently hardcoded and cannot be customized, but this is subject to change.
+This method enables fu calculations for a winning hand. Fu calculation is hardcoded and cannot be customized -- let me know if your ruleset needs to use custom fu.
 
-In the event of an exhaustive draw, this method looks for the status `"tenpai"` among all existing players. (This means you will have to set and unset tenpai status through the course of the game.) All `"tenpai"` players will pay the non-`"tenpai"` players according to the rules of riichi. That is, unless any player has the status `"nagashi"`, in which case they get nagashi payments.
+In the event of an exhaustive draw, this method looks for the status `"tenpai"` among all existing players. (This means you will have to set and unset tenpai status through the course of the game.) All `"tenpai"` players will pay the non-`"tenpai"` players according to the rules of riichi, hardcoded at 0/1000/1500/3000/0.
+
+That is, unless any player has the status `"nagashi"`, in which case all `"nagashi"` players get nagashi payments instead.
 
 ## `"method": "hk"`
 
@@ -577,13 +580,17 @@ All players pay for a win -- the discarder pays double.
 
 ## `"method": "sichuan"`
 
-Currently does the same as `hk` except only the discarder pays in case of a win by discard.
+Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action.
+
+Only the discarder pays in event of a deal in (`"win_by_discard"`, `"win_by_call"`). In case of self-draw (`"win_by_draw"`), all players (who have not yet won) pay.
+
+If `"draw_payments": true` is set under `"score_calculation"`, then on draw, all players with the "tenpai" status are paid according to the highest possible value their hand could achieve.
 
 ## `"method": "vietnamese"`
 
-This is the same as `"method": "riichi"` but it does not calculate fu. Instead it uses the `"yaku"` key to calculate Phán and the `"yakuman" key to calculate Mủn. Also, there are no tenpai payments.
+This is the same as `"method": "riichi"` but it does not calculate fu or tenpai payments. Instead it uses the `"yaku"` key to calculate Phán and the `"yakuman" key to calculate Mủn.
 
-# Game loop in detail (might be outdated)
+# Game loop in detail (outdated)
 
 Here's how the game loop functions:
 
