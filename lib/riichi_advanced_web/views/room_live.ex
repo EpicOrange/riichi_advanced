@@ -125,7 +125,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
         </div>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
-      <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu_buttons" />
+      <div class="top-right-container">
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />
+      </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>

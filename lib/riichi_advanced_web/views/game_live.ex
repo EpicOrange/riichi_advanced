@@ -96,6 +96,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       <%= if Map.has_key?(@state.rules, "tile_images") do %>
         <.live_component module={RiichiAdvancedWeb.CustomTilesComponent} id="custom-tiles" tiles={@state.rules["tile_images"]}/>
       <% end %>
+      <input id="mobile-zoom-checkbox" type="checkbox" class="mobile-zoom-checkbox" phx-update="ignore">
+      <label for="mobile-zoom-checkbox"></label>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
