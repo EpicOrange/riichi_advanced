@@ -242,7 +242,6 @@ div.compass {
   user-select: none;
   z-index: 2;
 }
-div.compass > div.score-box { border-style: ridge; }
 div.compass::before {
   position: absolute;
   content: "";
@@ -257,11 +256,10 @@ div.compass > div.score-box {
   position: absolute;
   width: 0;
   height: 0;
-  left: calc(50% - (1.125 * var(--tile-size)));
-  top: calc(50% - (1.125 * var(--tile-size)));
+  left: calc(50% - (1.25 * var(--tile-size)));
+  top: calc(50% - (1.25 * var(--tile-size)));
   border-radius: calc(0.25 * var(--tile-size));
-  border-width: calc(1.125 * var(--tile-size));
-  border-color: lightgray;
+  border: calc(1.25 * var(--tile-size)) solid black;
   z-index: -1;
 }
 div.compass > div.direction {
@@ -337,17 +335,15 @@ div.compass > div.direction > div.wind-marker.highlighted.bot {
 }
 div.compass > div.direction > div.score-counter {
   position: absolute;
+  width: calc(2 * var(--tile-size));
+  height: calc(0.66 * var(--tile-size));
+  left: calc(50% - (1 * var(--tile-size)));
+  bottom: calc(50% - (0.05 * var(--tile-size)));
   text-align: center;
-  width: calc(1.25 * var(--tile-size));
-  height: calc(0.4 * var(--tile-size));
-  font-size: calc(0.32 * var(--tile-size));
-  color: var(--tile-back);
-  background: black;
-  left: calc(50% - (0.625 * var(--tile-size)));
-  bottom: calc(50% + (0.25 * var(--tile-size)));
+  font-size: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
+  color: var(--tile-back);
 }
-
 div.compass > div.centerpiece {
   position: relative;
   text-align: center;
@@ -364,9 +360,8 @@ div.compass > div.centerpiece {
 div.compass > div.centerpiece::before {
   position: absolute;
   content: "";
-  width: calc(1.1 * var(--tile-size));
-  height: calc(1.1 * var(--tile-size));
-  background: #0000007F;
+  background: #5F5F5F;
+  border: calc(0.55 * var(--tile-size)) ridge #5F5F5F;
   left: calc(50% - (0.55 * var(--tile-size)));
   top: calc(50% - (0.55 * var(--tile-size)));
   z-index: -1;
@@ -374,8 +369,8 @@ div.compass > div.centerpiece::before {
 div.compass > div.centerpiece > div.tiles-left:last-child {
   transform: translateY(calc(0.2 * var(--tile-size)));
 }
-div.centerpiece > div.riichi-stick-counter,
-div.centerpiece > div.honba-counter {
+div.riichi-stick-counter,
+div.honba-counter {
   position: absolute;
   font-size: calc(0.25 * var(--tile-size));
   left: calc(0.075 * var(--tile-size));
@@ -387,39 +382,40 @@ div.centerpiece > div.honba-counter {
   align-items: center;
   column-gap: calc(0.1 * var(--tile-size));
 }
-div.centerpiece > div.riichi-stick-counter { bottom: calc(0.2 * var(--tile-size)); }
-div.centerpiece > div.honba-counter { bottom: calc(-0.05 * var(--tile-size)); }
-div.centerpiece > div.riichi-stick-counter::before,
-div.centerpiece > div.riichi-stick-counter::after,
-div.centerpiece > div.honba-counter::before,
-div.centerpiece > div.honba-counter::after {
+div.riichi-stick-counter { bottom: calc(0.2 * var(--tile-size)); }
+div.honba-counter { bottom: calc(-0.05 * var(--tile-size)); }
+div.riichi-stick-counter::before,
+div.riichi-stick-counter::after,
+div.honba-counter::before,
+div.honba-counter::after {
   content: "";
   grid-column: 0;
 }
-div.centerpiece > div.riichi-stick-counter::before,
-div.centerpiece > div.honba-counter::before {
+div.riichi-stick-counter::before,
+div.honba-counter::before {
   width: 100%;
   height: calc(0.16 * var(--tile-size));
   border-radius: calc(0.08 * var(--tile-size));
   background: white;
   z-index: 1;
 }
-div.centerpiece > div.riichi-stick-counter::after,
-div.centerpiece > div.honba-counter::after {
+div.riichi-stick-counter::after,
+div.honba-counter::after {
   font-family: Arial;
   font-size: calc(0.3 * var(--tile-size));
   height: 0;
   margin: auto;
   z-index: 2;
 }
-div.centerpiece > div.riichi-stick-counter::after {
+div.riichi-stick-counter::after {
   content: "•";
-  transform: translateY(calc(-0.34 * var(--tile-size)));
+  transform: translateY(calc(-0.38 * var(--tile-size))) translateX(calc(-0.03 * var(--tile-size))) rotate(90deg);
+  transform-origin: 50% calc(0.2 * var(--tile-size));
   color: red;
 }
-div.centerpiece > div.honba-counter::after {
+div.honba-counter::after {
   content: "⣿";
-  transform: translateY(calc(-0.37 * var(--tile-size))) rotate(90deg);
+  transform: translateY(calc(-0.38 * var(--tile-size))) rotate(90deg);
   transform-origin: 50% calc(0.2 * var(--tile-size));
   color: #182890;
 }
@@ -2349,8 +2345,8 @@ div.room > div.custom-json > textarea {
   font-size: calc(0.25 * var(--tile-size));
 }
 
-/* menu nav buttons */
-div.menu-buttons-container {
+/* top right (menu buttons, riichi stick display} */
+div.top-right-container {
   height: var(--tile-size);
   position: absolute;
   top: calc(-1.5 * var(--tile-size));
@@ -2362,19 +2358,20 @@ div.menu-buttons-container {
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
-  div.menu-buttons-container {
+  div.top-right-container {
     width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
     left: calc(100% + var(--tile-size));
   }
 }
 /* portrait (mobile) */
 @media (max-aspect-ratio: 1.2/1) {
-  div.menu-buttons-container {
+  div.top-right-container {
     width: calc(100% + var(--tile-size));
     right: calc(-0.5 * var(--tile-size));
   }
 }
-div.menu-buttons-container > button {
+/* menu buttons */
+div.menu-buttons > button {
   height: calc(0.6 * var(--tile-size));
   background: var(--tile-front);
   font-size: calc(0.5 * var(--tile-size));
@@ -2387,6 +2384,27 @@ div.menu-buttons-container > button {
 div.menu-buttons-container > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
+}
+/* centerpiece status component */
+/* landscape */
+@media (min-aspect-ratio: 1.2/1) {
+  div.centerpiece-status-bar {
+    display: none;
+  }
+}
+div.centerpiece-status-bar {
+  margin-right: calc(2 * var(--tile-size));
+  width: calc(1.5 * var(--tile-size));
+  color: white;
+  transform: translateY(calc(-0.5 * var(--tile-size))) scale(2);
+}
+div.centerpiece-status-bar > div.tiles-left {
+  position: absolute;
+  font-size: calc(0.4 * var(--tile-size));
+  right: calc(-0.6 * var(--tile-size));
+  padding-left: calc(0.1 * var(--tile-size));
+  bottom: 0;
+  border-left: calc(0.02 * var(--tile-size)) solid white;
 }
 
 /* log control */

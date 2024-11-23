@@ -8,7 +8,7 @@ defmodule RiichiAdvancedWeb.MenuButtonsComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="menu-buttons-container">
+    <div class={[@id]}>
       <button class="back" phx-cancellable-click="back">Back</button>
       <%= if @log_button do %>
         <button class="log" phx-cancellable-click="log">Copy log</button>
