@@ -277,7 +277,7 @@ input.mobile-zoom-checkbox { display: none; }
   /* move buttons up */
   input.mobile-zoom-checkbox:checked ~ div.buttons,
   input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
-    bottom: calc(3.25 * var(--tile-size));
+    bottom: calc(2.5 * var(--tile-size));
   }
 }
 
