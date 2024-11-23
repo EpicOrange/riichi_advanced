@@ -982,8 +982,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_call({:is_playable, seat, tile}, _from, state), do: {:reply, is_playable?(state, seat, tile), state}
-  def handle_call({:get_button_display_name, button_name}, _from, state), do: {:reply, if button_name == "skip" do "Skip" else state.rules["buttons"][button_name]["display_name"] end, state}
-  def handle_call({:get_auto_button_display_name, button_name}, _from, state), do: {:reply, state.rules["auto_buttons"][button_name]["display_name"], state}
   def handle_call(:get_revealed_tiles, _from, state), do: {:reply, get_revealed_tiles(state), state}
 
   def handle_call({:get_visible_waits, seat, index}, _from, state) do

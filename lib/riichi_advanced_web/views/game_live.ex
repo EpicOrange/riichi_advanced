@@ -184,14 +184,16 @@ defmodule RiichiAdvancedWeb.GameLive do
                 <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
               <% end %>
             <% else %>
-              <button class="button" phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={name} :for={name <- @state.players[@seat].buttons}><%= GenServer.call(@game_state, {:get_button_display_name, name}) %></button>
+              <%= for {button, button_name} <- Enum.map(@state.players[@seat].buttons, fn button -> {button, if button == "skip" do "Skip" else @state.rules["buttons"][button]["display_name"] end} end) do %>
+                <button class={["button", String.length(button_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= button_name %></button>
+              <% end %>
             <% end %>
           <% end %>
         </div>
         <div class="auto-buttons">
           <%= for {name, checked} <- @state.players[@seat].auto_buttons do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name}><%= GenServer.call(@game_state, {:get_auto_button_display_name, name}) %></label>
+            <label for={"auto-button-" <> name}><%= @state.rules["auto_buttons"][name]["display_name"] %></label>
           <% end %>
         </div>
         <div class="call-buttons-container">
