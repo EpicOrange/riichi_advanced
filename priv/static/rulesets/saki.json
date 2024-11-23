@@ -2026,7 +2026,7 @@
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]],
-      ["unset_status", "nagashi"],
+      ["unset_status", "nagashi", "extra_turn", "extra_turn_taken", "extra_turn_skipped"],
       ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done", "oohoshi_awai_done"],
       ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
       ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
@@ -4508,7 +4508,8 @@
             ["when", [{"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "inoue_jun_broke_ippatsu"]]]
           ]]
         ]]
-      ]
+      ],
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii"]
     },
     "maya_yukiko_chii": {
       "display_name": "Chii with priority",
@@ -4551,7 +4552,7 @@
           ["push_message", "called chii with priority (Maya Yukiko)"]
         ]]
       ],
-      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
     "pon": {
       "display_name": "Pon",
@@ -4599,7 +4600,7 @@
           ]]
         ]]
       ],
-      "precedence_over": ["chii", "pon"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon"]
     },
     "matsumi_yuu_pon": {
       "display_name": "Pon red dragon with priority",
@@ -4623,7 +4624,7 @@
           {"name": "not_others_status", "opts": ["duelist", "riichi"]}
         ]
       ],
-      "precedence_over": ["choe_myeonghwa", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon", "riichi", "ikeda_kana", "daiminkan", "ankan", "kakan", "ron"]
     },
     "daiminkan": {
       "display_name": "Kan",
@@ -4687,7 +4688,7 @@
           ]]
         ]]
       ],
-      "precedence_over": ["chii", "pon", "daiminkan"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon", "daiminkan"]
     },
     "ankan": {
       "display_name": "Ankan",
@@ -5026,7 +5027,7 @@
       "actions": [
         ["big_text", "Ron"], ["pause", 1000], ["set_status", "tried_to_ron"], ["recalculate_buttons"], ["reveal_hand"], ["win_by_discard"]
       ],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
       "display_name": "Ron",
@@ -5119,7 +5120,7 @@
       "actions": [
         ["big_text", "Ron"], ["pause", 1000], ["recalculate_buttons"], ["reveal_hand"], ["win_by_call"]
       ],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Tsumo",
@@ -5234,7 +5235,7 @@
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["choe_myeonghwa", "kunihiro_hajime_interrupt", "chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "kyuushu_kyuuhai": {
       "display_name": "Kyuushu Kyuuhai",
