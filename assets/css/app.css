@@ -261,14 +261,20 @@ input.mobile-zoom-checkbox { display: none; }
   }
   /* hover-zoom view of our own hand */
   input.mobile-zoom-checkbox:checked ~ div.hand.self {
-    transform: translateX(calc(-2.5 * var(--tile-size))) scale(1.5);
+    transform: scale(1.5);
     overflow-x: scroll;
     overflow-y: hidden;
-    max-width: calc(14 * var(--tile-size));
-    left: calc(50% - (5 * var(--tile-size)));
+    scrollbar-width: none;
+    padding-top: calc(0.25 * var(--tile-size));
+    left: calc(50% - (5.5 * var(--tile-size)));
+    max-width: calc(11 * var(--tile-size));
+  }
+  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles {
+    margin-left: 0;
   }
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls {
-    position: static;
+    transform: scale(calc(1 / 1.5));
+    transform-origin: 100% 50%;
   }
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles:hover::before,
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls:hover::before {
