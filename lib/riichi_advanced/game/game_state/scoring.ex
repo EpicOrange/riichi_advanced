@@ -467,6 +467,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
             Map.new(delta_scores, fn {seat, delta} -> {seat, delta * 2} end)
           else delta_scores end
 
+          # handle iwadate yuan's scoring quirk
+          delta_scores = if Map.has_key?(state.players[winner.seat].counters, "iwadate_yuan_payment") do
+            amount = state.players[winner.seat].counters["iwadate_yuan_payment"]
+            push_message(state, [%{text: "Every payer pays 1000 additional points (#{amount}) to #{winner.seat} #{state.players[winner.seat].nickname} for each chun used as five, each ura, each aka, and ippatsu (Iwadate Yuan)"}])
+            for {seat, delta} <- delta_scores, delta < 0, reduce: delta_scores do
+              delta_scores -> delta_scores |> Map.update!(winner.seat, & &1 + amount) |> Map.update!(seat, & &1 - amount)
+            end
+          else delta_scores end
+
           # award riichi sticks
           delta_scores = Map.update!(delta_scores, winner.seat, & &1 + riichi_payment)
 

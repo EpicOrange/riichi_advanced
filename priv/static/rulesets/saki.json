@@ -2315,6 +2315,7 @@
       ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}], [["set_tile_ordering", ["4z", "1z"]], ["set_tile_ordering", ["7z", "5z"]]]],
       ["when", [{"name": "status", "opts": ["arakawa-kei"]}], [["set_status_all", "use_arakawa_kei_scoring"]]],
       ["when", [{"name": "status", "opts": ["motouchi-naruka"]}], [["set_status", "motouchi_naruka_increase_tsumo_payment"], ["set_status_others", "motouchi_naruka_decrease_tsumo_payment"]]],
+      ["when", [{"name": "status", "opts": ["iwadate-yuan"]}], [["add_counter", "iwadate_yuan_payment", 0]]],
       ["when", [
         {"name": "status", "opts": ["iwadate-yuan"]},
         {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
@@ -2358,20 +2359,60 @@
                 ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["7z"], 1]]]]}], [["set_status", "7z"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
                 ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "7z", "attrs": ["golden"]}], 1], [["chun"], 1]]]]}], [["set_status", "777z"]]],
-                ["when", [
-                  {"name": "status", "opts": ["iwadate-yuan", "golden_chun"]},
-                  [
-                    {"name": "status_missing", "opts": ["7z"]},
+                ["when", [{"name": "status", "opts": ["iwadate-yuan"]}], [
+                  ["when", [{"name": "status", "opts": ["aka_m"]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                  ["when", [{"name": "status", "opts": ["aka_p"]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                  ["when", [{"name": "status", "opts": ["aka_s"]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                  ["when", [{"name": "status", "opts": ["ippatsu"]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                  ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "not_others_status", "opts": ["takakamo-shizuno"]}], [
+                    ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "hand_dora_count", "opts": [-5, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "hand_dora_count", "opts": [-5, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "hand_dora_count", "opts": [-5, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "hand_dora_count", "opts": [-5, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "hand_dora_count", "opts": [-7, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "hand_dora_count", "opts": [-7, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "hand_dora_count", "opts": [-7, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "hand_dora_count", "opts": [-7, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "hand_dora_count", "opts": [-9, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "hand_dora_count", "opts": [-9, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "hand_dora_count", "opts": [-9, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "hand_dora_count", "opts": [-9, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "hand_dora_count", "opts": [-11, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "hand_dora_count", "opts": [-11, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "hand_dora_count", "opts": [-11, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "hand_dora_count", "opts": [-11, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "hand_dora_count", "opts": [-13, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "hand_dora_count", "opts": [-13, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "hand_dora_count", "opts": [-13, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "hand_dora_count", "opts": [-13, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "hand_dora_count", "opts": [-15, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "hand_dora_count", "opts": [-15, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "hand_dora_count", "opts": [-15, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "hand_dora_count", "opts": [-15, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-18]}, {"name": "hand_dora_count", "opts": [-17, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-18]}, {"name": "hand_dora_count", "opts": [-17, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-18]}, {"name": "hand_dora_count", "opts": [-17, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-18]}, {"name": "hand_dora_count", "opts": [-17, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-20]}, {"name": "hand_dora_count", "opts": [-19, 1]}], [["add_counter", "iwadate_yuan_payment", 1000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-20]}, {"name": "hand_dora_count", "opts": [-19, 2]}], [["add_counter", "iwadate_yuan_payment", 2000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-20]}, {"name": "hand_dora_count", "opts": [-19, 3]}], [["add_counter", "iwadate_yuan_payment", 3000]]],
+                    ["when", [{"name": "tile_revealed", "opts": [-20]}, {"name": "hand_dora_count", "opts": [-19, 4]}], [["add_counter", "iwadate_yuan_payment", 4000]]]
+                  ]],
+                  ["when", [
+                    {"name": "status", "opts": ["golden_chun"]},
                     [
-                      {"name": "status", "opts": ["77z"]},
-                      {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
-                    ],
-                    [
-                      {"name": "status", "opts": ["777z"]},
-                      {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
+                      {"name": "status_missing", "opts": ["7z"]},
+                      [
+                        {"name": "status", "opts": ["77z"]},
+                        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
+                      ],
+                      [
+                        {"name": "status", "opts": ["777z"]},
+                        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
+                      ]
                     ]
-                  ]
-                ], [["set_status", "chun_as_five"]]],
+                  ], [["add_counter", "iwadate_yuan_payment", 1000]]]
+                ]],
                 ["when", [
                   {"name": "status", "opts": ["kanbara-satomi"]},
                   [

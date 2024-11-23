@@ -204,16 +204,28 @@ defmodule RiichiAdvanced.GameState.Conditions do
             false
         end
       "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
+      "hand_dora_count"       ->
+        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        if dora_indicator != nil do
+          num = Enum.at(opts, 1, 1)
+          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          Utils.count_tiles(cxt_player.hand, doras) == num
+        else false end
       "winning_dora_count"       ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
-        num = Enum.at(opts, 1, 1)
-        doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-        Utils.count_tiles(cxt_player.winning_hand, doras) == num
+        if dora_indicator != nil do
+          num = Enum.at(opts, 1, 1)
+          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          IO.inspect({cxt_player.winning_hand, doras})
+          Utils.count_tiles(cxt_player.winning_hand, doras) == num
+        else false end
       "winning_reverse_dora_count" ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
-        num = Enum.at(opts, 1, 1)
-        doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-        Utils.count_tiles(cxt_player.winning_hand, doras) == num
+        if dora_indicator != nil do
+          num = Enum.at(opts, 1, 1)
+          doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          Utils.count_tiles(cxt_player.winning_hand, doras) == num
+        else false end
       "match"                    ->
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
