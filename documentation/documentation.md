@@ -192,7 +192,9 @@ This defines a button with button text "Pair" that shows when every condition in
 
 Call buttons _must_ have `call_available` as one of the conditions in `show_when`. This condition checks whether the last discard matches the call specification. If you don't check that, and click the call button, the game will crash.
 
-The final moving part is the top-level `interruptible_actions` key, which defines a list of actions that can be interrupted. Here the internal `play_tile` action is made interruptible, and so after every `play_tile` action, the game will check the `show_when` button condition to see if they should appear. Without this key, `show_when` will only be checked at the start of each game.
+The final moving part is the top-level `interruptible_actions` key, which is an array of action names that can be interrupted. Here the internal `play_tile` action is made interruptible, and so after every `play_tile` action, the game will check the `show_when` button condition to see if they should appear. Without this key, `show_when` will only be checked at the start of each game.
+
+Even if an action, like `"draw"` is made interruptible by inclusion in the top-level `interruptible_actions` array, one can specify e.g. `"uninterruptible_draw"` instead of `"draw"` to have the engine ignore the interrupt regardless. This is useful because every interrupt requires recalculating all buttons for all players, and sometimes you don't need that.
 
 ## Conditions with arguments and complex conditions
 

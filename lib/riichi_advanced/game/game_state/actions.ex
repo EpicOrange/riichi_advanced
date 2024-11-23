@@ -430,6 +430,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     marked_objects = state.marking[context.seat]
+    uninterruptible = String.starts_with?(action, "uninterruptible_")
+    action = if uninterruptible do String.slice(action, 16..-1//1) else action end
     state = case action do
       "noop"                  -> state
       "print"                 ->
@@ -980,7 +982,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       _ ->
         # if our action updates state, then we need to recalculate buttons
         # this is so other players can react to certain actions
-        if Map.has_key?(state.interruptible_actions, action) do
+        if not uninterruptible && Map.has_key?(state.interruptible_actions, action) do
           state = if not Enum.empty?(state.winners) do
             # if there's a winner, never display buttons
             update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{} } end)
@@ -1240,7 +1242,6 @@ defmodule RiichiAdvanced.GameState.Actions do
           # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-          notify_ai(state)
           state
         else state end
       else

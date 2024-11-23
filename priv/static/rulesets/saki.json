@@ -2302,7 +2302,7 @@
       ["when", [{"name": "placement", "opts": [4]}], [["set_status", "4th_place"]]],
       ["when", ["not_all_saki_cards_drafted"], [["set_status_all", "match_start"]]],
       // first draw of the game
-      ["when", [{"name": "seat_is", "opts": ["east"]}], [["draw"]]]
+      ["when", [{"name": "seat_is", "opts": ["east"]}], [["uninterruptible_draw"]]]
     ]
   },
   "after_saki_start": {

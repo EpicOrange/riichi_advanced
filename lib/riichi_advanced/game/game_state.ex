@@ -687,7 +687,7 @@ defmodule RiichiAdvanced.GameState do
         ryanshanten: translate_match_definitions(state, Map.get(state.rules, "ryanshanten_definition", [])),
         sanshanten: translate_match_definitions(state, Map.get(state.rules, "sanshanten_definition", []))
       }
-      for dir <- [:east, :south, :west, :north], Map.get(state, dir) == nil, reduce: state do
+      state = for dir <- [:east, :south, :west, :north], Map.get(state, dir) == nil, reduce: state do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}})
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -696,9 +696,10 @@ defmodule RiichiAdvanced.GameState do
           # mark the ai as having clicked the timer, if one exists
           state = update_player(state, dir, fn player -> %Player{ player | ready: true } end)
           
-          notify_ai(state)
           state
       end
+      notify_ai(state)
+      state
     else state end
   end
 
@@ -733,6 +734,8 @@ defmodule RiichiAdvanced.GameState do
 
   # TODO replace these calls
   def notify_ai(_state) do
+    # IO.puts("Notifying ai")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
     GenServer.cast(self(), :notify_ai)
   end
   def notify_ai_marking(_state, seat) do
@@ -1178,8 +1181,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:notify_ai, state) do
-    # IO.puts("Notifying ai")
-    # IO.inspect(Process.info(self(), :current_stacktrace))
     if not state.log_loading_mode do
       if state.game_active do
         # if there are any new buttons for any AI players, notify them

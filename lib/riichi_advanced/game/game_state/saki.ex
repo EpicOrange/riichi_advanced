@@ -122,8 +122,6 @@ defmodule RiichiAdvanced.GameState.Saki do
     state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
 
     state = if check_if_all_drafted(state) do
-      state = Map.put(state, :game_active, true)
-
       # run after_saki_start actions
       state = if Map.has_key?(state.rules, "after_saki_start") do
         for {seat, _player} <- state.players, reduce: state do
