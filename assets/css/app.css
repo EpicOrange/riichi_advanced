@@ -267,6 +267,13 @@ input.mobile-zoom-checkbox { display: none; }
     max-width: calc(14 * var(--tile-size));
     left: calc(50% - (5 * var(--tile-size)));
   }
+  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls {
+    position: static;
+  }
+  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles:hover::before,
+  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls:hover::before {
+    display: none;
+  }
   /* move buttons up */
   input.mobile-zoom-checkbox:checked ~ div.buttons,
   input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
