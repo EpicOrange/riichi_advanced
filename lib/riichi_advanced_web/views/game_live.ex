@@ -24,6 +24,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:show_waits_index, nil)
     |> assign(:hovered_called_tile, nil)
     |> assign(:hovered_call_choice, nil)
+    |> assign(:playable_indices, [])
+    |> assign(:preplayed_index, nil)
 
     last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
       [mods] -> mods
@@ -111,6 +113,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         marking={@state.marking[@seat]}
         called_tile={@hovered_called_tile}
         call_choice={@hovered_call_choice}
+        playable_indices={@playable_indices}
+        preplayed_index={@preplayed_index}
         play_tile={&send(self(), {:play_tile, &1})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
@@ -302,8 +306,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       # otherwise, if buttons, skip
       player = socket.assigns.state.players[socket.assigns.seat]
       if socket.assigns.seat == socket.assigns.state.turn && not Enum.empty?(player.draw) do
-        index = length(player.hand)
-        GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
+        send(self(), {:play_tile, length(player.hand)})
       else
         if "skip" in player.buttons do
           GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
@@ -431,6 +434,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.assigns.seat == socket.assigns.state.turn do
       socket = assign(socket, :visible_waits, %{})
       socket = assign(socket, :show_waits_index, nil)
+      socket = assign(socket, :preplayed_index, index)
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
       {:noreply, socket}
     else
@@ -477,7 +481,16 @@ defmodule RiichiAdvancedWeb.GameLive do
         end
       end)
 
-      socket = assign(socket, :state, state)
+      # get all playable indices
+      playable_indices = if state.turn == socket.assigns.seat do
+        player = state.players[socket.assigns.seat]
+        for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), GenServer.call(socket.assigns.game_state, {:is_playable, socket.assigns.seat, tile}) do ix end
+      else [] end
+
+      socket = socket
+      |> assign(:state, state)
+      |> assign(:playable_indices, playable_indices)
+      |> assign(:preplayed_index, nil)
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
       {:noreply, socket}
     else

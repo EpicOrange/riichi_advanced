@@ -831,6 +831,16 @@ div.tile.removed ~ div.tile.draw {
 div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
 }
+@keyframes slideUp2 {
+  0% {}
+  100% {
+    transform: translateY(calc(-2 * var(--tile-size)));
+    opacity: 0;
+  }
+}
+div.tile.played {
+  animation: slideUp2 0.2s ease forwards;
+}
 
 @keyframes slideLeft {
   0% {
