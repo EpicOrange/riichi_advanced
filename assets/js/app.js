@@ -21,9 +21,10 @@ let Hooks = {}
 import Sortable from "sortablejs";
 Hooks.Sortable = {
   mounted() {
+    let isPortrait = (window.innerWidth / window.innerHeight) < 1.2
     let sorter = new Sortable(this.el, {
       animation: 150,
-      delay: 0,
+      delay: isPortrait ? 1500 : 0,
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
       forceFallback: true,
