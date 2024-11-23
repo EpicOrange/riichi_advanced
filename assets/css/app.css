@@ -261,17 +261,11 @@ input.mobile-zoom-checkbox { display: none; }
   }
   /* hover-zoom view of our own hand */
   input.mobile-zoom-checkbox:checked ~ div.hand.self {
-    transform: scale(2.25);
+    transform: translateX(calc(-2.5 * var(--tile-size))) scale(1.5);
     overflow-x: scroll;
     overflow-y: hidden;
-    max-width: calc(9 * var(--tile-size));
+    max-width: calc(14 * var(--tile-size));
     left: calc(50% - (5 * var(--tile-size)));
-  }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles {
-    padding-left: calc(3 * var(--tile-size));
-  }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.draws {
-    padding-right: calc(3 * var(--tile-size));
   }
   /* move buttons up */
   input.mobile-zoom-checkbox:checked ~ div.buttons,
