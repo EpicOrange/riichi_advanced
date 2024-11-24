@@ -181,7 +181,7 @@
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "match_start", "first_charleston", "charleston_right"],
+      // ["set_status_all", "match_start", "first_charleston", "charleston_right"],
       ["set_tile_alias_all", ["1j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]]
     ]
   },
@@ -330,29 +330,38 @@
       ],
       "unskippable": true
     },
-    "pung": {
+    "am_pung": {
       "display_name": "Pung",
       "call": [[0, 0]],
       "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["pung"]
+      "precedence_over": ["am_pung"]
     },
-    "kong": {
+    "am_kong": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["pung", "kong"]
+      "precedence_over": ["am_pung", "am_kong"]
     },
-    "quint": {
+    "am_quint": {
       "display_name": "Quint",
       "call": [[0, 0, 0, 0]],
       "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Quint"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["pung", "kong", "quint"]
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+    },
+    "am_joker_swap": {
+      "display_name": "Swap for exposed joker",
+      "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_nonjoker_any", "joker_call_tile_any"], [[[["pair"], 1]]]]}],
+      "actions": [
+        ["big_text", "Swap"],
+        ["mark", [["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]], ["call", 1, ["call_has_joker", "match_call_to_marked_hand"]]]],
+        ["swap_out_fly_joker", "1j"]
+      ]
     }
   },
   "auto_buttons": {
@@ -362,7 +371,7 @@
       "enabled_at_start": true
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn"],
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,

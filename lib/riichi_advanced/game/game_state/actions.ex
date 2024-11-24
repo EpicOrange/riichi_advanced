@@ -628,12 +628,34 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = Marking.mark_done(state, context.seat)
         state
       "swap_marked_calls" ->
-        marked_calls = Marking.get_marked(marked_objects, :call)
-        {call1, call_seat1, call_index1} = Enum.at(marked_calls, 0)
-        {call2, call_seat2, call_index2} = Enum.at(marked_calls, 1)
+        marked_call = Marking.get_marked(marked_objects, :call)
+        {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
+        {call2, call_seat2, call_index2} = Enum.at(marked_call, 1)
 
         state = update_player(state, call_seat1, &%Player{ &1 | calls: List.replace_at(&1.calls, call_index1, call2) })
         state = update_player(state, call_seat2, &%Player{ &1 | calls: List.replace_at(&1.calls, call_index2, call1) })
+
+        state = Marking.mark_done(state, context.seat)
+        state
+      "swap_out_fly_joker" ->
+        {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
+        {call, call_seat, call_index} = Marking.get_marked(marked_objects, :call) |> Enum.at(0)
+        fly_joker = Enum.at(opts, 0, "1j") |> Utils.to_tile()
+        call_tiles = Riichi.call_to_tiles(call)
+
+        call_joker_index = Enum.find_index(call_tiles, &Utils.same_tile(&1, fly_joker))
+        new_call = with {call_type, call_content} <- call do
+          {call_type, List.update_at(call_content, call_joker_index, fn {_t, sideways} -> {tile, sideways} end)}
+        end
+        push_message(state, [
+          %{text: "Player #{context.seat} #{state.players[context.seat].nickname} swapped out a joker from the call"}
+        ] ++ Utils.ph(call_tiles))
+
+        # replace hand tile with joker
+        state = update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, fly_joker) })
+
+        # replace call with new call
+        state = update_player(state, call_seat, &%Player{ &1 | calls: List.replace_at(&1.calls, call_index, new_call) })
 
         state = Marking.mark_done(state, context.seat)
         state
