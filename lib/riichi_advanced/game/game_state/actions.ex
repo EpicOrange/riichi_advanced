@@ -386,14 +386,14 @@ defmodule RiichiAdvanced.GameState.Actions do
       schedule_actions(state, seat, actions, %{seat: seat})
     else
       marked = Marking.get_marked(marked_objects, :hand)
-      {hand_tile1, hand_seat, hand_index1} = Enum.at(marked, 0)
-      {hand_tile2, _, hand_index2} = Enum.at(marked, 1)
-      {hand_tile3, _, hand_index3} = Enum.at(marked, 2)
-      hand_length = length(state.players[hand_seat].hand)
+      {_, hand_seat, _} = Enum.at(marked, 0)
+      {hand_tiles, hand_indices} = marked
+      |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+      |> Enum.unzip()
       # remove specified tiles from hand
-      state = for ix <- Enum.sort([-hand_index1, -hand_index2, -hand_index3]), reduce: state do
+      state = for ix <- Enum.sort(hand_indices, :desc), reduce: state do
         state ->
-          ix = -ix
+          hand_length = length(state.players[hand_seat].hand)
           if ix < hand_length do
             update_player(state, hand_seat, &%Player{ &1 | hand: List.delete_at(&1.hand, ix) })
           else
@@ -401,7 +401,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
       end
       # send them according to dir
-      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: [hand_tile1, hand_tile2, hand_tile3] })
+      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: hand_tiles })
       state = Marking.mark_done(state, seat)
       state
     end

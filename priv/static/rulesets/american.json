@@ -1,0 +1,346 @@
+{
+  "default_mods": [],
+  "available_mods": [
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
+  ],
+  "wall": ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g",
+           "1j", "1j", "1j", "1j",
+           "1j", "1j", "1j", "1j"],
+  "set_definitions": {
+    "pair": [0, 0],
+    "shuntsu": [0, 1, 2],
+    "koutsu": [0, 0, 0],
+    "quad": [0, 0, 0, 0],
+    "ryanmen/penchan": [0, 1],
+    "kanchan": [0, 2],
+    "iipeikou": [0, 0, 1, 1, 2, 2],
+    "ton": ["1z", "1z", "1z"],
+    "nan": ["2z", "2z", "2z"],
+    "shaa": ["3z", "3z", "3z"],
+    "pei": ["4z", "4z", "4z"],
+    "haku": ["0z", "0z", "0z"],
+    "hatsu": ["6z", "6z", "6z"],
+    "chun": ["7z", "7z", "7z"],
+    "ton_pair": ["1z", "1z"],
+    "nan_pair": ["2z", "2z"],
+    "shaa_pair": ["3z", "3z"],
+    "pei_pair": ["4z", "4z"],
+    "haku_pair": ["0z", "0z"],
+    "hatsu_pair": ["6z", "6z"],
+    "chun_pair": ["7z", "7z"],
+    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
+    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
+  },
+  "tenpai_definition": [
+  ],
+  "win_definition": [
+  ],
+  "yaku": [
+    {
+      "display_name": "Orphans",
+      "value": 10,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
+    },
+    {
+      "display_name": "All Honours",
+      "value": 10,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}]
+    },
+    {
+      "display_name": "No Flowers or Seasons",
+      "value": 1,
+      "when": [{"name": "has_no_call_named", "opts": ["flower"]}]
+    },
+    {
+      "display_name": "Seat Flower",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[[["1f"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Flower",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[[["2f"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Flower",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[[["3f"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Flower",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[[["4f"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Season",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[[["1g"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Season",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[[["2g"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Season",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[[["3g"]], 1]]]]}]
+    },
+    {
+      "display_name": "Seat Season",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[[["4g"]], 1]]]]}]
+    },
+    {
+      "display_name": "All Flowers",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["calls"], [[[[["1f"]], 1], [[["2f"]], 1], [[["3f"]], 1], [[["4f"]], 1]]]]}]
+    },
+    {
+      "display_name": "All Seasons",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["calls"], [[[[["1g"]], 1], [[["2g"]], 1], [[["3g"]], 1], [[["4g"]], 1]]]]}]
+    },
+    {
+      "display_name": "Heavenly Hand",
+      "value": 13,
+      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"]
+    },
+    {
+      "display_name": "Earthly Hand",
+      "value": 13,
+      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"]
+    },
+    {
+      "display_name": "Nine Gates",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
+    },
+    {
+      "display_name": "Thirteen Orphans",
+      "value": 13,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
+    },
+    {
+      "display_name": "Seven Pairs",
+      "value": 4,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
+    }
+  ],
+  "point_name": "Pts",
+  "score_calculation": {
+    "method": "direct",
+    "win_by_discard_name": "Mahjong",
+    "win_by_draw_name": "Mahjong"
+  },
+  "before_turn_change": {
+    "actions": [
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+    ]
+  },
+  "after_turn_change": {
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", ["not_no_tiles_remaining"], [["draw"]]]
+    ]
+  },
+  "after_start": {
+    "actions": [
+      ["set_status_all", "first_turn", "match_start", "first_charleston", "charleston_right"],
+      ["set_tile_alias_all", ["1j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]]
+    ]
+  },
+  "buttons": {
+    "charleston_left": {
+      "display_name": "Select three tiles to pass left",
+      "show_when": [{"name": "status", "opts": ["charleston_left"]}],
+      "actions": [
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_left"]]],
+        ["charleston_left"],
+        ["when", [{"name": "status", "opts": ["first_charleston"]}], [["unset_status", "first_charleston"], ["set_status", "decide_charleston"]]],
+        ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_across"]]]
+      ],
+      "unskippable": true
+    },
+    "charleston_across": {
+      "display_name": "Select three tiles to pass across",
+      "show_when": [{"name": "status", "opts": ["charleston_across"]}],
+      "actions": [
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"]]],
+        ["charleston_across"],
+        ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_left"]]],
+        ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]]
+      ],
+      "unskippable": true
+    },
+    "charleston_right": {
+      "display_name": "Select three tiles to pass right",
+      "show_when": [{"name": "status", "opts": ["charleston_right"]}],
+      "actions": [
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_right"]]],
+        ["charleston_right"],
+        ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_across"]]],
+        ["when", [{"name": "status", "opts": ["second_charleston"]}], [["unset_status", "second_charleston"], ["set_status", "final_charleston"]]]
+      ],
+      "unskippable": true
+    },
+    "continue_charleston": {
+      "display_name": "Continue Charleston",
+      "show_when": [{"name": "status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["first_charleston"]}],
+      "actions": [
+        ["unset_status", "decide_charleston"],
+        ["set_status", "second_charleston", "charleston_left"],
+        ["when", [{"name": "not_anyone_status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["final_charleston"]}], [["set_status_all", "second_charleston", "charleston_left"]]]
+      ],
+      "unskippable": true
+    },
+    "skip_charleston": {
+      "display_name": "Skip Charleston",
+      "show_when": [{"name": "status", "opts": ["decide_charleston"]}],
+      "actions": [
+        ["big_text", "Skip"],
+        ["unset_status_all", "decide_charleston"],
+        ["set_status_all", "final_charleston"]
+      ],
+      "precedence_over": ["continue_charleston"],
+      "unskippable": true
+    },
+    "final_charleston_offer_0": {
+      "display_name": "Offer 0",
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "actions": [
+        ["big_text", "Offer 0"],
+        ["set_status", "final_charleston", "charleston_across_0"],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_toimen_status", "charleston_across_1"], ["set_toimen_status", "charleston_across_0"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_toimen_status", "charleston_across_2"], ["set_toimen_status", "charleston_across_0"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["unset_toimen_status", "charleston_across_3"], ["set_toimen_status", "charleston_across_0"]]]
+      ],
+      "unskippable": true
+    },
+    "final_charleston_offer_1": {
+      "display_name": "Offer 1",
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "actions": [
+        ["big_text", "Offer 1"],
+        ["set_status", "final_charleston", "charleston_across_1"],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_1"], ["set_status", "charleston_across_0"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_toimen_status", "charleston_across_2"], ["set_toimen_status", "charleston_across_1"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["unset_toimen_status", "charleston_across_3"], ["set_toimen_status", "charleston_across_1"]]]
+      ],
+      "unskippable": true
+    },
+    "final_charleston_offer_2": {
+      "display_name": "Offer 2",
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "actions": [
+        ["big_text", "Offer 2"],
+        ["set_status", "final_charleston", "charleston_across_2"],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_0"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_1"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["unset_toimen_status", "charleston_across_3"], ["set_toimen_status", "charleston_across_2"]]]
+      ],
+      "unskippable": true
+    },
+    "final_charleston_offer_3": {
+      "display_name": "Offer 3",
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "actions": [
+        ["big_text", "Offer 3"],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_1"]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]],
+        ["set_status", "final_charleston", "charleston_across_3"]
+      ],
+      "unskippable": true
+    },
+    "charleston_across_0": {
+      "display_name": "Pass no tiles across",
+      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_0"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_0"]}],
+      "actions": [
+        ["unset_status", "final_charleston", "charleston_across_0"],
+        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
+      ],
+      "unskippable": true
+    },
+    "charleston_across_1": {
+      "display_name": "Select a tile to pass across",
+      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_1"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_1"]}],
+      "actions": [
+        ["mark", [["hand", 1, ["self", "not_joker"]]], [["unset_status", "charleston_across_1"]]],
+        ["charleston_across"],
+        ["unset_status", "final_charleston"],
+        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
+      ],
+      "unskippable": true
+    },
+    "charleston_across_2": {
+      "display_name": "Select two tiles to pass across",
+      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_2"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_2"]}],
+      "actions": [
+        ["mark", [["hand", 2, ["self", "not_joker"]]], [["unset_status", "charleston_across_2"]]],
+        ["charleston_across"],
+        ["unset_status", "final_charleston"],
+        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
+      ],
+      "unskippable": true
+    },
+    "charleston_across_3": {
+      "display_name": "Select three tiles to pass across",
+      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_3"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_3"]}],
+      "actions": [
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across_3"]]],
+        ["charleston_across"],
+        ["unset_status", "final_charleston"],
+        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
+      ],
+      "unskippable": true
+    }
+  },
+  "auto_buttons": {
+    "auto_sort": {
+      "display_name": "A",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    }
+  },
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "initial_score": 0,
+  "starting_tiles": 13,
+  "initial_dead_wall_length": 14,
+  "max_rounds": 0
+}
