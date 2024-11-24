@@ -84,7 +84,7 @@ main div.messages-container > div.messages span.bold {
   /* CSS rules for viewports where the height is greater than the width */
   main div.messages-container {
     left: calc(-0.5 * var(--tile-size));
-    top: calc(100% + 1.25 * var(--tile-size));
+    top: calc(100% + 1.5 * var(--tile-size));
     width: calc(100% + var(--tile-size));
     height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
   }
@@ -243,7 +243,7 @@ input.mobile-zoom-checkbox { display: none; }
   input.mobile-zoom-checkbox + label {
     position: absolute;
     left: calc(1.25 * var(--tile-size));
-    bottom: calc(3 * var(--tile-size));
+    bottom: calc(1.75 * var(--tile-size));
     background: var(--tile-back);
     border-radius: calc(0.125 * var(--tile-size));
     opacity: 0.5;
@@ -283,7 +283,7 @@ input.mobile-zoom-checkbox { display: none; }
   /* move buttons up */
   input.mobile-zoom-checkbox:checked ~ div.buttons,
   input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
-    bottom: calc(2.5 * var(--tile-size));
+    bottom: calc(1.75 * var(--tile-size));
   }
 }
 
@@ -992,8 +992,8 @@ div.call-buttons > button {
 }
 div.auto-buttons {
   position: absolute;
-  font-size: calc(0.5 * var(--tile-size));
-  bottom: calc(-1.25 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
   left: 0;
 }
 div.auto-buttons > input { display: none; }
@@ -1215,8 +1215,8 @@ div.display-wall-hover::before {
   position: absolute;
   padding: 0 calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
-  font-size: calc(0.5 * var(--tile-size));
-  bottom: calc(-1.25 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
   right: 0;
 }
 div.display-wall-container {
