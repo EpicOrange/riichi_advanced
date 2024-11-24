@@ -329,6 +329,30 @@
         ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
       ],
       "unskippable": true
+    },
+    "pung": {
+      "display_name": "Pung",
+      "call": [[0, 0]],
+      "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["pung"]
+    },
+    "kong": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["pung", "kong"]
+    },
+    "quint": {
+      "display_name": "Quint",
+      "call": [[0, 0, 0, 0]],
+      "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Quint"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["pung", "kong", "quint"]
     }
   },
   "auto_buttons": {
