@@ -46,10 +46,10 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
           <div class="draws" :if={not Enum.empty?(@draw)}>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
-              <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
-                <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={length(assigns.hand) + i}></div>
+              <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
+                <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
               <% else %>
-                <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, length(assigns.hand) + i, :hand}) do %>
+                <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
                   <div class={["tile", Utils.strip_attrs(tile), "marked"]}></div>
                 <% else %>
                   <div class={["tile", Utils.strip_attrs(tile)]}></div>
@@ -74,10 +74,10 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
           <div class="draws" :if={not Enum.empty?(@draw)}>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
-              <%= if not @your_turn? || (length(assigns.hand) + i) in @playable_indices do %>
-                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != (length(assigns.hand) + i) && "facedown", @your_turn? && @preplayed_index == i && "played"]}></div>
+              <%= if not @your_turn? || i in @playable_indices do %>
+                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", @your_turn? && @preplayed_index == i && "played"]}></div>
               <% else %>
-                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={length(assigns.hand) + i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != (length(assigns.hand) + i) && "facedown"]} data-id={i}></div>
+                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
               <% end %>
             <% end %>
           </div>
@@ -227,6 +227,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     assigns.draw
     |> hide_tiles(assigns.revealed?)
     |> Enum.with_index()
+    |> Enum.map(fn {tile, ix} -> {tile, ix + length(assigns.hand)} end)
     |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
   end
 
