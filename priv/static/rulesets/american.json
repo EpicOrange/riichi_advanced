@@ -391,7 +391,7 @@
     },
     "mahjong_draw": {
       "display_name": "Mahjong",
-      "show_when": ["our_turn", "has_draw", {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}],
       "actions": [
         ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
@@ -399,7 +399,7 @@
     },
     "mahjong_discard": {
       "display_name": "Mahjong",
-      "show_when": ["not_our_turn", "not_just_discarded", "someone_else_just_discarded", {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
       "actions": [
         ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
