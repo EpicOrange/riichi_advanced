@@ -280,7 +280,7 @@
     },
     "final_charleston_offer_1": {
       "display_name": "Offer 1",
-      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 1"],
         ["set_status", "final_charleston", "charleston_across_1"],
@@ -292,7 +292,7 @@
     },
     "final_charleston_offer_2": {
       "display_name": "Offer 2",
-      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 2"],
         ["set_status", "final_charleston", "charleston_across_2"],
@@ -304,7 +304,7 @@
     },
     "final_charleston_offer_3": {
       "display_name": "Offer 3",
-      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across"]}],
+      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 3"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]],
