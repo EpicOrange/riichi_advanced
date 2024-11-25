@@ -89,17 +89,25 @@ defmodule RiichiAdvanced.GameState.American do
     # move all nonflower single-tile and pair groups to the end, separated by a "nojokers" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
       representative = cond do
+        is_list(groups) && Enum.all?(groups, &is_list/1) -> groups |> Enum.concat()
         is_list(groups) -> groups |> Enum.at(0)
         true -> groups
       end
       num_tiles = if is_list(representative) do length(representative) else num end
-      same_tiles = if is_list(representative) && length(representative) > 1 do
-        Enum.all?(Enum.drop(representative, 1), & &1 == Enum.at(representative, 0))
-      else true end
-      num_tiles >= 3 && same_tiles
+      num_tiles >= 3
     end)
+    # for integer groups, make sure that the single tile subgroups are nojoker
+    use_jokers = for [groups, num] <- use_jokers do
+      groups = for group <- groups do
+        if is_list(group) && Enum.all?(group, &is_list/1) do
+          {short, long} = Enum.split_with(group, &length(&1) <= 2)
+          if Enum.empty?(short) do long else long ++ ["nojoker"] ++ short end
+        else group end
+      end
+      [groups, num]
+    end
     # ["debug"] ++ 
-    if Enum.empty?(nojokers) do use_jokers else use_jokers ++ ["nojoker"] ++ nojokers end
+    ["exhaustive"] ++ if Enum.empty?(nojokers) do use_jokers else use_jokers ++ ["nojoker"] ++ nojokers end
   end
   defp _translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
@@ -137,7 +145,6 @@ defmodule RiichiAdvanced.GameState.American do
           is_list(Enum.at(numeric, 0)) -> 0 not in Enum.concat(numeric)
           true                         -> 0 not in numeric
         end
-        IO.inspect({numeric, nonnumeric, invalid_numeric})
         if invalid_numeric do [] else
           numeric = if Enum.empty?(numeric) do [] else [[[numeric], 1]] end
           nonnumeric = Enum.map(nonnumeric, fn g -> [[g], 1] end)
@@ -152,7 +159,7 @@ defmodule RiichiAdvanced.GameState.American do
     case RiichiAdvanced.ETSCache.get({:translate_american_match_definitions, am_match_definitions}) do
       [] -> 
         result = _translate_american_match_definitions(am_match_definitions)
-        IO.inspect(result, charlists: :as_lists, label: "def")
+        # IO.inspect(result, charlists: :as_lists, label: "def")
         RiichiAdvanced.ETSCache.put({:translate_american_match_definitions, am_match_definitions}, result)
         result
       [result] -> result
@@ -191,9 +198,7 @@ defmodule RiichiAdvanced.GameState.American do
         # ]
         
         res = for {suit, group} <- preprocess_american_match_definition(am_match_definition), reduce: [{hand, []}] do
-          acc ->
-          IO.inspect(acc, label: "acc")
-          for {hand, result} <- acc do
+          acc -> for {hand, result} <- acc do
             match_definition = case suit do
               :unsuited -> [group]
               # todo handle numeric t
@@ -201,7 +206,6 @@ defmodule RiichiAdvanced.GameState.American do
               :b -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, b))], 1]]
               :c -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, c))], 1]]
             end
-            IO.inspect(match_definition, label: "match_definition")
             remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
             remaining_hands = if Enum.empty?(remaining_hands_nojoker) do
               Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r, tile_aliases)

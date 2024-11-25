@@ -183,23 +183,25 @@ defmodule Riichi do
       is_list(group) && not Enum.empty?(group) ->
         cond do
           # list of integers specifying a group of tiles
-          Enum.all?(group, &Kernel.is_integer/1) ->
+          Enum.all?(group, &is_integer/1) ->
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
             all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
               tiles = Enum.map(group, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
               remove_from_hand_calls(hand, tiles, calls, tile_aliases)
             end)
-          # list of lists of integers specifying multiple related groups of tiles
-          Enum.all?(group, &Kernel.is_list/1) && Enum.all?(group, &Enum.all?(&1, fn item -> Kernel.is_integer(item) end)) ->
+          # list of lists of integers specifying multiple related subgroups of tiles
+          # can include a "nojoker" tag specifying that subgroups after it should not use jokers
+          Enum.all?(group, &is_list(&1) || &1 == "nojoker") && Enum.all?(group, & &1 == "nojoker" || Enum.all?(&1, fn item -> is_integer(item) end)) ->
+            no_joker_index = Enum.find_index(group, fn elem -> elem == "nojoker" end)
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
             all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
-              for set <- group, reduce: [{hand, calls}] do
-                hand_calls -> 
+              for {set, i} <- Enum.with_index(group), set != "nojoker", reduce: [{hand, calls}] do
+                hand_calls ->
                   for {hand, calls} <- hand_calls do
                     tiles = Enum.map(set, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
-                    remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+                    remove_from_hand_calls(hand, tiles, calls, if no_joker_index == nil || i < no_joker_index do tile_aliases else %{} end)
                   end |> Enum.concat()
               end
             end)
@@ -244,7 +246,7 @@ defmodule Riichi do
     unique = "unique" in match_definition
     debug = "debug" in match_definition
     if debug do
-      IO.puts("Match definition: #{inspect(match_definition)}")
+      IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_aliases)}")
     end
     filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
@@ -262,7 +264,7 @@ defmodule Riichi do
               if debug do
                 IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
                 for {hand, calls, remaining_groups} <- hand_calls_groups do
-                  IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups)}")
+                  IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}")
                 end
               end
               new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
@@ -272,7 +274,7 @@ defmodule Riichi do
               if debug do
                 IO.puts("Acc (after removal):")
                 for {hand, calls, remaining_groups} <- new_hand_calls_groups do
-                  IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups)}")
+                  IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}")
                 end
               end
               new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end

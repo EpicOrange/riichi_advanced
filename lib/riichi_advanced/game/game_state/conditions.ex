@@ -52,7 +52,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
           "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
-          "hand_nonjoker_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ if Map.has_key?(state.players[context.seat].tile_mappings, tile) do [] else [tile] end, calls}] end)
+          "hand_draw_nonjoker_any" -> Enum.flat_map(state.players[context.seat].hand ++ state.players[context.seat].draw, fn tile -> [{hand ++ if Utils.count_tiles([tile], Map.keys(state.players[context.seat].tile_mappings)) > 0 do [] else [tile] end, calls}] end)
           "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
           "joker_call_tile_any" ->
             # used in american, this selects one nonjoker tile from each exposed call containing a joker

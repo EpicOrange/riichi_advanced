@@ -233,6 +233,10 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.join()
   end
 
+  def remove_nojoker_tag(group) do
+    if is_list(group) do Enum.reject(group, &is_binary/1) else group end
+  end
+
   def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
     calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
@@ -303,6 +307,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.concat()
     |> Enum.reject(fn group -> is_binary(group) end)
     |> Enum.reject(fn group -> is_list(group) && is_binary(Enum.at(group, 0)) end)
+    |> Enum.map(&remove_nojoker_tag/1)
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     # IO.inspect(all_sets, charlists: :as_lists)
     set_definitions = all_sets
@@ -460,6 +465,7 @@ defmodule RiichiAdvanced.SMT do
         {assertions, mentioned_set_ixs, tile_groups} = for [groups, num] <- match_definition, reduce: {[], [], tile_groups} do
           {assertions, mentioned_set_ixs, tile_groups} ->
             {set_ixs, tiles} = groups
+            |> Enum.map(&remove_nojoker_tag/1)
             |> Enum.map(fn group -> {group, Enum.find_index(all_sets, fn set -> set == group end)} end)
             |> Enum.map(fn {group, ix} -> cond do
               is_integer(ix) -> ix+1

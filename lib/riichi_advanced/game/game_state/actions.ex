@@ -652,7 +652,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         ] ++ Utils.ph(call_tiles))
 
         # replace hand tile with joker
-        state = update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, fly_joker) })
+        hand_length = length(state.players[hand_seat].hand)
+        state = if hand_index < hand_length do
+          update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, fly_joker) })
+        else
+          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, fly_joker) })
+        end
 
         # replace call with new call
         state = update_player(state, call_seat, &%Player{ &1 | calls: List.replace_at(&1.calls, call_index, new_call) })

@@ -1039,29 +1039,36 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end |> Enum.sort_by(fn {_, _, score, _} -> score end) |> Enum.at(-1)
 
         orig_hand = state.players[seat].hand
+        orig_calls = state.players[seat].calls
         # if any of our yaku look like american yaku, arrange the hand accordingly
         IO.inspect(yaku)
         american_yaku = Enum.filter(yaku, fn {name, _value} -> String.contains?(name, " #") end)
-        arranged_hand = if not Enum.empty?(american_yaku) do
+        {arranged_hand, arranged_calls} = if not Enum.empty?(american_yaku) do
           {yaku_name, _value} = Enum.at(american_yaku, 0)
           # look for this yaku in the yaku list, and get arrangement from the match condition
           am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
           am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) && condition["name"] == "match" end)
           am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-          orig_call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
+          orig_call_tiles = Enum.flat_map(orig_calls, &Riichi.call_to_tiles/1)
           ordering = state.players[seat].tile_ordering
           ordering_r = state.players[seat].tile_ordering_r
           tile_aliases = state.players[seat].tile_aliases
-          American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand ++ orig_call_tiles), Utils.strip_attrs(winning_tile), ordering, ordering_r, tile_aliases)
+          arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand ++ orig_call_tiles), Utils.strip_attrs(winning_tile), ordering, ordering_r, tile_aliases)
+          if arranged_hand != nil do
+            {arranged_hand, []}
+          else
+            {orig_hand, orig_calls}
+          end
         else
           # sort jokers into the hand
-          Utils.sort_tiles(orig_hand, joker_assignment)
+          arranged_hand = Utils.sort_tiles(orig_hand, joker_assignment)
+          {arranged_hand, orig_calls}
         end
         # change hand display to arranged hand
-        state = update_player(state, seat, fn player -> %Player{ player | hand: arranged_hand } end)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: arranged_hand, calls: arranged_calls } end)
         winner = Map.merge(winner, %{player: state.players[seat]})
         # restore original hand
-        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand } end)
+        state = update_player(state, seat, fn player -> %Player{ player | hand: orig_hand, calls: orig_calls } end)
 
         payer = case win_source do
           :draw    -> nil
