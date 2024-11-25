@@ -1123,11 +1123,12 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:play_tile, seat, index}, state) do
     tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
+    can_discard = Actions.can_discard(state, seat)
     playable = is_playable?(state, seat, tile)
-    if not playable do
+    if not can_discard or not playable do
       IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
     end
-    state = if Actions.can_discard(state, seat) && playable && (state.play_tile_debounce[seat] == false || state.log_loading_mode) do
+    state = if can_discard && playable && (state.play_tile_debounce[seat] == false || state.log_loading_mode) do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
       state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "" })
@@ -1309,7 +1310,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:clear_marked_objects, marking_player}, state) do
     state = Marking.clear_marked_objects(state, marking_player)
-    notify_ai(state)
+    notify_ai_marking(state, marking_player)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

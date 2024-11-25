@@ -376,7 +376,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   defp do_charleston(state, dir, seat, marked_objects) do
-    if Enum.any?(state.players, fn {seat, _} -> Marking.needs_marking?(state, seat) end) do
+    marked = Marking.get_marked(marked_objects, :hand)
+    if Enum.empty?(marked) || Enum.any?(state.players, fn {seat, _} -> Marking.needs_marking?(state, seat) end) do
       # defer until everyone is done marking
       actions = case dir do
         :kamicha -> [["charleston_left"]]
@@ -385,7 +386,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       schedule_actions(state, seat, actions, %{seat: seat})
     else
-      marked = Marking.get_marked(marked_objects, :hand)
       {_, hand_seat, _} = Enum.at(marked, 0)
       {hand_tiles, hand_indices} = marked
       |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
