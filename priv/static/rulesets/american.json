@@ -359,7 +359,10 @@
     "am_pung": {
       "display_name": "Pung",
       "call": [[0, 0]],
-      "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
+      "call_conditions": [
+        {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
+        {"name": "not_call_contains", "opts": [["1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
+      ],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung"]
@@ -367,7 +370,10 @@
     "am_kong": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
+      "call_conditions": [
+        {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
+        {"name": "not_call_contains", "opts": [["1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
+      ],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung", "am_kong"]
@@ -375,7 +381,10 @@
     "am_quint": {
       "display_name": "Quint",
       "call": [[0, 0, 0, 0]],
-      "call_conditions": [{"name": "not_called_tile_contains", "opts": [["1j"], 1]}],
+      "call_conditions": [
+        {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
+        {"name": "not_call_contains", "opts": [["1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
+      ],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Quint"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
