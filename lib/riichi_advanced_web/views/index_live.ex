@@ -33,6 +33,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="vietnamese">Vietnamese</option>
           <option value="bloody30faan">Bloody 30-Faan Jokers</option>
           <option value="cosmic">Cosmic Riichi</option>
+          <option value="american">American (2024 NMJL)</option>
           <option value="custom">Custom</option>
         </select>
         <br/>
