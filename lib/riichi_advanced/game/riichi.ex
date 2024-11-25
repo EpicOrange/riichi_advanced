@@ -19,7 +19,28 @@ defmodule Riichi do
   def _offset_tile(tile, n, order, order_r) do
     if tile != nil do
       cond do
-        (n < 1 && n > -1)|| n < -10 || n >= 30 ->
+        n == 100 -> # dragon of the same suit, used in american
+          cond do
+            is_manzu?(tile) -> :"7z"
+            is_pinzu?(tile) -> :"0z"
+            is_souzu?(tile) -> :"6z"
+            true           -> tile
+          end
+        n == 101 -> # dragon of a different suit, used in american
+          cond do
+            is_manzu?(tile) -> :"0z"
+            is_pinzu?(tile) -> :"6z"
+            is_souzu?(tile) -> :"7z"
+            true           -> tile
+          end
+        n == 102 -> # dragon of a different suit, used in american
+          cond do
+            is_manzu?(tile) -> :"6z"
+            is_pinzu?(tile) -> :"7z"
+            is_souzu?(tile) -> :"0z"
+            true           -> tile
+          end
+        (n < 1 && n > -1) || n < -10 || n >= 30 ->
           tile
         n >= 10 ->
           _offset_tile(shift_suit(tile), n-10, order, order_r)
@@ -221,16 +242,17 @@ defmodule Riichi do
     # t = System.os_time(:millisecond)
     exhaustive = "exhaustive" in match_definition
     unique = "unique" in match_definition
-    no_jokers = "nojoker" in match_definition
     debug = "debug" in match_definition
     if debug do
       IO.puts("Match definition: #{inspect(match_definition)}")
       IO.puts("Tile aliases: #{inspect(tile_aliases)}")
     end
-    tile_aliases = if no_jokers do %{} else filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1)) end
-    ret = for match_definition_elem <- match_definition, match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
+    filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    no_joker_index = Enum.find_index(match_definition, fn elem -> elem == "nojoker" end)
+    ret = for {match_definition_elem, i} <- Enum.with_index(match_definition), match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
       hand_calls ->
         [groups, num] = match_definition_elem
+        tile_aliases = if no_joker_index == nil || i < no_joker_index do filtered_tile_aliases else %{} end
         if num == 0 do
           hand_calls # no op, this is created by decompose_match_definitions
         else

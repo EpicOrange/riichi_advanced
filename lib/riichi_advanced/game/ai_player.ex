@@ -310,6 +310,7 @@ defmodule RiichiAdvanced.AIPlayer do
         _ ->
           IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything: #{inspect(choice)}")
           IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
+          GenServer.cast(state.game_state, {:clear_marked_objects, state.seat})
       end
       {:noreply, state}
     else

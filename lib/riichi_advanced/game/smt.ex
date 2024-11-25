@@ -221,10 +221,12 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.join()
   end
 
-  def set_to_bitvector(set) do
+  def set_to_bitvector(_encoding, set) do
     # input: [0, 0, 3, 6, 11, 11, 14, 17, 22, 22, 25, 28]
     # output: "100100200010010020001001002"
-    set
+    # 100, 101, 102 correspond to dragons, we ignore them
+    {tiles, _dragons} = Enum.split_with(set, fn i -> i < 30 end)
+    tiles
     |> Enum.group_by(fn i -> trunc(i / 10) end)
     |> Enum.sort_by(fn {k, _v} -> -k end)
     |> Enum.map(fn {_k, v} -> set_suit_to_bitvector(Enum.map(v, &rem(&1, 10))) end)
@@ -293,6 +295,7 @@ defmodule RiichiAdvanced.SMT do
     #   (ite (= num (_ bv1 8)) set1
     #   (ite (= num (_ bv2 8)) set2
     #   (ite (= num (_ bv3 8)) set3 zero))))
+    # IO.inspect(match_definitions, charlists: :as_lists)
     all_sets = match_definitions
     |> Enum.concat()
     |> Enum.reject(&Kernel.is_binary/1)
@@ -301,14 +304,15 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.reject(fn group -> is_binary(group) end)
     |> Enum.reject(fn group -> is_list(group) && is_binary(Enum.at(group, 0)) end)
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
+    # IO.inspect(all_sets, charlists: :as_lists)
     set_definitions = all_sets
     |> Enum.map(fn group -> Enum.flat_map(group, fn elem -> if is_list(elem) do elem else [elem] end end) end)
-    |> Enum.map(&set_to_bitvector/1)
+    |> Enum.map(&set_to_bitvector(encoding, &1))
     |> Enum.with_index()
     |> Enum.map(fn {str, i} -> "(define-fun set#{i+1} () (_ BitVec #{len}) #x#{String.pad_leading(str, Integer.floor_div(len, 4), "0")})\n" end)
-    to_set_fun = 1..length(all_sets)
-    |> Enum.map(fn i -> "\n  (ite (= num (_ bv#{i} 8)) set#{i}" end)
-    to_set_fun = "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n"
+    set_indices = if Enum.empty?(all_sets) do [] else 1..length(all_sets) end
+    to_set_fun = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "\n  (ite (= num (_ bv#{i} 8)) set#{i}" end) end
+    to_set_fun = if Enum.empty?(all_sets) do "" else "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n" end
 
     # first figure out which tiles are jokers based on tile_mappings
     call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
@@ -342,11 +346,12 @@ defmodule RiichiAdvanced.SMT do
     #     (bvmul hand_indices2 set2)
     #     (bvmul hand_indices3 set3)))
     #   (equal_digits zero (bvadd hand_indices1 hand_indices2 hand_indices3))))
-    declare_hand_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end)
+    set_indices = if Enum.empty?(all_sets) do [] else 1..length(all_sets) end
+    declare_hand_indices = Enum.map(set_indices, fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end)
     # we use bvmul for sets that use different suits
     # otherwise, use shift_set, which handles wrapping
-    hand_indices = Enum.map(1..length(all_sets), fn i -> "\n    (#{if 10 not in Enum.at(all_sets, i-1) and 20 not in Enum.at(all_sets, i-1) do "shift_set" else "bvmul" end} hand_indices#{i} set#{i})" end) |> Enum.join()
-    assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(1..length(all_sets), fn i -> " hand_indices#{i}" end)}))))\n"]
+    hand_indices = Enum.map(set_indices, fn i -> "\n    (#{if 10 not in Enum.at(all_sets, i-1) and 20 not in Enum.at(all_sets, i-1) do "shift_set" else "bvmul" end} hand_indices#{i} set#{i})" end) |> Enum.join()
+    assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(set_indices, fn i -> " hand_indices#{i}" end)}))))\n"]
 
     has_calls = length(calls) > 0
     calls_smt = if has_calls do
@@ -392,7 +397,7 @@ defmodule RiichiAdvanced.SMT do
       # (define-fun call_indices3 () (_ BitVec 136)
       #   (bvadd (ite (= call1_set (_ bv3 8)) (tile_from_index call1_index) zero)
       #          (ite (= call2_set (_ bv3 8)) (tile_from_index call2_index) zero)))
-      call_indices = Enum.map(1..length(all_sets), fn i ->
+      call_indices = Enum.map(set_indices, fn i ->
         call_sets = Enum.map(1..length(calls), fn j -> "(ite (= call#{j}_set (_ bv#{i} 8)) (tile_from_index call#{j}_index) zero)" end)
         "(define-fun call_indices#{i} () (_ BitVec #{len})\n  (bvadd #{Enum.join(call_sets, "\n         ")}))\n"
       end)
@@ -412,13 +417,13 @@ defmodule RiichiAdvanced.SMT do
     # (assert (= sumindices2 (sum_digits indices2)))
     # (assert (= sumindices3 (sum_digits indices3)))
     # (assert (= #x0 (bvand #x8 (add8_single sumindices1 (add8_single sumindices2 sumindices3)))))
-    declare_indices = Enum.map(1..length(all_sets), fn i -> "(declare-const indices#{i} (_ BitVec #{len}))\n" end)
-    assert_indices = Enum.map(1..length(all_sets), fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i}#{if has_calls do " call_indices#{i}" else "" end})))\n" end)
-    declare_sumindices = Enum.map(1..length(all_sets), fn i -> "(declare-const sumindices#{i} (_ BitVec 4))\n" end)
-    assert_sumindices = Enum.map(1..length(all_sets), fn i -> "(assert (= sumindices#{i} (sum_digits indices#{i})))\n" end)
-    assert_indices_total = Enum.map(1..length(all_sets), fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
-    assert_indices_total = "(assert (= #x0 (bvand #x8 #{assert_indices_total})))\n"
-    # assert_indices = Enum.map(1..length(all_sets), fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i} call_indices#{i})))\n" end)
+    declare_indices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "(declare-const indices#{i} (_ BitVec #{len}))\n" end) end
+    assert_indices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i}#{if has_calls do " call_indices#{i}" else "" end})))\n" end) end
+    declare_sumindices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "(declare-const sumindices#{i} (_ BitVec 4))\n" end) end
+    assert_sumindices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "(assert (= sumindices#{i} (sum_digits indices#{i})))\n" end) end
+    assert_indices_total = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single") end
+    assert_indices_total = if Enum.empty?(all_sets) do "" else "(assert (= #x0 (bvand #x8 #{assert_indices_total})))\n" end
+    # assert_indices = Enum.map(set_indices, fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i} call_indices#{i})))\n" end)
 
     index_smt = declare_hand_indices ++ assert_hand_indices
              ++ declare_indices ++ assert_indices
@@ -483,7 +488,7 @@ defmodule RiichiAdvanced.SMT do
             {assertions, set_ixs ++ mentioned_set_ixs, tile_groups}
         end
         # zero out unmentioned sets (big optimization)
-        nonexistent_set_ixs = Enum.reject(1..length(all_sets), fn i -> Enum.member?(mentioned_set_ixs, i) end)
+        nonexistent_set_ixs = Enum.reject(set_indices, fn i -> Enum.member?(mentioned_set_ixs, i) end)
         assertions = if not Enum.empty?(nonexistent_set_ixs) do
           sum = Enum.map(nonexistent_set_ixs, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
           ["\n    (= (_ bv0 4) #{sum})" | assertions]

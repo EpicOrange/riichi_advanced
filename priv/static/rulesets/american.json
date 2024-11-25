@@ -42,131 +42,157 @@
            "1j", "1j", "1j", "1j",
            "1j", "1j", "1j", "1j"],
   "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "iipeikou": [0, 0, 1, 1, 2, 2],
-    "ton": ["1z", "1z", "1z"],
-    "nan": ["2z", "2z", "2z"],
-    "shaa": ["3z", "3z", "3z"],
-    "pei": ["4z", "4z", "4z"],
-    "haku": ["0z", "0z", "0z"],
-    "hatsu": ["6z", "6z", "6z"],
-    "chun": ["7z", "7z", "7z"],
-    "ton_pair": ["1z", "1z"],
-    "nan_pair": ["2z", "2z"],
-    "shaa_pair": ["3z", "3z"],
-    "pei_pair": ["4z", "4z"],
-    "haku_pair": ["0z", "0z"],
-    "hatsu_pair": ["6z", "6z"],
-    "chun_pair": ["7z", "7z"],
-    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
+    "pair": [0, 0]
   },
   "tenpai_definition": [
   ],
   "win_definition": [
+    "222a 000 2222b 4444b",
+    "FFFF 2222a 0000 24b",
+    "FF 2024a 2222b 2222c", "FF 2024a 4444b 4444c",
+    "222a 444a 6666a 8888a", "222a 444a 6666b 8888b",
+    "22a 444a 44b 666b 8888c",
+    "22a 44a 666a 888a DDDDa",
+    "FFFF 4444a 6666b 24c", "FFFF 6666a 8888b 48c",
+    "FF 2222a 44a 66a 8888a", "FF 2222a 44b 66b 8888a",
+    "FFFF XXX0a XXXX0b XXX0c",
+    "XX0a DDDa XX0b DDDb XXXX0c",
+    "FF XXXX0a NEWS XXXX0b",
+    "FF 1111a 6666a 7777a",
+    "FF 2222a 5555a 7777a",
+    "FF 3333a 4444a 7777a",
+    "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
+    "FFFF DDDa DDDDb DDDDc",
+    "NNN SSS 1111a 2222b", "EEE WWW 1111a 2222b",
+    "FF NN EEE WWW SSSS",
+    "FF DDDDa NEWS DDDDb",
+    "NNNN XX0a XX1a XX2a SSSS", "EEEE XX0a XX1a XX2a WWWW",
+    "333a 666a 6666b 9999b", "333a 666a 6666b 9999c",
+    "FF 3a 66a 999a 333b 333c", "FF 3a 66a 999a 666b 666c", "FF 3a 66a 999a 999b 999c",
+    "FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c",
+    "333a DDDDa 333b DDDDb",
+    "FFFF 33a 66a 999a DDDb",
+    "3333a 66a 66b 66c 9999a", "3333b 66a 66b 66c 9999b", "3333c 66a 66b 66c 9999c",
+    "FF XXXXX0a XX1a XXXXX2a",
+    "XXXXX0a ZZZZ XXXXX1b", "XXXXX0a ZZZZ XXXXX2b", "XXXXX0a ZZZZ XXXXX3b", "XXXXX0a ZZZZ XXXXX4b", "XXXXX0a ZZZZ XXXXX5b", "XXXXX0a ZZZZ XXXXX6b", "XXXXX0a ZZZZ XXXXX7b", "XXXXX0a ZZZZ XXXXX8b",
+    "FFFFF DDDDa XXXXX0b",
+    "XX0a XXXXX1a XX0b XXXXX1b",
+    "111a 22a 3333a 44a 555a", "555a 66a 7777a 88a 999a",
+    "XX0a XXX1a DDDDb XXX2a XX3a",
+    "FF XXXX0a XXXX1a XXXX2a", "FF XXXX0a XXXX1b XXXX2c",
+    "XX0a XX1a XXX2a XXX3a DDDDa",
+    "XXX0a XXX0a XXXX0a XXXX0a", "XXX0a XXX0a XXXX0b XXXX0b",
+    "X0a XX1a XXXX2a X0b XX1b XXXX2b",
+    "FFFFF X0a X1a X2a XXX3b XXX3c",
+    "111a 33a 5555a 77a 999a", "111a 33a 5555b 77c 999c",
+    "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
+    "FF 11a 333a 5555a DDDa", "FF 55a 777a 9999a DDDa",
+    "FFFF 3333a 5555b 15c", "FFFF 5555a 7777b 35c",
+    "11a 33a 333b 555b DDDDc", "55a 77a 777b 999b DDDDc",
+    "11a 33a 55a 7777b 9999c",
+    "NN EEE 2024a WWW SS",
+    "FF 222a 444a 666a 88b 88c",
+    "NNN EW SSS XXX0a XXX1b",
+    "333a 666a 333b 666b 99c",
+    "FF 22a 46a 88a 22b 46b 88b",
+    "FF 11a 33a 55a 55b 77b 99b",
+    "112a 11223b 112233c", "998a 99887b 998877c",
+    "FF 33a 66a 99a 369b 369c",
+    "XX0a XX1a XX2a XX3a XX4a DDb DDc",
+    "2024a NN EW SS 2024b",
+    "XXX0a XXX1a XXX0b XXX1b XX2c",
+    "111a 33a 555a 333b 333c", "555a 77a 999a 777b 777c"
   ],
   "yaku": [
-    {
-      "display_name": "Orphans",
-      "value": 10,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
-    },
-    {
-      "display_name": "All Honours",
-      "value": 10,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}]
-    },
-    {
-      "display_name": "No Flowers or Seasons",
-      "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["flower"]}]
-    },
-    {
-      "display_name": "Seat Flower",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[[["1f"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Flower",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[[["2f"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Flower",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[[["3f"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Flower",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[[["4f"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Season",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[[["1g"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Season",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[[["2g"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Season",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[[["3g"]], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Season",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["calls"], [[[[["4g"]], 1]]]]}]
-    },
-    {
-      "display_name": "All Flowers",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["calls"], [[[[["1f"]], 1], [[["2f"]], 1], [[["3f"]], 1], [[["4f"]], 1]]]]}]
-    },
-    {
-      "display_name": "All Seasons",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["calls"], [[[[["1g"]], 1], [[["2g"]], 1], [[["3g"]], 1], [[["4g"]], 1]]]]}]
-    },
-    {
-      "display_name": "Heavenly Hand",
-      "value": 13,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"]
-    },
-    {
-      "display_name": "Earthly Hand",
-      "value": 13,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"]
-    },
-    {
-      "display_name": "Nine Gates",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
-    },
-    {
-      "display_name": "Thirteen Orphans",
-      "value": 13,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
-    },
-    {
-      "display_name": "Seven Pairs",
-      "value": 4,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
-    }
+    { "display_name": "2024 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["222a 000 2222b 4444b"]]}] },
+    { "display_name": "2024 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFF 2222a 0000 24b"]]}] },
+    { "display_name": "2024 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 2024a 2222b 2222c", "FF 2024a 4444b 4444c"]]}] },
+    { "display_name": "2024 #4", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["NN EEE 2024a WWW SS"]]}] },
+    { "display_name": "2468 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["222a 444a 6666a 8888a", "222a 444a 6666b 8888b"]]}] },
+    { "display_name": "2468 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["22a 444a 44b 666b 8888c"]]}] },
+    { "display_name": "2468 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["22a 44a 666a 888a DDDDa"]]}] },
+    { "display_name": "2468 #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFF 4444a 6666b 24c", "FFFF 6666a 8888b 48c"]]}] },
+    { "display_name": "2468 #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 2222a 44a 66a 8888a", "FF 2222a 44b 66b 8888a"]]}] },
+    { "display_name": "2468 #6", "value": 35, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 222a 444a 666a 88b 88c"]]}] },
+    { "display_name": "Any Like Numbers #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFF XXX0a XXXX0b XXX0c"]]}] },
+    { "display_name": "Any Like Numbers #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XX0a DDDa XX0b DDDb XXXX0c"]]}] },
+    { "display_name": "Any Like Numbers #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF XXXX0a NEWS XXXX0b"]]}] },
+    { "display_name": "Lucky Sevens #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 1111a 6666a 7777a"]]}] },
+    { "display_name": "Lucky Sevens #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 2222a 5555a 7777a"]]}] },
+    { "display_name": "Lucky Sevens #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 3333a 4444a 7777a"]]}] },
+    {"display_name": "Winds and Dragons #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS"]]}] },
+    {"display_name": "Winds and Dragons #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFF DDDa DDDDb DDDDc"]]}] },
+    {"display_name": "Winds and Dragons #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["NNN SSS 1111a 2222b", "EEE WWW 1111a 2222b"]]}] },
+    {"display_name": "Winds and Dragons #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF NN EEE WWW SSSS"]]}] },
+    {"display_name": "Winds and Dragons #5", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["NNNN XX0a XX1a XX2a SSSS", "EEEE XX0a XX1a XX2a WWWW"]]}] },
+    {"display_name": "Winds and Dragons #6", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF DDDDa NEWS DDDDb"]]}] },
+    {"display_name": "Winds and Dragons #7", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["NNN EW SSS XXX0a XXX1b"]]} ] },
+    {"display_name": "369 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["333a 666a 6666b 9999b", "333a 666a 6666b 9999c"]]}] },
+    {"display_name": "369 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 3a 66a 999a 333b 333c", "FF 3a 66a 999a 666b 666c", "FF 3a 66a 999a 999b 999c"]]}] },
+    {"display_name": "369 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c"]]}] },
+    {"display_name": "369 #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["333a DDDDa 333b DDDDb"]]}] },
+    {"display_name": "369 #5", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["3333a 66a 66b 66c 9999a", "3333b 66a 66b 66c 9999b", "3333c 66a 66b 66c 9999c"]]}] },
+    {"display_name": "369 #6", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFF 33a 66a 999a DDDb"]]}] },
+    {"display_name": "369 #7", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["333a 666a 333b 666b 99c"]]}] },
+    { "display_name": "Singles and Pairs #1", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 22a 46a 88a 22b 46b 88b"]]} ] },
+    { "display_name": "Singles and Pairs #2", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 11a 33a 55a 55b 77b 99b"]]} ] },
+    { "display_name": "Singles and Pairs #3", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["112a 11223b 112233c", "998a 99887b 998877c"]]} ] },
+    { "display_name": "Singles and Pairs #4", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 33a 66a 99a 369b 369c"]]} ] },
+    { "display_name": "Singles and Pairs #5", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XX0a XX1a XX2a XX3a XX4a DDb DDc"]]} ] },
+    { "display_name": "Singles and Pairs #6", "value": 75, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2024a NN EW SS 2024b"]]} ] },
+    { "display_name": "Quints #1", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF XXXXX0a XX1a XXXXX2a"]]}] },
+    { "display_name": "Quints #2", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XXXXX0a ZZZZ XXXXX1b", "XXXXX0a ZZZZ XXXXX2b", "XXXXX0a ZZZZ XXXXX3b", "XXXXX0a ZZZZ XXXXX4b", "XXXXX0a ZZZZ XXXXX5b", "XXXXX0a ZZZZ XXXXX6b", "XXXXX0a ZZZZ XXXXX7b", "XXXXX0a ZZZZ XXXXX8b"]]}] },
+    { "display_name": "Quints #3", "value": 45, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XX0a XXXXX1a XX0b XXXXX1b"]]}] },
+    { "display_name": "Quints #4", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFFF DDDDa XXXXX0b"]]}] },
+    { "display_name": "Consecutive Run #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["111a 22a 3333a 44a 555a", "555a 66a 7777a 88a 999a"]]}] },
+    { "display_name": "Consecutive Run #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XX0a XXX1a DDDDb XXX2a XX3a"]]}] },
+    { "display_name": "Consecutive Run #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF XXXX0a XXXX1a XXXX2a", "FF XXXX0a XXXX1b XXXX2c"]]}] },
+    { "display_name": "Consecutive Run #4", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["X0a XX1a XXXX2a X0b XX1b XXXX2b"]]}] },
+    { "display_name": "Consecutive Run #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XX0a XX1a XXX2a XXX3a DDDDa"]]}] },
+    { "display_name": "Consecutive Run #6", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFFF X0a X1a X2a XXX3b XXX3c"]]}] },
+    { "display_name": "Consecutive Run #7", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XXX0a XXX0a XXXX0a XXXX0a", "XXX0a XXX0a XXXX0b XXXX0b"]]}] },
+    { "display_name": "Consecutive Run #8", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["XXX0a XXX1a XXX0b XXX1b XX2c"]]} ] },
+    { "display_name": "13579 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["111a 33a 5555a 77a 999a", "111a 33a 5555b 77c 999c"]]}] },
+    { "display_name": "13579 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["111a 333a 3333b 5555b", "555a 777a 7777b 9999b"]]}] },
+    { "display_name": "13579 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FF 11a 333a 5555a DDDa", "FF 55a 777a 9999a DDDa"]]}] },
+    { "display_name": "13579 #4", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["11a 33a 55a 7777b 9999c"]]}] },
+    { "display_name": "13579 #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["FFFF 3333a 5555b 15c", "FFFF 5555a 7777b 35c"]]}] },
+    { "display_name": "13579 #6", "value": 25, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["11a 33a 333b 555b DDDDc", "55a 77a 777b 999b DDDDc"]]}] },
+    { "display_name": "13579 #7", "value": 35, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["111a 33a 555a 333b 333c", "555a 77a 999a 777b 777c"]]} ] }
   ],
+  "yaku_precedence": {
+    "2024 #2": ["2024 #1"],
+    "2024 #4": ["Winds and Dragons #1"],
+    "2468 #3": ["2468 #1"],
+    "2468 #6": ["2468 #5"],
+    "Any Like Numbers #2": ["Any Like Numbers #1"],
+    "Winds and Dragons #6": ["Winds and Dragons #2"],
+    "369 #3": ["369 #1"],
+    "369 #7": ["369 #1"],
+    "Quints #1": ["Any Like Numbers #1", "Any Like Numbers #2", "Any Like Numbers #3", "Lucky Sevens #1", "Lucky Sevens #2", "Lucky Sevens #3", "Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #4", "13579 #5", "13579 #6", "13579 #7"],
+    "Quints #2": ["Any Like Numbers #1", "Any Like Numbers #2", "Any Like Numbers #3", "Lucky Sevens #1", "Lucky Sevens #2", "Lucky Sevens #3", "Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #4", "13579 #5", "13579 #6", "13579 #7"],
+    "Quints #3": ["Any Like Numbers #1", "Any Like Numbers #2", "Any Like Numbers #3", "Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #4", "13579 #5", "13579 #6", "13579 #7"],
+    "Quints #4": ["Any Like Numbers #1", "Any Like Numbers #2", "Any Like Numbers #3", "Lucky Sevens #1", "Lucky Sevens #2", "Lucky Sevens #3", "13579 #1", "13579 #2", "13579 #3", "13579 #4", "13579 #5", "13579 #6", "13579 #7"],
+    "Consecutive Run #2": ["Consecutive Run #1"],
+    "Consecutive Run #3": ["Consecutive Run #1", "Consecutive Run #2"],
+    "Consecutive Run #5": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3"],
+    "Consecutive Run #7": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5"],
+    "Consecutive Run #4": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5", "Consecutive Run #7"],
+    "Consecutive Run #6": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #7"],
+    "Consecutive Run #8": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7"],
+    "13579 #1": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5", "Consecutive Run #7"],
+    "13579 #2": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5", "Consecutive Run #7", "13579 #1"],
+    "13579 #3": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5", "Consecutive Run #7", "13579 #1", "13579 #2"],
+    "13579 #5": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5", "Consecutive Run #7", "13579 #1", "13579 #2", "13579 #3"],
+    "13579 #6": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #5", "Consecutive Run #7", "13579 #1", "13579 #2", "13579 #3", "13579 #5"],
+    "13579 #4": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #5", "13579 #6"],
+    "13579 #7": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #4", "13579 #5", "13579 #6"]
+  },
   "point_name": "Pts",
   "score_calculation": {
     "method": "direct",
-    "win_by_discard_name": "Mahjong",
-    "win_by_draw_name": "Mahjong"
+    "win_by_discard_name": "Discard",
+    "win_by_draw_name": "Draw"
   },
   "before_turn_change": {
     "actions": [
@@ -181,7 +207,7 @@
   },
   "after_start": {
     "actions": [
-      // ["set_status_all", "match_start", "first_charleston", "charleston_right"],
+      ["set_status_all", "match_start", "first_charleston", "charleston_right"],
       ["set_tile_alias_all", ["1j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]]
     ]
   },
@@ -359,9 +385,25 @@
       "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_nonjoker_any", "joker_call_tile_any"], [[[["pair"], 1]]]]}],
       "actions": [
         ["big_text", "Swap"],
-        ["mark", [["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]], ["call", 1, ["call_has_joker", "match_call_to_marked_hand"]]]],
+        ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
         ["swap_out_fly_joker", "1j"]
       ]
+    },
+    "mahjong_draw": {
+      "display_name": "Mahjong",
+      "show_when": ["our_turn", "has_draw", {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}],
+      "actions": [
+        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
+      ],
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+    },
+    "mahjong_discard": {
+      "display_name": "Mahjong",
+      "show_when": ["not_our_turn", "not_just_discarded", "someone_else_just_discarded", {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
+      "actions": [
+        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
+      ],
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
     }
   },
   "auto_buttons": {
@@ -375,5 +417,5 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
-  "max_rounds": 0
+  "max_rounds": 8
 }

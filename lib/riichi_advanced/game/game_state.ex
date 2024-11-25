@@ -119,6 +119,7 @@ end
 
 defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
@@ -804,10 +805,15 @@ defmodule RiichiAdvanced.GameState do
           is_binary(match_definition) ->
             name = match_definition <> "_definition"
             if Map.has_key?(state.rules, name) do
-              translate_sets_in_match_definitions(state.rules[name], set_definitions)
+              if not Enum.empty?(state.rules[name]) && is_binary(Enum.at(state.rules[name], 0)) do
+                American.translate_american_match_definitions(state.rules[name])
+              else
+                translate_sets_in_match_definitions(state.rules[name], set_definitions)
+              end
             else
-              GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
-              []
+              American.translate_american_match_definitions([match_definition])
+              # GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
+              # []
             end
           is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
           true                        ->
@@ -1303,6 +1309,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:clear_marked_objects, marking_player}, state) do
     state = Marking.clear_marked_objects(state, marking_player)
+    notify_ai(state)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
