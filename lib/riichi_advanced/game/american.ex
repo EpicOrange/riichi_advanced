@@ -86,17 +86,20 @@ defmodule RiichiAdvanced.GameState.American do
     else [] end
   end
   defp translate_american_match_definitions_postprocess(match_definition) do
-    # move all single-tile and pair groups to the end, separated by a "nojokers" tag
-    {jokers, nojokers} = Enum.split_with(match_definition, fn [groups, _num] ->
-      first_choice = Enum.at(groups, 0)
-      num_tiles = if is_list(first_choice) do length(first_choice) else 1 end
-      same_tiles = if is_list(first_choice) && length(first_choice) > 1 do
-        Enum.all?(Enum.drop(first_choice, 1), fn t -> t == Enum.at(first_choice, 0) end)
+    # move all nonflower single-tile and pair groups to the end, separated by a "nojokers" tag
+    {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
+      representative = cond do
+        is_list(groups) -> groups |> Enum.at(0)
+        true -> groups
+      end
+      num_tiles = if is_list(representative) do length(representative) else num end
+      same_tiles = if is_list(representative) && length(representative) > 1 do
+        Enum.all?(Enum.drop(representative, 1), & &1 == Enum.at(representative, 0))
       else true end
       num_tiles >= 3 && same_tiles
     end)
     # ["debug"] ++ 
-    if Enum.empty?(nojokers) do jokers else jokers ++ ["nojoker"] ++ nojokers end
+    if Enum.empty?(nojokers) do use_jokers else use_jokers ++ ["nojoker"] ++ nojokers end
   end
   defp _translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
@@ -160,6 +163,7 @@ defmodule RiichiAdvanced.GameState.American do
     case letter do
       "D" -> dragons[suit]
       "0" -> "0z"
+      _ when is_integer(letter) -> letter
       _   -> letter <> suit
     end
   end
