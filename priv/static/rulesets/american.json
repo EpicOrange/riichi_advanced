@@ -307,10 +307,10 @@
       "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 3"],
+        ["set_status", "final_charleston", "charleston_across_3"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_1"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]],
-        ["set_status", "final_charleston", "charleston_across_3"]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]]
       ],
       "unskippable": true
     },
