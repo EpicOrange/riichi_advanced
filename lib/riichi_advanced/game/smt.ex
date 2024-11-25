@@ -234,7 +234,7 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def remove_nojoker_tag(group) do
-    if is_list(group) do Enum.reject(group, &is_binary/1) else group end
+    if is_list(group) do Enum.reject(group, & &1 == "nojoker") else group end
   end
 
   def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
@@ -299,17 +299,16 @@ defmodule RiichiAdvanced.SMT do
     #   (ite (= num (_ bv1 8)) set1
     #   (ite (= num (_ bv2 8)) set2
     #   (ite (= num (_ bv3 8)) set3 zero))))
-    # IO.inspect(match_definitions, charlists: :as_lists)
+    # IO.inspect(match_definitions, charlists: :as_lists, label: "match_definitions")
     all_sets = match_definitions
     |> Enum.concat()
     |> Enum.reject(&Kernel.is_binary/1)
-    |> Enum.map(fn [groups, _num] -> groups end)
-    |> Enum.concat()
+    |> Enum.flat_map(fn [groups, _num] -> groups end)
     |> Enum.reject(fn group -> is_binary(group) end)
-    |> Enum.reject(fn group -> is_list(group) && is_binary(Enum.at(group, 0)) end)
+    |> Enum.reject(fn group -> is_list(group) && Utils.is_tile(Enum.at(group, 0)) end)
     |> Enum.map(&remove_nojoker_tag/1)
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
-    # IO.inspect(all_sets, charlists: :as_lists)
+    # IO.inspect(all_sets, charlists: :as_lists, label: "all_sets")
     set_definitions = all_sets
     |> Enum.map(fn group -> Enum.flat_map(group, fn elem -> if is_list(elem) do elem else [elem] end end) end)
     |> Enum.map(&set_to_bitvector(encoding, &1))
@@ -470,7 +469,7 @@ defmodule RiichiAdvanced.SMT do
             |> Enum.map(fn {group, ix} -> cond do
               is_integer(ix) -> ix+1
               is_binary(group) -> Utils.to_tile(group) 
-              is_list(group) && is_binary(Enum.at(group, 0)) -> Enum.map(group, &Utils.to_tile/1)
+              is_list(group) && Utils.is_tile(Enum.at(group, 0)) -> Enum.map(group, &Utils.to_tile/1)
               true ->
                 IO.puts("Unhandled SMT group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
                 nil

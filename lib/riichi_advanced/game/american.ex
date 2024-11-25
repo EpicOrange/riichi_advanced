@@ -88,12 +88,14 @@ defmodule RiichiAdvanced.GameState.American do
   defp translate_american_match_definitions_postprocess(match_definition) do
     # move all nonflower single-tile and pair groups to the end, separated by a "nojokers" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
-      representative = cond do
-        is_list(groups) && Enum.all?(groups, &is_list/1) -> groups |> Enum.concat()
-        is_list(groups) -> groups |> Enum.at(0)
-        true -> groups
+      num_tiles = cond do
+        is_list(groups) && Enum.all?(groups, &is_list(&1) || &1 == "nojoker") ->
+          groups
+          |> Enum.reject(& &1 == "nojoker")
+          |> Enum.max_by(&length/1)
+        is_list(groups) -> length(groups)
+        true -> num
       end
-      num_tiles = if is_list(representative) do length(representative) else num end
       num_tiles >= 3
     end)
     # for integer groups, make sure that the single tile subgroups are nojoker

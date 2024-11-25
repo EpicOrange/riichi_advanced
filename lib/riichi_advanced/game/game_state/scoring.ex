@@ -1041,7 +1041,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         orig_hand = state.players[seat].hand
         orig_calls = state.players[seat].calls
         # if any of our yaku look like american yaku, arrange the hand accordingly
-        IO.inspect(yaku)
         american_yaku = Enum.filter(yaku, fn {name, _value} -> String.contains?(name, " #") end)
         {arranged_hand, arranged_calls} = if not Enum.empty?(american_yaku) do
           {yaku_name, _value} = Enum.at(american_yaku, 0)
