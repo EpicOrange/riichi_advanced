@@ -167,12 +167,21 @@ defmodule RiichiAdvanced.GameState.American do
     end
   end
   def translate_letter_to_tile_spec(letter, suit, base_tile, ordering, ordering_r) do
-    dragons = %{"m" => "7z", "p" => "0z", "s" => "6z"}
+    dragons = %{m: "7z", p: "0z", s: "6z"}
+    offsets = %{m: %{m: 0, p: 10, s: 20}, p: %{m: 20, p: 0, s: 10}, s: %{m: 10, p: 20, s: 0}, unsuited: %{m: 0, p: 0, s: 0}}
     case letter do
       "D" -> dragons[suit]
       "0" -> "0z"
-      _ when is_integer(letter) -> Riichi.offset_tile(base_tile, letter, ordering, ordering_r) |> Atom.to_string()
-      _   -> letter <> suit
+      _ when is_integer(letter) ->
+        base_tile_suit = cond do
+          Riichi.is_manzu?(base_tile) -> :m
+          Riichi.is_pinzu?(base_tile) -> :p
+          Riichi.is_souzu?(base_tile) -> :s
+          true -> :unsuited
+        end
+        offset = offsets[base_tile_suit][suit]
+        Riichi.offset_tile(base_tile, letter + offset, ordering, ordering_r) |> Utils.tile_to_string()
+      _   -> letter <> Atom.to_string(suit)
     end
   end
   # ["2m", "0z", "2m", "4m"], [:"2m", :"1j", :"4m", :"0z"] => [:"2m", :"0z", :"1j", :"4m"]
@@ -187,7 +196,8 @@ defmodule RiichiAdvanced.GameState.American do
   def arrange_american_hand(am_match_definitions, hand, winning_tile, ordering, ordering_r, tile_aliases) do
     hand = hand ++ [winning_tile]
     # arrange the given hand (which may contain jokers) to match any of the match definitions
-    permutations = [["m", "p", "s"], ["m", "s", "p"], ["p", "m", "s"], ["p", "s", "m"], ["s", "m", "p"], ["s", "p", "m"]]
+    # permutations = [["m", "p", "s"], ["m", "s", "p"], ["p", "m", "s"], ["p", "s", "m"], ["s", "m", "p"], ["s", "p", "m"]]
+    permutations = [[:m, :p, :s], [:m, :s, :p], [:p, :m, :s], [:p, :s, :m], [:s, :m, :p], [:s, :p, :m]]
     for am_match_definition <- am_match_definitions, [a, b, c] <- permutations, base_tile <- hand, reduce: nil do
       nil ->
         # "FF 2024a 4444b 4444c"
@@ -197,34 +207,41 @@ defmodule RiichiAdvanced.GameState.American do
         #   b: ["4", "4", "4", "4"],
         #   c: ["4", "4", "4", "4"]
         # ]
-        
         res = for {suit, group} <- preprocess_american_match_definition(am_match_definition), reduce: [{hand, []}] do
-          acc -> for {hand, result} <- acc do
+          acc ->
             match_definition = case suit do
               :unsuited -> [group]
-              # todo handle numeric t
               :a -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, a, base_tile, ordering, ordering_r))], 1]]
               :b -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, b, base_tile, ordering, ordering_r))], 1]]
               :c -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, c, base_tile, ordering, ordering_r))], 1]]
             end
+            [[groups, orig_num]] = match_definition
             IO.inspect(match_definition)
-            remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
-            remaining_hands = if Enum.empty?(remaining_hands_nojoker) do
-              Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r, tile_aliases)
-            else remaining_hands_nojoker end
-            for {remaining_hand, _calls} <- remaining_hands do
-              new_group = hand -- remaining_hand
-              # sort 2024 etc according to the match_definition
-              # must keep jokers in mind
-              new_group = case match_definition do
-                [[[group], 1]] ->
-                  group = if is_list(group) do group else [group] end
-                  arrange_american_group(group, new_group, tile_aliases)
-                _ -> new_group
-              end
-              {remaining_hand, result ++ [new_group]}
-            end
-          end |> Enum.concat()
+            if not Enum.any?(groups, fn group -> group == nil || is_list(group) && nil in group end) do
+              for {hand, result} <- acc do
+                IO.inspect(result)
+                remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
+                remaining_hands = if Enum.empty?(remaining_hands_nojoker) do
+                  # we just need to remove as many flowers as we can
+                  num = min(orig_num, Riichi.binary_search_count_matches([{hand, []}], [[[groups, 1]]], ordering, ordering_r, %{}))
+                  for {hand, _calls} <- Riichi.remove_match_definition(hand, [], [[groups, num]], ordering, ordering_r) do
+                    Riichi.remove_match_definition(hand, [], [[groups, orig_num - num]], ordering, ordering_r, tile_aliases)
+                  end |> Enum.concat()
+                else remaining_hands_nojoker end
+                for {remaining_hand, _calls} <- remaining_hands do
+                  new_group = hand -- remaining_hand
+                  # sort 2024 etc according to the match_definition
+                  # must keep jokers in mind
+                  new_group = case match_definition do
+                    [[[group], 1]] ->
+                      group = if is_list(group) do group else [group] end
+                      arrange_american_group(group, new_group, tile_aliases)
+                    _ -> new_group
+                  end
+                  {remaining_hand, result ++ [new_group]}
+                end
+              end |> Enum.concat()
+            else [] end
         end
         case res do
           [] -> nil

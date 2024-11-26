@@ -117,7 +117,7 @@ defmodule RiichiAdvanced.GameState.Marking do
             call_tile = Riichi.call_to_tiles(call)
             |> Enum.reject(& &1 in jokers)
             |> Enum.at(0)
-            Utils.same_tile(tile, call_tile) end)
+            Utils.same_tile(tile, Utils.strip_attrs(call_tile)) end)
         "match_call_to_marked_hand" ->
           jokers = Map.keys(state.players[marking_player].tile_mappings)
           call_tile = Riichi.call_to_tiles(tile)
@@ -127,7 +127,7 @@ defmodule RiichiAdvanced.GameState.Marking do
           |> Enum.filter(fn {src, _mark_info} -> src == :hand end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
-          |> Enum.all?(fn {tile, _, _} -> Utils.same_tile(call_tile, tile) end)
+          |> Enum.all?(fn {tile, _, _} -> Utils.same_tile(call_tile, Utils.strip_attrs(tile)) end)
         "self"              -> marking_player == seat
         "others"            -> marking_player != seat
         "shimocha"          -> Utils.get_relative_seat(marking_player, seat) == :shimocha

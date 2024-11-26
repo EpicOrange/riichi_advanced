@@ -354,13 +354,18 @@ defmodule Riichi do
     if l < r do
       m = if l == -1 do r else Integer.floor_div(l + r + 1, 2) end
       multiplied_match_def = multiply_match_definitions(match_definitions, m)
-      matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
-      {l, r} = if matched do
-        if l == -1 do {l, r * 2} else {m, r} end
+      if Enum.empty?(multiplied_match_def) do
+        IO.inspect("Error: empty match definition given: #{inspect(match_definitions)}")
+        0
       else
-        if l == -1 do {0, r} else {l, m - 1} end
+        matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
+        {l, r} = if matched do
+          if l == -1 do {l, r * 2} else {m, r} end
+        else
+          if l == -1 do {0, r} else {l, m - 1} end
+        end
+        binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l, r)
       end
-      binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases, l, r)
     else l end 
   end
 

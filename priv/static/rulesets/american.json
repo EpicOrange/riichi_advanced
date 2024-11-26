@@ -1,8 +1,6 @@
 {
   "default_mods": [],
-  "available_mods": [
-    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
-  ],
+  "available_mods": [],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -92,7 +90,7 @@
     "11a 33a 55a 7777b 9999c",
     "NN EEE 2024a WWW SS",
     "FF 222a 444a 666a 88b 88c",
-    "NNN EW SSS XXX0a XXX1b",
+    "NNN EW SSS XXX0a XXX0b",
     "333a 666a 333b 666b 99c",
     "FF 22a 46a 88a 22b 46b 88b",
     "FF 11a 33a 55a 55b 77b 99b",
@@ -126,7 +124,7 @@
     { "display_name": "Winds and Dragons #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF NN EEE WWW SSSS"]]}] },
     { "display_name": "Winds and Dragons #5", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NNNN XX0a XX1a XX2a SSSS", "EEEE XX0a XX1a XX2a WWWW"]]}] },
     { "display_name": "Winds and Dragons #6", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF DDDDa NEWS DDDDb"]]}] },
-    { "display_name": "Winds and Dragons #7", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NNN EW SSS XXX0a XXX1b"]]} ] },
+    { "display_name": "Winds and Dragons #7", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NNN EW SSS XXX0a XXX0b"]]} ] },
     { "display_name": "369 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["333a 666a 6666b 9999b", "333a 666a 6666b 9999c"]]}] },
     { "display_name": "369 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 3a 66a 999a 333b 333c", "FF 3a 66a 999a 666b 666c", "FF 3a 66a 999a 999b 999c"]]}] },
     { "display_name": "369 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c"]]}] },

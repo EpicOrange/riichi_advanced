@@ -66,7 +66,9 @@ defmodule Utils do
   end
 
   def tile_to_string(tile) do
-    tile |> strip_attrs() |> Atom.to_string()
+    if tile != nil do
+      tile |> strip_attrs() |> Atom.to_string()
+    else nil end
   end
 
   def tile_to_attrs(tile) do
