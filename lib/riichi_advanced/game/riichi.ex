@@ -554,10 +554,15 @@ defmodule Riichi do
     end
   end
 
-  def call_to_tiles({_name, call}) do
-    for {tile, _sideways} <- call do
+  def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
+    tiles = for {tile, _sideways} <- call do
       flip_faceup(tile)
     end
+    if replace_am_jokers && Utils.count_tiles(tiles, [:"1j"]) > 0 do
+      # replace all american jokers with the nonjoker tile
+      nonjoker = Enum.find(tiles, &not Utils.same_tile(&1, :"1j")) |> Utils.strip_attrs()
+      Enum.map(tiles, fn t -> if Utils.same_tile(t, :"1j") do nonjoker else t end end)
+    else tiles end
   end
 
   def get_round_wind(kyoku) do
