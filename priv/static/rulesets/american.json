@@ -323,7 +323,8 @@
         ["unset_status", "final_charleston", "charleston_across_0"],
         ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_across_1": {
       "display_name": "Select a tile to pass across",
@@ -334,7 +335,8 @@
         ["unset_status", "final_charleston"],
         ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_across_2": {
       "display_name": "Select two tiles to pass across",
@@ -345,7 +347,8 @@
         ["unset_status", "final_charleston"],
         ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_across_3": {
       "display_name": "Select three tiles to pass across",
@@ -356,7 +359,8 @@
         ["unset_status", "final_charleston"],
         ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "am_pung": {
       "display_name": "Pung",

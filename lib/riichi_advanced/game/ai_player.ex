@@ -107,6 +107,7 @@ defmodule RiichiAdvanced.AIPlayer do
   defp get_mark_choices(source, players, revealed_tiles, num_scryed_tiles, wall) do
     case source do
       :done          -> []
+      :cancellable   -> []
       :hand          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, source, &1}) |> Enum.with_index() end)
       :call          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.calls, &{seat, source, &1}) |> Enum.with_index() end)
       :discard       -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, source, &1}) |> Enum.with_index() end)

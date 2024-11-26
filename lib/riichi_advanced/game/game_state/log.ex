@@ -133,6 +133,7 @@ defmodule RiichiAdvanced.GameState.Log do
     for {kw, val} <- marking do
       case kw do
         :done -> [kw, false]
+        :cancellable -> [kw, val]
         _     ->
           val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, s, i] end))
           [kw, val]
@@ -152,6 +153,7 @@ defmodule RiichiAdvanced.GameState.Log do
     for [kw, val] <- marking do
       case kw do
         "done" -> {:done, false}
+        "cancellable" -> {:cancellable, val}
         _      ->
           val = Map.new(val, fn {k, v} -> {String.to_atom(k), v} end)
           val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_atom(s), i} end))

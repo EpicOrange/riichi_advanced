@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.GameState.Marking do
       # for example: 
       # east: [
       #   done: false,
+      #   cancellable: true,
       #   hand: {
       #     marked: [{:"2m", :east, 4}],
       #     needed: 1,
