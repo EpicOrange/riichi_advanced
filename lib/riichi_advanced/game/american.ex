@@ -196,7 +196,6 @@ defmodule RiichiAdvanced.GameState.American do
   def arrange_american_hand(am_match_definitions, hand, winning_tile, ordering, ordering_r, tile_aliases) do
     hand = hand ++ [winning_tile]
     # arrange the given hand (which may contain jokers) to match any of the match definitions
-    # permutations = [["m", "p", "s"], ["m", "s", "p"], ["p", "m", "s"], ["p", "s", "m"], ["s", "m", "p"], ["s", "p", "m"]]
     permutations = [[:m, :p, :s], [:m, :s, :p], [:p, :m, :s], [:p, :s, :m], [:s, :m, :p], [:s, :p, :m]]
     for am_match_definition <- am_match_definitions, [a, b, c] <- permutations, base_tile <- hand, reduce: nil do
       nil ->

@@ -28,8 +28,8 @@ defmodule RiichiAdvanced.GameState.Marking do
     state
   end
 
-  def setup_marking(state, seat, to_mark) do
-    state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: [done: false] do
+  def setup_marking(state, seat, to_mark, cancellable) do
+    state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: [done: false, cancellable: cancellable] do
       marked_objects ->
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
         case target do
@@ -48,7 +48,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def needs_marking?(state, seat) do
-    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source != :done) && length(mark_info.marked) < mark_info.needed end)
+    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in [:done, :cancellable]) && length(mark_info.marked) < mark_info.needed end)
   end
 
   defp get_object(state, seat, index, source) do
@@ -198,7 +198,11 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def clear_marked_objects(state, seat) do
-    update_in(state.marking[seat], &Enum.map(&1, fn {source, mark_info} -> {source, if source == :done do false else Map.put(mark_info, :marked, []) end} end))
+    update_in(state.marking[seat], &Enum.map(&1, fn {source, mark_info} -> {source, case source do
+      :done        -> false
+      :cancellable -> mark_info
+      _            -> Map.put(mark_info, :marked, [])
+    end} end))
   end
 
   def reset_marking(state, marking_player) do

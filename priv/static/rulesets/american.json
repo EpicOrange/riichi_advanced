@@ -220,7 +220,8 @@
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["unset_status", "first_charleston"], ["set_status", "decide_charleston"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_across"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_across": {
       "display_name": "Select three tiles to pass across",
@@ -231,7 +232,8 @@
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_left"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_right": {
       "display_name": "Select three tiles to pass right",
@@ -242,7 +244,8 @@
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_across"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["unset_status", "second_charleston"], ["set_status", "final_charleston"]]]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "continue_charleston": {
       "display_name": "Continue Charleston",
