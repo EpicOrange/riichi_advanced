@@ -191,6 +191,7 @@
   "point_name": "Pts",
   "score_calculation": {
     "method": "direct",
+    "use_smt": false,
     "win_by_discard_name": "Discard",
     "win_by_draw_name": "Draw"
   },

@@ -166,12 +166,12 @@ defmodule RiichiAdvanced.GameState.American do
       [result] -> result
     end
   end
-  def translate_letter_to_tile_spec(letter, suit) do
+  def translate_letter_to_tile_spec(letter, suit, base_tile, ordering, ordering_r) do
     dragons = %{"m" => "7z", "p" => "0z", "s" => "6z"}
     case letter do
       "D" -> dragons[suit]
       "0" -> "0z"
-      _ when is_integer(letter) -> letter
+      _ when is_integer(letter) -> Riichi.offset_tile(base_tile, letter, ordering, ordering_r) |> Atom.to_string()
       _   -> letter <> suit
     end
   end
@@ -188,7 +188,7 @@ defmodule RiichiAdvanced.GameState.American do
     hand = hand ++ [winning_tile]
     # arrange the given hand (which may contain jokers) to match any of the match definitions
     permutations = [["m", "p", "s"], ["m", "s", "p"], ["p", "m", "s"], ["p", "s", "m"], ["s", "m", "p"], ["s", "p", "m"]]
-    for am_match_definition <- am_match_definitions, [a, b, c] <- permutations, reduce: nil do
+    for am_match_definition <- am_match_definitions, [a, b, c] <- permutations, base_tile <- hand, reduce: nil do
       nil ->
         # "FF 2024a 4444b 4444c"
         # [
@@ -203,10 +203,11 @@ defmodule RiichiAdvanced.GameState.American do
             match_definition = case suit do
               :unsuited -> [group]
               # todo handle numeric t
-              :a -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, a))], 1]]
-              :b -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, b))], 1]]
-              :c -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, c))], 1]]
+              :a -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, a, base_tile, ordering, ordering_r))], 1]]
+              :b -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, b, base_tile, ordering, ordering_r))], 1]]
+              :c -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, c, base_tile, ordering, ordering_r))], 1]]
             end
+            IO.inspect(match_definition)
             remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
             remaining_hands = if Enum.empty?(remaining_hands_nojoker) do
               Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r, tile_aliases)
@@ -227,7 +228,11 @@ defmodule RiichiAdvanced.GameState.American do
         end
         case res do
           [] -> nil
-          [{_hand, result}] -> Enum.concat(Enum.intersperse(result, [:"3x"])) -- [winning_tile]
+          [{_hand, result}] ->
+            result |> Enum.intersperse([:"3x"]) |> Enum.concat()
+            |> Enum.reverse()
+            |> then(& &1 -- [winning_tile])
+            |> Enum.reverse()
         end
       hand -> hand
     end

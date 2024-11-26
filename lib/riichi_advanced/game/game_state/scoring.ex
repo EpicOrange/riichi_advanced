@@ -1010,7 +1010,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end
     scoring_table = state.rules["score_calculation"]
     # deal with jokers
-    joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    use_smt = Map.get(scoring_table, "use_smt", true)
+    joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       jokers = Map.keys(state.players[seat].tile_mappings)
       if Utils.count_tiles(jokers, smt_hand) > 0 do
