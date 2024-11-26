@@ -93,7 +93,6 @@ defmodule RiichiAdvanced.GameState.American do
           groups
           |> Enum.reject(& &1 == "nojoker")
           |> Enum.max_by(&length/1)
-        is_list(groups) -> length(groups)
         true -> num
       end
       num_tiles >= 3

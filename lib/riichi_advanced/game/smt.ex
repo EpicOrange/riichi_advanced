@@ -191,10 +191,14 @@ defmodule RiichiAdvanced.SMT do
     #     (= ((_ extract 7 4) left) ((_ extract 7 4) right))
     #     (= ((_ extract 3 0) left) ((_ extract 3 0) right))))
     equal_calls = Enum.map(0..len-1//4, fn ix -> "(= ((_ extract #{ix+3} #{ix}) left) ((_ extract #{ix+3} #{ix}) right))" end)
+    at_least_calls = Enum.map(0..len-1//4, fn ix -> "(bvuge ((_ extract #{ix+3} #{ix}) left) ((_ extract #{ix+3} #{ix}) right))" end)
     equal_digits = """
     (define-fun equal_digits ((left (_ BitVec #{len})) (right (_ BitVec #{len}))) Bool
       (and
         #{Enum.join(equal_calls, "\n    ")}))
+    (define-fun at_least_digits ((left (_ BitVec #{len})) (right (_ BitVec #{len}))) Bool
+      (and
+        #{Enum.join(at_least_calls, "\n    ")}))
     (define-fun nonzero ((val (_ BitVec #{len}))) Bool
       (not (equal_digits zero val)))
     """
@@ -221,6 +225,13 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.join()
   end
 
+  def add_missing_suit(sets) do
+    # basically if sets has keys 0 and 2 but not 1, add 1
+    if Map.has_key?(sets, 0) && not Map.has_key?(sets, 1) && Map.has_key?(sets, 2) do
+      Map.put(sets, 1, [])
+    else sets end
+  end
+
   def set_to_bitvector(_encoding, set) do
     # input: [0, 0, 3, 6, 11, 11, 14, 17, 22, 22, 25, 28]
     # output: "100100200010010020001001002"
@@ -228,13 +239,29 @@ defmodule RiichiAdvanced.SMT do
     {tiles, _dragons} = Enum.split_with(set, fn i -> i < 30 end)
     tiles
     |> Enum.group_by(fn i -> trunc(i / 10) end)
+    |> add_missing_suit()
     |> Enum.sort_by(fn {k, _v} -> -k end)
     |> Enum.map(fn {_k, v} -> set_suit_to_bitvector(Enum.map(v, &rem(&1, 10))) end)
     |> Enum.join()
   end
 
   def remove_nojoker_tag(group) do
-    if is_list(group) do Enum.reject(group, & &1 == "nojoker") else group end
+    if is_list(group) do Enum.reject(group, & &1 == "nojoker") |> Enum.sort() else group end
+  end
+
+  def tile_group_assertion(i, encoding, len, group, num, unique) do
+    if unique do
+      # "(assert ((_ at-least #{num})\n#{Enum.map(group, fn tile -> "    (nonzero (bvand h (bvmul (_ bv7 #{len}) #{to_smt_tile(Utils.to_tile(tile), encoding)})))" end) |> Enum.join("\n")}))"
+      tiles = Enum.map(group, &to_smt_tile(Utils.to_tile(&1), encoding))
+      tile_ixs = 1..length(tiles)
+      declare_tile_flags = Enum.map(tile_ixs, fn ix -> "(declare-const tiles#{i}_#{ix} Bool)" end)
+      assert_tile = "(assert (equal_digits tiles#{i} (bvadd\n  #{Enum.map(Enum.zip(tiles, tile_ixs), fn {tile, ix} -> "(ite tiles#{i}_#{ix} #{tile} zero)" end) |> Enum.join("\n  ")})))"
+      assert_num_1 = "(assert ((_ at-least #{num}) #{Enum.map(tile_ixs, fn ix -> "tiles#{i}_#{ix}" end) |> Enum.join(" ")}))"
+      assert_num_2 = "(assert ((_ at-most #{num}) #{Enum.map(tile_ixs, fn ix -> "tiles#{i}_#{ix}" end) |> Enum.join(" ")}))"
+      Enum.join(declare_tile_flags ++ [assert_tile, assert_num_1, assert_num_2], "\n")
+    else
+      "(assert (equal_digits tiles#{i} (bvmul (_ bv#{num} #{len}) (bvadd\n    #{Enum.map(group, &to_smt_tile(Utils.to_tile(&1), encoding)) |> Enum.join("\n    ")})))"
+    end
   end
 
   def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
@@ -332,6 +359,27 @@ defmodule RiichiAdvanced.SMT do
     end)
     |> Enum.unzip()
 
+    # collect all non-set tile groups used (sets of exact tiles rather than shiftable sets)
+    all_tile_groups = for match_definition <- match_definitions, [groups, num] <- match_definition, reduce: [] do
+      all_tile_groups ->
+        unique = "unique" in match_definition
+        tile_groups = groups
+        |> Enum.map(&remove_nojoker_tag/1)
+        |> Enum.reject(& &1 in all_sets)
+        new_groups = if unique do
+          [{tile_groups, num, true}]
+        else
+          Enum.flat_map(tile_groups, fn group -> cond do
+            is_binary(group) -> [{[group], num, false}]
+            is_list(group) && Utils.is_tile(Enum.at(group, 0)) -> [{group, num, false}]
+            true ->
+              IO.puts("Unhandled SMT tile group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
+              []
+          end end)
+        end
+        all_tile_groups ++ new_groups
+    end |> Enum.uniq()
+
     # hand part 2: declare hand
     # (declare-const hand (_ BitVec 136))
     # (assert (= hand (bvadd #x0001100001110000000200000000000000 joker1)))
@@ -344,18 +392,21 @@ defmodule RiichiAdvanced.SMT do
     # (declare-const hand_indices1 (_ BitVec 136))
     # (declare-const hand_indices2 (_ BitVec 136))
     # (declare-const hand_indices3 (_ BitVec 136))
-    # (assert (or
+    # (assert
     #   (equal_digits hand (bvadd
     #     (bvmul hand_indices1 set1)
     #     (bvmul hand_indices2 set2)
-    #     (bvmul hand_indices3 set3)))
-    #   (equal_digits zero (bvadd hand_indices1 hand_indices2 hand_indices3))))
+    #     (bvmul hand_indices3 set3)
+    #     (ite tiles1_used tiles1 zero))))
     set_indices = if Enum.empty?(all_sets) do [] else 1..length(all_sets) end
-    declare_hand_indices = Enum.map(set_indices, fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end)
+    declare_hand_indices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "(declare-const hand_indices#{i} (_ BitVec #{len}))\n" end) end
     # we use bvmul for sets that use different suits
     # otherwise, use shift_set, which handles wrapping
-    hand_indices = Enum.map(set_indices, fn i -> "\n    (#{if 10 not in Enum.at(all_sets, i-1) and 20 not in Enum.at(all_sets, i-1) do "shift_set" else "bvmul" end} hand_indices#{i} set#{i})" end) |> Enum.join()
-    assert_hand_indices = ["(assert (or\n  (equal_digits hand (bvadd#{hand_indices}))\n  (equal_digits zero (bvadd#{Enum.map(set_indices, fn i -> " hand_indices#{i}" end)}))))\n"]
+    add_hand_indices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "\n    (#{if Enum.all?(Enum.at(all_sets, i-1), & &1 < 10) do "shift_set" else "bvmul" end} hand_indices#{i} set#{i})" end) |> Enum.join() end
+    # add tile groups to the hand if they are used
+    tile_group_indices = if Enum.empty?(all_tile_groups) do [] else 1..length(all_tile_groups) end
+    add_used_tiles = if Enum.empty?(all_tile_groups) do [] else Enum.map(tile_group_indices, fn i -> "\n    (ite tiles#{i}_used tiles#{i} zero)" end) end
+    assert_hand_indices = if Enum.empty?(all_sets) do [] else ["(assert\n  (equal_digits hand (bvadd#{add_hand_indices}#{add_used_tiles})))\n"] end
 
     has_calls = length(calls) > 0
     calls_smt = if has_calls do
@@ -427,6 +478,7 @@ defmodule RiichiAdvanced.SMT do
     assert_sumindices = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "(assert (= sumindices#{i} (sum_digits indices#{i})))\n" end) end
     assert_indices_total = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single") end
     assert_indices_total = if Enum.empty?(all_sets) do "" else "(assert (= #x0 (bvand #x8 #{assert_indices_total})))\n" end
+
     # assert_indices = Enum.map(set_indices, fn i -> "(assert (= indices#{i} (bvadd hand_indices#{i} call_indices#{i})))\n" end)
 
     index_smt = declare_hand_indices ++ assert_hand_indices
@@ -459,54 +511,73 @@ defmodule RiichiAdvanced.SMT do
     #        (= (_ bv0 4) sumindices2)
     #        (= (_ bv7 4) sumindices3))
     #   (and (tiles1 hand))))
-    {match_assertions, tile_groups} = for match_definition <- match_definitions, reduce: {[], []} do
-      {match_assertions, tile_groups} ->
-        {assertions, mentioned_set_ixs, tile_groups} = for [groups, num] <- match_definition, reduce: {[], [], tile_groups} do
-          {assertions, mentioned_set_ixs, tile_groups} ->
-            {set_ixs, tiles} = groups
-            |> Enum.map(&remove_nojoker_tag/1)
-            |> Enum.map(fn group -> {group, Enum.find_index(all_sets, fn set -> set == group end)} end)
-            |> Enum.map(fn {group, ix} -> cond do
-              is_integer(ix) -> ix+1
-              is_binary(group) -> Utils.to_tile(group) 
-              is_list(group) && Utils.is_tile(Enum.at(group, 0)) -> Enum.map(group, &Utils.to_tile/1)
-              true ->
-                IO.puts("Unhandled SMT group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
-                nil
-            end end)
-            |> Enum.split_with(fn i -> is_integer(i) end)
+    {match_assertions, sumindices_usages} = for match_definition <- match_definitions, reduce: {[], []} do
+      {match_assertions, sumindices_usages} ->
+        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions} = for [groups, num] <- match_definition, reduce: {[], [], [], []} do
+          {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions} ->
+            unique = "unique" in match_definition
+            {set_ixs, tiles_ixs} = if unique do
+              [{[], [1+Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})]}]
+            else
+              groups
+              |> Enum.map(&remove_nojoker_tag/1)
+              |> Enum.map(fn group -> {group, Enum.find_index(all_sets, & &1 == group), Enum.find_index(all_tile_groups, & &1 == {group, num, unique} || &1 == {[group], num, unique})} end)
+              |> Enum.flat_map(fn {group, ix_set, ix_tile_group} -> cond do
+                is_integer(ix_set) -> [{[ix_set+1], []}]
+                is_integer(ix_tile_group) -> [{[], [ix_tile_group+1]}]
+                true ->
+                  IO.puts("Unhandled SMT group #{inspect(group, charlists: :as_lists)}.")
+                  []
+              end end)
+            end
+            |> Enum.unzip()
+            set_ixs = Enum.concat(set_ixs)
+            tiles_ixs = Enum.concat(tiles_ixs)
             # first take care of sets
-            assertions = if not Enum.empty?(set_ixs) do
+            sumindices_assertion = if not Enum.empty?(set_ixs) do
               sum = Enum.map(set_ixs, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
               if num < 0 do
-                ["\n    (bvult (_ bv#{-num} 4) #{sum})" | assertions]
+                ["(bvult (_ bv#{-num} 4) #{sum})"]
               else
-                ["\n    (= (_ bv#{num} 4) #{sum})" | assertions]
+                ["(= (_ bv#{num} 4) #{sum})"]
               end
-            else assertions end
+            else [] end
+            assertions = assertions ++ sumindices_assertion
 
             # then take care of tiles
-            {assertions, tile_groups} = if not Enum.empty?(tiles) do
-              {["\n    (tiles#{length(tile_groups)} hand)" | assertions], tile_groups ++ [{Enum.map(tiles, &to_smt_tile(&1, encoding)), num}]}
-            else {assertions, tile_groups} end
-            # IO.inspect({groups, set_ixs, tiles})
-            {assertions, set_ixs ++ mentioned_set_ixs, tile_groups}
+            assertions = if not Enum.empty?(tiles_ixs) do
+              assertions ++ Enum.map(tiles_ixs, fn i -> "tiles#{i}_used" end)
+            else assertions end
+            # IO.inspect({groups, set_ixs, tiles_ixs})
+            {assertions, set_ixs ++ mentioned_set_ixs, tiles_ixs ++ mentioned_tiles_ixs, sumindices_assertions ++ sumindices_assertion}
         end
-        # zero out unmentioned sets (big optimization)
-        nonexistent_set_ixs = Enum.reject(set_indices, fn i -> Enum.member?(mentioned_set_ixs, i) end)
+        # zero out unmentioned sets and tiles (big optimization)
+        nonexistent_tiles_ixs = Enum.to_list(tile_group_indices) -- mentioned_tiles_ixs
+        assertions = if not Enum.empty?(nonexistent_tiles_ixs) do
+          sum = Enum.map(nonexistent_tiles_ixs, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")
+          ["(not (or #{sum}))\n    " | assertions]
+        else assertions end
+        nonexistent_set_ixs = Enum.to_list(set_indices) -- mentioned_set_ixs
         assertions = if not Enum.empty?(nonexistent_set_ixs) do
           sum = Enum.map(nonexistent_set_ixs, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
           ["\n    (= (_ bv0 4) #{sum})" | assertions]
         else assertions end
-        {["\n  (and #{Enum.join(assertions, " ")})" | match_assertions], tile_groups}
+
+        # collect all sumindices assertions (big optimization)
+        sumindices_usages = if Enum.empty?(sumindices_assertions) do sumindices_usages else [{mentioned_set_ixs, sumindices_assertions} | sumindices_usages] end
+        {["\n  (and #{Enum.join(assertions, " ")})" | match_assertions], sumindices_usages}
     end
+    sumindices_usages = Enum.uniq(sumindices_usages)
+    indices_optimization = if Enum.empty?(all_sets) do [] else ["(assert ((_ at-most 1)\n  #{Enum.map(sumindices_usages, fn {_ixs, assertions} -> "(and #{Enum.join(assertions, "\n  ")})" end) |> Enum.join("\n  ")}))\n"] end
+    indices_optimization2 = if Enum.empty?(all_sets) do [] else Enum.map(sumindices_usages, fn {ixs, assertions} -> "(assert (or (and #{Enum.map(ixs, fn i -> "(= (_ bv0 4) sumindices#{i})" end) |> Enum.join(" ")}) (and #{Enum.join(assertions, "\n  ")})))\n" end) end
+
     match_assertions = "(assert (or#{match_assertions}))\n"
-    # IO.inspect(tile_groups)
 
-    # TODO tile_groups
-    tile_groups = tile_groups |> Enum.with_index() |> Enum.map(fn {{group, num}, i} -> "(define-fun tiles#{i} ((h (_ BitVec #{len}))) Bool\n  ((_ at-least #{num})\n#{Enum.map(group, fn tiles -> "    (nonzero (bvand h (bvmul (_ bv7 #{len}) #{tiles})))" end) |> Enum.join("\n")}))\n" end)
+    tile_groups = all_tile_groups
+    |> Enum.with_index()
+    |> Enum.map(fn {{group, num, unique}, i} -> "(declare-const tiles#{i+1} (_ BitVec #{len}))\n(declare-const tiles#{i+1}_used Bool)\n#{tile_group_assertion(i+1, encoding, len, group, num, unique)}\n" end)
 
-    smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions])
+    smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions] ++ indices_optimization ++ indices_optimization2)
     if @print_smt do
       IO.puts(smt)
       # IO.inspect(encoding)
