@@ -809,14 +809,14 @@
     {
       "display_name": "Toikon",
       "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234"], 4], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 4], [["pair"], 1]] ]]}]
     },
     {
       "display_name": "Toikon",
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234"], 4], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[ "exhaustive", [["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 4], [["pair"], 1]] ]]}
       ]
     },
     {
@@ -824,20 +824,20 @@
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["ryandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 2], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[ "exhaustive", [["ryandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 2], [["pair"], 1]] ]]}
       ]
     },
     {
       "display_name": "Sandoukon",
       "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[ "exhaustive", [["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]] ]]}]
     },
     {
       "display_name": "Sandoukon",
       "value": 1,
       "when": [
         {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]},
-        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]]]]}
+        {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[ "exhaustive", [["sandoukon"], 1], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1]] ]]}
       ]
     },
     {
