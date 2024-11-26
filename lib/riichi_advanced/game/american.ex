@@ -215,10 +215,8 @@ defmodule RiichiAdvanced.GameState.American do
               :c -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, c, base_tile, ordering, ordering_r))], 1]]
             end
             [[groups, orig_num]] = match_definition
-            IO.inspect(match_definition)
             if not Enum.any?(groups, fn group -> group == nil || is_list(group) && nil in group end) do
               for {hand, result} <- acc do
-                IO.inspect(result)
                 remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
                 remaining_hands = if Enum.empty?(remaining_hands_nojoker) do
                   # we just need to remove as many flowers as we can
