@@ -1,6 +1,6 @@
 {
   "default_mods": [
-    "dora", "ura", "kandora", "aka",
+    "dora_sanma", "ura_sanma", "kandora_sanma", "aka",
     "ippatsu",
     "nagashi",
     "tobi",
@@ -11,10 +11,10 @@
     "renhou"
   ],
   "available_mods": [
-    {"id": "dora", "name": "Dora", "desc": "Enables dora."},
-    {"id": "ura", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
+    {"id": "dora_sanma", "name": "Dora", "desc": "Enables dora."},
+    {"id": "ura_sanma", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
     {"id": "aka", "name": "Aka", "desc": "Enables aka dora (red fives)."},
-    {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
+    {"id": "kandora_sanma", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
     {"id": "ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
     {"id": "nagashi", "name": "Nagashi", "desc": "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
@@ -718,6 +718,7 @@
     "yaku2_overrides_yaku1": true,
     "draw_tenpai_payments": true,
     "draw_nagashi_payments": true,
+    "tsumo_loss": true,
     "split_oya_ko_payment": true,
     "agarirenchan": true,
     "tenpairenchan": true,
@@ -828,31 +829,13 @@
       "display_name": "Kan",
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-      "actions": [
-        ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
-        ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_7"]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}], [["draw", 1, "kandraw_8"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_6"]}, {"name": "tile_not_drawn", "opts": ["kandraw_7"]}], [["draw", 1, "kandraw_7"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_5"]}, {"name": "tile_not_drawn", "opts": ["kandraw_6"]}], [["draw", 1, "kandraw_6"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "tile_not_drawn", "opts": ["kandraw_5"]}], [["draw", 1, "kandraw_5"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
-      ],
-      "precedence_over": ["pon", "daiminkan"]
-    },
-    "daiminkan": {
-      "display_name": "Kan",
-      "call": [[0, 0, 0]],
-      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
         "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
         {"name": "not_match", "opts": [["all_calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}
       ],
       "actions": [
         ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
+        ["shift_tile_to_dead_wall", 1],
         ["set_status", "kan"],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_7"]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}], [["draw", 1, "kandraw_8"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_6"]}, {"name": "tile_not_drawn", "opts": ["kandraw_7"]}], [["draw", 1, "kandraw_7"]]],
@@ -883,6 +866,7 @@
       ],
       "actions": [
         ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
+        ["shift_tile_to_dead_wall", 1],
         ["set_status", "kan", "ankan"],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_7"]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}], [["draw", 1, "kandraw_8"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_6"]}, {"name": "tile_not_drawn", "opts": ["kandraw_7"]}], [["draw", 1, "kandraw_7"]]],
@@ -909,7 +893,12 @@
       ],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
+        ["shift_tile_to_dead_wall", 1],
         ["set_status", "kan"],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_7"]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}], [["draw", 1, "kandraw_8"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_6"]}, {"name": "tile_not_drawn", "opts": ["kandraw_7"]}], [["draw", 1, "kandraw_7"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_5"]}, {"name": "tile_not_drawn", "opts": ["kandraw_6"]}], [["draw", 1, "kandraw_6"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "tile_not_drawn", "opts": ["kandraw_5"]}], [["draw", 1, "kandraw_5"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
         ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
@@ -991,8 +980,19 @@
     },
     "pei": {
       "display_name": "Pei",
-      "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}],
-      "actions": [["big_text", "Pei"], ["flower", "4z"], ["draw"]]
+      "show_when": ["our_turn", "has_draw", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}],
+      "actions": [
+        ["big_text", "Pei"], ["flower", "4z"],
+        ["shift_tile_to_dead_wall", 1],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_7"]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}], [["draw", 1, "kandraw_8"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_6"]}, {"name": "tile_not_drawn", "opts": ["kandraw_7"]}], [["draw", 1, "kandraw_7"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_5"]}, {"name": "tile_not_drawn", "opts": ["kandraw_6"]}], [["draw", 1, "kandraw_6"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_4"]}, {"name": "tile_not_drawn", "opts": ["kandraw_5"]}], [["draw", 1, "kandraw_5"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
+        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
+        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+      ]
     }
   },
   "auto_buttons": {

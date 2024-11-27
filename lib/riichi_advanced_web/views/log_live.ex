@@ -167,6 +167,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         kyoku={@state.kyoku}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
+        num_players={length(@state.available_seats)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
@@ -224,6 +225,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}
+        wall_length={length(Map.get(@state.rules, "wall", []))}
         die1={@state.die1}
         die2={@state.die2}
         dice_roll={@state.die1 + @state.die2}
@@ -232,6 +234,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         dead_wall_offset={@state.dead_wall_offset}
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
+        available_seats={@state.available_seats}
         :if={Map.get(@state.rules, "display_wall", false)} />
       <.live_component module={RiichiAdvancedWeb.LogControlComponent}
         id="log-control"

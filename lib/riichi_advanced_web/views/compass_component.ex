@@ -7,22 +7,33 @@ defmodule RiichiAdvancedWeb.CompassComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["compass", Riichi.get_seat_wind(@kyoku, @seat)]} phx-click="notify_ai" phx-target={@myself}>
+    <div class={["compass", @seat]} phx-click="notify_ai" phx-target={@myself}>
       <div class="centerpiece">
         <div class="tiles-left"><%= @tiles_left %></div>
         <div class="riichi-stick-counter" :if={@display_riichi_sticks}><%= @riichi_sticks %></div>
         <div class="honba-counter" :if={@display_honba}><%= @honba %></div>
       </div>
-      <%= for {dir, symbol} <- [{:east, "東"}, {:south, "南"}, {:west, "西"}, {:north, "北"}] do %>
+      <%= for {dir, symbol} <- prepare_compass(@kyoku, @available_seats) do %>
         <div class="score-box"></div>
         <div class={["direction", dir]}>
-          <div class={["riichi-tray", Riichi.get_seat_wind(@kyoku, @turn) == dir && "highlighted", @riichi[Riichi.get_player_from_seat_wind(@kyoku, dir)] && "riichi"]}></div>
-          <div class={["wind-marker", Riichi.get_seat_wind(@kyoku, @turn) == dir && "highlighted", @is_bot[Riichi.get_player_from_seat_wind(@kyoku, dir)] && "bot"]} :if={dir in @available_seats}><%= symbol %></div>
-          <div class="score-counter" :if={dir in @available_seats}><%= @score[Riichi.get_player_from_seat_wind(@kyoku, dir)] %></div>
+          <div class={["riichi-tray", @turn == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
+          <div class={["wind-marker", @turn == dir && "highlighted", @is_bot[dir] && "bot"]}><%= symbol %></div>
+          <div class="score-counter" :if={dir in @available_seats}><%= @score[dir] %></div>
         </div>
       <% end %>
     </div>
     """
+  end
+
+  def prepare_compass(kyoku, available_seats) do
+    symbols = %{east: "東", south: "南", west: "西", north: "北"}
+    Enum.map([:east, :south, :west, :north], fn seat -> 
+      if seat in available_seats do
+        {seat, symbols[Riichi.get_seat_wind(kyoku, seat, available_seats)]}
+      else
+        {seat, ""}
+      end
+    end)
   end
 
   def handle_event("notify_ai", _assigns, socket) do

@@ -96,7 +96,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def get_placements(state) do
     state.players
-    |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat) end)
+    |> Enum.sort_by(fn {seat, player} -> -player.score - Riichi.get_seat_scoring_offset(state.kyoku, seat, state.available_seats) end)
     |> Enum.map(fn {seat, _player} -> seat end)
   end
 
@@ -196,7 +196,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_score"                -> state.players[context.seat].score >= Enum.at(opts, 0, 0)
       "has_score_below"          -> state.players[context.seat].score < Enum.at(opts, 0, 0)
       "round_wind_is"            ->
-        round_wind = Riichi.get_round_wind(state.kyoku)
+        round_wind = Riichi.get_round_wind(state.kyoku, length(state.available_seats))
         case Enum.at(opts, 0, "east") do
           "east"  -> round_wind == :east
           "south" -> round_wind == :south
@@ -207,7 +207,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             false
         end
       "seat_is"                  ->
-        seat_wind = Riichi.get_seat_wind(state.kyoku, context.seat)
+        seat_wind = Riichi.get_seat_wind(state.kyoku, context.seat, state.available_seats)
         case Enum.at(opts, 0, "east") do
           "east"  -> seat_wind == :east
           "south" -> seat_wind == :south
@@ -418,7 +418,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
       "wall_is_here"        ->
         dice_roll = state.die1 + state.die2
-        break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat)
+        break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat, state.available_seats)
         end_dir = cond do
           state.wall_index < 2*(17 - dice_roll) -> break_dir
           state.wall_index < 2*(34 - dice_roll) -> Utils.prev_turn(break_dir)
@@ -429,7 +429,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end_dir == :self
       "dead_wall_ends_here"        ->
         dice_roll = state.die1 + state.die2
-        break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat)
+        break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat, state.available_seats)
         wall_length = length(state.wall) + length(state.dead_wall)
         end_dir = cond do
           wall_length < 2*(17 - dice_roll) -> break_dir

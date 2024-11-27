@@ -68,7 +68,7 @@ defmodule Game do
     # remember to edit :put_state if you change anything above
 
     # control variables
-    available_seats: [],
+    available_seats: [:east, :south, :west, :north],
     game_active: false,
     visible_screen: nil,
     error: nil,

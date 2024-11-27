@@ -565,17 +565,38 @@ defmodule Riichi do
     else tiles end
   end
 
-  def get_round_wind(kyoku) do
-    cond do
-      kyoku >= 0 && kyoku < 4 -> :east
-      kyoku >= 4 && kyoku < 8 -> :south
-      kyoku >= 8 && kyoku < 12 -> :west
-      kyoku >= 12 -> :north
+  def get_round_wind(kyoku, num_players) do
+    case num_players do
+      1 -> cond do
+        kyoku == 0 -> :east
+        kyoku == 1 -> :south
+        kyoku == 2 -> :west
+        kyoku >= 3 -> :north
+      end
+      2 -> cond do
+        kyoku >= 0 && kyoku < 2 -> :east
+        kyoku >= 2 && kyoku < 4 -> :south
+        kyoku >= 4 && kyoku < 6 -> :west
+        kyoku >= 6 -> :north
+      end
+      3 -> cond do
+        kyoku >= 0 && kyoku < 3 -> :east
+        kyoku >= 3 && kyoku < 6 -> :south
+        kyoku >= 6 && kyoku < 9 -> :west
+        kyoku >= 9 -> :north
+      end
+      4 -> cond do
+        kyoku >= 0 && kyoku < 4 -> :east
+        kyoku >= 4 && kyoku < 8 -> :south
+        kyoku >= 8 && kyoku < 12 -> :west
+        kyoku >= 12 -> :north
+      end
     end
   end
 
-  def get_seat_wind(kyoku, seat) do
-    Utils.prev_turn(seat, rem(kyoku, 4))
+  def get_seat_wind(kyoku, seat, available_seats) do
+    ix = Enum.find_index(available_seats, & &1 == seat)
+    if ix == nil do nil else Enum.at(available_seats, Integer.mod(ix - kyoku, length(available_seats))) end
   end
 
   def get_player_from_seat_wind(kyoku, wind) do
@@ -586,8 +607,8 @@ defmodule Riichi do
     Utils.next_turn(:east, rem(kyoku, 4))
   end
 
-  def get_seat_scoring_offset(kyoku, seat) do
-    case get_seat_wind(kyoku, seat) do
+  def get_seat_scoring_offset(kyoku, seat, available_seats) do
+    case get_seat_wind(kyoku, seat, available_seats) do
       :east  -> 3
       :south -> 2
       :west  -> 1
@@ -595,14 +616,14 @@ defmodule Riichi do
     end
   end
 
-  def get_break_direction(dice_roll, kyoku, seat) do
+  def get_break_direction(dice_roll, kyoku, seat, available_seats) do
     wall_dir = cond do
       dice_roll in [2, 6, 10] -> :south
       dice_roll in [3, 7, 11] -> :west
       dice_roll in [4, 8, 12] -> :north
       true                    -> :east
     end
-    get_seat_wind(kyoku, seat) |> Utils.get_relative_seat(wall_dir)
+    get_seat_wind(kyoku, seat, available_seats) |> Utils.get_relative_seat(wall_dir)
   end
 
   defp calculate_call_fu({name, call}) do
@@ -848,10 +869,19 @@ defmodule Riichi do
     ret
   end
 
-  def calc_ko_oya_points(score, is_dealer, han_fu_rounding_factor) do
-    divisor = if is_dealer do 3 else 4 end
+  def calc_ko_oya_points(score, is_dealer, num_players, han_fu_rounding_factor) do
+    divisor = if num_players == 4 do
+      if is_dealer do 3 else 4 end
+    else # sanma
+      if is_dealer do 2 else 3 end
+    end
+    num_ko_payers = if num_players == 4 do
+      if is_dealer do 3 else 2 end
+    else # sanma
+      if is_dealer do 2 else 1 end
+    end
+    IO.inspect({score, num_players, divisor, num_ko_payers, han_fu_rounding_factor})
     ko_payment = trunc(Float.round(score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
-    num_ko_payers = if is_dealer do 3 else 2 end
     oya_payment = score - num_ko_payers * ko_payment
     {ko_payment, oya_payment}
   end

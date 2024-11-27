@@ -5,6 +5,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :viewer, :spectator)
     socket = assign(socket, :wall, [])
     socket = assign(socket, :dead_wall, [])
+    socket = assign(socket, :wall_length, 136)
     socket = assign(socket, :wall_index, 0)
     socket = assign(socket, :dead_wall_offset, 0)
     socket = assign(socket, :revealed_tiles, [])
@@ -15,6 +16,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :die1, 3)
     socket = assign(socket, :die2, 4)
     socket = assign(socket, :dice_roll, 7)
+    socket = assign(socket, :available_seats, [:east, :south, :west, :north])
     {:ok, socket}
   end
 
@@ -24,16 +26,16 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
       <div class={[@id]}>
         <.live_component module={RiichiAdvancedWeb.DisplayWallWallComponent}
           id="wall toimen"
-          wall={@prepared_wall[:toimen]} />
+          wall={Map.get(@prepared_wall, :toimen, [])} />
         <.live_component module={RiichiAdvancedWeb.DisplayWallWallComponent}
           id="wall shimocha"
-          wall={@prepared_wall[:shimocha]} />
+          wall={Map.get(@prepared_wall, :shimocha, [])} />
         <.live_component module={RiichiAdvancedWeb.DisplayWallWallComponent}
           id="wall self"
-          wall={@prepared_wall[:self]} />
+          wall={Map.get(@prepared_wall, :self, [])} />
         <.live_component module={RiichiAdvancedWeb.DisplayWallWallComponent}
           id="wall kamicha"
-          wall={@prepared_wall[:kamicha]} />
+          wall={Map.get(@prepared_wall, :kamicha, [])} />
         <div class="dice">
           <div class={["die", to_die_class(@die1)]}></div>
           <div class={["die", to_die_class(@die2)]}></div>
@@ -79,30 +81,54 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     final_wall = live_wall_chunks ++ dead_wall_chunks
     
     # figure out where the wall break is relative to our seat
+    num_players = length(assigns.available_seats)
+    wall_length = trunc(Float.ceil(assigns.wall_length / num_players / 2))
     seat = if assigns.viewer == :spectator do :east else assigns.viewer end
-    break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, seat)
-    offset = -assigns.dice_roll - Integer.floor_div(-assigns.dead_wall_offset, 2)
-    wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, 17 - assigns.dice_roll)
-    wall2 = final_wall |> Enum.drop(17 - assigns.dice_roll) |> Enum.take(17)
-    wall3 = final_wall |> Enum.drop(34 - assigns.dice_roll) |> Enum.take(17)
-    wall4 = final_wall |> Enum.drop(51 + offset) |> Enum.take(17)
-    # IO.inspect({length(assigns.dead_wall), dead_wall_chunks, wall4, wall1})
-    # IO.inspect({length(assigns.dead_wall), length(wall4), length(wall1)})
+    break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, seat, assigns.available_seats)
 
-    # insert spacer for dead wall
-    dead_wall_length = -Integer.floor_div(-length(dead_wall), 2)
-    {wall1, wall4} = cond do
-      assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall4, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
-      assigns.wall_index >= length(assigns.wall) -> {wall1, wall4} # no spacer in wall1 if we drew into the dead wall
-      assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall4}
-      true -> {wall1, wall4}
+    case num_players do
+      3 ->
+        offset = -assigns.dice_roll - Integer.floor_div(-assigns.dead_wall_offset, 2)
+        wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, wall_length - assigns.dice_roll)
+        wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
+        wall3 = final_wall |> Enum.drop(2*wall_length + offset) |> Enum.take(wall_length)
+
+        # insert spacer for dead wall
+        dead_wall_length = -Integer.floor_div(-length(dead_wall), 2)
+        {wall1, wall3} = cond do
+          assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall3, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
+          assigns.wall_index >= length(assigns.wall) -> {wall1, wall3} # no spacer in wall1 if we drew into the dead wall
+          assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall3}
+          true -> {wall1, wall3}
+        end
+        available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.viewer, &1))
+        turns = [break_dir, Utils.prev_turn(break_dir), Utils.prev_turn(break_dir, 2), Utils.prev_turn(break_dir, 3)]
+        |> Enum.filter(& &1 in available_dirs)
+        Enum.zip(turns, [wall1, wall2, wall3]) |> Map.new()
+      4 ->
+        offset = -assigns.dice_roll - Integer.floor_div(-assigns.dead_wall_offset, 2)
+        wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, wall_length - assigns.dice_roll)
+        wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
+        wall3 = final_wall |> Enum.drop(2*wall_length - assigns.dice_roll) |> Enum.take(wall_length)
+        wall4 = final_wall |> Enum.drop(3*wall_length + offset) |> Enum.take(wall_length)
+        # IO.inspect({length(assigns.dead_wall), dead_wall_chunks, wall4, wall1})
+        # IO.inspect({length(assigns.dead_wall), length(wall4), length(wall1)})
+
+        # insert spacer for dead wall
+        dead_wall_length = -Integer.floor_div(-length(dead_wall), 2)
+        {wall1, wall4} = cond do
+          assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall4, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
+          assigns.wall_index >= length(assigns.wall) -> {wall1, wall4} # no spacer in wall1 if we drew into the dead wall
+          assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall4}
+          true -> {wall1, wall4}
+        end
+        %{
+          break_dir                     => wall1,
+          Utils.prev_turn(break_dir)    => wall2,
+          Utils.prev_turn(break_dir, 2) => wall3,
+          Utils.prev_turn(break_dir, 3) => wall4
+        }
     end
-    %{
-      break_dir                     => wall1,
-      Utils.prev_turn(break_dir)    => wall2,
-      Utils.prev_turn(break_dir, 2) => wall3,
-      Utils.prev_turn(break_dir, 3) => wall4
-    }
   end
 
   def to_die_class(die) do

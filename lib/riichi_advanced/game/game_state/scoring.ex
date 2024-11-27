@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   def get_minipoints(state, seat, winning_tile, win_source) do
     score_rules = state.rules["score_calculation"]
     enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
-    Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat), Riichi.get_round_wind(state.kyoku), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
+    Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat, state.available_seats), Riichi.get_round_wind(state.kyoku, length(state.available_seats)), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
   end
 
   def get_yaku_advanced(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
@@ -199,7 +199,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   #   end
   # end
 
-  def score_yaku(state, seat, yaku, yaku2, is_dealer, is_self_draw, minipoints \\ 0) do
+  def score_yaku(state, seat, yaku, yaku2, is_dealer, is_self_draw, num_players, minipoints \\ 0) do
     score_rules = state.rules["score_calculation"]
     yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
 
@@ -244,7 +244,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         score = Float.ceil(score / han_fu_rounding_factor) * han_fu_rounding_factor
 
         # handle limit scores
-        dealer_multiplier = if is_dealer do Map.get(score_rules, "dealer_multiplier", 1) else 1 end
+        dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
         limit_thresholds = Map.get(score_rules, "limit_thresholds", []) |> Enum.reverse()
         limit_scores = Map.get(score_rules, "limit_scores", []) |> Enum.reverse()
         limit_names = Map.get(score_rules, "limit_names", []) |> Enum.reverse()
@@ -257,7 +257,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
               limit_index -> limit_index
             end
           else limit_index end
-          {dealer_multiplier * Enum.at(limit_scores, limit_index), Enum.at(limit_names, limit_index)}
+          score = Enum.at(limit_scores, limit_index) * if is_dealer do dealer_multiplier else 1 end
+          {score, Enum.at(limit_names, limit_index)}
         else {score, nil} end
 
         score = score * if "double_score" in state.players[seat].status do 2 else 1 end
@@ -275,6 +276,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     self_draw_bonus = Map.get(score_rules, "self_draw_bonus", 0)
     score = score * if is_dealer do dealer_multiplier else 1 end |> Utils.try_integer()
     score = score + if is_self_draw do self_draw_bonus else 0 end
+
+    # apply tsumo loss
+    tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
+    score = score * if is_self_draw && tsumo_loss do
+      if is_dealer do (num_players - 1) / 3 else num_players / 4 end
+    else 1 end
 
     max_score = Map.get(score_rules, "max_score", :infinity)
     score = min(score, max_score)
@@ -316,8 +323,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {pao_yakuman, non_pao_yakuman} = Enum.split_with(winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end)
     if pao_triggered && length(pao_yakuman) > 0 && length(non_pao_yakuman) > 0 do
       # if we have both pao and non-pao yakuman, we need to calculate them separately and add them up
-      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, is_dealer, winner.win_source == :draw, winner.minipoints)
-      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, is_dealer, winner.win_source == :draw, winner.minipoints)
+      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, is_dealer, winner.win_source == :draw, length(state.available_seats), winner.minipoints)
+      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, is_dealer, winner.win_source == :draw, length(state.available_seats), winner.minipoints)
       delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku2: pao_yakuman }, collect_sticks)
       delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku2: non_pao_yakuman }, collect_sticks)
       delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
@@ -387,8 +394,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # for riichi, reverse-calculate the ko and oya parts of the total points
         split_oya_ko_payment = Map.get(score_rules, "split_oya_ko_payment", false)
         {ko_payment, oya_payment} = if split_oya_ko_payment do
-          han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", false)
-          Riichi.calc_ko_oya_points(basic_score, is_dealer, han_fu_rounding_factor)
+          han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+          num_players = length(state.available_seats)
+          Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
         else
           self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
           {self_draw_multiplier * basic_score, self_draw_multiplier * basic_score}
@@ -914,7 +922,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
       # score yaku
       yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-      {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
+      {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, length(state.available_seats), minipoints)
       IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
       {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
     end |> Enum.max_by(fn {_, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)

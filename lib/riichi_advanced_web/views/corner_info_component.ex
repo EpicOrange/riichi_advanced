@@ -11,7 +11,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
     <div class={@id}>
     <%= @player.nickname %>
       <div class="round-marker" :if={@seat == :east}>
-        <%= Utils.get_wind_name(Riichi.get_round_wind(@kyoku)) %>
+        <%= Utils.get_wind_name(Riichi.get_round_wind(@kyoku, @num_players)) %>
       </div>
       <%= if @saki != nil && @all_drafted do %>
         <div class="saki-cards">
