@@ -1,6 +1,12 @@
 {
-  "default_mods": [],
+  "default_mods": ["hk_three_point_minimum", "seven_flower_win"],
   "available_mods": [
+    {"id": "hk_three_point_minimum", "name": "Three Fan Minimum", "desc": "Only allow wins worth 3+ fan."},
+    {"id": "seven_flower_win", "name": "Seven Flower Win", "desc": "Allow instant win upon obtaining 7+ flowers."},
+    {"id": "hk_flowers_open_hand", "name": "Flowers Open Hand", "desc": "A hand with flowers declared cannot earn 1 fan from Concealed Hand."},
+    {"id": "hk_seven_pairs", "name": "Seven Pairs", "desc": "Add seven pairs as a possible winning hand, worth 4 fan."},
+    {"id": "remove_flowers", "name": "Remove Flowers", "desc": "Remove all eight flowers from the wall."},
+    {"id": "head_bump", "name": "Head Bump", "desc": "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
   "wall": ["1m", "1m", "1m", "1m",
@@ -67,24 +73,14 @@
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ]
+    ]
   ],
   "iishanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -95,7 +91,6 @@
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
-    [ [["pair"], 4] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -107,7 +102,6 @@
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 1] ],
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
-    [ [["pair"], 3] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -121,19 +115,10 @@
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ]
+    ]
   ],
   "all_flowers_definition": [
     [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1] ]
