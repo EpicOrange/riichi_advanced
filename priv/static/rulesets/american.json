@@ -186,12 +186,20 @@
     "13579 #4": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #5", "13579 #6"],
     "13579 #7": ["Consecutive Run #1", "Consecutive Run #2", "Consecutive Run #3", "Consecutive Run #4", "Consecutive Run #5", "Consecutive Run #6", "Consecutive Run #7", "Consecutive Run #8", "13579 #1", "13579 #2", "13579 #3", "13579 #4", "13579 #5", "13579 #6"]
   },
-  "point_name": "Pts",
   "score_calculation": {
-    "method": "direct",
+    "scoring_method": "multiplier",
+    "discarder_multiplier": 2,
+    "non_discarder_multiplier": 1,
+    "self_draw_multiplier": 2,
+    "yaku_lists": ["yaku"],
     "use_smt": false,
-    "win_by_discard_name": "Discard",
-    "win_by_draw_name": "Draw"
+    "highest_scoring_yaku_only": true,
+    "point_name": "Pts",
+    "win_by_discard_label": "Discard",
+    "win_by_draw_label": "Draw",
+    "win_by_discard_name": "Mahjong",
+    "win_by_draw_name": "Mahjong",
+    "exhaustive_draw_name": "Draw"
   },
   "before_turn_change": {
     "actions": [
@@ -206,7 +214,7 @@
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "match_start", "first_charleston", "charleston_right"],
+      // ["set_status_all", "match_start", "first_charleston", "charleston_right"],
       ["set_tile_alias_all", ["1j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]]
     ]
   },

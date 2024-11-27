@@ -233,7 +233,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {score, phan, mun, score_name}
       "han_fu_formula" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        base_score = minipoints * 2 ** (2 + points)
+        base_score = trunc(minipoints * 2 ** (2 + points))
         score = base_score * if is_dealer do 6 else 4 end
         score = -Integer.floor_div(-score, 100) * 100 # round up to nearest 100
 

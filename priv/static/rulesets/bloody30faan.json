@@ -1553,11 +1553,8 @@
       "Knitted Terminal Sequences"
     ]
   },
-  "point_name": "Faan",
   "score_calculation": {
-    "method": "sichuan",
-    "win_by_discard_name": "Hu",
-    "win_by_draw_name": "Zimo",
+    "scoring_method": "score_table",
     "score_table": {
       "0": 1, "1": 2, "2": 2,
       "3": 4, "4": 4,
@@ -1572,20 +1569,15 @@
       "30": 128, "31": 128, "32": 128, "33": 128, "34": 128, "35": 128, "36": 128, "37": 128, "38": 128, "39": 128,
       "max": 256
     },
-    "score_table_draw": {
-      "0": 1, "1": 2, "2": 2,
-      "3": 4, "4": 4,
-      "5": 8, "6": 8,
-      "7": 12, "8": 12,
-      "9": 16, "10": 16,
-      "11": 24, "12": 24, "13": 24,
-      "14": 32, "15": 32, "16": 32,
-      "17": 48, "18": 48, "19": 48,
-      "20": 64, "21": 64, "22": 64, "23": 64, "24": 64,
-      "25": 96, "26": 96, "27": 96, "28": 96, "29": 96,
-      "30": 128, "31": 128, "32": 128, "33": 128, "34": 128, "35": 128, "36": 128, "37": 128, "38": 128, "39": 128,
-      "max": 256
-    }
+    "yaku_lists": ["yaku", "meta_yaku"],
+    "point_name": "Faan",
+    "win_by_discard_label": "Hu",
+    "win_by_draw_label": "Zimo",
+    "win_by_discard_name": "Hu",
+    "win_by_discard_name_2": "Double Hu",
+    "win_by_discard_name_3": "Triple Hu",
+    "win_by_draw_name": "Zimo",
+    "exhaustive_draw_name": "Draw"
   },
   "before_turn_change": {
     "actions": [
@@ -1890,6 +1882,7 @@
       "display_name": "Zimo",
       "show_when": [
         "our_turn",
+        "has_draw",
         {"name": "not_others_status", "opts": ["call_made"]},
         {"name": "status_missing", "opts": ["match_start", "won"]},
         {"name": "match", "opts": [["hand", "calls"], ["tenpai", "kokushi_tenpai"]]},

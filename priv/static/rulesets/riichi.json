@@ -738,23 +738,23 @@
     "score_name": "Yakuman",
     "limit_thresholds": [
       [3, 70], [4, 40], [5, 0],
-      [6, 0], [7, 0],
-      [8, 0], [9, 0], [10, 0],
-      [11, 0], [12, 0],
+      [6, 0],
+      [8, 0],
+      [11, 0],
       [13, 0]
     ],
     "limit_scores": [
       8000, 8000, 8000,
-      12000, 12000,
-      16000, 16000, 16000,
-      24000, 24000,
+      12000,
+      16000,
+      24000,
       32000
     ],
     "limit_names": [
       "Mangan", "Mangan", "Mangan",
-      "Haneman", "Haneman",
-      "Baiman", "Baiman", "Baiman",
-      "Sanbaiman", "Sanbaiman",
+      "Haneman",
+      "Baiman",
+      "Sanbaiman",
       "Kazoe Yakuman"
     ],
     "yaku_lists": ["yaku", "extra_yaku"],
