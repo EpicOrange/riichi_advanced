@@ -632,11 +632,11 @@
     "point2_name": "★",
     "win_by_discard_label": "Discard",
     "win_by_draw_label": "Draw",
-    "win_by_discard_name": "Mahjong",
-    "win_by_discard_name_2": "Mahjong",
-    "win_by_discard_name_3": "Mahjong",
-    "win_by_draw_name": "Mahjong",
-    "win_with_pao_name": "Mahjong",
+    "win_by_discard_name": "Mah Jongg",
+    "win_by_discard_name_2": "Mah Jongg",
+    "win_by_discard_name_3": "Mah Jongg",
+    "win_by_draw_name": "Mah Jongg",
+    "win_with_pao_name": "Mah Jongg",
     "triple_win_draw_name": "Sanchahou",
     "exhaustive_draw_name": "Draw",
     "nagashi_name": "Nagashi Mangan"
@@ -818,7 +818,7 @@
       ]
     },
     "ron": {
-      "display_name": "Mahjong",
+      "display_name": "Mah Jongg",
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
@@ -829,12 +829,12 @@
         {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]}
       ],
       "actions": [
-        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
-      "display_name": "Mahjong",
+      "display_name": "Mah Jongg",
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
@@ -853,12 +853,12 @@
         ]
       ],
       "actions": [
-        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
-      "display_name": "Mahjong",
+      "display_name": "Mah Jongg",
       "show_when": [
         "our_turn",
         "has_draw",
@@ -868,7 +868,7 @@
         {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]}
       ],
       "actions": [
-        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     }

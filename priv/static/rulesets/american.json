@@ -170,8 +170,8 @@
     "point_name": "Pts",
     "win_by_discard_label": "Discard",
     "win_by_draw_label": "Draw",
-    "win_by_discard_name": "Mahjong",
-    "win_by_draw_name": "Mahjong",
+    "win_by_discard_name": "Mah Jongg",
+    "win_by_draw_name": "Mah Jongg",
     "exhaustive_draw_name": "Draw"
   },
   "before_turn_change": {
@@ -386,18 +386,18 @@
       ]
     },
     "mahjong_draw": {
-      "display_name": "Mahjong",
+      "display_name": "Mah Jongg",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "match", "opts": [["hand", "call_tiles", "draw"], ["win"]]}],
       "actions": [
-        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
     "mahjong_discard": {
-      "display_name": "Mahjong",
+      "display_name": "Mah Jongg",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", {"name": "not_match", "opts": [["last_discard"], [[[["1j"], 1]]]]}, {"name": "match", "opts": [["hand", "call_tiles", "last_discard"], ["win"]]}],
       "actions": [
-        ["big_text", "Mahjong"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
     }
