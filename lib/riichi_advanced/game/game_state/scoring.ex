@@ -245,9 +245,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # handle limit scores
         dealer_multiplier = if is_dealer do Map.get(score_rules, "dealer_multiplier", 1) else 1 end
-        limit_thresholds = Map.get(score_rules, "limit_thresholds", 1) |> Enum.reverse()
-        limit_scores = Map.get(score_rules, "limit_scores", 1) |> Enum.reverse()
-        limit_names = Map.get(score_rules, "limit_names", 1) |> Enum.reverse()
+        limit_thresholds = Map.get(score_rules, "limit_thresholds", []) |> Enum.reverse()
+        limit_scores = Map.get(score_rules, "limit_scores", []) |> Enum.reverse()
+        limit_names = Map.get(score_rules, "limit_names", []) |> Enum.reverse()
         limit_index = Enum.find_index(limit_thresholds, fn [han, fu] -> points >= han && minipoints >= fu end)
         {score, name} = if limit_index != nil do
           # handle ryuumonbuchi touka's scoring quirk

@@ -616,13 +616,6 @@
       240,
       320
     ],
-    "limit_names": [
-      "Mangan", "Mangan", "Mangan",
-      "Haneman",
-      "Baiman",
-      "Sanbaiman",
-      "Kazoe Yakuman"
-    ],
     "yaku_lists": ["yaku", "extra_yaku"],
     "yaku2_lists": ["yakuman"],
     "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
