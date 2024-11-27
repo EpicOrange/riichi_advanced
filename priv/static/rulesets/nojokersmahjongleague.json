@@ -1,6 +1,6 @@
 {
   "default_mods": [
-    "dora", "ura", "kandora", "aka",
+    "dora", "ura", "kandora",
     "ippatsu",
     "tobi",
     "immediate_kan_dora",
@@ -11,7 +11,6 @@
   "available_mods": [
     {"id": "dora", "name": "Dora", "desc": "Enables dora."},
     {"id": "ura", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
-    {"id": "aka", "name": "Aka", "desc": "Enables aka dora (red fives)."},
     {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
     {"id": "ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
@@ -497,18 +496,6 @@
       ]
     },
     {
-      "display_name": "Suuankou Tanki",
-      "value": 2,
-      "when": [
-        {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
-        [ // tenhou upgrade
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]}
-        ],
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}
-      ]
-    },
-    {
       "display_name": "Tsuuiisou",
       "value": 1,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","5z","6z","7z"]}]
@@ -529,31 +516,9 @@
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
     },
     {
-      "display_name": "Junsei Chuurenpoutou",
-      "value": 2,
-      "when": [[
-        {"name": "match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]},
-        [ // tenhou upgrade
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}
-        ]
-      ]]
-    },
-    {
       "display_name": "Kokushi Musou",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
-    },
-    {
-      "display_name": "Kokushi Musou Juusan Menmachi",
-      "value": 2,
-      "when": [[
-        {"name": "match", "opts": [["hand"], [[[["orphans_all"], 1]]]]},
-        [ // tenhou upgrade
-          "no_discards_yet",
-          {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}
-        ]
-      ]]
     },
     {
       "display_name": "Daisuushii",
@@ -583,64 +548,59 @@
     "Daisuushii": ["Shousuushii"]
   },
   "extra_yaku": [],
-  "yaku_alt_names": {
-    "Riichi": "立直",
-    "Tsumo": "門前清自摸和",
-    "Ippatsu": "一発",
-    "Chankan": "槍槓",
-    "Rinshan": "嶺上開花",
-    "Haitei": "海底摸月",
-    "Houtei": "河底撈魚",
-    "Pinfu": "平和",
-    "Tanyao": "断幺九",
-    "Iipeikou": "一盃口",
-    "Seat Wind": "自風",
-    "Round Wind": "場風",
-    "Haku": "役牌 白",
-    "Hatsu": "役牌 發",
-    "Chun": "役牌 中",
-    "Double Riichi": "ダブル立直",
-    "Chiitoitsu": "七対子",
-    "Chanta": "混全帯幺九",
-    "Ittsu": "一気通貫",
-    "Sanshoku": "三色同順",
-    "Sanshoku Doukou": "三色同刻",
-    "Sankantsu": "三槓子",
-    "Toitoi": "対々和",
-    "Sanankou": "三暗刻",
-    "Shousangen": "小三元",
-    "Honroutou": "混老頭",
-    "Ryanpeikou": "二盃口",
-    "Junchan": "純全帯幺九",
-    "Honitsu": "混一色",
-    "Chinitsu": "清一色",
-    "Renhou": "人和",
-    "Tenhou": "天和",
-    "Chiihou": "地和",
-    "Daisangen": "大三元",
-    "Suuankou": "四暗刻",
-    "Suuankou Tanki": "四暗刻単騎",
-    "Tsuuiisou": "字一色",
-    "Ryuuiisou": "緑一色",
-    "Chinroutou": "清老頭",
-    "Chuurenpoutou": "九蓮宝燈",
-    "Junsei Chuurenpoutou": "純正九蓮宝燈",
-    "Kokushi Musou": "国士無双",
-    "Kokushi Musou Juusan Menmachi": "国士無双十三面待ち",
-    "Daisuushii": "大四喜",
-    "Shousuushii": "小四喜",
-    "Suukantsu": "四槓子",
-    "Dora": "ドラ",
-    "Ura": "裏ドラ",
-    "Aka": "赤ドラ"
+  "translations": {
+    "Riichi": "Miscellaneous #1 (Ready)",
+    "Tsumo": "Miscellaneous #4 (Self Draw)",
+    "Ippatsu": "Miscellaneous #3 (One-Shot)",
+    "Chankan": "Miscellaneous #7 (Stealing a Kong)",
+    "Rinshan": "Miscellaneous #6 (Replacement Tile)",
+    "Haitei": "Miscellaneous #5 (Last Tile)",
+    "Houtei": "Miscellaneous #5 (Last Tile)",
+    "Pinfu": "Consecutive Run #5 (All Sequences)",
+    "Tanyao": "2345678 #1 (All Simples)",
+    "Iipeikou": "Consecutive Run #3 (Identical Runs)",
+    "Seat Wind": "Honors #1 (Seat Wind)",
+    "Round Wind": "Honors #1 (Round Wind)",
+    "Haku": "Honors #1 (White Dragon)",
+    "Hatsu": "Honors #1 (Green Dragon)",
+    "Chun": "Honors #1 (Red Dragon)",
+    "Double Riichi": "Miscellaneous #2 (Double Ready)",
+    "Chiitoitsu": "Pungs and Pairs #1 (Seven Pairs)",
+    "Chanta": "2345678 #2 (Half Outside Hand)",
+    "Ittsu": "Consecutive Run #2 (Pure Straight)",
+    "Sanshoku": "Consecutive Run #1 (Mixed Runs)",
+    "Sanshoku Doukou": "Pungs and Pairs #3 (Mixed Triplets)",
+    "Sankantsu": "Kongs #1 (Three Kongs)",
+    "Toitoi": "Pungs and Pairs #2 (All Triplets)",
+    "Sanankou": "Pungs and Pairs #4 (Three Concealed Triplets)",
+    "Shousangen": "Honors #2 (Little Three Dragons)",
+    "Honroutou": "2345678 #3 (Mixed Terminals)",
+    "Ryanpeikou": "Consecutive Run #4 (Two Identical Runs)",
+    "Junchan": "2345678 #4 (Pure Outside Hand)",
+    "Honitsu": "One Suit #1 (Half Flush)",
+    "Chinitsu": "One Suit #2 (Full Flush)",
+    "Tenhou": "Miscellaneous #8 (Hand of Heaven)",
+    "Chiihou": "Miscellaneous #8 (Hand of Earth)",
+    "Daisangen": "Honors #3 (Big Three Dragons)",
+    "Suuankou": "Pungs and Pairs #5 (Four Concealed Triplets)",
+    "Tsuuiisou": "Honors #6 (All Honors)",
+    "Ryuuiisou": "One Suit #3 (All Green)",
+    "Chinroutou": "2345678 #5 (All Terminals)",
+    "Chuurenpoutou": "One Suit #4 (Nine Gates)",
+    "Kokushi Musou": "Honors #7 (Thirteen Orphans)",
+    "Daisuushii": "Honors #5 (Big Four Winds)",
+    "Shousuushii": "Honors #4 (Little Four Winds)",
+    "Suukantsu": "Kongs #2 (Four Kongs)",
+    "Dora": "Bonus Tile",
+    "Ura": "Additional Bonus Tile"
   },
   "score_calculation": {
     "scoring_method": ["han_fu_formula", "multiplier"],
     "han_fu_multiplier": 0.01,
     "han_fu_rounding_factor": 1,
     "fixed_fu": 30,
-    "score_multiplier": 320, // this is for yakuman
     "dealer_multiplier": 1.5, // this is for yakuman
+    "score_multiplier": 320, // this is for yakuman
     "score_name": "Yakuman",
     "limit_thresholds": [
       [3, 60], [4, 30], [5, 0],

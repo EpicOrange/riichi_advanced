@@ -278,6 +278,12 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def translate(state, string) do
+    if Map.has_key?(state.rules, "translations") do
+      Map.get(state.rules["translations"], string, string)
+    else string end
+  end
+
   def initialize_new_round(state, kyoku_log \\ nil) do
     rules = state.rules
     {state, hands, scores} = if kyoku_log == nil do

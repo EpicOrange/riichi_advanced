@@ -848,9 +848,9 @@ defmodule Riichi do
     ret
   end
 
-  def calc_ko_oya_points(score, is_dealer) do
+  def calc_ko_oya_points(score, is_dealer, han_fu_rounding_factor) do
     divisor = if is_dealer do 3 else 4 end
-    ko_payment = trunc(Float.round(score / divisor / 100) * 100)
+    ko_payment = trunc(Float.round(score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
     num_ko_payers = if is_dealer do 3 else 2 end
     oya_payment = score - num_ko_payers * ko_payment
     {ko_payment, oya_payment}

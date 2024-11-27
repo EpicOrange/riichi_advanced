@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     }
     eligible_yaku = yaku_list
       |> Enum.filter(fn %{"display_name" => _name, "value" => _value, "when" => cond_spec} -> Conditions.check_cnf_condition(state, cond_spec, context) end)
-      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, value} end)
+      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {translate(state, name), value} end)
     eligible_yaku = existing_yaku ++ eligible_yaku
     yaku_map = Enum.reduce(eligible_yaku, %{}, fn {name, value}, acc -> Map.update(acc, name, value, & &1 + value) end)
     eligible_yaku = eligible_yaku
@@ -239,12 +239,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # calculate score using formula
         base_score = han_fu_multiplier * fu * 2 ** (2 + points)
-        score = trunc(base_score * if is_dealer do 6 else 4 end)
-        IO.inspect({base_score, score})
+        score = base_score * if is_dealer do 6 else 4 end
         # round up (to nearest 100, by default)
-        score = -Integer.floor_div(-score, han_fu_rounding_factor) * han_fu_rounding_factor
+        score = Float.ceil(score / han_fu_rounding_factor) * han_fu_rounding_factor
 
         # handle limit scores
+        dealer_multiplier = if is_dealer do Map.get(score_rules, "dealer_multiplier", 1) else 1 end
         limit_thresholds = Map.get(score_rules, "limit_thresholds", 1) |> Enum.reverse()
         limit_scores = Map.get(score_rules, "limit_scores", 1) |> Enum.reverse()
         limit_names = Map.get(score_rules, "limit_names", 1) |> Enum.reverse()
@@ -257,7 +257,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               limit_index -> limit_index
             end
           else limit_index end
-          {Enum.at(limit_scores, limit_index), Enum.at(limit_names, limit_index)}
+          {dealer_multiplier * Enum.at(limit_scores, limit_index), Enum.at(limit_names, limit_index)}
         else {score, nil} end
 
         score = score * if "double_score" in state.players[seat].status do 2 else 1 end
@@ -385,13 +385,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
       else # tsumo
         # for riichi, reverse-calculate the ko and oya parts of the total points
-        self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
         split_oya_ko_payment = Map.get(score_rules, "split_oya_ko_payment", false)
         {ko_payment, oya_payment} = if split_oya_ko_payment do
-          Riichi.calc_ko_oya_points(basic_score, is_dealer)
+          han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", false)
+          Riichi.calc_ko_oya_points(basic_score, is_dealer, han_fu_rounding_factor)
         else
+          self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
           {self_draw_multiplier * basic_score, self_draw_multiplier * basic_score}
         end
+        IO.inspect({basic_score, ko_payment, oya_payment})
 
         # handle motouchi naruka's scoring quirk
         motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, Map.get(score_rules, "riichi_value", 1000))
@@ -797,12 +799,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   # rearrange the winner's hand for display on the yaku display screen
   def rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile) do
+    score_rules = state.rules["score_calculation"]
+
     orig_hand = state.players[seat].hand
     orig_draw = state.players[seat].draw
     orig_calls = state.players[seat].calls
-    american_yaku = Enum.filter(yaku, fn {name, _value} -> String.contains?(name, " #") end)
-    {arranged_hand, arranged_calls} = if not Enum.empty?(american_yaku) do
-      {yaku_name, _value} = Enum.at(american_yaku, 0)
+    arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
+    {arranged_hand, arranged_calls} = if arrange_american_yaku do
+      {yaku_name, _value} = Enum.at(yaku, 0)
       # look for this yaku in the yaku list, and get arrangement from the match condition
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
       am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) && condition["name"] == "match" end)
