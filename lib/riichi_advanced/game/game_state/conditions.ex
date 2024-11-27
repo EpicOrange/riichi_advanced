@@ -88,8 +88,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def from_seats_spec(state, seat, seat_spec) do
     case seat_spec do
-      "all" -> [:east, :south, :west, :north]
-      "others" -> [:east, :south, :west, :north] -- [seat]
+      "all" -> state.available_seats
+      "others" -> state.available_seats -- [seat]
       _ -> [from_seat_spec(state, seat, seat_spec)]
     end
   end

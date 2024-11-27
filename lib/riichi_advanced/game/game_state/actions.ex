@@ -182,7 +182,15 @@ defmodule RiichiAdvanced.GameState.Actions do
     # this action is called after playing a tile
     # it should trigger on_turn_change, so don't mark the turn change as via_action
     if state.game_active do
-      change_turn(state, if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end)
+      new_turn = if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end
+      new_turn = for _ <- 1..3, reduce: new_turn do
+        new_turn -> if new_turn in state.available_seats do
+          new_turn
+        else
+          if state.reversed_turn_order do Utils.prev_turn(new_turn) else Utils.next_turn(new_turn) end
+        end
+      end
+      change_turn(state, new_turn)
     else
       # reschedule this turn change
       schedule_actions(state, state.turn, [["advance_turn"]], %{seat: state.turn})
@@ -538,15 +546,15 @@ defmodule RiichiAdvanced.GameState.Actions do
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
       "when_anyone"           ->
-        for dir <- [:east, :south, :west, :north], Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
+        for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
           state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
         end
       "when_everyone"           ->
-        if Enum.all?([:east, :south, :west, :north], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+        if Enum.all?(state.available_seats, fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
       "when_others"           ->
-        if Enum.all?([:east, :south, :west, :north] -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+        if Enum.all?(state.available_seats -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
       "mark" -> state # no-op
@@ -1208,7 +1216,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def performing_intermediate_action?(state) do
-    Enum.any?([:east, :south, :west, :north], fn seat -> performing_intermediate_action?(state, seat) end)
+    Enum.any?(state.available_seats, fn seat -> performing_intermediate_action?(state, seat) end)
   end
 
   def performing_intermediate_action?(state, seat) do
@@ -1245,6 +1253,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # supercede choices
     # basically, starting from the current turn player's choice, clear out others' choices
     seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
+    |> Enum.filter(fn seat -> seat in state.available_seats end)
     state = for seat <- seats, reduce: state do
       state ->
         choice = state.players[seat].choice

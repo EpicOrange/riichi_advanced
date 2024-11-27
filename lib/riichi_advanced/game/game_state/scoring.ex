@@ -707,7 +707,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
         # TODO refactor to calculate the delta scores first, then apply it to the state
         scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
-        state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- [:east, :south, :west, :north] -- [seat], reduce: state do
+        state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do
           state ->
             oya_payment = 4000
             ko_payment = if Riichi.get_east_player_seat(state.kyoku) == seat do 4000 else 2000 end
@@ -867,8 +867,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # if we're playing bloody end, record our opponents
     bloody_end = Map.get(state.rules, "bloody_end", false)
     opponents = if bloody_end do
-      Enum.reject([:east, :south, :west, :north], fn dir -> Map.has_key?(state.winners, dir) || dir == seat end)
-    else [:east, :south, :west, :north] -- [seat] end
+      Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) || dir == seat end)
+    else state.available_seats -- [seat] end
 
     # find the maximum score obtainable across all joker assignments
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
@@ -943,13 +943,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         :discard -> get_last_discard_action(state).seat
         :call    -> get_last_call_action(state).seat
       end,
-      pao_seat: cond do
-        "pao" in state.players[:east].status  -> :east
-        "pao" in state.players[:south].status -> :south
-        "pao" in state.players[:west].status  -> :west
-        "pao" in state.players[:north].status -> :north
-        true                                  -> nil
-      end,
+      pao_seat: Enum.find(state.available_seats, fn seat -> "pao" in state.players[seat].status end),
       winning_tile: new_winning_tile,
       right_display: cond do
         not Map.has_key?(score_rules, "right_display") -> nil

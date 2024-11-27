@@ -173,8 +173,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
   end
 
   # trigger auto buttons actions for players
-  def trigger_auto_buttons(state, seats \\ [:east, :south, :west, :north]) do
-    for seat <- seats,
+  def trigger_auto_buttons(state, seats \\ nil) do
+    for seat <- (if seats == nil do state.available_seats else seats end),
         not is_pid(Map.get(state, seat)),
         {auto_button_name, enabled} <- state.players[seat].auto_buttons,
         reduce: state do

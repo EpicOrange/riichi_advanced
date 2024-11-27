@@ -5,28 +5,22 @@ defmodule RiichiAdvanced.GameState.Marking do
   import RiichiAdvanced.GameState
 
   def initialize_marking(state) do
-    state = Map.put(state, :marking, %{
-      # for example: 
-      # east: [
-      #   done: false,
-      #   cancellable: true,
-      #   hand: {
-      #     marked: [{:"2m", :east, 4}],
-      #     needed: 1,
-      #     restrictions: ["match_suit"]
-      #   },
-      #   discard: {
-      #     marked: [],
-      #     needed: 1,
-      #     restrictions: ["match_suit"]
-      #   }
-      # ]
-      east: [],
-      south: [],
-      west: [],
-      north: []
-    })
-    state
+    # give each seat a marking array. for example:
+    # east: [
+    #   done: false,
+    #   cancellable: true,
+    #   hand: {
+    #     marked: [{:"2m", :east, 4}],
+    #     needed: 1,
+    #     restrictions: ["match_suit"]
+    #   },
+    #   discard: {
+    #     marked: [],
+    #     needed: 1,
+    #     restrictions: ["match_suit"]
+    #   }
+    # ]
+    Map.put(state, :marking, Map.new(state.available_seats, fn seat -> {seat, []} end))
   end
 
   def setup_marking(state, seat, to_mark, cancellable) do

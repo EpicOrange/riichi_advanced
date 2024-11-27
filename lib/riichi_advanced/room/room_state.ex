@@ -24,6 +24,7 @@ defmodule Room do
 
     # state
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+    available_seats: [],
     players: %{},
     shuffle: false,
     private: true,
@@ -92,6 +93,12 @@ defmodule RiichiAdvanced.RoomState do
 
     # put params and process ids into state
     state = Map.merge(state, %Room{
+      available_seats: case Map.get(rules, "num_players", 4) do
+        1 -> [:east]
+        2 -> [:east, :west]
+        3 -> [:east, :south, :west]
+        4 -> [:east, :south, :west, :north]
+      end,
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       session_id: state.session_id,

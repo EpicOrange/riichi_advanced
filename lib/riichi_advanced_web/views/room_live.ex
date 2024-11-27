@@ -77,7 +77,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
       </header>
       <div class="seats">
-        <%= for seat <- [:east, :south, :west, :north] do %>
+        <%= for seat <- @state.available_seats do %>
           <%= if @state.seats[seat] != nil do %>
             <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
               <div class="player-slot-button"><%= @state.seats[seat].nickname %></div>

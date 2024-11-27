@@ -165,7 +165,7 @@ defmodule RiichiAdvanced.GameState.Log do
   def finalize_kyoku(state) do
     state = update_in(state.log_state.kyokus, fn kyokus -> [%{
       index: length(state.log_state.kyokus),
-      players: Enum.map([:east, :south, :west, :north], fn dir -> %{
+      players: Enum.map(state.available_seats, fn dir -> %{
         points: state.players[dir].start_score,
         haipai: state.haipai[dir]
       } end),
@@ -195,7 +195,7 @@ defmodule RiichiAdvanced.GameState.Log do
           fu: Map.get(winner, :minipoints, 0),
           yakuman_mult: Map.get(winner, :yakuman_mult, 0),
           points: winner.score,
-          delta_points: Enum.map([:east, :south, :west, :north], fn dir -> state.delta_scores[dir] end),
+          delta_points: Enum.map(state.available_seats, fn dir -> state.delta_scores[dir] end),
         }
       end
     } | kyokus] end)
