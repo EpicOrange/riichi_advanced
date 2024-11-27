@@ -314,7 +314,8 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def skip_or_discard_draw(socket) do
-    if not socket.assigns.marking do
+    # do a clientside can_discard check here
+    if RiichiAdvanced.GameState.Actions.can_discard(socket.assigns.state, socket.assigns.seat, true) do
       # if draw, discard it
       # otherwise, if buttons, skip
       player = socket.assigns.state.players[socket.assigns.seat]

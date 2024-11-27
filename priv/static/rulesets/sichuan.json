@@ -181,14 +181,23 @@
       "when": ["no_tiles_remaining"]
     }
   ],
-  "point_name": "Fan",
   "score_calculation": {
-    "method": "sichuan",
-    "draw_payments": true,
-    "win_by_discard_name": "Hu",
-    "win_by_draw_name": "Zimo",
+    "scoring_method": "score_table",
+    "payments_at_exhaustive_draw": true,
     "score_table": {"0": 1, "1": 2, "2": 4, "max": 8},
-    "score_table_draw": {"0": 2, "1": 3, "2": 5, "max": 9}
+    "yaku_lists": ["yaku"],
+    "self_draw_bonus": 1,
+    "use_smt": false,
+    "score_best_hand_at_draw": true,
+    "next_dealer_is_first_winner": true,
+    "point_name": "Fan",
+    "win_by_discard_label": "Hu",
+    "win_by_draw_label": "Zimo",
+    "win_by_discard_name": "Hu",
+    "win_by_discard_name_2": "Double Hu",
+    "win_by_discard_name_3": "Triple Hu",
+    "win_by_draw_name": "Zimo",
+    "exhaustive_draw_name": "Draw"
   },
   "play_restrictions": [
     [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
@@ -219,9 +228,10 @@
   ],
   "after_start": {
     "actions": [
-      ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
-      ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
-      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
+      // ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
+      // ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
+      // ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
+      ["set_status_all", "round_start"]
     ]
   },
   "before_turn_change": {
@@ -490,6 +500,6 @@
   "display_wall": true,
   "initial_score": 0,
   "starting_tiles": 13,
-  "max_rounds": 4,
-  "bloody_end": true
+  "bloody_end": true,
+  "max_rounds": 4
 }

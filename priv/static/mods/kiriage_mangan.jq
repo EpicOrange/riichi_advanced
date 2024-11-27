@@ -1,21 +1,7 @@
-# 3 han 60 fu is now mangan
-.score_calculation.score_table_dealer["3"]["60"] = 12000
-|
-.score_calculation.score_table_nondealer["3"]["60"] = 8000
-|
-.score_calculation.score_table_dealer_draw["3"]["60"] = 4000
-|
-.score_calculation.score_table_nondealer_draw["3"]["60"] = 2000
-|
-.score_calculation.limit_hand_names["3"]["60"] = "Mangan"
-|
-# 4 han 30 fu is now mangan
-.score_calculation.score_table_dealer["4"]["30"] = 12000
-|
-.score_calculation.score_table_nondealer["4"]["30"] = 8000
-|
-.score_calculation.score_table_dealer_draw["4"]["30"] = 4000
-|
-.score_calculation.score_table_nondealer_draw["4"]["30"] = 2000
-|
-.score_calculation.limit_hand_names["4"]["30"] = "Mangan"
+.score_calculation.limit_thresholds = [
+  [3, 60], [4, 30], [5, 0],
+  [6, 0], [7, 0],
+  [8, 0], [9, 0], [10, 0],
+  [11, 0], [12, 0],
+  [13, 0]
+]

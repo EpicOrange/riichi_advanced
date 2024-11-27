@@ -30,16 +30,16 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
               <div class="han-counter"><%= Utils.try_integer(points) %> <%= @winner.point_name %></div>
             </div>
           <% end %>
-          <%= for {name, points} <- @winner.yakuman do %>
+          <%= for {name, points} <- @winner.yaku2 do %>
             <div class="yaku">
               <div class={["yaku-text", String.length(name) >= 12 && "small", String.length(name) >= 20 && "tiny"]}><%= name %></div>
-              <div class="han-counter"><%= Utils.try_integer(points) %> <%= @winner.limit_point_name %></div>
+              <div class="han-counter"><%= Utils.try_integer(points) %> <%= @winner.point2_name %></div>
             </div>
           <% end %>
         </div>
         <div class="score-display">
           <div class="total-han-display"><%= Utils.try_integer(@winner.points) %> <%= @winner.point_name %></div>
-          <div class="total-fu-display" :if={Map.has_key?(@winner, :minipoints)}><%= @winner.minipoints %> <%= @winner.minipoint_name %></div>
+          <div class="total-fu-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= @winner.right_display_name %></div>
           <div class="total-score-display"><%= @winner.score %></div>
           <div class="total-score-name-display" :if={Map.has_key?(@winner, :score_name) && @winner.score_name != ""}><%= @winner.score_name %></div>
         </div>

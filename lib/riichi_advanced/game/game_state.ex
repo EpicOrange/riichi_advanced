@@ -465,32 +465,15 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
 
-    {state, new_winning_tile} = Scoring.process_win(state, seat, winning_tile, win_source)
-
-    # add winning tile text (for display purposes)
-    winning_tile_text = if Map.has_key?(state.rules, "score_calculation") do
-      case win_source do
-        :draw -> Map.get(state.rules["score_calculation"], "win_by_draw_name", "")
-        :discard -> Map.get(state.rules["score_calculation"], "win_by_discard_name", "")
-        :call -> Map.get(state.rules["score_calculation"], "win_by_discard_name", "")
-      end
-    else "" end
-    state = update_in(state.winners[seat], &Map.put(&1, :winning_tile_text, winning_tile_text))
-    state = update_in(state.winner_keys, & &1 ++ [seat])
-
-    # correct the winner's hand if the winning tile was taken from hand (for display purposes)
-    # note that we're taking from the winner object's hand since that has sorted jokers
-    state = if winning_tile == nil do
-      hand = state.winners[seat].player.hand
-      ix = Enum.find_index(hand, &Utils.same_tile(&1, new_winning_tile))
-      update_in(state.winners[seat].player, fn player -> %Player{ player | hand: List.delete_at(hand, ix), draw: [new_winning_tile] } end)
-    else state end
+    winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
+    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+    state = Map.update!(state, :winner_keys, & &1 ++ [seat])
 
     push_message(state, [
       %{text: "Player #{seat} #{state.players[seat].nickname} called "},
-      %{bold: true, text: "#{String.downcase(winning_tile_text)}"},
+      %{bold: true, text: "#{String.downcase(winner.winning_tile_text)}"},
       %{text: " on "},
-      Utils.pt(new_winning_tile),
+      Utils.pt(winner.winning_tile),
       %{text: " with hand "}
     ] ++ Utils.ph(state.players[seat].hand |> Utils.sort_tiles())
       ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
@@ -704,9 +687,12 @@ defmodule RiichiAdvanced.GameState do
     else state end
   end
 
+  def has_unskippable_button?(state, seat) do
+    Enum.any?(state.players[seat].buttons, fn button_name -> state.rules["buttons"][button_name] != nil && Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
+  end
+
   def is_playable?(state, seat, tile) do
-    have_unskippable_button = Enum.any?(state.players[seat].buttons, fn button_name -> state.rules["buttons"][button_name] != nil && Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
-    not have_unskippable_button && not Utils.has_attr?(tile, ["no_discard"]) && if Map.has_key?(state.rules, "play_restrictions") do
+    not has_unskippable_button?(state, seat) && not Utils.has_attr?(tile, ["no_discard"]) && if Map.has_key?(state.rules, "play_restrictions") do
       Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
         not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) || not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
       end)
