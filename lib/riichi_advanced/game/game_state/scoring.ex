@@ -233,9 +233,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {score, phan, mun, score_name}
       "han_fu_formula" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        base_score = trunc(minipoints * 2 ** (2 + points))
-        score = base_score * if is_dealer do 6 else 4 end
-        score = -Integer.floor_div(-score, 100) * 100 # round up to nearest 100
+        han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 1)
+        han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+        fu = Map.get(score_rules, "fixed_fu", minipoints)
+
+        # calculate score using formula
+        base_score = han_fu_multiplier * fu * 2 ** (2 + points)
+        score = trunc(base_score * if is_dealer do 6 else 4 end)
+        IO.inspect({base_score, score})
+        # round up (to nearest 100, by default)
+        score = -Integer.floor_div(-score, han_fu_rounding_factor) * han_fu_rounding_factor
 
         # handle limit scores
         limit_thresholds = Map.get(score_rules, "limit_thresholds", 1) |> Enum.reverse()
@@ -922,6 +929,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       points2: points2,
       score: score,
       score_name: score_name,
+      score_denomination: Map.get(score_rules, "score_denomination", ""),
       point_name: Map.get(score_rules, if yaku_2_overrides do "point2_name" else "point_name" end, ""),
       point2_name: Map.get(score_rules, "point2_name", ""),
       minipoint_name: Map.get(score_rules, "minipoint_name", ""),
