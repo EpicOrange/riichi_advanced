@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     }
     eligible_yaku = yaku_list
       |> Enum.filter(fn %{"display_name" => _name, "value" => _value, "when" => cond_spec} -> Conditions.check_cnf_condition(state, cond_spec, context) end)
-      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {translate(state, name), value} end)
+      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, value} end)
     eligible_yaku = existing_yaku ++ eligible_yaku
     yaku_map = Enum.reduce(eligible_yaku, %{}, fn {name, value}, acc -> Map.update(acc, name, value, & &1 + value) end)
     eligible_yaku = eligible_yaku
@@ -927,8 +927,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       seat: seat,
       player: state.players[seat],
       win_source: win_source,
-      yaku: if yaku_2_overrides do [] else yaku end,
-      yaku2: yaku2,
+      yaku: if yaku_2_overrides do [] else yaku end |> Enum.map(fn {name, value} -> {translate(state, name), value} end),
+      yaku2: yaku2 |> Enum.map(fn {name, value} -> {translate(state, name), value} end),
       points: points,
       points2: points2,
       score: score,
