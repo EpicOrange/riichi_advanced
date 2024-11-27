@@ -187,7 +187,6 @@
     "score_table": {"0": 1, "1": 2, "2": 4, "max": 8},
     "yaku_lists": ["yaku"],
     "self_draw_bonus": 1,
-    "use_smt": false,
     "score_best_hand_at_draw": true,
     "next_dealer_is_first_winner": true,
     "point_name": "Fan",

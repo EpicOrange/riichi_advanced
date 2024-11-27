@@ -216,18 +216,21 @@ defmodule RiichiAdvanced.GameState.Scoring do
       "multiplier" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         score = points * Map.get(score_rules, "score_multiplier", 1)
-        {score, points, 0, ""}
+        score_name = Map.get(score_rules, "score_name", "")
+        {score, points, 0, score_name}
       "score_table" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         score = Map.get(score_rules["score_table"], Integer.to_string(points), score_rules["score_table"]["max"])
-        {score, points, 0, ""}
+        score_name = Map.get(score_rules, "score_name", "")
+        {score, points, 0, score_name}
       "vietnamese" ->
         phan = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         mun = Enum.reduce(yaku2, 0, fn {_name, value}, acc -> acc + value end)
         mun = mun + Integer.floor_div(phan, 6)
         phan = rem(phan, 6)
         score = if mun == 0 do score_rules["score_table"][Integer.to_string(phan)] else mun * score_rules["score_table"]["max"] end
-        {score, phan, mun, ""}
+        score_name = Map.get(score_rules, "score_name", "")
+        {score, phan, mun, score_name}
       "han_fu_formula" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         base_score = minipoints * 2 ** (2 + points)
@@ -242,8 +245,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {score, name} = if limit_index != nil do
           # handle ryuumonbuchi touka's scoring quirk
           limit_index = if "score_limit_one_tier_higher" in state.players[seat].status do
-            limit_thresholds = Enum.drop(limit_thresholds, limit_index+1)
-            case Enum.find_index(limit_thresholds, fn [han, fu] -> points >= han && minipoints >= fu end) do
+            case Enum.find_index(limit_scores, fn score -> score > Enum.at(limit_scores, limit_index) end) do
               nil         -> limit_index
               limit_index -> limit_index
             end
@@ -904,7 +906,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
       IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
       {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
-    end |> Enum.max_by(fn {_, _, _, _, _, score, _, _, _} -> score end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+    end |> Enum.max_by(fn {_, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
     state = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
 

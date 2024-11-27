@@ -734,7 +734,8 @@
   "score_calculation": {
     "scoring_method": ["han_fu_formula", "multiplier"],
     "score_multiplier": 32000, // this is for yakuman
-    "dealer_multiplier": 1.5,
+    "dealer_multiplier": 1.5, // this is for yakuman
+    "score_name": "Yakuman",
     "limit_thresholds": [
       [3, 70], [4, 40], [5, 0],
       [6, 0], [7, 0],
@@ -754,7 +755,7 @@
       "Haneman", "Haneman",
       "Baiman", "Baiman", "Baiman",
       "Sanbaiman", "Sanbaiman",
-      "Yakuman"
+      "Kazoe Yakuman"
     ],
     "yaku_lists": ["yaku", "extra_yaku"],
     "yaku2_lists": ["yakuman"],
