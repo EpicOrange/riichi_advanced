@@ -255,10 +255,10 @@ defmodule RiichiAdvanced.SMT do
       tiles = Enum.map(group, &to_smt_tile(Utils.to_tile(&1), encoding))
       tile_ixs = 1..length(tiles)
       declare_tile_flags = Enum.map(tile_ixs, fn ix -> "(declare-const tiles#{i}_#{ix} Bool)" end)
-      assert_tile = "(assert (equal_digits tiles#{i} (bvadd\n  #{Enum.map(Enum.zip(tiles, tile_ixs), fn {tile, ix} -> "(ite tiles#{i}_#{ix} #{tile} zero)" end) |> Enum.join("\n  ")})))"
-      assert_num_1 = "(assert ((_ at-least #{num}) #{Enum.map(tile_ixs, fn ix -> "tiles#{i}_#{ix}" end) |> Enum.join(" ")}))"
-      assert_num_2 = "(assert ((_ at-most #{num}) #{Enum.map(tile_ixs, fn ix -> "tiles#{i}_#{ix}" end) |> Enum.join(" ")}))"
-      Enum.join(declare_tile_flags ++ [assert_tile, assert_num_1, assert_num_2], "\n")
+      all_tiles = Enum.map(tile_ixs, fn ix -> "tiles#{i}_#{ix}" end) |> Enum.join(" ")
+      equals_tiles = "(equal_digits tiles#{i} (bvadd\n      #{Enum.map(Enum.zip(tiles, tile_ixs), fn {tile, ix} -> "(ite tiles#{i}_#{ix} #{tile} zero)" end) |> Enum.join("\n      ")}))"
+      assert_tile = "(assert (=> tiles#{i}_used\n  (and\n    #{equals_tiles}\n    (at_least_digits hand tiles#{i})\n    ((_ at-least #{num}) #{all_tiles})\n    ((_ at-most #{num}) #{all_tiles}))))"
+      Enum.join(declare_tile_flags ++ [assert_tile], "\n")
     else
       "(assert (equal_digits tiles#{i} (bvmul (_ bv#{num} #{len}) (bvadd\n    #{Enum.map(group, &to_smt_tile(Utils.to_tile(&1), encoding)) |> Enum.join("\n    ")})))"
     end
@@ -511,10 +511,10 @@ defmodule RiichiAdvanced.SMT do
     #        (= (_ bv0 4) sumindices2)
     #        (= (_ bv7 4) sumindices3))
     #   (and (tiles1 hand))))
-    {match_assertions, sumindices_usages} = for match_definition <- match_definitions, reduce: {[], []} do
-      {match_assertions, sumindices_usages} ->
-        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions} = for [groups, num] <- match_definition, reduce: {[], [], [], []} do
-          {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions} ->
+    {match_assertions, sumindices_usages, tiles_used_usages} = for match_definition <- match_definitions, reduce: {[], [], []} do
+      {match_assertions, sumindices_usages, tiles_used_usages} ->
+        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for [groups, num] <- match_definition, reduce: {[], [], [], [], []} do
+          {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} ->
             unique = "unique" in match_definition
             {set_ixs, tiles_ixs} = if unique do
               [{[], [1+Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})]}]
@@ -542,14 +542,17 @@ defmodule RiichiAdvanced.SMT do
                 ["(= (_ bv#{num} 4) #{sum})"]
               end
             else [] end
-            assertions = assertions ++ sumindices_assertion
 
             # then take care of tiles
-            assertions = if not Enum.empty?(tiles_ixs) do
-              assertions ++ Enum.map(tiles_ixs, fn i -> "tiles#{i}_used" end)
-            else assertions end
+            tiles_used_assertion = if not Enum.empty?(tiles_ixs) do
+              Enum.map(tiles_ixs, fn i -> "tiles#{i}_used" end)
+            else [] end
+
             # IO.inspect({groups, set_ixs, tiles_ixs})
-            {assertions, set_ixs ++ mentioned_set_ixs, tiles_ixs ++ mentioned_tiles_ixs, sumindices_assertions ++ sumindices_assertion}
+            {assertions ++ sumindices_assertion ++ tiles_used_assertion,
+             set_ixs ++ mentioned_set_ixs, tiles_ixs ++ mentioned_tiles_ixs,
+             sumindices_assertions ++ sumindices_assertion,
+             tiles_used_assertions ++ tiles_used_assertion}
         end
         # zero out unmentioned sets and tiles (big optimization)
         nonexistent_tiles_ixs = Enum.to_list(tile_group_indices) -- mentioned_tiles_ixs
@@ -563,21 +566,27 @@ defmodule RiichiAdvanced.SMT do
           ["\n    (= (_ bv0 4) #{sum})" | assertions]
         else assertions end
 
-        # collect all sumindices assertions (big optimization)
+        # collect all sumindices and tiles_used assertions (big optimization)
         sumindices_usages = if Enum.empty?(sumindices_assertions) do sumindices_usages else [{mentioned_set_ixs, sumindices_assertions} | sumindices_usages] end
-        {["\n  (and #{Enum.join(assertions, " ")})" | match_assertions], sumindices_usages}
+        tiles_used_usages = if Enum.empty?(tiles_used_assertions) do sumindices_usages else [{mentioned_tiles_ixs, tiles_used_assertions} | tiles_used_usages] end
+        {["\n  (and #{Enum.join(assertions, " ")})" | match_assertions], sumindices_usages, tiles_used_usages}
     end
-    sumindices_usages = Enum.uniq(sumindices_usages)
-    indices_optimization = if Enum.empty?(all_sets) do [] else ["(assert ((_ at-most 1)\n  #{Enum.map(sumindices_usages, fn {_ixs, assertions} -> "(and #{Enum.join(assertions, "\n  ")})" end) |> Enum.join("\n  ")}))\n"] end
-    indices_optimization2 = if Enum.empty?(all_sets) do [] else Enum.map(sumindices_usages, fn {ixs, assertions} -> "(assert (or (and #{Enum.map(ixs, fn i -> "(= (_ bv0 4) sumindices#{i})" end) |> Enum.join(" ")}) (and #{Enum.join(assertions, "\n  ")})))\n" end) end
+    _sumindices_usages = Enum.uniq(sumindices_usages)
+    _tiles_used_usages = Enum.uniq(tiles_used_usages)
+    # optimization1 = if Enum.empty?(all_sets) do [] else ["(assert ((_ at-most 1)\n  #{Enum.map(sumindices_usages, fn {_ixs, assertions} -> "(and #{Enum.join(assertions, "\n  ")})" end) |> Enum.join("\n  ")}))\n"] end
+    # optimization2 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most 1)\n  #{Enum.map(tiles_used_usages, fn {_ixs, assertions} -> "(and #{Enum.join(assertions, " ")})" end) |> Enum.join("\n  ")}))\n"] end
+    # optimization3 = if Enum.empty?(all_sets) do [] else Enum.map(sumindices_usages, fn {ixs, assertions} -> "(assert (or (and #{Enum.map(ixs, fn i -> "(= (_ bv0 4) sumindices#{i})" end) |> Enum.join(" ")}) (and #{Enum.join(assertions, "\n  ")})))\n" end) end
+    # max_tiles_used_usages = tiles_used_usages |> Enum.map(fn {_ixs, assertions} -> length(assertions) end) |> Enum.max(&>=/2, fn -> 0 end)
+    # optimization4 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most #{max_tiles_used_usages})\n  #{Enum.map(tile_group_indices, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")}))\n"] end
+    optimizations = [] #optimization1 ++ optimization2 #++ optimization3
 
-    match_assertions = "(assert (or#{match_assertions}))\n"
+    match_assertions = "(assert (or#{Enum.reverse(match_assertions)}))\n"
 
     tile_groups = all_tile_groups
     |> Enum.with_index()
     |> Enum.map(fn {{group, num, unique}, i} -> "(declare-const tiles#{i+1} (_ BitVec #{len}))\n(declare-const tiles#{i+1}_used Bool)\n#{tile_group_assertion(i+1, encoding, len, group, num, unique)}\n" end)
 
-    smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions] ++ indices_optimization ++ indices_optimization2)
+    smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions] ++ optimizations)
     if @print_smt do
       IO.puts(smt)
       # IO.inspect(encoding)
