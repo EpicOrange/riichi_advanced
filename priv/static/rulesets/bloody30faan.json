@@ -618,46 +618,6 @@
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z"]}]
     },
     {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
-    },
-    {
       "display_name": "White Dragon",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
@@ -671,6 +631,26 @@
       "display_name": "Red Dragon",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      ]]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      ]]
     },
     {
       "display_name": "Little Three Winds",

@@ -606,7 +606,7 @@ defmodule Riichi do
   end
 
   defp calculate_call_fu({name, call}) do
-    {relevant_tile, _sideways} = Enum.at(call, 1) # avoids the initial 1x from ankan
+    {relevant_tile, _sideways} = Enum.at(call, 1, {nil, nil}) # avoids the initial 1x from ankan
     case name do
       "chii"        -> 0
       "pon"         -> if relevant_tile in @terminal_honors do 4 else 2 end

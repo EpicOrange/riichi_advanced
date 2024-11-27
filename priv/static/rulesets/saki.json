@@ -426,76 +426,6 @@
       ]
     },
     {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "status_missing", "opts": ["usuzumi-hatsumi"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
-    },
-    {
       "display_name": "Haku",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
@@ -509,6 +439,56 @@
       "display_name": "Chun",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      ]]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      ]]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status", "opts": ["miyanaga-saki"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status", "opts": ["miyanaga-saki"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "status", "opts": ["miyanaga-saki"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status", "opts": ["miyanaga-saki"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 2]]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status", "opts": ["miyanaga-saki"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 3]]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "status", "opts": ["miyanaga-saki"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 4]]]]}]
     },
     {
       "display_name": "Double Riichi",
@@ -1053,7 +1033,8 @@
     "Junsei Chuurenpoutou": ["Chuurenpoutou"],
     "Kokushi Musou Juusan Menmachi": ["Kokushi Musou"],
     "Daisuushii": ["Shousuushii"],
-    "No Dora": ["Dora", "Aka", "Ura"]
+    "No Dora": ["Dora", "Aka", "Ura"],
+    "Any Wind": ["Round Wind", "Seat Wind"]
   },
   "extra_yaku": [
     { "display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 1]}] },

@@ -332,46 +332,6 @@
       ]
     },
     {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
-    },
-    {
-      "display_name": "Seat Wind",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}]
-    },
-    {
-      "display_name": "Round Wind",
-      "value": 1,
-      "when": [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
-    },
-    {
       "display_name": "Haku",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
@@ -385,6 +345,26 @@
       "display_name": "Chun",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
+    },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      ]]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+      ]]
     },
     {
       "display_name": "Double Riichi",
@@ -1042,7 +1022,6 @@
       "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["yondoukon"], 1], [["pair"], 1]]]]}]
     }
   ],
-  "yakuman": [],
   "yaku_precedence": {
     "Chinitsu": ["Honitsu"],
     "Chiitoitsu": ["Iipeikou", "Uumensai"],
@@ -1489,7 +1468,7 @@
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "yakuman"]]}
+        {"name": "has_yaku_with_discard", "opts": [1, ["yaku"]]}
       ],
       "actions": [
         ["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
@@ -1543,7 +1522,7 @@
         {"name": "match", "opts": [["hand", "calls"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "yakuman"]]}
+        {"name": "has_yaku_with_hand", "opts": [1, ["yaku"]]}
       ],
       "actions": [
         ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
