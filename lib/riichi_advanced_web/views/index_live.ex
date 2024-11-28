@@ -45,8 +45,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <button type="submit" class="enter-button">Enter</button>
       </form>
       <div class="index-bottom-buttons">
-        <button><a href="https://github.com/EpicOrange/riichi_advanced">Source</a></button>
-        <button><a href="https://discord.gg/5QQHmZQavP">Discord</a></button>
+        <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank">Source</a></button>
+        <button><a href="https://discord.gg/5QQHmZQavP" target="_blank">Discord</a></button>
         <button phx-click="goto_logs">Logs</button>
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
