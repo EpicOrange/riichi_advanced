@@ -451,7 +451,6 @@
     [ "exhaustive", [[[0,0,1,1,2,2]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
   ],
   "雙般高_definition": [
-    [ "exhaustive", [[[0,0,1,1,2,2]], 2], [["pair"], 1] ],
     [ "exhaustive", [[[0,0,1,1,2,2]], 2], [["pair"], 1] ]
   ],
   "清般高_definition": [
@@ -610,8 +609,13 @@
       "value": 2,
       "when": [
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]},
-        {"name": "counter_at_most", "opts": ["jokers", 0]}
+        {"name": "counter_at_most", "opts": ["jokers", 0]} // TODO don't count jokers in hand, only flowers
       ]
+    },
+    {
+      "display_name": "No Jokers",
+      "value": 2,
+      "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}] // TODO don't count flowers, only jokers in hand
     },
     {
       "display_name": "All Honors",
@@ -1319,19 +1323,19 @@
     {
       "display_name": "Melded Hand",
       "value": 5,
-      "when": ["won_by_discard", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
+      "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
     },
     {
       "display_name": "Hell Wait",
       "value": 2,
       "when": [{"name": "has_hell_wait", "opts": ["win"]}]
     },
-    {
-      "display_name": "No Jokers",
-      "value": 2,
-      "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}]
-    },
     // (7) 對子類
+    {
+      "display_name": "Seven Pairs",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
+    },
     {
       "display_name": "Three Consecutive Pairs",
       "value": 2,
@@ -1346,11 +1350,6 @@
       "display_name": "Seven Consecutive Pairs",
       "value": 30,
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["七連對"]]}]
-    },
-    {
-      "display_name": "Seven Pairs",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
     },
     {
       "display_name": "Three Identical Pairs",
@@ -1372,25 +1371,6 @@
       "display_name": "Thirteen Disconnected",
       "value": 5,
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["十三不搭"]]}]
-    },
-    {
-      "display_name": "Knitted Honors",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭七星"]]}]
-    },
-    {
-      "display_name": "Knitted Straight",
-      "value": 5,
-      "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], ["不搭雜龍"]]}
-      ]
-    },
-    {
-      "display_name": "Knitted Triplets",
-      "value": 5,
-      "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], ["不搭三相逢"]]}
-      ]
     },
     {
       "display_name": "Knitted Short Straight",
@@ -1419,6 +1399,25 @@
       "when": [
         {"name": "match", "opts": [["hand", "winning_tile"], ["2不搭老少"]]}
       ]
+    },
+    {
+      "display_name": "Knitted Straight",
+      "value": 5,
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], ["不搭雜龍"]]}
+      ]
+    },
+    {
+      "display_name": "Knitted Triplets",
+      "value": 5,
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], ["不搭三相逢"]]}
+      ]
+    },
+    {
+      "display_name": "Knitted Honors",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭七星"]]}]
     },
     // (9) 其他
     {
