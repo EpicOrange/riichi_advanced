@@ -24,7 +24,8 @@
     "suucha_riichi",
     "suukaikan",
     "kyuushu_kyuuhai",
-    "renhou"
+    "renhou",
+    "show_waits"
   ],
   "available_mods": [
     {"id": "dora", "name": "Dora", "desc": "Enables dora."},
