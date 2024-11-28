@@ -30,7 +30,7 @@ For more information about knitted sets, refer to the relevant section below (Kn
 
 Bloody end rules are enabled, meaning after the first win, remaining players continue playing until three players have won, or until the wall is exhausted. Multiple players may win off the same discard.
 
-In addition, if the wait tile is tanki on the Baida or Suit joker, one can only win by self-draw.
+In addition, if the wait tile is a single-tile wait for a pair on the Baida or Suit joker, one can only win by self-draw.
 
 TODO is there a dead wall?
 
@@ -47,7 +47,7 @@ There are also the following restrictions regarding jokers and calls:
 - You cannot add a joker to a pung.
 - You cannot concealed kong with a joker.
 
-Concealed kongs are completely hidden until the end of a hand.
+Concealed kongs are completely hidden until the end of a round.
 
 Swap-calling is disallowed.
 

@@ -78,7 +78,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           Variant:&nbsp;<b><%= @ruleset %></b>
           <%= if @state.tutorial_link != nil do %>
             <br/>
-            <a class="tutorial-link" href={@state.tutorial_link} target="blank">
+            <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
               <%= if @ruleset == "custom" do %>
                 (Documentation)
               <% else %>
