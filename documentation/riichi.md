@@ -2,9 +2,9 @@
 
 Riichi is a four-player game played with 34 different kinds of tiles:
 
-- numbered 1-9 character tiles ![](tiles/1m.png)![](tiles/2m.png)![](tiles/3m.png)![](tiles/4m.png)![](tiles/5m.png)![](tiles/6m.png)![](tiles/7m.png)![](tiles/8m.png)![](tiles/9m.png) (**manzu**),
-- numbered 1-9 circle tiles ![](tiles/1p.png)![](tiles/2p.png)![](tiles/3p.png)![](tiles/4p.png)![](tiles/5p.png)![](tiles/6p.png)![](tiles/7p.png)![](tiles/8p.png)![](tiles/9p.png) (**pinzu**),
-- numbered 1-9 bamboo tiles ![](tiles/1s.png)![](tiles/2s.png)![](tiles/3s.png)![](tiles/4s.png)![](tiles/5s.png)![](tiles/6s.png)![](tiles/7s.png)![](tiles/8s.png)![](tiles/9s.png) (**souzu**),
+- numbered 1-9 character tiles ![](tiles/1m.svg)![](tiles/2m.svg)![](tiles/3m.svg)![](tiles/4m.svg)![](tiles/5m.svg)![](tiles/6m.svg)![](tiles/7m.svg)![](tiles/8m.svg)![](tiles/9m.svg) (**manzu**),
+- numbered 1-9 circle tiles ![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg) (**pinzu**),
+- numbered 1-9 bamboo tiles ![](tiles/1s.svg)![](tiles/2s.svg)![](tiles/3s.svg)![](tiles/4s.svg)![](tiles/5s.svg)![](tiles/6s.svg)![](tiles/7s.svg)![](tiles/8s.svg)![](tiles/9s.svg) (**souzu**),
 - four wind tiles,
 - and three dragon tiles.
 
