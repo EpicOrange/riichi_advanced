@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "tile" -> [{hand ++ [context.tile], calls}]
           "called_tile" -> [{hand ++ [context.called_tile], calls}]
-          "call_choice" -> [{hand ++ [context.call_choice], calls}]
+          "call_choice" -> [{hand ++ context.call_choice, calls}]
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [winning_tile], calls}]
@@ -455,6 +455,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end_dir == :self
       "bet_at_least"        -> state.pot >= Enum.at(opts, 0, 0)
       "is_winner"           -> Map.has_key?(state.winners, context.seat)
+      "shimocha_exists"     -> Utils.get_seat(context.seat, :shimocha) in state.available_seats
+      "toimen_exists"       -> Utils.get_seat(context.seat, :toimen) in state.available_seats
+      "kamicha_exists"      -> Utils.get_seat(context.seat, :kamicha) in state.available_seats
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

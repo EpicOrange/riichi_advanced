@@ -384,7 +384,8 @@
     "Full Flush": ["Half Flush"],
     "Big Four Winds": ["Small Four Winds"],
     "Big Three Dragons": ["Small Three Dragons"],
-    "Blessing of Earth": ["Blessing of Man"]
+    "Blessing of Earth": ["Blessing of Man"],
+    "Four Concealed Triplets": ["All Triplets"]
   },
   "score_calculation": {
     "scoring_method": "score_table",
@@ -453,7 +454,7 @@
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["kan"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
                   ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
                   ["set_status", "kan"],

@@ -116,47 +116,47 @@
     {
       "display_name": "Face",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["1y"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[ "nojoker", [["1y"], 1] ]]]}]
     },
     {
       "display_name": "Four Faces",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["1y"], 4]]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[ "nojoker", [["1y"], 4] ]]]}]
     },
     {
       "display_name": "Animal",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["1a","2a","3a","4a"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}]
     },
     {
       "display_name": "All Animals",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "unique", [["1a","2a","3a","4a"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}]
     },
     {
       "display_name": "All Flowers",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "unique", [["1f","2f","3f","4f"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}]
     },
     {
       "display_name": "All Seasons",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "unique", [["1g","2g","3g","4g"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[["1f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["1f"], 1]] ]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[["2f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["2f"], 1]] ]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[["3f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["3f"], 1]] ]]}]
     },
     {
       "display_name": "Four Flower",
@@ -166,17 +166,17 @@
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[[["1g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["1g"], 1] ]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[[["2g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["2g"], 1] ]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[[["3g"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["3g"], 1] ]]]}]
     },
     {
       "display_name": "East Wind",
@@ -290,7 +290,7 @@
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
     },
     {
-      "display_name": "After Multiple Kongs",
+      "display_name": "After Multiple Gongs",
       "value": 10,
       "when": [{"name": "status", "opts": ["double_kan"]}]
     },
@@ -328,8 +328,8 @@
       "display_name": "All Sixteen Flowers",
       "value": 10,
       "when": [
-        {"name": "match", "opts": [["calls"], [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a"], 12] ]]]},
-        {"name": "match", "opts": [["calls"], [[ [["1y"], 4] ]]]}
+        {"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a"], 12] ]]]},
+        {"name": "match", "opts": [["calls"], [[ "nojoker", [["1y"], 4] ]]]}
       ]
     }
   ],
@@ -343,14 +343,16 @@
     "All Flowers": ["No Flowers", "Seat Flower"],
     "All Seasons": ["No Flowers", "Seat Season"],
     "All Sixteen Flowers": ["No Flowers", "Face", "Four Faces", "Animal", "All Animals", "Seat Flower", "Seat Season", "All Flowers", "All Seasons"],
-    "After Multiple Kongs": ["After a Kong"],
+    "After Multiple Gongs": ["After a Gong"],
     "Full Flush": ["Half Flush"],
     "Big Four Winds": ["Small Four Winds"],
-    "Big Three Dragons": ["Small Three Dragons"]
+    "Big Three Dragons": ["Small Three Dragons"],
+    "Four Concealed Triplets": ["All Triplets"]
   },
   "score_calculation": {
     "scoring_method": "multiplier",
     "score_multiplier": 20,
+    "max_score": 200,
     "discarder_multiplier": 2,
     "non_discarder_multiplier": 1,
     "self_draw_multiplier": 2,
@@ -393,7 +395,22 @@
     "start_flower": {
       "display_name": "Reveal flower",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], ["draw"]],
+      "actions": [
+        ["big_text", "Flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"],
+        ["when", [[
+          [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}],
+          [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}],
+          [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}],
+          [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ [["1y"], 4] ]]]}]
+        ]], [
+          ["push_message", "is paid 100 from all players for completing a set of flowers before the first turn"],
+          ["when", ["shimocha_exists"], [["add_score", 100], ["add_score", -100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
+          ["when", ["toimen_exists"], [["add_score", 100], ["add_score", -100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
+          ["when", ["kamicha_exists"], [["add_score", 100], ["add_score", -100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]]
+        ]],
+        ["draw"]
+      ],
       "unskippable": true
     },
     "start_joker": {
@@ -430,39 +447,52 @@
       ]
     },
     "daiminkan": {
-      "display_name": "Kong",
+      "display_name": "Gong",
       "call": [[0, 0, 0]],
       "call_conditions": [{"name": "not_call_contains", "opts": [["2y"], 1]}],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["kan"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
-      "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"],
-                  ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
-                  ["set_status", "kan"],
-                  ["draw"]
-                 ],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [
+        ["big_text", "Gong"], ["call"], ["change_turn", "self"],
+        ["push_message", "is paid 100 from the discarder for calling gong"],
+        ["add_score", 100], ["add_score", -100, "last_discarder"], ["big_text", "  -100  ", "last_discarder"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw"]
+      ],
       "precedence_over": ["chii", "pon"]
     },
     "ankan": {
-      "display_name": "Self Kong",
+      "display_name": "Concealed Gong",
       "call": [[0, 0, 0]],
       "call_conditions": [{"name": "not_call_contains", "opts": [["2y"], 1]}],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
-      "actions": [["big_text", "Kong"], ["self_call"],
-                  ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
-                  ["set_status", "kan"],
-                  ["draw"]
-                 ]
+      "actions": [
+        ["big_text", "Gong"], ["self_call"],
+        ["push_message", "is paid 100 from all players for making a concealed gong"],
+        ["when", ["shimocha_exists"], [["add_score", 100], ["add_score", -100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 100], ["add_score", -100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 100], ["add_score", -100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw"]
+      ]
     },
     "kakan": {
-      "display_name": "Kong",
+      "display_name": "Gong",
       "call": [[0, 0, 0]],
       "call_conditions": [{"name": "not_call_contains", "opts": [["2y"], 1]}],
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-      "actions": [["big_text", "Kong"], ["upgrade_call"],
-                  ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
-                  ["set_status", "kan"],
-                  ["draw"]
-                 ]
+      "actions": [
+        ["big_text", "Gong"], ["upgrade_call"],
+        ["push_message", "is paid 50 from all players for upgrading a pong into a gong"],
+        ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw"]
+      ]
     },
     "ron": {
       "display_name": "Wu",
@@ -517,8 +547,29 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y", "2y"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y", "2y"], ["set_status", "flower"], ["draw"]]
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1]]]]}],
+      "actions": [
+        ["big_text", "Flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"],
+        ["when", [[
+          [{"name": "match", "opts": [["call_choice"], [[ [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}],
+          [{"name": "match", "opts": [["call_choice"], [[ [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}],
+          [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}],
+          [{"name": "match", "opts": [["call_choice"], [[ [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ [["1y"], 4] ]]]}]
+        ]], [
+          ["push_message", "is paid 50 from all players for completing a set of flowers"],
+          ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
+          ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
+          ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]]
+        ]],
+        ["set_status", "flower"],
+        ["draw"]
+      ]
+    },
+    "joker": {
+      "display_name": "Fly",
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
+      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["draw"]]
     }
   },
   "auto_buttons": {
