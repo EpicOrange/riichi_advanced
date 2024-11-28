@@ -106,10 +106,10 @@
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z"],
   "reserved_tiles": [
-    "kandraw_2", "kandraw_1",
-    "kandraw_4", "kandraw_3",
-    "kandraw_6", "kandraw_5",
-    "kandraw_8", "kandraw_7"
+    "kandraw_1", "kandraw_2",
+    "kandraw_3", "kandraw_4",
+    "kandraw_5", "kandraw_6",
+    "kandraw_7", "kandraw_8"
   ],
   "revealed_tiles": [],
   "max_revealed_tiles": 0,
