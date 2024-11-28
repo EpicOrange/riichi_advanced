@@ -32,6 +32,24 @@ If you manage to win before your next discard (after your riichi declaration dis
 
 Some rare conditions in which you cannot riichi: you cannot riichi if you have less than 1000 points or if there are not enough tiles left in the wall for you to have a next draw.
 
+## Furiten
+
+In riichi (and all variants supported by Riichi Advanced), all discards are placed in front of their respective player.
+
+In riichi these discards have a special significance: they indicate which discards are __safe__ against that player. There is a rule called __furiten__ that states that if a player cannot call ron on tiles they have discarded before. This means if someone discarded ![](tiles/6p.svg), you can discard ![](tiles/6p.svg) and it is guaranteed that player cannot call ron on it.
+
+This is significant because if someone calls ron on your discard, you pay the full amount.
+
+Furiten is actually a little broader than described above. The full rule is as follows:
+
+- If any of your winning tiles is in your discards, you cannot ron, period.
+- (Temporary furiten) If someone discarded a tile that could have completed your hand (whether you have yaku or not), and you didn't win off it, then you are unable to call ron until your next draw.
+- (Permanent furiten) If you are in riichi, and someone discarded a tile that could have completed your hand (whether you have yaku or not), you are unable to call ron for the remainder of the round.
+
+In Riichi Advanced, if you are in furiten, it will be indicated by the appearance of some small text `furiten` at the bottom.
+
+You may still tsumo when in furiten.
+
 ## Calls
 
 One a tile has been discarded, often the next player in turn continues by drawing their tile. However, this process can be interrupted by calling the discarded tile. There are three possible calls on discarded tiles:
@@ -115,20 +133,27 @@ To score a hand, you add up all your han and consult a scoring table:
 - 11-12 han: 24000 points, 36000 if dealer. "Sanbaiman"
 - 13+ han: 32000 points, 48000 if dealer. "Yakuman"
 
-In addition, you win 300 for every honba, and you pick up all the 1000 riichi bets on the table.
+In addition, you add 300 to the score for every honba, and you pick up all the 1000 riichi bets on the table.
 
 Riichi Advanced will automatically score your hand and distribute the points, but it is useful to know the range of points you can earn. The rough calculation is that a 1 han hand is 1000 points, and each additional han roughly doubles that score, up to 4 han.
+
+Once the winning hand has been evaluated, payment proceeds as follows:
+
+- If it is a ron, the discarder pays the full amount.
+- If it is a tsumo and the winner is the dealer, the payment is split equally among all players, rounded up to the nearest 100. Note that this can result in a payment slightly greater than the calculated ron score.
+- If it is a tsumo and the winner is a non-dealer, the payment X is split unequally. The two non-dealers pay X/4 rounded up to the nearest 100, and the dealer pays X/2 rounded up to the nearest 100. Note that this can result in a payment slightly greater than the calculated ron score.
+- (rare) If multiple players call ron on the same discard, the payments happen separately. The player who gets honba/riichi bets is the next player in turn order -- other winners do not get honba or riichi bets.
 
 ## Fu
 
 If you have less than 5 han, then in addition to yaku, you may increase your score by having triplets or quads in hand. Each triplet and quad is worth some amount of __fu__ based on if they are a terminal/honor triplet or not.
 
 - Triplet of 2-8 tiles: 4 fu
-- Triplet of 1-9 tiles: 8 fu
+- Triplet of terminals/honors: 8 fu
 - Quad of 2-8 tiles: 16 fu
-- Quad of 1-9 tiles: 32 fu
+- Quad of terminals/honors: 32 fu
 
-The fu amount is halved if the triplet/quad is open (formed via call or from calling ron). Note that ankan is not considered open, and triplets formed by tsumo (self-draw) are considered closed.
+This fu amount is halved if the triplet/quad is open (formed via call or from calling ron). Note that ankan is not considered open, and triplets formed by tsumo (self-draw) are considered closed.
 
 In addition, the following events give bonus fu:
 
@@ -156,52 +181,67 @@ The game also ends once someone goes below zero points, though this is not commo
 
 ## Yaku list
 
-- Yakuhai (~50% of hands): Have a value triplet in hand, defined as either a dragon triplet, a round wind triplet, or a seat wind triplet. 1 han each.
-- Riichi (~41% of hands): Declare riichi, and win. 1 han.
-- Tsumo (~25% of hands): When your hand is __closed__ (no calls, except ankan) and you win by tsumo (self-draw), you get 1 han.
-- Tanyao (~22% of hands): Your hand consists of only tiles 2-8. So no ones, nines, winds, or dragons. 1 han.
-- Pinfu (~20% of hands): Closed hand with all sequences. In addition, your pair must not be made of yakuhai tiles, and your final wait must be a two-sided sequence wait (__ryanmen__), such as ![](tiles/7s.svg)![](tiles/8s.svg). 1 han.
-- Ippatsu (~7.9% of hands): Declare riichi, and win before your next discard after your riichi discard, with nobody making any calls in between. 1 han.
-- Honitsu (~4.7% of hands): Your hand consists of only one suit plus honor tiles. 3 han if closed, 2 han if open.
-- Iipeikou (~3.8% of hands): Your hand contains two identical sequences of the same suit, like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/3p.svg). 1 han if closed, does not count if open.
-- Sanshoku Doujun (~3.7% of hands): You have the same sequence in all three suits, like ![](tiles/1m.svg)![](tiles/2m.svg)![](tiles/3m.svg) ![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg) ![](tiles/1s.svg)![](tiles/2s.svg)![](tiles/3s.svg). 2 han if closed, 1 han if open.
-- Chiitoitsu (~2.8% of hands): Your hand is seven pairs. 2 han.
-- Ittsu (~1.5% of hands): You have the sequences 123 456 879 of a single suit in hand. 2 han if closed, 1 han if open.
-- Toitoi (~1.4% of hands): Your hand is all triplets. 2 han.
-- Haitei/Houtei (~0.82% of hands): You won off the last tile in the wall, or the last discard of the game, respectively. 1 han.
-- Chanta (~0.80% of hands): Every set/pair in your hand contains a terminal or honor tile. 2 han if closed, 1 han if open.
-- Sanankou (~0.62% of hands): Your hand contains three closed triplets. 2 han.
-- Chinitsu (~0.55% of hands): Your hand consists of only one suit, no honor tiles. Overrides honitsu. 6 han if closed, 5 han if open.
-- Junchan (~0.28% of hands): Every set/pair in your hand contains a terminal tile, no honors. Overrides chanta. 3 han if closed, 2 han if open.
-- Rinshan (~0.26% of hands): You won by tsumo off the replacement tile after a kan. 1 han.
-- Double Riichi (~0.19% of hands): You declared riichi on your first discard and won. 2 han instead of the typical 1 han.
+- __Yakuhai__ (~50% of hands): Have a value triplet in hand, defined as either a dragon triplet, a round wind triplet, or a seat wind triplet. 1 han each.
+- __Riichi__ (~41% of hands): Declare riichi, and win. 1 han.
+- __Tsumo__ (~25% of hands): When your hand is __closed__ (no calls, except ankan) and you win by tsumo (self-draw), you get 1 han.
+- __Tanyao__ (~22% of hands): Your hand consists of only tiles 2-8. So no ones, nines, winds, or dragons. 1 han.
+- __Pinfu__ (~20% of hands): Closed hand with all sequences. In addition, your pair must not be made of yakuhai tiles, and your final wait must be a two-sided sequence wait (__ryanmen__), such as ![](tiles/7s.svg)![](tiles/8s.svg). 1 han.
+- __Ippatsu__ (~7.9% of hands): Declare riichi, and win before your next discard after your riichi discard, with nobody making any calls in between. 1 han.
+- __Honitsu__ (~4.7% of hands): Your hand consists of only one suit plus honor tiles. 3 han if closed, 2 han if open.
+- __Iipeikou__ (~3.8% of hands): Your hand contains two identical sequences of the same suit, like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/3p.svg). 1 han if closed, does not count if open.
+- __Sanshoku Doujun__ (~3.7% of hands): You have the same sequence in all three suits, like ![](tiles/1m.svg)![](tiles/2m.svg)![](tiles/3m.svg) ![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg) ![](tiles/1s.svg)![](tiles/2s.svg)![](tiles/3s.svg). 2 han if closed, 1 han if open.
+- __Chiitoitsu__ (~2.8% of hands): Your hand is seven pairs. 2 han.
+- __Ittsu__ (~1.5% of hands): You have the sequences 123 456 879 of a single suit in hand. 2 han if closed, 1 han if open.
+- __Toitoi__ (~1.4% of hands): Your hand is all triplets. 2 han.
+- __Haitei/Houtei__ (~0.82% of hands): You won off the last tile in the wall, or the last discard of the game, respectively. 1 han.
+- __Chanta__ (~0.80% of hands): Every set/pair in your hand contains a terminal or honor tile. 2 han if closed, 1 han if open.
+- __Sanankou__ (~0.62% of hands): Your hand contains three closed triplets. 2 han.
+- __Chinitsu__ (~0.55% of hands): Your hand consists of only one suit, no honor tiles. Overrides honitsu. 6 han if closed, 5 han if open.
+- __Junchan__ (~0.28% of hands): Every set/pair in your hand contains a terminal tile, no honors. Overrides chanta. 3 han if closed, 2 han if open.
+- __Rinshan__ (~0.26% of hands): You won by tsumo off the replacement tile after a kan. 1 han.
+- __Double Riichi__ (~0.19% of hands): You declared riichi on your first discard and won. 2 han instead of the typical 1 han.
 
 The following are exceedingly rare yaku:
 
-- Shousangen (~0.067% of hands): You have two dragon triplets and a dragon pair. 2 han (plus the 2 han from the dragon triplets).
-- Ryanpeikou (~0.031% of hands): You have two sets of identical sequences (iipeikou). Overrides iipeikou and chiitoitsu. 3 han.
-- Sanshoku Doukou (~0.022% of hands): You have the same triplet in all three suits, like ![](tiles/1m.svg)![](tiles/1m.svg)![](tiles/1m.svg) ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg) ![](tiles/1s.svg)![](tiles/1s.svg)![](tiles/1s.svg). 2 han.
-- Honroutou (~0.018% of hands): Your hand consists of 1, 9, and honor tiles. Basically the opposite of tanyao. 2 han, plus you have to get this with toitoi (2 han).
-- Chankan (~0.015% of hands): When someone calls kakan, you have the option to call ron on that tile, and you get this yaku as a result. 1 han.
-- Sankantsu (~0.002% of hands): You have three kans (of any kind). 2 han.
+- __Shousangen__ (~0.067% of hands): You have two dragon triplets and a dragon pair. 2 han (plus the 2 han from the dragon triplets).
+- __Ryanpeikou__ (~0.031% of hands): You have two sets of identical sequences (iipeikou). Overrides iipeikou and chiitoitsu. 3 han.
+- __Sanshoku Doukou__ (~0.022% of hands): You have the same triplet in all three suits, like ![](tiles/1m.svg)![](tiles/1m.svg)![](tiles/1m.svg) ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg) ![](tiles/1s.svg)![](tiles/1s.svg)![](tiles/1s.svg). 2 han.
+- __Honroutou__ (~0.018% of hands): Your hand consists of 1, 9, and honor tiles. Basically the opposite of tanyao. 2 han, plus you have to get this with toitoi (2 han).
+- __Chankan__ (~0.015% of hands): When someone calls kakan, you have the option to call ron on that tile, and you get this yaku as a result. 1 han.
+- __Sankantsu__ (~0.002% of hands): You have three kans (of any kind). 2 han.
 
 The percentage stats are pulled from [here](http://tenhou.net/sc/prof.html).
 
 ## Yakuman
 
-The following nine rare yaku are considered __yakuman__, which immediately gives you 32000 (non-dealer)/48000 (dealer) points. Yakuman also stack, multiplying e.g. 32000 into 64000.
+The following ten rare yaku are considered __yakuman__, which immediately gives you 32000 (non-dealer)/48000 (dealer) points. Yakuman also stack, multiplying e.g. 32000 into 64000.
 
-- Suuankou (~0.026% of hands): All four of your sets are concealed triplets. Yakuman.
-- Daisangen (~0.019% of hands): You have all three dragon triplets. Yakuman.
-- Kokushi Musou (~0.018% of hands): You have each terminal and honor tile, with one of them forming a pair. Yakuman.
-- Shousuushii: You have three wind triplets and a wind pair. Yakuman.
-- Tenhou/Chiihou: You win off your first draw, with no intervening calls between the start of the round and your draw. Yakuman.
-- Tsuuiisou: Your hand consists only of honor tiles. Yakuman.
-- Ryuuiisou: Your hand consists only of all-green tiles: ![](2s.svg)![](3s.svg)![](4s.svg)![](6s.svg)![](8s.svg)![](6z.svg). Yakuman.
-- Chinroutou: Your hand consists only of 1 and 9. Yakuman.
+- __Suuankou__ (~0.026% of hands): All four of your sets are concealed triplets. Yakuman.
+- __Daisangen__ (~0.019% of hands): You have all three dragon triplets. Yakuman.
+- __Kokushi Musou__ (~0.018% of hands): You have each terminal and honor tile, with one of them forming a pair. Yakuman.
+- __Shousuushii__: You have three wind triplets and a wind pair. Yakuman.
+- __Tenhou/Chiihou__: You win off your first draw, with no intervening calls between the start of the round and your draw. Yakuman.
+- __Tsuuiisou__: Your hand consists only of honor tiles. Yakuman.
+- __Ryuuiisou__: Your hand consists only of all-green tiles: ![](2s.svg)![](3s.svg)![](4s.svg)![](6s.svg)![](8s.svg)![](6z.svg). Yakuman.
+- __Chinroutou__: Your hand consists only of 1 and 9. Yakuman.
+- __Chuurenpoutou__: Your final hand looks like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg) plus one extra tile of that suit. Yakuman.
 
-The following three yaku are considered __double yakuman__, and are exceedingly rare:
+The following four yaku are considered __double yakuman__, and are exceedingly rare:
 
-- Suuankou Tanki: All four of your sets are concealed triplets, and your final wait is for your pair. Double yakuman.
-- Kokushi Musou Juusan Menmachi: You have each terminal and honor tile, and your final wait is for your pair. Double yakuman.
-- Daisuushii: You have all four wind triplets. Double yakuman.
+- __Suuankou Tanki__: All four of your sets are concealed triplets, and your final wait is for your pair. Double yakuman.
+- __Kokushi Musou Juusan Menmachi__: You have each terminal and honor tile, and your final wait is for your pair. Double yakuman.
+- __Daisuushii__: You have all four wind triplets. Double yakuman.
+- __Junsei Chuurenpoutou__: Your waiting hand looks like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg), and your final wait is for any tile of that suit. Yakuman.
+
+## Pao
+
+This is an extremely rare and obscure rule that occurs with daisangen and daisuushii.
+
+Let's take daisangen for example. If a player has called two dragon triplets, and you help them complete their third dragon triplet by discarding the third dragon, then you are marked with __pao__. This is a penalty for helping another player complete an obvious yakuman. (For daisuushi, it occurs when giving the fourth wind to a player with three open wind triplets.)
+
+If you are marked with pao and the yakuman player wins without you dealing their final winning tile, then one of two things happen:
+
+- The yakuman player won by tsumo: Instead of the payment being split among all players, you pay the full amount for the yakuman.
+- The yakuman player won by ron: The discarder pays half the yakuman payment, and you pay the other half plus honba.
+
+In the event of multiple yakuman, pao only applies to the daisangen/daisuushii portion of the payment. This can result in some very weird payment logic that I had to code into Riichi Advanced.
