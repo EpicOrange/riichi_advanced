@@ -255,20 +255,26 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
 
     # messages and log
-    if called_tile != nil do
-      push_message(state, [
-        %{text: "Player #{seat} #{state.players[seat].nickname} called "},
-        %{bold: true, text: "#{call_name}"},
-        %{text: " on "},
-        Utils.pt(called_tile),
-        %{text: " with "}
-      ] ++ Utils.ph(call_choice))
-    else
-      push_message(state, [
-        %{text: "Player #{seat} #{state.players[seat].nickname} called "},
-        %{bold: true, text: "#{call_name}"},
-        %{text: " on "}
-      ] ++ Utils.ph(call_choice))
+    cond do
+      Map.get(state.rules["buttons"][call_name], "call_hidden", false) ->
+        push_message(state, [
+          %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+          %{bold: true, text: "#{call_name}"}
+        ])
+      called_tile != nil ->
+        push_message(state, [
+          %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+          %{bold: true, text: "#{call_name}"},
+          %{text: " on "},
+          Utils.pt(called_tile),
+          %{text: " with "}
+        ] ++ Utils.ph(call_choice))
+      true ->
+        push_message(state, [
+          %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+          %{bold: true, text: "#{call_name}"},
+          %{text: " on "}
+        ] ++ Utils.ph(call_choice))
     end
     state = Log.add_call(state, seat, call_name, call_choice, called_tile)
     click_sounds = [
@@ -922,6 +928,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state) # TODO remove
         state
+      "flip_all_calls_faceup"  ->
+        update_all_players(state, fn _seat, player ->
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, fn {tile, sideways} -> {Riichi.flip_faceup(tile), sideways} end)} end)
+          %Player{ player | calls: faceup_calls }
+        end)
       "flip_first_visible_discard_facedown" -> 
         ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") && not Utils.same_tile(tile, :"2x") end)
         if ix != nil do

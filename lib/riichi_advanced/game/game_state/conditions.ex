@@ -458,6 +458,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "shimocha_exists"     -> Utils.get_seat(context.seat, :shimocha) in state.available_seats
       "toimen_exists"       -> Utils.get_seat(context.seat, :toimen) in state.available_seats
       "kamicha_exists"      -> Utils.get_seat(context.seat, :kamicha) in state.available_seats
+      "three_winners"       -> map_size(state.winners) == 3
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

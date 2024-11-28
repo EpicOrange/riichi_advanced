@@ -1510,6 +1510,7 @@
     "Mixed Shifted Linked Sequences": ["Mixed Three Shifted Sequences", "Mixed Three Linked Sequences"],
     "Pure Shifted Linked Sequences": ["Pure Three Shifted Sequences", "Pure Three Linked Sequences"],
     "Pure Straight": ["Short Straight", "Mixed Straight", "Terminal Sequences"],
+    "Two Number Hand": ["Three Number Hand"],
     "Within Seven Tiles": ["Within Ten Tiles"],
     "Hand of Man": ["Within Seven Tiles"],
     "Hand of Heaven": ["Within Seven Tiles"],
@@ -1585,6 +1586,16 @@
       ["add_counter", "called_jokers", "count_matches", ["calls"], ["any_joker"]]
     ]
   },
+  "after_win": {
+    "actions": [
+      ["when", ["three_winners"], [["flip_all_calls_faceup"]]]
+    ]
+  },
+  "before_exhaustive_draw": {
+    "actions": [
+      ["flip_all_calls_faceup"]
+    ]
+  },
   "before_continue": {
     "actions": [["advance_turn"]]
   },
@@ -1652,6 +1663,8 @@
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"self": [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]},
+      "call_hidden": true,
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["self_call"],

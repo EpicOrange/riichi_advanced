@@ -502,6 +502,11 @@ defmodule RiichiAdvanced.GameState do
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
     else state end
 
+    # run after_win actions
+    state = if Map.has_key?(state.rules, "after_win") do
+      Actions.run_actions(state, state.rules["after_win"]["actions"], %{seat: seat, winning_tile: winning_tile, win_source: win_source})
+    else state end
+
     state
   end
 
