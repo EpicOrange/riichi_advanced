@@ -619,6 +619,7 @@
     "yaku_lists": ["yaku", "extra_yaku"],
     "yaku2_lists": ["yakuman"],
     "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
+    "use_smt": false,
     "yaku2_overrides_yaku1": true,
     "draw_tenpai_payments": true,
     "draw_nagashi_payments": true,
