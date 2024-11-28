@@ -198,8 +198,10 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def prepare_hand(assigns) do
     # map tiles to [{index, tile, is_last_discard, is highlighted}]
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
-    highlighted_indices = if assigns.your_hand? && assigns.call_choice != nil do
-      highlighted_tiles = if assigns.your_turn? do [assigns.called_tile | assigns.call_choice] else assigns.call_choice end
+    highlighted_indices = if assigns.your_hand? && assigns.called_tile != nil do
+      highlighted_tiles = if assigns.your_turn? do
+        [assigns.called_tile] ++ (if assigns.call_choice != nil do assigns.call_choice else [] end)
+      else assigns.call_choice end
       {indices, _call_choice} = for {tile, i} <- Enum.with_index(assigns.hand), reduce: {[], highlighted_tiles} do
         {indices, tiles} ->
           case Enum.find_index(tiles, &Utils.same_tile(&1, tile)) do
