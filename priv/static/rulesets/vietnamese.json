@@ -3,6 +3,7 @@
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
+  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-vietnamese-mahjong/",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",

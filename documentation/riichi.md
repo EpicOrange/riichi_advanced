@@ -224,14 +224,14 @@ The following ten rare yaku are considered __yakuman__, which immediately gives 
 - __Tsuuiisou__: Your hand consists only of honor tiles. Yakuman.
 - __Ryuuiisou__: Your hand consists only of all-green tiles: ![](2s.svg)![](3s.svg)![](4s.svg)![](6s.svg)![](8s.svg)![](6z.svg). Yakuman.
 - __Chinroutou__: Your hand consists only of 1 and 9. Yakuman.
-- __Chuurenpoutou__: Your final hand looks like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg) plus one extra tile of that suit. Yakuman.
+- __Chuurenpoutou__: Your final hand (including winning tile) looks like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg) of any suit, plus one additional tile of that suit. Yakuman.
 
 The following four yaku are considered __double yakuman__, and are exceedingly rare:
 
 - __Suuankou Tanki__: All four of your sets are concealed triplets, and your final wait is for your pair. Double yakuman.
 - __Kokushi Musou Juusan Menmachi__: You have each terminal and honor tile, and your final wait is for your pair. Double yakuman.
 - __Daisuushii__: You have all four wind triplets. Double yakuman.
-- __Junsei Chuurenpoutou__: Your waiting hand looks like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg), and your final wait is for any tile of that suit. Yakuman.
+- __Junsei Chuurenpoutou__: Your hand is exactly ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg) of any suit, and your final wait is for any tile of that suit. Double yakuman.
 
 ## Pao
 

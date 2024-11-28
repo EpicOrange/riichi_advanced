@@ -32,6 +32,7 @@
     {"id": "kuikae_ari", "name": "Kuikae Ari", "desc": "Allow swap-calling."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
+  "tutorial_link": "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU/edit?usp=sharing",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",

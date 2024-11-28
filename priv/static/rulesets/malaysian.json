@@ -5,6 +5,7 @@
     {"id": "malaysian_replaceable_fly_joker", "name": "Replaceable Fly Joker", "desc": "Allow swapping out fly jokers from your own pungs using the same tile."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
+  "tutorial_link": "https://www.sloperama.com/mahjongg/malaysian.html",
   "wall": ["1p", "1p", "1p", "1p",
            "2p", "2p", "2p", "2p",
            "3p", "3p", "3p", "3p",

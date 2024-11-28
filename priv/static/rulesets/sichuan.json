@@ -3,6 +3,7 @@
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
+  "tutorial_link": "https://www.mahjongpictureguide.com/pdf/SBR-Reference.pdf",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
