@@ -391,6 +391,61 @@
       ["set_tile_alias_all", ["2y"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]]
     ]
   },
+  "before_win": {
+    "actions": [
+      ["when_anyone", [{"name": "counter_equals", "opts": ["fly", 0]}], [
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_counter", "fly", "count_matches", ["hand", "calls"], ["fly"]]
+      ]],
+      ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
+        ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fly", 1]}], [["push_message", "is paid 50 from all players for having 1 fly tile"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fly", 2]}], [["push_message", "is paid 100 from all players for having 2 fly tiles"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fly", 3]}], [["push_message", "is paid 150 from all players for having 3 fly tiles"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fly", 4]}], [["push_message", "is paid 200 from all players for having 4 fly tiles"]]]
+      ]]
+    ]
+  },
+  "before_exhaustive_draw": {
+    "actions": [
+      ["when_anyone", [{"name": "counter_equals", "opts": ["fly", 0]}], [
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_attr_first_tile", "2y", ["revealed"]],
+        ["add_counter", "fly", "count_matches", ["hand", "calls"], ["fly"]]
+      ]],
+      ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
+        ["push_message", "is paid 50 from all players for each of their fly tiles"],
+        ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]]
+      ]]
+    ]
+  },
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
