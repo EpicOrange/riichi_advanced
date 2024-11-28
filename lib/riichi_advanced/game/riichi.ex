@@ -876,11 +876,6 @@ defmodule Riichi do
     else # sanma
       if is_dealer do 2 else 3 end
     end
-    num_ko_payers = if num_players == 4 do
-      if is_dealer do 3 else 2 end
-    else # sanma
-      if is_dealer do 2 else 1 end
-    end
     ko_payment = trunc(Float.ceil(score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
     oya_payment = trunc(Float.ceil(2 * score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
     # oya_payment is only relevant if is_dealer is false
