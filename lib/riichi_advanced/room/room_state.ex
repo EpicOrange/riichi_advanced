@@ -31,6 +31,7 @@ defmodule Room do
     starting: false,
     started: false,
     mods: %{},
+    tutorial_link: nil,
     textarea: [@initial_textarea],
     textarea_deltas: [[@initial_textarea]],
     textarea_delta_uuids: [],
@@ -113,6 +114,11 @@ defmodule RiichiAdvanced.RoomState do
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
+      tutorial_link: if state.ruleset == "custom" do
+        "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md"
+      else
+        Map.get(rules, "tutorial_link", nil)
+      end,
       textarea: [Delta.Op.insert(ruleset_json)],
     })
 

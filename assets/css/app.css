@@ -2269,6 +2269,9 @@ div.room > header > div.session {
   flex-direction: row;
   align-items: center;
 }
+div.room > header > div.variant > a.tutorial-link {
+  color: white;
+}
 div.room > header > input { display: none; }
 div.room > header > label {
   background: gray;

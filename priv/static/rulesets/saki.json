@@ -14,7 +14,7 @@
     {"id": "saki_yumeno_maho", "name": "Yumeno Maho", "desc": "Adds Yumeno Maho to the game."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
-
+  "tutorial_link": "https://docs.google.com/document/d/1y4Os-PJJQ5vMuc9hFbck_IcXItHmCHTjMlRNbHJu0gw/edit",
   "enable_saki_cards": true,
   "saki_ver": "v13",
   "saki_deck": [

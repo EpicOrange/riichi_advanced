@@ -74,7 +74,19 @@ defmodule RiichiAdvancedWeb.RoomLive do
             Public
           <% end %>
         </label>
-        <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
+        <div class="variant">
+          Variant:&nbsp;<b><%= @ruleset %></b>
+          <%= if @state.tutorial_link != nil do %>
+            <br/>
+            <a class="tutorial-link" href={@state.tutorial_link} target="blank">
+              <%= if @ruleset == "custom" do %>
+                (Documentation)
+              <% else %>
+                (Rules)
+              <% end %>
+            </a>
+          <% end %>
+        </div>
       </header>
       <div class="seats">
         <%= for seat <- @state.available_seats do %>

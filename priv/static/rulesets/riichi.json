@@ -94,6 +94,7 @@
     // {"id": "tsubame_gaeshi", "name": "Tsubame Gaeshi", "desc": "Local yaku. 1 han if you win off a riichi declaration discard."},
     // {"id": "hyakuman_goku", "name": "Hyakuman Goku", "desc": "Local yakuman achieved if your hand is purely character tiles whose numbers sum up to at least 100."},
   ],
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
