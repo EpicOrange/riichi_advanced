@@ -99,10 +99,10 @@ defmodule RiichiAdvanced.LogControlState do
     for {button_data, seat_num} <- Enum.with_index(button_press_event["buttons"]) do
       seat = Log.from_seat(seat_num)
       case button_data do
-        %{"button" => call_name, "call_choice" => call_choice, "called_tile" => called_tile} ->
+        %{"call_choice" => call_choice, "called_tile" => called_tile} ->
           call_choice = Enum.map(call_choice, &Utils.to_tile/1)
           called_tile = Utils.to_tile(called_tile)
-          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_name, call_choice, called_tile})
+          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_choice, called_tile})
         %{"choice" => choice} ->
           GenServer.cast(state.game_state_pid, {:press_saki_card, seat, choice})
         _ -> :ok

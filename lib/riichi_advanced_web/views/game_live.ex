@@ -210,7 +210,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                     <div class="call-button-separator"></div>
                   <% end %>
                   <%= for choice <- choices do %>
-                    <button class="call-button" phx-cancellable-click="call_button_clicked" phx-value-name={@state.players[@seat].call_name} phx-value-tile={Utils.strip_attrs(called_tile)} phx-value-choice={Enum.join(Utils.strip_attrs(choice), ",")}>
+                    <button class="call-button" phx-cancellable-click="call_button_clicked" phx-value-tile={Utils.strip_attrs(called_tile)} phx-value-choice={Enum.join(Utils.strip_attrs(choice), ",")}>
                     <%= for tile <- choice do %>
                       <div class={["tile", Utils.strip_attrs(tile)]}></div>
                     <% end %>
@@ -383,15 +383,15 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
+  def handle_event("call_button_clicked", %{"tile" => called_tile, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:press_call_button, socket.assigns.seat, call_name, call_choice, Utils.to_tile(called_tile)})
+    GenServer.cast(socket.assigns.game_state, {:press_call_button, socket.assigns.seat, call_choice, Utils.to_tile(called_tile)})
     {:noreply, socket}
   end
 
-  def handle_event("call_button_clicked", %{"name" => call_name, "choice" => choice}, socket) do
+  def handle_event("call_button_clicked", %{"choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:press_call_button, socket.assigns.seat, call_name, call_choice, nil})
+    GenServer.cast(socket.assigns.game_state, {:press_call_button, socket.assigns.seat, call_choice, nil})
     {:noreply, socket}
   end
 

@@ -1024,7 +1024,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         if not uninterruptible && Map.has_key?(state.interruptible_actions, action) do
           state = if not Enum.empty?(state.winners) do
             # if there's a winner, never display buttons
-            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{} } end)
+            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "", chosen_call_choice: nil, chosen_called_tile: nil, chosen_saki_card: nil } end)
           else
             Buttons.recalculate_buttons(state, state.interruptible_actions[action])
           end
@@ -1153,27 +1153,16 @@ defmodule RiichiAdvanced.GameState.Actions do
               Map.get(button_choices, choice, nil)
             else nil end
             case button_choice do
-              {:call, call_choices} ->
-                button_name = choice
-                flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
-                if length(flattened_call_choices) == 1 do
-                  # if there's only one choice, automatically choose it
-                  {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
-                  if @debug_actions do
-                    IO.puts("Running actions due to there being only one call choice for #{seat}: #{inspect(actions)}")
-                  end
-                  state = run_actions(state, actions, %{seat: seat, call_name: button_name, call_choice: call_choice, called_tile: called_tile})
-                  state
+              {:call, _call_choices} ->
+                # to have submitted a call action with call choices,
+                # we must have a chosen_called_tile and chosen_call_choice available
+                context = if player.chosen_saki_card != nil do
+                  %{seat: seat, call_name: choice, choice: player.chosen_saki_card}
                 else
-                  # otherwise, defer all actions and display call choices
-                  if @debug_actions do
-                    IO.puts("Scheduling call actions for #{seat}: #{inspect(actions)}")
-                  end
-                  state = schedule_actions(state, seat, actions, %{seat: seat, call_name: button_name})
-                  state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: button_name } end)
-                  notify_ai_call_buttons(state, seat)
-                  state
+                  %{seat: seat, call_name: choice, called_tile: player.chosen_called_tile, call_choice: player.chosen_call_choice}
                 end
+                state = run_actions(state, actions, context)
+                state
               {:mark, mark_spec, pre_actions} ->
                 # run pre-mark actions
                 if @debug_actions do
@@ -1208,6 +1197,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         notify_ai(state)
         state
       else state end
+      # clearing choices is done by evaluate_choices now
+      # though i guess we could still do it here? no difference
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
@@ -1252,9 +1243,9 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # supercede choices
     # basically, starting from the current turn player's choice, clear out others' choices
-    seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
+    ordered_seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
     |> Enum.filter(fn seat -> seat in state.available_seats end)
-    state = for seat <- seats, reduce: state do
+    state = for seat <- ordered_seats, reduce: state do
       state ->
         choice = state.players[seat].choice
         if choice not in [nil, "skip", "play_tile"] do
@@ -1272,6 +1263,35 @@ defmodule RiichiAdvanced.GameState.Actions do
             else player end
           end)
         else state end
+    end
+
+    # check call priority lists
+    # if multiple people have the same call, normally it will just trigger both calls
+    # define a "call_priority_list" key in your button to prevent this
+    # each item should be a CNF condition
+    # calls that satisfy the first condition are given priority over calls that don't
+    # calls that satisfy the second condition are given priority over calls that don't
+    # etc. if there are still multiple of the same call then it reverts to "first in turn order"
+    conflicting_players = ordered_seats
+    |> Enum.map(fn seat -> {seat, state.players[seat].choice} end)
+    |> Enum.filter(fn {_seat, choice} -> get_in(state.rules["buttons"], [choice, "call_priority_list"]) != nil end)
+    |> Enum.map(fn {seat, choice} -> %{choice => [seat]} end)
+    |> Enum.reduce(%{}, fn m, acc -> Map.merge(m, acc, fn _k, l, r -> l ++ r end) end)
+    state = for {choice, seats} <- conflicting_players, reduce: state do
+      state ->
+        priority_list = state.rules["buttons"][choice]["call_priority_list"]
+        winning_seat = seats
+        |> Enum.sort_by(fn seat ->
+          context = %{seat: seat, call_name: choice, called_tile: state.players[seat].chosen_called_tile, call_choice: state.players[seat].chosen_call_choice}
+          ix = Enum.find_index(priority_list, fn conditions -> Conditions.check_cnf_condition(state, conditions, context) end)
+          if ix == nil do :infinity else ix end
+        end)
+        |> Enum.at(0)
+        update_all_players(state, fn dir, player ->
+          if dir in (seats -- [winning_seat]) do
+            %Player{ player | choice: "skip", chosen_actions: [], buttons: [] }
+          else player end
+        end)
     end
 
     # check if nobody else needs to make choices
@@ -1296,20 +1316,57 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  def submit_actions(state, seat, choice, actions) do
-    if state.game_active && state.players[seat].choice == nil do
+  def submit_actions(state, seat, choice, actions, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil) do
+    player = state.players[seat]
+    if state.game_active && player.choice == nil do
       if @debug_actions do
         IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
         # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       end
-      state = case choice do
-        "skip" -> state
-        "play_tile" -> state
-        _ -> Log.add_button_press(state, seat, choice)
+
+      {called_tile, call_choice, call_choices} = if called_tile == nil && call_choice == nil && player.button_choices != nil do
+        button_choice = Map.get(player.button_choices, choice, nil)
+        case button_choice do
+          {:call, call_choices} ->
+            flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
+            if length(flattened_call_choices) == 1 do
+              # if there's only one choice, automatically choose it
+              {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
+              if @debug_actions do
+                IO.puts("Submitting actions due to there being only one call choice for #{seat}: #{inspect(actions)}")
+              end
+              {called_tile, call_choice, call_choices}
+            else {nil, nil, call_choices} end
+          _ -> {nil, nil, nil}
+        end
+      else {called_tile, call_choice, nil} end
+
+      if called_tile == nil && call_choice == nil && saki_card == nil && call_choices != nil do
+        # show call choice buttons
+        # clicking them will call submit_actions again, but with the optional parameters included
+        if @debug_actions do
+          IO.puts("Showing call buttons for #{seat}: #{inspect(actions)}")
+        end
+        state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: choice } end)
+        notify_ai_call_buttons(state, seat)
+        state
+      else
+        # log the button press
+        state = case choice do
+          "skip" -> state
+          "play_tile" -> state
+          _ ->
+            data = cond do
+              saki_card != nil -> %{choice: saki_card}
+              call_choice != nil -> %{call_choice: call_choice, called_tile: called_tile}
+              true -> %{}
+            end
+            Log.add_button_press(state, seat, choice, data)
+        end
+        state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card })
+        state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
+        evaluate_choices(state)
       end
-      state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions })
-      state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
-      evaluate_choices(state)
     else state end
   end
 

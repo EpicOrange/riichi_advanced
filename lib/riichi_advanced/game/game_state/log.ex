@@ -67,7 +67,7 @@ defmodule RiichiAdvanced.GameState.Log do
     end
   end
 
-  defp modify_last_button_press(state, fun, create_at_seat \\ nil) do
+  defp modify_last_button_press(state, fun, create_at_seat) do
     state = case Enum.at(state.log_state.log, 0) do
       event when (event != nil and event.event_type == :buttons_pressed) ->
         if create_at_seat != nil && Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
@@ -109,17 +109,17 @@ defmodule RiichiAdvanced.GameState.Log do
     modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
   end
 
-  def add_button_press(state, seat, button_name) do
-    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), %{button: button_name})) } end, seat)
+  def add_button_press(state, seat, button_name, data \\ %{}) do
+    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), Map.merge(%{button: button_name}, data))) } end, seat)
   end
 
-  def add_button_data(state, seat, data) do
-    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.update_at(&1, to_seat(seat), fn m -> Map.merge(m, data) end)) } end)
-  end
+  # def add_button_data(state, seat, data) do
+  #   modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.update_at(&1, to_seat(seat), fn m -> Map.merge(m, data) end)) } end, nil)
+  # end
 
-  def remove_button_press(state, seat) do
-    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end)
-  end
+  # def remove_button_press(state, seat) do
+  #   modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end, nil)
+  # end
 
   def encode_marking(marking) do
     # [

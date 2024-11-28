@@ -284,7 +284,7 @@ defmodule RiichiAdvanced.AIPlayer do
         end
         # IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
         Process.sleep(trunc(500 / @ai_speed))
-        GenServer.cast(state.game_state, {:press_call_button, state.seat, player.call_name, call_choice, called_tile})
+        GenServer.cast(state.game_state, {:press_call_button, state.seat, call_choice, called_tile})
       else
         [choice] = Enum.random(player.call_buttons["saki"])
         # IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
