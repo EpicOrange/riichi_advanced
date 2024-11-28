@@ -53,9 +53,21 @@ Swap-calling is disallowed.
 
 ## Faan table
 
-The faan table for B30FJ is extensive and as such will be broken down into nine subsections:
+The faan table for B30FJ is extensive and as such will be broken down into thirteen subsections:
 
-- TODO
+- Flowers and Honors
+- Terminals and Nonterminals
+- Suits
+- Kongs
+- Triplets
+- Sequences
+- Tile Hog
+- Numbers
+- Special Win Methods
+- Concealed
+- Pairs
+- Knitted Hands
+- Miscellaneous
 
 ### Flowers and Honors
 
@@ -71,7 +83,7 @@ The faan table for B30FJ is extensive and as such will be broken down into nine 
 - __Big Three Dragons__ (15 faan): Instead, you have three dragon triplets.
 - __All Honors__ (30 faan): Your hand is all honor tiles.
 
-## Terminals and Nonterminals
+### Terminals and Nonterminals
 
 Terminal tiles are the numbers 1 and 9.
 
@@ -84,7 +96,7 @@ Terminal tiles are the numbers 1 and 9.
 - __Mixed Terminals__ (10 faan): Your hand consists of terminals and honor tiles only.
 - __Pure Terminals__ (30 faan): Your hand actually consists of terminals only.
 
-## Suits
+### Suits
 
 - __One Voided Suit__ (2 faan): Your hand is missing one of the three suits.
 - __All Types__ (5 faan): Your hand has each of the five kinds of tiles: characters, circles, bamboo, winds, and dragons.
@@ -93,7 +105,7 @@ Terminal tiles are the numbers 1 and 9.
 - __Open Nine Gates__ (20 faan): Your hand (including calls) is all one suit in the nine gates shape (1112345678999 + one extra tile).
 - __Nine Gates__ (30 faan): Same, but you have no calls.
 
-## Kongs
+### Kongs
 
 - __Open Kong__ (1 faan): Having an open kong (i.e. called discard or added kong) grants 1 faan.
 - __Concealed Kong__ (2 faan): Having a concealed kong grants 2 faan.
@@ -101,7 +113,7 @@ Terminal tiles are the numbers 1 and 9.
 - __Three Kongs__ (15 faan): Instead, you have three kongs.
 - __Four Kongs__ (30 faan): Instead, you have four kongs.
 
-## Triplets
+### Triplets
 
 For the following, triplets can include kongs.
 
@@ -124,7 +136,7 @@ For the following, triplets can include kongs.
 - __Triple Triplets__ (10 faan): You have three triplets of the same number.
 - __Quadruple Triplets__ (30 faan): You have four triplets of the same number. This requires some joker tomfoolery, as it requires 6 of the same tile.
 
-## Sequences
+### Sequences
 
 - __All Sequences__ (2 faan): All of your sets are sequences.
 - __Double Sequences__ (1 faan): You have two of the same sequence in different suits. It is possible to get this one twice by having two of another sequence, which gives you a total of 2 faan.
@@ -149,7 +161,7 @@ For the following, triplets can include kongs.
 - __Mixed Straight__ (5 faan): You have 123 456 789, all of different suits.
 - __Pure Straight__ (8 faan): You have 123 456 789 in the same suit.
 
-## Tile Hog
+### Tile Hog
 
 Note that you are only awarded the highest scoring of the three Tile Hogs.
 
@@ -159,7 +171,7 @@ Note that you are only awarded the highest scoring of the three Tile Hogs.
 - __Double Tile Hog__ (8 faan): Your hand (not calls) altogether uses up all eight of two different tiles.
 - __Triple Tile Hog__ (30 faan): Your hand (not calls) altogether uses up all twelve of three different tiles.
 
-## Numbers
+### Numbers
 
 - __All Like Numbers__ (8 faan): All of your sets and your pair use contain the same number. e.g. 44 234 345 345 456 all contain 4.
 - __All Odds__ (5 faan): Your hand consists of odd numbers only.
@@ -168,7 +180,7 @@ Note that you are only awarded the highest scoring of the three Tile Hogs.
 - __Three Number Hand__ (5 faan): Your hand consists of three numbers only.
 - __Two Number Hand__ (10 faan): Instead, your hand consists of two numbers only.
 
-## Special Win Methods
+### Special Win Methods
 
 - __After a Flower__ (1 faan): Win off the replacement tile after calling a joker as a flower.
 - __After a Kong__ (2 faan): Win off the replacement tile after calling kong.
@@ -180,7 +192,7 @@ Note that you are only awarded the highest scoring of the three Tile Hogs.
 - __Hand of Heaven__ (30 faan): Win with your first draw (as East seat)
 - __Hand of Earth__ (30 faan): Win with your first draw (not East seat)
 
-## Concealed
+### Concealed
 
 - __Concealed Hand__ (1 faan): Have no calls except concealed kong. You may still get this if you win off a discard.
 - __Fully Concealed Hand__ (2 faan): Same, but you won off self draw.
@@ -188,7 +200,7 @@ Note that you are only awarded the highest scoring of the three Tile Hogs.
 - __Melded Hand__ (5 faan): Have four calls and win off a discard or by robbing a kong.
 - __Hell Wait__ (2 faan): Win with a hell wait. A hell wait is defined as a final wait in which all tiles except one are already visible to you, so there is only one remaining left in the wall (or in others' hands).
 
-## Pairs
+### Pairs
 
 The following are related to seven-pair hands.
 
@@ -200,7 +212,7 @@ The following are related to seven-pair hands.
 - __Three Dragons Seven Pairs__ (5 faan): Three of your pairs are dragon pairs.
 - __Four Winds Seven Pairs__ (10 faan): Four of your pairs are wind pairs.
 
-## Knitted Hands
+### Knitted Hands
 
 - __Thirteen Disconnected__ (5 faan): All of your tiles are disconnected, i.e. 3 away from each other or more. You also have a pair of one of the tiles.
 - __Knitted Short Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s which counts as two sets. You can get this twice for a total of 10 faan.
@@ -209,7 +221,7 @@ The following are related to seven-pair hands.
 - __Knitted Triplets__ (5 faan): You have e.g. 1m 1p 1s 4m 4p 4s 7m 7p 7s which counts as three sets. The three triplets have to be exactly 3 away, so they must be 1-4-7 or 2-5-8 or 3-6-9.
 - __Knitted Honors__ (5 faan): You have exactly one of each wind and dragon, plus seven of the nine tiles required to form knitted triplets or a knitted straight.
 
-## Miscellaneous
+### Miscellaneous
 
 - __Eyes of the General__ (1 faan): Your pair is 22, 55, or 88.
 - __Chicken Hand__ (15 faan): You score none of the other hands.
