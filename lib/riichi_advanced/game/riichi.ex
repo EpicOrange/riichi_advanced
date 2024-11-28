@@ -807,9 +807,10 @@ defmodule Riichi do
           [tile1, tile2] = Enum.uniq(hand)
           tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          if Utils.count_tiles([tile1], winning_tiles, tile_aliases) == 1 do [tile1_fu] else [] end ++ if Utils.count_tiles([tile2], winning_tiles, tile_aliases) == 1 do [tile2_fu] else [] end
+          if Utils.count_tiles([tile1], winning_tiles, tile_aliases) == 1 do [tile1_fu] else [] end
+          ++ if Utils.count_tiles([tile2], winning_tiles, tile_aliases) == 1 do [tile2_fu] else [] end
         # cosmic hand
-        length(hand) == 4 && num_pairs == 1 ->
+        enable_kontsu_fu && length(hand) == 4 && num_pairs == 1 ->
           {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
           [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
           pair_fu = calculate_pair_fu(pair_tile, seat_wind, round_wind)
@@ -880,9 +881,10 @@ defmodule Riichi do
     else # sanma
       if is_dealer do 2 else 1 end
     end
-    IO.inspect({score, num_players, divisor, num_ko_payers, han_fu_rounding_factor})
-    ko_payment = trunc(Float.round(score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
-    oya_payment = score - num_ko_payers * ko_payment
+    ko_payment = trunc(Float.ceil(score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
+    oya_payment = trunc(Float.ceil(2 * score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
+    # oya_payment is only relevant if is_dealer is false
+    # (it is just double ko payment if is_dealer is true, which is useless)
     {ko_payment, oya_payment}
   end
 

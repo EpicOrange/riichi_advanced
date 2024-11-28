@@ -241,7 +241,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         base_score = han_fu_multiplier * fu * 2 ** (2 + points)
         score = base_score * if is_dealer do 6 else 4 end
         # round up (to nearest 100, by default)
-        score = Float.ceil(score / han_fu_rounding_factor) * han_fu_rounding_factor
+        score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
 
         # handle limit scores
         dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
@@ -279,9 +279,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # apply tsumo loss
     tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
-    score = score * if is_self_draw && tsumo_loss do
-      if is_dealer do (num_players - 1) / 3 else num_players / 4 end
-    else 1 end
+    score = if is_self_draw && tsumo_loss do
+      # assumes 3-player
+      han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+      {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
+      IO.inspect({score, ko_payment, oya_payment})
+      if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
+    else score end
 
     max_score = Map.get(score_rules, "max_score", :infinity)
     score = min(score, max_score)
@@ -356,7 +360,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
 
       delta_scores = if direct_hit do # either ron, or tsumo pao, or remaining ron pao payment
-        payment = basic_score + honba_payment * 3
+        payment = basic_score + honba_payment * (length(state.available_seats) - 1)
         payment = if "megan_davin_double_payment" in state.players[winner.seat].status && "megan_davin_double_payment" in state.players[payer].status do
           push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double to their duelist (Megan Davin)"}])
           payment * 2
@@ -401,7 +405,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
           self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
           {self_draw_multiplier * basic_score, self_draw_multiplier * basic_score}
         end
-        IO.inspect({basic_score, ko_payment, oya_payment})
 
         # handle motouchi naruka's scoring quirk
         motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, Map.get(score_rules, "riichi_value", 1000))
@@ -735,12 +738,20 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {state, delta_scores}
       draw_tenpai_payments ->
         # do tenpai payments
-        delta_scores = case num_tenpai do
-          0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-          1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3000 else -1000 end} end)
-          2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
-          3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
-          4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+        delta_scores = case length(state.available_seats) do
+          3 -> case num_tenpai do
+            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 2000 else -1000 end} end)
+            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -2000 end} end)
+            3 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+          end
+          4 -> case num_tenpai do
+            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3000 else -1000 end} end)
+            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
+            3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
+            4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+          end
         end
 
         # handle kanbara satomi's scoring quirk
