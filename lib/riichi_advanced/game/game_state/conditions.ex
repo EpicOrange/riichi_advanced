@@ -5,6 +5,19 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   import RiichiAdvanced.GameState
 
+  # get the principal tile from a meld consisting of all one tile and jokers
+  defp get_joker_meld_tile(call, joker_tile) do
+    call_tiles = Riichi.call_to_tiles(call)
+    non_joker_tiles = Enum.reject(call_tiles, &Utils.same_tile(&1, joker_tile))
+    has_joker = length(non_joker_tiles) < length(call_tiles)
+    has_nonjoker = length(non_joker_tiles) > 0
+    if has_joker && has_nonjoker do
+      [tile, rest] = non_joker_tiles
+      tile = Utils.strip_attrs(tile)
+      if Enum.all?(rest, &Utils.same_tile(&1, tile)) do [tile] else [] end
+    else [] end
+  end
+
   def get_hand_calls_spec(state, context, hand_calls_spec) do
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)
@@ -54,16 +67,17 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
           "hand_draw_nonjoker_any" -> Enum.flat_map(state.players[context.seat].hand ++ state.players[context.seat].draw, fn tile -> [{hand ++ if Utils.count_tiles([tile], Map.keys(state.players[context.seat].tile_mappings)) > 0 do [] else [tile] end, calls}] end)
           "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
-          "joker_call_tile_any" ->
+          "self_joker_meld_tiles" ->
+            # used in malaysian, this selects one nonjoker tile from own exposed calls containing a joker
+            state.players[context.seat].calls
+            |> Enum.flat_map(&get_joker_meld_tile(&1, :"2y"))
+            |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
+          "anyone_joker_meld_tiles" ->
             # used in american, this selects one nonjoker tile from each exposed call containing a joker
-            tiles = for call <- Enum.flat_map(state.players, fn {_seat, player} -> player.calls end) do
-              call_tiles = Riichi.call_to_tiles(call)
-              non_joker_tiles = Enum.reject(call_tiles, &Utils.same_tile(&1, :"1j"))
-              if length(non_joker_tiles) < length(call_tiles) do
-                Enum.take(non_joker_tiles, 1)
-              else [] end
-            end |> Enum.concat()
-            Enum.flat_map(tiles, fn tile -> [{hand ++ [tile], calls}] end)
+            state.players
+            |> Enum.flat_map(fn {_seat, player} -> player.calls end)
+            |> Enum.flat_map(&get_joker_meld_tile(&1, :"1j"))
+            |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
           _ -> [{[context.tile], []}]
         end
       end |> Enum.concat()
