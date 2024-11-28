@@ -2777,24 +2777,10 @@
       "display_name": "Draw from your discards",
       "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
       "actions": [
-        ["big_text", "Shibuya Takami: set aside!"],
+        ["big_text", "Shibuya Takami: draw!"],
         ["unset_status", "about_to_draw"],
         ["mark", [["discard", 1, ["self"]]]],
-        ["push_message", "drew of their discards facedown (Shibuya Takami)"],
-        ["set_aside_marked"],
-        ["draw_from_aside"],
-        ["add_attr", ["draw"], ["facedown", "no_discard"]]
-      ],
-      "unskippable": true
-    },
-    "shibuya_takami": {
-      "display_name": "Set aside a discard as next draw",
-      "show_when": ["all_saki_cards_drafted", "our_turn", {"name": "status_missing", "opts": ["match_start", "discards_empty"]}, {"name": "status", "opts": ["shibuya-takami", "about_to_draw"]}, "not_just_discarded"],
-      "actions": [
-        ["big_text", "Shibuya Takami: set aside!"],
-        ["unset_status", "about_to_draw"],
-        ["mark", [["discard", 1, ["self"]]]],
-        ["push_message", "drew of their discards facedown (Shibuya Takami)"],
+        ["push_message", "drew one of their discards (Shibuya Takami)"], // TODO: say which one!
         ["set_aside_marked"],
         ["draw_from_aside"],
         ["add_attr", ["draw"], ["facedown", "no_discard"]]
