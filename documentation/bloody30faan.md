@@ -229,3 +229,23 @@ The following are related to seven-pair hands.
 - __Thirteen Orphans__ (20 faan): You have one of each terminal and honor tile, plus one extra terminal/honor.
 - __Thirteen Orphans__ (25 faan): Same, but you use at most three jokers.
 - __Thirteen Orphans__ (30 faan): Same, but you use at most one joker.
+
+## Scoring table
+
+Faan is additive and maps to the following payouts:
+
+- __0 faan__: 1
+- __1-2 faan__: 2
+- __3-4 faan__: 4
+- __5-6 faan__: 8
+- __7-8 faan__: 12
+- __9-10 faan__: 16
+- __11-13 faan__: 24
+- __14-16 faan__: 32
+- __17-19 faan__: 48
+- __20-24 faan__: 64
+- __25-29 faan__: 96
+- __30-39 faan__: 128
+- __40+ faan__: 256
+
+In event of a discard, the discarder pays the payout. In event of a self-drawn win, every player who hasn't yet won pays the payout.
