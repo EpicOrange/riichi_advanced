@@ -831,7 +831,8 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
         "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available",
-        {"name": "not_match", "opts": [["all_calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}
+        {"name": "not_match", "opts": [["all_calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]},
+        {"name": "tile_not_drawn", "opts": ["kandraw_8"]}
       ],
       "actions": [
         ["big_text", "Kan"], ["call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"], ["change_turn", "self"],
@@ -859,6 +860,7 @@
       "show_when": [
         "our_turn", "not_no_tiles_remaining", "has_draw", {"name": "status_missing", "opts": ["just_reached"]}, "self_call_available",
         {"name": "not_match", "opts": [["all_calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]},
+        {"name": "tile_not_drawn", "opts": ["kandraw_8"]},
         [
           {"name": "not_status", "opts": ["riichi"]},
           {"name": "not_call_would_change_waits", "opts": ["win"]}
@@ -889,7 +891,8 @@
       "upgrades": "pon",
       "show_when": [
         "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]},
-        {"name": "not_match", "opts": [["all_calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}
+        {"name": "not_match", "opts": [["all_calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]},
+        {"name": "tile_not_drawn", "opts": ["kandraw_8"]}
       ],
       "actions": [
         ["big_text", "Kan"], ["upgrade_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],
@@ -980,7 +983,7 @@
     },
     "pei": {
       "display_name": "Pei",
-      "show_when": ["our_turn", "has_draw", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}],
+      "show_when": ["our_turn", "has_draw", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}],
       "actions": [
         ["big_text", "Pei"], ["flower", "4z"],
         ["shift_tile_to_dead_wall", 1],
