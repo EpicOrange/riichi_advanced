@@ -28,12 +28,13 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <select name="ruleset" id="ruleset">
           <option value="riichi" selected>Riichi</option>
           <option value="sanma">Sanma</option>
+          <option value="cosmic">Cosmic Riichi</option>
+          <option value="saki">Sakicards v1.3</option>
           <option value="hk">Hong Kong</option>
           <option value="sichuan">Sichuan Bloody</option>
-          <option value="saki">Sakicards v1.3</option>
           <option value="vietnamese">Vietnamese</option>
+          <option value="malaysian">Malaysian</option>
           <option value="bloody30faan">Bloody 30-Faan Jokers</option>
-          <option value="cosmic">Cosmic Riichi</option>
           <option value="american">American (2024 NMJL)</option>
           <option value="custom">Custom</option>
         </select>
