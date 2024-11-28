@@ -37,12 +37,14 @@ main div#container {
   position: absolute;
   z-index: -1;
   display: flex;
+  user-select: none;
 }
 main div.messages-container {
   width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
   height: calc(100% + var(--tile-size));
   position: absolute;
   top: calc(-0.5 * var(--tile-size));
+  user-select: text;
   display: flex;
 }
 main div.messages-container > div.messages {
@@ -1798,6 +1800,7 @@ div.ruleset {
   background: #0f6f2f;
   width: min(90vw, 80vh);
   height: 90vh;
+  user-select: text;
 }
 div.ruleset::before {
   position: absolute;
