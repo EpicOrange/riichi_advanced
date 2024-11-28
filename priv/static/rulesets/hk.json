@@ -120,37 +120,14 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
     ]
   ],
-  "all_flowers_definition": [
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1] ]
-  ],
-  "all_seasons_definition": [
-    [ [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ]
-  ],
-  "7_flowers_definition": [
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["2f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["1f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ],
-    [ [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ]
-  ],
-  "8_flowers_definition": [
-    [ [["1f"], 1], [["2f"], 1], [["3f"], 1], [["4f"], 1], [["1g"], 1], [["2g"], 1], [["3g"], 1], [["4g"], 1] ]
-  ],
-  "little_three_dragons_definition": [
-    [ "unique", [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]
-  ],
-  "big_three_dragons_definition": [
-    [ "unique", [["haku", "hatsu", "chun"], 3] ]
-  ],
-  "little_four_winds_definition": [
-    [ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]
-  ],
-  "big_four_winds_definition": [
-    [ "unique", [["ton", "nan", "shaa", "pei"], 4] ]
-  ],
+  "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
+  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
+  "7_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
+  "8_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
+  "little_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]],
+  "big_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 3] ]],
+  "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
+  "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "yaku": [
     // Flowers
     {
