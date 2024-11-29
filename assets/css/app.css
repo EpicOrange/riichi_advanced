@@ -188,7 +188,7 @@ div.tile.highlight {
   --tile-saturate: 100%;
 }
 /* ponds */
-div.pond {
+div.pond, div.secondary-pond {
   display: flex;
   flex-flow: row wrap;
   /*flex-direction: row;*/
@@ -203,10 +203,28 @@ div.pond {
   overflow: visible;
   z-index: -1;
 }
-div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
-.pond > .tile { order: 0; z-index: 2; }
-.pond > .tile:nth-child(n+7) { order: 1; z-index: 1; }
-.pond > .tile:nth-child(n+13) { order: 2; z-index: 0; }
+div.four-rows > div.pond {
+  width: calc(4.75 * var(--tile-size));
+}
+div.four-rows > div.secondary-pond {
+  width: calc(4 * var(--tile-size));
+  margin-left: calc(4.75 * var(--tile-size));
+  margin-top: calc(0.25 * var(--tile-size));
+  transform-origin: calc(-2.375 * var(--tile-size)) calc(-2.875 * var(--tile-size));
+}
+div:not(.four-rows) > div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
+.pond > .tile { order: 0; }
+.pond > .tile:nth-child(n+7) { order: 1; }
+.pond > .tile:nth-child(n+13) { order: 2; }
+/* for toimen, their tiles overlap backwards, so we need to z-index them */
+.pond.toimen > .tile { z-index: 3; }
+.pond.toimen > .tile:nth-child(n+7) { z-index: 2; }
+.pond.toimen > .tile:nth-child(n+13) { z-index: 1; }
+.pond.toimen > .tile:nth-child(n+19) { z-index: 0; }
+.pond.toimen.secondary-pond > .tile { z-index: 3; }
+.pond.toimen.secondary-pond > .tile:nth-child(n+6) { z-index: 2; }
+.pond.toimen.secondary-pond > .tile:nth-child(n+11) { z-index: 1; }
+.pond.toimen.secondary-pond > .tile:nth-child(n+16) { z-index: 0; }
 div.pond.self {
   left: calc(50% - (2.375 * var(--tile-size)));
   top: calc(50% + (2.125 * var(--tile-size)));

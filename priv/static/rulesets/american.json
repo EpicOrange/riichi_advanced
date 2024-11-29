@@ -563,6 +563,7 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
+  "four_rows_discards": true,
   "dead_hand_buttons": true,
   "max_rounds": 8
 }

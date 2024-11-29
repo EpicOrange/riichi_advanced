@@ -10,28 +10,49 @@ defmodule RiichiAdvancedWeb.PondComponent do
     socket = assign(socket, :seat_turn?, false)
     socket = assign(socket, :viewer_buttons?, false)
     socket = assign(socket, :riichi_index, nil)
+    socket = assign(socket, :four_rows?, false)
+    socket = assign(socket, :secondary_pond?, false)
     socket = assign(socket, :marking, %{})
     {:ok, socket}
   end
 
   def render(assigns) do
     ~H"""
-    <div class={[@id, @highlight? && "highlight"]}>
-      <%= if not Enum.empty?(@marking) do %>
-        <%= for {tile, i} <- prepare_pond(@pond, @marking) do %>
-          <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
-            <div class={["tile", Utils.strip_attrs(tile), "markable", i == @riichi_index && "sideways"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
-          <% else %>
-            <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
-              <div class={["tile", Utils.strip_attrs(tile), "marked", i == @riichi_index && "sideways"]}></div>
+    <div class={[@four_rows? && "four-rows"]}>
+      <div class={[@id, @highlight? && not @secondary_pond? && "highlight"]}>
+        <%= if not Enum.empty?(@marking) do %>
+          <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.take(24) do %>
+            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
+              <div class={["tile", Utils.strip_attrs(tile), "markable", i == @riichi_index && "sideways"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
             <% else %>
-              <div class={["tile", Utils.strip_attrs(tile), i == @riichi_index && "sideways"]}></div>
+              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
+                <div class={["tile", Utils.strip_attrs(tile), "marked", i == @riichi_index && "sideways"]}></div>
+              <% else %>
+                <div class={["tile", Utils.strip_attrs(tile), i == @riichi_index && "sideways"]}></div>
+              <% end %>
             <% end %>
           <% end %>
+        <% else %>
+          <div :for={{tile, i} <- Enum.take(Enum.with_index(@pond), 24)} class={["tile", Utils.strip_attrs(tile), @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
         <% end %>
-      <% else %>
-        <div :for={{tile, i} <- Enum.with_index(@pond)} class={["tile", Utils.strip_attrs(tile), @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
-      <% end %>
+      </div>
+      <div class={[@id, "secondary-pond", @highlight? && "highlight"]} :if={@secondary_pond?}>
+        <%= if not Enum.empty?(@marking) do %>
+          <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.drop(24) do %>
+            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
+              <div class={["tile", Utils.strip_attrs(tile), "markable", i == @riichi_index && "sideways"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+            <% else %>
+              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
+                <div class={["tile", Utils.strip_attrs(tile), "marked", i == @riichi_index && "sideways"]}></div>
+              <% else %>
+                <div class={["tile", Utils.strip_attrs(tile), i == @riichi_index && "sideways"]}></div>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <div :for={{tile, i} <- Enum.drop(Enum.with_index(@pond), 24)} class={["tile", Utils.strip_attrs(tile), @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways"]}></div>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -65,6 +86,9 @@ defmodule RiichiAdvancedWeb.PondComponent do
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_discard_anim, assigns.seat}])
       socket
     else socket end
+
+    # toggle secondary pond
+    socket = assign(socket, :secondary_pond?, socket.assigns.four_rows? && (socket.assigns.secondary_pond? || length(Map.get(assigns, :pond, [])) > 24))
 
     # toggle highlight
     socket = assign(socket, :highlight?, socket.assigns.viewer != socket.assigns.seat && socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)

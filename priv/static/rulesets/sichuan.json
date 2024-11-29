@@ -500,6 +500,7 @@
   "display_wall": true,
   "initial_score": 0,
   "starting_tiles": 13,
+  "four_rows_discards": true,
   "bloody_end": true,
   "max_rounds": 4
 }

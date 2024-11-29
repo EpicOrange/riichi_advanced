@@ -1802,6 +1802,7 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
-  "max_rounds": 8,
-  "bloody_end": true
+  "four_rows_discards": true,
+  "bloody_end": true,
+  "max_rounds": 8
 }

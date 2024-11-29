@@ -715,7 +715,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def is_playable?(state, seat, tile) do
-    not has_unskippable_button?(state, seat) && not Utils.has_attr?(tile, ["no_discard"]) && if Map.has_key?(state.rules, "play_restrictions") do
+    tile != nil && not has_unskippable_button?(state, seat) && not Utils.has_attr?(tile, ["no_discard"]) && if Map.has_key?(state.rules, "play_restrictions") do
       Enum.all?(state.rules["play_restrictions"], fn [tile_spec, cond_spec] ->
         not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) || not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
       end)

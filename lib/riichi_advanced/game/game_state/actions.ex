@@ -78,7 +78,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       else state end
     else
-      IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
+      IO.puts("#{seat} tried to play an unplayable tile: #{inspect(tile)}")
       state
     end
   end
