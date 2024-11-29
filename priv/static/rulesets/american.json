@@ -447,7 +447,7 @@
     "3_am_quint": {
       "display_name": "Quint",
       "call": [[0, 0, 0, 0]],
-      "call_name": "am_quin",
+      "call_name": "am_quint",
       "call_conditions": [
         {"name": "hand_length_at_least", "opts": [5]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
