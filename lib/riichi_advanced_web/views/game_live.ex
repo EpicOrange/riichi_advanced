@@ -144,6 +144,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
+        dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
@@ -446,6 +447,17 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_event("hover_off", _assigns, socket) do
     socket = assign(socket, :hovered_called_tile, nil)
     socket = assign(socket, :hovered_call_choice, nil)
+    {:noreply, socket}
+  end
+
+  def handle_event("declare_dead_hand", %{"seat" => seat}, socket) do
+    dead_seat = case seat do
+      "east"  -> :east
+      "south" -> :south
+      "west"  -> :west
+      "north" -> :north
+    end
+    GenServer.cast(socket.assigns.game_state, {:declare_dead_hand, socket.assigns.seat, dead_seat})
     {:noreply, socket}
   end
 

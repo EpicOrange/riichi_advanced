@@ -1,5 +1,6 @@
 
 defmodule RiichiAdvanced.GameState.Conditions do
+  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
@@ -51,6 +52,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "shimocha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :shimocha)].pond, -1), calls}]
           "toimen_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :toimen)].pond, -1), calls}]
           "kamicha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :kamicha)].pond, -1), calls}]
+          "shimocha_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :shimocha)].calls}]
+          "toimen_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :toimen)].calls}]
+          "kamicha_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :kamicha)].calls}]
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "tile" -> [{hand ++ [context.tile], calls}]
           "called_tile" -> [{hand ++ [context.called_tile], calls}]
@@ -459,6 +463,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "toimen_exists"       -> Utils.get_seat(context.seat, :toimen) in state.available_seats
       "kamicha_exists"      -> Utils.get_seat(context.seat, :kamicha) in state.available_seats
       "three_winners"       -> map_size(state.winners) == 3
+      "hand_is_dead"        ->
+        seat = from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
+        match_definitions = translate_match_definitions(state, Enum.at(opts, 0, []))
+        American.check_dead_hand(state, seat, match_definitions)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

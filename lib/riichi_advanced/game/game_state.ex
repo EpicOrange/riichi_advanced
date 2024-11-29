@@ -1351,4 +1351,9 @@ defmodule RiichiAdvanced.GameState do
     state = broadcast_state_change(state)
     {:noreply, state}
   end
+
+  def handle_cast({:declare_dead_hand, seat, dead_seat}, state) do
+    state = American.declare_dead_hand(state, seat, dead_seat)
+    {:noreply, state}
+  end
 end

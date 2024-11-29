@@ -518,6 +518,25 @@ div.corner-info > div.round-marker {
   right: calc(-1 * var(--tile-size));
   bottom: calc(0.25 * var(--tile-size));
 }
+div.corner-info > div.saki-cards {
+  display: flex;
+}
+div.corner-info > div.dead-hand-button {
+  position: absolute;
+  border-radius: 50%;
+  font-size: calc(0.8 * var(--tile-size));
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  background: var(--tile-back);
+  color: var(--tile-front);
+  opacity: 0.5;
+  bottom: 0;
+  left: calc(50% - 0.5 * var(--tile-size));
+}
+div.corner-info > div.dead-hand-button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
 
 /* tiles */
 div.tile {
@@ -1827,11 +1846,7 @@ div.ruleset > textarea {
 
 
 
-
-
-div.saki-cards {
-  display: flex;
-}
+/* saki cards */
 div.saki-card {
   position: relative;
   width: var(--card-width);

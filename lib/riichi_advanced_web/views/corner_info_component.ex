@@ -9,7 +9,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
   def render(assigns) do
     ~H"""
     <div class={@id}>
-    <%= @player.nickname %>
+      <%= @player.nickname %>
       <div class="round-marker" :if={@seat == :east}>
         <%= Utils.get_wind_name(Riichi.get_round_wind(@kyoku, @num_players)) %>
       </div>
@@ -18,6 +18,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
           <div class={["saki-card", @saki.version, to_card_class(card), Saki.is_disabled_saki_card?(card) && "disabled"]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>
       <% end %>
+      <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons && @seat != @viewer && @viewer != :spectator}>!</div>
     </div>
     """
   end

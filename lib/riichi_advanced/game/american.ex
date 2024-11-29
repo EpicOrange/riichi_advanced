@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.GameState.American do
-  # import RiichiAdvanced.GameState
+  alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  import RiichiAdvanced.GameState
 
   # each american match definition is a string, like
   # "FF 3333a 6666b 9999c"
@@ -252,4 +253,27 @@ defmodule RiichiAdvanced.GameState.American do
     end
   end
 
+  def declare_dead_hand(state, seat, dead_seat) do
+    past_charleston = "match_start" not in state.players[seat].status
+    we_are_not_dead = "dead_hand" not in state.players[seat].status
+    they_are_not_dead = "dead_hand" not in state.players[dead_seat].status
+    no_one_is_declaring = Enum.all?(state.players, fn {_seat, player} -> not Enum.any?(["declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"], fn status -> status in player.status end) end)
+    dead_seat_has_calls = true # not Enum.empty?(state.players[dead_seat].calls)
+    if past_charleston && we_are_not_dead && they_are_not_dead && no_one_is_declaring && dead_seat_has_calls do
+      push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} is considering declaring a player's hand dead"}])
+      declare_dead_status = case Utils.get_relative_seat(seat, dead_seat) do
+        :shimocha -> "declare_shimocha_dead"
+        :toimen -> "declare_toimen_dead"
+        :kamicha -> "declare_kamicha_dead"
+      end
+      state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [declare_dead_status]) })
+      state = Buttons.recalculate_buttons(state)
+      state = broadcast_state_change(state)
+      state
+    else state end
+  end
+
+  def check_dead_hand(state, seat, match_definitions) do
+    true
+  end
 end

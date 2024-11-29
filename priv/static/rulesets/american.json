@@ -174,6 +174,9 @@
     "win_by_draw_name": "Mah Jongg",
     "exhaustive_draw_name": "Draw"
   },
+  "play_restrictions": [
+    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]]
+  ],
   "before_turn_change": {
     "actions": [
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
@@ -182,7 +185,10 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", ["not_no_tiles_remaining"], [["draw"]]]
+      // if dead hand, skip your turn, otherwise, draw a tile
+      ["ite", [{"name": "status", "opts": ["dead_hand"]}], [["advance_turn"]], [
+        ["when", ["not_no_tiles_remaining"], [["draw"]]]
+      ]]
     ]
   },
   "after_start": {
@@ -469,6 +475,84 @@
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
+    },
+    "declare_shimocha_dead": {
+      "display_name": "Declare player on right dead",
+      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}],
+      "actions": [
+        ["ite", [{"name": "hand_is_dead", "opts": [["win"], "shimocha"]}], [
+          ["big_text", "Dead hand", "shimocha"],
+          ["set_shimocha_status", "dead_hand"]
+        ], [
+          ["big_text", "Not dead", "shimocha"],
+          ["big_text", "Dead hand"],
+          ["push_message", "incorrectly declared a player's hand dead"],
+          ["set_status", "dead_hand"]
+        ]],
+        ["unset_status", "declare_shimocha_dead"]
+      ],
+      "unskippable": true
+    },
+    "declare_toimen_dead_cancel": {
+      "display_name": "Cancel",
+      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}],
+      "actions": [
+        ["push_message", "cancelled their challenge"],
+        ["unset_status", "declare_toimen_dead"]
+      ],
+      "unskippable": true
+    },
+    "declare_toimen_dead": {
+      "display_name": "Declare player on right dead",
+      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}],
+      "actions": [
+        ["ite", [{"name": "hand_is_dead", "opts": [["win"], "toimen"]}], [
+          ["big_text", "Dead hand", "toimen"],
+          ["set_toimen_status", "dead_hand"]
+        ], [
+          ["big_text", "Not dead", "toimen"],
+          ["big_text", "Dead hand"],
+          ["push_message", "incorrectly declared a player's hand dead"],
+          ["set_status", "dead_hand"]
+        ]],
+        ["unset_status", "declare_toimen_dead"]
+      ],
+      "unskippable": true
+    },
+    "declare_kamicha_dead_cancel": {
+      "display_name": "Cancel",
+      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
+      "actions": [
+        ["push_message", "cancelled their challenge"],
+        ["unset_status", "declare_kamicha_dead"]
+      ],
+      "unskippable": true
+    },
+    "declare_kamicha_dead": {
+      "display_name": "Declare player on right dead",
+      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
+      "actions": [
+        ["ite", [{"name": "hand_is_dead", "opts": [["win"], "kamicha"]}], [
+          ["big_text", "Dead hand", "kamicha"],
+          ["set_kamicha_status", "dead_hand"]
+        ], [
+          ["big_text", "Not dead", "kamicha"],
+          ["big_text", "Dead hand"],
+          ["push_message", "incorrectly declared a player's hand dead"],
+          ["set_status", "dead_hand"]
+        ]],
+        ["unset_status", "declare_kamicha_dead"]
+      ],
+      "unskippable": true
+    },
+    "declare_kamicha_dead_cancel": {
+      "display_name": "Cancel",
+      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
+      "actions": [
+        ["push_message", "cancelled their challenge"],
+        ["unset_status", "declare_kamicha_dead"]
+      ],
+      "unskippable": true
     }
   },
   "auto_buttons": {
@@ -482,5 +566,6 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
+  "dead_hand_buttons": true,
   "max_rounds": 8
 }
