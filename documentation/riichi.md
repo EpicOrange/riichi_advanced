@@ -28,9 +28,11 @@ Once your hand is one-away from a winning hand (__tenpai__), hovering over a til
 
 When tenpai, you may declare __riichi__. This means betting 1000 points, locking your hand, and telling everyone that you are near a win, which are all significant downsides. This is indicated on the board by a sideways discard. Once you declare riichi you are locked to discarding every tile you draw until you draw one of your winning tiles, or until someone discards one of your winning tiles. This makes riichi a bit of a gamble. The upside is that riichi is worth 1 han, the basic scoring unit. __All hands require 1 han to win__, making riichi very valuable. Hand conditions that give you han are called __yaku__, and riichi is one of the most common (occuring in around 41% of hands).
 
-If you manage to win before your next discard (after your riichi declaration discard), you earn a bonus yaku associated with riichi is called __ippatsu__, which is worth 1 han.
+If you manage to win before your next discard (after your riichi declaration discard), you earn a bonus yaku associated with riichi called __ippatsu__, which is worth 1 han.
 
 Some rare conditions in which you cannot riichi: you cannot riichi if you have less than 1000 points or if there are not enough tiles left in the wall for you to have a next draw.
+
+You also may not riichi if your hand is "open", but we will discuss that later.
 
 ## Furiten
 
@@ -42,7 +44,7 @@ This is significant because if someone calls ron on your discard, you pay the fu
 
 Furiten is actually a little broader than described above. The full rule is as follows:
 
-- If any of your winning tiles is in your discards, you cannot ron, period.
+- If any of your winning tiles is in your discards, you cannot ron, period. For example, if you are waiting for ![](tiles/2s.svg)![](tiles/5s.svg), and you have ![](tiles/5s.svg) in your discards, you cannot ron even if someone discards the other tile ![](tiles/2s.svg).
 - (Temporary furiten) If someone discarded a tile that could have completed your hand (whether you have yaku or not), and you didn't win off it, then you are unable to call ron until your next draw.
 - (Permanent furiten) If you are in riichi, and someone discarded a tile that could have completed your hand (whether you have yaku or not), you are unable to call ron for the remainder of the round.
 
@@ -178,6 +180,8 @@ A full scoring table for riichi can be found online, but the above scoring table
 A game of riichi consists of a four-round East round, plus a four-round South round. During each four-round cycle, each player has the opportunity to be dealer once. Games can go on longer because if the dealer wins, they stay dealer for the next round (a __repeat__). A game of riichi typically lasts 10 rounds (meaning 2 repeats).
 
 The game also ends once someone goes below zero points, though this is not common.
+
+Note that there is an additional common rule called "sudden death" that states the game continues into the West round if nobody reaches 30000+ points by the fourth South round. In this scenario, the game ends as soon as someone ends a round with 30000+ points, or at the conclusion of the fourth West round. Sudden death is not yet implemented in Riichi Advanced.
 
 ## Yaku list
 
