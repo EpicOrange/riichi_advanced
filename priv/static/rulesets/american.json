@@ -257,10 +257,12 @@
       ]],
       ["when", [{"name": "anyone_status", "opts": ["start_blind_pass", "charleston_left"]}], [
         ["unset_status_all", "start_blind_pass"],
+        ["push_system_message", "Select any number of the upside-down tiles to blind-pass that many tiles"],
         ["set_status_all", "blind_pass_left"]
       ]],
       ["when", [{"name": "anyone_status", "opts": ["start_blind_pass", "charleston_right"]}], [
         ["unset_status_all", "start_blind_pass"],
+        ["push_system_message", "Select any number of the upside-down tiles to blind-pass that many tiles"],
         ["set_status_all", "blind_pass_right"]
       ]]
     ]
@@ -270,7 +272,11 @@
       "display_name": "Select three tiles to pass left",
       "show_when": [{"name": "status", "opts": ["charleston_left"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_left"], ["merge_draw"], ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [["draw", 3, "1x"]]]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [
+          ["unset_status", "charleston_left"],
+          ["merge_draw"],
+          ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [["draw", 3, "1x"]]]
+        ]],
         ["charleston_left"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["unset_status", "first_charleston"], ["set_status", "decide_charleston"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_across"]]]
@@ -295,7 +301,11 @@
       "display_name": "Select three tiles to pass right",
       "show_when": [{"name": "status", "opts": ["charleston_right"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_right"], ["merge_draw"], ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [["draw", 3, "1x"]]]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [
+          ["unset_status", "charleston_right"],
+          ["merge_draw"],
+          ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [["draw", 3, "1x"]]]
+        ]],
         ["charleston_right"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_across"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["unset_status", "second_charleston"], ["set_status", "final_charleston"]]]

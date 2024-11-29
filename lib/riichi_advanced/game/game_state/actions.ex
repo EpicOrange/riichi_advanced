@@ -493,6 +493,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "push_message"          ->
         push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
         state
+      "push_system_message"   ->
+        push_message(state, Enum.map(opts, fn msg -> %{text: msg} end))
+        state
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
       "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
