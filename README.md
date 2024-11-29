@@ -2,22 +2,23 @@
 
 ![](title.png)
 
-Multipurpose extensible four-player mahjong client featuring the following:
+Multipurpose extensible mahjong client featuring the following:
 
-- Six base rulesets: Riichi, Hong Kong, Sichuan Bloody, Saki Powers, Vietnamese, Bloody 30-Faan Jokers
-- Dozens of optional mods (for Riichi): Head Bump, Open Riichi, Space Mahjong, Shiro Pocchi, Tenth tile in each suit, and more
-- Lobby system with public/private rooms
-- Infinitely customizable ruleset (it's a JSON file)
+- Multiple base rulesets, including Riichi, Hong Kong Old Style, Sichuan Bloody, and Bloody 30-Faan Jokers. You can even play Riichi Mahjong with Saki powers!
+- Optional mods for each ruleset, especially Riichi! Play with head bump, sequences wrapping from 9 to 1, a tenth tile in each suit, and more!
+- Lobby system with public/private rooms! Invite your friends!
+- Infinitely customizable ruleset! Copy-paste an existing ruleset and play your modified version directly in the client!
 
-This project is hosted at <https://riichiadvanced.com/>, and the Discord is here: <https://discord.gg/5QQHmZQavP>
+All of this is live at <https://riichiadvanced.com/>, and the Discord is here: <https://discord.gg/5QQHmZQavP>
 
-It is currently in beta, please help us test for bugs!
+This project is currently in beta, please help us test for bugs in the discord linked above!
+The planned v1.0 release date is 2025 New Years, so stay posted!
 
 ## Documentation
 
 If you're looking to make a custom ruleset using the game's JSON-based ruleset format, that documentation is available [here](documentation/documentation.md).
 
-This project is written in Elixir with the Phoenix framework making heavy use of the LiveView library. Like all Phoenix projects it has two moving parts:
+This project is written in Elixir with the Phoenix framework, making heavy use of the LiveView library. Like all Phoenix projects, it has two moving parts:
 
 - `lib/riichi_advanced`: Model
 - `lib/riichi_advanced_web`: Combined View/Controller
@@ -32,6 +33,7 @@ Here is a breakdown of all the directories:
     │   ├── riichi_advanced (all application logic)
     │   │   ├── game (everything related to the game screen)
     │   │   ├── lobby (everything related to the lobby screen)
+    │   │   ├── log (everything related to the log viewing screen)
     │   │   ├── messages (everything related to the messages panel)
     │   │   ├── room (everything related to the room screen)
     │   │   ├── application.ex (main thing! OTP root application/supervisor)
@@ -54,6 +56,7 @@ Here is a breakdown of all the directories:
     │   └── static
     │       ├── audio (all audio)
     │       ├── images (all spritesheets and svgs)
+    │       ├── logs (save location for all logs)
     │       ├── mods (all mods)
     │       ├── rulesets (all rulesets)
     │       ├── favicon.ico
@@ -62,6 +65,19 @@ Here is a breakdown of all the directories:
 
 ## Running the server
 
-Since I have obviously not uploaded the database keys in `/config`, and secrets stuff in `/priv/cert` you will have to substitute your own by generating a new Phoenix project, and copying over the files in those two directories.
+This process requires installing Elixir (≥ 1.14) and `npm`.
 
-After that's done, you can run the server via `iex -S mix phx.server` at the project root just like any other Phoenix project.
+Since I have obviously not uploaded the database keys in `/config`, and secrets stuff in `/priv/cert` you will have to substitute your own by generating a new Phoenix project via `mix phx.new riichi_advanced`, and copying over the files in those two directories.
+
+Then run at the project root:
+
+    # Get Elixir dependencies
+    mix deps.get
+    
+    # Get Node dependencies
+    (cd assets; npm i)
+    
+    # Start the server
+    iex -S mix phx.server
+
+This should start the server up at `localhost:4000`. Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
