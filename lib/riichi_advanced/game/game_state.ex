@@ -820,9 +820,12 @@ defmodule RiichiAdvanced.GameState do
                 translate_sets_in_match_definitions(state.rules[name], set_definitions)
               end
             else
-              American.translate_american_match_definitions([match_definition])
-              # GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
-              # []
+              if String.contains?(match_definition, " ") do
+                American.translate_american_match_definitions([match_definition])
+              else
+                GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
+                []
+              end
             end
           is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
           true                        ->

@@ -605,13 +605,13 @@
       "value": 2,
       "when": [
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]},
-        {"name": "counter_at_most", "opts": ["jokers", 0]} // TODO don't count jokers in hand, only flowers
+        {"name": "counter_at_most", "opts": ["called_jokers", 0]}
       ]
     },
     {
       "display_name": "No Jokers",
       "value": 2,
-      "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}] // TODO don't count flowers, only jokers in hand
+      "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}]
     },
     {
       "display_name": "All Honors",
@@ -1581,7 +1581,8 @@
   },
   "before_win": {
     "actions": [
-      ["add_counter", "called_jokers", "count_matches", ["jokers"], ["any_joker"]]
+      ["add_counter", "called_jokers", "count_matches", ["jokers"], ["any_joker"]],
+      ["subtract_counter", "jokers", "count_matches", ["jokers"], ["any_joker"]]
     ]
   },
   "after_win": {
@@ -1753,7 +1754,7 @@
     },
     "joker": {
       "display_name": "Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]]]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_joker"]]}],
       "actions": [["big_text", "Flower"], ["flower", "12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], ["set_status", "joker"], ["draw"]]
     }
   },

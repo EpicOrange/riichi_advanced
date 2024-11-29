@@ -767,39 +767,42 @@
     [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
   ],
   "before_turn_change": {
-    "actions": [["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
-                ["unset_status", "just_reached", "call_made", "kan", "ankan"],
-                ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]]
-               ]
+    "actions": [
+      ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+      ["unset_status", "just_reached", "call_made", "kan", "ankan"],
+      ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
+      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]],
+      ["when", [{"name": "match", "opts": [["hand", "calls", "any_discard"], ["win"]]}], [["set_status", "furiten"]]]
+    ]
   },
   "after_turn_change": {
-    "actions": [["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw"]]],
-                ["when_anyone",
-                  [[
-                    {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-                    [
-                      {"name": "last_call_is", "opts": ["kakan"]},
-                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-                    ],
-                    [
-                      {"name": "last_call_is", "opts": ["ankan"]},
-                      {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-                      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-                    ]
-                  ]],
-                  [["set_status", "furiten"]]
-                ]
-               ]
+    "actions": [
+      ["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw"]]],
+      ["when_anyone",
+        [[
+          {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+          [
+            {"name": "last_call_is", "opts": ["kakan"]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ],
+          [
+            {"name": "last_call_is", "opts": ["ankan"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ]
+        ]],
+        [["set_status", "furiten"]]
+      ]
+    ]
   },
   "before_call": {
-    "actions": [["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
-                ["unset_status", "just_reached", "call_made", "kan"],
-                ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
-                ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
-               ]
+    "actions": [
+      ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+      ["unset_status", "just_reached", "call_made", "kan"],
+      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
+    ]
   },
   "after_call": {
     "actions": [
