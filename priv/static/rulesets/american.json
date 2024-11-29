@@ -187,8 +187,76 @@
   },
   "after_start": {
     "actions": [
-      // ["set_status_all", "match_start", "first_charleston", "charleston_right"],
+      ["set_status_all", "match_start", "first_charleston", "charleston_right"],
       ["set_tile_alias_all", ["1j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"]]
+    ]
+  },
+  "after_charleston": {
+    "actions": [
+      ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [
+        ["unset_status_all", "blind_pass_left"],
+        ["when_anyone", [], [["delete_tiles", "1x"]]],
+        ["when_anyone", [], [
+          ["set_counter", "to_pass", 3],
+          ["subtract_counter", "to_pass", "count_draws", "kamicha"]
+        ]],
+        ["when_anyone", [], [
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
+          ["subtract_counter", "to_pass", "count_draws", "self"],
+          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "kamicha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "kamicha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "kamicha", 1]]],
+          ["unset_status", "pass_1", "pass_2", "pass_3"]
+        ]],
+        ["when_anyone", [], [
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
+          ["subtract_counter", "to_pass", "count_draws", "self"],
+          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "kamicha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "kamicha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "kamicha", 1]]],
+          ["unset_status", "pass_1", "pass_2", "pass_3"]
+        ]]
+      ]],
+      ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [
+        ["unset_status_all", "blind_pass_right"],
+        ["when_anyone", [], [["delete_tiles", "1x"]]],
+        ["when_anyone", [], [
+          ["set_counter", "to_pass", 3],
+          ["subtract_counter", "to_pass", "count_draws", "shimocha"]
+        ]],
+        ["when_anyone", [], [
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
+          ["subtract_counter", "to_pass", "count_draws", "self"],
+          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "shimocha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "shimocha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "shimocha", 1]]],
+          ["unset_status", "pass_1", "pass_2", "pass_3"]
+        ]],
+        ["when_anyone", [], [
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
+          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
+          ["subtract_counter", "to_pass", "count_draws", "self"],
+          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "shimocha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "shimocha", 1]]],
+          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "shimocha", 1]]],
+          ["unset_status", "pass_1", "pass_2", "pass_3"]
+        ]]
+      ]],
+      ["when", [{"name": "anyone_status", "opts": ["start_blind_pass", "charleston_left"]}], [
+        ["unset_status_all", "start_blind_pass"],
+        ["set_status_all", "blind_pass_left"]
+      ]],
+      ["when", [{"name": "anyone_status", "opts": ["start_blind_pass", "charleston_right"]}], [
+        ["unset_status_all", "start_blind_pass"],
+        ["set_status_all", "blind_pass_right"]
+      ]]
     ]
   },
   "buttons": {
@@ -196,7 +264,7 @@
       "display_name": "Select three tiles to pass left",
       "show_when": [{"name": "status", "opts": ["charleston_left"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_left"]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_left"], ["merge_draw"], ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [["draw", 3, "1x"]]]]],
         ["charleston_left"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["unset_status", "first_charleston"], ["set_status", "decide_charleston"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_across"]]]
@@ -208,10 +276,11 @@
       "display_name": "Select three tiles to pass across",
       "show_when": [{"name": "status", "opts": ["charleston_across"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"], ["merge_draw"]]],
         ["charleston_across"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_left"]]],
-        ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]]
+        ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]],
+        ["set_status", "start_blind_pass"]
       ],
       "unskippable": true,
       "cancellable": false
@@ -220,7 +289,7 @@
       "display_name": "Select three tiles to pass right",
       "show_when": [{"name": "status", "opts": ["charleston_right"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_right"]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_right"], ["merge_draw"], ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [["draw", 3, "1x"]]]]],
         ["charleston_right"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_across"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["unset_status", "second_charleston"], ["set_status", "final_charleston"]]]

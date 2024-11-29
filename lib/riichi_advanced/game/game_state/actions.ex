@@ -379,6 +379,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           Riichi.is_num?(context.tile, 9) -> 900
           true                            -> 0
         end
+      ["count_draws" | opts] ->
+        seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0))
+        length(state.players[seat].draw)
       [amount | _opts] when is_integer(amount) -> amount
       _ ->
         IO.inspect("Unknown amount spec #{inspect(amt_spec)}")
@@ -386,9 +389,30 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
+  defp set_counter(state, context, counter_name, amt_spec) do
+    amount = interpret_amount(state, context, amt_spec)
+    new_ctr = amount
+    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    state
+  end
+
   defp add_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = amount + Map.get(state.players[context.seat].counters, counter_name, 0)
+    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    state
+  end
+
+  defp subtract_counter(state, context, counter_name, amt_spec) do
+    amount = interpret_amount(state, context, amt_spec)
+    new_ctr = -amount + Map.get(state.players[context.seat].counters, counter_name, 0)
+    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    state
+  end
+  
+  defp multiply_counter(state, context, counter_name, amt_spec) do
+    amount = interpret_amount(state, context, amt_spec)
+    new_ctr = amount * Map.get(state.players[context.seat].counters, counter_name, 0)
     state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
     state
   end
@@ -419,8 +443,16 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
       end
       # send them according to dir
-      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: hand_tiles })
+      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: hand_tiles, status: Enum.uniq(&1.status ++ ["_charleston_completed"]) })
       state = Marking.mark_done(state, seat)
+
+      # if everyone has charleston completed then we run after_charleston actions
+      state = if Enum.all?(state.players, fn {_seat, player} -> "_charleston_completed" in player.status end) do
+        state = update_all_players(state, fn _seat, player -> %Player{ player | status: player.status -- ["_charleston_completed"] } end)
+        if Map.has_key?(state.rules, "after_charleston") do
+          run_actions(state, state.rules["after_charleston"]["actions"], %{seat: seat})
+        else state end
+      else state end
       state
     end
   end
@@ -454,6 +486,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "noop"                  -> state
       "print"                 ->
         IO.inspect(opts)
+        state
+      "print_counter"         ->
+        IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
         state
       "push_message"          ->
         push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
@@ -511,7 +546,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         for dir <- chii_victims, reduce: state do
           state -> update_player(state, Utils.get_seat(context.seat, dir), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
         end
+      "set_counter"           -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
         seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
@@ -1015,6 +1053,17 @@ defmodule RiichiAdvanced.GameState.Actions do
       "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
       "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
       "merge_draw"          -> update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: [] })
+      "delete_tiles"   ->
+        # TODO allow specifying target
+        tiles = Enum.map(opts, &Utils.to_tile/1)
+        state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.count_tiles([t], tiles) > 0 end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
+        state
+      "pass_draws"   ->
+        to = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        {to_pass, remaining} = Enum.split(state.players[context.seat].draw, Enum.at(opts, 1, 1))
+        state = update_player(state, context.seat, &%Player{ &1 | draw: remaining })
+        state = update_player(state, to, &%Player{ &1 | draw: &1.draw ++ to_pass })
+        state
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

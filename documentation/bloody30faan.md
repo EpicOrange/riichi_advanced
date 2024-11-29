@@ -36,7 +36,7 @@ TODO is there a dead wall?
 
 ## Calls
 
-In addition to the normal calls (Sheung, Pung, Kong) you may declare a joker like a flower tile, awarding one additional fan each.
+In addition to the normal calls (Sheung, Pung, Kong) you may declare a joker like a flower tile, awarding one additional faan each.
 
 The call precedence is Kong > Pung > Sheung. In the event of multiple kong or multiple pung, the kong/pung with no jokers takes precedence, then the kong/pung using a weaker joker takes precedence.
 
