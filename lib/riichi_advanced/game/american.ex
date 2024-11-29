@@ -251,8 +251,9 @@ defmodule RiichiAdvanced.GameState.American do
                 # remove the given match definition from hand to get a remaining_hand
                 # first try the fast and easy way of using no jokers
                 remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
-                remaining_hands = if Enum.empty?(remaining_hands_nojoker) do
+                remaining_hands = if Enum.empty?(remaining_hands_nojoker) && orig_num >= 3 do
                   # couldn't remove this group without using jokers, so we need to remove jokers
+                  # note that we can only remove jokers if the group is 3+ tiles
                   # remove as many nonjokers as we can first
                   {hand, num_removed} = for n <- 1..orig_num, reduce: {hand, nil} do
                     {hand, nil} -> 
@@ -374,6 +375,8 @@ defmodule RiichiAdvanced.GameState.American do
     visible_tiles = get_visible_tiles(state) |> Utils.strip_attrs()
     hand = Enum.shuffle(state.wall) -- visible_tiles
     tile_aliases = state.players[seat].tile_aliases
+    # IO.inspect(Enum.frequencies(visible_tiles), label: "visible")
+    # IO.inspect(Enum.frequencies(hand))
 
     # # debug
     # ret = viable_am_match_definitions

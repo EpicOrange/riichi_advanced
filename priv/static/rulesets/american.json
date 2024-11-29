@@ -486,6 +486,7 @@
       "display_name": "Declare player on right dead",
       "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}],
       "actions": [
+        ["unset_status", "declare_shimocha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
           ["big_text", "Dead hand", "shimocha"],
           ["push_message", "declared a player's hand dead"],
@@ -496,8 +497,7 @@
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared a player's hand dead"],
           ["set_status", "dead_hand"]
-        ]],
-        ["unset_status", "declare_shimocha_dead"]
+        ]]
       ],
       "unskippable": true
     },
@@ -505,6 +505,7 @@
       "display_name": "Declare player across dead",
       "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}],
       "actions": [
+        ["unset_status", "declare_toimen_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
           ["big_text", "Dead hand", "toimen"],
           ["push_message", "declared a player's hand dead"],
@@ -515,8 +516,7 @@
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared a player's hand dead"],
           ["set_status", "dead_hand"]
-        ]],
-        ["unset_status", "declare_toimen_dead"]
+        ]]
       ],
       "unskippable": true
     },
@@ -524,6 +524,7 @@
       "display_name": "Declare player on left dead",
       "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
       "actions": [
+        ["unset_status", "declare_kamicha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
           ["big_text", "Dead hand", "kamicha"],
           ["push_message", "declared a player's hand dead"],
@@ -534,8 +535,7 @@
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared a player's hand dead"],
           ["set_status", "dead_hand"]
-        ]],
-        ["unset_status", "declare_kamicha_dead"]
+        ]]
       ],
       "unskippable": true
     },

@@ -24,12 +24,12 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   # we use this to ensure no double discarding
   def can_discard(state, seat, ignore_turn \\ false) do
-    our_turn = seat == state.turn || ignore_turn
+    our_turn = seat == state.turn
     last_discard_action = get_last_discard_action(state)
     turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
     extra_turn = "extra_turn_taken" in state.players[state.turn].status
-    our_turn
-    && (not turn_just_discarded || extra_turn)
+    our_turn || ignore_turn
+    && (not turn_just_discarded || extra_turn || ignore_turn)
     && not has_unskippable_button?(state, seat)
     && Enum.empty?(state.players[seat].call_buttons)
     && not Marking.needs_marking?(state, seat)
