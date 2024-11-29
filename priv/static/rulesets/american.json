@@ -418,42 +418,48 @@
       "unskippable": true,
       "cancellable": false
     },
-    "am_pung": {
+    "1_am_pung": {
       "display_name": "Pung",
       "call": [[0, 0]],
+      "call_name": "am_pung",
       "call_conditions": [
+        {"name": "hand_length_at_least", "opts": [3]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
         {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]}
       ],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung"]
     },
-    "am_kong": {
+    "2_am_kong": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_name": "am_kong",
       "call_conditions": [
+        {"name": "hand_length_at_least", "opts": [4]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
         {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]}
       ],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung", "am_kong"]
     },
-    "am_quint": {
+    "3_am_quint": {
       "display_name": "Quint",
       "call": [[0, 0, 0, 0]],
+      "call_name": "am_quin",
       "call_conditions": [
+        {"name": "hand_length_at_least", "opts": [5]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
         {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]}
       ],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Quint"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
     "am_joker_swap": {
       "display_name": "Swap for exposed joker",
-      "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}],
       "actions": [
         ["big_text", "Swap"],
         ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
@@ -476,13 +482,15 @@
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
-    "declare_shimocha_dead": {
+    "declare_dead_0_shimocha": {
       "display_name": "Declare player on right dead",
       "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}],
       "actions": [
-        ["ite", [{"name": "hand_is_dead", "opts": [["win"], "shimocha"]}], [
+        ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
           ["big_text", "Dead hand", "shimocha"],
-          ["set_shimocha_status", "dead_hand"]
+          ["push_message", "declared a player's hand dead"],
+          ["set_shimocha_status", "dead_hand"],
+          ["when", [{"name": "current_turn_is", "opts": ["shimocha"]}], [["advance_turn"]]]
         ], [
           ["big_text", "Not dead", "shimocha"],
           ["big_text", "Dead hand"],
@@ -493,22 +501,15 @@
       ],
       "unskippable": true
     },
-    "declare_toimen_dead_cancel": {
-      "display_name": "Cancel",
+    "declare_dead_0_toimen": {
+      "display_name": "Declare player across dead",
       "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}],
       "actions": [
-        ["push_message", "cancelled their challenge"],
-        ["unset_status", "declare_toimen_dead"]
-      ],
-      "unskippable": true
-    },
-    "declare_toimen_dead": {
-      "display_name": "Declare player on right dead",
-      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}],
-      "actions": [
-        ["ite", [{"name": "hand_is_dead", "opts": [["win"], "toimen"]}], [
+        ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
           ["big_text", "Dead hand", "toimen"],
-          ["set_toimen_status", "dead_hand"]
+          ["push_message", "declared a player's hand dead"],
+          ["set_toimen_status", "dead_hand"],
+          ["when", [{"name": "current_turn_is", "opts": ["toimen"]}], [["advance_turn"]]]
         ], [
           ["big_text", "Not dead", "toimen"],
           ["big_text", "Dead hand"],
@@ -519,22 +520,15 @@
       ],
       "unskippable": true
     },
-    "declare_kamicha_dead_cancel": {
-      "display_name": "Cancel",
+    "declare_dead_0_kamicha": {
+      "display_name": "Declare player on left dead",
       "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
       "actions": [
-        ["push_message", "cancelled their challenge"],
-        ["unset_status", "declare_kamicha_dead"]
-      ],
-      "unskippable": true
-    },
-    "declare_kamicha_dead": {
-      "display_name": "Declare player on right dead",
-      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
-      "actions": [
-        ["ite", [{"name": "hand_is_dead", "opts": [["win"], "kamicha"]}], [
+        ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
           ["big_text", "Dead hand", "kamicha"],
-          ["set_kamicha_status", "dead_hand"]
+          ["push_message", "declared a player's hand dead"],
+          ["set_kamicha_status", "dead_hand"],
+          ["when", [{"name": "current_turn_is", "opts": ["kamicha"]}], [["advance_turn"]]]
         ], [
           ["big_text", "Not dead", "kamicha"],
           ["big_text", "Dead hand"],
@@ -545,15 +539,18 @@
       ],
       "unskippable": true
     },
-    "declare_kamicha_dead_cancel": {
+    "declare_dead_1_cancel": {
       "display_name": "Cancel",
-      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
+      "show_when": [{"name": "not_status_missing", "opts": ["declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"]}],
       "actions": [
         ["push_message", "cancelled their challenge"],
-        ["unset_status", "declare_kamicha_dead"]
+        ["unset_status", "declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"]
       ],
       "unskippable": true
     }
+    // TODO messages should mention direction of player
+    // TODO advance turn if dead player is current turn player
+    // TODO can't skip calls via double click
   },
   "auto_buttons": {
     "auto_sort": {

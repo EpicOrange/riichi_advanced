@@ -7,13 +7,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
   import RiichiAdvanced.GameState
 
   # get the principal tile from a meld consisting of all one tile and jokers
-  defp get_joker_meld_tile(call, joker_tile) do
+  def get_joker_meld_tile(call, joker_tile) do
     call_tiles = Riichi.call_to_tiles(call)
     non_joker_tiles = Enum.reject(call_tiles, &Utils.same_tile(&1, joker_tile))
     has_joker = length(non_joker_tiles) < length(call_tiles)
     has_nonjoker = length(non_joker_tiles) > 0
     if has_joker && has_nonjoker do
-      [tile, rest] = non_joker_tiles
+      [tile | rest] = non_joker_tiles
       tile = Utils.strip_attrs(tile)
       if Enum.all?(rest, &Utils.same_tile(&1, tile)) do [tile] else [] end
     else [] end
@@ -463,10 +463,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "toimen_exists"       -> Utils.get_seat(context.seat, :toimen) in state.available_seats
       "kamicha_exists"      -> Utils.get_seat(context.seat, :kamicha) in state.available_seats
       "three_winners"       -> map_size(state.winners) == 3
+      "hand_length_at_least" -> length(state.players[context.seat].hand ++ state.players[context.seat].draw) >= Enum.at(opts, 0, 0)
+      "current_turn_is"     -> state.turn == from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
       "hand_is_dead"        ->
-        seat = from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 0, []))
-        American.check_dead_hand(state, seat, match_definitions)
+        seat = from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        am_match_definitions = Map.get(state.rules, "win_definition", [])
+        American.check_dead_hand(state, seat, am_match_definitions)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

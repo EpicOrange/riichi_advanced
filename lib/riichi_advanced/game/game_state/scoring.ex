@@ -830,12 +830,20 @@ defmodule RiichiAdvanced.GameState.Scoring do
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
       am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) && condition["name"] == "match" end)
       am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-      orig_call_tiles = Enum.flat_map(orig_calls, &Riichi.call_to_tiles/1)
       ordering = state.players[seat].tile_ordering
       ordering_r = state.players[seat].tile_ordering_r
       tile_aliases = state.players[seat].tile_aliases
-      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand ++ orig_call_tiles), Utils.strip_attrs(new_winning_tile), ordering, ordering_r, tile_aliases)
-      if arranged_hand != nil do {arranged_hand, []} else {orig_hand, orig_calls} end
+      new_winning_tile = Utils.strip_attrs(new_winning_tile)
+      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, Utils.strip_attrs(new_winning_tile), ordering, ordering_r, tile_aliases)
+      if arranged_hand != nil do
+        arranged_hand = arranged_hand
+        |> Enum.intersperse([:"3x"])
+        |> Enum.concat()
+        |> Enum.reverse()
+        |> then(& &1 -- [new_winning_tile])
+        |> Enum.reverse()
+        {arranged_hand, []}
+      else {orig_hand, orig_calls} end
     else
       # otherwise, sort jokers into the hand
       arranged_hand = Utils.sort_tiles(orig_hand, joker_assignment)

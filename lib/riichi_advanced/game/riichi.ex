@@ -246,6 +246,7 @@ defmodule Riichi do
     unique = "unique" in match_definition
     debug = "debug" in match_definition
     if debug do
+      IO.puts("======================================================")
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_aliases)}")
     end
@@ -267,17 +268,26 @@ defmodule Riichi do
                   IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}")
                 end
               end
-              new_hand_calls_groups = for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
-                remove_group(hand, calls, group, ordering, ordering_r, tile_aliases)
-                |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
-              end |> Enum.concat() |> Enum.uniq()
+              new_hand_calls_groups = if exhaustive do
+                for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
+                  remove_group(hand, calls, group, ordering, ordering_r, tile_aliases)
+                  |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
+                end |> Enum.concat() |> Enum.uniq()
+              else
+                for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups, reduce: [] do
+                  [] ->
+                    remove_group(hand, calls, group, ordering, ordering_r, tile_aliases)
+                    |> Enum.take(1)
+                    |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
+                  result -> result
+                end
+              end
               if debug do
                 IO.puts("Acc (after removal):")
                 for {hand, calls, remaining_groups} <- new_hand_calls_groups do
                   IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}")
                 end
               end
-              new_hand_calls_groups = if exhaustive do new_hand_calls_groups else Enum.take(new_hand_calls_groups, 1) end
               new_hand_calls_groups
           end
           if num < 0 do # this is a negative match

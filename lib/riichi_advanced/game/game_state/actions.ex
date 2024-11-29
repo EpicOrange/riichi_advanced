@@ -222,10 +222,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  def trigger_call(state, seat, call_name, call_choice, called_tile, call_source) do
-    call_name = Map.get(state.rules["buttons"][call_name], "call_name", call_name)
+  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
+    call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
     default_call_style = Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end)
-    call_style = Map.merge(default_call_style, Map.get(state.rules["buttons"][call_name], "call_style", %{}))
+    call_style = Map.merge(default_call_style, Map.get(state.rules["buttons"][button_name], "call_style", %{}))
 
     # style the call
     call = if called_tile != nil do
@@ -256,7 +256,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # messages and log
     cond do
-      Map.get(state.rules["buttons"][call_name], "call_hidden", false) ->
+      Map.get(state.rules["buttons"][button_name], "call_hidden", false) ->
         push_message(state, [
           %{text: "Player #{seat} #{state.players[seat].nickname} called "},
           %{bold: true, text: "#{call_name}"}

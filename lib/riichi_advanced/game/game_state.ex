@@ -856,7 +856,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def get_visible_tiles(state, seat) do
+  def get_visible_tiles(state, seat \\ nil) do
     # construct all visible tiles
     visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
     visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end) |> Enum.flat_map(&Riichi.call_to_tiles/1)

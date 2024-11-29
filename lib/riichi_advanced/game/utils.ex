@@ -187,7 +187,7 @@ defmodule Utils do
   def same_tile(tile1, tile2, tile_aliases \\ %{}) do
     l1 = strip_attrs([tile1 | adjacent_jokers(tile1, tile_aliases)])
     l2 = strip_attrs([tile2 | adjacent_jokers(tile2, tile_aliases)])
-    same_id = :any in l2
+    same_id = :any in l1 || :any in l2
     || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x"] end))
     || Enum.any?(l1, fn tile -> tile in l2 end)
     {_, attrs2} = to_attr_tile(tile2)
