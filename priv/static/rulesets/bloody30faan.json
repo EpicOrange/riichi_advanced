@@ -1556,6 +1556,9 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
+  "play_restrictions": [
+    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
+  ],
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "joker"],
