@@ -21,9 +21,9 @@ The wall for Bloody 30 Faan Jokers is composed of the following:
 There are five winning hand configurations in B30FJ:
 
 - Four sets and a pair. Sets are triplets or sequences. You may also use a knitted straight in place of three sets, a knitted short straight in place of two sets, a knitted terminal-sequences in place of two sets, or knitted triplets in place of three sets.
-- Seven pairs.
-- Thirteen orphans.
-- Thirteen disconnected (includes a pair)
+- Seven pairs (no repeats).
+- Thirteen orphans (each terminal and honor tile, one of them forming a pair).
+- Thirteen disconnected (includes a pair).
 - Knitted honors hand. To achieve this, you must have exactly one of each wind and dragon, plus seven of the nine tiles required to form knitted triplets or a knitted straight.
 
 For more information about knitted sets, refer to the relevant section below (Knitted Hands).
@@ -32,7 +32,7 @@ Bloody end rules are enabled, meaning after the first win, remaining players con
 
 In addition, if the wait tile is a single-tile wait for a pair on the Baida or Suit joker, one can only win by self-draw.
 
-TODO is there a dead wall?
+There is no dead wall.
 
 ## Calls
 
@@ -224,8 +224,8 @@ The following are related to seven-pair hands.
 ### Miscellaneous
 
 - __Eyes of the General__ (1 faan): Your pair is 22, 55, or 88.
-- __Chicken Hand__ (15 faan): You score none of the other hands.
-- __University Train__ (20 faan): You have a pair of red dragons, plus a pure straight of any suit, plus either a triplet of threes or a kong of fours.
+- __Chicken Hand__ (15 faan): You score none of the other hands. e.g. 123m345p3344z + J77s, winning on 3z after 10 tiles have been discarded
+- __University Train__ (20 faan): You have a pair of red dragons, plus a pure straight (123456789) of any suit, plus either a triplet of threes or a kong of fours.
 - __Thirteen Orphans__ (20 faan): You have one of each terminal and honor tile, plus one extra terminal/honor.
 - __Thirteen Orphans__ (25 faan): Same, but you use at most three jokers.
 - __Thirteen Orphans__ (30 faan): Same, but you use at most one joker.

@@ -40,10 +40,6 @@
            "7z", "7z", "7z", "7z",
            "12j", "13j", "14j", "15j",
            "16j", "17j", "18j", "19j"],
-  "reserved_tiles": [
-    "kandraw_1", "kandraw_2",
-    "kandraw_3", "kandraw_4"
-  ],
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
@@ -1582,7 +1578,7 @@
   },
   "before_win": {
     "actions": [
-      ["add_counter", "called_jokers", "count_matches", ["calls"], ["any_joker"]]
+      ["add_counter", "called_jokers", "count_matches", ["jokers"], ["any_joker"]]
     ]
   },
   "after_win": {
@@ -1645,10 +1641,7 @@
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["draw"]
       ],
       "precedence_over": ["chii", "pon"],
       "call_priority_list": [
@@ -1668,10 +1661,7 @@
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["draw"]
       ],
       "call_conditions": [
         {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
@@ -1685,10 +1675,7 @@
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["draw"]
       ],
       "call_conditions": [
         {"name": "not_called_tile_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
@@ -1801,7 +1788,6 @@
   "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "initial_dead_wall_length": 14,
   "four_rows_discards": true,
   "bloody_end": true,
   "max_rounds": 8
