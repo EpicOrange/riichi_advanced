@@ -322,6 +322,18 @@
   "all_fives_definition": [
     [ "exhaustive", [[["5m","5m"],["5p","5p"],["5s","5s"]], 1], [[["5m","5m","5m"],["5p","5p","5p"],["5s","5s","5s"],["3m","4m","5m"],["3p","4p","5p"],["3s","4s","5s"],["4m","5m","6m"],["4p","5p","6p"],["4s","5s","6s"],["5m","6m","7m"],["5p","6p","7p"],["5s","6s","7s"]], 4] ]
   ],
+  "edge_wait_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [[["1m", "2m"],["1p", "2p"],["1s", "2s"],["8m", "9m"],["8p", "9p"],["8s", "9s"]], 1] ],
+    [ "exhaustive", [["pair"], 1], [["knit_straight1", "knit_straight2"], 1], [[["1m", "2m"],["1p", "2p"],["1s", "2s"],["8m", "9m"],["8p", "9p"],["8s", "9s"]], 1] ]
+  ],
+  "closed_wait_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [["kanchan"], 1] ],
+    [ "exhaustive", [["pair"], 1], [["knit_straight1", "knit_straight2"], 1], [["kanchan"], 1] ]
+  ],
+  "single_wait_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ "exhaustive", [["knit_straight1", "knit_straight2"], 1], [["shuntsu", "koutsu"], 1] ]
+  ],
   "yaku": [
     // 88
     {
@@ -866,9 +878,31 @@
       "display_name": "Self Drawn",
       "value": 1,
       "when": ["won_by_draw"]
+    },
+    {
+      "display_name": "Edge Wait",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["edge_wait"]]},
+        {"name": "wait_count_at_most", "opts": [1, ["win"]]}
+      ]
+    },
+    {
+      "display_name": "Closed Wait",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["closed_wait"]]},
+        {"name": "wait_count_at_most", "opts": [1, ["win"]]}
+      ]
+    },
+    {
+      "display_name": "Single Wait",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["single_wait"]]},
+        {"name": "wait_count_at_most", "opts": [1, ["win"]]}
+      ]
     }
-    // TODO: edge wait, closed wait, single wait
-    
   ],
   "meta_yaku": [
     {
