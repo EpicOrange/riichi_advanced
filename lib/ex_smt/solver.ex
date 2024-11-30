@@ -2,6 +2,7 @@ defmodule ExSMT.Solver do
   require Logger
 
   def start_link(init_data) do
+    # IO.puts("Starting z3 solver for #{inspect(Keyword.get(init_data, :session_id))} #{inspect(Keyword.get(init_data, :ruleset))}")
     state = %{
       session_id: Keyword.get(init_data, :session_id),
       ruleset: Keyword.get(init_data, :ruleset)
@@ -89,6 +90,9 @@ defmodule ExSMT.Solver do
           {:error, :einval} -> Path.expand(bin_path)
         end
     end
+    
+    # make sure that this genserver calls terminate() when killed
+    Process.flag(:trap_exit, true)
 
     if File.regular?(z3_bin_path) do
       launch_cfg = %{
