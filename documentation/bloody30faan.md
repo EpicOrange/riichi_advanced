@@ -122,7 +122,7 @@ For the following, triplets can include kongs.
 - __Four Concealed Triplets__ (15 faan): Instead, you have four concealed triplets.
 - __Two Shifted Triplets__ (2 faan): You have consecutive triplets in the pattern 111222. They do not have to be the same suit.
 - __Three Small Shifted Triplets__ (5 faan): You have consecutive triplets in the pattern 111222333, except one of them is actually a pair. The three can be of any suit.
-- __Three Pure Shifted Triplets__ (10 faan): Same, but they are all the same suit.
+- __Three Pure Shifted Triplets__ (10 faan): Instead, you have consecutive triplets in the pattern 111222333, of the same suit.
 - __Four Pure Small Shifted Triplets__ (15 faan): Instead, you have consecutive triplets in the pattern 111222333444, except one of them is actually a pair. They are all the same suit.
 - __Four Pure Shifted Triplets__ (20 faan): Instead, you have consecutive triplets in the pattern 111222333444, of the same suit.
 - __Three Mixed Small Shifted Triplets__ (5 faan): You have consecutive triplets in the pattern 111222333, except one of them is actually a pair. They must all be of different suits.

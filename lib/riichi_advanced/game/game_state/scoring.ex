@@ -386,13 +386,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
         else payment end
 
         discarder_multiplier = Map.get(score_rules, "discarder_multiplier", 1)
+        discarder_penalty = Map.get(score_rules, "discarder_penalty", 0)
         non_discarder_multiplier = Map.get(score_rules, "non_discarder_multiplier", 0)
+        non_discarder_penalty = Map.get(score_rules, "non_discarder_penalty", 0)
         for paying_seat <- winner.opponents, reduce: delta_scores do
           delta_scores ->
             multiplier = if paying_seat == payer do discarder_multiplier else non_discarder_multiplier end
+            penalty = if paying_seat == payer do discarder_penalty else non_discarder_penalty end
             delta_scores
-            |> Map.update!(paying_seat, & &1 - (payment * multiplier))
-            |> Map.update!(winner.seat, & &1 + (payment * multiplier))
+            |> Map.update!(paying_seat, & &1 - (payment * multiplier) - penalty)
+            |> Map.update!(winner.seat, & &1 + (payment * multiplier) + penalty)
         end
       else # tsumo
         # for riichi, reverse-calculate the ko and oya parts of the total points
@@ -403,7 +406,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
         else
           self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
-          {self_draw_multiplier * basic_score, self_draw_multiplier * basic_score}
+          self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
+          {self_draw_multiplier * basic_score + self_draw_penalty, self_draw_multiplier * basic_score + self_draw_penalty}
         end
 
         # handle motouchi naruka's scoring quirk
