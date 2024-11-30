@@ -288,19 +288,19 @@ defmodule RiichiAdvancedWeb.GameLive do
           </div>
         <% end %>
       <% end %>
-      <div class="visible-waits-container" :if={not Enum.empty?(Map.get(@visible_waits, @show_waits_index, []))}>
-        <div class="visible-waits">
-          <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, []), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
-            <div class="visible-wait">
-              <div class="visible-wait-num"><%= num %></div>
-              <div class={["tile", wait]}></div>
-            </div>
-          <% end %>
-          <div class="visible-waits-total">
-            &nbsp;=&nbsp;<%= Map.get(@visible_waits, @show_waits_index, []) |> Enum.map(fn {_wait, num} -> num end) |> Enum.sum() %>
+      <%= if @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
+        <div class="visible-waits-container">
+          <div class="visible-waits">
+            <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
+              <div class="visible-wait">
+                <div class="visible-wait-num"><%= num %></div>
+                <div class={["tile", wait]}></div>
+              </div>
+            <% end %>
+            &nbsp;=&nbsp;<%= Map.get(@visible_waits, @show_waits_index, %{}) |> Enum.map(fn {_wait, num} -> num end) |> Enum.sum() %>
           </div>
         </div>
-      </div>
+      <% end %>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
         <.live_component module={RiichiAdvancedWeb.CenterpieceStatusBarComponent}
@@ -343,10 +343,9 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:visible_waits_hand, nil)
     else socket end
     socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
-      waits = GenServer.call(socket.assigns.game_state, {:get_visible_waits, socket.assigns.seat, index})
-      socket
-      |> assign(:visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
-      |> assign(:visible_waits_hand, hand)
+      # async call; gets handled below in :set_visible_waits
+      GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
+      assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, :loading))
     else socket end
     socket
   end
@@ -569,6 +568,13 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info({:reset_discard_anim, seat}, socket) do
     relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
     send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", just_discarded: false)
+    {:noreply, socket}
+  end
+
+  def handle_info({:set_visible_waits, hand, index, waits}, socket) do
+    socket = socket
+    |> assign(:visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
+    |> assign(:visible_waits_hand, hand)
     {:noreply, socket}
   end
 

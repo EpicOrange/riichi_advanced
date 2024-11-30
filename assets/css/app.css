@@ -1107,6 +1107,8 @@ div.visible-waits-container {
 }
 div.visible-waits {
   background: #0000007F;
+  font-size: calc(0.4 * var(--tile-size));
+  color: white;
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.25 * var(--tile-size));
   display: flex;
@@ -1115,16 +1117,10 @@ div.visible-waits {
   align-items: flex-end;
 }
 div.visible-waits > div.visible-wait {
-  font-size: calc(0.4 * var(--tile-size));
-  color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   row-gap: calc(0.25 * var(--tile-size));
-}
-div.visible-waits-total {
-  font-size: calc(0.4 * var(--tile-size));
-  color: white;
 }
 
 

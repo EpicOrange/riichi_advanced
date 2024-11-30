@@ -1002,18 +1002,18 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:is_playable, seat, tile}, _from, state), do: {:reply, is_playable?(state, seat, tile), state}
   def handle_call(:get_revealed_tiles, _from, state), do: {:reply, get_revealed_tiles(state), state}
 
-  def handle_call({:get_visible_waits, seat, index}, _from, state) do
-    if index == nil do
-      {:reply, get_visible_waits(state, seat, nil), state}
-    else
-      tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
-      playable = is_playable?(state, seat, tile)
-      if not playable || not Map.has_key?(state.rules, "show_waits") do
-        {:reply, %{}, state}
-      else
-        {:reply, get_visible_waits(state, seat, index), state}
+  def handle_cast({:get_visible_waits, from, seat, index}, state) do
+    if Map.has_key?(state.rules, "show_waits") do
+      hand = state.players[seat].hand
+      draw = state.players[seat].draw
+      waits = cond do
+        index == nil -> get_visible_waits(state, seat, nil)
+        is_playable?(state, seat, Enum.at(hand ++ draw, index)) -> get_visible_waits(state, seat, index)
+        true -> %{}
       end
+      send(from, {:set_visible_waits, hand, index, waits})
     end
+    {:noreply, state}
   end
 
   # the AI calls these to figure out if it's allowed to play
