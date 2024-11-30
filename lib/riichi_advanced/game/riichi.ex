@@ -186,7 +186,7 @@ defmodule Riichi do
           Enum.all?(group, &is_integer/1) ->
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
-            all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+            all_tiles |> Enum.uniq() |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
               tiles = Enum.map(group, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
               remove_from_hand_calls(hand, tiles, calls, tile_aliases)
             end)
@@ -196,7 +196,7 @@ defmodule Riichi do
             no_joker_index = Enum.find_index(group, fn elem -> elem == "nojoker" end)
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
-            all_tiles |> Enum.uniq() |> Enum.flat_map(fn base_tile ->
+            all_tiles |> Enum.uniq() |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
               for {set, i} <- Enum.with_index(group), set != "nojoker", reduce: [{hand, calls}] do
                 hand_calls ->
                   for {hand, calls} <- hand_calls do
@@ -230,7 +230,7 @@ defmodule Riichi do
     ret
   end
 
-  @match_keywords ["exhaustive", "unique", "nojoker", "debug"]
+  @match_keywords ["almost", "exhaustive", "unique", "nojoker", "debug"]
 
   def filter_irrelevant_tile_aliases(tile_aliases, all_tiles) do
     # filter out irrelevant tile aliases
@@ -242,6 +242,7 @@ defmodule Riichi do
 
   defp _remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases) do
     # t = System.os_time(:millisecond)
+    almost = "almost" in match_definition
     exhaustive = "exhaustive" in match_definition
     unique = "unique" in match_definition
     debug = "debug" in match_definition
@@ -250,6 +251,7 @@ defmodule Riichi do
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_aliases)}")
     end
+    hand = if almost do hand ++ [:any] else hand end
     filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
     no_joker_index = Enum.find_index(match_definition, fn elem -> elem == "nojoker" end)
     ret = for {match_definition_elem, i} <- Enum.with_index(match_definition), match_definition_elem not in @match_keywords, reduce: [{hand, calls}] do
@@ -310,6 +312,7 @@ defmodule Riichi do
           end
         end
     end
+    ret = if almost do Enum.reject(ret, fn {hand, _calls} -> :any in hand end) else ret end
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
     #   IO.puts("_remove_match_definition: #{inspect(hand)} #{inspect(match_definition)} #{inspect(elapsed_time)} ms")
