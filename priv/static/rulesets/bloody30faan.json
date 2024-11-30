@@ -776,34 +776,22 @@
     {
       "display_name": "Open Kong",
       "value": 1,
-      "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]},
-        {"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}]
     },
     {
       "display_name": "Concealed Kong",
       "value": 2,
-      "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]},
-        {"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}]
     },
     {
       "display_name": "Two Kongs",
       "value": 5,
-      "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]},
-        {"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}]
     },
     {
       "display_name": "Three Kongs",
       "value": 15,
-      "when": [
-        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]},
-        {"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}
-      ]
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}]
     },
     {
       "display_name": "Four Kongs",
@@ -891,27 +879,27 @@
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}]
     },
     {
-      "display_name": "Mixed Three Small Shifted Triplets",
+      "display_name": "Three Mixed Small Shifted Triplets",
       "value": 5,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色連刻"]]}]
     },
     {
-      "display_name": "Mixed Three Shifted Triplets",
+      "display_name": "Three Mixed Shifted Triplets",
       "value": 8,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色連刻"]]}]
     },
     {
-      "display_name": "Mixed Four Small Shifted Triplets",
+      "display_name": "Four Mixed Small Shifted Triplets",
       "value": 10,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色四連刻"]]}]
     },
     {
-      "display_name": "Mixed Four Shifted Triplets",
+      "display_name": "Four Mixed Shifted Triplets",
       "value": 15,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四連刻"]]}]
     },
     {
-      "display_name": "Mixed Five Small Shifted Triplets",
+      "display_name": "Five Mixed Small Shifted Triplets",
       "value": 20,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色五連刻"]]}]
     },
@@ -957,12 +945,12 @@
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}]
     },
     {
-      "display_name": "Triple Pure Sequences",
+      "display_name": "Pure Triple Sequence",
       "value": 10,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}]
     },
     {
-      "display_name": "Quadruple Pure Sequences",
+      "display_name": "Pure Quadruple Sequence",
       "value": 30,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}]
     },
@@ -1002,32 +990,32 @@
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清般高"]]}]
     },
     {
-      "display_name": "Mixed Three Shifted Sequences",
+      "display_name": "Three Mixed Shifted Sequences",
       "value": 2,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色三步高"]]}]
     },
     {
-      "display_name": "Mixed Four Shifted Sequences",
+      "display_name": "Four Mixed Shifted Sequences",
       "value": 8,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四步高"]]}]
     },
     {
-      "display_name": "Pure Three Shifted Sequences",
+      "display_name": "Three Pure Shifted Sequences",
       "value": 10,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}]
     },
     {
-      "display_name": "Pure Four Shifted Sequences",
+      "display_name": "Four Pure Shifted Sequences",
       "value": 30,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四步高"]]}]
     },
     {
-      "display_name": "Mixed Three Linked Sequences",
+      "display_name": "Three Mixed Linked Sequences",
       "value": 2,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色跳步高"]]}]
     },
     {
-      "display_name": "Pure Three Linked Sequences",
+      "display_name": "Three Pure Linked Sequences",
       "value": 8,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色跳步高"]]}]
     },
@@ -1448,12 +1436,12 @@
     {
       "display_name": "Mixed Shifted Linked Sequences",
       "value": 8,
-      "when": [{"name": "has_existing_yaku", "opts": ["Mixed Three Shifted Sequences", "Mixed Three Linked Sequences"]}]
+      "when": [{"name": "has_existing_yaku", "opts": ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]}]
     },
     {
       "display_name": "Pure Shifted Linked Sequences",
       "value": 20,
-      "when": [{"name": "has_existing_yaku", "opts": ["Pure Three Shifted Sequences", "Pure Three Linked Sequences"]}]
+      "when": [{"name": "has_existing_yaku", "opts": ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]}]
     },
     {
       "display_name": "Chicken Hand",
@@ -1473,23 +1461,26 @@
     "Mixed Flush": ["One Voided Suit"],
     "Full Flush": ["Mixed Flush"],
     "Nine Gates": ["Open Nine Gates"],
+    "Two Kongs": ["Open Kong", "Concealed Kong"],
+    "Three Kongs": ["Two Kongs"],
+    "Four Kongs": ["Three Kongs"],
     "Three Concealed Triplets": ["Two Concealed Triplets"],
     "Four Concealed Triplets": ["Three Concealed Triplets"],
     "Three Small Shifted Triplets": ["Two Shifted Triplets"],
     "Three Pure Shifted Triplets": ["Two Shifted Triplets"],
     "Four Pure Small Shifted Triplets": ["Three Small Shifted Triplets"],
     "Four Pure Shifted Triplets": ["Three Pure Shifted Triplets"],
-    "Mixed Three Small Shifted Triplets": ["Two Shifted Triplets", "Three Small Shifted Triplets"],
-    "Mixed Three Shifted Triplets": ["Two Shifted Triplets"],
-    "Mixed Four Small Shifted Triplets": ["Mixed Three Small Shifted Triplets"],
-    "Mixed Four Shifted Triplets": ["Mixed Three Shifted Triplets"],
-    "Mixed Five Small Shifted Triplets": ["Mixed Four Small Shifted Triplets"],
+    "Three Mixed Small Shifted Triplets": ["Two Shifted Triplets", "Three Small Shifted Triplets"],
+    "Three Mixed Shifted Triplets": ["Two Shifted Triplets"],
+    "Four Mixed Small Shifted Triplets": ["Three Mixed Small Shifted Triplets"],
+    "Four Mixed Shifted Triplets": ["Three Mixed Shifted Triplets"],
+    "Five Mixed Small Shifted Triplets": ["Four Mixed Small Shifted Triplets"],
     "Small Triple Triplets": ["Double Triplets"],
     "Triple Triplets": ["Double Triplets"],
     "Quadruple Triplets": ["Triple Triplets"],
     "Triple Sequences": ["Double Sequences"],
-    "Triple Pure Sequences": ["Triple Sequences"],
-    "Quadruple Pure Sequences": ["Triple Pure Sequences"],
+    "Pure Triple Sequence": ["Triple Sequences"],
+    "Pure Quadruple Sequence": ["Pure Triple Sequence"],
     "Double Short Straight": ["Short Straight"],
     "Pure Double Short Straight": ["Short Straight", "Double Short Straight"],
     "Double Identical Sequences": [
@@ -1503,12 +1494,12 @@
       "Four Winds Seven Pairs"
     ],
     "Pure Double Identical Sequences": ["Double Identical Sequences"],
-    "Mixed Four Shifted Sequences": ["Mixed Three Shifted Sequences"],
-    "Pure Four Shifted Sequences": ["Pure Three Shifted Sequences"],
-    "Pure Three Linked Sequences": ["Mixed Three Linked Sequences"],
-    "Golden Gate Bridge": ["Pure Three Linked Sequences"],
-    "Mixed Shifted Linked Sequences": ["Mixed Three Shifted Sequences", "Mixed Three Linked Sequences"],
-    "Pure Shifted Linked Sequences": ["Pure Three Shifted Sequences", "Pure Three Linked Sequences"],
+    "Four Mixed Shifted Sequences": ["Three Mixed Shifted Sequences"],
+    "Four Pure Shifted Sequences": ["Three Pure Shifted Sequences"],
+    "Three Pure Linked Sequences": ["Three Mixed Linked Sequences"],
+    "Golden Gate Bridge": ["Three Pure Linked Sequences"],
+    "Mixed Shifted Linked Sequences": ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"],
+    "Pure Shifted Linked Sequences": ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"],
     "Pure Straight": ["Short Straight", "Mixed Straight", "Terminal Sequences"],
     "Two Number Hand": ["Three Number Hand"],
     "Within Seven Tiles": ["Within Ten Tiles"],

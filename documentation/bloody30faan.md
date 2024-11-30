@@ -125,11 +125,11 @@ For the following, triplets can include kongs.
 - __Three Pure Shifted Triplets__ (10 faan): Same, but they are all the same suit.
 - __Four Pure Small Shifted Triplets__ (15 faan): Instead, you have consecutive triplets in the pattern 111222333444, except one of them is actually a pair. They are all the same suit.
 - __Four Pure Shifted Triplets__ (20 faan): Instead, you have consecutive triplets in the pattern 111222333444, of the same suit.
-- __Mixed Three Small Shifted Triplets__ (5 faan): You have consecutive triplets in the pattern 111222333, except one of them is actually a pair. They must all be of different suits.
-- __Mixed Three Shifted Triplets__ (8 faan): Instead, you have consecutive triplets in the pattern 111222333. They must all be of different suits.
-- __Mixed Four Small Shifted Triplets__ (10 faan): Instead, you have consecutive triplets in the pattern 111222333444, except one of them is actually a pair. Their suits have to _cycle_: e.g. if it starts with characters, circles, bamboo, the last suit must be characters again.
-- __Mixed Four Shifted Triplets__ (15 faan): Instead, you have consecutive triplets in the pattern 111222333444, with cycling suits as before.
-- __Mixed Five Small Shifted Triplets__ (20 faan): Instead, you have consecutive triplets in the pattern 111222333444555, except one of them is actually a pair. Their suits have to _cycle_: e.g. if it starts with characters, circles, bamboo, the last suit must be characters again, and the following suit must be circles again.
+- __Three Mixed Small Shifted Triplets__ (5 faan): You have consecutive triplets in the pattern 111222333, except one of them is actually a pair. They must all be of different suits.
+- __Three Mixed Shifted Triplets__ (8 faan): Instead, you have consecutive triplets in the pattern 111222333. They must all be of different suits.
+- __Four Mixed Small Shifted Triplets__ (10 faan): Instead, you have consecutive triplets in the pattern 111222333444, except one of them is actually a pair. Their suits have to _cycle_: e.g. if it starts with characters, circles, bamboo, the last suit must be characters again.
+- __Four Mixed Shifted Triplets__ (15 faan): Instead, you have consecutive triplets in the pattern 111222333444, with cycling suits as before.
+- __Five Mixed Small Shifted Triplets__ (20 faan): Instead, you have consecutive triplets in the pattern 111222333444555, except one of them is actually a pair. Their suits have to _cycle_: e.g. if it starts with characters, circles, bamboo, the last suit must be characters again, and the following suit must be circles again.
 - __Double Triplets__ (2 faan): You have two triplets of the same number. They can be of different suits.
 - __Small Triple Triplets__ (5 faan): You have three triplets of the same number, except one of them is actually a pair. They are obviously all of different suits.
 - __Triple Triplets__ (10 faan): You have three triplets of the same number.
@@ -140,23 +140,23 @@ For the following, triplets can include kongs.
 - __All Sequences__ (2 faan): All of your sets are sequences.
 - __Double Sequences__ (1 faan): You have two of the same sequence in different suits. It is possible to get this one twice by having two of another sequence, which gives you a total of 2 faan.
 - __Triple Sequences__ (5 faan): You have three of the same sequence in different suits.
-- __Triple Pure Sequences__ (10 faan): You have three of the same sequence in the same suit.
-- __Quadruple Pure Sequences__ (30 faan): You have four of the same sequence in the same suit.
+- __Pure Triple Sequence__ (10 faan): You have three of the same sequence in the same suit.
+- __Pure Quadruple Sequence__ (30 faan): You have four of the same sequence in the same suit.
 - __Short Straight__ (1 faan): You have 123 456 or 456 789 of one suit. It is possible to get this one twice by having two short straights, which gives you a total of 2 faan.
 - __Double Short Straight__ (10 faan): You have 123 456 or 456 789 of one suit and the same 123 456 or 456 789 of another suit.
 - __Pure Double Short Straight__ (20 faan): You have 123 123 456 456 or 456 456 789 789 of one suit.
 - __Identical Sequences__ (2 faan): You have two of the exact same sequence in one suit.
 - __Double Identical Sequences__ (10 faan): You have two of the exact same sequence in one suit, and two of another exact same sequence in another suit.
 - __Pure Identical Sequences__ (15 faan): You have two of the exact same sequence in one suit, and two of another exact same sequence in the same suit.
-- __Mixed Three Shifted Sequences__ (2 faan): You have something like 123 234 345, all of different suits.
-- __Mixed Four Shifted Sequences__ (8 faan): You have something like 123 234 345 456, and their suits _cycle_: e.g. if it starts with characters, circles, bamboo, the last sequence's suit must be characters again.
-- __Pure Three Shifted Sequences__ (10 faan): You have something like 123 234 345 in the same suit.
-- __Pure Four Shifted Sequences__ (30 faan): You have something like 123 234 345 456 in the same suit.
-- __Mixed Three Linked Sequences__ (2 faan): You have something like 123 345 567, all of different suits.
-- __Pure Three Linked Sequences__ (8 faan): You have something like 123 345 567 in the same suit.
+- __Three Mixed Shifted Sequences__ (2 faan): You have something like 123 234 345, all of different suits.
+- __Four Mixed Shifted Sequences__ (8 faan): You have something like 123 234 345 456, and their suits _cycle_: e.g. if it starts with characters, circles, bamboo, the last sequence's suit must be characters again.
+- __Three Pure Shifted Sequences__ (10 faan): You have something like 123 234 345 in the same suit.
+- __Four Pure Shifted Sequences__ (30 faan): You have something like 123 234 345 456 in the same suit.
+- __Three Mixed Linked Sequences__ (2 faan): You have something like 123 345 567, all of different suits.
+- __Three Pure Linked Sequences__ (8 faan): You have something like 123 345 567 in the same suit.
 - __Golden Gate Bridge__ (20 faan): You have 123 345 567 789 in the same suit.
-- __Mixed Shifted Linked Sequences__ (8 faan): You have both Mixed Three Shifted Sequences and Mixed Three Linked Sequences simulaneously. For example, 123p234m345s567m, which counts as 123p 234m 345s and 123p 345s 567m.
-- __Pure Shifted Linked Sequences__ (20 faan): You have both Pure Three Shifted Sequences and Pure Three Linked Sequences simulaneously. For example, 123 234 345 567, which counts as 123 234 345 and 123 345 567.
+- __Mixed Shifted Linked Sequences__ (8 faan): You have both Three Mixed Shifted Sequences and Three Mixed Linked Sequences simulaneously. For example, 123p234m345s567m, which counts as 123p 234m 345s and 123p 345s 567m.
+- __Pure Shifted Linked Sequences__ (20 faan): You have both Three Pure Shifted Sequences and Three Pure Linked Sequences simulaneously. For example, 123 234 345 567, which counts as 123 234 345 and 123 345 567.
 - __Mixed Straight__ (5 faan): You have 123 456 789, all of different suits.
 - __Pure Straight__ (8 faan): You have 123 456 789 in the same suit.
 
