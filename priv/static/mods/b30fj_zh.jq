@@ -103,7 +103,7 @@
   "Three Identical Pairs": "三同對",
   "Three Dragons Seven Pairs": "三元七對",
   "Four Winds Seven Pairs": "四喜七對",
-  "Thirteen Disconnected": "十三不搭",
+  "Thirteen Unconnected": "十三不搭",
   "Knitted Short Straight": "不搭連六",
   "Knitted Terminal Sequences": "不搭老少",
   "Knitted Straight": "不搭雜龍",

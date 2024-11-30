@@ -723,9 +723,11 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp _reindex_hand(hand, from, to) do
-    {l1, [tile | r1]} = Enum.split(hand, from)
-    {l2, r2} = Enum.split(l1 ++ r1, to)
-    l2 ++ [tile] ++ r2
+    if from < length(hand) do
+      {l1, [tile | r1]} = Enum.split(hand, from)
+      {l2, r2} = Enum.split(l1 ++ r1, to)
+      l2 ++ [tile] ++ r2
+    else hand end
   end
 
   def from_named_tile(state, tile_name) do

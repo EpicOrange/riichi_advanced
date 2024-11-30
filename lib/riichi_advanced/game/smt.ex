@@ -245,8 +245,18 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.join()
   end
 
-  def remove_nojoker_tag(group) do
+  def remove_group_keywords(group) do
     if is_list(group) do Enum.reject(group, & &1 == "nojoker") |> Enum.sort() else group end
+  end
+
+  def strip_restart(match_definition) do
+    if "restart" in match_definition do
+      # remove "restart" and everything to the left of it
+      match_definition
+      |> Enum.reverse()
+      |> Enum.take_while(& &1 != "restart")
+      |> Enum.reverse()
+    else match_definition end
   end
 
   def tile_group_assertion(i, encoding, len, group, num, unique) do
@@ -333,7 +343,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.flat_map(fn [groups, _num] -> groups end)
     |> Enum.reject(fn group -> is_binary(group) end)
     |> Enum.reject(fn group -> is_list(group) && Utils.is_tile(Enum.at(group, 0)) end)
-    |> Enum.map(&remove_nojoker_tag/1)
+    |> Enum.map(&remove_group_keywords/1)
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     # IO.inspect(all_sets, charlists: :as_lists, label: "all_sets")
     set_definitions = all_sets
@@ -360,24 +370,29 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.unzip()
 
     # collect all non-set tile groups used (sets of exact tiles rather than shiftable sets)
-    all_tile_groups = for match_definition <- match_definitions, [groups, num] <- match_definition, reduce: [] do
+    all_tile_groups = for match_definition <- match_definitions, {[groups, num], group_ix} <- Enum.with_index(match_definition), reduce: [] do
       all_tile_groups ->
-        unique = "unique" in match_definition
+        unique_ix = Enum.find_index(match_definition, & &1 == "unique")
         tile_groups = groups
-        |> Enum.map(&remove_nojoker_tag/1)
+        |> Enum.map(&remove_group_keywords/1)
         |> Enum.reject(& &1 in all_sets)
-        new_groups = if unique do
-          [{tile_groups, num, true}]
+        if Enum.empty?(tile_groups) do
+          all_tile_groups
         else
-          Enum.flat_map(tile_groups, fn group -> cond do
-            is_binary(group) -> [{[group], num, false}]
-            is_list(group) && Utils.is_tile(Enum.at(group, 0)) -> [{group, num, false}]
-            true ->
-              IO.puts("Unhandled SMT tile group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
-              []
-          end end)
+          unique = unique_ix != nil && group_ix > unique_ix
+          new_groups = if unique do
+            [{tile_groups, num, true}]
+          else
+            Enum.flat_map(tile_groups, fn group -> cond do
+              is_binary(group) -> [{[group], num, false}]
+              is_list(group) && Utils.is_tile(Enum.at(group, 0)) -> [{group, num, false}]
+              true ->
+                IO.puts("Unhandled SMT tile group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
+                []
+            end end)
+          end
+          all_tile_groups ++ new_groups
         end
-        all_tile_groups ++ new_groups
     end |> Enum.uniq()
 
     # hand part 2: declare hand
@@ -513,14 +528,16 @@ defmodule RiichiAdvanced.SMT do
     #   (and (tiles1 hand))))
     {match_assertions, sumindices_usages, tiles_used_usages} = for match_definition <- match_definitions, reduce: {[], [], []} do
       {match_assertions, sumindices_usages, tiles_used_usages} ->
-        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for [groups, num] <- match_definition, reduce: {[], [], [], [], []} do
+        match_definition = strip_restart(match_definition)
+        unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for {[groups, num], group_ix} <- Enum.with_index(match_definition), reduce: {[], [], [], [], []} do
           {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} ->
-            unique = "unique" in match_definition
+            unique = unique_ix != nil && group_ix > unique_ix
             {set_ixs, tiles_ixs} = if unique do
               [{[], [1+Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})]}]
             else
               groups
-              |> Enum.map(&remove_nojoker_tag/1)
+              |> Enum.map(&remove_group_keywords/1)
               |> Enum.map(fn group -> {group, Enum.find_index(all_sets, & &1 == group), Enum.find_index(all_tile_groups, & &1 == {group, num, unique} || &1 == {[group], num, unique})} end)
               |> Enum.flat_map(fn {group, ix_set, ix_tile_group} -> cond do
                 is_integer(ix_set) -> [{[ix_set+1], []}]
