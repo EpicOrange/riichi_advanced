@@ -549,12 +549,12 @@
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["knitted_straight"]]}]
     },
     {
-      "display_name": "Upper Five",
+      "display_name": "Upper Four",
       "value": 12,
       "when": [{"name": "winning_hand_consists_of", "opts": ["6m","7m","8m","9m","6p","7p","8p","9p","6s","7s","8s","9s"]}]
     },
     {
-      "display_name": "Lower Five",
+      "display_name": "Lower Four",
       "value": 12,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","1p","2p","3p","4p","1s","2s","3s","4s"]}]
     },
@@ -967,9 +967,9 @@
     "Full Flush": ["Mixed Flush"],
     "Pure Triple Chow": ["Pure Double Chow"],
     "Pure Shifted Pungs": [],
-    "Upper Tiles": ["Upper Five"],
+    "Upper Tiles": ["Upper Four"],
     "Middle Tiles": [],
-    "Lower Tiles": ["Lower Five"],
+    "Lower Tiles": ["Lower Four"],
     // 16
     "Pure Straight": ["Short Straight"],
     "Three-Suited Terminal Chows": ["Two Terminal Chows"],
@@ -980,8 +980,8 @@
     // 12
     "Lesser Honors and Knitted Tiles": [],
     "Knitted Straight": [],
-    "Upper Five": [],
-    "Lower Five": [],
+    "Upper Four": [],
+    "Lower Four": [],
     "Big Three Winds": [],
     // 8
     "Mixed Straight": [],
