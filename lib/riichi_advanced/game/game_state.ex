@@ -763,7 +763,13 @@ defmodule RiichiAdvanced.GameState do
       for match_definition_elem <- match_definition do
         case match_definition_elem do
           [groups, num] ->
-            translated_groups = for group <- groups, do: (if Map.has_key?(set_definitions, group) do set_definitions[group] else group end)
+            translated_groups = for group <- groups do
+              result = Map.get(set_definitions, group, group)
+              # if is_binary(result) && not Utils.is_tile(result) do
+              #   IO.puts("Warning: unrecognized set #{result}. Did you forget to put it in set_definitions?")
+              # end
+              result
+            end
             [translated_groups, num]
           _ when is_binary(match_definition_elem) -> match_definition_elem
           _ ->

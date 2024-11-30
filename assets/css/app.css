@@ -739,8 +739,10 @@ div.tile.\32 \36 z { background-position-y: calc(-112 * var(--tile-size) - var(-
 div.tile.\32 \37 z { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \32 j { background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \33 j { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \34 j { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \35 j { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \36 j { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \37 j { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \38 j { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \39 j { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 t { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }

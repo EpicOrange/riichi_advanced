@@ -129,15 +129,15 @@ defmodule Riichi do
     end
   end
 
-  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, _initial \\ true)
-  def try_remove_all_tiles(hand, [], _tile_aliases, _initial), do: [hand]
-  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, _initial) do
+  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, ignore_suit \\ false, _initial \\ true)
+  def try_remove_all_tiles(hand, [], _tile_aliases, _ignore_suit, _initial), do: [hand]
+  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, ignore_suit, _initial) do
     # t = System.os_time(:millisecond)
     ret = for t <- [tile] ++ Map.get(tile_aliases, tile, []) do
       hand
       |> Enum.with_index()
-      |> Enum.filter(fn {hand_tile, _ix} -> Utils.same_tile(hand_tile, t) end)
-      |> Enum.flat_map(fn {_hand_tile, ix} -> try_remove_all_tiles(List.delete_at(hand, ix), tiles, tile_aliases, false) end)
+      |> Enum.filter(fn {hand_tile, _ix} -> if ignore_suit do Utils.same_number(hand_tile, t) else Utils.same_tile(hand_tile, t) end end)
+      |> Enum.flat_map(fn {_hand_tile, ix} -> try_remove_all_tiles(List.delete_at(hand, ix), tiles, tile_aliases, ignore_suit) end)
     end |> Enum.concat() |> Enum.uniq()
     # elapsed_time = System.os_time(:millisecond) - t
     # if initial && elapsed_time > 10 do
@@ -146,13 +146,13 @@ defmodule Riichi do
     ret
   end
 
-  def remove_from_hand_calls(hand, tiles, calls, tile_aliases \\ %{}) do
+  def remove_from_hand_calls(hand, calls, tiles, tile_aliases \\ %{}, ignore_suit \\ false) do
     # from hand
-    from_hand = try_remove_all_tiles(hand, tiles, tile_aliases) |> Enum.map(fn hand -> {hand, calls} end)
+    from_hand = try_remove_all_tiles(hand, tiles, tile_aliases, ignore_suit) |> Enum.map(fn hand -> {hand, calls} end)
 
     # from calls
     matching_indices = calls |> Enum.map(&call_to_tiles/1) |> Enum.with_index() |> Enum.flat_map(fn {call, i} ->
-      case try_remove_all_tiles(call, tiles, tile_aliases) do
+      case try_remove_all_tiles(call, tiles, tile_aliases, ignore_suit) do
         [] -> []
         _  -> [i]
       end
@@ -175,7 +175,7 @@ defmodule Riichi do
     end) |> Enum.uniq()
   end
 
-  def remove_group(hand, calls, group, ordering, ordering_r, tile_aliases \\ %{}) do
+  def remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases \\ %{}) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     # t = System.os_time(:millisecond)
     ret = cond do
@@ -188,7 +188,7 @@ defmodule Riichi do
             |> apply_tile_aliases(tile_aliases)
             all_tiles |> Enum.uniq() |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
               tiles = Enum.map(group, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
-              remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+              remove_from_hand_calls(hand, calls, tiles, tile_aliases, ignore_suit)
             end)
           # list of lists of integers specifying multiple related subgroups of tiles
           # can include a "nojoker" tag specifying that subgroups after it should not use jokers
@@ -201,22 +201,22 @@ defmodule Riichi do
                 hand_calls ->
                   for {hand, calls} <- hand_calls do
                     tiles = Enum.map(set, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
-                    remove_from_hand_calls(hand, tiles, calls, if no_joker_index == nil || i < no_joker_index do tile_aliases else %{} end)
+                    remove_from_hand_calls(hand, calls, tiles, if no_joker_index == nil || i < no_joker_index do tile_aliases else %{} end)
                   end |> Enum.concat()
               end
             end)
           # list of tiles
           Enum.all?(group, &Utils.is_tile/1) ->
             tiles = Enum.map(group, fn tile -> Utils.to_tile(tile) end)
-            remove_from_hand_calls(hand, tiles, calls, tile_aliases)
+            remove_from_hand_calls(hand, calls, tiles, tile_aliases)
           # single tile (with attrs)
-          Utils.is_tile(group) -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
+          Utils.is_tile(group) -> remove_from_hand_calls(hand, calls, [Utils.to_tile(group)], tile_aliases, ignore_suit)
           true ->
             IO.puts("Unhandled group #{inspect(group)}")
             [{hand, calls}]
         end
       # single tile (no attrs)
-      Utils.is_tile(group) -> remove_from_hand_calls(hand, [Utils.to_tile(group)], calls, tile_aliases)
+      Utils.is_tile(group) -> remove_from_hand_calls(hand, calls, [Utils.to_tile(group)], tile_aliases, ignore_suit)
       # call
       is_binary(group) -> try_remove_call(hand, calls, group)
       true ->
@@ -230,7 +230,7 @@ defmodule Riichi do
     ret
   end
 
-  @match_keywords ["almost", "exhaustive", "unique", "nojoker", "debug"]
+  @match_keywords ["almost", "exhaustive", "ignore_suit", "unique", "nojoker", "debug"]
 
   def filter_irrelevant_tile_aliases(tile_aliases, all_tiles) do
     # filter out irrelevant tile aliases
@@ -244,12 +244,16 @@ defmodule Riichi do
     # t = System.os_time(:millisecond)
     almost = "almost" in match_definition
     exhaustive = "exhaustive" in match_definition
+    ignore_suit = "ignore_suit" in match_definition
     unique = "unique" in match_definition
     debug = "debug" in match_definition
     if debug do
       IO.puts("======================================================")
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_aliases)}")
+    end
+    if almost && :any in hand do
+      IO.puts("Warning: \"almost\" keyword does not support hands that have :any yet")
     end
     hand = if almost do hand ++ [:any] else hand end
     filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
@@ -272,13 +276,13 @@ defmodule Riichi do
               end
               new_hand_calls_groups = if exhaustive do
                 for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
-                  remove_group(hand, calls, group, ordering, ordering_r, tile_aliases)
+                  remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases)
                   |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
                 end |> Enum.concat() |> Enum.uniq()
               else
                 for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups, reduce: [] do
                   [] ->
-                    remove_group(hand, calls, group, ordering, ordering_r, tile_aliases)
+                    remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases)
                     |> Enum.take(1)
                     |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
                   result -> result
@@ -511,8 +515,8 @@ defmodule Riichi do
       "dora" -> Utils.count_tiles([context.tile], context.doras) >= 1
       "kuikae" ->
         potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["hand"])
-        triplet = remove_group(potential_set, [], [0,0,0], context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
-        sequence = remove_group(potential_set, [], [0,1,2], context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
+        triplet = remove_group(potential_set, [], [0,0,0], false, context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
+        sequence = remove_group(potential_set, [], [0,1,2], false, context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
         not Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs

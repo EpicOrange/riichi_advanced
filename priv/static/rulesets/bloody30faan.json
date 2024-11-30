@@ -1,7 +1,8 @@
 {
   "default_mods": ["show_waits"],
   "available_mods": [
-    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "b30fj_zh", "name": "Chinese Yaku Names", "desc": "Display yaku names in Traditional Chinese."}
   ],
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/bloody30faan.md",
   "wall": ["1m", "1m", "1m", "1m",
@@ -78,6 +79,24 @@
     "haku_pair": ["0z", "0z"],
     "hatsu_pair": ["6z", "6z"],
     "chun_pair": ["7z", "7z"],
+    "junchan_1": ["1m","1m","1m"],
+    "junchan_2": ["1p","1p","1p"],
+    "junchan_3": ["1s","1s","1s"],
+    "junchan_4": ["1m","2m","3m"],
+    "junchan_5": ["1p","2p","3p"],
+    "junchan_6": ["1s","2s","3s"],
+    "junchan_7": ["7m","8m","9m"],
+    "junchan_8": ["7p","8p","9p"],
+    "junchan_9": ["7s","8s","9s"],
+    "junchan_10": ["9m","9m","9m"],
+    "junchan_11": ["9p","9p","9p"],
+    "junchan_12": ["9s","9s","9s"],
+    "junchan_pair_1": ["1m","1m"],
+    "junchan_pair_2": ["1p","1p"],
+    "junchan_pair_3": ["1s","1s"],
+    "junchan_pair_4": ["9m","9m"],
+    "junchan_pair_5": ["9p","9p"],
+    "junchan_pair_6": ["9s","9s"],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
@@ -451,13 +470,13 @@
     [ "exhaustive", [[["9m","9m"],["9p","9p"],["9s","9s"]], 1], [[["9m","9m","9m"],["9p","9p","9p"],["9s","9s","9s"],["7m","8m","9m"],["7p","8p","9p"],["7s","8s","9s"]], 4] ]
   ],
   "三連對_definition": [
-    [ [[[0,0,1,1,2,2]], 1], [["pair"], 4] ]
+    [ "ignore_suit", [[[0,0,1,1,2,2]], 1], [["pair"], 4] ]
   ],
   "五連對_definition": [
-    [ [[[0,0,1,1,2,2,3,3,4,4]], 1], [["pair"], 2] ]
+    [ "ignore_suit", [[[0,0,1,1,2,2,3,3,4,4]], 1], [["pair"], 2] ]
   ],
   "七連對_definition": [
-    [ [[[0,0,1,1,2,2,3,3,4,4,5,5,6,6]], 1] ]
+    [ "ignore_suit", [[[0,0,1,1,2,2,3,3,4,4,5,5,6,6]], 1] ]
   ],
   "三同對_definition": [
     [ [[[[0,0],[10,10],[20,20]]], 1], [["pair"], 4] ]
@@ -954,7 +973,7 @@
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雙般高"]]}]
     },
     {
-      "display_name": "Pure Identical Sequences",
+      "display_name": "Pure Double Identical Sequences",
       "value": 15,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清般高"]]}]
     },
@@ -1010,7 +1029,7 @@
     },
     // (3) 四歸類
     {
-      "display_name": "Tile Hog",
+      "display_name": "Tile Hog (2)",
       "value": 2,
       "when": [
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]},
@@ -1019,7 +1038,7 @@
       ]
     },
     {
-      "display_name": "Tile Hog",
+      "display_name": "Tile Hog (3)",
       "value": 5,
       "when": [
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]},
@@ -1027,7 +1046,7 @@
       ]
     },
     {
-      "display_name": "Tile Hog",
+      "display_name": "Tile Hog (4)",
       "value": 15,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]}]
     },
@@ -1216,14 +1235,14 @@
       "when": ["no_tiles_remaining"]
     },
     {
-      "display_name": "Within Seven Tiles",
+      "display_name": "Within Ten Tiles",
       "value": 5,
-      "when": [{"name": "tiles_remaining", "opts": [70]}]
+      "when": [{"name": "tiles_remaining", "opts": [82]}]
     },
     {
-      "display_name": "Within Ten Tiles",
+      "display_name": "Within Seven Tiles",
       "value": 8,
-      "when": [{"name": "tiles_remaining", "opts": [67]}]
+      "when": [{"name": "tiles_remaining", "opts": [85]}]
     },
     {
       "display_name": "Hand of Man",
@@ -1275,17 +1294,26 @@
     {
       "display_name": "Three Consecutive Pairs",
       "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三連對"]]}]
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]},
+        {"name": "match", "opts": [["hand", "winning_tile"], ["三連對"]]}
+      ]
     },
     {
       "display_name": "Five Consecutive Pairs",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["五連對"]]}]
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]},
+        {"name": "match", "opts": [["hand", "winning_tile"], ["五連對"]]}
+      ]
     },
     {
       "display_name": "Seven Consecutive Pairs",
       "value": 30,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["七連對"]]}]
+      "when": [
+        {"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]},
+        {"name": "match", "opts": [["hand", "winning_tile"], ["七連對"]]}
+      ]
     },
     {
       "display_name": "Three Identical Pairs",
@@ -1435,8 +1463,17 @@
     "Triple Pure Sequences": ["Triple Sequences"],
     "Quadruple Pure Sequences": ["Triple Pure Sequences"],
     "Double Short Straight": ["Short Straight"],
-    "Pure Double Short Straight": ["Double Short Straight"],
-    "Double Identical Sequences": ["Identical Sequences"],
+    "Pure Double Short Straight": ["Short Straight", "Double Short Straight"],
+    "Double Identical Sequences": [
+      "Identical Sequences",
+      "Seven Pairs",
+      "Three Consecutive Pairs",
+      "Five Consecutive Pairs",
+      "Seven Consecutive Pairs",
+      "Three Identical Pairs",
+      "Three Dragons Seven Pairs",
+      "Four Winds Seven Pairs"
+    ],
     "Pure Double Identical Sequences": ["Double Identical Sequences"],
     "Mixed Four Shifted Sequences": ["Mixed Three Shifted Sequences"],
     "Pure Four Shifted Sequences": ["Pure Three Shifted Sequences"],
@@ -1469,6 +1506,11 @@
       "Knitted Short Straight",
       "Knitted Terminal Sequences"
     ]
+  },
+  "translations": {
+    "Tile Hog (2)": "Tile Hog",
+    "Tile Hog (3)": "Tile Hog",
+    "Tile Hog (4)": "Tile Hog"
   },
   "score_calculation": {
     "scoring_method": "score_table",
