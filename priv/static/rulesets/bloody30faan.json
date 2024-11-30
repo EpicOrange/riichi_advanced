@@ -1754,7 +1754,7 @@
     },
     "joker": {
       "display_name": "Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_joker"]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_joker"]]}],
       "actions": [["big_text", "Flower"], ["flower", "12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], ["set_status", "joker"], ["draw"]]
     }
   },
