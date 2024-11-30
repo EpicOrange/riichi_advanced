@@ -34,6 +34,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <option value="sichuan">Sichuan Bloody</option>
           <option value="bloody30faan">Bloody 30-Faan Jokers</option>
           <option value="american">American (2024 NMJL)</option>
+          <option value="mcr">MCR</option>
           <option value="vietnamese">Vietnamese</option>
           <option value="malaysian">Malaysian</option>
           <option value="singaporean">Singaporean</option>
