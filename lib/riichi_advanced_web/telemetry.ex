@@ -51,28 +51,28 @@ defmodule RiichiAdvancedWeb.Telemetry do
         unit: {:native, :millisecond}
       ),
 
-      # Database Metrics
-      summary("riichi_advanced.repo.query.total_time",
-        unit: {:native, :millisecond},
-        description: "The sum of the other measurements"
-      ),
-      summary("riichi_advanced.repo.query.decode_time",
-        unit: {:native, :millisecond},
-        description: "The time spent decoding the data received from the database"
-      ),
-      summary("riichi_advanced.repo.query.query_time",
-        unit: {:native, :millisecond},
-        description: "The time spent executing the query"
-      ),
-      summary("riichi_advanced.repo.query.queue_time",
-        unit: {:native, :millisecond},
-        description: "The time spent waiting for a database connection"
-      ),
-      summary("riichi_advanced.repo.query.idle_time",
-        unit: {:native, :millisecond},
-        description:
-          "The time the connection spent waiting before being checked out for the query"
-      ),
+      # # Database Metrics
+      # summary("riichi_advanced.repo.query.total_time",
+      #   unit: {:native, :millisecond},
+      #   description: "The sum of the other measurements"
+      # ),
+      # summary("riichi_advanced.repo.query.decode_time",
+      #   unit: {:native, :millisecond},
+      #   description: "The time spent decoding the data received from the database"
+      # ),
+      # summary("riichi_advanced.repo.query.query_time",
+      #   unit: {:native, :millisecond},
+      #   description: "The time spent executing the query"
+      # ),
+      # summary("riichi_advanced.repo.query.queue_time",
+      #   unit: {:native, :millisecond},
+      #   description: "The time spent waiting for a database connection"
+      # ),
+      # summary("riichi_advanced.repo.query.idle_time",
+      #   unit: {:native, :millisecond},
+      #   description:
+      #     "The time the connection spent waiting before being checked out for the query"
+      # ),
 
       # VM Metrics
       summary("vm.memory.total", unit: {:byte, :kilobyte}),

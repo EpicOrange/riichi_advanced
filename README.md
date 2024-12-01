@@ -67,16 +67,20 @@ Here is a breakdown of all the directories:
 
 This process requires installing Elixir (≥ 1.14) and `npm`.
 
-Since I have obviously not uploaded the database keys in `/config`, and secrets stuff in `/priv/cert` you will have to substitute your own by generating a new Phoenix project via `mix phx.new riichi_advanced`, and copying over the files in those two directories.
+Then run:
 
-Then run at the project root:
+    git clone "https://github.com/EpicOrange/riichi_advanced.git"
+    cd riichi_advanced
 
     # Get Elixir dependencies
     mix deps.get
-    
+
+    # Generate self-signed certs for local https
+    mix phx.gen.cert
+
     # Get Node dependencies
     (cd assets; npm i)
-    
+
     # Start the server
     iex -S mix phx.server
 

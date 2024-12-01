@@ -37,7 +37,6 @@ npm-debug.log
 
 # my stuff
 
-/config
 /priv/cert
 *.sh
 /priv/static/logs

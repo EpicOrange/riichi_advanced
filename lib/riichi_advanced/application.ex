@@ -9,7 +9,7 @@ defmodule RiichiAdvanced.Application do
   def start(_type, _args) do
     children = [
       RiichiAdvancedWeb.Telemetry,
-      RiichiAdvanced.Repo,
+      # RiichiAdvanced.Repo,
       {Registry, keys: :unique, name: :game_registry},
       RiichiAdvanced.ETSCache,
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.GameSessionSupervisor}, id: :game_session_supervisor),
