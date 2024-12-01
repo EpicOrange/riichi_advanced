@@ -11,6 +11,21 @@ defmodule RiichiAdvancedWeb.IndexLive do
       GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
       socket
     else socket end
+    socket = assign(socket, :rulesets, [
+      {"riichi",       "Riichi"},
+      {"sanma",        "Sanma"},
+      {"cosmic",       "Cosmic Riichi"},
+      {"saki",         "Sakicards v1.3"},
+      {"hk",           "Hong Kong"},
+      {"sichuan",      "Sichuan Bloody"},
+      {"mcr",          "MCR"},
+      {"bloody30faan", "Bloody 30-Faan Jokers"},
+      {"american",     "American (2024 NMJL)"},
+      {"vietnamese",   "Vietnamese"},
+      {"malaysian",    "Malaysian"},
+      {"singaporean",  "Singaporean"},
+      {"custom",       "Custom"},
+    ])
     {:ok, socket}
   end
 
@@ -24,26 +39,13 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="tile 7z"></div>
       </div>
       <form phx-submit="redirect">
-        Ruleset:
-        <select name="ruleset" id="ruleset">
-          <option value="riichi" selected>Riichi</option>
-          <option value="sanma">Sanma</option>
-          <option value="cosmic">Cosmic Riichi</option>
-          <option value="saki">Sakicards v1.3</option>
-          <option value="hk">Hong Kong</option>
-          <option value="sichuan">Sichuan Bloody</option>
-          <option value="bloody30faan">Bloody 30-Faan Jokers</option>
-          <option value="american">American (2024 NMJL)</option>
-          <option value="mcr">MCR</option>
-          <option value="vietnamese">Vietnamese</option>
-          <option value="malaysian">Malaysian</option>
-          <option value="singaporean">Singaporean</option>
-          <option value="custom">Custom</option>
-        </select>
-        <br/>
-        Name:
-        <input type="text" name="nickname" placeholder="Nickname (optional)" />
-        <br/>
+        <div class="ruleset-selection">
+          <%= for {{ruleset, name}, i} <- Enum.with_index(@rulesets) do %>
+            <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0}>
+            <label for={ruleset}><%= name %></label>
+          <% end %>
+        </div>
+        <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />
         <button type="submit" class="enter-button">Enter</button>
       </form>
       <div class="index-bottom-buttons">

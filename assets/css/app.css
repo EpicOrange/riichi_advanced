@@ -2151,18 +2151,12 @@ div.title > div.title-advanced::before {
 div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
-  top: calc(50% - 1 * var(--tile-size));
+  height: calc(7.5 * var(--tile-size));
+  top: calc(50% - 1.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   background: #FFFFFF3F;
-}
-div#container > form, div#container > form * {
-  font-size: calc(0.75 * var(--tile-size));
-}
-div#container > form > div.form-error {
-  font-size: calc(0.5 * var(--tile-size));
-  color: white;
 }
 div#container > div.index-bottom-buttons {
   position: absolute;
@@ -2173,7 +2167,59 @@ div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
 
-
+div#container > form {
+  display: flex;
+  flex-direction: column;
+  align-items: space-around;
+}
+div#container > form, div#container > form * {
+  font-size: calc(0.75 * var(--tile-size));
+}
+div#container > form > div.form-error {
+  font-size: calc(0.5 * var(--tile-size));
+  color: white;
+}
+div#container > form > input.nickname-input {
+  margin: calc(0.5 * var(--tile-size));
+}
+div#container > form > div.ruleset-selection {
+  overflow-y: auto;
+  line-height: 1;
+  text-align: center;
+  flex-grow: 1;
+}
+div#container > form > div.ruleset-selection > input[type="radio"] { display: none; }
+div#container > form > div.ruleset-selection > label {
+  display: inline-block;
+  border-radius: calc(0.25 * var(--tile-size));
+  font-size: calc(0.55 * var(--tile-size));
+  padding: calc(0.15 * var(--tile-size));
+  background: gray;
+  color: white;
+}
+div#container > form > div.ruleset-selection > input[type="radio"]:checked + label {
+  background: var(--tile-back);
+}
+div#container > form > button.enter-button {
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  width: 100%;
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: center;
+  flex-direction: column;
+}
+div#container > form > button.enter-button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
+}
 
 
 /* lobby screen */
@@ -2258,6 +2304,8 @@ div.lobby > div.rooms > div.room > div.room-players {
 div.lobby > button.create-room {
   position: absolute;
   width: 100%;
+  font-size: calc(0.8 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
   bottom: calc(0 * var(--tile-size));
   left: calc(0 * var(--tile-size));
 }
