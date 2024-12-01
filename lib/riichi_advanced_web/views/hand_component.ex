@@ -283,7 +283,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     # animate played tile by inserting an invisible tile at its index
-    # this gets undone after 750ms
+    # this gets undone after 750ms by sending :reset_hand_anim
     socket = if Map.has_key?(socket.assigns, :played_tile_index) do
       socket = if socket.assigns.played_tile_index != nil do
         actual_hand = socket.assigns.hand ++ socket.assigns.draw
