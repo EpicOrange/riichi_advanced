@@ -41,7 +41,8 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
   end
 
   def prepare_unrevealed_tiles(revealed_tiles, max_revealed_tiles) do
-    List.duplicate(:"1x", if revealed_tiles == nil do 0 else max_revealed_tiles - length(revealed_tiles) end)
+    num_unrevealed_tiles = if revealed_tiles == nil do 0 else max(0, max_revealed_tiles - length(revealed_tiles)) end
+    List.duplicate(:"1x", num_unrevealed_tiles)
   end
 
   def handle_event("mark_tile", %{"index" => index}, socket) do

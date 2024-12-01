@@ -845,15 +845,16 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_revealed_tiles(state) do
-    for tile_spec <- state.revealed_tiles do
-      cond do
-        is_integer(tile_spec)    -> Enum.at(state.dead_wall, tile_spec, :"1x")
-        Utils.is_tile(tile_spec) -> Utils.to_tile(tile_spec)
-        true                     ->
-          GenServer.cast(self(), {:show_error, "Unknown revealed tile spec: #{inspect(tile_spec)}"})
-          state
-      end
-    end
+    for tile_spec <- state.revealed_tiles, reduce: [] do
+      result ->
+        cond do
+          is_integer(tile_spec)    -> [Enum.at(state.dead_wall, tile_spec, :"1x") | result]
+          Utils.is_tile(tile_spec) -> [Utils.to_tile(tile_spec) | result]
+          true                     ->
+            GenServer.cast(self(), {:show_error, "Unknown revealed tile spec: #{inspect(tile_spec)}"})
+            result
+        end
+    end |> Enum.reverse()
   end
 
   def replace_revealed_tile(state, index, tile) do
