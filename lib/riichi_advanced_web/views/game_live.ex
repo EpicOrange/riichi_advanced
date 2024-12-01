@@ -20,6 +20,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:loading, true)
     |> assign(:marking, false)
     |> assign(:visible_waits, %{})
+    |> assign(:revealed_tiles, nil)
     |> assign(:visible_waits_hand, nil)
     |> assign(:show_waits_index, nil)
     |> assign(:hovered_called_tile, nil)
@@ -236,7 +237,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         id="revealed-tiles"
         game_state={@game_state}
         viewer={@viewer}
-        revealed_tiles={@state.revealed_tiles}
+        revealed_tiles={@revealed_tiles}
         max_revealed_tiles={@state.max_revealed_tiles}
         marking={@state.marking[@seat]} />
       <.live_component module={RiichiAdvancedWeb.ScryedTilesComponent}
@@ -522,6 +523,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:state, state)
       |> assign(:playable_indices, playable_indices)
       |> assign(:preplayed_index, nil)
+      |> assign(:revealed_tiles, RiichiAdvanced.GameState.get_revealed_tiles(state))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
       {:noreply, socket}
     else

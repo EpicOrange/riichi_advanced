@@ -3,7 +3,7 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
 
   def mount(socket) do
     socket = assign(socket, :game_state, nil)
-    socket = assign(socket, :revealed_tiles, [])
+    socket = assign(socket, :revealed_tiles, nil)
     socket = assign(socket, :max_revealed_tiles, 0)
     socket = assign(socket, :marking, %{})
     {:ok, socket}
@@ -13,9 +13,9 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
     ~H"""
     <div class={[@id]}>
       <%= if Enum.empty?(@marking) do %>
-        <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- prepare_revealed_tiles(@game_state, @revealed_tiles, @marking)}></div>
+        <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- prepare_revealed_tiles(@revealed_tiles, @marking)}></div>
       <% else %>
-        <%= for {tile, i} <- prepare_revealed_tiles(@game_state, @revealed_tiles, @marking) do %>
+        <%= for {tile, i} <- prepare_revealed_tiles(@revealed_tiles, @marking) do %>
           <%= if GenServer.call(@game_state, {:can_mark?, @viewer, nil, i, :revealed_tile}) do %>
             <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
@@ -27,17 +27,21 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
           <% end %>
         <% end %>
       <% end %>
-      <div class={["tile", "1x"]} :for={_ <- length(@revealed_tiles)+1..@max_revealed_tiles//1}></div>
+      <div class={["tile", tile]} :for={tile <- prepare_unrevealed_tiles(@revealed_tiles, @max_revealed_tiles)}></div>
     </div>
     """
   end
 
-  def prepare_revealed_tiles(game_state, _revealed_tiles, _marking) do
-    # need to pass in the revealed_tiles and marking args, so that this updates when revealed_tiles/marking updates
-    if game_state != nil do
-      GenServer.call(game_state, :get_revealed_tiles)
+  def prepare_revealed_tiles(revealed_tiles, _marking) do
+    # need to pass in marking arg, so that this updates when marking updates
+    if revealed_tiles != nil do
+      revealed_tiles
       |> Enum.with_index()
     else [] end
+  end
+
+  def prepare_unrevealed_tiles(revealed_tiles, max_revealed_tiles) do
+    List.duplicate(:"1x", if revealed_tiles == nil do 0 else max_revealed_tiles - length(revealed_tiles) end)
   end
 
   def handle_event("mark_tile", %{"index" => index}, socket) do

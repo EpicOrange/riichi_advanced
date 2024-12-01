@@ -19,6 +19,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     |> assign(:display_honba, false)
     |> assign(:loading, true)
     |> assign(:marking, false)
+    |> assign(:revealed_tiles, nil)
 
     # liveviews mount twice
     if socket.root_pid != nil do
@@ -206,7 +207,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         id="revealed-tiles"
         game_state={@game_state}
         viewer={@viewer}
-        revealed_tiles={@state.revealed_tiles}
+        revealed_tiles={@revealed_tiles}
         max_revealed_tiles={@state.max_revealed_tiles}
         marking={@state.marking[@seat]} />
       <.live_component module={RiichiAdvancedWeb.ScryedTilesComponent}
@@ -361,6 +362,7 @@ defmodule RiichiAdvancedWeb.LogLive do
       end)
 
       socket = assign(socket, :state, state)
+      |> assign(:revealed_tiles, RiichiAdvanced.GameState.get_revealed_tiles(state))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
       {:noreply, socket}
     else

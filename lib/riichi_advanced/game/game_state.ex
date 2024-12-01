@@ -1008,7 +1008,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_call({:is_playable, seat, tile}, _from, state), do: {:reply, is_playable?(state, seat, tile), state}
-  def handle_call(:get_revealed_tiles, _from, state), do: {:reply, get_revealed_tiles(state), state}
 
   # the AI calls these to figure out if it's allowed to play
   # (this is since they operate on a delay, so state may have changed between when they were
