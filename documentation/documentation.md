@@ -560,35 +560,135 @@ Prepend `"not_"` to any of the condition names to negate it.
 
 # Scoring methods
 
-Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and be associated with an object with a `"method"` key. Scoring will be performed based on this `"method"` key. Here are the currently supported options for `"method"`:
+Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and must contain an array under a `"yaku_lists"` key:
+  
+    "score_calculation": {
+      "scoring_method": "multiplier",
+      "yaku_lists": ["yaku"]
+    },
 
-## `"method": "riichi"`
+The idea is that each of the yaku in the toplevel `"yaku"` array will be processed and their point total added up to get the value `points`. You can also specify a second array key `"yaku2_lists"` which is the same thing but gives the value `points2`. For example, in the Riichi ruleset, `points` are Han and `points2` represents the number of stacked yakuman.
 
-Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action. Only the discarder pays in event of a deal in (`"win_by_discard"`, `"win_by_call"`). In case of self-draw (`"win_by_draw"`), all players pay, the dealer pays double.
+The following are optional string keys that are in place for each of the strings in the scoring screen in the Riichi ruleset.
+  
+    "score_calculation": {
+      "point_name": "Han",
+      "point2_name": "★",
+      "minipoint_name": "Fu",
+      "win_by_discard_label": "Ron",
+      "win_by_draw_label": "Tsumo",
+      "win_by_discard_name": "Ron",
+      "win_by_discard_name_2": "Double Ron",
+      "win_by_discard_name_3": "Triple Ron",
+      "win_by_draw_name": "Tsumo",
+      "win_with_pao_name": "Sekinin Barai",
+      "triple_win_draw_name": "Sanchahou",
+      "exhaustive_draw_name": "Ryuukyoku",
+      "nagashi_name": "Nagashi Mangan",
+      // secondary points to display to the right of points
+      // can be "points", "points2", or "minipoints"
+      "right_display": "minipoints"
+    },
 
-This method enables fu calculations for a winning hand. Fu calculation is hardcoded and cannot be customized -- let me know if your ruleset needs to use custom fu.
+In addition, to calculate the actual score from `points`/`points2`, the `"score_calculation"` key must exist and be associated with an object with a `"scoring_method"` key. Scoring will be performed based on this `"scoring_method"` key.
 
-In the event of an exhaustive draw, this method looks for the status `"tenpai"` among all existing players. (This means you will have to set and unset tenpai status through the course of the game.) All `"tenpai"` players will pay the non-`"tenpai"` players according to the rules of riichi, hardcoded at 0/1000/1500/3000/0.
+Here are the currently supported options for `"scoring_method"`:
 
-That is, unless any player has the status `"nagashi"`, in which case all `"nagashi"` players get nagashi payments instead.
+### `"scoring_method": "multiplier"`
 
-## `"method": "hk"`
+The idea is that you multiply `points` by some number (can be less than 1) to get the final score. For example, in Malaysian mahjong, score is fan times 20, so you would put:
+  
+    "score_calculation": {
+      "scoring_method": "multiplier",
+      "score_multiplier": 20,
+    },
 
-Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action.
+If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
 
-All players pay for a win -- the discarder pays double.
+### `"scoring_method": "score_table"`
 
-## `"method": "sichuan"`
+Here, `points` is used as a (string) index into a points table, whose keys must be strings per the JSON schema. For example, in Hong Kong Old Style, the score doubles every Fan, and doubles every two Fan after 4 Fan, so you would put:
 
-Once a win action is triggered (`"win_by_discard"`, `"win_by_call"`, or `"win_by_draw"`) the game generates a win for each player that triggered a win action.
+    "score_calculation": {
+      "scoring_method": "score_table",
+      "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+    },
 
-Only the discarder pays in event of a deal in (`"win_by_discard"`, `"win_by_call"`). In case of self-draw (`"win_by_draw"`), all players (who have not yet won) pay.
+If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
 
-If `"draw_payments": true` is set under `"score_calculation"`, then on draw, all players with the "tenpai" status are paid according to the highest possible value their hand could achieve.
+### `"scoring_method": "vietnamese"`
 
-## `"method": "vietnamese"`
+In Vietnamese mahjong, certain yaku award Phán and certain yaku award Mủn. We represent Phán with `points1` and Mủn with `points2`, so this scoring method requires a `"yaku2_lists"` key.
 
-This is the same as `"method": "riichi"` but it does not calculate fu or tenpai payments. Instead it uses the `"yaku"` key to calculate Phán and the `"yakuman" key to calculate Mủn.
+Every 6 Phán is worth one Mủn, and each Mủn represents a multiplier on the 6 Phán score.
+
+All you need to specify is the score value of 0-6 Phán in the same manner as the `"score_table"` method:
+
+    "score_table": {"0": 0.5, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "max": 32},
+
+`"max"` must be present here, as it is the value used for the `Mủn` multiplier.
+
+If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
+
+### `"scoring_method": "han_fu_formula"`
+
+This is the riichi scoring method.
+
+First of all, this mode calculates fu for the hand and stores it in a variable `minipoints`. If there is interest in having options like `"closed_triplet_fu: 100"` I'd be down to support it, but unfortunately this calculation is completely hardcoded for now.
+
+Then the score is calculated as follows:
+
+    han_fu_multiplier * minipoints * 2^(2 + points)
+
+where the `"han_fu_multiplier"` key defaults to `4`. If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
+
+To get the final score, this score is rounded up to the nearest `"han_fu_rounding_factor"`, which defaults to `100`.
+
+Then it checks for limit hands, defined by the following three keys, which for Riichi are set to:
+
+    "limit_thresholds": [
+      [3, 70], [4, 40], [5, 0],
+      [6, 0],
+      [8, 0],
+      [11, 0],
+      [13, 0]
+    ],
+    "limit_scores": [
+      8000, 8000, 8000,
+      12000,
+      16000,
+      24000,
+      32000
+    ],
+    "limit_names": [
+      "Mangan", "Mangan", "Mangan",
+      "Haneman",
+      "Baiman",
+      "Sanbaiman",
+      "Kazoe Yakuman"
+    ],
+
+The idea is that it checks `[points, minipoints]` against the latest value in `"limit_thresholds"`, and if any of them match, the score is replaced by the corresponding `"limit_score"` and given the corresponding `"limit_name"`.
+
+### `"scoring_method": ["han_fu_formula", "multiplier"]`
+
+This is the actual value of `"scoring_method"` used for riichi. The idea for a two-value array value for `"scoring_method"` is that we use `"han_fu_formula"` for `points` and `"multiplier"` for `points2`, and add the resulting scores. For riichi, this means using `"han_fu_formula"` to calculate the standard Han score, and `"multiplier"` for yakuman hands.
+
+Riichi also specifies the key `"yaku2_overrides_yaku1": true`, which means if any yaku contribute to `points2`, then we ignore all yaku that contribute to `points`.
+
+## Payments
+
+All of the above is to calculate the basic score of a hand, displayed when the hand wins. How are payouts calculated?
+
+In event of a win-by-discard, the discarder pays the score multiplied by `"discarder_multiplier"`, which defaults to `1`. Non-discarders pay the score multiplied by `"non_discarder_multiplier"`, which defaults to `0`. 
+
+Otherwise the win is by self-draw. Then every player pays the winner the score multiplied by `"draw_multiplier"`, which defaults to `1`.
+
+You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`, `"draw_penalty"` which add a fixed amount to their respective payments (after the multiplication). For example, in MCR all players pay the winner 8 points regardless of the score, so all of these would be set to `8`.
+
+If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
+
+<!--
 
 # Game loop in detail (outdated)
 
@@ -637,3 +737,5 @@ If the ponning player presses "pon" then they discard the deferred "advance_turn
 ("pon" includes a `["change_turn", "self"]` action, which allows game flow to continue.)
 Otherwise if the ponning player presses "skip", then all players have chosen skip.
 This means the deferred "advance_turn" is then run, as if the pon choice never happened.
+
+-->

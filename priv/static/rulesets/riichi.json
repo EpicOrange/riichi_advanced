@@ -713,7 +713,7 @@
   "score_calculation": {
     "scoring_method": ["han_fu_formula", "multiplier"],
     "score_multiplier": 32000, // this is for yakuman
-    "dealer_multiplier": 1.5, // this is for yakuman
+    "dealer_multiplier": 1.5,
     "score_name": "Yakuman",
     "limit_thresholds": [
       [3, 70], [4, 40], [5, 0],

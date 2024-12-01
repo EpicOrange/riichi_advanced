@@ -233,18 +233,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {score, phan, mun, score_name}
       "han_fu_formula" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 1)
+        han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 4)
         han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+        dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
         fu = Map.get(score_rules, "fixed_fu", minipoints)
 
         # calculate score using formula
         base_score = han_fu_multiplier * fu * 2 ** (2 + points)
-        score = base_score * if is_dealer do 6 else 4 end
+        score = base_score * if is_dealer do dealer_multiplier else 1 end
         # round up (to nearest 100, by default)
         score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
 
         # handle limit scores
-        dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
         limit_thresholds = Map.get(score_rules, "limit_thresholds", []) |> Enum.reverse()
         limit_scores = Map.get(score_rules, "limit_scores", []) |> Enum.reverse()
         limit_names = Map.get(score_rules, "limit_names", []) |> Enum.reverse()

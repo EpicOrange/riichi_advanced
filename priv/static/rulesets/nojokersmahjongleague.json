@@ -596,7 +596,7 @@
   },
   "score_calculation": {
     "scoring_method": ["han_fu_formula", "multiplier"],
-    "han_fu_multiplier": 0.01,
+    "han_fu_multiplier": 0.04,
     "han_fu_rounding_factor": 1,
     "fixed_fu": 30,
     "dealer_multiplier": 1.5, // this is for yakuman
