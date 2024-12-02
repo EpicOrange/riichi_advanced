@@ -312,9 +312,14 @@ defmodule Riichi do
                     end
                     new_hand_calls_groups = if exhaustive do
                       for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups do
-                        remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases)
-                        |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
-                      end |> Enum.concat() |> Enum.uniq()
+                        Task.async(fn ->
+                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases)
+                          |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do remaining_groups -- [group] else remaining_groups end} end)
+                        end)
+                      end
+                      |> Task.yield_many(timeout: :infinity)
+                      |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+                      |> Enum.uniq()
                     else
                       for {hand, calls, remaining_groups} <- hand_calls_groups, group <- remaining_groups, reduce: [] do
                         [] ->

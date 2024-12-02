@@ -912,31 +912,36 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # find the maximum score obtainable across all joker assignments
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
-      # replace 5z in joker assignment with 0z if 0z is present in the wall
-      joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 1 do
-        Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
-      else joker_assignment end
+      Task.async(fn ->
+        # replace 5z in joker assignment with 0z if 0z is present in the wall
+        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 1 do
+          Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
+        else joker_assignment end
 
-      # replace winner's hand with joker assignment to determine yaku
-      {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+        # replace winner's hand with joker assignment to determine yaku
+        {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
 
-      # obtain yaku and minipoints
-      winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
-      {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
-      {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
-        get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
-      else {[], minipoints, new_winning_tile} end
-      IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+        # obtain yaku and minipoints
+        winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
+        {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
+        {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
+          get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
+        else {[], minipoints, new_winning_tile} end
+        IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
 
-      # if you win with 14 tiles all in hand (no draw), then take the given winning tile
-      new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end
+        # if you win with 14 tiles all in hand (no draw), then take the given winning tile
+        new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end
 
-      # score yaku
-      yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-      {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
-      IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
-      {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
-    end |> Enum.max_by(fn {_, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+        # score yaku
+        yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
+        {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
+        IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
+        {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
+      end)
+    end
+    |> Task.yield_many(timeout: :infinity)
+    |> Enum.map(fn {_task, {:ok, res}} -> res end)
+    |> Enum.max_by(fn {_, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
     state = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
 

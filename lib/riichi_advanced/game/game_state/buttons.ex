@@ -81,6 +81,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def recalculate_buttons(state, interrupt_level \\ 100) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
+      # t = System.os_time(:millisecond)
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
       buttons_before = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -116,6 +117,12 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, [{seat, button_choices} | new_button_choices]}
           end
       end
+
+      # elapsed_time = System.os_time(:millisecond) - t
+      # if elapsed_time > 10 do
+      #   IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
+      # end
+      
       new_button_choices = Map.new(new_button_choices)
       
       # IO.puts("Buttons after:")
