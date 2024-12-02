@@ -270,7 +270,7 @@ defmodule RiichiAdvanced.SMT do
       assert_tile = "(assert (=> tiles#{i}_used\n  (and\n    #{equals_tiles}\n    (at_least_digits hand tiles#{i})\n    ((_ at-least #{num}) #{all_tiles})\n    ((_ at-most #{num}) #{all_tiles}))))"
       Enum.join(declare_tile_flags ++ [assert_tile], "\n")
     else
-      "(assert (equal_digits tiles#{i} (bvmul (_ bv#{num} #{len}) (bvadd\n    #{Enum.map(group, &to_smt_tile(Utils.to_tile(&1), encoding)) |> Enum.join("\n    ")})))"
+      "(assert (equal_digits tiles#{i} (bvmul (_ bv#{num} #{len}) (bvadd\n    #{Enum.map(group, &to_smt_tile(Utils.to_tile(&1), encoding)) |> Enum.join("\n    ")}))))"
     end
   end
 
