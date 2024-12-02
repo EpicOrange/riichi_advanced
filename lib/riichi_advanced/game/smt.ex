@@ -53,7 +53,7 @@ defmodule RiichiAdvanced.SMT do
   def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, last_assignment \\ nil, result \\ []) do
     cond do
       length(joker_ixs) == 0 -> [%{}]
-      length(result) >= 100  -> result
+      length(result) >= Integer.floor_div(100, length(joker_ixs)) -> result
       true ->
         contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i], encoding)})" end) end
         contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
@@ -232,7 +232,7 @@ defmodule RiichiAdvanced.SMT do
     else sets end
   end
 
-  def set_to_bitvector(_encoding, set) do
+  def set_to_bitvector(set, len) do
     # input: [0, 0, 3, 6, 11, 11, 14, 17, 22, 22, 25, 28]
     # output: "100100200010010020001001002"
     # 100, 101, 102 correspond to dragons, we ignore them
@@ -243,6 +243,8 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.sort_by(fn {k, _v} -> -k end)
     |> Enum.map(fn {_k, v} -> set_suit_to_bitvector(Enum.map(v, &rem(&1, 10))) end)
     |> Enum.join()
+    |> String.pad_leading(Integer.floor_div(len, 4), "0")
+    |> then(&"#x" <> &1)
   end
 
   def remove_group_keywords(group) do
@@ -348,9 +350,25 @@ defmodule RiichiAdvanced.SMT do
     # IO.inspect(all_sets, charlists: :as_lists, label: "all_sets")
     set_definitions = all_sets
     |> Enum.map(fn group -> Enum.flat_map(group, fn elem -> if is_list(elem) do elem else [elem] end end) end)
-    |> Enum.map(&set_to_bitvector(encoding, &1))
     |> Enum.with_index()
-    |> Enum.map(fn {str, i} -> "(define-fun set#{i+1} () (_ BitVec #{len}) #x#{String.pad_leading(str, Integer.floor_div(len, 4), "0")})\n" end)
+    |> Enum.map(fn {set, i} ->
+      if Enum.any?(set, & &1 >= 10) do
+        # multi-suit set; must be equal to one of three possible suit rotations
+        str1 = set_to_bitvector(set, len)
+        str2 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 10, 30)), len)
+        str3 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 20, 30)), len)
+        """
+        (define-const set#{i+1}_sel (_ BitVec 2))
+        (define-fun set#{i+1} () (_ BitVec #{len})
+          (ite (= (_ bv1 set#{i+1}_sel)) #{str1}
+          (ite (= (_ bv2 set#{i+1}_sel)) #{str2}
+          (ite (= (_ bv3 set#{i+1}_sel)) #{str3} zero))))
+        """
+      else
+        str = set_to_bitvector(set, len)
+        "(define-fun set#{i+1} () (_ BitVec #{len}) #x#{str})\n"
+      end
+    end)
     set_indices = if Enum.empty?(all_sets) do [] else 1..length(all_sets) end
     to_set_fun = if Enum.empty?(all_sets) do [] else Enum.map(set_indices, fn i -> "\n  (ite (= num (_ bv#{i} 8)) set#{i}" end) end
     to_set_fun = if Enum.empty?(all_sets) do "" else "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n" end
