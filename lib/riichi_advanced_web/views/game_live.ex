@@ -303,7 +303,6 @@ defmodule RiichiAdvancedWeb.GameLive do
         </div>
       <% end %>
       <div class="top-right-container">
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
         <.live_component module={RiichiAdvancedWeb.CenterpieceStatusBarComponent}
           id="centerpiece-status-bar"
           tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
@@ -311,6 +310,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
           display_riichi_sticks={@display_riichi_sticks}
           display_honba={@display_honba} />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">

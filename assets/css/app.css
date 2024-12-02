@@ -2497,11 +2497,15 @@ div.top-right-container {
   height: var(--tile-size);
   position: absolute;
   top: calc(-1.5 * var(--tile-size));
-  right: 0;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
+  justify-content: flex-end;
   column-gap: calc(0.25 * var(--tile-size));
   z-index: -1; /* behind revealed tiles */
+}
+div.menu-buttons {
+  display: flex;
+  flex-direction: row-reverse;
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
@@ -2554,8 +2558,8 @@ div.centerpiece-status-bar > div.tiles-left {
   border-left: calc(0.02 * var(--tile-size)) solid white;
 }
 /* sometimes these get duplicated by network conditions, so only show the latest one */
-div.top-right-container > div.menu-buttons:not(:nth-last-child(2)),
-div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(1)) {
+div.top-right-container > div.menu-buttons:not(:nth-last-child(1)),
+div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(2)) {
   display: none;
 }
 
