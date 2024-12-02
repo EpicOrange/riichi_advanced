@@ -399,10 +399,10 @@
     [ "exhaustive", [[[[0,1,2],[0,1,2],[3,4,5],[3,4,5]]], 1], [["pair"], 1] ]
   ],
   "一般高_definition": [
-    [ "exhaustive", [[[0,1,2],[0,1,2]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
   ],
   "雙般高_definition": [
-    [ "exhaustive", [[[0,1,2],[0,1,2]], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 2], [["pair"], 1] ]
   ],
   "清般高_definition": [
     [ "exhaustive", [[[0,0,1,1,2,2,0,0,1,1,2,2]], 1], [["pair"], 1] ],
