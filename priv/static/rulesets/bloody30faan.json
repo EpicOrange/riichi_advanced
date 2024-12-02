@@ -100,12 +100,12 @@
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
-    [ "exhaustive", "almost", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ "exhaustive", "almost", [["pair"], 1], [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2", "knit_triplets"], 1] ],
-    [ "exhaustive", "almost", [["pair"], 1], [["shuntsu", "koutsu"], 2], [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1] ],
+    [ "exhaustive", "almost", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ "exhaustive", "almost", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", "almost", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2", "knit_triplets"], 1] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 2], [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1] ],
+    [ "exhaustive", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1] ],
+    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ],
     [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique",
@@ -185,10 +185,10 @@
     ]
   ],
   "win_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2", "knit_triplets"], 1] ],
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 2], [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1] ],
-    [ "exhaustive", [["pair"], 1], [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ "exhaustive", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2], [["pair"], 1] ],
     [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
