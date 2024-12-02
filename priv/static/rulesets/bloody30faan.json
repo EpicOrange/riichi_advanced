@@ -62,7 +62,6 @@
     "knit_short_straight2": [[0,3],[21,24],[12,15]],
     "knit_terminal_seqs1": [[0,6],[11,17],[22,28]],
     "knit_terminal_seqs2": [[0,6],[21,27],[12,18]],
-    "iipeikou": [0, 0, 1, 1, 2, 2],
     "老少順": [[0,1,2],[6,7,8]],
     "一色老少雙順": [0,0,1,1,2,2,6,6,7,7,8,8],
     "ton": ["1z", "1z", "1z"],
@@ -465,6 +464,25 @@
     [ "exhaustive", [[["8m","8m"],["8p","8p"],["8s","8s"]], 1], [[["8m","8m","8m"],["8p","8p","8p"],["8s","8s","8s"],["6m","7m","8m"],["6p","7p","8p"],["6s","7s","8s"],["7m","8m","9m"],["7p","8p","9p"],["7s","8s","9s"]], 4] ],
     [ "exhaustive", [[["9m","9m"],["9p","9p"],["9s","9s"]], 1], [[["9m","9m","9m"],["9p","9p","9p"],["9s","9s","9s"],["7m","8m","9m"],["7p","8p","9p"],["7s","8s","9s"]], 4] ]
   ],
+  "三數_definition": [
+    [ "ignore_suit", [["1m", "2m", "3m"], 1] ],
+    [ "ignore_suit", [["2m", "3m", "4m"], 1] ],
+    [ "ignore_suit", [["3m", "4m", "5m"], 1] ],
+    [ "ignore_suit", [["4m", "5m", "6m"], 1] ],
+    [ "ignore_suit", [["5m", "6m", "7m"], 1] ],
+    [ "ignore_suit", [["6m", "7m", "8m"], 1] ],
+    [ "ignore_suit", [["7m", "8m", "9m"], 1] ]
+  ],
+  "兩數_definition": [
+    [ "ignore_suit", [["1m", "2m"], 1] ],
+    [ "ignore_suit", [["2m", "3m"], 1] ],
+    [ "ignore_suit", [["3m", "4m"], 1] ],
+    [ "ignore_suit", [["4m", "5m"], 1] ],
+    [ "ignore_suit", [["5m", "6m"], 1] ],
+    [ "ignore_suit", [["6m", "7m"], 1] ],
+    [ "ignore_suit", [["7m", "8m"], 1] ],
+    [ "ignore_suit", [["8m", "9m"], 1] ]
+  ],
   "三連對_definition": [
     [ "ignore_suit", [[[0,0,1,1,2,2]], 1], [["pair"], 4] ]
   ],
@@ -491,7 +509,7 @@
   ],
   "科大列車_definition": [
     [ "exhaustive",
-      [[["7z", "7z"]], 1], [[[0,1,2],[3,4,5],[6,7,8]], 1],
+      [[["7z", "7z"]], 1], [[[[0,1,2],[3,4,5],[6,7,8]]], 1],
       [[["3m","3m","3m"], ["3p","3p","3p"], ["3s","3s","3s"],
         ["4m","4m","4m","4m"], ["4p","4p","4p","4p"], ["4s","4s","4s","4s"]], 1] ]
   ],
@@ -515,46 +533,14 @@
   ],
   "yaku": [
     // (1) 字花類
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 1]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 2]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 3]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 4]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 5]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 6]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 7]}]
-    },
-    {
-      "display_name": "Flower",
-      "value": 1,
-      "when": [{"name": "counter_at_least", "opts": ["called_jokers", 8]}]
-    },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 1]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 2]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 3]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 4]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 5]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 6]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 7]}] },
+    { "display_name": "Flower", "value": 1, "when": [{"name": "counter_at_least", "opts": ["called_jokers", 8]}] },
     {
       "display_name": "No Honors or Flowers",
       "value": 2,
@@ -563,31 +549,11 @@
         {"name": "counter_at_most", "opts": ["called_jokers", 0]}
       ]
     },
-    {
-      "display_name": "No Jokers",
-      "value": 2,
-      "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}]
-    },
-    {
-      "display_name": "All Honors",
-      "value": 30,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z"]}]
-    },
-    {
-      "display_name": "White Dragon",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
-    },
-    {
-      "display_name": "Green Dragon",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}]
-    },
-    {
-      "display_name": "Red Dragon",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
-    },
+    { "display_name": "No Jokers", "value": 2, "when": [{"name": "counter_at_most", "opts": ["jokers", 0]}] },
+    { "display_name": "All Honors", "value": 30, "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z"]}] },
+    { "display_name": "White Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
+    { "display_name": "Green Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
+    { "display_name": "Red Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}] },
     {
       "display_name": "Round Wind",
       "value": 1,
@@ -608,47 +574,15 @@
         [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
       ]]
     },
-    {
-      "display_name": "Little Three Winds",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_winds"]]}]
-    },
-    {
-      "display_name": "Little Three Dragons",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}]
-    },
-    {
-      "display_name": "Big Three Winds",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}]
-    },
-    {
-      "display_name": "Big Three Dragons",
-      "value": 15,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
-    },
-    {
-      "display_name": "Little Four Winds",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}]
-    },
-    {
-      "display_name": "Big Four Winds",
-      "value": 30,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
-    },
+    { "display_name": "Little Three Winds", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_winds"]]}] },
+    { "display_name": "Little Three Dragons", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}] },
+    { "display_name": "Big Three Winds", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}] },
+    { "display_name": "Big Three Dragons", "value": 15, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}] },
+    { "display_name": "Little Four Winds", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}] },
+    { "display_name": "Big Four Winds", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}] },
     // (2) 么九類
-    {
-      "display_name": "Terminal Sequences",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["老少順"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]]]}]
-    },
-    {
-      "display_name": "All Simples",
-      "value": 2,
-      "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}]
-    },
+    { "display_name": "Terminal Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["老少順"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]]]}] },
+    { "display_name": "All Simples", "value": 2, "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },
     {
       "display_name": "Mixed Outside Hand",
       "value": 5,
@@ -669,26 +603,10 @@
         ]]]}
       ]
     },
-    {
-      "display_name": "Double Terminal Sequences",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["老少順"], 2], [["pair"], 1] ]]]}]
-    },
-    {
-      "display_name": "Pure Double Terminal Sequences",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["一色老少雙順"], 1], [["pair"], 1] ]]]}]
-    },
-    {
-      "display_name": "Mixed Terminals",
-      "value": 10,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
-    },
-    {
-      "display_name": "Pure Terminals",
-      "value": 30,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
-    },
+    { "display_name": "Double Terminal Sequences", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["老少順"], 2], [["pair"], 1] ]]]}] },
+    { "display_name": "Pure Double Terminal Sequences", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["一色老少雙順"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Mixed Terminals", "value": 10, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
+    { "display_name": "Pure Terminals", "value": 30, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}] },
     // (3) 花色類
     {
       "display_name": "One Voided Suit",
@@ -730,46 +648,14 @@
         {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
       ]]
     },
-    {
-      "display_name": "Open Nine Gates",
-      "value": 20,
-      "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], ["副露九子連環"]]}
-      ]
-    },
-    {
-      "display_name": "Nine Gates",
-      "value": 30,
-      "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}
-      ]
-    },
+    { "display_name": "Open Nine Gates", "value": 20, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["副露九子連環"]]}] },
+    { "display_name": "Nine Gates", "value": 30, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}] },
     // (1) 刻/槓子類
-    {
-      "display_name": "Open Kong",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}]
-    },
-    {
-      "display_name": "Concealed Kong",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}]
-    },
-    {
-      "display_name": "Two Kongs",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}]
-    },
-    {
-      "display_name": "Three Kongs",
-      "value": 15,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}]
-    },
-    {
-      "display_name": "Four Kongs",
-      "value": 30,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}]
-    },
+    { "display_name": "Open Kong", "value": 1, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}] },
+    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
+    { "display_name": "Two Kongs", "value": 5, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}] },
+    { "display_name": "Three Kongs", "value": 15, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}] },
+    { "display_name": "Four Kongs", "value": 30, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}] },
     {
       "display_name": "Two Concealed Triplets",
       "value": 2,
@@ -825,456 +711,75 @@
         ]
       ]]
     },
-    {
-      "display_name": "Two Shifted Triplets",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩連刻"]]}]
-    },
-    {
-      "display_name": "Three Small Shifted Triplets",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三連刻"]]}]
-    },
-    {
-      "display_name": "Three Pure Shifted Triplets",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三連刻"]]}]
-    },
-    {
-      "display_name": "Four Pure Small Shifted Triplets",
-      "value": 15,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小一色四連刻"]]}]
-    },
-    {
-      "display_name": "Four Pure Shifted Triplets",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}]
-    },
-    {
-      "display_name": "Three Mixed Small Shifted Triplets",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色連刻"]]}]
-    },
-    {
-      "display_name": "Three Mixed Shifted Triplets",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色連刻"]]}]
-    },
-    {
-      "display_name": "Four Mixed Small Shifted Triplets",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色四連刻"]]}]
-    },
-    {
-      "display_name": "Four Mixed Shifted Triplets",
-      "value": 15,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四連刻"]]}]
-    },
-    {
-      "display_name": "Five Mixed Small Shifted Triplets",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色五連刻"]]}]
-    },
-    {
-      "display_name": "Double Triplets",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩同刻"]]}]
-    },
-    {
-      "display_name": "Small Triple Triplets",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三同刻"]]}]
-    },
-    {
-      "display_name": "Triple Triplets",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三同刻"]]}]
-    },
-    {
-      "display_name": "Quadruple Triplets",
-      "value": 30,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四同刻"]]}]
-    },
-    {
-      "display_name": "All Triplets",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
-    },
+    { "display_name": "Two Shifted Triplets", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩連刻"]]}] },
+    { "display_name": "Three Small Shifted Triplets", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三連刻"]]}] },
+    { "display_name": "Three Pure Shifted Triplets", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三連刻"]]}] },
+    { "display_name": "Four Pure Small Shifted Triplets", "value": 15, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小一色四連刻"]]}] },
+    { "display_name": "Four Pure Shifted Triplets", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}] },
+    { "display_name": "Three Mixed Small Shifted Triplets", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色連刻"]]}] },
+    { "display_name": "Three Mixed Shifted Triplets", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色連刻"]]}] },
+    { "display_name": "Four Mixed Small Shifted Triplets", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三色四連刻"]]}] },
+    { "display_name": "Four Mixed Shifted Triplets", "value": 15, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四連刻"]]}] },
+    { "display_name": "Five Mixed Small Shifted Triplets", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色五連刻"]]}] },
+    { "display_name": "Double Triplets", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩同刻"]]}] },
+    { "display_name": "Small Triple Triplets", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三同刻"]]}] },
+    { "display_name": "Triple Triplets", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三同刻"]]}] },
+    { "display_name": "Quadruple Triplets", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四同刻"]]}] },
+    { "display_name": "All Triplets", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
     // (2) 順子類
-    {
-      "display_name": "Double Sequences",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩相逢"]]}]
-    },
-    {
-      "display_name": "Double Sequences",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2兩相逢"]]}]
-    },
-    {
-      "display_name": "Triple Sequences",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}]
-    },
-    {
-      "display_name": "Pure Triple Sequence",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}]
-    },
-    {
-      "display_name": "Pure Quadruple Sequence",
-      "value": 30,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}]
-    },
-    {
-      "display_name": "Short Straight",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["連六"]]}]
-    },
-    {
-      "display_name": "Short Straight",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2連六"]]}]
-    },
-    {
-      "display_name": "Double Short Straight",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["連六雙順"]]}]
-    },
-    {
-      "display_name": "Pure Double Short Straight",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色連六雙順"]]}]
-    },
-    {
-      "display_name": "Identical Sequences",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一般高"]]}]
-    },
-    {
-      "display_name": "Double Identical Sequences",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雙般高"]]}]
-    },
-    {
-      "display_name": "Pure Double Identical Sequences",
-      "value": 15,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清般高"]]}]
-    },
-    {
-      "display_name": "Three Mixed Shifted Sequences",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色三步高"]]}]
-    },
-    {
-      "display_name": "Four Mixed Shifted Sequences",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四步高"]]}]
-    },
-    {
-      "display_name": "Three Pure Shifted Sequences",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}]
-    },
-    {
-      "display_name": "Four Pure Shifted Sequences",
-      "value": 30,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四步高"]]}]
-    },
-    {
-      "display_name": "Three Mixed Linked Sequences",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色跳步高"]]}]
-    },
-    {
-      "display_name": "Three Pure Linked Sequences",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色跳步高"]]}]
-    },
-    {
-      "display_name": "Golden Gate Bridge",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["金門大橋"]]}]
-    },
-    {
-      "display_name": "Mixed Straight",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雜龍"]]}]
-    },
-    {
-      "display_name": "Pure Straight",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清龍"]]}]
-    },
-    {
-      "display_name": "All Sequences",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}]
-    },
+    { "display_name": "Double Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩相逢"]]}] },
+    { "display_name": "Double Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2兩相逢"]]}] },
+    { "display_name": "Triple Sequences", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}] },
+    { "display_name": "Pure Triple Sequence", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}] },
+    { "display_name": "Pure Quadruple Sequence", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}] },
+    { "display_name": "Short Straight", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["連六"]]}] },
+    { "display_name": "Short Straight", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2連六"]]}] },
+    { "display_name": "Double Short Straight", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["連六雙順"]]}] },
+    { "display_name": "Pure Double Short Straight", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色連六雙順"]]}] },
+    { "display_name": "Identical Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一般高"]]}] },
+    { "display_name": "Double Identical Sequences", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雙般高"]]}] },
+    { "display_name": "Pure Double Identical Sequences", "value": 15, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清般高"]]}] },
+    { "display_name": "Three Mixed Shifted Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色三步高"]]}] },
+    { "display_name": "Four Mixed Shifted Sequences", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色四步高"]]}] },
+    { "display_name": "Three Pure Shifted Sequences", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三步高"]]}] },
+    { "display_name": "Four Pure Shifted Sequences", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四步高"]]}] },
+    { "display_name": "Three Mixed Linked Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色跳步高"]]}] },
+    { "display_name": "Three Pure Linked Sequences", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色跳步高"]]}] },
+    { "display_name": "Golden Gate Bridge", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["金門大橋"]]}] },
+    { "display_name": "Mixed Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雜龍"]]}] },
+    { "display_name": "Pure Straight", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清龍"]]}] },
+    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}] },
     // (3) 四歸類
-    {
-      "display_name": "Tile Hog (2)",
-      "value": 2,
-      "when": [
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸二"]]}
-      ]
-    },
-    {
-      "display_name": "Tile Hog (3)",
-      "value": 5,
-      "when": [
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]}
-      ]
-    },
-    {
-      "display_name": "Tile Hog (4)",
-      "value": 15,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]}]
-    },
-    {
-      "display_name": "Double Tile Hog",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2]]]]}]
-    },
-    {
-      "display_name": "Triple Tile Hog",
-      "value": 30,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 3]]]]}]
-    },
+    { "display_name": "Tile Hog (2)", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸二"]]}] },
+    { "display_name": "Tile Hog (3)", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]}] },
+    { "display_name": "Tile Hog (4)", "value": 15, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸四"]]}] },
+    { "display_name": "Double Tile Hog", "value": 8, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2]]]]}] },
+    { "display_name": "Triple Tile Hog", "value": 30, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 3]]]]}] },
     // (4) 數字類
-    {
-      "display_name": "All Like Numbers",
-      "value": 8,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["滿庭芳"]]}]
-    },
-    {
-      "display_name": "All Odds",
-      "value": 5,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","3m","5m","7m","9m","1p","3p","5p","7p","9p","1s","3s","5s","7s","9s"]}]
-    },
-    {
-      "display_name": "All Evens",
-      "value": 5,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["2m","4m","6m","8m","2p","4p","6p","8p","2s","4s","6s","8s"]}]
-    },
-    {
-      "display_name": "All Central",
-      "value": 5,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["4m","5m","6m","4p","5p","6p","4s","5s","6s"]}]
-    },
-    {
-      "display_name": "Three Number Hand",
-      "value": 5,
-      "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","3m","3p","3s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","4m","4p","4s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s","4m","4p","4s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","4m","4p","4s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","4m","4p","4s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","4m","4p","4s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","4m","4p","4s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","4m","4p","4s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","5m","5p","5s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","5m","5p","5s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","5m","5p","5s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","5m","5p","5s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","6m","6p","6s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","6m","6p","6s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","6m","6p","6s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","8m","8p","8s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s","4m","4p","4s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","4m","4p","4s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","4m","4p","4s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","4m","4p","4s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","4m","4p","4s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","4m","4p","4s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","5m","5p","5s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","5m","5p","5s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","5m","5p","5s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","5m","5p","5s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","6m","6p","6s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","6m","6p","6s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","6m","6p","6s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","8m","8p","8s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","4m","4p","4s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","4m","4p","4s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","4m","4p","4s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","4m","4p","4s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","4m","4p","4s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","5m","5p","5s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","5m","5p","5s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","5m","5p","5s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","5m","5p","5s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","6m","6p","6s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","6m","6p","6s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","6m","6p","6s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","8m","8p","8s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","5m","5p","5s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","5m","5p","5s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","5m","5p","5s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","5m","5p","5s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","6m","6p","6s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","6m","6p","6s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","6m","6p","6s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","8m","8p","8s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","6m","6p","6s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","6m","6p","6s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","6m","6p","6s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","8m","8p","8s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["6m","6p","6s","7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["6m","6p","6s","7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["6m","6p","6s","8m","8p","8s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["7m","7p","7s","8m","8p","8s","9m","9p","9s"]}
-      ]]
-    },
-    {
-      "display_name": "Two Number Hand",
-      "value": 10,
-      "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","2m","2p","2s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","3m","3p","3s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","4m","4p","4s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","1p","1s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","3m","3p","3s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","4m","4p","4s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["2m","2p","2s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","4m","4p","4s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["3m","3p","3s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","5m","5p","5s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["4m","4p","4s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","6m","6p","6s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["5m","5p","5s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["6m","6p","6s","7m","7p","7s"]},
-        {"name": "winning_hand_consists_of", "opts": ["6m","6p","6s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["6m","6p","6s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["7m","7p","7s","8m","8p","8s"]},
-        {"name": "winning_hand_consists_of", "opts": ["7m","7p","7s","9m","9p","9s"]},
-        {"name": "winning_hand_consists_of", "opts": ["8m","8p","8s","9m","9p","9s"]}
-      ]]
-    },
+    { "display_name": "All Like Numbers", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["滿庭芳"]]}] },
+    { "display_name": "All Odds", "value": 5, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","3m","5m","7m","9m","1p","3p","5p","7p","9p","1s","3s","5s","7s","9s"]}] },
+    { "display_name": "All Evens", "value": 5, "when": [{"name": "winning_hand_consists_of", "opts": ["2m","4m","6m","8m","2p","4p","6p","8p","2s","4s","6s","8s"]}] },
+    { "display_name": "All Central", "value": 5, "when": [{"name": "winning_hand_consists_of", "opts": ["4m","5m","6m","4p","5p","6p","4s","5s","6s"]}] },
+    { "display_name": "Three Number Hand", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三數"]]}] },
+    { "display_name": "Two Number Hand", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩數"]]}] },
     // (5) 偶然類
-    {
-      "display_name": "After a Flower",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["joker"]}]
-    },
-    {
-      "display_name": "After a Kong",
-      "value": 2,
-      "when": [{"name": "status", "opts": ["kan"]}]
-    },
-    {
-      "display_name": "Robbing a Kong",
-      "value": 5,
-      "when": ["won_by_call"]
-    },
-    {
-      "display_name": "Under the Sea",
-      "value": 2,
-      "when": ["no_tiles_remaining"]
-    },
-    {
-      "display_name": "Within Ten Tiles",
-      "value": 5,
-      "when": [{"name": "tiles_remaining", "opts": [82]}]
-    },
-    {
-      "display_name": "Within Seven Tiles",
-      "value": 8,
-      "when": [{"name": "tiles_remaining", "opts": [85]}]
-    },
-    {
-      "display_name": "Hand of Man",
-      "value": 15,
-      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"]
-    },
-    {
-      "display_name": "Hand of Heaven",
-      "value": 30,
-      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
-    },
-    {
-      "display_name": "Hand of Earth",
-      "value": 30,
-      "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
-    },
+    { "display_name": "After a Flower", "value": 1, "when": [{"name": "status", "opts": ["joker"]}] },
+    { "display_name": "After a Kong", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Robbing a Kong", "value": 5, "when": ["won_by_call"] },
+    { "display_name": "Under the Sea", "value": 2, "when": ["no_tiles_remaining"] },
+    { "display_name": "Within Ten Tiles", "value": 5, "when": [{"name": "tiles_remaining", "opts": [82]}] },
+    { "display_name": "Within Seven Tiles", "value": 8, "when": [{"name": "tiles_remaining", "opts": [85]}] },
+    { "display_name": "Hand of Man", "value": 15, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"] },
+    { "display_name": "Hand of Heaven", "value": 30, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Hand of Earth", "value": 30, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
     // (6) 狀態類
-    {
-      "display_name": "Concealed Hand",
-      "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
-    },
-    {
-      "display_name": "Fully Concealed Hand",
-      "value": 2,
-      "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
-    },
-    {
-      "display_name": "Self Drawn Melded Hand",
-      "value": 2,
-      "when": ["won_by_draw", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    {
-      "display_name": "Melded Hand",
-      "value": 5,
-      "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    {
-      "display_name": "Hell Wait",
-      "value": 2,
-      "when": [{"name": "has_hell_wait", "opts": ["win"]}]
-    },
+    { "display_name": "Concealed Hand", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
+    { "display_name": "Fully Concealed Hand", "value": 2, "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
+    { "display_name": "Self Drawn Melded Hand", "value": 2, "when": ["won_by_draw", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Melded Hand", "value": 5, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Hell Wait", "value": 2, "when": [{"name": "has_hell_wait", "opts": ["win"]}] },
     // (7) 對子類
-    {
-      "display_name": "Seven Pairs",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
-    },
+    { "display_name": "Seven Pairs", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
     {
       "display_name": "Three Consecutive Pairs",
       "value": 2,
@@ -1299,57 +804,17 @@
         {"name": "match", "opts": [["hand", "winning_tile"], ["七連對"]]}
       ]
     },
-    {
-      "display_name": "Three Identical Pairs",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三同對"]]}]
-    },
-    {
-      "display_name": "Three Dragons Seven Pairs",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三元七對"]]}]
-    },
-    {
-      "display_name": "Four Winds Seven Pairs",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["四喜七對"]]}]
-    },
+    { "display_name": "Three Identical Pairs", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三同對"]]}] },
+    { "display_name": "Three Dragons Seven Pairs", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["三元七對"]]}] },
+    { "display_name": "Four Winds Seven Pairs", "value": 10, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["四喜七對"]]}] },
     // (8) 不搭類
-    {
-      "display_name": "Thirteen Unconnected",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["十三不搭"]]}]
-    },
-    {
-      "display_name": "Knitted Short Straight",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭連六"]]}]
-    },
-    {
-      "display_name": "Knitted Short Straight",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["2不搭連六"]]}]
-    },
-    {
-      "display_name": "Knitted Terminal Sequences",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭老少"]]}]
-    },
-    {
-      "display_name": "Knitted Terminal Sequences",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["2不搭老少"]]}]
-    },
-    {
-      "display_name": "Knitted Straight",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭雜龍"]]}]
-    },
-    {
-      "display_name": "Knitted Triplets",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭三相逢"]]}]
-    },
+    { "display_name": "Thirteen Unconnected", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["十三不搭"]]}] },
+    { "display_name": "Knitted Short Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭連六"]]}] },
+    { "display_name": "Knitted Short Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["2不搭連六"]]}] },
+    { "display_name": "Knitted Terminal Sequences", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭老少"]]}] },
+    { "display_name": "Knitted Terminal Sequences", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["2不搭老少"]]}] },
+    { "display_name": "Knitted Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭雜龍"]]}] },
+    { "display_name": "Knitted Triplets", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["不搭三相逢"]]}] },
     {
       "display_name": "Knitted Honors",
       "value": 5,
@@ -1360,54 +825,16 @@
       ]
     },
     // (9) 其他
-    {
-      "display_name": "Eyes of the General",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["將眼"]]}]
-    },
-    {
-      "display_name": "University Train",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["科大列車"]]}]
-    },
-    {
-      "display_name": "Thirteen Orphans",
-      "value": 20,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
-    },
-    {
-      "display_name": "Thirteen Orphans",
-      "value": 5,
-      "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]},
-        {"name": "counter_at_most", "opts": ["jokers", 3]}
-      ]
-    },
-    {
-      "display_name": "Thirteen Orphans",
-      "value": 5,
-      "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]},
-        {"name": "counter_at_most", "opts": ["jokers", 1]}
-      ]
-    }
+    { "display_name": "Eyes of the General", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["將眼"]]}] },
+    { "display_name": "University Train", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["科大列車"]]}] },
+    { "display_name": "Thirteen Orphans", "value": 20, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}] }
   ],
   "meta_yaku": [
-    {
-      "display_name": "Mixed Shifted Linked Sequences",
-      "value": 8,
-      "when": [{"name": "has_existing_yaku", "opts": ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]}]
-    },
-    {
-      "display_name": "Pure Shifted Linked Sequences",
-      "value": 20,
-      "when": [{"name": "has_existing_yaku", "opts": ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]}]
-    },
-    {
-      "display_name": "Chicken Hand",
-      "value": 15,
-      "when": ["has_no_yaku"]
-    }
+    { "display_name": "Mixed Shifted Linked Sequences", "value": 8, "when": [{"name": "has_existing_yaku", "opts": ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]}] },
+    { "display_name": "Pure Shifted Linked Sequences", "value": 20, "when": [{"name": "has_existing_yaku", "opts": ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]}] },
+    { "display_name": "Chicken Hand", "value": 15, "when": ["has_no_yaku"] },
+    { "display_name": "Thirteen Orphans", "value": 5, "when": [{"name": "has_existing_yaku", "opts": ["Thirteen Orphans"]}, {"name": "counter_at_most", "opts": ["jokers", 3]}] },
+    { "display_name": "Thirteen Orphans", "value": 5, "when": [{"name": "match", "opts": ["Thirteen Orphans"]}, {"name": "counter_at_most", "opts": ["jokers", 1]}] }
   ],
   "yaku_precedence": {
     "Big Three Winds": ["Little Three Winds"],
@@ -1461,6 +888,8 @@
     "Mixed Shifted Linked Sequences": ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"],
     "Pure Shifted Linked Sequences": ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"],
     "Pure Straight": ["Short Straight", "Mixed Straight", "Terminal Sequences"],
+    "Tile Hog (3)": ["Tile Hog (2)"],
+    "Tile Hog (4)": ["Tile Hog (3)"],
     "Two Number Hand": ["Three Number Hand"],
     "Within Seven Tiles": ["Within Ten Tiles"],
     "Hand of Man": ["Within Seven Tiles"],
