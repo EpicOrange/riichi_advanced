@@ -1,6 +1,8 @@
 {
   "default_mods": [],
-  "available_mods": [],
+  "available_mods": [
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
+  ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
