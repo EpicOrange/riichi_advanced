@@ -834,7 +834,7 @@
     { "display_name": "Pure Shifted Linked Sequences", "value": 20, "when": [{"name": "has_existing_yaku", "opts": ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]}] },
     { "display_name": "Chicken Hand", "value": 15, "when": ["has_no_yaku"] },
     { "display_name": "Thirteen Orphans", "value": 5, "when": [{"name": "has_existing_yaku", "opts": ["Thirteen Orphans"]}, {"name": "counter_at_most", "opts": ["jokers", 3]}] },
-    { "display_name": "Thirteen Orphans", "value": 5, "when": [{"name": "match", "opts": ["Thirteen Orphans"]}, {"name": "counter_at_most", "opts": ["jokers", 1]}] }
+    { "display_name": "Thirteen Orphans", "value": 5, "when": [{"name": "has_existing_yaku", "opts": ["Thirteen Orphans"]}, {"name": "counter_at_most", "opts": ["jokers", 1]}] }
   ],
   "yaku_precedence": {
     "Big Three Winds": ["Little Three Winds"],
