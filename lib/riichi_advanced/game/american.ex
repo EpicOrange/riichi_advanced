@@ -89,13 +89,18 @@ defmodule RiichiAdvanced.GameState.American do
     else [] end
   end
   defp translate_american_match_definitions_postprocess(match_definition) do
-    # move all nonflower single-tile and pair groups to the end, separated by a "nojokers" tag
+    # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojokers" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
       num_tiles = cond do
         is_list(groups) && Enum.all?(groups, &is_list(&1) || &1 == "nojoker") ->
           groups
           |> Enum.reject(& &1 == "nojoker")
-          |> Enum.max_by(&length/1)
+          |> Enum.map(&cond do
+            Enum.all?(&1, fn subgroup -> is_list(subgroup) end) -> length(Enum.at(&1, 0))
+            Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end) -> length(&1)
+            true -> 1
+          end)
+          |> Enum.max()
         true -> num
       end
       num_tiles >= 3
@@ -200,7 +205,7 @@ defmodule RiichiAdvanced.GameState.American do
   end
   def arrange_american_hand(am_match_definitions, hand, calls, winning_tile, ordering, ordering_r, tile_aliases) do
     call_tiles = Enum.flat_map(calls, &Riichi.call_to_tiles/1)
-    hand = hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
+    hand = hand ++ call_tiles
     # arrange the given hand (which may contain jokers) to match any of the match definitions
     permutations = [[:m, :p, :s], [:m, :s, :p], [:p, :m, :s], [:p, :s, :m], [:s, :m, :p], [:s, :p, :m]]
     for am_match_definition <- am_match_definitions, [a, b, c] <- permutations, base_tile <- Enum.uniq(hand), reduce: nil do
