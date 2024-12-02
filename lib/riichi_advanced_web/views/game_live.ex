@@ -514,7 +514,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       end)
 
       # get all playable indices
-      playable_indices = if state.turn == socket.assigns.seat do
+      playable_indices = if RiichiAdvanced.GameState.Actions.can_discard(state, socket.assigns.seat) do
         player = state.players[socket.assigns.seat]
         for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), GenServer.call(socket.assigns.game_state, {:is_playable, socket.assigns.seat, tile}) do ix end
       else [] end
