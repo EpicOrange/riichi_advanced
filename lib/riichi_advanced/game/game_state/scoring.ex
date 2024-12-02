@@ -683,8 +683,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = state.rules["score_calculation"]
 
     score_best_hand_at_draw = Map.get(score_rules, "score_best_hand_at_draw", false)
-    draw_tenpai_payments = Map.get(score_rules, "draw_tenpai_payments", false)
-    draw_nagashi_payments = Map.get(score_rules, "draw_nagashi_payments", false)
+    draw_tenpai_payments = Map.get(score_rules, "draw_tenpai_payments", nil)
+    draw_nagashi_payments = Map.get(score_rules, "draw_nagashi_payments", nil)
     tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
     nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end)
     num_tenpai = tenpai |> Map.values() |> Enum.count(& &1)
@@ -723,15 +723,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         {state, delta_scores}
-      draw_nagashi_payments && num_nagashi > 0 -> 
+      draw_nagashi_payments != nil && num_nagashi > 0 -> 
         # do nagashi payments
         # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
         # TODO refactor to calculate the delta scores first, then apply it to the state
+        [pay_ko, pay_oya] = draw_nagashi_payments
         scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
         state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do
           state ->
-            oya_payment = 4000
-            ko_payment = if Riichi.get_east_player_seat(state.kyoku) == seat do 4000 else 2000 end
+            oya_payment = pay_oya
+            ko_payment = if Riichi.get_east_player_seat(state.kyoku) == seat do pay_oya else pay_ko end
             payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
 
             # handle kanbara satomi's scoring quirk
@@ -746,20 +747,21 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
         delta_scores = Map.new(state.players, fn {seat, player} -> {seat, player.score - scores_before[seat]} end)
         {state, delta_scores}
-      draw_tenpai_payments ->
+      draw_tenpai_payments != nil ->
+        [pay1, pay2, pay3] = draw_tenpai_payments
         # do tenpai payments
         delta_scores = case length(state.available_seats) do
           3 -> case num_tenpai do
             0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 2000 else -1000 end} end)
-            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -2000 end} end)
+            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 2 * pay1 else -pay1 end} end)
+            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do Utils.try_integer(pay2 / 2) else -pay2 end} end)
             3 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
           end
           4 -> case num_tenpai do
             0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3000 else -1000 end} end)
-            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1500 else -1500 end} end)
-            3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 1000 else -3000 end} end)
+            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3 * pay1 else -pay1 end} end)
+            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do pay2 else -pay2 end} end)
+            3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do Utils.try_integer(pay3 / 3) else -pay3 end} end)
             4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
           end
         end

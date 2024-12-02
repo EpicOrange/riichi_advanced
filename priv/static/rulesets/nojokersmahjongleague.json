@@ -55,8 +55,8 @@
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z"],
   "reserved_tiles": [
-    "kandraw_2", "kandraw_1",
-    "kandraw_4", "kandraw_3"
+    "kandraw_1", "kandraw_2",
+    "kandraw_3", "kandraw_4"
   ],
   "revealed_tiles": [],
   "max_revealed_tiles": 0,
@@ -621,8 +621,8 @@
     "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
     "use_smt": false,
     "yaku2_overrides_yaku1": true,
-    "draw_tenpai_payments": true,
-    "draw_nagashi_payments": true,
+    "draw_tenpai_payments": [10, 15, 30],
+    "draw_nagashi_payments": [20, 40],
     "split_oya_ko_payment": true,
     "agarirenchan": true,
     "tenpairenchan": true,

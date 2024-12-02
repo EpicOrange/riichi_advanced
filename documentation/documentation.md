@@ -360,16 +360,8 @@ Rules:
 
 Yaku and scoring:
 
-- `extra_yaku`: List of yaku that doesn't count towards having yaku, like dora
-- `limit_point_name`: Name for limit points, like ★
-- `meta_yaku`: List of yaku whose conditions depend on existing yaku.
-- `minipoint_name`: Name for minipoints, like Fu
-- `point_name`: Name for points, like Han
 - `score_calculation`: Scoring method. See the scoring method section.
-- `yaku`: List of yaku.
-- `yaku_alt_names`: Does nothing, but I might make it do something in the future.
 - `yaku_precedence`: An object specifying which yaku gets overridden by other yaku.
-- `yakuman`: List of yakuman.
 
 Saki:
 
@@ -587,7 +579,8 @@ The following are optional string keys that are in place for each of the strings
       "nagashi_name": "Nagashi Mangan",
       // secondary points to display to the right of points
       // can be "points", "points2", or "minipoints"
-      "right_display": "minipoints"
+      "right_display": "minipoints",
+      "score_denomination": ""
     },
 
 In addition, to calculate the actual score from `points`/`points2`, the `"score_calculation"` key must exist and be associated with an object with a `"scoring_method"` key. Scoring will be performed based on this `"scoring_method"` key.
@@ -687,6 +680,15 @@ Otherwise the win is by self-draw. Then every player pays the winner the score m
 You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`, `"draw_penalty"` which add a fixed amount to their respective payments (after the multiplication). For example, in MCR all players pay the winner 8 points regardless of the score, so all of these would be set to `8`.
 
 If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
+
+There are typically no payments at exhaustive draw, but you can enable riichi-style tenpai and nagashi exhaustive draw payments via the following:
+
+    "score_calculation": {
+      "draw_tenpai_payments": [1000, 1500, 3000],
+      "draw_nagashi_payments": [2000, 4000],
+    },
+
+These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
 
 <!--
 
