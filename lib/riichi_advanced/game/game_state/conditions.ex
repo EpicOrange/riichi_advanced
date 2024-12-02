@@ -165,12 +165,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_draw"              -> context.win_source == :draw
       "won_by_discard"           -> context.win_source == :discard
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
-      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_yaku_with_discard"    -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
-      "has_yaku_with_call"       -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, Enum.flat_map(Enum.at(opts, 1, ["yaku"]), fn yaku_key -> state.rules[yaku_key] end), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
-      "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_declared_yaku_with_discard" -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, last_action.tile, :discard)
-      "has_declared_yaku_with_call"    -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, Enum.flat_map(opts, fn yaku_key -> state.rules[yaku_key] end), :declared, context.seat, last_action.tile, :call)
+      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
+      "has_yaku_with_discard"    -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
+      "has_yaku_with_call"       -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
+      "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, :declared, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
+      "has_declared_yaku_with_discard" -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, opts, :declared, context.seat, last_action.tile, :discard)
+      "has_declared_yaku_with_call"    -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, opts, :declared, context.seat, last_action.tile, :call)
       "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile, players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action != nil && last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.tile_aliases)

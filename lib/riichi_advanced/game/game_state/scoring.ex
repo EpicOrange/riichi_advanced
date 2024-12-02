@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   import RiichiAdvanced.GameState
 
-  defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
+  defp _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
     context = %{
       seat: seat,
       winning_tile: winning_tile,
@@ -25,6 +25,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
       excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(state.rules["yaku_precedence"], name, []) end)
       Enum.reject(eligible_yaku, fn {name, _value} -> name in excluded_yaku end)
     else eligible_yaku end
+  end
+
+  defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
+    yaku_names = Enum.map(yaku_list, & &1["display_name"])
+    existing_yaku_names = Enum.map(existing_yaku, fn {name, _value} -> name end)
+    case RiichiAdvanced.ETSCache.get({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, state.players[seat].tile_aliases, winning_tile, win_source, yaku_names, existing_yaku_names}) do
+      [] -> 
+        result = _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
+        RiichiAdvanced.ETSCache.put({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, state.players[seat].tile_aliases, winning_tile, win_source, yaku_names, existing_yaku_names}, result)
+        result
+      [result] -> result
+    end
   end
 
   def get_minipoints(state, seat, winning_tile, win_source) do
@@ -63,6 +75,20 @@ defmodule RiichiAdvanced.GameState.Scoring do
     best_yaku
   end
 
+  def get_best_yaku_from_lists(state, yaku_list_names, seat, winning_tiles, win_source) do
+    # returns {yaku, minipoints, new_winning_tile}
+    for yaku_list_name <- yaku_list_names, reduce: {[], 0, nil} do
+      {yaku, minipoints, new_winning_tile} ->
+        if Map.has_key?(state.rules, yaku_list_name) do
+          {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules[yaku_list_name], seat, winning_tiles, win_source, yaku)
+          {yaku, minipoints, new_winning_tile}
+        else
+          GenServer.cast(self(), {:show_error, "WARNING: Could not find toplevel yaku list named \"#{yaku_list_name}\"!"})
+          {yaku, minipoints, new_winning_tile}
+        end
+    end
+  end
+
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
     orig_hand = state.players[seat].hand
     {flower_calls, non_flower_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
@@ -79,7 +105,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {state, assigned_winning_tile}
   end
 
-  def _seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source) do
+  def seat_scores_points(state, yaku_list_names, min_points, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
@@ -92,37 +118,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+      {yaku, _minipoints, _winning_tile} = get_best_yaku_from_lists(state, yaku_list_names, seat, [assigned_winning_tile], win_source)
       case min_points do
         :declared ->
-          Enum.any?(get_yaku_advanced(state, yaku_list, seat, [assigned_winning_tile], win_source), fn {_winning_tile, {_minipoints, yakus}} ->
-            names = Enum.map(yakus, fn {name, _value} -> name end)
-            Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
-          end)
-        _ -> 
-          points = for yaku <- yaku_list, reduce: 0 do
-            points when points >= min_points -> points
-            points ->
-              for {_winning_tile, {_minipoints, yakus}} <- get_yaku_advanced(state, [yaku], seat, [assigned_winning_tile], win_source) do
-                case yakus do
-                  []               -> points
-                  [{_name, value}] -> points + value
-                end
-              end |> Enum.max()
-          end
+          names = Enum.map(yaku, fn {name, _value} -> name end)
+          Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
+        _ ->
+          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
+          IO.inspect(points)
           points >= min_points
       end
     end)
-  end
-
-  def seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source) do
-    yaku_names = Enum.map(yaku_list, fn yaku -> yaku["display_name"] end)
-    case RiichiAdvanced.ETSCache.get({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}) do
-      [] -> 
-        result = _seat_scores_points(state, yaku_list, min_points, seat, winning_tile, win_source)
-        RiichiAdvanced.ETSCache.put({:seat_scores_points, state.players[seat].hand, state.players[seat].calls, winning_tile, state.players[seat].tile_aliases, yaku_names, min_points}, result)
-        result
-      [result] -> result
-    end
   end
 
   # defp parse_test_spec(rules, test_spec) do
@@ -912,32 +918,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
       # replace winner's hand with joker assignment to determine yaku
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
 
-      # obtain first list of yaku and minipoints
-      # TODO do we need ourselves in state.winners to calculate yaku?
-      # (if so, change it so we don't need state.winners to calculate yaku)
-      {yaku, minipoints, new_winning_tile} = for yaku_list_name <- score_rules["yaku_lists"], reduce: {[], 0, nil} do
-        {yaku, minipoints, new_winning_tile} ->
-          if Map.has_key?(state.rules, yaku_list_name) do
-            winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
-            {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules[yaku_list_name], seat, winning_tiles, win_source, yaku)
-            {yaku, minipoints, new_winning_tile}
-          else
-            GenServer.cast(self(), {:show_error, "WARNING: Could not find toplevel yaku list named \"#{yaku_list_name}\"!"})
-            {yaku, minipoints, new_winning_tile}
-          end
-      end
-      # obtain second list of yaku
-      yaku2 = if Map.has_key?(score_rules, "yaku2_lists") do
-        for yaku_list_name <- score_rules["yaku2_lists"], reduce: [] do
-          yaku2 ->
-            if Map.has_key?(state.rules, yaku_list_name) do
-              get_best_yaku(state, state.rules[yaku_list_name], seat, [assigned_winning_tile], win_source, yaku2)
-            else
-              GenServer.cast(self(), {:show_error, "WARNING: Could not find toplevel yaku list named \"#{yaku_list_name}\"!"})
-              yaku2
-            end
-        end
-      else [] end
+      # obtain yaku and minipoints
+      winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
+      {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
+      {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
+        get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
+      else {[], minipoints, new_winning_tile} end
       IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
 
       # if you win with 14 tiles all in hand (no draw), then take the given winning tile

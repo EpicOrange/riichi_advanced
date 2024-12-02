@@ -1228,7 +1228,7 @@
         {"name": "status_missing", "opts": ["match_start", "won"]},
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_draw", "opts": [8, ["yaku", "meta_yaku", "extra_yaku"]]}
+        {"name": "has_yaku_with_hand", "opts": [8, ["yaku", "meta_yaku", "extra_yaku"]]}
       ],
       "actions": [
         ["big_text", "Zimo"],

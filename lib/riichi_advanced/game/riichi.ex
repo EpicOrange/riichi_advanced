@@ -684,7 +684,7 @@ defmodule Riichi do
     fu
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}, enable_kontsu_fu \\ false) do
+  defp _calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases, enable_kontsu_fu) do
     # t = System.os_time(:millisecond)
 
     IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
@@ -893,6 +893,16 @@ defmodule Riichi do
     # end
 
     ret
+  end
+
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}, enable_kontsu_fu \\ false) do
+    case RiichiAdvanced.ETSCache.get({:calculate_fu, starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, tile_aliases, enable_kontsu_fu}) do
+      [] -> 
+        result = _calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases, enable_kontsu_fu)
+        RiichiAdvanced.ETSCache.put({:calculate_fu, starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, tile_aliases, enable_kontsu_fu}, result)
+        result
+      [result] -> result
+    end
   end
 
   def calc_ko_oya_points(score, is_dealer, num_players, han_fu_rounding_factor) do
