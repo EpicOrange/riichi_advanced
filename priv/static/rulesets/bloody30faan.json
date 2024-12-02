@@ -107,7 +107,7 @@
     [ "exhaustive", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1] ],
     [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ],
-    [ [["koutsu"], -1], [["pair"], 6] ],
+    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
