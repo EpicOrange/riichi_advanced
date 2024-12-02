@@ -389,7 +389,7 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
-      ["set_tile_alias_all", ["2y"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]]
+      ["set_tile_alias_all", ["2y"], ["any"]]
     ]
   },
   "before_win": {
@@ -450,7 +450,7 @@
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1]]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
       "actions": [
         ["big_text", "Flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"],
@@ -477,7 +477,7 @@
     },
     "start_no_flower": {
       "display_name": "No flowers",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1]]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"]],
       "unskippable": true
     },
@@ -603,7 +603,7 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1]]]]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
       "actions": [
         ["big_text", "Flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"],

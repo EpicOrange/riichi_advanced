@@ -128,7 +128,7 @@
   "big_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 3] ]],
   "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
-  "any_flower_definition": [[ [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a"], 1] ]],
+  "any_flower_definition": [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a"], 1] ]],
   "yaku": [
     // Flowers
     // {

@@ -89,7 +89,7 @@ defmodule RiichiAdvanced.GameState.American do
     else [] end
   end
   defp translate_american_match_definitions_postprocess(match_definition) do
-    # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojokers" tag
+    # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
       num_tiles = cond do
         is_list(groups) && Enum.all?(groups, &is_list(&1) || &1 == "nojoker") ->

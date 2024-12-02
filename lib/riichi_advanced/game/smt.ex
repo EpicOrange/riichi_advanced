@@ -366,7 +366,7 @@ defmodule RiichiAdvanced.SMT do
         """
       else
         str = set_to_bitvector(set, len)
-        "(define-fun set#{i+1} () (_ BitVec #{len}) #x#{str})\n"
+        "(define-fun set#{i+1} () (_ BitVec #{len}) #{str})\n"
       end
     end)
     set_indices = if Enum.empty?(all_sets) do [] else 1..length(all_sets) end
@@ -381,6 +381,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(fn {tile, ix} ->
       {_joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
       joker_choices = joker_choices
+      |> Enum.flat_map(fn tile2 -> if tile2 == :any do all_tiles else [tile2] end end)
       |> Enum.map(fn tile2 -> "(= joker#{ix} #{to_smt_tile(tile2, encoding)})" end)
       |> Enum.join("\n            ")
       {ix, "(declare-const joker#{ix} (_ BitVec #{len}))\n(assert (or #{joker_choices}))\n"}
