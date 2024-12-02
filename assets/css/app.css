@@ -2506,6 +2506,7 @@ div.top-right-container {
 div.menu-buttons {
   display: flex;
   flex-direction: row-reverse;
+  column-gap: calc(0.25 * var(--tile-size));
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
