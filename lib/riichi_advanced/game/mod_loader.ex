@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.ModLoader do
+  alias RiichiAdvanced.GameState.Debug, as: Debug
 
   def apply_mod(mod_name, ruleset_json) do
     # apply mods
@@ -25,7 +26,9 @@ defmodule RiichiAdvanced.ModLoader do
           String.replace(modded_json, "{", "{\"enabled_mods\":" <> inspect(mod_names), global: false)
         end
 
-        RiichiAdvanced.ETSCache.put({ruleset, mod_names}, modded_json, :cache_mods)
+        if not Debug.skip_ruleset_caching() do
+          RiichiAdvanced.ETSCache.put({ruleset, mod_names}, modded_json, :cache_mods)
+        end
 
         modded_json
     end

@@ -1,6 +1,6 @@
 defmodule RiichiAdvanced.SMT do
-  @print_smt false
-
+  alias RiichiAdvanced.GameState.Debug, as: Debug
+  
   @boilerplate """
                (set-logic QF_FD)
                (define-fun zero () (_ BitVec <len>) (_ bv0 <len>))
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.SMT do
         contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
         query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
         smt = Enum.join([contra, "(check-sat)\n", query])
-        if @print_smt do
+        if Debug.print_smt() do
           IO.puts(smt)
         end
         {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
@@ -604,7 +604,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(fn {{group, num, unique}, i} -> "(declare-const tiles#{i+1} (_ BitVec #{len}))\n(declare-const tiles#{i+1}_used Bool)\n#{tile_group_assertion(i+1, encoding, len, group, num, unique)}\n" end)
 
     smt = Enum.join([String.replace(@boilerplate, "<len>", "#{len}"), encoding_boilerplate] ++ set_definitions ++ [to_set_fun] ++ joker_constraints ++ hand_smt ++ calls_smt ++ tile_groups ++ index_smt ++ [match_assertions] ++ optimizations)
-    if @print_smt do
+    if Debug.print_smt() do
       IO.puts(smt)
       # IO.inspect(encoding)
     end

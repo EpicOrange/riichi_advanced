@@ -8,8 +8,6 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
 
-  @debug_actions false
-
   def temp_disable_play_tile(state, seat) do
     state = Map.update!(state, :play_tile_debounce, &Map.put(&1, seat, true))
     Debounce.apply(state.play_tile_debouncers[seat])
@@ -1077,7 +1075,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         # schedule an unpause after the given delay
         state = schedule_actions_before(state, context.seat, actions, context)
         :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, context}])
-        if @debug_actions do
+        if Debug.debug_actions() do
           IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
         end
         {state, []}
@@ -1098,7 +1096,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             _run_actions(state, actions, context)
           else
             # if buttons changed, stop evaluating actions here
-            if @debug_actions do
+            if Debug.debug_actions() do
               IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)} actions are: #{inspect([[action | opts] | actions])}")
             end
             {state, actions}
@@ -1123,7 +1121,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     {state, deferred_actions} = _run_actions(state, actions, context)
     # defer the remaining actions
     state = if not Enum.empty?(deferred_actions) do
-      if @debug_actions do
+      if Debug.debug_actions() do
         IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
       end
       state = schedule_actions(state, context.seat, deferred_actions, context)
@@ -1155,7 +1153,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     actions = state.players[context.seat].deferred_actions
     if state.game_active && not Enum.empty?(actions) do
       state = update_player(state, context.seat, &%Player{ &1 | choice: nil, chosen_actions: nil, deferred_actions: [], deferred_context: %{} })
-      if @debug_actions do
+      if Debug.debug_actions() do
         IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       end
       state = run_actions(state, actions, context)
@@ -1169,7 +1167,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     for {seat, player} <- state.players, reduce: state do
       state ->
         state = if not Enum.empty?(player.deferred_actions) do
-          if @debug_actions do
+          if Debug.debug_actions() do
             IO.puts("Resuming deferred actions for #{seat}")
           end
           run_deferred_actions(state, player.deferred_context)
@@ -1195,7 +1193,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp adjudicate_actions(state) do
     if state.game_active do
       lock = Mutex.await(state.mutex, __MODULE__)
-      if @debug_actions do
+      if Debug.debug_actions() do
         IO.puts("\nAdjudicating actions!")
       end
       # clear last discard
@@ -1228,14 +1226,14 @@ defmodule RiichiAdvanced.GameState.Actions do
                 state
               {:mark, mark_spec, pre_actions} ->
                 # run pre-mark actions
-                if @debug_actions do
+                if Debug.debug_actions() do
                   IO.puts("Running pre-mark actions for #{seat}: #{inspect(pre_actions)}")
                 end
                 state = run_actions(state, pre_actions, %{seat: seat})
                 # setup marking
                 cancellable = Map.get(state.rules["buttons"][choice], "cancellable", true)
                 state = Marking.setup_marking(state, seat, mark_spec, cancellable)
-                if @debug_actions do
+                if Debug.debug_actions() do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
                 end
                 state = schedule_actions(state, seat, actions, %{seat: seat})
@@ -1243,7 +1241,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 state
               nil ->
                 # just run all button actions as normal
-                if @debug_actions do
+                if Debug.debug_actions() do
                   IO.puts("Running actions for #{seat}: #{inspect(actions)}")
                 end
                 state = run_actions(state, actions, %{seat: seat})
@@ -1382,7 +1380,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def submit_actions(state, seat, choice, actions, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil) do
     player = state.players[seat]
     if state.game_active && player.choice == nil do
-      if @debug_actions do
+      if Debug.debug_actions() do
         IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
         # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       end
@@ -1395,7 +1393,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             if length(flattened_call_choices) == 1 do
               # if there's only one choice, automatically choose it
               {called_tile, [call_choice]} = Enum.max_by(call_choices, fn {_tile, choices} -> length(choices) end)
-              if @debug_actions do
+              if Debug.debug_actions() do
                 IO.puts("Submitting actions due to there being only one call choice for #{seat}: #{inspect(actions)}")
               end
               {called_tile, call_choice, call_choices}
@@ -1407,7 +1405,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       if called_tile == nil && call_choice == nil && saki_card == nil && call_choices != nil do
         # show call choice buttons
         # clicking them will call submit_actions again, but with the optional parameters included
-        if @debug_actions do
+        if Debug.debug_actions() do
           IO.puts("Showing call buttons for #{seat}: #{inspect(actions)}")
         end
         state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: choice } end)

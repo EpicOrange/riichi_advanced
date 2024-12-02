@@ -16,6 +16,7 @@ defmodule LogControl do
 end
 
 defmodule RiichiAdvanced.LogControlState do
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
   use GenServer
 
@@ -62,8 +63,32 @@ defmodule RiichiAdvanced.LogControlState do
     tile = discard_event["tile"] |> Utils.to_tile()
     # figure out what index was discarded
     ix = if not discard_event["tsumogiri"] do
+      if Debug.debug_log() && Enum.find_index(hand, &Utils.same_tile(&1, tile)) == nil do
+        # debug
+        IO.inspect({hand, draw, tile, discard_event})
+        IO.inspect({:east, state.game_state.players.east.hand})
+        IO.inspect({:south, state.game_state.players.south.hand})
+        IO.inspect({:west, state.game_state.players.west.hand})
+        IO.inspect({:north, state.game_state.players.north.hand})
+        IO.inspect({:east, state.game_state.players.east.pond})
+        IO.inspect({:south, state.game_state.players.south.pond})
+        IO.inspect({:west, state.game_state.players.west.pond})
+        IO.inspect({:north, state.game_state.players.north.pond})
+      end
       Enum.find_index(hand, &Utils.same_tile(&1, tile))
     else
+      if Debug.debug_log() && Enum.find_index(draw, &Utils.same_tile(&1, tile)) == nil do
+        # debug
+        IO.inspect({hand, draw, tile, discard_event})
+        IO.inspect({:east, state.game_state.players.east.hand})
+        IO.inspect({:south, state.game_state.players.south.hand})
+        IO.inspect({:west, state.game_state.players.west.hand})
+        IO.inspect({:north, state.game_state.players.north.hand})
+        IO.inspect({:east, state.game_state.players.east.pond})
+        IO.inspect({:south, state.game_state.players.south.pond})
+        IO.inspect({:west, state.game_state.players.west.pond})
+        IO.inspect({:north, state.game_state.players.north.pond})
+      end
       length(hand) + Enum.find_index(draw, &Utils.same_tile(&1, tile))
     end
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
