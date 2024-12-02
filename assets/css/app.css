@@ -2553,6 +2553,11 @@ div.centerpiece-status-bar > div.tiles-left {
   bottom: 0;
   border-left: calc(0.02 * var(--tile-size)) solid white;
 }
+/* sometimes these get duplicated by network conditions, so only show the latest one */
+div.top-right-container > div.menu-buttons:not(:nth-last-child(2)),
+div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(1)) {
+  display: none;
+}
 
 /* log control */
 
