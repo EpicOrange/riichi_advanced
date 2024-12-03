@@ -468,6 +468,20 @@ defmodule RiichiAdvanced.GameState.Conditions do
         seat = from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
         am_match_definitions = Map.get(state.rules, "win_definition", [])
         American.check_dead_hand(state, seat, am_match_definitions)
+      "all_calls_deaden_hand" ->
+        am_match_definitions = Map.get(state.rules, "win_definition", [])
+        for {button_name, {:call, choices}} <- state.players[context.seat].button_choices,
+            {called_tile, call_choices} <- choices,
+            call_choice <- call_choices,
+            reduce: true do
+          false -> false
+          true  ->
+            call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
+            call = {call_name, Enum.map(Utils.strip_attrs([called_tile | call_choice]), fn tile -> {tile, false} end)}
+            update_player(state, context.seat, &%Player{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
+            |> American.get_viable_am_match_definitions(context.seat, am_match_definitions)
+            |> Enum.empty?()
+        end
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

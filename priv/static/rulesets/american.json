@@ -1,5 +1,5 @@
 {
-  "default_mods": [],
+  "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
@@ -611,13 +611,26 @@
       ],
       "enabled_at_start": false
     },
-    "5_auto_discard": {
+    "5_auto_no_dead_call": {
+      "display_name": "DC",
+      "desc": "Skip calls that deaden your hand.",
+      "actions": [
+        ["when", [
+          "not_our_turn",
+          {"name": "buttons_include", "opts": ["skip"]},
+          {"name": "buttons_exclude", "opts": ["ron"]},
+          "all_calls_deaden_hand"
+        ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": true
+    },
+    "6_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     },
-    "6_auto_discard_nonmatching": {
+    "7_auto_discard_nonmatching": {
       "display_name": "DD",
       "desc": "Automatically discard your drawn tile if it doesn't match any of your hand tiles.",
       "actions": [

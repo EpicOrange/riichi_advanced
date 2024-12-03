@@ -1128,16 +1128,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       state
     else state end
     state = Map.update!(state, :actions_cv, & &1 - 1)
-    state = if state.actions_cv == 0 do
-      # notify_ai(state)
-      # make our next decision for us (unless these actions were caused by auto buttons)
-      state = if not Map.has_key?(context, :auto) || not context.auto do
-        # IO.puts("Triggering auto buttons")
-        state = Buttons.trigger_auto_buttons(state)
-        state
-      else state end
-      state
-    else state end
+    # state = if state.actions_cv == 0 do
+    #   # notify_ai(state)
+    #   # make our next decision for us (unless these actions were caused by auto buttons)
+    #   state = if not Map.get(context, :auto, false) do
+    #     IO.puts("Triggering auto buttons")
+    #     state = Buttons.trigger_auto_buttons(state)
+    #     state
+    #   else state end
+    #   state
+    # else state end
     state
   end
 

@@ -139,6 +139,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
         end
       end
 
+      # run auto buttons every time we recalculate buttons
+      state = trigger_auto_buttons(state)
+
       state
     else state end
   end
