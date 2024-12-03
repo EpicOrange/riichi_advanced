@@ -344,6 +344,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {riichi_payment, honba_payment} = if collect_sticks do {state.pot, Map.get(score_rules, "honba_value", 0) * state.honba} else {0, 0} end
       honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
 
+      basic_score = winner.score
+      
+      basic_score = if "wareme" in state.players[winner.seat].status do
+        push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gains double points for wareme"}])
+        basic_score * 2
+      else basic_score end
+      
       # calculate some parameters that change if pao exists
       {delta_scores, basic_score, payer, direct_hit} =
         # due to the way we handle mixed pao-and-not-pao yakuman earlier,
@@ -354,15 +361,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
           if winner.payer != nil do # ron
             # the deal-in player is not responsible for honba payments,
             # so we take care of their share of payment right here
-            basic_score = trunc(winner.score / 2)
+            basic_score = Utils.try_integer(basic_score / 2)
             delta_scores = Map.put(delta_scores, winner.payer, -basic_score)
             delta_scores = Map.put(delta_scores, winner.seat, basic_score)
             {delta_scores, basic_score, winner.pao_seat, true}
           else
-            {delta_scores, winner.score, winner.pao_seat, true}
+            {delta_scores, basic_score, winner.pao_seat, true}
           end
         else
-          {delta_scores, winner.score, winner.payer, winner.payer != nil}
+          {delta_scores, basic_score, winner.payer, winner.payer != nil}
         end
 
       delta_scores = if direct_hit do # either ron, or tsumo pao, or remaining ron pao payment
@@ -454,6 +461,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
             else payment end
             payment = if "tsujigaito_satoha_double_score" in state.players[winner.seat].status do
               push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
+              payment * 2
+            else payment end
+            payment = if "wareme" in state.players[payer].status do
+              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} loses double points for wareme"}])
               payment * 2
             else payment end
             delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)

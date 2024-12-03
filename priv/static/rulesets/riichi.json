@@ -72,10 +72,10 @@
     {"id": "no_double_yakuman", "name": "No Double Yakuman", "desc": "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."},
     {"id": "yakuman_only", "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
     {"id": "toriuchi", "name": "Toriuchi", "desc": "Each 1s (bird) tile is worth 1 extra han, unless your hand contains 7p (pistol) which would shoot the birds dead. That is, unless your hand contains 8s (birdcage) which would protect the birds from gunfire. This is extra han like dora, and does not count towards your 1 han minimum."},
+    {"id": "wareme", "name": "Wareme", "desc": "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
 
     // pending mod ideas:
-    // {"id": "wareme", "name": "Wareme", "desc": "In each round, a random player is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."},
     // {"id": "aotenjou", "name": "Aotenjou", "desc": "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^han."},
     // {"id": "chombo", "name": "Chombo", "desc": "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."},
     // {"id": "sudden_death", "name": "Sudden Death", "desc": "Sets a goal of 30000 points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below 30000 points, play continues to the West (South) round until someone surpasses 30000 points, or at the end of West 4 (South 4)."},

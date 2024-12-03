@@ -281,13 +281,14 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
         </div>
       <% else %>
-        <%= if @state.players[@viewer] != nil do %>
-          <div class={["status-line", "self"]}>
-            <%= for status <- @state.players[@viewer].status, status in Map.get(@state.rules, "shown_statuses", []) do %>
-              <div class="status-text"><%= status %></div>
-            <% end %>
-          </div>
-        <% end %>
+        <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
+          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) || (seat == @viewer && status in Map.get(@state.rules, "shown_statuses", [])) do %>
+            <div class="status-text"><%= status %></div>
+          <% end %>
+          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) || (seat == @viewer && name in Map.get(@state.rules, "shown_statuses", [])) do %>
+            <div class="status-text"><%= "#{name}: #{value}" %></div>
+          <% end %>
+        </div>
       <% end %>
       <%= if @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
         <div class="visible-waits-container">
