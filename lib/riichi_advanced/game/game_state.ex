@@ -678,7 +678,11 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def finalize_game(state) do
-    # TODO
+    # trigger before_conclusion actions
+    state = if Map.has_key?(state.rules, "before_conclusion") do
+      Actions.run_actions(state, state.rules["before_conclusion"]["actions"], %{seat: state.turn})
+    else state end
+
     IO.puts("Game concluded")
     state = Map.put(state, :visible_screen, :game_end)
     state
