@@ -456,11 +456,17 @@ defmodule Riichi do
   def partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # take out one copy of each group to process last
     decomposed_match_definitions = for match_definition <- match_definitions do
-      for {[groups, num], i} <- Enum.with_index(match_definition), num >= 1 do
-        {List.replace_at(match_definition, i, [groups, num-1]), [[groups, 1]]}
+      {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
+        {result, keywords} -> case match_definition_elem do
+          [groups, num] when num >= 1     ->
+            entry = {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
+            {[entry | result], keywords}
+          [_groups, num] when num < 1     -> {result, keywords}
+          keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}
+        end
       end
+      Enum.reverse(result)
     end |> Enum.concat()
-    # remove def1 and defer def2
     for {def1, def2} <- decomposed_match_definitions do
       {remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases), def2}
     end
