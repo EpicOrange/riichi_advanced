@@ -414,7 +414,7 @@ defmodule RiichiAdvanced.GameState do
     persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
     persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
-      {name, auto_button["enabled_at_start"]}
+      {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
     state = state
     |> Map.put(:wall_index, Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum())
@@ -1170,8 +1170,8 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:toggle_auto_button, seat, auto_button_name, enabled}, state) do
     # Keyword.put screws up ordering, so we need to use Enum.map
-    state = update_player(state, seat, fn player -> %Player{ player | auto_buttons: Enum.map(player.auto_buttons, fn {name, on} ->
-      if auto_button_name == name do {name, enabled} else {name, on} end
+    state = update_player(state, seat, fn player -> %Player{ player | auto_buttons: Enum.map(player.auto_buttons, fn {name, desc, on} ->
+      if auto_button_name == name do {name, desc, enabled} else {name, desc, on} end
     end) } end)
     # schedule a :trigger_auto_button message
     state = Buttons.trigger_auto_button(state, seat, auto_button_name, enabled)

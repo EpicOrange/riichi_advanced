@@ -569,14 +569,68 @@
       "unskippable": true
     }
     // TODO messages should mention direction of player
-    // TODO advance turn if dead player is current turn player
-    // TODO can't skip calls via double click
   },
   "auto_buttons": {
-    "auto_sort": {
+    "1_auto_sort": {
       "display_name": "A",
+      "desc": "Automatically sort your hand.",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
+    },
+    "2_auto_ron": {
+      "display_name": "M",
+      "desc": "Automatically declare Mah Jongg.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["mahjong_discard"]}], [["press_button", "mahjong_discard"]]],
+        ["when", [{"name": "buttons_include", "opts": ["mahjong_draw"]}], [["press_button", "mahjong_draw"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "3_auto_no_call": {
+      "display_name": "C",
+      "desc": "Skip all calls except Mah Jongg.",
+      "actions": [
+        ["when", [
+          "not_our_turn",
+          {"name": "buttons_include", "opts": ["skip"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard"]}
+        ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "4_auto_no_joker_call": {
+      "display_name": "JC",
+      "desc": "Skip calls that only use your jokers.",
+      "actions": [
+        ["when", [
+          "not_our_turn",
+          {"name": "buttons_include", "opts": ["skip"]},
+          {"name": "buttons_exclude", "opts": ["ron"]},
+          {"name": "not_match", "opts": [["last_discard", "hand_any"], [[ "nojoker", [["pair"], 1] ]]]}
+        ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "5_auto_discard": {
+      "display_name": "D",
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    },
+    "6_auto_discard_nonmatching": {
+      "display_name": "DD",
+      "desc": "Automatically discard your drawn tile if it doesn't match any of your hand tiles.",
+      "actions": [
+        ["when", [
+          "has_draw",
+          [
+            {"name": "not_match", "opts": [["hand"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]},
+            {"name": "not_match", "opts": [["draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}
+          ],
+          {"name": "not_match", "opts": [["draw"], [[ "nojoker", [["1j"], 1] ]]]},
+          {"name": "not_match", "opts": [["draw", "hand_any"], [[ "nojoker", [["pair"], 1] ]]]}
+        ], [["discard_draw"]]]],
+      "enabled_at_start": false
     }
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn"],
