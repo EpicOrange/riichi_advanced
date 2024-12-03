@@ -100,7 +100,7 @@
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
-    [ "exhaustive", "almost", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
     [ "exhaustive", "almost", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
     [ "exhaustive", "almost", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],

@@ -35,7 +35,7 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
         |> Enum.map(fn {tile, ix} ->
           if win_definition != nil do
-            {tile, ix, Riichi.get_waits_and_ukeire(all_tiles, visible_tiles, hand -- [tile], calls, win_definition, ordering, ordering_r, tile_aliases)}
+            {tile, ix, Riichi.get_waits_and_ukeire(all_tiles, visible_tiles, hand -- [tile], calls, win_definition, ordering, ordering_r, tile_aliases, true)}
           else {tile, ix, %{}} end
         end)
 

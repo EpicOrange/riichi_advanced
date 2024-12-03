@@ -478,11 +478,11 @@ defmodule Riichi do
   # TODO move wall to front, remove @all_tiles
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
-  def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles) do
+  def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles, skip_tenpai_check \\ false) do
     # t = System.os_time(:millisecond)
 
     # only check for waits if we're tenpai
-    ret = if match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
+    ret = if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
       filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
       hand_calls_def = partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
       for tile <- Enum.uniq(wall), reduce: [] do
@@ -506,16 +506,16 @@ defmodule Riichi do
     ret
   end
 
-  def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases) do
-    waits = get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases, wall)
+  def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases, skip_tenpai_check) do
+    waits = get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases, wall, skip_tenpai_check)
     freqs = Enum.frequencies(wall -- Utils.strip_attrs(visible_tiles))
     Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
   end
 
-  def get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
+  def get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
     case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, wall, visible_tiles, hand, calls, match_definitions, ordering, tile_aliases}) do
       [] -> 
-        result = _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
+        result = _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases, skip_tenpai_check)
         RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, wall, visible_tiles, hand, calls, match_definitions, ordering, tile_aliases}, result)
         result
       [result] -> result
