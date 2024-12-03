@@ -1,0 +1,1 @@
+.tenpaiyame = true

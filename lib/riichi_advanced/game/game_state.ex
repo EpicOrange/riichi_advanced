@@ -643,7 +643,7 @@ defmodule RiichiAdvanced.GameState do
 
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
-          if state.round_result == :end_game || Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] do
+          if should_end_game(state) do
             finalize_game(state)
           else
             if not state.log_seeking_mode do
@@ -674,6 +674,21 @@ defmodule RiichiAdvanced.GameState do
       true ->
         IO.puts("timer_finished() called; unsure what the timer was for")
         state
+    end
+  end
+
+  def should_end_game(state) do
+    forced = state.round_result == :end_game # e.g. tobi
+    dealer = Riichi.get_east_player_seat(state.kyoku)
+    agariyame = Map.get(state.rules, "agariyame", false) && state.round_result == :win && dealer in state.winner_keys
+    tenpaiyame = Map.get(state.rules, "tenpaiyame", false) && state.round_result == :draw && "tenpai" in state.players[dealer].status
+    forced || agariyame || tenpaiyame || if Map.has_key?(state.rules, "sudden_death_goal") do
+      above_goal = Enum.any?(state.players, fn {seat, player} -> player.score >= state.rules["sudden_death_goal"] end)
+      past_max_rounds = state.kyoku >= state.rules["sudden_death_max_rounds"]
+      above_goal || past_max_rounds
+    else
+      past_max_rounds = Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"]
+      past_max_rounds
     end
   end
 

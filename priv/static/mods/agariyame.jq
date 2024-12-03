@@ -1,0 +1,1 @@
+.agariyame = true
