@@ -605,7 +605,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["ron"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard"]},
           {"name": "not_match", "opts": [["last_discard", "hand_any"], [[ "nojoker", [["pair"], 1] ]]]}
         ], [["press_button", "skip"]]]
       ],
@@ -618,7 +618,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["ron"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard"]},
           "all_calls_deaden_hand"
         ], [["press_button", "skip"]]]
       ],

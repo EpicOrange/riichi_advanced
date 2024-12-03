@@ -84,7 +84,6 @@ defmodule Game do
     delta_scores_reason: nil,
     next_dealer: nil,
     timer: 0,
-    actions_cv: 0, # condition variable
     log_loading_mode: false, # disables pause and doesn't notify players on state change
     log_seeking_mode: false, # disables round change on round end
 

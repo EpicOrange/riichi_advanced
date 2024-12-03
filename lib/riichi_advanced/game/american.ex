@@ -351,14 +351,12 @@ defmodule RiichiAdvanced.GameState.American do
     calls = replace_jokers_in_calls(state.players[seat].calls)
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
-    IO.inspect(hand, label: "hand")
-    IO.inspect(calls, label: "calls")
     Enum.filter(am_match_definitions, &Riichi.match_hand(hand, calls, translate_match_definitions(state, [&1]), ordering, ordering_r, %{}))
   end
 
   def check_dead_hand(state, seat, am_match_definitions) do
     viable_am_match_definitions = get_viable_am_match_definitions(state, seat, am_match_definitions)
-    IO.inspect(viable_am_match_definitions, label: "viable_am_match_definitions")
+    # IO.inspect(viable_am_match_definitions, label: "viable_am_match_definitions")
 
     # at least one win definition must match the hand (entire wall - visible tiles)
     # since our matching mechanism is inefficient for big hands with jokers,

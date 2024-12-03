@@ -1112,11 +1112,10 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def run_actions(state, actions, context) do
-    state = Map.update!(state, :actions_cv, & &1 + 1)
     # if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
-    #   IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
+    #   IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
     # end
-    # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}; cv = #{state.actions_cv}")
+    # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
     # IO.inspect(Process.info(self(), :current_stacktrace))
     {state, deferred_actions} = _run_actions(state, actions, context)
     # defer the remaining actions
@@ -1127,17 +1126,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       state = schedule_actions(state, context.seat, deferred_actions, context)
       state
     else state end
-    state = Map.update!(state, :actions_cv, & &1 - 1)
-    # state = if state.actions_cv == 0 do
-    #   # notify_ai(state)
-    #   # make our next decision for us (unless these actions were caused by auto buttons)
-    #   state = if not Map.get(context, :auto, false) do
-    #     IO.puts("Triggering auto buttons")
-    #     state = Buttons.trigger_auto_buttons(state)
-    #     state
-    #   else state end
-    #   state
-    # else state end
     state
   end
 
