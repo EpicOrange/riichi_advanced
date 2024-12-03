@@ -50,6 +50,8 @@ Concealed kongs are completely hidden until the end of a round.
 
 Swap-calling is disallowed.
 
+Adding a tile to a pung to make a kong is eligible for Robbing a Kong, but flower declarations are not.
+
 ## Faan table
 
 The faan table for B30FJ is extensive and as such will be broken down into thirteen subsections:

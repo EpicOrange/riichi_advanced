@@ -203,7 +203,7 @@ defmodule RiichiAdvanced.GameState.American do
       ix  -> [Enum.at(tiles, ix) | arrange_american_group(group, List.delete_at(tiles, ix), tile_aliases)]
     end
   end
-  def arrange_american_hand(am_match_definitions, hand, calls, winning_tile, ordering, ordering_r, tile_aliases) do
+  def arrange_american_hand(am_match_definitions, hand, calls, ordering, ordering_r, tile_aliases) do
     call_tiles = Enum.flat_map(calls, &Riichi.call_to_tiles/1)
     hand = hand ++ call_tiles
     # arrange the given hand (which may contain jokers) to match any of the match definitions
@@ -391,7 +391,7 @@ defmodule RiichiAdvanced.GameState.American do
     # not Enum.any?(ret, fn {_a, b} -> b != nil end)
 
     arrangements = viable_am_match_definitions
-    |> Enum.map(&arrange_american_hand([&1], hand, calls, nil, ordering, ordering_r, tile_aliases))
+    |> Enum.map(&arrange_american_hand([&1], hand, calls, ordering, ordering_r, tile_aliases))
     |> Enum.reject(& &1 == nil)
 
     if not Enum.empty?(arrangements) do

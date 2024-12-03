@@ -846,7 +846,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       ordering_r = state.players[seat].tile_ordering_r
       tile_aliases = state.players[seat].tile_aliases
       new_winning_tile = Utils.strip_attrs(new_winning_tile)
-      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, Utils.strip_attrs(new_winning_tile), ordering, ordering_r, tile_aliases)
+      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, ordering, ordering_r, tile_aliases)
       if arranged_hand != nil do
         arranged_hand = arranged_hand
         |> Enum.intersperse([:"3x"])
@@ -868,6 +868,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {List.delete_at(arranged_hand, ix), [new_winning_tile]}
     else {arranged_hand, orig_draw} end
 
+    # push message
+    if not Enum.empty?(Map.keys(joker_assignment) -- [:"0m", :"0p", :"0s"]) do
+      orig_call_tiles = orig_calls
+      |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
+      |> Enum.flat_map(fn call -> Enum.take(Riichi.call_to_tiles(call), 3) end) # ignore kans
+      smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
+      joker_assignment_message = joker_assignment
+      |> Enum.map(fn {joker_ix, tile} -> [Utils.pt(Enum.at(smt_hand, joker_ix)), %{text: "→"}, Utils.pt(tile)] end)
+      |> Enum.intersperse([%{text: ","}])
+      |> Enum.concat()
+      push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
+    end
+
     # rearrange their hand
     update_player(state, seat, fn player -> %Player{ player | hand: arranged_hand, draw: arranged_draw, calls: arranged_calls } end)
   end
@@ -888,7 +901,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       jokers = Map.keys(state.players[seat].tile_mappings)
       if Utils.count_tiles(jokers, smt_hand) > 0 do
-        RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
+        # run smt, but push a message if it takes more than 0.5 seconds
+        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings) end)
+        notify_task = Task.async(fn ->
+          :timer.sleep(500)
+          push_message(state, [%{text: "Running joker solver..."}])
+        end)
+        res = Task.await(smt_task, :infinity)
+        if Task.yield(notify_task, 0) == nil do
+          Task.shutdown(notify_task, :brutal_kill)
+        end
+        res
       else [%{}] end
     end
     IO.puts("Joker assignments (calculate_winner_details): #{inspect(joker_assignments)}")

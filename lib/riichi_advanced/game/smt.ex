@@ -358,11 +358,11 @@ defmodule RiichiAdvanced.SMT do
         str2 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 10, 30)), len)
         str3 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 20, 30)), len)
         """
-        (define-const set#{i+1}_sel (_ BitVec 2))
+        (declare-const set#{i+1}_sel (_ BitVec 2))
         (define-fun set#{i+1} () (_ BitVec #{len})
-          (ite (= (_ bv1 set#{i+1}_sel)) #{str1}
-          (ite (= (_ bv2 set#{i+1}_sel)) #{str2}
-          (ite (= (_ bv3 set#{i+1}_sel)) #{str3} zero))))
+          (ite (= (_ bv1 2) set#{i+1}_sel) #{str1}
+          (ite (= (_ bv2 2) set#{i+1}_sel) #{str2}
+          (ite (= (_ bv3 2) set#{i+1}_sel) #{str3} zero))))
         """
       else
         str = set_to_bitvector(set, len)
@@ -374,7 +374,7 @@ defmodule RiichiAdvanced.SMT do
     to_set_fun = if Enum.empty?(all_sets) do "" else "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n" end
 
     # first figure out which tiles are jokers based on tile_mappings
-    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
+    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end) # calls have already been preprocessed to remove sideways flag
     {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
     |> Enum.filter(fn {tile, _ix} -> Utils.count_tiles([tile], jokers) == 1 end)
