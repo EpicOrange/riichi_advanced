@@ -29,40 +29,48 @@
            "5z", "5z", "5z", "5z",
            "7z", "7z", "7z", "7z"],
   "play_restrictions": [
-    [["1m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "1"]}]]],
-    [["2m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "2"]}]]],
-    [["3m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "3"]}]]],
-    [["4m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "4"]}]]],
-    [["5m", "0m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "5"]}]]],
-    [["6m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "6"]}]]],
-    [["7m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "7"]}]]],
-    [["8m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "8"]}]]],
-    [["9m"], [["game_start", {"name": "last_discard_matches", "opts": ["manzu", "jihai", "9"]}]]],
-    [["1p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "1"]}]]],
-    [["2p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "2"]}]]],
-    [["3p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "3"]}]]],
-    [["4p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "4"]}]]],
-    [["5p", "0p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "5"]}]]],
-    [["6p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "6"]}]]],
-    [["7p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "7"]}]]],
-    [["8p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "8"]}]]],
-    [["9p"], [["game_start", {"name": "last_discard_matches", "opts": ["pinzu", "jihai", "9"]}]]],
-    [["1s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "1"]}]]],
-    [["2s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "2"]}]]],
-    [["3s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "3"]}]]],
-    [["4s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "4"]}]]],
-    [["5s", "0s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "5"]}]]],
-    [["6s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "6"]}]]],
-    [["7s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "7"]}]]],
-    [["8s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "8"]}]]],
-    [["9s"], [["game_start", {"name": "last_discard_matches", "opts": ["souzu", "jihai", "9"]}]]]
+    [["1m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "1"]}]],
+    [["2m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "2"]}]],
+    [["3m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "3"]}]],
+    [["4m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "4"]}]],
+    [["5m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "5"]}]],
+    [["6m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "6"]}]],
+    [["7m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "7"]}]],
+    [["8m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "8"]}]],
+    [["9m"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["manzu", "jihai", "9"]}]],
+    [["1p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "1"]}]],
+    [["2p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "2"]}]],
+    [["3p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "3"]}]],
+    [["4p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "4"]}]],
+    [["5p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "5"]}]],
+    [["6p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "6"]}]],
+    [["7p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "7"]}]],
+    [["8p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "8"]}]],
+    [["9p"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["pinzu", "jihai", "9"]}]],
+    [["1s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "1"]}]],
+    [["2s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "2"]}]],
+    [["3s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "3"]}]],
+    [["4s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "4"]}]],
+    [["5s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "5"]}]],
+    [["6s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "6"]}]],
+    [["7s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "7"]}]],
+    [["8s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "8"]}]],
+    [["9s"], ["not_no_discards_yet", {"name": "not_last_discard_matches", "opts": ["souzu", "jihai", "9"]}]]
   ],
   "play_effects": [
-    ["7z", [["reverse_turn_order"]]]
+    ["7z", [["reverse_turn_order"]]],
+    ["any", [["when", [{"name": "tiles_in_hand", "opts": [0]}], [["big_text", "Won"], ["pause", 1500], ["win_by_discard"]]]]]
   ],
   "on_no_valid_tiles": {
     "actions": [["draw"]],
     "recurse": true
+  },
+  "score_calculation": {
+    "yaku_lists": [],
+    "win_by_discard_name": "Winner"
+  },
+  "after_start": {
+    "actions": [["add_score", 1], ["bet_points", 1]]
   },
   "buttons": {
     "uno": {
@@ -74,6 +82,7 @@
         ["when_anyone", [{"name": "tiles_in_hand", "opts": [1]}, {"name": "not_status", "opts": ["uno"]}], [["draw", 2]]]
       ],
       "precedence_over": ["uno"],
+      "call_priority_list": [],
       "unskippable": true
     }
   },
