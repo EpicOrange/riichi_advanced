@@ -31,6 +31,7 @@ defmodule Room do
     starting: false,
     started: false,
     mods: %{},
+    categories: [],
     tutorial_link: nil,
     textarea: [@initial_textarea],
     textarea_deltas: [[@initial_textarea]],
@@ -90,7 +91,13 @@ defmodule RiichiAdvanced.RoomState do
       [mods] -> mods
       []     -> Map.get(rules, "default_mods", [])
     end
-    mods = Map.get(rules, "available_mods", [])
+    {mods, categories} = for {item, i} <- Map.get(rules, "available_mods", []) |> Enum.with_index(), reduce: {[], []} do
+      {result, categories} -> cond do
+        is_map(item) -> {[item |> Map.put("index", i) |> Map.put("category", Enum.at(categories, 0, nil)) | result], categories}
+        is_binary(item) -> {result, [item | categories]}
+      end
+    end
+    categories = Enum.reverse(categories)
 
     # put params and process ids into state
     state = Map.merge(state, %Room{
@@ -106,14 +113,16 @@ defmodule RiichiAdvanced.RoomState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      mods: mods |> Enum.with_index() |> Map.new(fn {mod, i} -> {mod["id"], %{
+      mods: mods |> Map.new(fn mod -> {mod["id"], %{
         enabled: mod["id"] in default_mods,
-        index: i,
+        index: mod["index"],
         name: mod["name"],
         desc: mod["desc"],
+        category: mod["category"],
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
+      categories: categories,
       tutorial_link: if state.ruleset == "custom" do
         "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md"
       else

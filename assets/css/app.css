@@ -2469,6 +2469,15 @@ div.room > div.custom-json::before {
 }
 div.room > div.mods::before { content: "Mods"; }
 div.room > div.custom-json::before { content: "Ruleset"; }
+div.room > div.mods {
+  overflow-y: auto;
+}
+div.room > div.mods > div.mod-category,
+div.room > div.mods > div.mod-category-spacer {
+  width: 100%;
+  min-height: 0.5em;
+  margin-left: -0.5em;
+}
 div.room > div.mods > input { display: none; }
 div.room > div.mods > label {
   background: gray;
