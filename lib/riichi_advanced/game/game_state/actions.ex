@@ -353,9 +353,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         for {seat, player} <- state.players, seat != context.seat do
           Utils.count_tiles(player.pond, [:"1x"])
         end |> Enum.sum()
-      ["num_revealed_tiles_all" | _opts] ->
+      ["num_matching_revealed_tiles_all" | opts] ->
         for {_seat, player} <- state.players do
-          Utils.count_tiles(player.hand ++ player.draw, [{:any, ["revealed"]}])
+          player.hand ++ player.draw
+          |> IO.inspect()
+          |> Enum.filter(&Riichi.tile_matches(opts, %{tile: &1}))
+          |> Utils.count_tiles([{:any, ["revealed"]}])
         end |> Enum.sum()
       ["num_matching_melded_tiles_all" | opts] ->
         for {_seat, player} <- state.players do
@@ -396,6 +399,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(hand, doras)
         else 0 end
+      ["pot" | _opts] -> state.pot
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_integer(amount) -> amount
       _ ->
@@ -431,6 +435,12 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp multiply_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = amount * Map.get(state.players[context.seat].counters, counter_name, 0)
+    put_in(state.players[context.seat].counters[counter_name], new_ctr)
+  end
+  
+  defp divide_counter(state, context, counter_name, amt_spec) do
+    amount = interpret_amount(state, context, amt_spec)
+    new_ctr = Integer.floor_div(Map.get(state.players[context.seat].counters, counter_name, 0), amount)
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
@@ -571,6 +581,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
         seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
