@@ -501,7 +501,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
   def check_dnf_condition(state, cond_spec, context \\ %{}) do
     cond do
       is_binary(cond_spec) -> check_condition(state, cond_spec, context)
-      is_map(cond_spec)    -> check_condition(state, cond_spec["name"], context, cond_spec["opts"])
+      is_map(cond_spec)    ->
+        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context.seat, cond_spec["as"])} else context end
+        check_condition(state, cond_spec["name"], context, cond_spec["opts"])
       is_list(cond_spec)   -> Enum.any?(cond_spec, &check_cnf_condition(state, &1, context))
       true                 ->
         IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
@@ -512,7 +514,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
   def check_cnf_condition(state, cond_spec, context \\ %{}) do
     cond do
       is_binary(cond_spec) -> check_condition(state, cond_spec, context)
-      is_map(cond_spec)    -> check_condition(state, cond_spec["name"], context, cond_spec["opts"])
+      is_map(cond_spec)    ->
+        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context.seat, cond_spec["as"])} else context end
+        check_condition(state, cond_spec["name"], context, cond_spec["opts"])
       is_list(cond_spec)   -> Enum.all?(cond_spec, &check_dnf_condition(state, &1, context))
       true                 ->
         IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
