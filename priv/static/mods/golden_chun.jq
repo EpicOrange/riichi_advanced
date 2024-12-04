@@ -28,12 +28,11 @@ end
 ]
 |
 .golden_chun_777z_win_definition = [
-  [ "exhaustive", [["chun"], 1], [["pair"], 1], [["shuntsu", "koutsu"], 3] ]
+  [ "debug", "exhaustive", [["chun"], 1], [["pair"], 1], [["shuntsu", "koutsu"], 3] ]
 ]
 |
 # add aka and golden chun yaku
 .extra_yaku += [
-  {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_h"]}]},
   {"display_name": "Kin", "value": 1, "when": [
     {"name": "status", "opts": ["golden_chun"]},
     [
@@ -59,22 +58,26 @@ end
   ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["chun"], 1] ]]]}], [["set_status", "777z"]]]
 ]
 |
-# add golden chun yakuman
-.yakuman += [
-  {"display_name": "Sangen Pocchi", "value": 1, "when": [
-    {"name": "status", "opts": ["shiro_pocchi", "aka_h", "golden_chun"]},
+.after_win.actions += [
+  ["when", [
+    {"name": "status", "opts": ["golden_chun"]},
     [
       {"name": "status_missing", "opts": ["7z"]},
       [
         {"name": "status", "opts": ["77z"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
+        {"name": "match", "opts": [["arranged_hand", "arranged_calls", "winning_tile"], ["golden_chun_77z_win"]]}
       ],
       [
         {"name": "status", "opts": ["777z"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
+        {"name": "match", "opts": [["arranged_hand", "arranged_calls", "winning_tile"], ["golden_chun_777z_win"]]}
       ]
     ]
-  ]}
+  ], [["set_status", "kindora"]]]
+]
+|
+# add golden chun yakuman
+.yakuman += [
+  {"display_name": "Sangen Pocchi", "value": 1, "when": [{"name": "status", "opts": ["shiro_pocchi", "aka_h", "kindora"]}]}
 ]
 |
 # can't call golden chun unless as a chun

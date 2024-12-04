@@ -36,6 +36,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles(&1, true)), calls}]
+          "arranged_hand" -> [{hand ++ state.players[context.seat].arranged_hand, calls}]
+          "arranged_calls" -> [{hand, calls ++ state.players[context.seat].arranged_calls}]
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
@@ -167,6 +169,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_draw"              -> context.win_source == :draw
       "won_by_discard"           -> context.win_source == :discard
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
+      "has_yaku"                 -> context.seat in state.winner_seats && Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_yaku_with_discard"    -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
       "has_yaku_with_call"       -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, Enum.at(opts, 1, ["yaku"]), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)

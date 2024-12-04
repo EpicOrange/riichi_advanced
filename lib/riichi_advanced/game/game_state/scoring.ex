@@ -722,7 +722,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               # add winner to state
               state
               |> Map.update!(:winners, &Map.put(&1, seat, winner))
-              |> Map.update!(:winner_keys, & &1 ++ [seat])
+              |> Map.update!(:winner_seats, & &1 ++ [seat])
           end
         else state end
 
@@ -896,8 +896,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
     end
 
-    # rearrange their hand
-    update_player(state, seat, fn player -> %Player{ player | hand: arranged_hand, draw: arranged_draw, calls: arranged_calls } end)
+    %{ hand: arranged_hand, draw: arranged_draw, calls: arranged_calls }
   end
 
   # generate a winner object for a given seat
@@ -981,7 +980,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.map(fn {_task, {:ok, res}} -> res end)
     |> Enum.max_by(fn {_, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
-    state = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
+    # rearrange their hand
+    %{hand: arranged_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
 
     # return the complete winner object
     yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
@@ -1026,7 +1026,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         :discard -> Map.get(score_rules, "win_by_discard_label", "")
         :call    -> Map.get(score_rules, "win_by_discard_label", "")
       end,
-      opponents: opponents
+      opponents: opponents,
+      arranged_hand: arranged_hand ++ arranged_draw,
+      arranged_calls: arranged_calls,
     }
   end
 

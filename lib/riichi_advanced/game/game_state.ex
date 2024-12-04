@@ -42,7 +42,9 @@ defmodule Player do
     declared_yaku: nil,
     last_discard: nil, # for animation purposes only
     winning_hand: nil,
-    ready: false
+    ready: false,
+    arranged_hand: [],
+    arranged_calls: [],
   ]
   use Accessible
 end
@@ -78,7 +80,7 @@ defmodule Game do
     error: nil,
     round_result: nil,
     winners: %{},
-    winner_keys: [],
+    winner_seats: [],
     winner_index: 0,
     delta_scores: %{},
     delta_scores_reason: nil,
@@ -433,7 +435,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:turn, nil) # so that change_turn detects a turn change
     |> Map.put(:round_result, nil)
     |> Map.put(:winners, %{})
-    |> Map.put(:winner_keys, [])
+    |> Map.put(:winner_seats, [])
     |> Map.put(:winner_index, 0)
     |> Map.put(:delta_scores, %{})
     |> Map.put(:delta_scores_reason, nil)
@@ -483,8 +485,9 @@ defmodule RiichiAdvanced.GameState do
     Debounce.apply(state.timer_debouncer)
 
     winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
+    state = update_player(state, seat, fn player -> %Player{ player | arranged_hand: winner.arranged_hand, arranged_calls: winner.arranged_calls } end)
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-    state = Map.update!(state, :winner_keys, & &1 ++ [seat])
+    state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     push_message(state, [
       %{text: "Player #{seat} #{state.players[seat].nickname} called "},
@@ -680,7 +683,7 @@ defmodule RiichiAdvanced.GameState do
   def should_end_game(state) do
     forced = state.round_result == :end_game # e.g. tobi
     dealer = Riichi.get_east_player_seat(state.kyoku)
-    agariyame = Map.get(state.rules, "agariyame", false) && state.round_result == :win && dealer in state.winner_keys
+    agariyame = Map.get(state.rules, "agariyame", false) && state.round_result == :win && dealer in state.winner_seats
     tenpaiyame = Map.get(state.rules, "tenpaiyame", false) && state.round_result == :draw && "tenpai" in state.players[dealer].status
     forced || agariyame || tenpaiyame || if Map.has_key?(state.rules, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {seat, player} -> player.score >= state.rules["sudden_death_goal"] end)

@@ -119,6 +119,7 @@ defmodule RiichiAdvanced.RoomState do
         name: mod["name"],
         desc: mod["desc"],
         category: mod["category"],
+        order: Map.get(mod, "order", 0),
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
@@ -154,7 +155,7 @@ defmodule RiichiAdvanced.RoomState do
   def get_enabled_mods(state) do
     Map.get(state, :mods, %{})
     |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
-    |> Enum.sort_by(fn {_mod, opts} -> opts.index end)
+    |> Enum.sort_by(fn {_mod, opts} -> {opts.order, opts.index} end)
     |> Enum.map(fn {mod, _opts} -> mod end)
   end
 
