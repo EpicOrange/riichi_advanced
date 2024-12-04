@@ -118,33 +118,31 @@ defmodule RiichiAdvanced.GameState.Saki do
     {state, cards}
   end
 
-  def draft_saki_card(state, seat, choice) do
-    state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
-
-    state = if check_if_all_drafted(state) do
-      # run after_saki_start actions
-      state = if Map.has_key?(state.rules, "after_saki_start") do
-        for {seat, _player} <- state.players, reduce: state do
-          state ->
-            push_message(state, [
-              %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
-              %{bold: true, text: "#{Enum.find_value(Enum.reverse(state.players[seat].status), &@card_names[&1])}"}
-            ])
-            Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: seat})
-        end
-      else state end
-
-      state = Buttons.recalculate_buttons(state, 0)
-      notify_ai(state)
-      state
+  def saki_start(state) do
+    state = if Map.has_key?(state.rules, "after_saki_start") do
+      for {seat, _player} <- state.players, reduce: state do
+        state ->
+          push_message(state, [
+            %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
+            %{bold: true, text: "#{Enum.map(state.players[seat].status, &@card_names[&1]) |> Enum.reject(& &1 == nil) |> Enum.join(", ")}"}
+          ])
+          Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: seat})
+      end
     else state end
+
+    state = Buttons.recalculate_buttons(state, 0)
+    notify_ai(state)
     state
+  end
+
+  def draft_saki_card(state, seat, choice) do
+    update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
   end
 
   def check_if_all_drafted(state) do
     Enum.all?(state.players, fn {_seat, player} -> Enum.any?(player.status, &is_saki_card?/1) end)
   end
-
+  
   def filter_cards(statuses) do
     Enum.filter(statuses, &is_saki_card?/1)
   end

@@ -1079,28 +1079,29 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_player(state, context.seat, &%Player{ &1 | declared_yaku: [] })
         notify_ai_declare_yaku(state, context.seat)
         state
-      "disable_saki_card"     ->
+      "disable_saki_card" ->
         targets = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, "self"))
         state = Saki.disable_saki_card(state, targets)
         state
-      "enable_saki_card"     ->
+      "enable_saki_card" ->
         targets = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, "self"))
         state = Saki.enable_saki_card(state, targets)
         state
       "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
       "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
       "merge_draw"          -> update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: [] })
-      "delete_tiles"   ->
+      "delete_tiles"    ->
         # TODO allow specifying target
         tiles = Enum.map(opts, &Utils.to_tile/1)
         state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.count_tiles([t], tiles) > 0 end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
         state
-      "pass_draws"   ->
+      "pass_draws"      ->
         to = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
         {to_pass, remaining} = Enum.split(state.players[context.seat].draw, Enum.at(opts, 1, 1))
         state = update_player(state, context.seat, &%Player{ &1 | draw: remaining })
         state = update_player(state, to, &%Player{ &1 | draw: &1.draw ++ to_pass })
         state
+      "saki_start"      -> Saki.saki_start(state)
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

@@ -8,6 +8,7 @@
   "available_mods": [
     "Saki",
     {"id": "persistent_saki_cards", "name": "Persistent Cards", "desc": "The character card you choose at the beginning is your card for the whole game."},
+    {"id": "two_saki_cards", "name": "Two Saki Cards", "desc": "You draft two character cards instead of one. This mode is unsupported by the developers of Sakicards, but let's see what happens."},
     {"id": "saki_yumeno_maho", "name": "Yumeno Maho", "desc": "Adds Yumeno Maho to the game."},
     "Rules",
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
@@ -2065,7 +2066,7 @@
       ["when", [{"name": "placement", "opts": [2]}], [["set_status", "2nd_place"]]],
       ["when", [{"name": "placement", "opts": [3]}], [["set_status", "3rd_place"]]],
       ["when", [{"name": "placement", "opts": [4]}], [["set_status", "4th_place"]]],
-      ["when", ["not_all_saki_cards_drafted"], [["set_status_all", "match_start"]]],
+      ["when", ["not_all_saki_cards_drafted"], [["set_status_all", "drafting", "match_start"]]],
       // first draw of the game
       ["when", [{"name": "seat_is", "opts": ["east"]}], [["uninterruptible_draw"]]]
     ]
@@ -2095,7 +2096,8 @@
         ["set_status_others", "reveal_all"],
         ["push_message", "reveals other players' hands due to being 4th place (Fukuji Mihoko)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
-      ]]
+      ]],
+      ["unset_status_all", "match_start"]
     ]
   },
   "before_win": {
@@ -2346,8 +2348,12 @@
   "buttons": {
     "draft": {
       "display_name": "Draft Character Card",
-      "show_when": [{"name": "status", "opts": ["match_start"]}],
-      "actions": [["unset_status", "match_start"], ["draft_saki_card", 4]],
+      "show_when": [{"name": "status", "opts": ["drafting"]}],
+      "actions": [
+        ["unset_status", "drafting"],
+        ["draft_saki_card", 4],
+        ["when", [{"name": "not_anyone_status", "opts": ["drafting"]}], [["saki_start"]]]
+      ],
       "unskippable": true
     },
     "atarashi_ako": {
