@@ -16,7 +16,6 @@
     {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
     {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
     {"id": "tenpaiyame", "deps": ["tenpairenchan"], "name": "Tenpaiyame", "desc": "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."},
-    {"id": "sudden_death", "name": "Sudden Death", "desc": "Sets a goal of 30000 points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below 30000 points, play continues to the West (South) round until someone surpasses 30000 points, or at the end of West 4 (South 4)."},
     {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
     {"id": "immediate_kan_dora", "deps": ["kandora", "dora"], "name": "Immediate Kan Dora", "desc": "Flip kan dora immediately after daiminkan and kakan."},
     {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},

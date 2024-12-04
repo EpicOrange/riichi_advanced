@@ -684,7 +684,7 @@ defmodule RiichiAdvanced.GameState do
     tenpaiyame = Map.get(state.rules, "tenpaiyame", false) && state.round_result == :draw && "tenpai" in state.players[dealer].status
     forced || agariyame || tenpaiyame || if Map.has_key?(state.rules, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {seat, player} -> player.score >= state.rules["sudden_death_goal"] end)
-      past_max_rounds = state.kyoku >= state.rules["sudden_death_max_rounds"]
+      past_max_rounds = Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] + 4
       above_goal || past_max_rounds
     else
       past_max_rounds = Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"]
