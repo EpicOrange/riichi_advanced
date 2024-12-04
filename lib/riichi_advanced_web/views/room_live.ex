@@ -125,10 +125,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <% end %>
       </div>
       <%= if @ruleset == "custom" do %>
+        <div class="mods-title">Ruleset</div>
         <div class="custom-json">
           <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
         </div>
       <% else %>
+        <div class="mods-title">Mods</div>
         <div class="mods">
           <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
             <div class="mod-category"><%= category %></div>

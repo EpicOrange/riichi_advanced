@@ -2460,15 +2460,14 @@ div.room > div.custom-json {
   height: calc(9 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
 }
-div.room > div.mods::before,
-div.room > div.custom-json::before {
+div.room div.mods-title {
   position: absolute;
-  top: calc(-1.5 * var(--tile-size));
-  left: calc(-0.5 * var(--tile-size));
+  top: calc(3.75 * var(--tile-size));
+  left: 0;
   font-size: calc(1 * var(--tile-size));
+  width: calc(3.5 * var(--tile-size));
+  text-align: center;
 }
-div.room > div.mods::before { content: "Mods"; }
-div.room > div.custom-json::before { content: "Ruleset"; }
 div.room > div.mods {
   overflow-y: auto;
 }
