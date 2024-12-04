@@ -121,4 +121,6 @@ end
 ]
 |
 # chii from anyone
-.buttons.chii.show_when |= map(if . == "kamicha_discarded" then "someone_else_just_discarded" else . end)
+.buttons |= if has("chii") then
+  .chii.show_when |= map(if . == "kamicha_discarded" then "someone_else_just_discarded" else . end)
+else . end

@@ -1,12 +1,14 @@
 {
-  "default_mods": ["hk_three_point_minimum", "seven_flower_win"],
+  "default_mods": ["hk_three_point_minimum", "seven_flower_win", "show_waits"],
   "available_mods": [
+    "Rules"
     {"id": "hk_three_point_minimum", "name": "Three Fan Minimum", "desc": "Only allow wins worth 3+ fan."},
     {"id": "seven_flower_win", "name": "Seven Flower Win", "desc": "Allow instant win upon obtaining 7+ flowers."},
     {"id": "hk_flowers_open_hand", "name": "Flowers Open Hand", "desc": "A hand with flowers declared cannot earn 1 fan from Concealed Hand."},
-    {"id": "hk_seven_pairs", "name": "Seven Pairs", "desc": "Add seven pairs as a possible winning hand, worth 4 fan."},
     {"id": "remove_flowers", "name": "Remove Flowers", "desc": "Remove all eight flowers from the wall."},
     {"id": "head_bump", "name": "Head Bump", "desc": "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."},
+    {"id": "hk_seven_pairs", "name": "Seven Pairs", "desc": "Add seven pairs as a possible winning hand, worth 4 fan."},
+    "Other"
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
   ],
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",

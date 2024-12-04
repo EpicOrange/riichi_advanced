@@ -1,5 +1,5 @@
 {
-  "default_mods": ["malaysian_five_point_minimum"],
+  "default_mods": ["malaysian_five_point_minimum", "show_waits"],
   "available_mods": [
     {"id": "malaysian_five_point_minimum", "name": "Five Fan Minimum", "desc": "Only allow wins worth 5+ fan."},
     {"id": "malaysian_replaceable_fly_joker", "name": "Replaceable Fly Joker", "desc": "Allow swapping out fly jokers from your own pungs using the same tile."},

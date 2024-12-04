@@ -64,11 +64,13 @@ else . end
 )
 |
 # change chinroutou
-.yakuman |= map(
-  if .display_name == "Chinroutou" then
-    .when[0].opts |= nine_to_ten
-  else . end
-)
+if has("yakuman") then
+  .yakuman |= map(
+    if .display_name == "Chinroutou" then
+      .when[0].opts |= nine_to_ten
+    else . end
+  )
+else . end
 |
 # change 13 orphans to require the ten tiles
 .set_definitions.orphans_all |= nine_to_ten
