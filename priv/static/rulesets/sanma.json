@@ -1,6 +1,6 @@
 {
   "default_mods": [
-    "dora_sanma", "ura_sanma", "kandora_sanma", "aka",
+    "dora", "ura", "kandora", "aka",
     "ippatsu",
     "nagashi",
     "tobi",
@@ -11,10 +11,10 @@
     "renhou"
   ],
   "available_mods": [
-    {"id": "dora_sanma", "name": "Dora", "desc": "Enables dora."},
-    {"id": "ura_sanma", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
+    {"id": "dora", "name": "Dora", "desc": "Enables dora."},
+    {"id": "ura", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
     {"id": "aka", "name": "Aka", "desc": "Enables aka dora (red fives)."},
-    {"id": "kandora_sanma", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
+    {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
     {"id": "ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
     {"id": "nagashi", "name": "Nagashi", "desc": "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},

@@ -9,6 +9,8 @@ def insert_after_kan_action($action; $arr):
 
 # flip next dora after non-ankan kan
 [
+  ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["reveal_tile", -18]]],
+  ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["reveal_tile", -16]]],
   ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
   ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
   ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
@@ -27,6 +29,8 @@ def insert_after_kan_action($action; $arr):
 |
 # dora flips immediately after ankan
 .buttons.ankan.actions |= insert_after_kan_action("set_status"; [
+  ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["reveal_tile", -18]]],
+  ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["reveal_tile", -16]]],
   ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
   ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
   ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],

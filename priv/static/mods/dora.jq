@@ -44,26 +44,18 @@
   "7z": ["5z"]
 }
 |
+# count dora
+.before_win.actions += [
+  ["when", [{"name": "tile_revealed", "opts": [-6]}], [["add_counter", "dora", "count_dora", -6, ["hand", "calls", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-8]}], [["add_counter", "dora", "count_dora", -8, ["hand", "calls", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-10]}], [["add_counter", "dora", "count_dora", -10, ["hand", "calls", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-12]}], [["add_counter", "dora", "count_dora", -12, ["hand", "calls", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-14]}], [["add_counter", "dora", "count_dora", -14, ["hand", "calls", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-16]}], [["add_counter", "dora", "count_dora", -16, ["hand", "calls", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-18]}], [["add_counter", "dora", "count_dora", -18, ["hand", "calls", "winning_tile"]]]]
+]
+|
 # add dora yaku
 .extra_yaku += [
-  {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 1]}]},
-  {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 2]}]},
-  {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 3]}]},
-  {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 4]}]},
-  {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 1]}]},
-  {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 2]}]},
-  {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 3]}]},
-  {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 4]}]},
-  {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 1]}]},
-  {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 2]}]},
-  {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 3]}]},
-  {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 4]}]},
-  {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 1]}]},
-  {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 2]}]},
-  {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 3]}]},
-  {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 4]}]},
-  {"display_name": "Dora", "value": 1, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 1]}]},
-  {"display_name": "Dora", "value": 2, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 2]}]},
-  {"display_name": "Dora", "value": 3, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 3]}]},
-  {"display_name": "Dora", "value": 4, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 4]}]}
+  {"display_name": "Dora", "value": "dora", "when": [{"name": "counter_at_least", "opts": ["dora", 1]}]}
 ]
