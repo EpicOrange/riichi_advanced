@@ -356,7 +356,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["num_matching_revealed_tiles_all" | opts] ->
         for {_seat, player} <- state.players do
           player.hand ++ player.draw
-          |> IO.inspect()
           |> Enum.filter(&Riichi.tile_matches(opts, %{tile: &1}))
           |> Utils.count_tiles([{:any, ["revealed"]}])
         end |> Enum.sum()

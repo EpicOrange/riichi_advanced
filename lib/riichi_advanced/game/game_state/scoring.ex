@@ -880,11 +880,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else {arranged_hand, orig_draw} end
 
     # push message
-    if not Enum.empty?(Map.keys(joker_assignment) -- [:"0m", :"0p", :"0s"]) do
-      orig_call_tiles = orig_calls
-      |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
-      |> Enum.flat_map(fn call -> Enum.take(Riichi.call_to_tiles(call), 3) end) # ignore kans
-      smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
+    orig_call_tiles = orig_calls
+    |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
+    |> Enum.flat_map(fn call -> Enum.take(Riichi.call_to_tiles(call), 3) end) # ignore kans
+    smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
+    joker_tiles = Utils.strip_attrs(Enum.map(Map.keys(joker_assignment), &Enum.at(smt_hand, &1)))
+    if not Enum.empty?(joker_tiles -- [:"0m", :"0p", :"0s"]) do
       joker_assignment_message = joker_assignment
       |> Enum.map(fn {joker_ix, tile} -> [Utils.pt(Enum.at(smt_hand, joker_ix)), %{text: "→"}, Utils.pt(tile)] end)
       |> Enum.intersperse([%{text: ","}])
