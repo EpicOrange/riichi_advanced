@@ -2187,6 +2187,8 @@ div#container > form > div.ruleset-selection {
   line-height: 1;
   text-align: center;
   flex-grow: 1;
+  color: white;
+  font-size: calc(0.55 * var(--tile-size));
 }
 div#container > form > div.ruleset-selection > input[type="radio"] { display: none; }
 div#container > form > div.ruleset-selection > label {
@@ -2195,10 +2197,12 @@ div#container > form > div.ruleset-selection > label {
   font-size: calc(0.55 * var(--tile-size));
   padding: calc(0.15 * var(--tile-size));
   background: gray;
-  color: white;
 }
 div#container > form > div.ruleset-selection > input[type="radio"]:checked + label {
   background: var(--tile-back);
+}
+div#container > form > div.ruleset-selection > input[type="radio"][disabled] + label {
+  opacity: 0.4;
 }
 div#container > form > button.enter-button {
   background: var(--tile-front);

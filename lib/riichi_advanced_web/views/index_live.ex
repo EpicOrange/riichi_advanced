@@ -12,19 +12,26 @@ defmodule RiichiAdvancedWeb.IndexLive do
       socket
     else socket end
     socket = assign(socket, :rulesets, [
-      {"riichi",       "Riichi"},
-      {"sanma",        "Sanma"},
-      {"cosmic",       "Cosmic Riichi"},
-      {"saki",         "Sakicards v1.3"},
-      {"hk",           "Hong Kong"},
-      {"sichuan",      "Sichuan Bloody"},
-      {"mcr",          "MCR"},
-      {"bloody30faan", "Bloody 30-Faan Jokers"},
-      {"american",     "American (2024 NMJL)"},
-      {"vietnamese",   "Vietnamese"},
-      {"malaysian",    "Malaysian"},
-      {"singaporean",  "Singaporean"},
-      {"custom",       "Custom"},
+      {"riichi",       "Riichi", "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."},
+      {"sanma",        "Sanma", "Three-player Riichi."},
+      {"cosmic",       "Cosmic Riichi", "A Space Mahjong variant with mixed triplets, more yaku, and more calls."},
+      {"saki",         "Sakicards v1.3", "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."},
+      {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
+      {"sichuan",      "Sichuan Bloody", "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."},
+      {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
+      {"bloody30faan", "Bloody 30-Faan Jokers", "Bloody end rules mahjong With Vietnamese jokers and somehow more yaku than MCR."},
+      {"american",     "American (2024 NMJL)", "American mahjong. Assemble hands with jokers, and declare other players' hands dead. Rules are not available for this one."},
+      {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
+      {"malaysian",    "Malaysian", "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."},
+      {"singaporean",  "Singaporean", "Mahjong with various instant payouts and various unique ways to get penalized by pao."},
+      {"custom",       "Custom", "Create and play your own custom ruleset."},
+    ])
+    socket = assign(socket, :unimplemented_rulesets, [
+      {"tianjin", "Tianjin", "Mahjong with seven joker tiles determined after you build the wall."},
+      {"fuzhou", "Fuzhou", "17-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself. https://old.reddit.com/r/Mahjong/comments/171izis/fuzhou_mahjong_rules_corrected/"},
+      {"filipino", "Filipino", "17-tile mahjong where all honor tiles are flower tiles."},
+      {"korean", "Korean", "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first."},
+      {"cn_classical", "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points. http://mahjong.wikidot.com/rules:chinese-classical-scoring"},
     ])
     {:ok, socket}
   end
@@ -40,9 +47,14 @@ defmodule RiichiAdvancedWeb.IndexLive do
       </div>
       <form phx-submit="redirect">
         <div class="ruleset-selection">
-          <%= for {{ruleset, name}, i} <- Enum.with_index(@rulesets) do %>
+          <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0}>
-            <label for={ruleset}><%= name %></label>
+            <label for={ruleset} title={desc}><%= name %></label>
+          <% end %>
+          To be implemented:
+          <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
+            <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
+            <label for={ruleset} title={desc}><%= name %></label>
           <% end %>
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />
