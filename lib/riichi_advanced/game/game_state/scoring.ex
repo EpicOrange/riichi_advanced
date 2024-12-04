@@ -987,7 +987,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
     %{
       seat: seat,
-      player: state.players[seat],
+      player: %Player{ state.players[seat] | hand: arranged_hand, draw: arranged_draw, calls: arranged_calls },
       win_source: win_source,
       yaku: if yaku_2_overrides do [] else yaku end |> Enum.map(fn {name, value} -> {translate(state, name), value} end),
       yaku2: yaku2 |> Enum.map(fn {name, value} -> {translate(state, name), value} end),
