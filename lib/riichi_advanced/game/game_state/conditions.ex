@@ -107,7 +107,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
   def from_seats_spec(state, seat, seat_spec) do
     case seat_spec do
       "all" -> state.available_seats
+      "everyone" -> state.available_seats
       "others" -> state.available_seats -- [seat]
+      _ when is_list(seat_spec) -> Enum.flat_map(&from_seats_spec(state, seat, &1)) |> Enum.uniq()
       _ -> [from_seat_spec(state, seat, seat_spec)]
     end
   end

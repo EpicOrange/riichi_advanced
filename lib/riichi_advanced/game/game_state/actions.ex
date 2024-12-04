@@ -380,6 +380,23 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["count_draws" | opts] ->
         seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0))
         length(state.players[seat].draw)
+      ["count_dora" | opts] ->
+        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
+        hand = hand ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+        if dora_indicator != nil do
+          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          Utils.count_tiles(hand, doras)
+        else 0 end
+      ["count_reverse_dora" | opts] ->
+        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
+        hand = hand ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+        if dora_indicator != nil do
+          doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          Utils.count_tiles(hand, doras)
+        else 0 end
+      [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_integer(amount) -> amount
       _ ->
         IO.inspect("Unknown amount spec #{inspect(amt_spec)}")
@@ -389,30 +406,32 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp set_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
-    new_ctr = amount
-    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
-    state
+    put_in(state.players[context.seat].counters[counter_name], amount)
+  end
+
+  defp set_counter_all(state, context, counter_name, amt_spec) do
+    amount = interpret_amount(state, context, amt_spec)
+    for dir <- state.available_seats, reduce: state do
+      state -> put_in(state.players[dir].counters[counter_name], amount)
+    end
   end
 
   defp add_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = amount + Map.get(state.players[context.seat].counters, counter_name, 0)
-    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
-    state
+    put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
   defp subtract_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = -amount + Map.get(state.players[context.seat].counters, counter_name, 0)
-    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
-    state
+    put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
   
   defp multiply_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = amount * Map.get(state.players[context.seat].counters, counter_name, 0)
-    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
-    state
+    put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
   defp do_charleston(state, dir, seat, marked_objects) do
@@ -548,6 +567,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           state -> update_player(state, Utils.get_seat(context.seat, dir), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
         end
       "set_counter"           -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "set_counter_all"       -> set_counter_all(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
@@ -590,16 +610,22 @@ defmodule RiichiAdvanced.GameState.Actions do
       "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
+      "as"                    ->
+        for dir <- Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, [])), reduce: state do
+          state ->
+            IO.inspect(dir)
+            run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
+        end
       "when_anyone"           ->
-        for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}), reduce: state do
+        for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: state do
           state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
         end
       "when_everyone"           ->
-        if Enum.all?(state.available_seats, fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+        if Enum.all?(state.available_seats, fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
       "when_others"           ->
-        if Enum.all?(state.available_seats -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{seat: dir}) end) do
+        if Enum.all?(state.available_seats -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
       "mark" -> state # no-op
