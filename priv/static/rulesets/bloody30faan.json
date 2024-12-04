@@ -277,7 +277,7 @@
     [ "exhaustive", "ignore_suit", [[[[0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
   ],
   "一色三連刻_definition": [
-    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
   ],
   "小一色四連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2],[3,3]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1] ],
