@@ -906,12 +906,12 @@ defmodule Riichi do
     closed_pinfu_fu = if win_source == :draw do 22 else 30 end
     fu = if closed_pinfu_fu in fus do closed_pinfu_fu else fu end
 
-    # if it's kokushi, 30 fu
+    # if it's kokushi, 30 fu (tsumo) or 40 fu (ron)
     kokushi_tiles = [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
     fu = Enum.flat_map(winning_tiles, fn winning_tile ->
       case try_remove_all_tiles(starting_hand ++ [winning_tile], kokushi_tiles, tile_aliases) do
         [] -> [fu]
-        _  -> [30]
+        _  -> [if win_source == :draw do 30 else 40 end]
       end
     end) |> Enum.max()
 
