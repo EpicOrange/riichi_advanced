@@ -2470,6 +2470,8 @@ div.room div.mods-title {
 }
 div.room > div.mods {
   overflow-y: auto;
+  padding-top: calc(0.25 * var(--tile-size));
+  padding-bottom: calc(0.25 * var(--tile-size));
 }
 div.room > div.mods > div.mod-category,
 div.room > div.mods > div.mod-category-spacer {
