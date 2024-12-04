@@ -884,10 +884,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.reject(fn {call_name, _call} -> call_name in ["flower", "joker", "start_flower", "start_joker"] end)
     |> Enum.flat_map(fn call -> Enum.take(Riichi.call_to_tiles(call), 3) end) # ignore kans
     smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
-    joker_tiles = Utils.strip_attrs(Enum.map(Map.keys(joker_assignment), &Enum.at(smt_hand, &1)))
-    if not Enum.empty?(joker_tiles -- [:"0m", :"0p", :"0s"]) do
+    joker_assignment = joker_assignment
+    |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
+    |> Enum.reject(fn {joker_tile, tile} -> joker_tile in [:"0m", :"0p", :"0s", :"26z"] end)
+    |> Map.new()
+    if not Enum.empty?(joker_assignment) do
       joker_assignment_message = joker_assignment
-      |> Enum.map(fn {joker_ix, tile} -> [Utils.pt(Enum.at(smt_hand, joker_ix)), %{text: "→"}, Utils.pt(tile)] end)
+      |> Enum.map(fn {joker_tile, tile} -> [Utils.pt(joker_tile), %{text: "→"}, Utils.pt(tile)] end)
       |> Enum.intersperse([%{text: ","}])
       |> Enum.concat()
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)

@@ -1,12 +1,3 @@
-def add_yaku_statuses($actions; $type):
-  [
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["26z"], 1]]]]}], [["set_status", "aka_h"]]],
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1]]]]}], [["set_status", "golden_chun"]]],
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["7z"], 1]]]]}], [["set_status", "7z"]]],
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun_pair"], 1]]]]}], [["set_status", "77z"]]],
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["27z"], 1], [["chun"], 1]]]]}], [["set_status", "777z"]]]
-  ] + $actions;
-
 # replace a 6z with red hatsu
 (.wall | index("6z")) as $idx | if $idx then .wall[$idx] = "26z" else . end
 |
@@ -59,12 +50,14 @@ end
   ]}
 ]
 |
-# set yaku statuses for red hatsu and golden chun
-.buttons.ron.actions |= add_yaku_statuses(.; "last_discard")
-|
-.buttons.chankan.actions |= add_yaku_statuses(.; "last_called_tile")
-|
-.buttons.tsumo.actions |= add_yaku_statuses(.; "draw")
+# count aka and add golden chun statuses
+.before_win.actions += [
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["26z"], 1] ]]]}], [["add_counter", "aka", 1]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1] ]]]}], [["set_status", "golden_chun"]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["7z"], 1] ]]]}], [["set_status", "7z"]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["chun_pair"], 1] ]]]}], [["set_status", "77z"]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["chun"], 1] ]]]}], [["set_status", "777z"]]]
+]
 |
 # add golden chun yakuman
 .yakuman += [
