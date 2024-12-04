@@ -8,29 +8,6 @@
   "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["dragons"], 1]]]]}]
 }]
 |
-.extra_yaku += [
-  {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 5]}]},
-  {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-6, 6]}]},
-  {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 5]}]},
-  {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-8, 6]}]},
-  {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 5]}]},
-  {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-10, 6]}]},
-  {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 5]}]},
-  {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-12, 6]}]},
-  {"display_name": "Dora", "value": 5, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 5]}]},
-  {"display_name": "Dora", "value": 6, "when": [{"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-14, 6]}]},
-  {"display_name": "Ura", "value": 5, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-5, 5]}]},
-  {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-6]}, {"name": "winning_dora_count", "opts": [-5, 6]}]},
-  {"display_name": "Ura", "value": 5, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-7, 5]}]},
-  {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-8]}, {"name": "winning_dora_count", "opts": [-7, 6]}]},
-  {"display_name": "Ura", "value": 5, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-9, 5]}]},
-  {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-10]}, {"name": "winning_dora_count", "opts": [-9, 6]}]},
-  {"display_name": "Ura", "value": 5, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-11, 5]}]},
-  {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-12]}, {"name": "winning_dora_count", "opts": [-11, 6]}]},
-  {"display_name": "Ura", "value": 5, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-13, 5]}]},
-  {"display_name": "Ura", "value": 4, "when": [{"name": "status", "opts": ["riichi"]}, {"name": "tile_revealed", "opts": [-14]}, {"name": "winning_dora_count", "opts": [-13, 6]}]}
-]
-|
 # add joker rules
 # supports star suit mod
 if any(.wall[]; . == "1t") then
