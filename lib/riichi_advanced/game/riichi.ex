@@ -623,6 +623,14 @@ defmodule Riichi do
     end
   end
 
+  def flip_facedown(tile) do
+    case tile do
+      :"1x" -> :"1x"
+      {:"1x", attrs} -> {:"1x", attrs}
+      tile -> {:"1x", Utils.tile_to_attrs(tile)}
+    end
+  end
+
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
     tiles = for {tile, _sideways} <- call do
       flip_faceup(tile)

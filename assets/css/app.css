@@ -187,7 +187,8 @@ div.hand.shimocha div.tiles:hover::before,
 div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
 
-/* tile colorings */
+/* tile attrs */
+div.tile.reversed { transform: scaleX(-100%); }
 div.tile.inactive { opacity: 0.7; --tile-brightness: 60%; }
 div.tile.highlight,
 div.pond.highlight div.tile:last-child {
@@ -813,6 +814,21 @@ div.kamicha div.tile:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
           drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+}
+div.tile.reversed:not(.flat) {
+  transform: scaleX(-100%) translateY(calc(var(--tile-height) / -4)) translateZ(0);
+  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
+          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+}
+div.pond.self div.tile.reversed:not(.flat) {
+  transform: scaleX(-100%) translateY(calc(var(--tile-height) / -4)) translateZ(0);
+}
+div.shimocha div.tile.reversed:not(.flat) {
+  transform: scaleX(-100%) translateX(calc(var(--tile-height) / 4)) translateZ(0);
+}
+div.kamicha div.tile.reversed:not(.flat) {
+  transform: scaleX(-100%) translateX(calc(var(--tile-height) / -4)) translateZ(0);
 }
 /* shimocha's tiles need to overlap in the reverse order */
 div.shimocha div.tile:nth-child(2) { z-index: -1; }

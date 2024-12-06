@@ -23,12 +23,12 @@ defmodule RiichiAdvancedWeb.PondComponent do
         <%= if not Enum.empty?(@marking) do %>
           <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.take(24) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
-              <div class={["tile", Utils.strip_attrs(tile), "markable", i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
-                <div class={["tile", Utils.strip_attrs(tile), "marked", i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
               <% else %>
-                <div class={["tile", Utils.strip_attrs(tile), i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)}></div>
               <% end %>
             <% end %>
           <% end %>
@@ -40,17 +40,17 @@ defmodule RiichiAdvancedWeb.PondComponent do
         <%= if not Enum.empty?(@marking) do %>
           <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.drop(24) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
-              <div class={["tile", Utils.strip_attrs(tile), "markable", i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
-                <div class={["tile", Utils.strip_attrs(tile), "marked", i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
               <% else %>
-                <div class={["tile", Utils.strip_attrs(tile), i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)}></div>
               <% end %>
             <% end %>
           <% end %>
         <% else %>
-          <div :for={{tile, i} <- Enum.drop(Enum.with_index(@pond), 24)} class={["tile", Utils.strip_attrs(tile), @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
+          <div :for={{tile, i} <- Enum.drop(Enum.with_index(@pond), 24)} class={Utils.get_tile_class(tile, i, assigns)}></div>
         <% end %>
       </div>
     </div>

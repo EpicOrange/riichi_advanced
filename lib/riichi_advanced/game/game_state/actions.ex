@@ -205,12 +205,12 @@ defmodule RiichiAdvanced.GameState.Actions do
             "call_sideways"                         -> {called_tile, true}
             ix when is_integer(ix)                  -> {Enum.at(tiles, ix), false}
             ["sideways", ix] when is_integer(ix)    -> {Enum.at(tiles, ix), true}
-            ["1x", ix] when is_integer(ix)          -> {{:"1x", [Enum.at(tiles, ix)]}, false}
-            ["1x", "call"]                          -> {{:"1x", [called_tile]}, false}
-            ["1x", tile]                            -> {{:"1x", [Utils.to_tile(tile)]}, false}
-            ["1x_sideways", ix] when is_integer(ix) -> {{:"1x", [Enum.at(tiles, ix)]}, true}
-            ["1x_sideways", "call"]                 -> {{:"1x", [called_tile]}, true}
-            ["1x_sideways", tile]                   -> {{:"1x", [Utils.to_tile(tile)]}, true}
+            ["1x", ix] when is_integer(ix)          -> {Enum.at(tiles, ix) |> Riichi.flip_facedown(), false}
+            ["1x", "call"]                          -> {called_tile |> Riichi.flip_facedown(), false}
+            ["1x", tile]                            -> {Utils.to_tile(tile) |> Riichi.flip_facedown(), false}
+            ["1x_sideways", ix] when is_integer(ix) -> {Enum.at(tiles, ix) |> Riichi.flip_facedown(), true}
+            ["1x_sideways", "call"]                 -> {called_tile |> Riichi.flip_facedown(), true}
+            ["1x_sideways", tile]                   -> {Utils.to_tile(tile) |> Riichi.flip_facedown(), true}
             tile                                    -> {Utils.to_tile(tile), false}
           end
           [tile | acc]
@@ -221,6 +221,13 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
+    # get the actual called tile (with attrs)
+    called_tile = case call_source do
+      :discards -> Enum.at(state.players[state.turn].pond, -1)
+      :hand     -> called_tile
+      _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
+    end
+
     call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
     default_call_style = Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end)
     call_style = Map.merge(default_call_style, Map.get(state.rules["buttons"][button_name], "call_style", %{}))
@@ -228,7 +235,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # style the call
     call = if called_tile != nil do
       style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
-      style_call(style, Utils.strip_attrs(call_choice), Utils.strip_attrs(called_tile))
+      style_call(style, call_choice, called_tile)
     else
       Enum.map(call_choice, fn tile -> {tile, false} end)
     end
@@ -318,7 +325,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     default_call_style = Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end)
     call_style = Map.merge(default_call_style, Map.get(state.rules["buttons"][call_name], "call_style", %{}))
     style = call_style[Atom.to_string(dir)]
-    call = style_call(style, Utils.strip_attrs(call_choice), Utils.strip_attrs(called_tile))
+    call = style_call(style, call_choice, called_tile)
 
     upgraded_call = {call_name, call}
     state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand"]), [called_tile]) |> Enum.at(0) |> Utils.remove_attr(["hand"]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
