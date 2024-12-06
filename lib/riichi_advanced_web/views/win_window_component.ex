@@ -19,7 +19,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             </div>
           <% end %>
           <div class="winning-tile-container">
-            <div class={["tile", "winning-tile", Utils.strip_attrs(@winner.winning_tile)]}></div>
+            <div class={["tile", "winning-tile", Utils.strip_attrs(@winner.winning_tile), Utils.has_attr?(@winner.winning_tile, ["transparent"]) && "transparent"]}></div>
             <div class="winning-tile-text"><%= @winner.winning_tile_text %></div>
           </div>
         </div>
