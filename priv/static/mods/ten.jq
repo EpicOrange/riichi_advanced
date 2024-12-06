@@ -69,7 +69,7 @@ else . end
     .when[0].opts += ["9m","9p","9s"]
   elif .display_name == "Honroutou" then
     .when[0].opts |= nine_to_ten
-  elif .display_name == "Honitsu" or .display_name == "Chinitsu" then
+  elif .display_name == "Honitsu" or .display_name == "Chinitsu" or .display_name == "Half Flush" or .display_name == "Full Flush" then
     .when[-1][0].opts += ["10m"] | .when[-1][1].opts += ["10p"] | .when[-1][2].opts += ["10s"]
   else . end
 )
