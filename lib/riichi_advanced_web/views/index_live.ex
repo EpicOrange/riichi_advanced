@@ -27,11 +27,11 @@ defmodule RiichiAdvancedWeb.IndexLive do
       {"custom",       "Custom", "Create and play your own custom ruleset."},
     ])
     socket = assign(socket, :unimplemented_rulesets, [
-      {"tianjin", "Tianjin", "Mahjong with seven joker tiles determined after you build the wall."},
-      {"fuzhou", "Fuzhou", "17-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself. https://old.reddit.com/r/Mahjong/comments/171izis/fuzhou_mahjong_rules_corrected/"},
-      {"filipino", "Filipino", "17-tile mahjong where all honor tiles are flower tiles."},
-      {"korean", "Korean", "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first."},
-      {"cn_classical", "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points. http://mahjong.wikidot.com/rules:chinese-classical-scoring"},
+      {"tianjin", "Tianjin", "Mahjong with seven joker tiles determined after you build the wall.", "https://michaelxing.com/mahjong/instr.php"},
+      {"fuzhou", "Fuzhou", "17-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself.", "https://old.reddit.com/r/Mahjong/comments/171izis/fuzhou_mahjong_rules_corrected/"},
+      {"filipino", "Filipino", "17-tile mahjong where all honor tiles are flower tiles.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-filipino-mahjong-rules"},
+      {"korean", "Korean", "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-korean-mahjong-rules"},
+      {"cn_classical", "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points.", "http://mahjong.wikidot.com/rules:chinese-classical-scoring"},
     ])
     {:ok, socket}
   end
@@ -52,9 +52,9 @@ defmodule RiichiAdvancedWeb.IndexLive do
             <label for={ruleset} title={desc}><%= name %></label>
           <% end %>
           To be implemented:
-          <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
+          <%= for {ruleset, name, desc, link} <- @unimplemented_rulesets do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
-            <label for={ruleset} title={desc}><%= name %></label>
+            <label for={ruleset} title={desc}><a href={link}><%= name %></a></label>
           <% end %>
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />

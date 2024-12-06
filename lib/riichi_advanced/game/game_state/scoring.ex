@@ -886,7 +886,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
     joker_assignment = joker_assignment
     |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
-    |> Enum.reject(fn {joker_tile, tile} -> joker_tile in [:"0m", :"0p", :"0s", :"26z"] end)
+    |> Enum.reject(fn {joker_tile, _tile} -> joker_tile in [:"0m", :"0p", :"0s", :"26z"] end)
     |> Map.new()
     if not Enum.empty?(joker_assignment) do
       joker_assignment_message = joker_assignment

@@ -2198,6 +2198,11 @@ div#container > form > div.ruleset-selection > label {
   padding: calc(0.15 * var(--tile-size));
   background: gray;
 }
+div#container > form > div.ruleset-selection > label > a {
+  text-decoration: none;
+  color: white;
+  font-size: calc(0.55 * var(--tile-size));
+}
 div#container > form > div.ruleset-selection > input[type="radio"]:checked + label {
   background: var(--tile-back);
 }

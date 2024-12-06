@@ -234,7 +234,7 @@ defmodule RiichiAdvanced.SMT do
 
   def set_to_bitvector(set, len) do
     # input: [0, 0, 3, 6, 11, 11, 14, 17, 22, 22, 25, 28]
-    # output: "100100200010010020001001002"
+    # output: "#x100100200010010020001001002"
     # 100, 101, 102 correspond to dragons, we ignore them
     {tiles, _dragons} = Enum.split_with(set, fn i -> i < 30 end)
     tiles
