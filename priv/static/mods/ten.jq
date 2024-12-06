@@ -89,3 +89,16 @@ else . end
 .kokushi_tenpai_definition |= nine_to_ten
 |
 .win_definition |= nine_to_ten
+# for sichuan, need to add ten to voided definition
+|
+if has("manzu_definition") then
+  .manzu_definition = [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m","10m"], 1]]]
+end
+|
+if has("pinzu_definition") then
+  .pinzu_definition = [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p","10p"], 1]]]
+end
+|
+if has("souzu_definition") then
+  .souzu_definition = [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s","10s"], 1]]]
+end
