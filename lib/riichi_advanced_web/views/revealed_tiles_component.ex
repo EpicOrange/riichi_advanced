@@ -10,7 +10,6 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
   end
 
   def render(assigns) do
-    IO.inspect(prepare_revealed_tiles(assigns.revealed_tiles, assigns.marking))
     ~H"""
     <div class={[@id]}>
       <%= if Enum.empty?(@marking) do %>
