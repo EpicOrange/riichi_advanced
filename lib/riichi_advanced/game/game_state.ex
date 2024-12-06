@@ -687,7 +687,7 @@ defmodule RiichiAdvanced.GameState do
     agariyame = Map.get(state.rules, "agariyame", false) && state.round_result == :win && dealer in state.winner_seats
     tenpaiyame = Map.get(state.rules, "tenpaiyame", false) && state.round_result == :draw && "tenpai" in state.players[dealer].status
     forced || agariyame || tenpaiyame || if Map.has_key?(state.rules, "sudden_death_goal") do
-      above_goal = Enum.any?(state.players, fn {seat, player} -> player.score >= state.rules["sudden_death_goal"] end)
+      above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= state.rules["sudden_death_goal"] end)
       past_max_rounds = Map.has_key?(state.rules, "max_rounds") && state.kyoku >= state.rules["max_rounds"] + 4
       above_goal || past_max_rounds
     else
@@ -1118,16 +1118,18 @@ defmodule RiichiAdvanced.GameState do
     state = Map.update!(state, :play_tile_debounce, &Map.put(&1, seat, false))
     {:noreply, state}
   end
+  
   def handle_cast({:reset_big_text, seat}, state) do
     state = update_player(state, seat, &Map.put(&1, :big_text, ""))
     state = broadcast_state_change(state)
     {:noreply, state}
   end
+
   def handle_cast({:unpause, context}, state) do
     actions = state.players[context.seat].deferred_actions
     IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
     state = Map.put(state, :game_active, true)
-    state = Actions.run_actions(state, actions, context)
+    state = Actions.run_deferred_actions(state, context)
     state = broadcast_state_change(state)
     notify_ai(state)
     {:noreply, state}
@@ -1136,7 +1138,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:reindex_hand, seat, from, to}, state) do
     state = Actions.temp_disable_play_tile(state, seat)
     # IO.puts("#{seat} moved tile from #{from} to #{to}")
-    state = update_player(state, seat, &%Player{ &1 | :hand => _reindex_hand(&1.hand, from, to) })
+    state = update_player(state, seat, &%Player{ &1 | hand: _reindex_hand(&1.hand, from, to) })
     state = broadcast_state_change(state)
     {:noreply, state}
   end

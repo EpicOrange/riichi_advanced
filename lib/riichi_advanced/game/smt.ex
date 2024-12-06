@@ -342,6 +342,7 @@ defmodule RiichiAdvanced.SMT do
     all_sets = match_definitions
     |> Enum.concat()
     |> Enum.reject(&Kernel.is_binary/1)
+    |> Enum.filter(fn [_groups, num] -> num > 0 end)
     |> Enum.flat_map(fn [groups, _num] -> groups end)
     |> Enum.reject(fn group -> is_binary(group) end)
     |> Enum.reject(fn group -> is_list(group) && Utils.is_tile(Enum.at(group, 0)) end)
@@ -389,7 +390,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.unzip()
 
     # collect all non-set tile groups used (sets of exact tiles rather than shiftable sets)
-    all_tile_groups = for match_definition <- match_definitions, {[groups, num], group_ix} <- Enum.with_index(match_definition), reduce: [] do
+    all_tile_groups = for match_definition <- match_definitions, {[groups, num], group_ix} <- Enum.with_index(match_definition), num > 0, reduce: [] do
       all_tile_groups ->
         unique_ix = Enum.find_index(match_definition, & &1 == "unique")
         tile_groups = groups
