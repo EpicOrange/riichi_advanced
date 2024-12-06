@@ -733,6 +733,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def has_unskippable_button?(state, seat) do
+    not Enum.empty?(state.players[seat].call_buttons)
+    ||
     Enum.any?(state.players[seat].buttons, fn button_name -> state.rules["buttons"][button_name] != nil && Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
   end
 
