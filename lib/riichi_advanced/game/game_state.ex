@@ -45,6 +45,7 @@ defmodule Player do
     ready: false,
     arranged_hand: [],
     arranged_calls: [],
+    playable_indices: [],
   ]
   use Accessible
 end
@@ -930,6 +931,10 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state) do
+    # calculate playable indices
+    state = update_all_players(state, fn seat, player -> %Player{ player | playable_indices: 
+      for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, seat, tile) do ix end
+    } end)
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
     # reset anim
