@@ -10,12 +10,19 @@ def nine_to_ten:
     .
   end;
 
-# add the ten tiles
-.wall += [
-  "10m", "10m", "10m", "10m",
-  "10p", "10p", "10p", "10p",
-  "10s", "10s", "10s", "10s"
-]
+# add the ten tiles (different for sanma and yonma)
+if any(.wall[]; . == "2m") then
+  .wall += [
+    "10m", "10m", "10m", "10m",
+    "10p", "10p", "10p", "10p",
+    "10s", "10s", "10s", "10s"
+  ]
+else
+  .wall |= (map(if . == "9m" then "10m" else . end) + [
+    "10p", "10p", "10p", "10p",
+    "10s", "10s", "10s", "10s"
+  ])
+end
 |
 # add ten
 .after_start.actions += [
@@ -34,6 +41,10 @@ if .dora_indicators then
     "10p": ["1p"],
     "10s": ["1s"]
   }
+  |
+  .dora_indicators |= if .["1m"] == ["9m"] then
+    .["1m"] = ["10m"]
+  else . end
 else . end
 |
 # change chanta and junchan requirements

@@ -1,7 +1,12 @@
 .max_revealed_tiles = 5
 |
 # initial dora flip
-.revealed_tiles += [-6]
+
+if .num_players == 3 then
+  .revealed_tiles += [-10]
+else
+  .revealed_tiles += [-6]
+end
 |
 # dora indicator map
 .dora_indicators = {
@@ -43,6 +48,10 @@
   "6z": ["7z"],
   "7z": ["5z"]
 }
+|
+if .num_players == 3 then
+  .dora_indicators["1m"] = ["9m"]
+else . end
 |
 # count dora
 .before_win.actions += [
