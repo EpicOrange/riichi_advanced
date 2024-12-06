@@ -10,19 +10,20 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
   end
 
   def render(assigns) do
+    IO.inspect(prepare_revealed_tiles(assigns.revealed_tiles, assigns.marking))
     ~H"""
     <div class={[@id]}>
       <%= if Enum.empty?(@marking) do %>
-        <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- prepare_revealed_tiles(@revealed_tiles, @marking)}></div>
+        <div class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["transparent"]) && "transparent"]} :for={{tile, _i} <- prepare_revealed_tiles(@revealed_tiles, @marking)}></div>
       <% else %>
         <%= for {tile, i} <- prepare_revealed_tiles(@revealed_tiles, @marking) do %>
           <%= if GenServer.call(@game_state, {:can_mark?, @viewer, nil, i, :revealed_tile}) do %>
-            <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+            <div class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["transparent"]) && "transparent", "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
             <%= if GenServer.call(@game_state, {:is_marked?, @viewer, nil, i, :revealed_tile}) do %>
-              <div class={["tile", Utils.strip_attrs(tile), "marked"]}></div>
+              <div class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["transparent"]) && "transparent", "marked"]}></div>
             <% else %>
-              <div class={["tile", Utils.strip_attrs(tile)]}></div>
+              <div class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
             <% end %>
           <% end %>
         <% end %>

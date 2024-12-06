@@ -183,10 +183,19 @@ div.hand.toimen:hover { z-index: -1; }
 div.hand.shimocha div.tiles:hover::before,
 div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
+div.tile.inactive { opacity: 0.6; }
 div.tile.highlight {
   --tile-brightness: 80%;
   --tile-saturate: 100%;
 }
+div.tile.transparent {
+  --tile-brightness: 200%;
+  --tile-saturate: 80%;
+  --tile-back: var(--tile-front);
+  --tile-back-side: var(--tile-front-side);
+  opacity: 0.5;
+}
+div.tile.transparent.inactive { opacity: 0.3; }
 /* ponds */
 div.pond, div.secondary-pond {
   display: flex;
@@ -768,7 +777,6 @@ div.tile.\31 \39 t { background-position-y: calc(-139 * var(--tile-size) - var(-
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
-div.tile.inactive { opacity: 0.6; }
 /* tile 3d */
 div.tile {
   --tile-brightness: 100%;

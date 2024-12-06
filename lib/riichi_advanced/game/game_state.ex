@@ -337,7 +337,7 @@ defmodule RiichiAdvanced.GameState do
         revealed_tiles = Map.get(rules, "revealed_tiles", [])
         max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
         state 
-        |> Map.put(:all_tiles, all_tiles)
+        |> Map.put(:all_tiles, Utils.strip_attrs(all_tiles))
         |> Map.put(:wall, wall)
         |> Map.put(:haipai, hands)
         |> Map.put(:dead_wall, dead_wall)

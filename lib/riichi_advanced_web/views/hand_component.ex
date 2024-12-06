@@ -65,9 +65,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
                 <%= if not @your_turn? || i in @playable_indices do %>
-                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", @your_turn? && @preplayed_index == i && "played", highlight && "highlight"]} data-id={i}></div>
+                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", Utils.has_attr?(tile, ["transparent"]) && "transparent", @your_turn? && @preplayed_index == i && "played", highlight && "highlight"]} data-id={i}></div>
                 <% else %>
-                  <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
+                  <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} data-id={i}></div>
                 <% end %>
               <% end %>
             <% end %>
@@ -75,9 +75,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws" :if={not Enum.empty?(@draw)}>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if not @your_turn? || i in @playable_indices do %>
-                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", @your_turn? && @preplayed_index == i && "played"]}></div>
+                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", Utils.has_attr?(tile, ["transparent"]) && "transparent", @your_turn? && @preplayed_index == i && "played"]}></div>
               <% else %>
-                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown"]} data-id={i}></div>
+                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={["tile", Utils.strip_attrs(tile), "inactive", Utils.has_attr?(tile, ["facedown"]) && @hover_index != i && "facedown", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} data-id={i}></div>
               <% end %>
             <% end %>
           </div>
@@ -85,12 +85,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <% else %>
         <div class="tiles">
           <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
-            <div class={["tile", Utils.strip_attrs(tile), removed && "removed", highlight && "highlight"]} data-id={i}></div>
+            <div class={["tile", Utils.strip_attrs(tile), removed && "removed", highlight && "highlight", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} data-id={i}></div>
           <% end %>
         </div>
         <div class="draws" :if={not Enum.empty?(@draw)}>
           <%= for {tile, _i} <- prepare_draw(assigns) do %>
-            <div class={["tile", Utils.strip_attrs(tile)]}></div>
+            <div class={["tile", Utils.strip_attrs(tile), Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
           <% end %>
         </div>
       <% end %>
@@ -99,16 +99,16 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :call}) do %>
               <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
-                <div class={["tile", Utils.strip_attrs(tile), "markable", sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+                <div class={["tile", Utils.strip_attrs(tile), "markable", sideways && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} :for={{tile, sideways} <- call}></div>
               </div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :call}) do %>
                 <div class="call">
-                  <div class={["tile", Utils.strip_attrs(tile), "marked", sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+                  <div class={["tile", Utils.strip_attrs(tile), "marked", sideways && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} :for={{tile, sideways} <- call}></div>
                 </div>
               <% else %>
                 <div class="call">
-                  <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+                  <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} :for={{tile, sideways} <- call}></div>
                 </div>
               <% end %>
             <% end %>
@@ -116,7 +116,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <% else %>
           <%= for {{_name, call}, _i} <- prepare_calls(assigns) do %>
             <div class="call">
-              <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways"]} :for={{tile, sideways} <- call}></div>
+              <div class={["tile", Utils.strip_attrs(tile), sideways && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]} :for={{tile, sideways} <- call}></div>
             </div>
           <% end %>
         <% end %>

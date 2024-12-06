@@ -15,10 +15,10 @@ defmodule RiichiAdvancedWeb.DisplayWallWallComponent do
           <% else %>
             <div class="tile-stack">
               <%= if length(tiles) == 1 do %>
-                <div class={["tile", Enum.at(tiles, 0), "bottom"]}></div>
+                <div class={["tile", Utils.strip_attrs(Enum.at(tiles, 0)), "bottom"]}></div>
               <% else %>
-                <div class={["tile", Enum.at(tiles, 0), "top"]}></div>
-                <div class={["tile", Enum.at(tiles, 1), "bottom"]}></div>
+                <div class={["tile", Utils.strip_attrs(Enum.at(tiles, 0)), "top"]}></div>
+                <div class={["tile", Utils.strip_attrs(Enum.at(tiles, 1)), "bottom"]}></div>
               <% end %>
             </div>
           <% end %>
