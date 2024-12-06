@@ -863,10 +863,6 @@ defmodule Riichi do
     # - two pairs remaining (shanpon)
     # cosmic hand can also have
     # - one pair, one mixed pair remaining
-    # shouhai hands should either have:
-    # - seven tiles (including pair) remaining (floating/complete)
-    # - four tiles (including pair) remaining (sticking)
-    # - four tiles (no pair) remaining (headless)
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
       cond do
@@ -885,14 +881,6 @@ defmodule Riichi do
           pair_fu = calculate_pair_fu(pair_tile, seat_wind, round_wind)
           kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
           [fu + pair_fu + kontsu_fu]
-        # shouhai hands
-        length(starting_hand) == 12 && length(hand) == 4 && num_pairs == 0 -> [fu]
-        length(starting_hand) == 12 && length(hand) == 7 && num_pairs == 1 ->
-          pair_fu = Enum.frequencies(hand)
-          |> Enum.filter(fn {_tile, freq} -> freq == 2 end)
-          |> Enum.map(fn {tile, _freq} -> calculate_pair_fu(tile, seat_wind, round_wind) end)
-          |> Enum.max()
-          [fu + pair_fu]
         true                                                   -> []
       end
     end)
