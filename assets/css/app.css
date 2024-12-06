@@ -186,19 +186,25 @@ div.hand.toimen:hover { z-index: -1; }
 div.hand.shimocha div.tiles:hover::before,
 div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
+
+/* tile colorings */
 div.tile.inactive { opacity: 0.7; --tile-brightness: 60%; }
-div.tile.highlight {
+div.tile.highlight,
+div.pond.highlight div.tile:last-child {
   --tile-brightness: 80%;
   --tile-saturate: 100%;
 }
 div.tile.transparent {
-  --tile-brightness: 150%;
-  --tile-saturate: 80%;
+  --tile-brightness: 80%;
+  --tile-saturate: 250%;
   --tile-back: var(--tile-front);
   --tile-back-side: var(--tile-front-side);
   opacity: 0.5;
 }
-div.tile.transparent.inactive { opacity: 0.35; --tile-brightness: 60%; }
+div.tile.transparent.highlight,
+div.pond.highlight div.tile.transparent:last-child { --tile-brightness: 48%; }
+div.tile.transparent.inactive { opacity: 0.35; --tile-brightness: 60%; --tile-saturate: 100%; }
+
 /* ponds */
 div.pond, div.secondary-pond {
   display: flex;
@@ -259,10 +265,6 @@ div.pond.kamicha {
   top: calc(50% + (2.375 * var(--tile-size)));
 }
 div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-size))); }
-div.pond.highlight div.tile:last-child {
-  --tile-brightness: 80%;
-  --tile-saturate: 100%;
-}
 
 /* mobile zoom button for hand */
 input.mobile-zoom-checkbox { display: none; }
