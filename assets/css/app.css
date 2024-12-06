@@ -4,6 +4,8 @@ html, body {
   font-family: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
   font-weight: normal;
   overflow-x: hidden;
+  overflow-y: visible;
+  height: 100%;
 }
 
 main {
@@ -19,6 +21,7 @@ main {
   --tile-back-side: #f0974c;
   position: relative;
   z-index: 1;
+  overflow: visible;
 }
 main::before {
   content: "";
