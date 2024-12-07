@@ -330,13 +330,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     pao_triggered = winner.pao_seat != nil
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
-    {pao_yakuman, non_pao_yakuman} = Enum.split_with(winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end)
-    if pao_triggered && length(pao_yakuman) > 0 && length(non_pao_yakuman) > 0 do
-      # if we have both pao and non-pao yakuman, we need to calculate them separately and add them up
-      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yakuman, is_dealer, winner.win_source == :draw, winner.minipoints)
-      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yakuman, is_dealer, winner.win_source == :draw, winner.minipoints)
-      delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku2: pao_yakuman }, collect_sticks)
-      delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku2: non_pao_yakuman }, collect_sticks)
+    {pao_yaku, non_pao_yaku} = if Map.get(score_rules, "pao_pays_all", false) do
+      {winner.yaku ++ winner.yaku2, []}
+    else
+      Enum.split_with(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end)
+    end
+    if pao_triggered && length(pao_yaku) > 0 && length(non_pao_yaku) > 0 do
+      # if we have both pao and non-pao yaku, we need to calculate them separately and add them up
+      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
+      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
+      delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku: pao_yaku, yaku2: [] }, collect_sticks)
+      delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku: non_pao_yaku, yaku2: [] }, collect_sticks)
       delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
       delta_scores
     else
@@ -353,12 +357,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
       
       # calculate some parameters that change if pao exists
       {delta_scores, basic_score, payer, direct_hit} =
-        # due to the way we handle mixed pao-and-not-pao yakuman earlier,
-        # we're guaranteed either all of the yakuman are pao, or none of them are
-        if winner.pao_seat != nil && length(pao_yakuman) > 0 do
+        # due to the way we handle mixed pao-and-not-pao yaku earlier,
+        # we're guaranteed either all of the yaku are pao, or none of them are
+        if winner.pao_seat != nil && length(pao_yaku) > 0 do
           # if pao, then payer becomes the pao seat,
           # and a ron payment is split in half
-          if winner.payer != nil do # ron
+          if winner.payer != nil && Map.get(score_rules, "split_pao_ron", true) do # ron
             # the deal-in player is not responsible for honba payments,
             # so we take care of their share of payment right here
             basic_score = Utils.try_integer(basic_score / 2)
@@ -366,6 +370,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             delta_scores = Map.put(delta_scores, winner.seat, basic_score)
             {delta_scores, basic_score, winner.pao_seat, true}
           else
+            # otherwise the responsibility of the payment is entirely on the pao seat
             {delta_scores, basic_score, winner.pao_seat, true}
           end
         else
@@ -625,8 +630,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
       delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
     end
 
+    # add delta_score counter, if it exists
+    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
+
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
-    is_pao = Enum.any?(winners, fn {_seat, winner} -> winner.pao_seat != nil end)
+    pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
+    is_pao = Enum.any?(winners, fn {_seat, winner} -> winner.pao_seat != nil && Enum.any?(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end) end)
 
     # handle ezaki hitomi's scoring quirk
     {state, delta_scores} = if is_tsumo do
@@ -985,6 +994,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # return the complete winner object
     yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
+    payer = case win_source do
+      :draw    -> nil
+      :discard -> get_last_discard_action(state).seat
+      :call    -> get_last_call_action(state).seat
+    end
     %{
       seat: seat,
       player: %Player{ state.players[seat] | hand: arranged_hand, draw: arranged_draw, calls: arranged_calls },
@@ -1000,12 +1014,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       point2_name: Map.get(score_rules, "point2_name", ""),
       minipoint_name: Map.get(score_rules, "minipoint_name", ""),
       minipoints: minipoints,
-      payer: case win_source do
-        :draw    -> nil
-        :discard -> get_last_discard_action(state).seat
-        :call    -> get_last_call_action(state).seat
-      end,
-      pao_seat: Enum.find(state.available_seats, fn seat -> "pao" in state.players[seat].status end),
+      payer: payer,
+      pao_seat: Enum.find(state.available_seats, fn seat -> seat != payer && "pao" in state.players[seat].status end),
       winning_tile: new_winning_tile,
       right_display: cond do
         not Map.has_key?(score_rules, "right_display") -> nil

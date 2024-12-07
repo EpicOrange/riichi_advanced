@@ -283,7 +283,6 @@
     [ "exhaustive", [[[[0,1,2],[23,24,25],[16,17,18]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
   ],
   "pure_straight_definition": [
-    [ "exhaustive", [[[[0,1,2],[3,4,5],[6,7,8]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ],
     [ "exhaustive", [[[[0,1,2],[3,4,5],[6,7,8]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
   ],
   "tile_hog_definition": [

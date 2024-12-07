@@ -89,7 +89,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <% else %>
         <div class="tiles">
           <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
-            <div class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"])} data-id={i}></div>
+            <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"])} data-id={i}></div>
           <% end %>
         </div>
         <div class="draws" :if={not Enum.empty?(@draw)}>
@@ -144,7 +144,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       </div>
       <div class="calls flowers">
         <%= for {{_name, call}, i} <- prepare_flowers(assigns) do %>
-          <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, sideways} <- call}></div>
+          <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, _sideways} <- call}></div>
         <% end %>
       </div>
     </div>

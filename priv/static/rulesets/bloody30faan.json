@@ -665,7 +665,7 @@
         // 0-1 open triplets, hand must be 3 triplets and a pair
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         // 0 open triplets, hand must be 2 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]},
         [
           "won_by_draw",
           [
@@ -674,7 +674,7 @@
             // 0-1 open triplet tsumo, hand must be 3 triplets and a pair
             {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
             // 0 open triplet tsumo, hand must be 2 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]}
+            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]}
           ]
         ]
       ]]
@@ -776,7 +776,7 @@
     { "display_name": "Concealed Hand", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
     { "display_name": "Fully Concealed Hand", "value": 2, "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
     { "display_name": "Self Drawn Melded Hand", "value": 2, "when": ["won_by_draw", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
-    { "display_name": "Melded Hand", "value": 5, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Melded Hand", "value": 5, "when": ["not_won_by_draw", {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
     { "display_name": "Hell Wait", "value": 2, "when": [{"name": "has_hell_wait", "opts": ["win"]}] },
     // (7) 對子類
     { "display_name": "Seven Pairs", "value": 5, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },

@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "aside" -> [{hand ++ state.players[context.seat].aside, calls}]
           "aside_unique" -> [{hand ++ Enum.uniq(state.players[context.seat].aside), calls}]
           "calls" -> [{hand, calls ++ state.players[context.seat].calls}]
-          "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower"] end)}]
+          "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "pei"] end)}]
           "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
@@ -39,8 +39,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "arranged_hand" -> [{hand ++ state.players[context.seat].arranged_hand, calls}]
           "arranged_calls" -> [{hand, calls ++ state.players[context.seat].arranged_calls}]
           "last_call" -> [{hand, calls ++ [context.call]}]
-          "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [] end
-          "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [] end
+          "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
+          "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
           "second_last_visible_discard" ->
             if last_discard_action != nil do 
               visible_pond = state.players[last_discard_action.seat].pond
@@ -48,8 +48,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
               |> Enum.filter(fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
               if not Enum.empty?(visible_pond) do
                 [{hand ++ Enum.take(visible_pond, -1), calls}]
-              else [] end
-            else [] end
+              else [{hand, calls}] end
+            else [{hand, calls}] end
           "self_last_discard" -> [{hand ++ Enum.take(state.players[context.seat].pond, -1), calls}]
           "shimocha_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :shimocha)].pond, -1), calls}]
           "toimen_last_discard" -> [{hand ++ Enum.take(state.players[Utils.get_seat(context.seat, :toimen)].pond, -1), calls}]
@@ -70,6 +70,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_calls" -> [{hand, calls ++ Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)}]
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
+          "visible_tiles" -> [{hand ++ get_visible_tiles(state), calls}]
+          "any_visible_tile" -> Enum.map(get_visible_tiles(state), fn tile -> {hand ++ [tile], calls} end)
           "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
           "hand_draw_nonjoker_any" -> Enum.flat_map(state.players[context.seat].hand ++ state.players[context.seat].draw, fn tile -> [{hand ++ if Utils.count_tiles([tile], Map.keys(state.players[context.seat].tile_mappings)) > 0 do [] else [tile] end, calls}] end)
           "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
@@ -144,7 +146,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "game_start"                  -> last_action == nil
       "no_discards_yet"             -> last_discard_action == nil
       "no_calls_yet"                -> last_call_action == nil
-      "last_call_is"                -> last_call_action != nil && last_call_action.call_name == Enum.at(opts, 0, "kakan")
+      "last_call_is"                -> last_call_action != nil && last_call_action.call_name in opts
       "kamicha_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
       "toimen_discarded"            -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat, 2)
       "shimocha_discarded"          -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat, 3)
@@ -183,6 +185,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
       "discarder_status"         -> last_action != nil && last_action.action == :discard && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
+      "callee_status"            -> last_action != nil && last_action.action == :call && Enum.all?(opts, fn st -> st in state.players[last_action.from].status end)
       "caller_status"            -> last_action != nil && last_action.action == :call && Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
       "shimocha_status"          -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :shimocha)].status end)
       "toimen_status"            -> Enum.all?(opts, fn st -> st in state.players[Utils.get_seat(context.seat, :toimen)].status end)

@@ -269,10 +269,7 @@
     {
       "display_name": "Riichi",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["riichi"]},
-        {"name": "status_missing", "opts": ["double_riichi"]}
-      ]
+      "when": [{"name": "status", "opts": ["riichi"]}]
     },
     {
       "display_name": "Tsumo",
@@ -658,6 +655,7 @@
     }
   ],
   "yaku_precedence": {
+    "Double Riichi": ["Riichi"],
     "Chinitsu": ["Honitsu"],
     "Chiitoitsu": ["Iipeikou"],
     "Ryanpeikou": ["Iipeikou", "Chiitoitsu"],
@@ -889,11 +887,7 @@
         {"name": "not_call_changes_waits", "opts": ["win"]}
       ]],
       "show_when": [
-        "our_turn", "not_no_tiles_remaining", "has_draw", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}, "self_call_available",
-        [
-          {"name": "not_status", "opts": ["riichi"]},
-          {"name": "not_call_would_change_waits", "opts": ["win"]}
-        ]
+        "our_turn", "not_no_tiles_remaining", "has_draw", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}, "self_call_available"
       ],
       "actions": [
         ["big_text", "Kan"], ["self_call"], ["unset_status_all", "just_reached"], ["set_status_all", "call_made"],

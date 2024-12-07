@@ -230,10 +230,7 @@
     {
       "display_name": "Riichi",
       "value": 1,
-      "when": [
-        {"name": "status", "opts": ["riichi"]},
-        {"name": "status_missing", "opts": ["double_riichi"]}
-      ]
+      "when": [{"name": "status", "opts": ["riichi"]}]
     },
     {
       "display_name": "Tsumo",
@@ -619,6 +616,7 @@
     }
   ],
   "yaku_precedence": {
+    "Double Riichi": ["Riichi"],
     "Chinitsu": ["Honitsu"],
     "Chiitoitsu": ["Iipeikou"],
     "Ryanpeikou": ["Iipeikou", "Chiitoitsu"],

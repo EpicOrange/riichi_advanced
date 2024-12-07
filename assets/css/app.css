@@ -210,27 +210,16 @@ div.hand.kamicha {
   transform: rotate(90deg);
   transform-origin: top left;
 }
-div.draws::before {
-  content: "";
-  position: absolute;
-  top: calc(-0.375 * var(--tile-size));
-  left: calc(-0.25 * var(--tile-size));
-  background: #0f6f2f;
-  border-radius: calc(0.25 * var(--tile-size));
-  width: calc(100% + 0.5 * var(--tile-size));
-  height: calc(100% + 0.5 * var(--tile-size));
-  z-index: -100;
-}
 div.calls:hover { z-index: 100; }
-div.tiles:hover::before, div.calls:hover::before {
+div.draws::before, div.tiles:hover::before, div.calls:hover::before {
   content: "";
   position: absolute;
-  top: calc(-0.375 * var(--tile-size));
-  left: calc(-0.125 * var(--tile-size));
+  top: calc(-0.25 * var(--tile-size));
+  left: 0;
   background: #0f6f2f;
   border-radius: calc(0.25 * var(--tile-size));
-  width: calc(100% + 0.5 * var(--tile-size));
-  height: calc(100% + 0.5 * var(--tile-size));
+  width: calc(100% * var(--tile-size));
+  height: calc(100% + 0.25 * var(--tile-size));
 }
 /* toimen's hand covers shimo's calls */
 /* but if we lower its z-index, then toimen's calls are covered by kami */
