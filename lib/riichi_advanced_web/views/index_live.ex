@@ -75,7 +75,13 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />
         <div class="enter-buttons">
           <button type="submit">Enter</button>
-          <button type="button" phx-cancellable-click="toggle_show_room_code">Join private room</button>
+          <button type="button" phx-cancellable-click="toggle_show_room_code">
+            <%= if @show_room_code_buttons do %>
+              Close
+            <% else %>
+              Join private room
+            <% end %>
+          </button>
         </div>
       </form>
       <%= if @show_room_code_buttons do %>
