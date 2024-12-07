@@ -96,7 +96,7 @@ main div.messages-container > div.messages span.bold {
 }
 
 /* hands */
-div.hand, div.tiles, div.calls, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
+div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -120,6 +120,60 @@ div.calls {
   right: 0;
   z-index: -1;
 }
+div.flowers {
+  right: calc(1.25 * var(--tile-size));
+  bottom: calc(1.25 * var(--tile-size));
+}
+/* reverse the z-index of calls so they overlap correctly */
+div.calls > div:nth-child(1) { z-index: -1; }
+div.calls > div:nth-child(2) { z-index: -2; }
+div.calls > div:nth-child(3) { z-index: -3; }
+div.calls > div:nth-child(4) { z-index: -4; }
+div.calls > div:nth-child(5) { z-index: -5; }
+div.calls > div:nth-child(6) { z-index: -6; }
+div.calls > div:nth-child(7) { z-index: -7; }
+div.calls > div:nth-child(8) { z-index: -8; }
+div.calls > div:nth-child(9) { z-index: -9; }
+div.calls > div:nth-child(10) { z-index: -10; }
+div.calls > div:nth-child(11) { z-index: -11; }
+div.calls > div:nth-child(12) { z-index: -12; }
+div.calls > div:nth-child(13) { z-index: -13; }
+div.calls > div:nth-child(14) { z-index: -14; }
+div.calls > div:nth-child(15) { z-index: -15; }
+div.calls > div:nth-child(16) { z-index: -16; }
+div.calls > div:nth-child(17) { z-index: -17; }
+div.calls > div:nth-child(18) { z-index: -18; }
+div.calls > div:nth-child(19) { z-index: -19; }
+div.calls > div:nth-child(20) { z-index: -20; }
+div.calls > div:nth-child(21) { z-index: -21; }
+div.calls > div:nth-child(22) { z-index: -22; }
+div.calls > div:nth-child(23) { z-index: -23; }
+div.calls > div:nth-child(24) { z-index: -24; }
+/* shimocha's calls overlap in the reverse order */
+div.shimocha div.calls > div:nth-child(1) { z-index: -24; }
+div.shimocha div.calls > div:nth-child(2) { z-index: -23; }
+div.shimocha div.calls > div:nth-child(3) { z-index: -22; }
+div.shimocha div.calls > div:nth-child(4) { z-index: -21; }
+div.shimocha div.calls > div:nth-child(5) { z-index: -20; }
+div.shimocha div.calls > div:nth-child(6) { z-index: -19; }
+div.shimocha div.calls > div:nth-child(7) { z-index: -18; }
+div.shimocha div.calls > div:nth-child(8) { z-index: -17; }
+div.shimocha div.calls > div:nth-child(9) { z-index: -16; }
+div.shimocha div.calls > div:nth-child(10) { z-index: -15; }
+div.shimocha div.calls > div:nth-child(11) { z-index: -14; }
+div.shimocha div.calls > div:nth-child(12) { z-index: -13; }
+div.shimocha div.calls > div:nth-child(13) { z-index: -12; }
+div.shimocha div.calls > div:nth-child(14) { z-index: -11; }
+div.shimocha div.calls > div:nth-child(15) { z-index: -10; }
+div.shimocha div.calls > div:nth-child(16) { z-index: -9; }
+div.shimocha div.calls > div:nth-child(17) { z-index: -8; }
+div.shimocha div.calls > div:nth-child(18) { z-index: -7; }
+div.shimocha div.calls > div:nth-child(19) { z-index: -6; }
+div.shimocha div.calls > div:nth-child(20) { z-index: -5; }
+div.shimocha div.calls > div:nth-child(21) { z-index: -4; }
+div.shimocha div.calls > div:nth-child(22) { z-index: -3; }
+div.shimocha div.calls > div:nth-child(23) { z-index: -2; }
+div.shimocha div.calls > div:nth-child(24) { z-index: -1; }
 div.call, div.draws, div.winning-tile-container {
   margin-left: calc(0.375 * var(--tile-size));
 }
@@ -802,7 +856,8 @@ div.tile.sideways:not(.flat) {
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.pond.self div.tile:not(.flat) {
+div.pond.self div.tile:not(.flat),
+div.self div.flowers div.tile:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
@@ -986,7 +1041,8 @@ div.hand.just-drew > div.draws > div.tile {
   }
   100% {}
 }
-div.hand.just-called > div.calls > div.call:nth-last-child(2) {
+div.hand.just-called > div.calls > div.call:nth-last-child(2),
+div.hand.just-called-flower > div.flowers > div.tile:last-child {
   animation: slideRight 0.4s ease forwards;
 }
 

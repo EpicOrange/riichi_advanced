@@ -302,7 +302,7 @@ defmodule Utils do
     reversed = transparent && id == :"1x"
     id = if reversed do Riichi.flip_faceup(tile) |> Utils.strip_attrs() else id end
     facedown = Utils.has_attr?(tile, ["facedown"]) && Map.get(assigns, :hover_index, nil) != i
-    played = Map.get(assigns, :your_turn?, true) && Map.get(assigns, :preplayed_index, nil) == i
+    played = Map.get(assigns, :your_hand?, true) && Map.get(assigns, :preplayed_index, nil) == i
     sideways = i == Map.get(assigns, :riichi_index, nil) && "sideways"
     just_played = Map.get(assigns, :just_discarded?, false) && Map.has_key?(assigns, :pond) && i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) && i == assigns.riichi_index

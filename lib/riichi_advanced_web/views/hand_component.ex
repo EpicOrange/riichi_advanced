@@ -1,6 +1,9 @@
 defmodule RiichiAdvancedWeb.HandComponent do
   use RiichiAdvancedWeb, :live_component
 
+  # these calls get shown up top
+  @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
+
   def mount(socket) do
     socket = assign(socket, :your_hand?, false)
     socket = assign(socket, :revealed?, false)
@@ -9,6 +12,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
     socket = assign(socket, :just_called, false)
+    socket = assign(socket, :just_called_flower, false)
     socket = assign(socket, :just_drew, false)
     socket = assign(socket, :called_tile, nil)
     socket = assign(socket, :call_choice, nil)
@@ -24,7 +28,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={[@id, @just_called && "just-called", @just_drew && "just-drew"]}>
+    <div class={[@id, @just_called && "just-called", @just_called_flower && "just-called-flower", @just_drew && "just-drew"]}>
       <%= if @your_hand? do %>
         <%= if not Enum.empty?(@marking) do %>
           <div class="tiles">
@@ -138,6 +142,11 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
       </div>
+      <div class="calls flowers">
+        <%= for {{_name, call}, i} <- prepare_flowers(assigns) do %>
+          <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, sideways} <- call}></div>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -234,10 +243,19 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def prepare_calls(assigns) do
-    # map calls to [{call, index}]
+    # map calls to [{call, index}], omitting flowers
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.calls
     |> Enum.with_index()
+    |> Enum.reject(fn {{name, _call}, _i} -> name in @flower_names end)
+  end
+
+  def prepare_flowers(assigns) do
+    # map calls to [{flower, index}]
+    # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
+    assigns.calls
+    |> Enum.with_index()
+    |> Enum.filter(fn {{name, _call}, _i} -> name in @flower_names end)
   end
 
   def prepare_aside(assigns) do
@@ -266,7 +284,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
     # animate incoming calls
     socket = if Map.has_key?(assigns, :calls) && length(assigns.calls) > length(socket.assigns.calls) do
-      socket = assign(socket, :just_called, true)
+      {last_call_name, _last_call} = Enum.at(assigns.calls, -1)
+      socket = assign(socket, if last_call_name in @flower_names do :just_called_flower else :just_called end, true)
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, assigns.seat}])
       socket
     else socket end
