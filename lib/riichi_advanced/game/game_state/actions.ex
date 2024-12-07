@@ -257,7 +257,12 @@ defmodule RiichiAdvanced.GameState.Actions do
     new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
     # actually add the call to the player
     state = update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
-    state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+    state = if called_tile != nil do
+      update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+    else
+      # flower
+      update_action(state, seat, :call, %{from: state.turn, called_tile: Enum.at(call_choice, 0), other_tiles: [], call_name: call_name})
+    end
 
     # messages and log
     cond do
@@ -406,6 +411,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           Utils.count_tiles(hand, doras)
         else 0 end
       ["pot" | _opts] -> state.pot
+      ["honba" | _opts] -> state.honba
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_integer(amount) -> amount
       _ ->
@@ -1127,8 +1133,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         # if our action updates state, then we need to recalculate buttons
         # this is so other players can react to certain actions
         if not uninterruptible && Map.has_key?(state.interruptible_actions, action) do
-          state = if not Enum.empty?(state.winners) do
-            # if there's a winner, never display buttons
+          state = if state.visible_screen != nil do
+            # if viewing a win screen, never display buttons
             update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "", chosen_call_choice: nil, chosen_called_tile: nil, chosen_saki_card: nil } end)
           else
             Buttons.recalculate_buttons(state, state.interruptible_actions[action])
@@ -1253,6 +1259,9 @@ defmodule RiichiAdvanced.GameState.Actions do
                   %{seat: seat, call_name: choice, choice: player.chosen_saki_card}
                 else
                   %{seat: seat, call_name: choice, called_tile: player.chosen_called_tile, call_choice: player.chosen_call_choice}
+                end
+                if Debug.debug_actions() do
+                  IO.puts("Running call actions for #{seat}: #{inspect(actions)}")
                 end
                 state = run_actions(state, actions, context)
                 state
