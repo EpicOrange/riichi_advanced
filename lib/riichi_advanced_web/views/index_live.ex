@@ -22,6 +22,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
       {"sichuan",      "Sichuan Bloody", "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."},
       {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
+      {"taiwanese",    "Taiwanese", "16-tile mahjong with riichi mechanics."},
       {"bloody30faan", "Bloody 30-Faan Jokers", "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."},
       {"american",     "American (2024 NMJL)", "American mahjong. Assemble hands with jokers, and declare other players' hands dead. Rules are not available for this one."},
       {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
@@ -30,7 +31,6 @@ defmodule RiichiAdvancedWeb.IndexLive do
       {"custom",       "Custom", "Create and play your own custom ruleset."},
     ])
     socket = assign(socket, :unimplemented_rulesets, [
-      {"taiwanese",    "Taiwanese", "16-tile mahjong.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-taiwanese-mahjong"},
       {"fuzhou",       "Fuzhou", "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself.", "https://old.reddit.com/r/Mahjong/comments/171izis/fuzhou_mahjong_rules_corrected/"},
       {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-filipino-mahjong-rules"},
       {"visayan",      "Visayan", "16-tile mahjong where you can form dragon and wind sequences.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-filipino-visayan-mahjong"},
