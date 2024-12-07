@@ -77,7 +77,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
             <div class="placement"><div class="placement-place"><%= @placements[Utils.get_seat(@seat, :kamicha)] %></div></div>
           <% end %>
         </div>
-        <div class="timer" phx-cancellable-click="ready_for_next_round"><%= @timer %></div>
+        <div class="timer" phx-cancellable-click="ready_for_next_round">Skip (<%= @timer %>)</div>
       <% end %>
     </div>
     """

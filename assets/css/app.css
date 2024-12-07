@@ -1772,7 +1772,7 @@ div.game-end-window > div.timer {
   font-size: calc(0.5 * var(--tile-size));
   right: calc(-0.25 * var(--tile-size));
   bottom: calc(-0.25 * var(--tile-size));
-  width: calc(1 * var(--tile-size));
+  width: calc(2 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
   cursor: pointer;
 }
