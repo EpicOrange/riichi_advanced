@@ -732,7 +732,16 @@
       ],
       "enabled_at_start": false
     },
-    "3_auto_no_call": {
+    "3_auto_flower": {
+      "display_name": "F",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "4_auto_no_call": {
       "display_name": "C",
       "actions": [
         ["when", [
@@ -743,7 +752,7 @@
       ],
       "enabled_at_start": false
     },
-    "4_auto_discard": {
+    "5_auto_discard": {
       "display_name": "D",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
@@ -753,5 +762,6 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
+  "four_rows_discards": true,
   "max_rounds": 16
 }
