@@ -67,7 +67,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <%= if not @your_turn? || i in @playable_indices do %>
                   <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"])} data-id={i}></div>
                 <% else %>
-                  <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"])} data-id={i}></div>
+                  <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive", highlight && "highlight"])} data-id={i}></div>
                 <% end %>
               <% end %>
             <% end %>
@@ -77,7 +77,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
               <%= if not @your_turn? || i in @playable_indices do %>
                 <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns)}></div>
               <% else %>
-                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns)} data-id={i}></div>
+                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} data-id={i}></div>
               <% end %>
             <% end %>
           </div>
