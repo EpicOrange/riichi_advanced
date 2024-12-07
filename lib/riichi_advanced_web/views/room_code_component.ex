@@ -54,6 +54,7 @@ defmodule RiichiAdvancedWeb.RoomCodeComponent do
         <button type="button" phx-cancellable-click="enter_room_code" phx-target={@myself} phx-value-tile="5z"><div class="tile 5z"></div></button>
         <button type="button" phx-cancellable-click="enter_room_code" phx-target={@myself} phx-value-tile="6z"><div class="tile 6z"></div></button>
         <button type="button" phx-cancellable-click="enter_room_code" phx-target={@myself} phx-value-tile="7z"><div class="tile 7z"></div></button>
+        <button type="button"><div class="tile 2x"></div></button>
         <button type="button" phx-cancellable-click="enter_room_code" phx-target={@myself}><div class="tile 1t"></div></button>
       </div>
     </div>
