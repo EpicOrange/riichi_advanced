@@ -2213,6 +2213,7 @@ div#container > form > div.form-error {
 }
 div#container > form > input.nickname-input {
   margin: calc(0.5 * var(--tile-size));
+  margin-bottom: 0;
 }
 div#container > form > div.ruleset-selection {
   overflow-y: auto;
@@ -2241,15 +2242,24 @@ div#container > form > div.ruleset-selection > input[type="radio"]:checked + lab
 div#container > form > div.ruleset-selection > input[type="radio"][disabled] + label {
   opacity: 0.4;
 }
-div#container > form > button.enter-button {
+
+/* enter buttons for index and lobby */
+div.enter-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-top: calc(0.5 * var(--tile-size));
+}
+div.enter-buttons > button {
   background: var(--tile-front);
   color: black;
   border-width: 0;
+  font-size: calc(0.75 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  width: 100%;
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
+  flex-grow: 1;
   display: flex;
   justify-content: center;
   align-content: center;
@@ -2257,11 +2267,41 @@ div#container > form > button.enter-button {
   vertical-align: center;
   flex-direction: column;
 }
-div#container > form > button.enter-button:active {
+div.enter-buttons > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
 }
 
+/* room code modal */
+div.room-code-modal {
+  position: absolute;
+  border-radius: calc(0.25 * var(--tile-size));
+  background: #3f3f3f;
+  color: white;
+  top: calc(6.5 * var(--tile-size));
+  left: calc(0.75 * var(--tile-size));
+  width: calc(14.5 * var(--tile-size));
+  height: calc(7 * var(--tile-size));
+}
+div.room-code-modal > div.room-code-display {
+  display: inline-block;
+  width: 100%;
+  height: calc(1 * var(--tile-size));
+  margin: calc(0.5 * var(--tile-size));
+}
+div.room-code-modal > div.room-code-display > div.tile {
+  display: inline-block;
+}
+div.room-code-modal > div.room-code-buttons {
+  text-align: center;
+}
+div.room-code-modal > div.room-code-buttons > button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
 
 /* lobby screen */
 div.lobby {
@@ -2309,8 +2349,7 @@ div.lobby > div.rooms > div.room {
   align-items: center;
   width: 100%;
 }
-div.lobby > div.rooms > div.room > button.join-room,
-div.lobby > button.create-room {
+div.lobby > div.rooms > div.room > button.join-room {
   background: var(--tile-front-side);
   border-width: 0;
   border-radius: calc(0.25 * var(--tile-size));

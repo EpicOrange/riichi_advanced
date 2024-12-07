@@ -2,7 +2,10 @@ defmodule RiichiAdvancedWeb.IndexLive do
   use RiichiAdvancedWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, :messages, [])
+    socket = socket
+    |> assign(:messages, [])
+    |> assign(:show_room_code_buttons, false)
+    |> assign(:room_code, [])
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
@@ -50,7 +53,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def render(assigns) do
     ~H"""
-    <div id="container">
+    <div id="container" phx-hook="ClickListener">
       <div class="title">
         <div class="title-riichi">Riichi</div>
         <div class="title-advanced">Advanced</div>
@@ -70,8 +73,14 @@ defmodule RiichiAdvancedWeb.IndexLive do
           <% end %>
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />
-        <button type="submit" class="enter-button">Enter</button>
+        <div class="enter-buttons">
+          <button type="submit">Enter</button>
+          <button type="button" phx-cancellable-click="toggle_show_room_code">Join private room</button>
+        </div>
       </form>
+      <%= if @show_room_code_buttons do %>
+        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" set_room_code={&send(self(), {:set_room_code, &1})} />
+      <% end %>
       <div class="index-bottom-buttons">
         <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank">Source</a></button>
         <button><a href="https://discord.gg/5QQHmZQavP" target="_blank">Discord</a></button>
@@ -82,25 +91,48 @@ defmodule RiichiAdvancedWeb.IndexLive do
     """
   end
 
-  def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname}, socket) do
-    # check if there are any public rooms of this ruleset
-    # if not, skip the lobby and go directly to making a new table
-    session_ids = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
-    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
-    |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
-    |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
-    has_public_room = Enum.any?(session_ids, fn session_id -> 
-      [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, session_id))
-      room_state = GenServer.call(room_state_pid, :get_state)
-      not room_state.private
-    end)
-    socket = if has_public_room do
-      push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
-    else
-      {:ok, _, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
-      push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
-    end
+  def handle_event("double_clicked", _assigns, socket) do
     {:noreply, socket}
+  end
+
+  def handle_event("right_clicked", _assigns, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("toggle_show_room_code", _assigns, socket) do
+    socket = assign(socket, :show_room_code_buttons, not socket.assigns.show_room_code_buttons)
+    {:noreply, socket}
+  end
+
+  def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname}, socket) do
+    if socket.assigns.show_room_code_buttons do
+      socket = if length(socket.assigns.room_code) == 3 do
+        # enter private room, or create a new room
+        session_id = Enum.join(socket.assigns.room_code, ",")
+        push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
+      else socket end
+      {:noreply, socket}
+    else
+      # get all running session ids for this ruleset
+      session_ids = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
+      |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+      |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
+      |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
+      # check if there are any public rooms of this ruleset
+      # if not, skip the lobby and go directly to making a new table
+      has_public_room = Enum.any?(session_ids, fn session_id -> 
+        [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, session_id))
+        room_state = GenServer.call(room_state_pid, :get_state)
+        not room_state.private
+      end)
+      socket = if has_public_room do
+        push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
+      else
+        {:ok, _, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
+        push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
+      end
+      {:noreply, socket}
+    end
   end
   
   def handle_event("goto_logs", _assigns, socket) do
@@ -116,4 +148,10 @@ defmodule RiichiAdvancedWeb.IndexLive do
       {:noreply, socket}
     end
   end
+
+  def handle_info({:set_room_code, room_code}, socket) do
+    socket = assign(socket, :room_code, room_code)
+    {:noreply, socket}
+  end
+
 end
