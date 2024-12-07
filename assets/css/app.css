@@ -123,6 +123,7 @@ div.calls {
 div.flowers {
   right: calc(1.25 * var(--tile-size));
   bottom: calc(1.25 * var(--tile-size));
+  z-index: -2;
 }
 /* reverse the z-index of calls so they overlap correctly */
 div.calls > div:nth-child(1) { z-index: -1; }
