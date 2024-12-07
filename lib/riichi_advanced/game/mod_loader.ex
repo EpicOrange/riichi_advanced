@@ -43,12 +43,9 @@ defmodule RiichiAdvanced.ModLoader do
         modded_json = apply_multiple_mods(ruleset_json, mod_names)
 
         # list out the mods as a "enabled_mods" key, via string replacement
-        modded_json = if String.contains?(modded_json, "\"") do
-          String.replace(modded_json, "{", "{\"enabled_mods\":" <> inspect(mod_names) <> ",", global: false)
-        else
-          # if the json file is empty, don't add the comma
-          String.replace(modded_json, "{", "{\"enabled_mods\":" <> inspect(mod_names), global: false)
-        end
+        # if the json file is empty, don't add a trailing comma
+        trailing_comma = if String.contains?(modded_json, "\"") do "," else "" end
+        modded_json = String.replace(modded_json, "{", "{\"enabled_mods\": [" <> Enum.join(Enum.map(mod_names, &"\"#{&1}\""), ", ") <> "]" <> trailing_comma, global: false)
 
         if not Debug.skip_ruleset_caching() do
           RiichiAdvanced.ETSCache.put({ruleset, mod_names}, modded_json, :cache_mods)
