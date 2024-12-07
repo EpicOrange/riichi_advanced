@@ -260,19 +260,22 @@
       "display_name": "Select three tiles to pass left",
       "show_when": [{"name": "status", "opts": ["charleston_left"]}],
       "actions": [["mark", [["hand", 3, ["self"]]], [["unset_status", "charleston_left"]]], ["charleston_left"], ["set_status", "round_start"]],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_across": {
       "display_name": "Select three tiles to pass across",
       "show_when": [{"name": "status", "opts": ["charleston_across"]}],
       "actions": [["mark", [["hand", 3, ["self"]]], [["unset_status", "charleston_across"]]], ["charleston_across"], ["set_status", "round_start"]],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "charleston_right": {
       "display_name": "Select three tiles to pass right",
       "show_when": [{"name": "status", "opts": ["charleston_right"]}],
       "actions": [["mark", [["hand", 3, ["self"]]], [["unset_status", "charleston_right"]]], ["charleston_right"], ["set_status", "round_start"]],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "void_manzu": {
       "display_name": "No Craks",
