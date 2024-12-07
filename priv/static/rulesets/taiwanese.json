@@ -383,7 +383,7 @@
   ],
   "before_turn_change": {
     "actions": [
-      ["unset_status", "kan", "double_kan"],
+      ["unset_status", "kan", "double_kan", "just_reached"],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
