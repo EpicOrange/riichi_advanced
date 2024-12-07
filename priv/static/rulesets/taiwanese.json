@@ -166,7 +166,6 @@
     { "display_name": "Single Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
     { "display_name": "Within Ten Discards", "value": 5, "when": [{"name": "tiles_remaining", "opts": [54]}] },
     { "display_name": "Within Five Discards", "value": 10, "when": [{"name": "tiles_remaining", "opts": [59]}] },
-    { "display_name": "Last Five Tiles", "value": 0, "when": [{"name": "anyone_status", "opts": ["five_tile_pao"]}, {"name": "not_tiles_remaining", "opts": [6]}] },
     // Suit-based hands
     {
       "display_name": "Half Flush",
@@ -363,7 +362,7 @@
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
     "yaku_lists": ["yaku"],
-    "pao_eligible_yaku": ["Big Four Winds", "Little Four Winds", "Big Three Dragons", "Little Three Dragons", "Last Five Tiles"],
+    "pao_eligible_yaku": ["Big Four Winds", "Little Four Winds", "Big Three Dragons", "Little Three Dragons"],
     "agarirenchan": true,
     "tenpairenchan": true,
     "pao_pays_all": true,
@@ -385,7 +384,6 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "double_kan"],
-      ["when", [{"name": "status_missing", "opts": ["pao"]}], [["unset_status", "five_tile_pao"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
@@ -398,7 +396,6 @@
   },
   "after_call": {
     "actions": [
-      ["when", [{"name": "callee_status", "opts": ["five_tile_pao"]}], [["set_callee_status", "pao"]]],
       ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
       ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
       ["when", [{"name": "match", "opts": [["last_call"], [[[["manzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["manzu_3"], 5]]]]}], [["set_callee_status", "pao"]]],
@@ -406,17 +403,6 @@
       ["when", [{"name": "match", "opts": [["last_call"], [[[["souzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["souzu_3"], 5]]]]}], [["set_callee_status", "pao"]]]
     ]
   },
-  "play_effects": [
-    ["any", [
-      ["when", [
-        {"name": "not_tiles_remaining", "opts": [6]},
-        // visible_tiles includes tile
-        // if our discard is live there should be only four of this tile in ["tile", "tile", "tile", "visible_tiles"]
-        // matching 5 means we have a duplicate of this tile, i.e. not live
-        {"name": "not_match", "opts": [["tile", "tile", "tile", "visible_tiles"], [[[[[0,0,0,0,0]], 1]]]]}
-      ], [["set_status", "five_tile_pao"]]]
-    ]]
-  ],
   "after_start": {
     "actions": [["set_status_all", "first_turn", "match_start"]]
   },
@@ -432,13 +418,6 @@
         ["set_counter", "delta_score", "extra_payment"],
         ["set_counter_all", "extra_payment", "extra_payment"],
         ["as", "east", [["set_counter", "delta_score", "extra_payment"], ["multiply_counter", "delta_score", -1]]]
-      ]]
-    ]
-  },
-  "after_win": {
-    "actions": [
-      ["when_anyone", [{"name": "status", "opts": ["pao", "five_tile_pao"]}, "pao_triggered"], [
-        ["push_message", "is responsible for the full payment due to having a live tile called when there were five or less tiles remaining in the wall"]
       ]]
     ]
   },
