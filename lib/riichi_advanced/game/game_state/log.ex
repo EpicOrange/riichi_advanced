@@ -155,9 +155,9 @@ defmodule RiichiAdvanced.GameState.Log do
         "done" -> {:done, false}
         "cancellable" -> {:cancellable, val}
         _      ->
-          val = Map.new(val, fn {k, v} -> {String.to_atom(k), v} end)
-          val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_atom(s), i} end))
-          {String.to_atom(kw), val}
+          val = Map.new(val, fn {k, v} -> {String.to_existing_atom(k), v} end)
+          val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
+          {String.to_existing_atom(kw), val}
       end
     end
   end

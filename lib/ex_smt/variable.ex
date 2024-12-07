@@ -25,7 +25,8 @@ defmodule ExSMT.Variable do
     i = case i_parts do
       ["_"] -> nil
       ["I", int_str] -> String.to_integer(int_str, 10)
-      ["E", etf_b64] -> :erlang.binary_to_term(Base.decode64!(etf_b64))
+      # this is marked unsafe by sobelow, and we don't use it anyways
+      # ["E", etf_b64] -> :erlang.binary_to_term(Base.decode64!(etf_b64))
     end
 
     %__MODULE__{type: type, name: name, i: i}
