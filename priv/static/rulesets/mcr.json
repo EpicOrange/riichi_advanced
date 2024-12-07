@@ -1261,9 +1261,9 @@
     "3_auto_flower": {
       "display_name": "F",
       "actions": [
-        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
         ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
-        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"]]]
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
       ],
       "enabled_at_start": false
     },

@@ -630,6 +630,17 @@ defmodule RiichiAdvanced.GameState.Actions do
         # need to do this or else we might reenter adjudicate_actions
         :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
         state
+      "press_first_call_button" ->
+        button_choice = Map.get(state.players[context.seat].button_choices, Enum.at(opts, 0, "skip"), nil)
+        case button_choice do
+          {:call, call_choices} ->
+            {called_tile, choices} = Enum.at(call_choices, 0)
+            call_choice = Enum.at(choices, 0)
+            # need to do this or else we might reenter adjudicate_actions
+            :timer.apply_after(100, GenServer, :cast, [self(), {:press_call_button, context.seat, call_choice, called_tile}])
+          _ -> :ok
+        end
+        state
       "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
