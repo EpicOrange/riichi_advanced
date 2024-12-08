@@ -521,6 +521,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       state = Map.update!(state, :call_stack, &[[fn_name | args] | &1])
       actions = Map.get(state.rules["functions"], fn_name)
       actions = map_action_opts(actions, &Map.get(args, &1, &1))
+      if Debug.debug_actions() do
+        IO.puts("Running function: #{inspect(actions)}")
+      end
       state = run_actions(state, actions, context)
       state = Map.update!(state, :call_stack, &Enum.drop(&1, 1))
       state
@@ -1515,7 +1518,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def map_action_opts([], _fun), do: []
   def map_action_opts([action | actions], fun) do
-    case action do
+    mapped_action = case action do
       ["when", condition, subactions] -> ["when", condition, map_action_opts(subactions, fun)]
       ["as", seats_spec, subactions] -> ["as", seats_spec, map_action_opts(subactions, fun)]
       ["when_anyone", condition, subactions] -> ["when_anyone", condition, map_action_opts(subactions, fun)]
@@ -1524,8 +1527,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["unless", condition, subactions] -> ["unless", condition, map_action_opts(subactions, fun)]
       ["ite", condition, subactions1, subactions2] -> ["ite", condition, map_action_opts(subactions1, fun), map_action_opts(subactions2, fun)]
       ["run", fn_name, args] -> ["run", fn_name, Map.new(args, fn {name, value} -> {name, fun.(value)} end)]
-      [action_name | opts] -> [[action_name | Enum.map(opts, fun)] | map_action_opts(actions, fun)]
+      [action_name | opts] -> [action_name | Enum.map(opts, fun)]
     end
+    [mapped_action | map_action_opts(actions, fun)]
   end
 
 end
