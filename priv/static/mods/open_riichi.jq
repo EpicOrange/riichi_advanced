@@ -39,8 +39,16 @@ else . end
     "display_name": "Open Riichi",
     "value": 2,
     "when": [{"name": "status", "opts": ["open_riichi"]}]
+  },
+  {
+    "display_name": "Open Double Riichi",
+    "value": 3,
+    "when": [{"name": "status", "opts": ["open_riichi", "double_riichi"]}]
   }
 ] + .[$ix+1:]
 |
 # have open riichi supercede regular riichi yaku
-.yaku_precedence["Open Riichi"] = ["Riichi"]
+.yaku_precedence += {
+  "Open Riichi": ["Riichi"],
+  "Open Double Riichi": ["Open Riichi"]
+}
