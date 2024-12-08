@@ -212,7 +212,9 @@ defmodule RiichiAdvanced.GameState do
 
     # apply mods
     mods = Map.get(state, :mods, [])
-    ruleset_json = RiichiAdvanced.ModLoader.apply_mods(state.ruleset, ruleset_json, mods)
+    ruleset_json = if state.ruleset != "custom" do
+      RiichiAdvanced.ModLoader.apply_mods(state.ruleset, ruleset_json, mods)
+    else ruleset_json end
     if not Enum.empty?(mods) do
       # cache mods
       RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, mods, :cache_mods)
@@ -240,7 +242,8 @@ defmodule RiichiAdvanced.GameState do
       case Jason.decode(ruleset_json) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
-          IO.inspect(ruleset_json)
+          IO.puts("Erroring json:")
+          IO.puts(ruleset_json)
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
           # state = show_error(state, inspect(err))
           {state, %{}}

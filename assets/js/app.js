@@ -181,10 +181,8 @@ Hooks.CollaborativeTextarea = {
       // check if it's a full reload
       if (from_version < 0) {
         same_version = true;
-        window.server_doc = new Delta(deltas[0]);
+        window.server_doc = new Delta().insert("");
         window.server_version = from_version;
-        uuids = [];
-        deltas = [];
       }
 
       var server_deltas = deltas.map(delta => new Delta(delta));
