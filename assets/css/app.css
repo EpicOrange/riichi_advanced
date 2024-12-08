@@ -95,6 +95,26 @@ main div.messages-container > div.messages span.bold {
   }
 }
 
+/* global styles */
+
+/* toggle buttons */
+input[type="radio"], input[type="checkbox"] { display: none; }
+label {
+  display: inline-block;
+  background: gray;
+  border-radius: calc(0.125 * var(--tile-size));
+  padding: 0 calc(0.125 * var(--tile-size));
+  margin-top: calc(0.125 * var(--tile-size));
+  white-space: nowrap;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
+}
+input + label { background: gray; }
+input:checked + label { background: var(--tile-back); }
+
+
+
 /* hands */
 div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
   display: flex;
@@ -312,7 +332,6 @@ div.pond.kamicha {
 div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-size))); }
 
 /* mobile zoom button for hand */
-input.mobile-zoom-checkbox { display: none; }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
   input.mobile-zoom-checkbox + label { display: none; }
@@ -323,7 +342,6 @@ input.mobile-zoom-checkbox { display: none; }
     position: absolute;
     left: calc(1.25 * var(--tile-size));
     bottom: calc(1.75 * var(--tile-size));
-    background: var(--tile-back);
     border-radius: calc(0.125 * var(--tile-size));
     opacity: 0.5;
   }
@@ -1116,13 +1134,6 @@ div.auto-buttons {
   bottom: calc(-1.5 * var(--tile-size));
   left: 0;
 }
-div.auto-buttons > input { display: none; }
-div.auto-buttons > label {
-  background: gray;
-  padding: 0 calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
-}
-div.auto-buttons > input:checked + label { background: var(--tile-back); }
 
 
 /* big text */
@@ -1256,15 +1267,10 @@ div.declare-yaku-container {
 div.declare-yaku-container > input.declare-yaku-minimize { display: none; }
 div.declare-yaku-container > label.declare-yaku-minimize-label {
   position: absolute;
-  background: var(--tile-back);
-  padding: 0 calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
   width: calc(0.5 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
   top: calc(-0.75 * var(--tile-size));
   right: 0;
-  text-align: center;
-  user-select: none;
 }
 div.declare-yaku {
   position: relative;
@@ -1305,7 +1311,6 @@ div.declare-yaku div.declarable-yakus > label {
   padding: 0 calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
 }
-div.declare-yaku div.declarable-yakus > input:checked + label { background: var(--tile-back); }
 div.declare-yaku button.declare-yaku-button {
   margin: calc(0.25 * var(--tile-size)) 0;
   height: calc(1 * var(--tile-size));
@@ -2269,23 +2274,16 @@ div#container > form > div.ruleset-selection {
   color: white;
   font-size: calc(0.55 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > input[type="radio"] { display: none; }
 div#container > form > div.ruleset-selection > label {
-  display: inline-block;
-  border-radius: calc(0.25 * var(--tile-size));
   font-size: calc(0.55 * var(--tile-size));
   padding: calc(0.15 * var(--tile-size));
-  background: gray;
 }
 div#container > form > div.ruleset-selection > label > a {
   text-decoration: none;
   color: white;
   font-size: calc(0.55 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > input[type="radio"]:checked + label {
-  background: var(--tile-back);
-}
-div#container > form > div.ruleset-selection > input[type="radio"][disabled] + label {
+div#container > form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
 }
 
@@ -2484,14 +2482,6 @@ div.room > header > div.session {
 div.room > header > div.variant > a.tutorial-link {
   color: white;
 }
-div.room > header > input { display: none; }
-div.room > header > label {
-  background: gray;
-  padding: 0 calc(0.125 * var(--tile-size));
-  margin-top: calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
-}
-div.room > header > input:checked + label { background: var(--tile-back); }
 
 div.room > div.seats,
 div.room > div.mods,
@@ -2575,14 +2565,6 @@ div.room > div.seats-buttons {
   align-items: center;
   column-gap: calc(0.25 * var(--tile-size));
 }
-div.room > div.seats-buttons > input { display: none; }
-div.room > div.seats-buttons > label {
-  background: gray;
-  padding: 0 calc(0.125 * var(--tile-size));
-  margin-top: calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
-}
-div.room > div.seats-buttons > input:checked + label { background: var(--tile-back); }
 div.room > div.seats-buttons > button.get-up-button,
 div.room > div.seats-buttons > button.start-game-button {
   font-size: calc(0.4 * var(--tile-size));
@@ -2612,16 +2594,6 @@ div.room > div.mods > div.mod-category-spacer {
   min-height: 0.5em;
   margin-left: -0.5em;
 }
-div.room > div.mods > input { display: none; }
-div.room > div.mods > label {
-  background: gray;
-  padding: 0 calc(0.125 * var(--tile-size));
-  margin-top: calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
-  white-space: nowrap;
-  user-select: none;
-}
-div.room > div.mods > input:checked + label { background: var(--tile-back); }
 div.room > div.custom-json > textarea {
   position: absolute;
   background: #3f3f3f;

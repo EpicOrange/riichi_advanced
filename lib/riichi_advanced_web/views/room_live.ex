@@ -104,7 +104,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <% end %>
       </div>
       <div class="seats-buttons">
-        <input id="shuffle-seats" type="checkbox" class="shuffle-seats" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
+        <input id="shuffle-seats" type="checkbox" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
         <label for="shuffle-seats">Shuffle seats on start?</label>
         <%= if Enum.any?(@state.seats, fn {_seat, player} -> player != nil && player.id == @id end) do %>
           <button class="get-up-button" phx-cancellable-click="get_up">Get up</button>
