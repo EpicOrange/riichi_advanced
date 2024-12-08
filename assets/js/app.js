@@ -176,15 +176,19 @@ Hooks.CollaborativeTextarea = {
 
     function write({from_version, version, uuids, deltas}) {
       var same_version = window.server_version == from_version;
-      var server_deltas = deltas.map(delta => new Delta(delta));
-      var server_delta = server_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
       // console.log(`Received update ${from_version}=>${version}: ${JSON.stringify(server_deltas)}`);
+      
       // check if it's a full reload
       if (from_version < 0) {
         same_version = true;
         window.server_doc = new Delta(deltas[0]);
         window.server_version = from_version;
+        uuids = [];
+        deltas = [];
       }
+
+      var server_deltas = deltas.map(delta => new Delta(delta));
+      var server_delta = server_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
       if (same_version) { // TODO just drop initial deltas if we're a newer version
         if (window.textarea_initialized) {
           console.log("updating");
@@ -217,7 +221,7 @@ Hooks.CollaborativeTextarea = {
       }
     }
     this.handleEvent("apply-delta", debounced(write).bind(this));
-    this.handleEvent("started-game", () => {
+    this.handleEvent("left-page", () => {
       // leaving room page, reset js state
       window.textarea_initialized = false;
     });
