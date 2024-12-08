@@ -63,7 +63,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       <form phx-submit="redirect">
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
-            <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0}>
+            <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
             <label for={ruleset} title={desc}><%= name %></label>
           <% end %>
           To be implemented:
