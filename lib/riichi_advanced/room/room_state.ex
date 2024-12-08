@@ -325,7 +325,10 @@ defmodule RiichiAdvanced.RoomState do
     state = broadcast_state_change(state)
     mods = if state.ruleset == "custom" do [] else get_enabled_mods(state) end
     if state.ruleset == "custom" do
-      RiichiAdvanced.ETSCache.put(state.session_id, Enum.at(state.textarea, 0)["insert"], :cache_rulesets)
+      ruleset_json = Enum.at(state.textarea, 0)["insert"]
+      if ruleset_json != nil do
+        RiichiAdvanced.ETSCache.put(state.session_id, ruleset_json, :cache_rulesets)
+      end
     end
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do

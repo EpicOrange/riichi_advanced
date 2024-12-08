@@ -17,7 +17,7 @@ defmodule RiichiAdvanced.ModLoader do
     |> Enum.join()
     |> then(&"."<>&1)
 
-    IO.puts(mod_contents)
+    # IO.puts(mod_contents)
 
     # write to path
     {fd, query_path} = Temp.open!(%{mode: [:write, :utf8]})

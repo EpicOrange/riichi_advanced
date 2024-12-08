@@ -140,6 +140,7 @@ window.client_deltas = [];
 window.client_delta_uuids = [];
 window.server_doc = new Delta().insert("");
 window.server_version = -1;
+window.textarea_initialized = false;
 Hooks.CollaborativeTextarea = {
   mounted() {
     this.el.value = "";
@@ -181,11 +182,14 @@ Hooks.CollaborativeTextarea = {
       // check if it's a full reload
       if (from_version < 0) {
         same_version = true;
-        window.server_doc = new Delta().insert("");
+        window.server_doc = new Delta(deltas[0]);
         window.server_version = from_version;
       }
       if (same_version) { // TODO just drop initial deltas if we're a newer version
-        update.bind(this)(true); // add current delta, if there is one, to window.client_deltas
+        if (window.textarea_initialized) {
+          console.log("updating");
+          update.bind(this)(true); // add current delta, if there is one, to window.client_deltas
+        }
         // take only client deltas that are not accounted for by the server delta
         var flattened_uuids = uuids.flat();
         var client_delta_uuids = window.client_delta_uuids.filter(uuid => !flattened_uuids.includes(uuid));
@@ -213,6 +217,10 @@ Hooks.CollaborativeTextarea = {
       }
     }
     this.handleEvent("apply-delta", debounced(write).bind(this));
+    this.handleEvent("started-game", () => {
+      // leaving room page, reset js state
+      window.textarea_initialized = false;
+    });
   }
 }
 

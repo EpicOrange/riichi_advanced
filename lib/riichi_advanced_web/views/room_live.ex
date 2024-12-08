@@ -211,6 +211,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           get_in(state.seats.north.id) == socket.id -> :north
           true                                      -> :spectator
         end
+        socket = push_event(socket, "started-game", %{})
         push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
       else socket end
       {:noreply, socket}

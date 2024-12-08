@@ -320,13 +320,15 @@ defmodule RiichiAdvanced.GameState do
       starting_tiles = Map.get(rules, "starting_tiles", 0)
       hands = Map.new([:east, :south, :west, :north], &{&1, []})
       hands = if Debug.debug() do Debug.set_starting_hand(wall) else
-        tiles = [
-          Enum.slice(wall, 0..(starting_tiles-1)),
-          Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
-          Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
-          Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))
-        ]
-        Map.merge(hands, Enum.zip(state.available_seats, tiles) |> Map.new())
+        if starting_tiles > 0 do
+          tiles = [
+            Enum.slice(wall, 0..(starting_tiles-1)),
+            Enum.slice(wall, starting_tiles..(starting_tiles*2-1)),
+            Enum.slice(wall, (starting_tiles*2)..(starting_tiles*3-1)),
+            Enum.slice(wall, (starting_tiles*3)..(starting_tiles*4-1))
+          ]
+          Map.merge(hands, Enum.zip(state.available_seats, tiles) |> Map.new())
+        else hands end
       end
 
       # reserve some tiles in the dead wall
