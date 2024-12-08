@@ -102,6 +102,7 @@ defmodule Game do
     pot: 0,
     tags: %{},
     log_state: %{},
+    call_stack: [], # call stack limit is 10 for now
 
     # working game state (reset on new round)
     # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)

@@ -515,6 +515,21 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
+  defp call_function(state, context, fn_name, args) do
+    if length(state.call_stack) < 10 do
+      args = Map.new(args, fn {name, value} -> {"$" <> name, value} end)
+      state = Map.update!(state, :call_stack, &[[fn_name | args] | &1])
+      actions = Map.get(state.rules["functions"], fn_name)
+      actions = map_action_opts(actions, &Map.get(args, &1, &1))
+      state = run_actions(state, actions, context)
+      state = Map.update!(state, :call_stack, &Enum.drop(&1, 1))
+      state
+    else
+      IO.puts("Cannot call function #{fn_name}: call stack limit reached")
+      state
+    end
+  end
+
   defp _run_actions(state, [], _context), do: {state, []}
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -535,6 +550,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "push_system_message"   ->
         push_message(state, Enum.map(opts, fn msg -> %{text: msg} end))
         state
+      "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
       "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
@@ -1487,6 +1503,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def extract_actions([action | actions], names) do
     case action do
       ["when", _condition, subactions] -> extract_actions(subactions, names)
+      ["as", _seats_spec, subactions] -> extract_actions(subactions, names)
       ["when_anyone", _condition, subactions] -> extract_actions(subactions, names)
       ["when_everyone", _condition, subactions] -> extract_actions(subactions, names)
       ["when_others", _condition, subactions] -> extract_actions(subactions, names)
@@ -1494,6 +1511,21 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["ite", _condition, subactions1, subactions2] -> extract_actions(subactions1, names) ++ extract_actions(subactions2, names)
       [action_name | _opts] -> if action_name in names do [action] else [] end
     end ++ extract_actions(actions, names)
+  end
+
+  def map_action_opts([], _fun), do: []
+  def map_action_opts([action | actions], fun) do
+    case action do
+      ["when", condition, subactions] -> ["when", condition, map_action_opts(subactions, fun)]
+      ["as", seats_spec, subactions] -> ["as", seats_spec, map_action_opts(subactions, fun)]
+      ["when_anyone", condition, subactions] -> ["when_anyone", condition, map_action_opts(subactions, fun)]
+      ["when_everyone", condition, subactions] -> ["when_everyone", condition, map_action_opts(subactions, fun)]
+      ["when_others", condition, subactions] -> ["when_others", condition, map_action_opts(subactions, fun)]
+      ["unless", condition, subactions] -> ["unless", condition, map_action_opts(subactions, fun)]
+      ["ite", condition, subactions1, subactions2] -> ["ite", condition, map_action_opts(subactions1, fun), map_action_opts(subactions2, fun)]
+      ["run", fn_name, args] -> ["run", fn_name, Map.new(args, fn {name, value} -> {name, fun.(value)} end)]
+      [action_name | opts] -> [[action_name | Enum.map(opts, fun)] | map_action_opts(actions, fun)]
+    end
   end
 
 end
