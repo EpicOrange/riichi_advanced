@@ -54,6 +54,12 @@ defmodule RiichiAdvancedWeb.LogLive do
       |> assign(:log, log)
       |> assign(:log_json, log_json)
 
+      if ruleset == "custom" && Map.has_key?(log["rules"], "ruleset_json") do
+        # for custom logs, fetch the ruleset from the log and load it into ets before starting log supervisor
+        RiichiAdvanced.ETSCache.put(socket.assigns.session_id, log["rules"]["ruleset_json"], :cache_rulesets)
+        RiichiAdvanced.ETSCache.put(socket.assigns.session_id <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
+      end
+
       # start a new game process
       log_spec = {RiichiAdvanced.LogSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.session_id)}}}
       {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do

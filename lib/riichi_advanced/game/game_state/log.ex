@@ -221,12 +221,13 @@ defmodule RiichiAdvanced.GameState.Log do
       } end),
       rules: %{
         ruleset: state.ruleset,
+        ruleset_json: "",
         mods: state.mods
       },
       kyokus: Enum.reverse(state.log_state.kyokus)
     }
     out = if state.ruleset == "custom" do
-      Map.put(out, :ruleset_json, state.ruleset_json)
+      put_in(out.rules.ruleset_json, state.ruleset_json)
     else out end
     Jason.encode!(out)
   end
