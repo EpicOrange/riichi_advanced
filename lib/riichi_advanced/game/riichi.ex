@@ -746,9 +746,9 @@ defmodule Riichi do
     |> Enum.filter(fn {name, _call} -> name == "ton" end)
     |> Enum.flat_map(&call_to_tiles/1)
     
-    starting_hand = starting_hand ++ ton_tiles
+    starting_hand = starting_hand ++ ton_tiles |> Utils.strip_attrs()
     standard_length = length(starting_hand) in [1, 4, 7, 10, 13]
-    winning_tiles = if standard_length do apply_tile_aliases([winning_tile], tile_aliases) else @all_tiles end
+    winning_tiles = if standard_length do apply_tile_aliases([winning_tile], tile_aliases) else @all_tiles end |> Utils.strip_attrs() |> Enum.uniq()
     starting_hand = if standard_length do starting_hand else starting_hand ++ [winning_tile] end
     # initial fu
     fu = case win_source do
