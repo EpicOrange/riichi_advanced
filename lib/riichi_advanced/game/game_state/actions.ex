@@ -413,9 +413,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
-      [amount | _opts] when is_integer(amount) -> amount
+      [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->
-        IO.inspect("Unknown amount spec #{inspect(amt_spec)}")
+        IO.puts("Unknown amount spec #{inspect(amt_spec)}")
         0
     end
   end
@@ -446,7 +446,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   
   defp multiply_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
-    new_ctr = amount * Map.get(state.players[context.seat].counters, counter_name, 0)
+    new_ctr = Utils.try_integer(amount * Map.get(state.players[context.seat].counters, counter_name, 0))
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
   
