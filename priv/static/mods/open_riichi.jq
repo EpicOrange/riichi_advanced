@@ -19,32 +19,12 @@
   ]
 }
 |
-# if suucha riichi exists, add it
-if (.buttons.riichi.actions | any(.[]; .[0] == "when" and any(.[2][]; . == ["abortive_draw", "Suucha Riichi"]))) then
-  .buttons.open_riichi.actions += [
-    ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
-      ["add_score", -1000],
-      ["put_down_riichi_stick"],
-      ["pause", 1000],
-      ["abortive_draw", "Suucha Riichi"]
-    ]]
-  ]
-else . end
-|
 # add open riichi yaku after riichi
 (.yaku | map(.display_name == "Riichi") | index(true)) as $ix
 |
 .yaku |= .[:$ix+1] + [
-  {
-    "display_name": "Open Riichi",
-    "value": 2,
-    "when": [{"name": "status", "opts": ["open_riichi"]}]
-  },
-  {
-    "display_name": "Open Double Riichi",
-    "value": 3,
-    "when": [{"name": "status", "opts": ["open_riichi", "double_riichi"]}]
-  }
+  { "display_name": "Open Riichi", "value": 2, "when": [{"name": "status", "opts": ["open_riichi"]}] },
+  { "display_name": "Open Double Riichi", "value": 3, "when": [{"name": "status", "opts": ["open_riichi", "double_riichi"]}] }
 ] + .[$ix+1:]
 |
 # have open riichi supercede regular riichi yaku
