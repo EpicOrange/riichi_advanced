@@ -60,7 +60,8 @@ main div.messages-container > div.messages {
   white-space: wrap;
   border: none;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  justify-content: flex-end;
   overflow-y: auto;
   padding: 0.5rem;
   box-sizing: border-box;
@@ -92,6 +93,9 @@ main div.messages-container > div.messages span.bold {
     top: calc(100% + 1.5 * var(--tile-size));
     width: calc(100% + var(--tile-size));
     height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
+  }
+  main div.messages-container > div.messages {
+    flex-direction: column-reverse;
   }
 }
 
