@@ -12,4 +12,6 @@ In addition, you must have a 3 fan hand minimum in order to win. This is only a 
 
 At the beginning of each round, you must declare all flowers/seasons in your hand before making any discards. This happens in an initial go-around before the first discard.
 
+A dead wall is sometimes used. The HKOS implementation in Riichi Advanced does not use a dead wall.
+
 For the yaku table and scoring table, consult [this guide](https://drive.google.com/file/d/1JW_lcSeZKCwOuRwTNwvn7Pd9FCdcz7PQ/view).
