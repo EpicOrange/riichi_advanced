@@ -141,16 +141,38 @@ window.client_delta_uuids = [];
 window.server_doc = new Delta().insert("");
 window.server_version = -1;
 window.textarea_initialized = false;
+window.safe_diff = async (from, to) => {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker("/assets/js/safe_diff_worker.js");
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      resolve(to.concat(from.diff(new Delta())));
+    }, 500);
+    worker.onmessage = (e) => {
+      clearTimeout(timeout);
+      worker.terminate();
+      resolve(new Delta(e.data.result));
+    };
+    worker.onerror = (e) => {
+      clearTimeout(timeout);
+      worker.terminate();
+      console.log(e);
+      // delete and reinsert everything
+      resolve(to.concat(from.diff(new Delta())));
+    };
+    worker.postMessage({ from, to });
+  });
+};
 Hooks.CollaborativeTextarea = {
   mounted() {
     this.el.value = "";
     var debounced = (fun) => (...args) => {
       window.clearTimeout(window.delta_debounce);
-      window.delta_debounce = window.setTimeout(() => fun.apply(this, args), 50);
-    }
-    function update(no_poll) {
+      window.delta_debounce = window.setTimeout(() => fun.apply(this, args), 100);
+    };
+    async function update(no_poll) {
       var new_client_doc = new Delta().insert(this.el.value)
-      var client_delta = window.client_doc.diff(new_client_doc);
+      var client_delta = await safe_diff(window.client_doc, new_client_doc);
       window.client_doc = new_client_doc;
       var uuid = uuidv4();
       if (client_delta.ops.length > 0) {
@@ -165,7 +187,6 @@ Hooks.CollaborativeTextarea = {
     this.el.addEventListener('focus', () => debounced(update).bind(this)(false));
     this.el.addEventListener('blur', () => debounced(update).bind(this)(false));
     this.el.addEventListener('keyup', (e) => {
-      // console.log("key pressed:", e.key, this.el.value);
       debounced(update).bind(this)(false);
     });
 
@@ -174,7 +195,7 @@ Hooks.CollaborativeTextarea = {
       else return "";
     }
 
-    function write({from_version, version, uuids, deltas}) {
+    async function write({from_version, version, uuids, deltas}) {
       var same_version = window.server_version == from_version;
       // console.log(`Received update ${from_version}=>${version}: ${JSON.stringify(server_deltas)}`);
       
@@ -198,7 +219,7 @@ Hooks.CollaborativeTextarea = {
         var client_deltas = window.client_deltas.filter((delta, i) => !flattened_uuids.includes(window.client_delta_uuids[i]));
         var client_delta = client_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
         // store diff between client and server doc (for cursor calculation later)
-        var undo = window.client_doc.diff(window.server_doc);
+        var undo = await safe_diff(window.client_doc, window.server_doc);
         var redo = undo.invert(window.client_doc);
         // only then do we update the server doc
         window.server_version = version;
@@ -207,10 +228,12 @@ Hooks.CollaborativeTextarea = {
         // calculate new cursor position
         var server_only_deltas = server_deltas.filter((delta, i) => uuids[i].every(uuid => !window.client_delta_uuids.includes(uuid)));
         var server_only_delta = server_only_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
-        var new_cursor_position = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionEnd);
+        var new_selection_start = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionStart);
+        var new_selection_end = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionEnd);
         // set textarea to client doc contents
         this.el.value = get_contents(window.client_doc);
-        this.el.selectionEnd = new_cursor_position;
+        this.el.selectionStart = new_selection_start;
+        this.el.selectionEnd = new_selection_end;
         // update client deltas to be all unaccounted-for client deltas
         window.client_deltas = client_deltas;
         window.client_delta_uuids = client_delta_uuids;
