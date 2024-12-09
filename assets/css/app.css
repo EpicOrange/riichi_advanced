@@ -1651,11 +1651,14 @@ div.total-han-display,
 div.total-fu-display,
 div.total-score-display {
   position: relative;
+  white-space: nowrap;
   z-index: 1;
 }
 div.total-han-display, div.total-fu-display { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-display { font-size: calc(2 * var(--tile-size)); order: 1; }
+div.total-score-display.small { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-name-display { font-size: calc(1.2 * var(--tile-size)); order: 1; }
+div.total-score-name-display.small { font-size: calc(1 * var(--tile-size)); }
 div.total-han-display::before,
 div.total-fu-display::before,
 div.total-score-display::before,

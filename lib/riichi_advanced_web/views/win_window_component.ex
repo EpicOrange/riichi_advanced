@@ -40,8 +40,8 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
         <div class="score-display">
           <div class="total-han-display"><%= Utils.try_integer(@winner.points) %> <%= @winner.point_name %></div>
           <div class="total-fu-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= @winner.right_display_name %></div>
-          <div class="total-score-display"><%= @winner.score %> <%= @winner.score_denomination %></div>
-          <div class="total-score-name-display" :if={Map.has_key?(@winner, :score_name) && @winner.score_name != ""}><%= @winner.score_name %></div>
+          <div class={["total-score-display", String.length("#{@winner.score} #{@winner.score_denomination}") >= 12 && "small"]}><%= @winner.score %> <%= @winner.score_denomination %></div>
+          <div class={["total-score-name-display", String.length(@winner.score_name) >= 12 && "small"]} :if={Map.has_key?(@winner, :score_name) && @winner.score_name != ""}><%= @winner.score_name %></div>
         </div>
         <div class="timer" phx-cancellable-click="ready_for_next_round">Skip (<%= @timer %>)</div>
       <% end %>
