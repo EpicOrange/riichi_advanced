@@ -2679,7 +2679,9 @@ div.centerpiece-status-bar > div.tiles-left {
 }
 /* sometimes these get duplicated by network conditions, so only show the latest one */
 div.top-right-container > div.menu-buttons:not(:nth-last-child(1)),
-div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(2)) {
+div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(2)),
+div.visible-waits-container > div.menu-buttons,
+div.visible-waits-container > div.centerpiece-status-bar {
   display: none;
 }
 
