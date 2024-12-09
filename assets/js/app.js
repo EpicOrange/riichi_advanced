@@ -204,6 +204,7 @@ Hooks.CollaborativeTextarea = {
         same_version = true;
         window.server_doc = new Delta().insert("");
         window.server_version = from_version;
+        window.textarea_initialized = true;
       }
 
       var server_deltas = deltas.map(delta => new Delta(delta));
