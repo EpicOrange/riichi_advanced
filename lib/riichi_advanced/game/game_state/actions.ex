@@ -1527,7 +1527,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["unless", condition, subactions] -> ["unless", condition, map_action_opts(subactions, fun)]
       ["ite", condition, subactions1, subactions2] -> ["ite", condition, map_action_opts(subactions1, fun), map_action_opts(subactions2, fun)]
       ["run", fn_name, args] -> ["run", fn_name, Map.new(args, fn {name, value} -> {name, fun.(value)} end)]
-      [action_name | opts] -> [action_name | Enum.map(opts, fun)]
+      [action_name | opts] -> Enum.map(action, fun)
     end
     [mapped_action | map_action_opts(actions, fun)]
   end
