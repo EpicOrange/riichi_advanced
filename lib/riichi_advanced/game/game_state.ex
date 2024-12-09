@@ -306,9 +306,9 @@ defmodule RiichiAdvanced.GameState do
     rules = state.rules
     {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
-      all_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
-      wall = all_tiles
-      
+      wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
+      all_tiles = wall |> Enum.uniq() |> Utils.sort_tiles()
+
       # check that there are no nil tiles
       state = wall
       |> Enum.zip(Map.get(rules, "wall", []))
@@ -343,7 +343,7 @@ defmodule RiichiAdvanced.GameState do
         revealed_tiles = Map.get(rules, "revealed_tiles", [])
         max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
         state 
-        |> Map.put(:all_tiles, Utils.strip_attrs(all_tiles))
+        |> Map.put(:all_tiles, all_tiles)
         |> Map.put(:wall, wall)
         |> Map.put(:haipai, hands)
         |> Map.put(:dead_wall, dead_wall)
@@ -388,12 +388,13 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.reverse()
       dead_wall = dead_wall ++ kyoku_log["kan_tiles"]
       |> Enum.map(&Utils.to_tile/1)
+      all_tiles = (wall ++ dead_wall) |> Enum.uniq() |> Utils.sort_tiles()
       reserved_tiles = Map.get(rules, "reserved_tiles", [])
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
 
       state = state
-      |> Map.put(:all_tiles, Utils.sort_tiles(wall ++ dead_wall))
+      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
@@ -917,7 +918,7 @@ defmodule RiichiAdvanced.GameState do
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
     visible_tiles = get_visible_tiles(state, seat)
-    Riichi.get_waits_and_ukeire(state.all_tiles, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+    Riichi.get_waits_and_ukeire(state.wall, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
   end
 
   def push_message(state, message) do

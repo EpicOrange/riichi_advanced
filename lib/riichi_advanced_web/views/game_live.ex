@@ -297,7 +297,7 @@ defmodule RiichiAdvancedWeb.GameLive do
             <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
               <div class="visible-wait">
                 <div class="visible-wait-num"><%= num %></div>
-                <div class={["tile", wait]}></div>
+                <div class={Utils.get_tile_class(wait, 0)}></div>
               </div>
             <% end %>
             &nbsp;=&nbsp;<%= Map.get(@visible_waits, @show_waits_index, %{}) |> Enum.map(fn {_wait, num} -> num end) |> Enum.sum() %>

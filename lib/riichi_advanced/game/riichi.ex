@@ -497,7 +497,7 @@ defmodule Riichi do
             Map.put(filtered_tile_aliases, tile, tile_aliases[tile])
           else tile_aliases end
           if is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) do
-            other_waits = [tile | Map.get(tile_aliases, tile, [])] |> Utils.strip_attrs()
+            other_waits = [tile | Map.get(tile_aliases, tile, [])]
             waits ++ other_waits
           else waits end
         end |> Enum.uniq()
@@ -514,7 +514,7 @@ defmodule Riichi do
 
   def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases, skip_tenpai_check) do
     waits = get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases, wall, skip_tenpai_check)
-    freqs = Enum.frequencies(wall -- Utils.strip_attrs(visible_tiles))
+    freqs = Enum.frequencies(wall -- visible_tiles)
     Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
   end
 
