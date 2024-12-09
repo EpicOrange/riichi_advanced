@@ -1,3 +1,8 @@
+def add_call_restriction($call):
+  if .buttons | has($call) then
+    .buttons[$call].call_restrictions += [{"name": "not_call_contains", "opts": [["4x"], 1]}]
+  else . end;
+
 .starting_tiles = 12
 |
 .after_start.actions += [
@@ -9,29 +14,16 @@
 |
 .play_restrictions += [[["4x"], []]]
 |
-[{"name": "not_call_contains", "opts": [["4x"], 1]}] as $call_restriction
+add_call_restriction("chii")
 |
-if .buttons | has("chii") then
-  .buttons.chii.call_restrictions += $call_restriction
-else . end
+add_call_restriction("pon")
 |
-if .buttons | has("pon") then
-  .buttons.pon.call_restrictions += $call_restriction
-else . end
+add_call_restriction("daiminkan")
 |
-if .buttons | has("daiminkan") then
-  .buttons.daiminkan.call_restrictions += $call_restriction
-else . end
+add_call_restriction("kakan")
 |
-if .buttons | has("kakan") then
-  .buttons.kakan.call_restrictions += $call_restriction
-else . end
+add_call_restriction("ankan")
 |
-if .buttons | has("ankan") then
-  .buttons.ankan.call_restrictions += $call_restriction
-else . end
-|
-if .buttons | has("pei") then
-  .buttons.pei.call_restrictions += $call_restriction
-else . end
-# TODO saki buttons
+add_call_restriction("pei")
+
+# TODO saki buttons?

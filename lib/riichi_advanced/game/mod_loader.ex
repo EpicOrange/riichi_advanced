@@ -13,6 +13,7 @@ defmodule RiichiAdvanced.ModLoader do
     mod_contents = mod_names
     |> Enum.map(&File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{&1 <> ".jq"}")))
     |> Enum.map(&String.trim/1)
+    |> Enum.map(&Regex.replace(~r{\s#.*}, &1, "")) # strip comments
     |> Enum.map(&" | (#{&1}) as $_result\n|\n$_result")
     |> Enum.join()
     |> then(&"."<>&1)
