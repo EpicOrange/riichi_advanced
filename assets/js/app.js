@@ -168,11 +168,17 @@ Hooks.CollaborativeTextarea = {
     this.el.value = "";
     var debounced = (fun) => (...args) => {
       window.clearTimeout(window.delta_debounce);
-      window.delta_debounce = window.setTimeout(() => fun.apply(this, args), 100);
+      window.delta_debounce = window.setTimeout(() => fun.apply(this, args), 50);
     };
     async function update(no_poll) {
-      var new_client_doc = new Delta().insert(this.el.value)
+      var old_client_doc = window.client_doc;
+      var new_client_doc = new Delta().insert(this.el.value);
       var client_delta = await safe_diff(window.client_doc, new_client_doc);
+      if (get_contents(window.client_doc) != get_contents(old_client_doc)) {
+        // console.log("updated while we were calculating the diff");
+        return;
+      }
+      // console.log("sending", JSON.stringify(window.client_doc), "=>", JSON.stringify(new_client_doc), "=", JSON.stringify(client_delta));
       window.client_doc = new_client_doc;
       var uuid = uuidv4();
       if (client_delta.ops.length > 0) {
@@ -197,6 +203,7 @@ Hooks.CollaborativeTextarea = {
 
     async function write({from_version, version, uuids, deltas}) {
       var same_version = window.server_version == from_version;
+      var initial_contents = this.el.value;
       // console.log(`Received update ${from_version}=>${version}: ${JSON.stringify(server_deltas)}`);
       
       // check if it's a full reload
@@ -205,7 +212,7 @@ Hooks.CollaborativeTextarea = {
         same_version = true;
         window.server_doc = new Delta().insert("");
         window.server_version = from_version;
-        console.log("initialized", uuids, deltas);
+        // console.log("initialized", JSON.stringify(uuids), JSON.stringify(deltas));
       }
 
       var server_deltas = deltas.map(delta => new Delta(delta));
@@ -219,29 +226,30 @@ Hooks.CollaborativeTextarea = {
         var client_delta_uuids = window.client_delta_uuids.filter(uuid => !flattened_uuids.includes(uuid));
         var client_deltas = window.client_deltas.filter((delta, i) => !flattened_uuids.includes(window.client_delta_uuids[i]));
         var client_delta = client_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
-        // clear global client deltas in case textarea updates between now and when this function finishes
-        window.client_deltas = [];
-        window.client_delta_uuids = [];
         // store diff between client and server doc (for cursor calculation later)
         var undo = await safe_diff(window.client_doc, window.server_doc);
         var redo = undo.invert(window.client_doc);
-        // only then do we update the server doc
+
+        if (this.el.value != initial_contents) {
+          // console.log("updated while we were calculating diffs");
+          return;
+        }
+
+        // only then do we register this update to the server doc
         window.server_version = version;
         window.server_doc = window.server_doc.compose(server_delta);
+        // set textarea to client doc contents
         window.client_doc = window.server_doc.compose(client_delta);
+        // console.log("writing", initial_contents, "=>", get_contents(window.client_doc));
+        this.el.value = get_contents(window.client_doc);
         // calculate new cursor position
         var server_only_deltas = server_deltas.filter((delta, i) => uuids[i].every(uuid => !window.client_delta_uuids.includes(uuid)));
         var server_only_delta = server_only_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
-        var new_selection_start = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionStart);
-        var new_selection_end = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionEnd);
-
-        // set textarea to client doc contents
-        this.el.value = get_contents(window.client_doc);
-        this.el.selectionStart = new_selection_start;
-        this.el.selectionEnd = new_selection_end;
+        this.el.selectionStart = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionStart);
+        this.el.selectionEnd = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionEnd);
         // update client deltas to be all unaccounted-for client deltas
-        window.client_deltas.unshift(...client_deltas);
-        window.client_delta_uuids.unshift(...client_delta_uuids);
+        window.client_deltas = client_deltas;
+        window.client_delta_uuids = client_delta_uuids;
       } else {
         // console.log(`Rejecting update ${from_version}=>${version} since our version is ${window.server_version}`);
       }
