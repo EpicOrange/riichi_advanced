@@ -35,7 +35,7 @@ defmodule Room do
     tutorial_link: nil,
     textarea: [@initial_textarea],
     textarea_deltas: [[@initial_textarea]],
-    textarea_delta_uuids: [],
+    textarea_delta_uuids: [[]],
     textarea_version: 0,
   ]
   use Accessible
@@ -216,8 +216,8 @@ defmodule RiichiAdvanced.RoomState do
   def handle_call({:update_textarea, client_version, uuids, client_deltas}, _from, state) do
     version_diff = state.textarea_version - client_version
     missed_deltas = Enum.take(state.textarea_deltas, version_diff)
-    others_deltas = missed_deltas
-    |> Enum.zip(Enum.take(state.textarea_delta_uuids, version_diff))
+    missed_delta_uuids = Enum.take(state.textarea_delta_uuids, version_diff)
+    others_deltas = Enum.zip(missed_deltas, missed_delta_uuids)
     |> Enum.reject(fn {_delta, uuid_list} -> Enum.any?(uuid_list, fn uuid -> uuid in uuids end) end)
     |> Enum.map(fn {delta, _uuid_list} -> delta end)
 
@@ -233,7 +233,7 @@ defmodule RiichiAdvanced.RoomState do
     #   and return #{inspect(returned_deltas)}
     # """)
 
-    returned_uuids = [uuids | Enum.take(state.textarea_delta_uuids, version_diff)] |> Enum.reverse()
+    returned_uuids = [uuids | missed_delta_uuids] |> Enum.reverse()
     state = if not Enum.empty?(client_delta) do
       state = Map.update!(state, :textarea_version, & &1 + 1)
       state = Map.update!(state, :textarea_deltas, &[transformed_delta | &1])

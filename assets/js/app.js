@@ -200,25 +200,28 @@ Hooks.CollaborativeTextarea = {
       // console.log(`Received update ${from_version}=>${version}: ${JSON.stringify(server_deltas)}`);
       
       // check if it's a full reload
-      if (from_version < 0) {
+      var full_reload = from_version < 0;
+      if (full_reload) {
         same_version = true;
         window.server_doc = new Delta().insert("");
         window.server_version = from_version;
-        window.textarea_initialized = true;
+        console.log("initialized", uuids, deltas);
       }
 
       var server_deltas = deltas.map(delta => new Delta(delta));
       var server_delta = server_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
       if (same_version) { // TODO just drop initial deltas if we're a newer version
         if (window.textarea_initialized) {
-          console.log("updating");
-          update.bind(this)(true); // add current delta, if there is one, to window.client_deltas
+          await update.bind(this)(true); // add current delta, if there is one, to window.client_deltas
         }
         // take only client deltas that are not accounted for by the server delta
         var flattened_uuids = uuids.flat();
         var client_delta_uuids = window.client_delta_uuids.filter(uuid => !flattened_uuids.includes(uuid));
         var client_deltas = window.client_deltas.filter((delta, i) => !flattened_uuids.includes(window.client_delta_uuids[i]));
         var client_delta = client_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
+        // clear global client deltas in case textarea updates between now and when this function finishes
+        window.client_deltas = [];
+        window.client_delta_uuids = [];
         // store diff between client and server doc (for cursor calculation later)
         var undo = await safe_diff(window.client_doc, window.server_doc);
         var redo = undo.invert(window.client_doc);
@@ -231,20 +234,26 @@ Hooks.CollaborativeTextarea = {
         var server_only_delta = server_only_deltas.reduce((acc, delta) => acc.compose(delta), new Delta());
         var new_selection_start = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionStart);
         var new_selection_end = undo.compose(server_only_delta).compose(redo).transformPosition(this.el.selectionEnd);
+
         // set textarea to client doc contents
         this.el.value = get_contents(window.client_doc);
         this.el.selectionStart = new_selection_start;
         this.el.selectionEnd = new_selection_end;
         // update client deltas to be all unaccounted-for client deltas
-        window.client_deltas = client_deltas;
-        window.client_delta_uuids = client_delta_uuids;
+        window.client_deltas.unshift(...client_deltas);
+        window.client_delta_uuids.unshift(...client_delta_uuids);
       } else {
         // console.log(`Rejecting update ${from_version}=>${version} since our version is ${window.server_version}`);
+      }
+      // finally mark textarea as initialized if we started from a full reload
+      if (full_reload) {
+        window.textarea_initialized = true;
       }
     }
     this.handleEvent("apply-delta", debounced(write).bind(this));
     this.handleEvent("left-page", () => {
       // leaving room page, reset js state
+      console.log("left page");
       window.textarea_initialized = false;
     });
   }
