@@ -550,7 +550,7 @@ defmodule RiichiAdvanced.SMT do
       {match_assertions, sumindices_usages, tiles_used_usages} ->
         match_definition = strip_restart(match_definition)
         unique_ix = Enum.find_index(match_definition, & &1 == "unique")
-        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for {[groups, num], group_ix} <- Enum.with_index(match_definition), reduce: {[], [], [], [], []} do
+        {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for {[groups, num], group_ix} <- Enum.with_index(match_definition), num > 0, reduce: {[], [], [], [], []} do
           {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} ->
             unique = unique_ix != nil && group_ix > unique_ix
             {set_ixs, tiles_ixs} = if unique do
@@ -573,11 +573,7 @@ defmodule RiichiAdvanced.SMT do
             # first take care of sets
             sumindices_assertion = if not Enum.empty?(set_ixs) do
               sum = Enum.map(set_ixs, fn i -> "sumindices#{i}" end) |> make_chainable("add8_single")
-              if num < 0 do
-                ["(bvult (_ bv#{-num} 4) #{sum})"]
-              else
-                ["(= (_ bv#{num} 4) #{sum})"]
-              end
+              ["(= (_ bv#{num} 4) #{sum})"]
             else [] end
 
             # then take care of tiles
