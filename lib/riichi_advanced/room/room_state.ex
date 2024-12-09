@@ -120,6 +120,7 @@ defmodule RiichiAdvanced.RoomState do
         desc: mod["desc"],
         category: mod["category"],
         order: Map.get(mod, "order", 0),
+        class: mod["class"],
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),

@@ -1960,9 +1960,11 @@ div.saki-card {
   border-radius: calc(0.15 * var(--tile-size));
   flex-shrink: 0;
 }
-div.saki-card:hover::before {
+label.mod {
+  position: relative;
+}
+div.saki-card:hover::before, div.saki-card:hover::after, label.mod:hover::before, label.mod:hover::after {
   position: absolute;
-  content: "";
   background: inherit;
   width: var(--card-width);
   height: var(--card-height);
@@ -1972,175 +1974,164 @@ div.saki-card:hover::before {
   transform-origin: 50% 100%;
   z-index: 10;
 }
-div.saki-card.v12 {
+label.mod:hover::before { left: 0; }
+label.mod:hover::after { left: calc(1 * var(--card-width)); }
+label.mod:hover::before, label.mod:hover::after { top: calc(-1 * var(--card-height)); }
+div.saki-card:hover::before, label.mod:hover::before { content: ""; }
+div.saki-card.v12, label.mod.v12:hover::before, label.mod.v12:hover::after {
   --card-width: calc(0.89 * var(--tile-size));
   --card-height: calc(1.25 * var(--tile-size));
   background: url("/images/sakicardsv12.png") no-repeat;
   background-size: auto calc(6 * var(--card-height));
 }
-div.saki-card.v13 {
+div.saki-card.v13, label.mod.v13:hover::before, label.mod.v13:hover::after {
   --card-width: calc(0.865 * var(--tile-size));
   --card-height: calc(1.25 * var(--tile-size));
   background: url("/images/sakicardsv13.png") no-repeat;
   background-size: auto calc(7 * var(--card-height));
 }
-div.saki-card.v12:hover::before {
+div.saki-card.v12:hover::before, label.mod.v12:hover::after, label.mod.v12:hover::before, label.mod.v12:hover::after {
   --card-width: calc(7.12 * var(--tile-size));
   --card-height: calc(10 * var(--tile-size));
   background-size: auto calc(6 * var(--card-height));
 }
-div.saki-card.v13:hover::before {
+div.saki-card.v13:hover::before, label.mod.v13:hover::after, label.mod.v13:hover::before, label.mod.v13:hover::after {
   --card-width: calc(6.92 * var(--tile-size));
   --card-height: calc(10 * var(--tile-size));
   background-size: auto calc(7 * var(--card-height));
 }
-div.saki-card.v12.aislinn-wishart, div.saki-card.v12.aislinn-wishart:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.amae-koromo, div.saki-card.v12.amae-koromo:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.anetai-toyone, div.saki-card.v12.anetai-toyone:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.arakawa-kei, div.saki-card.v12.arakawa-kei:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.atago-hiroe, div.saki-card.v12.atago-hiroe:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.atarashi-ako, div.saki-card.v12.atarashi-ako:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.choe-myeonghwa, div.saki-card.v12.choe-myeonghwa:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.ezaki-hitomi, div.saki-card.v12.ezaki-hitomi:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.fukuji-mihoko, div.saki-card.v12.fukuji-mihoko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.hanada-kirame, div.saki-card.v12.hanada-kirame:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.hao-huiyu, div.saki-card.v12.hao-huiyu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.haramura-nodoka, div.saki-card.v12.haramura-nodoka:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.hirose-sumire, div.saki-card.v12.hirose-sumire:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.ikeda-kana, div.saki-card.v12.ikeda-kana:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.inoue-jun, div.saki-card.v12.inoue-jun:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.iwato-kasumi, div.saki-card.v12.iwato-kasumi:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.jindai-komaki, div.saki-card.v12.jindai-komaki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.kajiki-yumi, div.saki-card.v12.kajiki-yumi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.kainou-yoshiko, div.saki-card.v12.kainou-yoshiko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kakura-kurumi, div.saki-card.v12.kakura-kurumi:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kanbara-satomi, div.saki-card.v12.kanbara-satomi:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.karijuku-tomoe, div.saki-card.v12.karijuku-tomoe:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kataoka-yuuki, div.saki-card.v12.kataoka-yuuki:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kosegawa-shiromi, div.saki-card.v12.kosegawa-shiromi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kunihiro-hajime, div.saki-card.v12.kunihiro-hajime:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.mase-yuuko, div.saki-card.v12.mase-yuuko:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.matano-seiko, div.saki-card.v12.matano-seiko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.matsumi-kuro, div.saki-card.v12.matsumi-kuro:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.matsumi-yuu, div.saki-card.v12.matsumi-yuu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.maya-yukiko, div.saki-card.v12.maya-yukiko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.megan-davin, div.saki-card.v12.megan-davin:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.miyanaga-saki, div.saki-card.v12.miyanaga-saki:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.miyanaga-teru, div.saki-card.v12.miyanaga-teru:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.nanpo-kazue, div.saki-card.v12.nanpo-kazue:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.nelly-virsaladze, div.saki-card.v12.nelly-virsaladze:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.onjouji-toki, div.saki-card.v12.onjouji-toki:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.oohoshi-awai, div.saki-card.v12.oohoshi-awai:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.ryuumonbuchi-touka, div.saki-card.v12.ryuumonbuchi-touka:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.sagimori-arata, div.saki-card.v12.sagimori-arata:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.sawamura-tomoki, div.saki-card.v12.sawamura-tomoki:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.senoo-kaori, div.saki-card.v12.senoo-kaori:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.shibuya-takami, div.saki-card.v12.shibuya-takami:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.shimizudani-ryuuka, div.saki-card.v12.shimizudani-ryuuka:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.shirouzu-mairu, div.saki-card.v12.shirouzu-mairu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.someya-mako, div.saki-card.v12.someya-mako:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.takakamo-shizuno, div.saki-card.v12.takakamo-shizuno:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.takei-hisa, div.saki-card.v12.takei-hisa:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.takimi-haru, div.saki-card.v12.takimi-haru:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.toyouko-momoko, div.saki-card.v12.toyouko-momoko:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.tsujigaito-satoha, div.saki-card.v12.tsujigaito-satoha:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.tsuruta-himeko, div.saki-card.v12.tsuruta-himeko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.usuzawa-sae, div.saki-card.v12.usuzawa-sae:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.usuzumi-hatsumi, div.saki-card.v12.usuzumi-hatsumi:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.yumeno-maho, div.saki-card.v12.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.aislinn-wishart, div.saki-card.v13.aislinn-wishart:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.amae-koromo, div.saki-card.v13.amae-koromo:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.anetai-toyone, div.saki-card.v13.anetai-toyone:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.arakawa-kei, div.saki-card.v13.arakawa-kei:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.atago-hiroe, div.saki-card.v13.atago-hiroe:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.atago-kinue, div.saki-card.v13.atago-kinue:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.atarashi-ako, div.saki-card.v13.atarashi-ako:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.choe-myeonghwa, div.saki-card.v13.choe-myeonghwa:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.ezaki-hitomi, div.saki-card.v13.ezaki-hitomi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.fukuji-mihoko, div.saki-card.v13.fukuji-mihoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.funakubo-hiroko, div.saki-card.v13.funakubo-hiroko:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.hanada-kirame, div.saki-card.v13.hanada-kirame:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.hao-huiyu, div.saki-card.v13.hao-huiyu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.haramura-nodoka, div.saki-card.v13.haramura-nodoka:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.hirose-sumire, div.saki-card.v13.hirose-sumire:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.ikeda-kana, div.saki-card.v13.ikeda-kana:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.inoue-jun, div.saki-card.v13.inoue-jun:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.iwadate-yuan, div.saki-card.v13.iwadate-yuan:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.iwato-kasumi, div.saki-card.v13.iwato-kasumi:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.jindai-komaki, div.saki-card.v13.jindai-komaki:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kajiki-yumi, div.saki-card.v13.kajiki-yumi:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kainou-yoshiko, div.saki-card.v13.kainou-yoshiko:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kakura-kurumi, div.saki-card.v13.kakura-kurumi:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kanbara-satomi, div.saki-card.v13.kanbara-satomi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.karijuku-tomoe, div.saki-card.v13.karijuku-tomoe:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kataoka-yuuki, div.saki-card.v13.kataoka-yuuki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kosegawa-shiromi, div.saki-card.v13.kosegawa-shiromi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kunihiro-hajime, div.saki-card.v13.kunihiro-hajime:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.mase-yuuko, div.saki-card.v13.mase-yuuko:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.matano-seiko, div.saki-card.v13.matano-seiko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.matsumi-kuro, div.saki-card.v13.matsumi-kuro:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.matsumi-yuu, div.saki-card.v13.matsumi-yuu:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.maya-yukiko, div.saki-card.v13.maya-yukiko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.megan-davin, div.saki-card.v13.megan-davin:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.miyanaga-saki, div.saki-card.v13.miyanaga-saki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.miyanaga-teru, div.saki-card.v13.miyanaga-teru:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.motouchi-naruka, div.saki-card.v13.motouchi-naruka:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.nanpo-kazue, div.saki-card.v13.nanpo-kazue:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.nelly-virsaladze, div.saki-card.v13.nelly-virsaladze:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.onjouji-toki, div.saki-card.v13.onjouji-toki:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.oohoshi-awai, div.saki-card.v13.oohoshi-awai:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.ryuumonbuchi-touka, div.saki-card.v13.ryuumonbuchi-touka:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.sagimori-arata, div.saki-card.v13.sagimori-arata:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.sawamura-tomoki, div.saki-card.v13.sawamura-tomoki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.senoo-kaori, div.saki-card.v13.senoo-kaori:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.shibuya-takami, div.saki-card.v13.shibuya-takami:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.shimizudani-ryuuka, div.saki-card.v13.shimizudani-ryuuka:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.shirouzu-mairu, div.saki-card.v13.shirouzu-mairu:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.shishihara-sawaya, div.saki-card.v13.shishihara-sawaya:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.someya-mako, div.saki-card.v13.someya-mako:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.suehara-kyouko, div.saki-card.v13.suehara-kyouko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.takakamo-shizuno, div.saki-card.v13.takakamo-shizuno:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.takei-hisa, div.saki-card.v13.takei-hisa:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.takimi-haru, div.saki-card.v13.takimi-haru:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.toyouko-momoko, div.saki-card.v13.toyouko-momoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.tsujigaito-satoha, div.saki-card.v13.tsujigaito-satoha:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.tsuruta-himeko, div.saki-card.v13.tsuruta-himeko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.ueshige-suzu, div.saki-card.v13.ueshige-suzu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.usuzawa-sae, div.saki-card.v13.usuzawa-sae:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.usuzumi-hatsumi, div.saki-card.v13.usuzumi-hatsumi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.yae-kobashiri, div.saki-card.v13.yae-kobashiri:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.yoshitome-miharu, div.saki-card.v13.yoshitome-miharu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.yumeno-maho, div.saki-card.v13.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v12.aislinn-wishart, div.saki-card.v12.aislinn-wishart:hover::before, label.mod.v12.aislinn-wishart:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.amae-koromo, div.saki-card.v12.amae-koromo:hover::before, label.mod.v12.amae-koromo:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.anetai-toyone, div.saki-card.v12.anetai-toyone:hover::before, label.mod.v12.anetai-toyone:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.arakawa-kei, div.saki-card.v12.arakawa-kei:hover::before, label.mod.v12.arakawa-kei:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.atago-hiroe, div.saki-card.v12.atago-hiroe:hover::before, label.mod.v12.atago-hiroe:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.atarashi-ako, div.saki-card.v12.atarashi-ako:hover::before, label.mod.v12.atarashi-ako:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.choe-myeonghwa, div.saki-card.v12.choe-myeonghwa:hover::before, label.mod.v12.choe-myeonghwa:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.ezaki-hitomi, div.saki-card.v12.ezaki-hitomi:hover::before, label.mod.v12.ezaki-hitomi:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.fukuji-mihoko, div.saki-card.v12.fukuji-mihoko:hover::before, label.mod.v12.fukuji-mihoko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.hanada-kirame, div.saki-card.v12.hanada-kirame:hover::before, label.mod.v12.hanada-kirame:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.hao-huiyu, div.saki-card.v12.hao-huiyu:hover::before, label.mod.v12.hao-huiyu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.haramura-nodoka, div.saki-card.v12.haramura-nodoka:hover::before, label.mod.v12.haramura-nodoka:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.hirose-sumire, div.saki-card.v12.hirose-sumire:hover::before, label.mod.v12.hirose-sumire:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.ikeda-kana, div.saki-card.v12.ikeda-kana:hover::before, label.mod.v12.ikeda-kana:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.inoue-jun, div.saki-card.v12.inoue-jun:hover::before, label.mod.v12.inoue-jun:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.iwato-kasumi, div.saki-card.v12.iwato-kasumi:hover::before, label.mod.v12.iwato-kasumi:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.jindai-komaki, div.saki-card.v12.jindai-komaki:hover::before, label.mod.v12.jindai-komaki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.kajiki-yumi, div.saki-card.v12.kajiki-yumi:hover::before, label.mod.v12.kajiki-yumi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.kainou-yoshiko, div.saki-card.v12.kainou-yoshiko:hover::before, label.mod.v12.kainou-yoshiko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kakura-kurumi, div.saki-card.v12.kakura-kurumi:hover::before, label.mod.v12.kakura-kurumi:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kanbara-satomi, div.saki-card.v12.kanbara-satomi:hover::before, label.mod.v12.kanbara-satomi:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.karijuku-tomoe, div.saki-card.v12.karijuku-tomoe:hover::before, label.mod.v12.karijuku-tomoe:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kataoka-yuuki, div.saki-card.v12.kataoka-yuuki:hover::before, label.mod.v12.kataoka-yuuki:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kosegawa-shiromi, div.saki-card.v12.kosegawa-shiromi:hover::before, label.mod.v12.kosegawa-shiromi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kunihiro-hajime, div.saki-card.v12.kunihiro-hajime:hover::before, label.mod.v12.kunihiro-hajime:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.mase-yuuko, div.saki-card.v12.mase-yuuko:hover::before, label.mod.v12.mase-yuuko:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.matano-seiko, div.saki-card.v12.matano-seiko:hover::before, label.mod.v12.matano-seiko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.matsumi-kuro, div.saki-card.v12.matsumi-kuro:hover::before, label.mod.v12.matsumi-kuro:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.matsumi-yuu, div.saki-card.v12.matsumi-yuu:hover::before, label.mod.v12.matsumi-yuu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.maya-yukiko, div.saki-card.v12.maya-yukiko:hover::before, label.mod.v12.maya-yukiko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.megan-davin, div.saki-card.v12.megan-davin:hover::before, label.mod.v12.megan-davin:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.miyanaga-saki, div.saki-card.v12.miyanaga-saki:hover::before, label.mod.v12.miyanaga-saki:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.miyanaga-teru, div.saki-card.v12.miyanaga-teru:hover::before, label.mod.v12.miyanaga-teru:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.nanpo-kazue, div.saki-card.v12.nanpo-kazue:hover::before, label.mod.v12.nanpo-kazue:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.nelly-virsaladze, div.saki-card.v12.nelly-virsaladze:hover::before, label.mod.v12.nelly-virsaladze:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.onjouji-toki, div.saki-card.v12.onjouji-toki:hover::before, label.mod.v12.onjouji-toki:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.oohoshi-awai, div.saki-card.v12.oohoshi-awai:hover::before, label.mod.v12.oohoshi-awai:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.ryuumonbuchi-touka, div.saki-card.v12.ryuumonbuchi-touka:hover::before, label.mod.v12.ryuumonbuchi-touka:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.sagimori-arata, div.saki-card.v12.sagimori-arata:hover::before, label.mod.v12.sagimori-arata:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.sawamura-tomoki, div.saki-card.v12.sawamura-tomoki:hover::before, label.mod.v12.sawamura-tomoki:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.senoo-kaori, div.saki-card.v12.senoo-kaori:hover::before, label.mod.v12.senoo-kaori:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.shibuya-takami, div.saki-card.v12.shibuya-takami:hover::before, label.mod.v12.shibuya-takami:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.shimizudani-ryuuka, div.saki-card.v12.shimizudani-ryuuka:hover::before, label.mod.v12.shimizudani-ryuuka:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.shirouzu-mairu, div.saki-card.v12.shirouzu-mairu:hover::before, label.mod.v12.shirouzu-mairu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.someya-mako, div.saki-card.v12.someya-mako:hover::before, label.mod.v12.someya-mako:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.takakamo-shizuno, div.saki-card.v12.takakamo-shizuno:hover::before, label.mod.v12.takakamo-shizuno:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.takei-hisa, div.saki-card.v12.takei-hisa:hover::before, label.mod.v12.takei-hisa:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.takimi-haru, div.saki-card.v12.takimi-haru:hover::before, label.mod.v12.takimi-haru:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.toyouko-momoko, div.saki-card.v12.toyouko-momoko:hover::before, label.mod.v12.toyouko-momoko:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.tsujigaito-satoha, div.saki-card.v12.tsujigaito-satoha:hover::before, label.mod.v12.tsujigaito-satoha:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.tsuruta-himeko, div.saki-card.v12.tsuruta-himeko:hover::before, label.mod.v12.tsuruta-himeko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.usuzawa-sae, div.saki-card.v12.usuzawa-sae:hover::before, label.mod.v12.usuzawa-sae:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.usuzumi-hatsumi, div.saki-card.v12.usuzumi-hatsumi:hover::before, label.mod.v12.usuzumi-hatsumi:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.yumeno-maho, div.saki-card.v12.yumeno-maho:hover::before, label.mod.v12.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.aislinn-wishart, div.saki-card.v13.aislinn-wishart:hover::before, label.mod.v13.aislinn-wishart:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.amae-koromo, div.saki-card.v13.amae-koromo:hover::before, label.mod.v13.amae-koromo:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.anetai-toyone, div.saki-card.v13.anetai-toyone:hover::before, label.mod.v13.anetai-toyone:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.arakawa-kei, div.saki-card.v13.arakawa-kei:hover::before, label.mod.v13.arakawa-kei:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.atago-hiroe, div.saki-card.v13.atago-hiroe:hover::before, label.mod.v13.atago-hiroe:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.atago-kinue, div.saki-card.v13.atago-kinue:hover::before, label.mod.v13.atago-kinue:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.atarashi-ako, div.saki-card.v13.atarashi-ako:hover::before, label.mod.v13.atarashi-ako:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.choe-myeonghwa, div.saki-card.v13.choe-myeonghwa:hover::before, label.mod.v13.choe-myeonghwa:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.ezaki-hitomi, div.saki-card.v13.ezaki-hitomi:hover::before, label.mod.v13.ezaki-hitomi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.fukuji-mihoko, div.saki-card.v13.fukuji-mihoko:hover::before, label.mod.v13.fukuji-mihoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.funakubo-hiroko, div.saki-card.v13.funakubo-hiroko:hover::before, label.mod.v13.funakubo-hiroko:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.hanada-kirame, div.saki-card.v13.hanada-kirame:hover::before, label.mod.v13.hanada-kirame:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.hao-huiyu, div.saki-card.v13.hao-huiyu:hover::before, label.mod.v13.hao-huiyu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.haramura-nodoka, div.saki-card.v13.haramura-nodoka:hover::before, label.mod.v13.haramura-nodoka:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.hirose-sumire, div.saki-card.v13.hirose-sumire:hover::before, label.mod.v13.hirose-sumire:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.ikeda-kana, div.saki-card.v13.ikeda-kana:hover::before, label.mod.v13.ikeda-kana:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.inoue-jun, div.saki-card.v13.inoue-jun:hover::before, label.mod.v13.inoue-jun:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.iwadate-yuan, div.saki-card.v13.iwadate-yuan:hover::before, label.mod.v13.iwadate-yuan:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.iwato-kasumi, div.saki-card.v13.iwato-kasumi:hover::before, label.mod.v13.iwato-kasumi:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.jindai-komaki, div.saki-card.v13.jindai-komaki:hover::before, label.mod.v13.jindai-komaki:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kajiki-yumi, div.saki-card.v13.kajiki-yumi:hover::before, label.mod.v13.kajiki-yumi:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kainou-yoshiko, div.saki-card.v13.kainou-yoshiko:hover::before, label.mod.v13.kainou-yoshiko:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kakura-kurumi, div.saki-card.v13.kakura-kurumi:hover::before, label.mod.v13.kakura-kurumi:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kanbara-satomi, div.saki-card.v13.kanbara-satomi:hover::before, label.mod.v13.kanbara-satomi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.karijuku-tomoe, div.saki-card.v13.karijuku-tomoe:hover::before, label.mod.v13.karijuku-tomoe:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kataoka-yuuki, div.saki-card.v13.kataoka-yuuki:hover::before, label.mod.v13.kataoka-yuuki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kosegawa-shiromi, div.saki-card.v13.kosegawa-shiromi:hover::before, label.mod.v13.kosegawa-shiromi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kunihiro-hajime, div.saki-card.v13.kunihiro-hajime:hover::before, label.mod.v13.kunihiro-hajime:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.mase-yuuko, div.saki-card.v13.mase-yuuko:hover::before, label.mod.v13.mase-yuuko:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.matano-seiko, div.saki-card.v13.matano-seiko:hover::before, label.mod.v13.matano-seiko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.matsumi-kuro, div.saki-card.v13.matsumi-kuro:hover::before, label.mod.v13.matsumi-kuro:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.matsumi-yuu, div.saki-card.v13.matsumi-yuu:hover::before, label.mod.v13.matsumi-yuu:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.maya-yukiko, div.saki-card.v13.maya-yukiko:hover::before, label.mod.v13.maya-yukiko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.megan-davin, div.saki-card.v13.megan-davin:hover::before, label.mod.v13.megan-davin:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.miyanaga-saki, div.saki-card.v13.miyanaga-saki:hover::before, label.mod.v13.miyanaga-saki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.miyanaga-teru, div.saki-card.v13.miyanaga-teru:hover::before, label.mod.v13.miyanaga-teru:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.motouchi-naruka, div.saki-card.v13.motouchi-naruka:hover::before, label.mod.v13.motouchi-naruka:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.nanpo-kazue, div.saki-card.v13.nanpo-kazue:hover::before, label.mod.v13.nanpo-kazue:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.nelly-virsaladze, div.saki-card.v13.nelly-virsaladze:hover::before, label.mod.v13.nelly-virsaladze:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.onjouji-toki, div.saki-card.v13.onjouji-toki:hover::before, label.mod.v13.onjouji-toki:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.oohoshi-awai, div.saki-card.v13.oohoshi-awai:hover::before, label.mod.v13.oohoshi-awai:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.ryuumonbuchi-touka, div.saki-card.v13.ryuumonbuchi-touka:hover::before, label.mod.v13.ryuumonbuchi-touka:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.sagimori-arata, div.saki-card.v13.sagimori-arata:hover::before, label.mod.v13.sagimori-arata:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.sawamura-tomoki, div.saki-card.v13.sawamura-tomoki:hover::before, label.mod.v13.sawamura-tomoki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.senoo-kaori, div.saki-card.v13.senoo-kaori:hover::before, label.mod.v13.senoo-kaori:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.shibuya-takami, div.saki-card.v13.shibuya-takami:hover::before, label.mod.v13.shibuya-takami:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.shimizudani-ryuuka, div.saki-card.v13.shimizudani-ryuuka:hover::before, label.mod.v13.shimizudani-ryuuka:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.shirouzu-mairu, div.saki-card.v13.shirouzu-mairu:hover::before, label.mod.v13.shirouzu-mairu:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.shishihara-sawaya, div.saki-card.v13.shishihara-sawaya:hover::before, label.mod.v13.shishihara-sawaya:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.someya-mako, div.saki-card.v13.someya-mako:hover::before, label.mod.v13.someya-mako:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.suehara-kyouko, div.saki-card.v13.suehara-kyouko:hover::before, label.mod.v13.suehara-kyouko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.takakamo-shizuno, div.saki-card.v13.takakamo-shizuno:hover::before, label.mod.v13.takakamo-shizuno:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.takei-hisa, div.saki-card.v13.takei-hisa:hover::before, label.mod.v13.takei-hisa:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.takimi-haru, div.saki-card.v13.takimi-haru:hover::before, label.mod.v13.takimi-haru:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.toyouko-momoko, div.saki-card.v13.toyouko-momoko:hover::before, label.mod.v13.toyouko-momoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.tsujigaito-satoha, div.saki-card.v13.tsujigaito-satoha:hover::before, label.mod.v13.tsujigaito-satoha:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.tsuruta-himeko, div.saki-card.v13.tsuruta-himeko:hover::before, label.mod.v13.tsuruta-himeko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.ueshige-suzu, div.saki-card.v13.ueshige-suzu:hover::before, label.mod.v13.ueshige-suzu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.usuzawa-sae, div.saki-card.v13.usuzawa-sae:hover::before, label.mod.v13.usuzawa-sae:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.usuzumi-hatsumi, div.saki-card.v13.usuzumi-hatsumi:hover::before, label.mod.v13.usuzumi-hatsumi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.yae-kobashiri, div.saki-card.v13.yae-kobashiri:hover::before, label.mod.v13.yae-kobashiri:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.yoshitome-miharu, div.saki-card.v13.yoshitome-miharu:hover::before, label.mod.v13.yoshitome-miharu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.yumeno-maho, div.saki-card.v13.yumeno-maho:hover::before, label.mod.v13.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+label.mod.v13:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.shimocha div.saki-card:hover::before { transform: rotate(90deg) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size))); }
 div.toimen div.saki-card:hover::before { transform: rotate(180deg) translateY(calc(5 * var(--tile-size))); }
 div.kamicha div.saki-card:hover::before { transform: rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size))); }
 div.saki-card.disabled, div.saki-card.disabled:hover::before { filter: saturate(0%); }
 /* double card view for mairu/himeko */
-div.saki-card:hover::after {
-  position: absolute;
-  background: inherit;
-  width: var(--card-width);
-  height: var(--card-height);
-  pointer-events: none;
+div.saki-card.shirouzu-mairu:hover::after,
+div.saki-card.tsuruta-himeko:hover::after {
   left: calc(-350% + 0.5 * var(--card-width));
-  top: -700%;
-  transform-origin: 50% 100%;
   z-index: 10;
 }
-div.saki-card.v12:hover::after {
-  --card-width: calc(7.12 * var(--tile-size));
-  --card-height: calc(10 * var(--tile-size));
-  background-size: auto calc(6 * var(--card-height));
-}
-div.saki-card.v13:hover::after {
-  --card-width: calc(6.92 * var(--tile-size));
-  --card-height: calc(10 * var(--tile-size));
-  background-size: auto calc(7 * var(--card-height));
-}
-div.saki-card.v12.shirouzu-mairu::after { content: ""; background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.tsuruta-himeko::after { content: ""; background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.shirouzu-mairu::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.tsuruta-himeko::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.shirouzu-mairu:hover::after, label.mod.v12.shirouzu-mairu:hover::after { content: ""; background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.tsuruta-himeko:hover::after { content: ""; background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.shirouzu-mairu:hover::after, label.mod.v13.shirouzu-mairu:hover::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.tsuruta-himeko:hover::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
 div.saki-card.shirouzu-mairu:hover::before,
 div.saki-card.tsuruta-himeko:hover::before {
   transform: translateX(calc(-0.5 * var(--card-width)));
@@ -2582,6 +2573,9 @@ div.room > div.custom-json {
   height: calc(9 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
 }
+div.room > div.mods > div.mods-inner-container {
+  width: 100%;
+}
 div.room div.mods-title {
   position: absolute;
   top: calc(3.75 * var(--tile-size));
@@ -2591,12 +2585,16 @@ div.room div.mods-title {
   text-align: center;
 }
 div.room > div.mods {
-  overflow-y: auto;
+  overflow: auto;
   padding-top: calc(0.25 * var(--tile-size));
   padding-bottom: calc(0.25 * var(--tile-size));
 }
-div.room > div.mods > div.mod-category,
-div.room > div.mods > div.mod-category-spacer {
+div.room > div.mods.mods-saki > div.mods-inner-container {
+  /* saki needs room for hoverable cards */
+  padding-right: 100%;
+}
+div.room > div.mods > div.mods-inner-container > div.mod-category,
+div.room > div.mods > div.mods-inner-container > div.mod-category-spacer {
   width: 100%;
   min-height: 0.5em;
   margin-left: -0.5em;

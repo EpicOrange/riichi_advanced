@@ -131,15 +131,17 @@ defmodule RiichiAdvancedWeb.RoomLive do
         </div>
       <% else %>
         <div class="mods-title">Mods</div>
-        <div class="mods">
-          <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
-            <div class="mod-category"><%= category %></div>
-            <%= for {mod, mod_details} <- Enum.sort_by(mods, fn {_name, mod} -> mod.index end) do %>
-              <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
-              <label for={mod} title={mod_details.desc}><%= mod_details.name %></label>
+        <div class={["mods", "mods-#{@state.ruleset}"]}>
+          <div class="mods-inner-container">
+            <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
+              <div class="mod-category"><%= category %></div>
+              <%= for {mod, mod_details} <- Enum.sort_by(mods, fn {_name, mod} -> mod.index end) do %>
+                <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
+                <label for={mod} title={mod_details.desc} class={["mod", mod_details.class]}><%= mod_details.name %></label>
+              <% end %>
+              <div class="mod-category-spacer"></div>
             <% end %>
-            <div class="mod-category-spacer"></div>
-          <% end %>
+          </div>
         </div>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
