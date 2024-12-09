@@ -1008,7 +1008,7 @@
     "chii": {
       "display_name": "Sheung",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Sheung"], ["call"], ["change_turn", "self"]],
       "call_conditions": [
         {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
@@ -1017,7 +1017,7 @@
     "pon": {
       "display_name": "Pung",
       "call": [[0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"],
       "call_priority_list": [
@@ -1031,7 +1031,7 @@
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["set_status", "kan"],
@@ -1051,7 +1051,7 @@
       "call": [[0, 0, 0]],
       "call_style": {"self": [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]},
       "call_hidden": true,
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["set_status", "kan"],
@@ -1065,7 +1065,7 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["set_status", "kan"],
@@ -1144,7 +1144,7 @@
     },
     "joker": {
       "display_name": "Flower",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_joker"]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_joker"]]}],
       "actions": [["big_text", "Flower"], ["flower", "12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], ["set_status", "joker"], ["draw"]]
     }
   },
