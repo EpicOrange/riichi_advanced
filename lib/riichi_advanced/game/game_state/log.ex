@@ -83,9 +83,9 @@ defmodule RiichiAdvanced.GameState.Log do
       for choice <- choices do
         if state.turn == seat do
           # self call
-          %{player: to_seat(seat), type: call_name, tiles: Utils.strip_attrs(choice ++ [called_tile])}
+          %{player: to_seat(seat), type: call_name, tiles: choice ++ [called_tile]}
         else
-          %{player: to_seat(seat), type: call_name, tiles: Utils.strip_attrs(choice)}
+          %{player: to_seat(seat), type: call_name, tiles: choice}
         end
       end
     end |> Enum.concat() |> Enum.uniq()
@@ -104,7 +104,7 @@ defmodule RiichiAdvanced.GameState.Log do
   # end
 
   def add_call(state, seat, call_name, call_choice, called_tile) do
-    tiles = Utils.strip_attrs(call_choice ++ if called_tile != nil do [called_tile] else [] end)
+    tiles = call_choice ++ if called_tile != nil do [called_tile] else [] end
     call = %{player: to_seat(seat), type: call_name, tiles: tiles}
     modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
   end
@@ -187,7 +187,7 @@ defmodule RiichiAdvanced.GameState.Log do
           seat: to_seat(seat),
           pao: to_seat(Map.get(winner, :pao_seat, nil)),
           won_from: to_seat(winner.payer),
-          hand: state.players[seat].winning_hand,
+          hand: winner.winning_hand,
           tile: winner.winning_tile,
           yaku: Enum.map(winner.yaku, fn {name, value} -> [name, value] end),
           yakuman: Enum.map(Map.get(winner, :yakuman, []), fn {name, value} -> [name, value] end),

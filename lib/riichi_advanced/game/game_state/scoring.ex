@@ -1037,6 +1037,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         :call    -> Map.get(score_rules, "win_by_discard_label", "")
       end,
       opponents: opponents,
+      winning_hand: winning_hand,
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,
     }
