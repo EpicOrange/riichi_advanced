@@ -137,6 +137,8 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Log, as: Log
   use GenServer
 
+  @timer 10
+
   def start_link(init_data) do
     IO.puts("Game supervisor PID is #{inspect(self())}")
     GenServer.start_link(
@@ -487,7 +489,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, 10)
+    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :winner)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
@@ -534,7 +536,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, 10)
+    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
@@ -562,7 +564,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, 10)
+    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     Debounce.apply(state.timer_debouncer)
@@ -581,7 +583,7 @@ defmodule RiichiAdvanced.GameState do
         state = Map.update!(state, :winner_index, & &1 + 1)
 
         # reset timer
-        state = Map.put(state, :timer, 10)
+        state = Map.put(state, :timer, @timer)
         state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         Debounce.apply(state.timer_debouncer)
 
@@ -601,7 +603,7 @@ defmodule RiichiAdvanced.GameState do
         state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
         
         # reset timer
-        state = Map.put(state, :timer, 10)
+        state = Map.put(state, :timer, @timer)
         state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         Debounce.apply(state.timer_debouncer)
         
