@@ -136,7 +136,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def draft_saki_card(state, seat, choice) do
-    update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [choice]), call_buttons: %{} })
+    update_player(state, seat, &%Player{ &1 | status: MapSet.put(&1.status, choice), call_buttons: %{} })
   end
 
   def check_if_all_drafted(state) do

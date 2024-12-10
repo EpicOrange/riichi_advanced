@@ -328,7 +328,7 @@ defmodule RiichiAdvanced.GameState.American do
         :toimen -> "declare_toimen_dead"
         :kamicha -> "declare_kamicha_dead"
       end
-      state = update_player(state, seat, &%Player{ &1 | status: Enum.uniq(&1.status ++ [declare_dead_status]) })
+      state = update_player(state, seat, &%Player{ &1 | status: MapSet.put(&1.status, declare_dead_status) })
       state = Buttons.recalculate_buttons(state)
       state = broadcast_state_change(state)
       state
