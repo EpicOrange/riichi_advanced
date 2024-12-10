@@ -56,6 +56,7 @@
     {"id": "shiiaru_raotai", "name": "Shiiaru Raotai", "desc": "Local yaku. 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."},
     {"id": "sanrenkou", "name": "Sanrenkou", "desc": "Local yaku. 2 han for having three triplets of the same suit in sequence, like 222,333,444."},
     {"id": "paarenchan", "name": "Paarenchan", "desc": "The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak."},
+    {"id": "sanankon", "name": "Sanankon", "desc": "Local yaku. 2 han for having three concealed kontsu. 6 han for having four, and 13 han for having four waiting on your pair."},
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
@@ -388,12 +389,7 @@
         {"name": "match", "opts": [["hand", "calls"], [[ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "kontsu"], 1], [["pair"], 1] ]]]},
         [
           "won_by_draw",
-          [
-            // 0-1 open triplet tsumo, hand must be 4 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["pair"], 1] ]]]},
-            // 0 open triplet tsumo, hand must be 3 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "kontsu"], 1], [["pair"], 1] ]]]}
-          ]
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1] ]]]}
         ]
       ]]
     },

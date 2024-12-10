@@ -668,14 +668,7 @@
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]},
         [
           "won_by_draw",
-          [
-            // 0-2 open triplet tsumo, hand must be 4 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
-            // 0-1 open triplet tsumo, hand must be 3 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
-            // 0 open triplet tsumo, hand must be 2 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]}
-          ]
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]}
         ]
       ]]
     },
@@ -689,12 +682,7 @@
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         [
           "won_by_draw",
-          [
-            // 0-1 open triplet tsumo, hand must be 4 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
-            // 0 open triplet tsumo, hand must be 3 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]}
-          ]
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1]]]]}
         ]
       ]]
     },
@@ -706,7 +694,6 @@
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
         [
           "won_by_draw",
-          // 0 open triplet tsumo, hand must be 4 triplets and a pair
           {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]}
         ]
       ]]

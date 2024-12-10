@@ -211,7 +211,6 @@
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
         [
           "won_by_draw",
-          // 0 open triplet tsumo, hand must be 4 triplets and a pair
           {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]}
         ]
       ]]
