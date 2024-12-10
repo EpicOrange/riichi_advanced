@@ -672,9 +672,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
       sanchahou                    -> Map.get(score_rules, "triple_win_draw_name", "Sanchahou")
       is_pao                       -> Map.get(score_rules, "win_with_pao_name", "Sekinin Barai")
       is_tsumo                     -> Map.get(score_rules, "win_by_draw_name", "Win by Draw")
-      map_size(state.winners) == 1 -> Map.get(score_rules, "win_by_discard_name", "Win by Discard")
-      map_size(state.winners) == 2 -> Map.get(score_rules, "win_by_discard_name_2", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
-      map_size(state.winners) == 3 -> Map.get(score_rules, "win_by_discard_name_3", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
+      map_size(winners) == 1       -> Map.get(score_rules, "win_by_discard_name", "Win by Discard")
+      map_size(winners) == 2       -> Map.get(score_rules, "win_by_discard_name_2", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
+      map_size(winners) == 3       -> Map.get(score_rules, "win_by_discard_name_3", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
     end
 
     # get next dealer
