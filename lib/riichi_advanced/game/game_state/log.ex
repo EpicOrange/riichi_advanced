@@ -21,7 +21,7 @@ defimpl Jason.Encoder, for: Tuple do
 end
 
 defmodule RiichiAdvanced.GameState.Log do
-  # alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Marking, as: Marking
   # import RiichiAdvanced.GameState
 
   def init_log(state) do
@@ -131,12 +131,11 @@ defmodule RiichiAdvanced.GameState.Log do
     #   }
     # ]
     for {kw, val} <- marking do
-      case kw do
-        :done -> [kw, false]
-        :cancellable -> [kw, val]
-        _     ->
-          val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, s, i] end))
-          [kw, val]
+      if kw in Marking.special_keys() do
+        [kw, val]
+      else
+        val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, s, i] end))
+        [kw, val]
       end
     end
   end
@@ -151,13 +150,12 @@ defmodule RiichiAdvanced.GameState.Log do
     #   }]
     # ]
     for [kw, val] <- marking do
-      case kw do
-        "done" -> {:done, false}
-        "cancellable" -> {:cancellable, val}
-        _      ->
-          val = Map.new(val, fn {k, v} -> {String.to_existing_atom(k), v} end)
-          val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
-          {String.to_existing_atom(kw), val}
+      if kw in Enum.map(Marking.special_keys(), &Atom.to_string/1) do
+        {String.to_existing_atom(kw), val}
+      else
+        val = Map.new(val, fn {k, v} -> {String.to_existing_atom(k), v} end)
+        val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
+        {String.to_existing_atom(kw), val}
       end
     end
   end

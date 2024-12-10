@@ -1,14 +1,20 @@
 
 defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
+
+  @special_keys [:done, :cancellable, :post_actions]
+
+  def special_keys(), do: @special_keys
 
   def initialize_marking(state) do
     # give each seat a marking array. for example:
     # east: [
     #   done: false,
     #   cancellable: true,
+    #   post_actions: [],
     #   hand: {
     #     marked: [{:"2m", :east, 4}],
     #     needed: 1,
@@ -23,8 +29,9 @@ defmodule RiichiAdvanced.GameState.Marking do
     Map.put(state, :marking, Map.new(state.available_seats, fn seat -> {seat, []} end))
   end
 
-  def setup_marking(state, seat, to_mark, cancellable) do
-    state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: [done: false, cancellable: cancellable] do
+  def setup_marking(state, seat, to_mark, cancellable, post_actions) do
+    init = [done: false, cancellable: cancellable, post_actions: post_actions]
+    state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: init do
       marked_objects ->
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
         case target do
@@ -43,7 +50,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def needs_marking?(state, seat) do
-    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in [:done, :cancellable]) && length(mark_info.marked) < mark_info.needed end)
+    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) && length(mark_info.marked) < mark_info.needed end)
   end
 
   defp get_object(state, seat, index, source) do
@@ -70,7 +77,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def is_done?(state, marking_player) do
-    [{_done, val}] = get_mark_infos(state.marking[marking_player], :done)
+    [{:done, val}] = get_mark_infos(state.marking[marking_player], :done)
     val
   end
 
@@ -194,9 +201,9 @@ defmodule RiichiAdvanced.GameState.Marking do
 
   def clear_marked_objects(state, seat) do
     update_in(state.marking[seat], &Enum.map(&1, fn {source, mark_info} -> {source, case source do
-      :done        -> false
-      :cancellable -> mark_info
-      _            -> Map.put(mark_info, :marked, [])
+      :done                          -> false
+      _ when source in @special_keys -> mark_info
+      _                              -> Map.put(mark_info, :marked, [])
     end} end))
   end
 
@@ -212,7 +219,16 @@ defmodule RiichiAdvanced.GameState.Marking do
       # only reset marking once the mark action marks it done
       state = if is_done?(state, marking_player) do
         state = Log.log(state, marking_player, :mark, %{marking: Log.encode_marking(state.marking[marking_player])})
-        reset_marking(state, marking_player)
+
+        # run post-mark actions
+        [{:post_actions, post_actions}] = get_mark_infos(state.marking[marking_player], :post_actions)
+        if Debug.debug_actions() do
+          IO.puts("Running post-mark actions for #{marking_player}: #{inspect(post_actions)}")
+        end
+        state = Actions.run_actions(state, post_actions, %{seat: marking_player})
+
+        state = reset_marking(state, marking_player)
+        state
       else state end
 
       # if we're still going, run deferred actions for everyone and then notify ai

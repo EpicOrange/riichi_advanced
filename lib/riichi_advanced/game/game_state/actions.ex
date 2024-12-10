@@ -665,9 +665,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
       "as"                    ->
         for dir <- Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, [])), reduce: state do
-          state ->
-            IO.inspect(dir)
-            run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
+          state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
         end
       "when_anyone"           ->
         for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: state do
@@ -1295,7 +1293,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
                 state = run_actions(state, actions, context)
                 state
-              {:mark, mark_spec, pre_actions} ->
+              {:mark, mark_spec, pre_actions, post_actions} ->
                 # run pre-mark actions
                 if Debug.debug_actions() do
                   IO.puts("Running pre-mark actions for #{seat}: #{inspect(pre_actions)}")
@@ -1303,7 +1301,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 state = run_actions(state, pre_actions, %{seat: seat})
                 # setup marking
                 cancellable = Map.get(state.rules["buttons"][choice], "cancellable", true)
-                state = Marking.setup_marking(state, seat, mark_spec, cancellable)
+                state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions)
                 if Debug.debug_actions() do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
                 end

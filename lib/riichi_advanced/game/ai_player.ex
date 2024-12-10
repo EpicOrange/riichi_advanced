@@ -1,4 +1,6 @@
 defmodule RiichiAdvanced.AIPlayer do
+  alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Marking, as: Marking
   use GenServer
 
   @ai_speed 4
@@ -11,7 +13,7 @@ defmodule RiichiAdvanced.AIPlayer do
     state = Map.put(state, :initialized, false)
     state = Map.put(state, :shanten, 6)
     state = Map.put(state, :preselected_flower, nil)
-    if RiichiAdvanced.GameState.Debug.debug_fast_ai() do
+    if Debug.debug_fast_ai() do
       :timer.apply_after(100, Kernel, :send, [self(), :initialize])
     else
       :timer.apply_after(2500, Kernel, :send, [self(), :initialize])
@@ -105,19 +107,21 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   defp get_mark_choices(source, players, revealed_tiles, num_scryed_tiles, wall) do
-    case source do
-      :done          -> []
-      :cancellable   -> []
-      :hand          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, source, &1}) |> Enum.with_index() end)
-      :call          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.calls, &{seat, source, &1}) |> Enum.with_index() end)
-      :discard       -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, source, &1}) |> Enum.with_index() end)
-      :aside         -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, source, &1}) |> Enum.with_index() end)
-      :revealed_tile -> revealed_tiles |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
-      :scry          -> wall |> Enum.take(num_scryed_tiles) |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
-      _              ->
-        IO.puts("AI does not recognize the mark source #{inspect(source)}")
-        {nil, nil, nil}
-    end 
+    if source in Marking.special_keys() do
+      []
+    else
+      case source do
+        :hand          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.hand ++ p.draw, &{seat, source, &1}) |> Enum.with_index() end)
+        :call          -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.calls, &{seat, source, &1}) |> Enum.with_index() end)
+        :discard       -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, source, &1}) |> Enum.with_index() end)
+        :aside         -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, source, &1}) |> Enum.with_index() end)
+        :revealed_tile -> revealed_tiles |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
+        :scry          -> wall |> Enum.take(num_scryed_tiles) |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
+        _              ->
+          IO.puts("AI does not recognize the mark source #{inspect(source)}")
+          {nil, nil, nil}
+      end
+    end
   end
 
   def handle_info(:initialize, state) do
@@ -149,7 +153,7 @@ defmodule RiichiAdvanced.AIPlayer do
           # {_tile, index} = Enum.at(playables, -1)
           # use our rudimentary AI for discarding
           # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
-          {{tile, index}, shanten} = if RiichiAdvanced.GameState.Debug.debug() do
+          {{tile, index}, shanten} = if Debug.debug() do
             {Enum.at(playables, -1), 6}
           else
             case choose_discard(state, player, playables, all_tiles, visible_tiles) do
