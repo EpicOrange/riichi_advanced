@@ -1509,8 +1509,8 @@ div.display-wall > div.dice > div.die.six::before {
     drop-shadow(calc(0 * var(--tile-size)) calc(0.21 * var(--tile-size)) 0 black);
 }
 
-/* win/draw windows */
-div.game-end-window {
+/* game modals (win/draw/error windows) */
+div.game-modal-container {
   position: absolute;
   width: 80%;
   height: 80%;
@@ -1520,12 +1520,22 @@ div.game-end-window {
   float: left;
   transition: opacity 0.5s ease;
 }
-div.game-end-window.inactive {
+div.game-modal-container.inactive,
+div.game-modal-hide:active {
   opacity: 0;
   pointer-events: none;
   user-select: none;
 }
-div.game-end-window::before {
+div.game-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+}
+div.game-modal::before {
   position: absolute;
   content: "";
   width: 108%;
@@ -1537,9 +1547,9 @@ div.game-end-window::before {
   opacity: 0.6;
   z-index: -1;
 }
-div.game-end-window > div.winning-hand,
-div.game-end-window > div.yakus,
-div.game-end-window > div.score-display {
+div.game-modal > div.winning-hand,
+div.game-modal > div.yakus,
+div.game-modal > div.score-display {
   pointer-events: none;
   user-select: none;
 }
@@ -1698,15 +1708,16 @@ div.total-score-name-display::before {
 }
 
 /* delta score window */
-div.game-end-window > div.delta-score-reason {
+div.game-modal > div.delta-score-reason {
   position: absolute;
   font-size: calc(1.25 * var(--tile-size));
   text-align: center;
+  top: 0;
   width: 100%;
   user-select: none;
   z-index: 3;
 }
-div.game-end-window > div.delta-score-reason::before {
+div.game-modal > div.delta-score-reason::before {
   position: absolute;
   content: "";
   background-image: url(/images/brush-bg.svg);
@@ -1719,7 +1730,7 @@ div.game-end-window > div.delta-score-reason::before {
   bottom: calc(-0.5 * var(--tile-size));
   z-index: -1;
 }
-div.game-end-window > div.delta-score {
+div.game-modal > div.delta-score {
   line-height: 1;
   position: absolute;
   font-size: calc(1 * var(--tile-size));
@@ -1727,11 +1738,11 @@ div.game-end-window > div.delta-score {
   user-select: none;
   z-index: 2;
 }
-div.game-end-window > div.delta-score.self { bottom: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-end-window > div.delta-score.kamicha { left: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-end-window > div.delta-score.toimen { top: calc(2.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-end-window > div.delta-score.shimocha { right: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-end-window > div.delta-score > div.hline::before {
+div.game-modal > div.delta-score.self { bottom: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
+div.game-modal > div.delta-score.kamicha { left: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
+div.game-modal > div.delta-score.toimen { top: calc(2.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
+div.game-modal > div.delta-score.shimocha { right: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
+div.game-modal > div.delta-score > div.hline::before {
   position: absolute;
   content: "";
   background: black;
@@ -1739,7 +1750,7 @@ div.game-end-window > div.delta-score > div.hline::before {
   right: 0;
   height: calc(0.0625 * var(--tile-size));
 }
-div.game-end-window > div.delta-score::before {
+div.game-modal > div.delta-score::before {
   position: absolute;
   content: "";
   background-image: url(/images/brush-bg2.svg);
@@ -1750,54 +1761,55 @@ div.game-end-window > div.delta-score::before {
   height: calc(6 * var(--tile-size));
   z-index: -1;
 }
-div.game-end-window > div.delta-score.self::before {
+div.game-modal > div.delta-score.self::before {
   transform: rotate(0deg);
   left: calc(50% - 2.5 * var(--tile-size));
   bottom: calc(50% - 2.25 * var(--tile-size));
 }
-div.game-end-window > div.delta-score.kamicha::before {
+div.game-modal > div.delta-score.kamicha::before {
   transform: rotate(90deg);
   left: calc(50% - 3.5 * var(--tile-size));
   bottom: calc(50% - 2.5 * var(--tile-size));
 }
-div.game-end-window > div.delta-score.toimen::before {
+div.game-modal > div.delta-score.toimen::before {
   transform: rotate(180deg);
   left: calc(50% - 3 * var(--tile-size));
   bottom: calc(50% - 1.5 * var(--tile-size));
 }
-div.game-end-window > div.delta-score.shimocha::before {
+div.game-modal > div.delta-score.shimocha::before {
   transform: rotate(270deg);
   left: calc(50% - 2.5 * var(--tile-size));
   bottom: calc(50% - 1.5 * var(--tile-size));
 }
-div.game-end-window > div.delta-score > div.initial { color: gray; }
-div.game-end-window > div.delta-score > div.change.positive { color: green; }
-div.game-end-window > div.delta-score > div.change.negative { color: red; }
-div.game-end-window > div.delta-score > div.result { transform: translateY(calc(0.125 * var(--tile-size))); }
+div.game-modal > div.delta-score > div.initial { color: gray; }
+div.game-modal > div.delta-score > div.change.positive { color: green; }
+div.game-modal > div.delta-score > div.change.negative { color: red; }
+div.game-modal > div.delta-score > div.result { transform: translateY(calc(0.125 * var(--tile-size))); }
 
 /* game end timer */
 
-div.game-end-window > div.timer {
+div.game-modal-container > div.timer {
   position: absolute;
   color: white;
-  text-align: center;
+  text-align: right;
   font-size: calc(0.5 * var(--tile-size));
   right: calc(-0.25 * var(--tile-size));
   bottom: calc(-0.25 * var(--tile-size));
-  width: calc(2 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
   cursor: pointer;
+  white-space: nowrap;
+  z-index: 1;
 }
 
 /* error box */
-div.game-end-window.error-window {
+div.game-modal.error-window {
   color: white;
 }
-div.game-end-window.error-window > h1 {
+div.game-modal.error-window > h1 {
   text-align: center;
   user-select: none;
 }
-div.game-end-window.error-window > textarea.error {
+div.game-modal.error-window > textarea.error {
   position: absolute;
   background: #3f3f3f;
   color: white;
@@ -1807,7 +1819,7 @@ div.game-end-window.error-window > textarea.error {
   left: 0;
   white-space: pre;
 }
-div.game-end-window.error-window > button.dismiss-error {
+div.game-modal.error-window > button.dismiss-error {
   position: absolute;
   width: 100%;
   height: calc(1 * var(--tile-size));
@@ -1821,11 +1833,11 @@ div.game-end-window.error-window > button.dismiss-error {
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
 }
-div.game-end-window.error-window > button.dismiss-error:active {
+div.game-modal.error-window > button.dismiss-error:active {
   bottom: 0;
   filter: none;
 }
-div.game-end-window.error-window::before {
+div.game-modal.error-window::before {
   background: red;
 }
 
@@ -1895,7 +1907,7 @@ div.placement > div.placement-place::before {
 div.placement span.placement-score {
   margin-left: calc(0.5 * var(--tile-size));
 }
-div.scoreboard + a.goto-index-button {
+div.game-modal-container > a.goto-index-button {
   position: absolute;
   width: 100%;
   height: calc(1 * var(--tile-size));
@@ -1911,7 +1923,7 @@ div.scoreboard + a.goto-index-button {
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
 }
-div.scoreboard + a.goto-index-button:active {
+div.game-modal-container > a.goto-index-button:active {
   bottom: 0;
   filter: none;
 }

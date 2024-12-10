@@ -7,12 +7,14 @@ defmodule RiichiAdvancedWeb.ErrorWindowComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["game-end-window", "error-window", @error == nil && "inactive"]}>
-      <%= if @error != nil do %>
-        <h1>Error!</h1>
-        <textarea class="error" readonly><%= @error %></textarea>
-        <button class="dismiss-error" phx-click="dismiss_error" phx-target={@myself}>Dismiss</button>
-      <% end %>
+    <div class={["game-modal-container", @error == nil && "inactive"]}>
+      <div class="game-modal error-window">
+        <%= if @error != nil do %>
+          <h1>Error!</h1>
+          <textarea class="error" readonly><%= @error %></textarea>
+          <button class="dismiss-error" phx-click="dismiss_error" phx-target={@myself}>Dismiss</button>
+        <% end %>
+      </div>
     </div>
     """
   end
