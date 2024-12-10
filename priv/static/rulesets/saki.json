@@ -1622,14 +1622,14 @@
         ["multiply_counter", "iwadate_yuan_payment", 1000]
       ]],
       // count round winds and seat winds (only relevant for saki, who can call multiple west winds)
-      ["when", [{"name": "round_wind_is", "opts": ["east"]}], ["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]],
-      ["when", [{"name": "round_wind_is", "opts": ["south"]}], ["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]],
-      ["when", [{"name": "round_wind_is", "opts": ["west"]}], ["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]],
-      ["when", [{"name": "round_wind_is", "opts": ["north"]}], ["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]],
-      ["when", [{"name": "seat_is", "opts": ["east"]}], ["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]],
-      ["when", [{"name": "seat_is", "opts": ["south"]}], ["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]],
-      ["when", [{"name": "seat_is", "opts": ["west"]}], ["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]],
-      ["when", [{"name": "seat_is", "opts": ["north"]}], ["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]],
+      ["when", [{"name": "round_wind_is", "opts": ["east"]}], [["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]]],
+      ["when", [{"name": "round_wind_is", "opts": ["south"]}], [["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]]],
+      ["when", [{"name": "round_wind_is", "opts": ["west"]}], [["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]]],
+      ["when", [{"name": "round_wind_is", "opts": ["north"]}], [["add_counter", "round_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]]],
+      ["when", [{"name": "seat_is", "opts": ["east"]}], [["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]]],
+      ["when", [{"name": "seat_is", "opts": ["south"]}], [["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]]],
+      ["when", [{"name": "seat_is", "opts": ["west"]}], [["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]]],
+      ["when", [{"name": "seat_is", "opts": ["north"]}], [["add_counter", "seat_wind", "count_matches", ["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]]],
       // mase yuuko gets 1 han per 3 identical tiles in discards
       ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["add_counter", "mase_yuuko_han", "count_matches", ["pond"], [[[["koutsu"], 1]]]]]],
       // matano seiko gets 1/2/3 han for 2/3/4 triplets
