@@ -18,3 +18,8 @@ else
 end) as $wall
 |
 .wall = $wall
+|
+# skip sichuan voided suit prompt
+if (.buttons | has("void_souzu")) then
+  .after_charleston.actions += [["as", "everyone", [["unset_status", "round_start"], ["set_status", "void_manzu"]]]]
+else . end
