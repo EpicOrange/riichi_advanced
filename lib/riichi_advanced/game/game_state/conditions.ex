@@ -162,6 +162,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "no_discards_yet"             -> last_discard_action == nil
       "no_calls_yet"                -> last_call_action == nil
       "last_call_is"                -> last_call_action != nil && last_call_action.call_name in opts
+      # TODO replace with "as": keyword
       "kamicha_discarded"           -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat)
       "toimen_discarded"            -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat, 2)
       "shimocha_discarded"          -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == Utils.prev_turn(context.seat, 3)
@@ -522,7 +523,15 @@ defmodule RiichiAdvanced.GameState.Conditions do
       is_map(cond_spec)    ->
         context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context, cond_spec["as"])} else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
-      is_list(cond_spec)   -> Enum.any?(cond_spec, &check_cnf_condition(state, &1, context))
+      is_list(cond_spec)   ->
+        case cond_spec do
+          # at most n (but at least 1)
+          [n | cond_spec] when is_integer(n) ->
+            count = Enum.count(cond_spec, &check_cnf_condition(state, &1, context))
+            1 <= count && count <= n
+          # at most all (but at least 1)
+          _ -> Enum.any?(cond_spec, &check_cnf_condition(state, &1, context))
+        end
       true                 ->
         IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
         true
@@ -535,7 +544,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
       is_map(cond_spec)    ->
         context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context, cond_spec["as"])} else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
-      is_list(cond_spec)   -> Enum.all?(cond_spec, &check_dnf_condition(state, &1, context))
+      is_list(cond_spec)   ->
+        case cond_spec do
+          # at least n
+          [n | cond_spec] when is_integer(n) -> Enum.count(cond_spec, &check_dnf_condition(state, &1, context)) >= n
+          # at least all
+          _ -> Enum.all?(cond_spec, &check_dnf_condition(state, &1, context))
+        end
       true                 ->
         IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
         true

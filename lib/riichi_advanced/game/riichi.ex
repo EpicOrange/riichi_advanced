@@ -241,7 +241,7 @@ defmodule Riichi do
     # t = System.os_time(:millisecond)
     almost = "almost" in match_definition
     exhaustive = "exhaustive" in match_definition
-    ignore_suit = "ignore_suit" in match_definition
+    ignore_suit_ix = Enum.find_index(match_definition, & &1 == "ignore_suit")
     unique_ix = Enum.find_index(match_definition, & &1 == "unique")
     debug = "debug" in match_definition
     if almost && :any in hand do
@@ -259,6 +259,7 @@ defmodule Riichi do
       [] -> []
       hand_calls ->
         unique = unique_ix != nil && i > unique_ix
+        ignore_suit = ignore_suit_ix != nil && i > ignore_suit_ix
         case match_definition_elem do
           "restart" -> [{hand, calls}]
           [groups, num] ->
