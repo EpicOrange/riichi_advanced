@@ -239,7 +239,6 @@ defmodule RiichiAdvancedWeb.LogLive do
         dice_roll={@state.die1 + @state.die2}
         wall_index={@state.wall_index}
         revealed_tiles={@state.revealed_tiles}
-        dead_wall_offset={@state.dead_wall_offset}
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}

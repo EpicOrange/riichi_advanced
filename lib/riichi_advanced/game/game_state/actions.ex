@@ -90,7 +90,6 @@ defmodule RiichiAdvanced.GameState.Actions do
           {wall_tiles, dead_wall} = Enum.split(state.dead_wall, 1)
           state = Map.put(state, :wall, state.wall ++ wall_tiles)
           state = Map.put(state, :dead_wall, dead_wall)
-          state = Map.put(state, :dead_wall_offset, state.dead_wall_offset + 1)
           draw_tile(state, seat, num, tile_spec, to_aside)
         else
           IO.puts("#{seat} tried to draw a nil tile!")
@@ -357,7 +356,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering_r = state.players[context.seat].tile_ordering_r
         tile_aliases = state.players[context.seat].tile_aliases
         Enum.count(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
-      ["tiles_in_wall" | _opts] -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
+      ["tiles_in_wall" | _opts] -> length(state.wall) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
       ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[context.seat].pond, [:"1x"])

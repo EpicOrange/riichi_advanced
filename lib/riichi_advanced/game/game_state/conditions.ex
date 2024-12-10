@@ -225,10 +225,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
             (tile - length(state.dead_wall)) not in state.revealed_tiles
           else true end
         end)
-      "no_tiles_remaining"       -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index <= 0
-      "tiles_remaining"          -> length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index >= Enum.at(opts, 0, 0)
+      "no_tiles_remaining"       -> length(state.wall) - state.wall_index <= 0
+      "tiles_remaining"          -> length(state.wall) - state.wall_index >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->
-        draws_left = length(state.wall) - length(state.drawn_reserved_tiles) - state.wall_index
+        draws_left = length(state.wall) - state.wall_index
         case Utils.get_relative_seat(context.seat, state.turn) do
           :shimocha -> draws_left >= 3
           :toimen   -> draws_left >= 2

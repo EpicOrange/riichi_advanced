@@ -7,7 +7,6 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :dead_wall, [])
     socket = assign(socket, :wall_length, 136)
     socket = assign(socket, :wall_index, 0)
-    socket = assign(socket, :dead_wall_offset, 0)
     socket = assign(socket, :revealed_tiles, [])
     socket = assign(socket, :reserved_tiles, [])
     socket = assign(socket, :drawn_reserved_tiles, [])
@@ -70,8 +69,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
     # concatenate
     wall_spaces = List.duplicate(:"2x", assigns.wall_index)
-    dead_wall_spaces = List.duplicate(:"2x", assigns.dead_wall_offset)
-    live_wall_chunks = (wall_spaces ++ wall ++ dead_wall_spaces)
+    live_wall_chunks = (wall_spaces ++ wall)
     |> Enum.chunk_every(2)
     dead_wall_chunks = dead_wall
     |> Enum.reverse()
@@ -88,13 +86,13 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
     case num_players do
       3 ->
-        offset = -assigns.dice_roll - Integer.floor_div(-assigns.dead_wall_offset, 2)
-        wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, wall_length - assigns.dice_roll)
+        extra = rem(length(dead_wall), 2)
+        wall1 = Enum.take(final_wall, -assigns.dice_roll - extra) ++ Enum.take(final_wall, wall_length - assigns.dice_roll - extra)
         wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
-        wall3 = final_wall |> Enum.drop(2*wall_length + offset) |> Enum.take(wall_length)
+        wall3 = final_wall |> Enum.drop(2*wall_length - assigns.dice_roll) |> Enum.take(wall_length)
 
         # insert spacer for dead wall
-        dead_wall_length = -Integer.floor_div(-length(dead_wall), 2)
+        dead_wall_length = Integer.floor_div(length(dead_wall), 2)
         {wall1, wall3} = cond do
           assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall3, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
           assigns.wall_index >= length(assigns.wall) -> {wall1, wall3} # no spacer in wall1 if we drew into the dead wall
@@ -106,16 +104,16 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
         |> Enum.filter(& &1 in available_dirs)
         Enum.zip(turns, [wall1, wall2, wall3]) |> Map.new()
       4 ->
-        offset = -assigns.dice_roll - Integer.floor_div(-assigns.dead_wall_offset, 2)
-        wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, wall_length - assigns.dice_roll)
+        extra = rem(length(dead_wall), 2)
+        wall1 = Enum.take(final_wall, -assigns.dice_roll - extra) ++ Enum.take(final_wall, wall_length - assigns.dice_roll - extra)
         wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
         wall3 = final_wall |> Enum.drop(2*wall_length - assigns.dice_roll) |> Enum.take(wall_length)
-        wall4 = final_wall |> Enum.drop(3*wall_length + offset) |> Enum.take(wall_length)
-        # IO.inspect({length(assigns.dead_wall), dead_wall_chunks, wall4, wall1})
+        wall4 = final_wall |> Enum.drop(3*wall_length - assigns.dice_roll) |> Enum.take(wall_length)
+        # IO.inspect({length(assigns.dead_wall), length(live_wall_chunks), length(dead_wall_chunks), wall4, wall1})
         # IO.inspect({length(assigns.dead_wall), length(wall4), length(wall1)})
 
         # insert spacer for dead wall
-        dead_wall_length = -Integer.floor_div(-length(dead_wall), 2)
+        dead_wall_length = Integer.floor_div(length(dead_wall), 2)
         {wall1, wall4} = cond do
           assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall4, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
           assigns.wall_index >= length(assigns.wall) -> {wall1, wall4} # no spacer in wall1 if we drew into the dead wall

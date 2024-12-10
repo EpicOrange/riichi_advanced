@@ -110,7 +110,6 @@ defmodule Game do
     die1: 3,
     die2: 4,
     wall_index: 0,
-    dead_wall_offset: 0,
     haipai: [],
     actions: [],
     dead_wall: [],
@@ -429,7 +428,6 @@ defmodule RiichiAdvanced.GameState do
     end
     state = state
     |> Map.put(:wall_index, Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum())
-    |> Map.put(:dead_wall_offset, 0)
     |> update_all_players(&%Player{
          score: scores[&1],
          start_score: scores[&1],
