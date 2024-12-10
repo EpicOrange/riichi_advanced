@@ -41,6 +41,7 @@ defmodule RiichiAdvancedWeb.Router do
       live "/game/:ruleset/:id", GameLive
       live "/log", LogMenuLive
       live "/log/:id", LogLive
+      live "/about", AboutLive
     end
   end
 

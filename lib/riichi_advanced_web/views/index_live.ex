@@ -91,6 +91,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
       <div class="index-bottom-buttons">
+        <button phx-click="goto_about">About</button>
         <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank">Source</a></button>
         <button><a href="https://discord.gg/5QQHmZQavP" target="_blank">Discord</a></button>
         <button phx-click="goto_logs">Logs</button>
@@ -142,6 +143,11 @@ defmodule RiichiAdvancedWeb.IndexLive do
       end
       {:noreply, socket}
     end
+  end
+  
+  def handle_event("goto_about", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/about")
+    {:noreply, socket}
   end
   
   def handle_event("goto_logs", _assigns, socket) do

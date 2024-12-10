@@ -2272,6 +2272,8 @@ div#container > form {
   border-radius: calc(0.25 * var(--tile-size));
   transition: height 0.5s, top 0.5s;
   background: #5D9166;
+  color: white;
+  font-size: calc(0.5 * var(--tile-size));
   z-index: 2;
 }
 div#container > input.rulesets-expand-checkbox:checked ~ form {
@@ -2292,7 +2294,7 @@ div#container > form {
   flex-direction: column;
   align-items: space-around;
 }
-div#container > form, div#container > form * {
+div#container > form input, div#container > form button {
   font-size: calc(0.75 * var(--tile-size));
 }
 div#container > form > div.form-error {
@@ -2323,6 +2325,19 @@ div#container > form > div.ruleset-selection > label > a {
 div#container > form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
 }
+/* about page */
+div#container > form > ul.beta-testers {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  box-sizing: border-box;
+  list-style-type: none;
+  padding: 0;
+  margin: 0.5em;
+  user-select: text;
+}
+div#container > form > ul.beta-testers > li { padding: 0.1em 0.25em; }
+div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
 
 /* enter buttons for index and lobby */
 div.enter-buttons {
