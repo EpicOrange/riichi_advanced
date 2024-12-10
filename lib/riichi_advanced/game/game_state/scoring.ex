@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       |> Enum.map(fn name -> {name, yaku_map[name]} end)
     if Map.has_key?(state.rules, "yaku_precedence") do
       excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(state.rules["yaku_precedence"], name, []) end)
-      Enum.reject(eligible_yaku, fn {name, _value} -> name in excluded_yaku end)
+      Enum.reject(eligible_yaku, fn {name, value} -> name in excluded_yaku || value in excluded_yaku end)
     else eligible_yaku end
   end
 

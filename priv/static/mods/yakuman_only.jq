@@ -1,14 +1,14 @@
-def add_yakuman_condition($type; $has_kazoe):
+def add_yakuman_condition($check; $has_kazoe):
   if $has_kazoe then
     [
       [
-        {"name": $type, "opts": [1, ["yaku"]]},
-        {"name": $type, "opts": [13, ["yaku", "extra_yaku"]]}
+        {"name": $check, "opts": [1, ["yaku"]]},
+        {"name": $check, "opts": [13, ["yaku", "extra_yaku"]]}
       ],
-      {"name": $type, "opts": [1, ["yakuman"]]}
+      {"name": $check, "opts": [1, ["yakuman"]]}
     ]
   else
-    {"name": $type, "opts": [1, ["yakuman"]]}
+    {"name": $check, "opts": [1, ["yakuman"]]}
   end;
 
 any(.score_calculation.limit_thresholds[]; .[0] >= 13) as $has_kazoe

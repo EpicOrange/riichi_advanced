@@ -173,6 +173,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "someone_else_just_discarded" -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn != context.seat
       "just_discarded"              -> last_action != nil && last_action.action == :discard && last_action.seat == state.turn && state.turn == context.seat
       "just_called"                 -> last_action != nil && last_action.action == :call && last_action.seat == state.turn
+      "just_self_called"            -> last_action != nil && last_action.action == :call && last_action.seat == state.turn && last_action.from == state.turn
       "call_available"              -> last_action != nil && last_action.action == :discard && Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [last_action.tile], cxt_player.tile_aliases, cxt_player.tile_mappings)
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]) ++ Utils.add_attr(cxt_player.draw, ["hand"]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [], cxt_player.tile_aliases, cxt_player.tile_mappings)
       "can_upgrade_call"            -> cxt_player.calls
@@ -310,6 +311,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           name          -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end)
         end end)
       "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
+      "has_points"              -> Enum.sum(Enum.map(context.existing_yaku, fn {_name, value} -> value end)) >= Enum.at(opts, 0, 1)
       "placement"               ->
         placements = get_placements(state)
         Enum.any?(opts, &Enum.at(placements, &1 - 1) == context.seat)

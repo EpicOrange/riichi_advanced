@@ -1,6 +1,6 @@
-def add_aka_status($actions; $type):
+def add_aka_status($actions; $check):
   [
-    ["when", [{"name": "match", "opts": [["hand", "calls", $type], [[[["0t"], 1]]]]}], [["set_status", "aka_t"]]]
+    ["when", [{"name": "match", "opts": [["hand", "calls", $check], [[[["0t"], 1]]]]}], [["set_status", "aka_t"]]]
   ] + $actions;
 
 .wall += [

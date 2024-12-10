@@ -8,16 +8,9 @@
   // The major design goal is to be able to play any variant of mahjong out
   // there -- Hong Kong, American, Saki-power-infused mahjong.
 
-  // I am in the process of writing comprehensive documentation for this
-  // thing, but it might take a while before documentation is out.
-
-  // Currently there is no way to user-submit a custom ruleset other than
-  // sending it to me on Discord. Feel free to do that, by the way! For the
-  // most part, all I need is the tiles, the scoring method, and the yaku.
-
   "default_mods": [
     "dora", "ura", "kandora", "aka",
-    "ippatsu",
+    "yaku/ippatsu",
     "nagashi",
     "tobi",
     "suufon_renda",
@@ -25,7 +18,7 @@
     "suukaikan",
     "agarirenchan", "tenpairenchan",
     "kyuushu_kyuuhai",
-    "renhou", "pao",
+    "yaku/renhou_yakuman", "pao",
     "show_waits"
   ],
   "available_mods": [
@@ -44,7 +37,6 @@
     {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
     {"id": "drawless_riichi", "name": "Drawless Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
-    {"id": "open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
     {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
@@ -69,14 +61,41 @@
     {"id": "aka", "conflicts": ["chinitsu"], "name": "Aka", "desc": "Enables aka dora (red fives)."},
     {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
     "Yaku",
-    {"id": "ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
-    {"id": "renhou", "name": "Renhou", "desc": "Enable renhou yakuman."},
-    {"id": "tsubame_gaeshi", "name": "Tsubame Gaeshi", "desc": "Local yaku. 1 han if you win off a riichi declaration discard."},
-    {"id": "shiiaru_raotai", "name": "Shiiaru Raotai", "desc": "Local yaku. 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."},
-    {"id": "kanburi", "name": "Kanburi", "desc": "Local yaku. 1 han if you win off the tile discarded by a player who just called kan."},
-    {"id": "sanrenkou", "name": "Sanrenkou", "desc": "Local yaku. 2 han for having three triplets of the same suit in sequence, like 222,333,444."},
-    {"id": "uumensai", "name": "Uumensai", "desc": "Local yaku. 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."},
-    {"id": "paarenchan", "name": "Paarenchan", "desc": "The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak."},
+    // 1 han
+    {"id": "yaku/ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu."},
+    {"id": "yaku/tsubame_gaeshi", "name": "Tsubame Gaeshi", "desc": "Local yaku. 1 han if you win off a riichi declaration discard."},
+    {"id": "yaku/shiiaru_raotai", "name": "Shiiaru Raotai", "desc": "Local yaku. 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."},
+    {"id": "yaku/kanburi", "name": "Kanburi", "desc": "Local yaku. 1 han if you win off the tile discarded by a player who just called kan."},
+    {"id": "yaku/honors_chiitoitsu", "name": "Honors Chiitoitsu", "desc": "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds."},
+    {"id": "yaku/uushin_tsuukan", "name": "Uushin Tsuukan", "desc": "Local yaku. 1 han on top of ittsu if your winning tile is the 5 needed for ittsu."},
+    // 2 han
+    {"id": "yaku/open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
+    {"id": "yaku/sanrenkou", "name": "Sanrenkou", "desc": "Local yaku. 2 han for having three triplets of the same suit in sequence, like 222,333,444."},
+    {"id": "yaku/sanshoku_ittsu", "name": "Sanshoku Ittsu", "desc": "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."},
+    {"id": "yaku/kyandonhou", "name": "Kyandonhou", "desc": "Local yaku. A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."},
+    {"id": "yaku/ryandoukou", "name": "Ryandoukou", "desc": "Local yaku. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."},
+    {"id": "yaku/shoutate", "name": "Shoutate", "desc": "Local yaku. 2 han for having sanshoku doukou, except one of the triplets is a pair."},
+    {"id": "yaku/choupaikou", "name": "Choupaikou etc.", "desc": "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."},
+    {"id": "yaku/suuzuukou", "name": "Suuzuukou", "desc": "Local yaku. 2 han for having four honor tile triplets."},
+    {"id": "yaku/uumensai", "name": "Uumensai", "desc": "Local yaku. 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."},
+    {"id": "yaku/sanpuukou", "name": "Sanpuukou", "desc": "Local yaku. 2 han if you have three wind triplets."},
+    {"id": "yaku/renkaihou", "name": "Renkaihou", "desc": "Local yaku. 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."},
+    // 3 han
+    {"id": "yaku/isshoku_sanjun", "name": "Isshoku Sanjun", "desc": "Local yaku. 3 han if you have three of the exact same sequence in one suit, like 123m 123m 123m. Does not stack with iipeikou or sanrenkou."},
+    {"id": "yaku/ittsu_chanta", "name": "Ittsu Chanta", "desc": "Local yaku. 2 han if you have ittsu, and if you ignore the 456, you have chanta (3 han if junchan). +1 han if closed. Does not stack with ittsu."},
+    {"id": "yaku/tanfonhou", "name": "Tanfonhou", "desc": "Local yaku. 2 han if your hand contains no red. This means you can have only 248p23468s and honors except red dragon. 5 han intead (chintanfon) if no honor tiles, +1 han if closed."},
+    {"id": "yaku/chinpeikou", "name": "Chinpeikou", "desc": "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits). Honor tile pairs are permitted (despite 'chin' being in the name)."},
+    "Mangan",
+    {"id": "yaku/renhou_mangan", "conflicts": ["yaku/renhou_yakuman"], "name": "Renhou Mangan", "desc": "Enable renhou mangan."},
+    {"id": "yaku/kinkei_dokuritsu", "name": "Kinkei Dokuritsu", "desc": "Local yaku. Mangan if you are waiting on 1s (bird tile) with four calls (open or closed)."},
+    {"id": "yaku/touchao_hanchanshue", "name": "Touchao Hanchanshue", "desc": "Local yaku. Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."},
+    {"id": "yaku/uupin_kaihou", "name": "Uupin Kaihou", "desc": "Local yaku. Mangan if you win with rinshan on the 5p (5 circles)."},
+    {"id": "yaku/ryanzou_chankan", "name": "Ryanzou Chankan", "desc": "Local yaku. Mangan if you win with chankan on the 2s (2 bamboo)."},
+    {"id": "yaku/iipin_mouyue", "name": "Iipin Mouyue", "desc": "Local yaku. Mangan if you win with haitei (not houtei) on the 1p (1 circles)."},
+    {"id": "yaku/chuupin_raoyui", "name": "Chuupin Raoyui", "desc": "Local yaku. Mangan if you win with houtei (not haitei) on the 9p (9 circles)."},
+    "Yakuman",
+    {"id": "yaku/renhou_yakuman", "conflicts": ["yaku/renhou_mangan"], "name": "Renhou Yakuman", "desc": "Enable renhou yakuman."},
+    {"id": "yaku/paarenchan", "name": "Paarenchan", "desc": "The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
@@ -387,8 +406,8 @@
     { "display_name": "Chinitsu", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "has_existing_yaku", "opts": ["Chinitsu"]}] }
   ],
   "yakuman": [
-    { "display_name": "Tenhou", "value": 1, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Chiihou", "value": 1, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
+    { "display_name": "Tenhou", "value": 1, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Chiihou", "value": 1, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
     { "display_name": "Daisangen", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}] },
     {
       "display_name": "Suuankou",
@@ -500,8 +519,8 @@
       ["ite", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]], [["unset_status", "tenpai"]]]
     ],
     "discard_passed": [
-      // unset temporary statuses from everyone
-      ["unset_status_all", "just_reached", "call_made", "kan"],
+      // unset temporary statuses from others
+      ["as", "others", [["just_reached", "unset_status", "kan"]]],
       // furiten check
       ["when_anyone",
         [[
@@ -543,7 +562,7 @@
     ]
   },
   "before_call": {
-    "actions": [["run", "turn_cleanup"], ["set_status_all", "call_made"]]
+    "actions": [["run", "turn_cleanup"], ["unset_status_all", "discards_empty"]]
   },
   "after_call": {
     "actions": [["run", "discard_passed"]]

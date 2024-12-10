@@ -1157,7 +1157,8 @@
       ["unset_status", "discard_passed", "ready", "just_reached", "just_iishantened", "just_changed_atago_kinue_aside_waits", "just_called", "call_made", "chii", "pon", "kan", "ankan", "daiminkan", "discard_facedown", "onjouji_toki_drew", "shirouzu_mairu_drew", "inoue_jun_broke_ippatsu", "just_swapped", "call_interrupted", "swap_interrupted", "motouchi_naruka_skip_interrupt", "suehara_kyouko_set_aside", "kajiki_yumi_facedown_done", "oohoshi_awai_done"],
       ["unset_status_all", "yae_kobashiri_skip", "tsujigaito_satoha_scryed", "just_scryed"],
       ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
-      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]]
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]],
+      ["unset_status_all", "discards_empty"]
     ]
   },
   "after_call": {
@@ -1315,7 +1316,6 @@
       ["when", [{"name": "everyone_status", "opts": ["suufonrenda_4z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
     ]]]],
     ["tanyaohai", [["unset_status", "nagashi"]]],
-    ["any", [["unset_status", "discards_empty"]]],
     ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takimi Haru: extra turn!"],

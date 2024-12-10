@@ -475,9 +475,9 @@
     { "display_name": "Kanburi", "value": 1, "when": ["won_by_discard", {"name": "discarder_status", "opts": ["kan"]}] },
     { "display_name": "Fuunburi", "value": 1, "when": ["won_by_discard", {"name": "discarder_status", "opts": ["fuun"]}] },
     { "display_name": "Tsubame Gaeshi", "value": 1, "when": ["won_by_discard", {"name": "discarder_status", "opts": ["just_reached"]}] },
-    { "display_name": "Tenhou", "value": 13, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Chiihou", "value": 13, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
-    { "display_name": "Renhou", "value": 13, "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "status_missing", "opts": ["call_made"]}, "won_by_discard"] },
+    { "display_name": "Tenhou", "value": 13, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Chiihou", "value": 13, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
+    { "display_name": "Renhou", "value": 13, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_discard"] },
     { "display_name": "Daisangen", "value": 13, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}] },
     {
       "display_name": "Suuankou",
@@ -675,8 +675,8 @@
       ["ite", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]], [["unset_status", "tenpai"]]]
     ],
     "discard_passed": [
-      // unset temporary statuses from everyone
-      ["unset_status_all", "just_reached", "call_made", "kan", "fuun"],
+      // unset temporary statuses from others
+      ["as", "others", [["unset_status", "just_reached", "kan", "fuun"]]],
       // furiten check
       ["when_anyone",
         [[
@@ -718,14 +718,11 @@
     ]
   },
   "before_call": {
-    "actions": [["run", "turn_cleanup"]]
+    "actions": [["run", "turn_cleanup"], ["set_status_all", "call_made"], ["unset_status_all", "discards_empty"]]
   },
   "after_call": {
     "actions": [["run", "discard_passed"]]
   },
-  "play_effects": [
-    ["any", [["unset_status", "discards_empty"]]]
-  ],
   "after_start": {
     "actions": [
       ["set_status_all", "discards_empty"],
