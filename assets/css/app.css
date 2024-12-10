@@ -2244,6 +2244,7 @@ div.title > div.title-advanced::before {
 div#container > input.rulesets-expand-checkbox + label {
   position: absolute;
   border-radius: 50%;
+  font-size: calc(0.6 * var(--tile-size));
   width: calc(1 * var(--tile-size));
   aspect-ratio: 1/1;
   right: calc(0.5 * var(--tile-size));
@@ -2362,6 +2363,7 @@ div.room-code-modal {
   left: calc(0.75 * var(--tile-size));
   width: calc(14.5 * var(--tile-size));
   height: calc(7 * var(--tile-size));
+  z-index: 5;
 }
 div.room-code-modal > div.room-code-display {
   display: inline-block;
