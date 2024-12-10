@@ -338,12 +338,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
         ordering_r = cxt_player.tile_ordering_r
         tile_aliases = cxt_player.tile_aliases
         tile_mappings = cxt_player.tile_mappings
-        waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+        waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, ordering, ordering_r, [], tile_aliases, tile_mappings), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
             call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
-            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, ordering, ordering_r, tile_aliases)
+            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
             # IO.puts("waits after call: #{inspect(waits_after_call)}")
@@ -377,7 +377,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_aliases = cxt_player.tile_aliases
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+        waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
         length(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
@@ -387,7 +387,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_aliases = cxt_player.tile_aliases
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+        waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
         length(waits) <= number
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))

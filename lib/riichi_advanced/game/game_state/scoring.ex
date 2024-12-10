@@ -494,7 +494,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       delta_scores = if "use_arakawa_kei_scoring" in winner.player.status do
         win_definitions = translate_match_definitions(state, ["win"])
         visible_tiles = get_visible_tiles(state, winner.seat)
-        waits = Riichi.get_waits_and_ukeire(state.all_tiles, visible_tiles, winner.hand, winner.calls, win_definitions, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+        waits = Riichi.get_waits_and_ukeire(winner.hand, winner.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
         if "arakawa-kei" in winner.player.status do
           # everyone pays winner 100 points per live out
           ukeire = waits |> Map.values() |> Enum.sum()
@@ -550,7 +550,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
               win_definitions = translate_match_definitions(state, ["win"])
-              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) ++ [:"2x"]
+              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, state.all_tiles, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) ++ [:"2x"]
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
                 winner = calculate_winner_details(state, seat, waits, :discard, true)
@@ -721,7 +721,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             state ->
               # calculate possible waits
               winner = state.players[seat]
-              waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases) ++ [:"2x"]
+              waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases) ++ [:"2x"]
 
               # calculate new winner object
               state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored

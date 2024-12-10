@@ -95,7 +95,7 @@ defmodule Game do
     players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
     rules: %{},
     interruptible_actions: %{},
-    all_tiles: [],
+    all_tiles: MapSet.new(),
     wall: [],
     kyoku: 0,
     honba: 0,
@@ -309,7 +309,7 @@ defmodule RiichiAdvanced.GameState do
     {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
       wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
-      all_tiles = wall |> Enum.uniq() |> Utils.sort_tiles()
+      all_tiles = MapSet.new(wall)
 
       # check that there are no nil tiles
       state = wall
@@ -390,7 +390,7 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.reverse()
       dead_wall = dead_wall ++ kyoku_log["kan_tiles"]
       |> Enum.map(&Utils.to_tile/1)
-      all_tiles = (wall ++ dead_wall) |> Enum.uniq() |> Utils.sort_tiles()
+      all_tiles = MapSet.new(wall ++ dead_wall)
       reserved_tiles = Map.get(rules, "reserved_tiles", [])
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
@@ -920,7 +920,7 @@ defmodule RiichiAdvanced.GameState do
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
     visible_tiles = get_visible_tiles(state, seat)
-    Riichi.get_waits_and_ukeire(state.wall, visible_tiles, hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, ordering, ordering_r, tile_aliases)
   end
 
   def push_message(state, message) do
@@ -1235,7 +1235,7 @@ defmodule RiichiAdvanced.GameState do
         if Buttons.no_buttons_remaining?(state) do
           if is_pid(Map.get(state, state.turn)) do
             # IO.puts("Notifying #{state.turn} AI that it's their turn")
-            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn], all_tiles: state.all_tiles, visible_tiles: get_visible_tiles(state, state.turn)}})
+            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn], wall: state.wall ++ state.dead_wall, visible_tiles: get_visible_tiles(state, state.turn)}})
           end
         else
           Enum.each(state.available_seats, fn seat ->

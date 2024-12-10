@@ -8,14 +8,6 @@ defmodule Riichi do
 
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
 
-  # TODO remove this, replace with wall - joker tiles
-  @all_tiles [
-    :"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m",
-    :"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p",
-    :"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s",
-    :"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"
-  ]
-
   def _offset_tile(tile, n, order, order_r) do
     if tile != nil do
       cond do
@@ -481,28 +473,26 @@ defmodule Riichi do
     end)
   end
 
-  # TODO move wall to front, remove @all_tiles
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
-  def get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, wall \\ @all_tiles, skip_tenpai_check \\ false) do
+  def get_waits(hand, calls, match_definitions, all_tiles, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
     # t = System.os_time(:millisecond)
 
     # only check for waits if we're tenpai
     ret = if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
       filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
       hand_calls_def = partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
-      for tile <- Enum.uniq(wall), reduce: [] do
+      for tile <- all_tiles, reduce: MapSet.new() do
         waits -> if tile in waits do waits else
           tile_aliases = if tile_aliases[tile] != nil do
             Map.put(filtered_tile_aliases, tile, tile_aliases[tile])
           else tile_aliases end
           if is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) do
-            other_waits = [tile | Map.get(tile_aliases, tile, [])]
-            waits ++ other_waits
+            MapSet.union(waits, MapSet.new([tile | Map.get(tile_aliases, tile, [])]))
           else waits end
-        end |> Enum.uniq()
+        end
       end
-    else [] end
+    else MapSet.new() end
 
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
@@ -512,19 +502,19 @@ defmodule Riichi do
     ret
   end
 
-  def _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases, skip_tenpai_check) do
-    waits = get_waits(hand, calls, match_definitions, ordering, ordering_r, tile_aliases, wall, skip_tenpai_check)
+  defp _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, ordering, ordering_r, tile_aliases, skip_tenpai_check) do
+    waits = get_waits(hand, calls, match_definitions, MapSet.new(wall), ordering, ordering_r, tile_aliases, skip_tenpai_check)
     # remove irrelevant statuses
     |> Utils.remove_attr(["draw", "discard"])
     freqs = Enum.frequencies(wall -- visible_tiles)
     Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
   end
 
-  def get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
-    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, wall, visible_tiles, hand, calls, match_definitions, ordering, tile_aliases}) do
+  def get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
+    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, hand, calls, match_definitions, wall, visible_tiles, ordering, tile_aliases}) do
       [] -> 
-        result = _get_waits_and_ukeire(wall, visible_tiles, hand, calls, match_definitions, ordering, ordering_r, tile_aliases, skip_tenpai_check)
-        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, wall, visible_tiles, hand, calls, match_definitions, ordering, tile_aliases}, result)
+        result = _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, ordering, ordering_r, tile_aliases, skip_tenpai_check)
+        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, hand, calls, match_definitions, wall, visible_tiles, ordering, tile_aliases}, result)
         result
       [result] -> result
     end
@@ -749,9 +739,7 @@ defmodule Riichi do
     |> Enum.flat_map(&call_to_tiles/1)
     
     starting_hand = starting_hand ++ ton_tiles |> Utils.strip_attrs()
-    standard_length = length(starting_hand) in [1, 4, 7, 10, 13]
-    winning_tiles = if standard_length do apply_tile_aliases([winning_tile], tile_aliases) else @all_tiles end |> Utils.strip_attrs() |> Enum.uniq()
-    starting_hand = if standard_length do starting_hand else starting_hand ++ [winning_tile] end
+    winning_tiles = apply_tile_aliases([winning_tile], tile_aliases) |> Utils.strip_attrs() |> Enum.uniq()
     # initial fu
     fu = case win_source do
       :draw -> 22
