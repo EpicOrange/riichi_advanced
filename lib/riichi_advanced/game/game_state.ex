@@ -1303,7 +1303,7 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         if is_pid(Map.get(state, seat)) && seat == state.turn do
           # IO.puts("Notifying #{seat} AI that it's their turn")
-          send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], all_tiles: state.all_tiles, visible_tiles: get_visible_tiles(state, seat)}})
+          send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], wall: state.wall ++ state.dead_wall, visible_tiles: get_visible_tiles(state, seat)}})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:ai_ignore_buttons, seat}])
