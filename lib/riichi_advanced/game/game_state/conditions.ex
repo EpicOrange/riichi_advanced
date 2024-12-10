@@ -115,7 +115,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
   end
 
   def from_seats_spec(state, context, seat_spec) do
-    case seat_spec do
+    negated = String.starts_with?(seat_spec, "not_")
+    seat_spec = if negated do String.slice(seat_spec, 4..-1//1) else seat_spec end
+    seats = case seat_spec do
       "all" -> state.available_seats
       "everyone" -> state.available_seats
       "others" -> state.available_seats -- [context.seat]
@@ -131,6 +133,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       _ when is_list(seat_spec) -> Enum.flat_map(seat_spec, &from_seats_spec(state, context, &1)) |> Enum.uniq()
       _ -> [from_seat_spec(state, context, seat_spec)]
     end
+    if negated do state.available_seats -- seats else seats end
   end
 
   def get_placements(state) do
