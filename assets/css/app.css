@@ -2190,7 +2190,7 @@ div.title {
 }
 div.title > div {
   position: absolute;
-  z-index: 2;
+  z-index: 1;
   display: inline-block;
 }
 div.title > div.title-riichi {
@@ -2241,6 +2241,26 @@ div.title > div.title-advanced::before {
   z-index: -1;
 }
 
+div#container > input.rulesets-expand-checkbox + label {
+  position: absolute;
+  border-radius: 50%;
+  width: calc(1 * var(--tile-size));
+  aspect-ratio: 1/1;
+  right: calc(0.5 * var(--tile-size));
+  top: calc(5.875 * var(--tile-size));
+  border: none;
+  padding: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: top 0.5s;
+}
+div#container > input.rulesets-expand-checkbox:checked + label {
+  top: calc(0.375 * var(--tile-size));
+}
+div#container > input.rulesets-expand-checkbox + label::before { content: "+"; }
+div#container > input.rulesets-expand-checkbox:checked + label::before { content: "–"; }
 div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
@@ -2249,7 +2269,13 @@ div#container > form {
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  background: #FFFFFF3F;
+  transition: height 0.5s, top 0.5s;
+  background: #5D9166;
+  z-index: 2;
+}
+div#container > input.rulesets-expand-checkbox:checked ~ form {
+  height: calc(13 * var(--tile-size));
+  top: calc(50% - 7 * var(--tile-size));
 }
 div#container > div.index-bottom-buttons {
   position: absolute;

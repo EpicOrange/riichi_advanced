@@ -60,12 +60,15 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="tile 8m"></div>
         <div class="tile 7z"></div>
       </div>
+      <input type="checkbox" id="rulesets-expand-checkbox" class="rulesets-expand-checkbox" phx-update="ignore"/>
+      <label for="rulesets-expand-checkbox"/>
       <form phx-submit="redirect">
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
             <label for={ruleset} title={desc}><%= name %></label>
           <% end %>
+          <br/>
           To be implemented:
           <%= for {ruleset, name, desc, link} <- @unimplemented_rulesets do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
