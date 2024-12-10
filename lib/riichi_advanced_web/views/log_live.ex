@@ -191,7 +191,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         seat={@seat}
         viewer={@viewer}
         turn={@state.turn}
-        tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
+        tiles_left={length(@state.wall) - @state.wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
         riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}

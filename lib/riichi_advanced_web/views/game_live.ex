@@ -162,7 +162,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         seat={@seat}
         viewer={@viewer}
         turn={@state.turn}
-        tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
+        tiles_left={length(@state.wall) - @state.wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
         riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
@@ -306,7 +306,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.CenterpieceStatusBarComponent}
           id="centerpiece-status-bar"
-          tiles_left={length(@state.wall) - @state.wall_index - length(@state.drawn_reserved_tiles)}
+          tiles_left={length(@state.wall) - @state.wall_index}
           honba={@state.honba}
           riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
           display_riichi_sticks={@display_riichi_sticks}
