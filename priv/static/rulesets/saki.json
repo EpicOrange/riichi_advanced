@@ -1012,7 +1012,7 @@
       ["when_anyone", [{"name": "status", "opts": ["fukuji-mihoko", "placement_updated"]}], [
         ["when", [{"name": "status", "opts": ["4th_place"]}], [
           // open other players' hands
-          ["set_status_others", "reveal_all"],
+          ["as", "others", [["set_status", "reveal_all"]]],
           ["push_message", "reveals other players' hands due to being 4th place (Fukuji Mihoko)"],
           ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
         ]],
@@ -1146,9 +1146,9 @@
   },
   "before_call": {
     "actions": [
-      ["set_caller_status", "is_caller"],
+      ["as", "caller", [["set_status", "is_caller"]]],
       ["when_anyone", [{"name": "status", "opts": ["is_caller"]}, {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["set_status", "was_closed_hand"]]],
-      ["unset_caller_status", "is_caller"],
+      ["as", "caller", [["unset_status", "is_caller"]]],
       ["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]],
       ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
       ["when", [{"name": "status", "opts": ["kan"]}, {"name": "not_status", "opts": ["ankan"]}, {"name": "tile_revealed", "opts": [-18]}, {"name": "tile_not_revealed", "opts": [-20]}], [["ensure_dead_wall_2"], ["reveal_tile", -20]]],
@@ -1182,8 +1182,8 @@
         ]],
         [["set_status", "furiten"]]
       ],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
       ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
       ["when_anyone", [{"name": "status", "opts": ["atago-kinue"]}, "not_no_tiles_remaining"], [
         ["draw_aside"],
@@ -1446,7 +1446,7 @@
       ["when", [{"name": "status", "opts": ["mase-yuuko"]}], [["set_tile_ordering", ["9m", "1m"]], ["set_tile_ordering", ["9p", "1p"]], ["set_tile_ordering", ["9s", "1s"]]]],
       ["when", [{"name": "status", "opts": ["senoo-kaori", "mase-yuuko"]}], [["set_tile_ordering", ["4z", "1z"]], ["set_tile_ordering", ["7z", "5z"]]]],
       ["when", [{"name": "status", "opts": ["arakawa-kei"]}], [["set_status_all", "use_arakawa_kei_scoring"]]],
-      ["when", [{"name": "status", "opts": ["motouchi-naruka"]}], [["set_status", "motouchi_naruka_increase_tsumo_payment"], ["set_status_others", "motouchi_naruka_decrease_tsumo_payment"]]],
+      ["when", [{"name": "status", "opts": ["motouchi-naruka"]}], [["set_status", "motouchi_naruka_increase_tsumo_payment"], ["as", "others", [["set_status", "motouchi_naruka_decrease_tsumo_payment"]]]]],
       ["when", [{"name": "status", "opts": ["iwadate-yuan"]}], [["add_counter", "iwadate_yuan_payment", 0]]],
       ["when", [
         {"name": "status", "opts": ["iwadate-yuan"]},
@@ -1459,7 +1459,7 @@
       ["when", [{"name": "status", "opts": ["hanada-kirame"]}, {"name": "status_missing", "opts": ["hanada-kirame_exhausted"]}], [["set_status", "hanada_kirame_score_protection"]]],
       ["when", [{"name": "status", "opts": ["ezaki-hitomi"]}], [["set_status", "ezaki_hitomi_reflect"]]],
       ["when", [{"name": "status", "opts": ["fukuji-mihoko"]}, {"name": "placement", "opts": [4]}], [
-        ["set_status_others", "reveal_all"],
+        ["as", "others", [["set_status", "reveal_all"]]],
         ["push_message", "reveals other players' hands due to being 4th place (Fukuji Mihoko)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_all"]}], [["add_attr", ["hand", "draw"], ["revealed"]]]]
       ]],
@@ -1704,11 +1704,11 @@
       // atago hiroe damaten doesn't have to pay for tsumo
       ["when_anyone", [{"name": "status", "opts": ["atago-hiroe", "tenpai"]}, {"name": "status_missing", "opts": ["riichi"]}], [["set_status", "atago_hiroe_no_tsumo_payment"]]],
       // maya yukiko gets double tsumo payment from players they call chii from
-      ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["set_status_chii_victims", "double_tsumo_payment"]]],
+      ["when", [{"name": "status", "opts": ["maya-yukiko"]}, "won_by_draw"], [["as", "chii_victims", [["set_status", "double_tsumo_payment"]]]]],
       // nelly virsaladze dealing in means they take all bets on board
       // TODO implement this without hardcoding
-      ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["nelly-virsaladze"]}], [["set_discarder_status", "nelly_virsaladze_take_bets"]]],
-      ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["set_caller_status", "nelly_virsaladze_take_bets"]]],
+      ["when", ["won_by_discard", {"name": "discarder_status", "opts": ["nelly-virsaladze"]}], [["as", "last_discarder", [["set_status", "nelly_virsaladze_take_bets"]]]]],
+      ["when", ["won_by_call", {"name": "caller_status", "opts": ["nelly-virsaladze"]}], [["as", "caller", [["set_status", "nelly_virsaladze_take_bets"]]]]],
       // tsujigaito satoha gets double score under threat of ippatsu
       ["when", [{"name": "status", "opts": ["tsujigaito-satoha"]}, {"name": "others_status", "opts": ["ippatsu"]}], [["set_status", "tsujigaito_satoha_double_score"]]],
       // handle ezaki hitomi's ability
@@ -2443,7 +2443,7 @@
       ],
       "actions": [
         ["set_status", "declare_manzu"],
-        ["set_status_others", "reveal_manzu"],
+        ["as", "others", [["set_status", "reveal_manzu"]]],
         ["push_message", "declared that all manzu must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_manzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["manzu"]]]]
       ],
@@ -2459,7 +2459,7 @@
       ],
       "actions": [
         ["set_status", "declare_pinzu"],
-        ["set_status_others", "reveal_pinzu"],
+        ["as", "others", [["set_status", "reveal_pinzu"]]],
         ["push_message", "declared that all pinzu must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_pinzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["pinzu"]]]]
       ],
@@ -2475,7 +2475,7 @@
       ],
       "actions": [
         ["set_status", "declare_souzu"],
-        ["set_status_others", "reveal_souzu"],
+        ["as", "others", [["set_status", "reveal_souzu"]]],
         ["push_message", "declared that all souzu must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_souzu"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["souzu"]]]]
       ],
@@ -2491,7 +2491,7 @@
       ],
       "actions": [
         ["set_status", "declare_jihai"],
-        ["set_status_others", "reveal_jihai"],
+        ["as", "others", [["set_status", "reveal_jihai"]]],
         ["push_message", "declared that all jihai must be revealed (Iwato Kasumi)"],
         ["when_anyone", [{"name": "status", "opts": ["reveal_jihai"]}], [["add_attr", ["hand", "draw", "aside"], ["revealed"], ["jihai"]]]]
       ],
@@ -2626,7 +2626,7 @@
         ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
         ["unset_status", "iishanten"],
         ["draw_last_discard"],
-        ["set_discarder_status", "double_payment"],
+        ["as", "last_discarder", [["set_status", "double_payment"]]],
         ["change_turn", "self"],
         ["set_status", "ready", "riichi", "just_reached", "ippatsu"],
         ["when", [{"name": "others_status", "opts": ["riichi"]}], [["set_status", "chasing"]]],
@@ -3050,8 +3050,8 @@
       ],
       "actions": [
         ["set_status", "funakubo_hiroko_swapping"],
-        ["set_shimocha_status", "swap_shimocha"],
-        ["set_toimen_status", "swap_kamicha"],
+        ["as", "shimocha", [["set_status", "swap_shimocha"]]],
+        ["as", "toimen", [["set_status", "swap_kamicha"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "ordered south and west to swap three tiles with each other (Funakubo Hiroko)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "ordered west and north to swap three tiles with each other (Funakubo Hiroko)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "ordered north and east to swap three tiles with each other (Funakubo Hiroko)"]]],
@@ -3076,8 +3076,8 @@
       ],
       "actions": [
         ["set_status", "funakubo_hiroko_swapping"],
-        ["set_shimocha_status", "swap_toimen"],
-        ["set_kamicha_status", "swap_toimen"],
+        ["as", "shimocha", [["set_status", "swap_toimen"]]],
+        ["as", "kamicha", [["set_status", "swap_toimen"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "ordered south and north to swap three tiles with each other (Funakubo Hiroko)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "ordered west and east to swap three tiles with each other (Funakubo Hiroko)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "ordered north and south to swap three tiles with each other (Funakubo Hiroko)"]]],
@@ -3102,8 +3102,8 @@
       ],
       "actions": [
         ["set_status", "funakubo_hiroko_swapping"],
-        ["set_toimen_status", "swap_shimocha"],
-        ["set_kamicha_status", "swap_kamicha"],
+        ["as", "toimen", [["set_status", "swap_shimocha"]]],
+        ["as", "kamicha", [["set_status", "swap_kamicha"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "ordered west and north to swap three tiles with each other (Funakubo Hiroko)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "ordered north and east to swap three tiles with each other (Funakubo Hiroko)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "ordered east and south to swap three tiles with each other (Funakubo Hiroko)"]]],
@@ -3261,7 +3261,7 @@
       ],
       "actions": [
         ["set_status", "megan-davin_exhausted", "megan_davin_double_payment"],
-        ["set_shimocha_status", "duelist", "megan_davin_double_payment"],
+        ["as", "shimocha", [["set_status", "duelist", "megan_davin_double_payment"]]],
         ["disable_saki_card", "shimocha"],
         ["big_text", "Megan Davin: duel!"],
         ["big_text", "Megan Davin: duel!", "shimocha"],
@@ -3283,7 +3283,7 @@
       ],
       "actions": [
         ["set_status", "megan-davin_exhausted", "megan_davin_double_payment"],
-        ["set_toimen_status", "duelist", "megan_davin_double_payment"],
+        ["as", "toimen", [["set_status", "duelist", "megan_davin_double_payment"]]],
         ["disable_saki_card", "toimen"],
         ["big_text", "Megan Davin: duel!"],
         ["big_text", "Megan Davin: duel!", "toimen"],
@@ -3305,7 +3305,7 @@
       ],
       "actions": [
         ["set_status", "megan-davin_exhausted", "megan_davin_double_payment"],
-        ["set_kamicha_status", "duelist", "megan_davin_double_payment"],
+        ["as", "kamicha", [["set_status", "duelist", "megan_davin_double_payment"]]],
         ["disable_saki_card", "kamicha"],
         ["big_text", "Megan Davin: duel!"],
         ["big_text", "Megan Davin: duel!", "kamicha"],
@@ -3328,9 +3328,8 @@
       "actions": [
         ["set_status", "usuzawa-sae_exhausted"],
         ["disable_saki_card", "others"],
-        ["set_shimocha_status", "usuzawa_sae_opponent"],
+        ["as", "shimocha", [["set_status", "usuzawa_sae_opponent"], ["big_text", "Usuzawa Sae: opponent!"]]],
         ["big_text", "Usuzawa Sae: opponent!"],
-        ["big_text", "Usuzawa Sae: opponent!", "shimocha"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose south as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose west as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
@@ -3350,8 +3349,7 @@
       "actions": [
         ["set_status", "usuzawa-sae_exhausted"],
         ["disable_saki_card", "others"],
-        ["set_toimen_status", "usuzawa_sae_opponent"],
-        ["big_text", "Usuzawa Sae: opponent!"],
+        ["as", "toimen", [["set_status", "usuzawa_sae_opponent"], ["big_text", "Usuzawa Sae: opponent!"]]],
         ["big_text", "Usuzawa Sae: opponent!", "toimen"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose west as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
@@ -3372,9 +3370,8 @@
       "actions": [
         ["set_status", "usuzawa-sae_exhausted"],
         ["disable_saki_card", "others"],
-        ["set_kamicha_status", "usuzawa_sae_opponent"],
+        ["as", "kamicha", [["set_status", "usuzawa_sae_opponent"], ["big_text", "Usuzawa Sae: opponent!"]]],
         ["big_text", "Usuzawa Sae: opponent!"],
-        ["big_text", "Usuzawa Sae: opponent!", "kamicha"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose east as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "disabled everyone else's ability and chose south as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],

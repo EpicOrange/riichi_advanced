@@ -392,7 +392,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           true                            -> 0
         end
       ["count_draws" | opts] ->
-        seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0))
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0))
         length(state.players[seat].draw)
       ["count_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
@@ -487,7 +487,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # if everyone has charleston completed then we run after_charleston actions
       state = if Enum.all?(state.players, fn {_seat, player} -> "_charleston_completed" in player.status end) do
-        state = update_all_players(state, fn _seat, player -> %Player{ player | status: player.status -- ["_charleston_completed"] } end)
+        state = update_all_players(state, fn _seat, player -> %Player{ player | status: MapSet.delete(player.status, "_charleston_completed") } end)
         if Map.has_key?(state.rules, "after_charleston") do
           run_actions(state, state.rules["after_charleston"]["actions"], %{seat: seat})
         else state end
@@ -564,7 +564,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice)
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)
-      "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0, "self")), true)
+      "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")), true)
       "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
       "win_by_call"           -> win(state, context.seat, get_last_call_action(state).called_tile, :call)
       "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
@@ -577,36 +577,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         win(state, context.seat, tile, :discard)
       "ryuukyoku"             -> exhaustive_draw(state)
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
-      "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_shimocha_status"   -> update_player(state, Utils.get_seat(context.seat, :shimocha), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_shimocha_status" -> update_player(state, Utils.get_seat(context.seat, :shimocha), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_toimen_status"     -> update_player(state, Utils.get_seat(context.seat, :toimen), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_toimen_status"   -> update_player(state, Utils.get_seat(context.seat, :toimen), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_kamicha_status"    -> update_player(state, Utils.get_seat(context.seat, :kamicha), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_kamicha_status"  -> update_player(state, Utils.get_seat(context.seat, :kamicha), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_status_others"     -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status ++ opts) end } end)
-      "unset_status_others"   -> update_all_players(state, fn seat, player -> %Player{ player | status: if seat == context.seat do player.status else Enum.uniq(player.status -- opts) end } end)
-      "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_status_all"      -> update_all_players(state, fn _seat, player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_callee_status"     -> update_player(state, Map.get(context, :callee, if get_last_call_action(state) != nil do get_last_call_action(state).from else nil end), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_callee_status"   -> update_player(state, Map.get(context, :callee, if get_last_call_action(state) != nil do get_last_call_action(state).from else nil end), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_caller_status"     -> update_player(state, Map.get(context, :caller, if get_last_call_action(state) != nil do get_last_call_action(state).seat else nil end), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_caller_status"   -> update_player(state, Map.get(context, :caller, if get_last_call_action(state) != nil do get_last_call_action(state).seat else nil end), fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_discarder_status"   -> update_player(state, get_last_discard_action(state).seat, fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-      "unset_discarder_status" -> update_player(state, get_last_discard_action(state).seat, fn player -> %Player{ player | status: Enum.uniq(player.status -- opts) } end)
-      "set_status_chii_victims" -> 
-        chii_victims = for {"chii", tiles} <- state.players[context.seat].calls do
-          case tiles do
-            [{_, false}, {_, false}, {_, true}] -> [:shimocha]
-            [{_, false}, {_, true}, {_, false}] -> [:toimen]
-            [{_, true}, {_, false}, {_, false}] -> [:kamicha]
-            _ -> []
-          end
-        end |> Enum.concat() |> Enum.uniq()
-        for dir <- chii_victims, reduce: state do
-          state -> update_player(state, Utils.get_seat(context.seat, dir), fn player -> %Player{ player | status: Enum.uniq(player.status ++ opts) } end)
-        end
+      "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
+      "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
+      "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
+      "unset_status_all"      -> update_all_players(state, fn _seat, player -> %Player{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
       "set_counter"           -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "set_counter_all"       -> set_counter_all(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
@@ -614,7 +588,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              ->
-        seat = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 1, "self"))
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 1, "self"))
         temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
       "pause"                 ->
         if not state.log_loading_mode do
@@ -629,7 +603,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
         state
       "add_score"             ->
-        recipients = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 1, "self"))
+        recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
         amount = interpret_amount(state, context, [Enum.at(opts, 0, 0)])
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
@@ -664,7 +638,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
       "as"                    ->
-        for dir <- Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, [])), reduce: state do
+        for dir <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, [])), reduce: state do
           state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
         end
       "when_anyone"           ->
@@ -1121,11 +1095,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         notify_ai_declare_yaku(state, context.seat)
         state
       "disable_saki_card" ->
-        targets = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
         state = Saki.disable_saki_card(state, targets)
         state
       "enable_saki_card" ->
-        targets = Conditions.from_seats_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
         state = Saki.enable_saki_card(state, targets)
         state
       "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
@@ -1137,7 +1111,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.count_tiles([t], tiles) > 0 end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
         state
       "pass_draws"      ->
-        to = Conditions.from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        to = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         {to_pass, remaining} = Enum.split(state.players[context.seat].draw, Enum.at(opts, 1, 1))
         state = update_player(state, context.seat, &%Player{ &1 | draw: remaining })
         state = update_player(state, to, &%Player{ &1 | draw: &1.draw ++ to_pass })

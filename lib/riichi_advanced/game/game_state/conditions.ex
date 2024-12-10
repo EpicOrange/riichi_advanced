@@ -92,29 +92,44 @@ defmodule RiichiAdvanced.GameState.Conditions do
     end
   end
 
-  def from_seat_spec(state, seat, seat_spec) do
+  def from_seat_spec(state, context, seat_spec) do
     case seat_spec do
       "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east)
       "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south)
       "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west)
       "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north)
-      "shimocha" -> Utils.get_seat(seat, :shimocha)
-      "toimen" -> Utils.get_seat(seat, :toimen)
-      "kamicha" -> Utils.get_seat(seat, :kamicha)
+      "shimocha" -> Utils.get_seat(context.seat, :shimocha)
+      "toimen" -> Utils.get_seat(context.seat, :toimen)
+      "kamicha" -> Utils.get_seat(context.seat, :kamicha)
       "last_discarder" ->
         last_discard_action = get_last_discard_action(state)
-        if last_discard_action != nil do last_discard_action.seat else seat end
-      _ -> seat
+        if last_discard_action != nil do last_discard_action.seat else context.seat end
+      "caller" ->
+        last_call_action = get_last_call_action(state)
+        Map.get(context, :caller, if last_call_action != nil do last_call_action.seat else context.seat end)
+      "callee" ->
+        last_call_action = get_last_call_action(state)
+        Map.get(context, :callee, if last_call_action != nil do last_call_action.from else context.seat end)
+      _ -> context.seat
     end
   end
 
-  def from_seats_spec(state, seat, seat_spec) do
+  def from_seats_spec(state, context, seat_spec) do
     case seat_spec do
       "all" -> state.available_seats
       "everyone" -> state.available_seats
-      "others" -> state.available_seats -- [seat]
-      _ when is_list(seat_spec) -> Enum.flat_map(seat_spec, &from_seats_spec(state, seat, &1)) |> Enum.uniq()
-      _ -> [from_seat_spec(state, seat, seat_spec)]
+      "others" -> state.available_seats -- [context.seat]
+      "chii_victims" -> for {"chii", tiles} <- state.players[context.seat].calls do
+        # check sideways tiles
+        case tiles do
+          [{_, false}, {_, false}, {_, true}] -> [:shimocha]
+          [{_, false}, {_, true}, {_, false}] -> [:toimen]
+          [{_, true}, {_, false}, {_, false}] -> [:kamicha]
+          _ -> []
+        end
+      end |> Enum.concat()
+      _ when is_list(seat_spec) -> Enum.flat_map(seat_spec, &from_seats_spec(state, context, &1)) |> Enum.uniq()
+      _ -> [from_seat_spec(state, context, seat_spec)]
     end
   end
 
@@ -162,9 +177,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
           Riichi.can_call?(context.calls_spec, call_tiles, cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings)
         end)
-      "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))].draw)
-      "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))].aside)
-      "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))].calls)
+      "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].draw)
+      "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].aside)
+      "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].calls)
       "has_call_named"           -> Enum.all?(cxt_player.calls, fn {name, _call} -> name in opts end)
       "has_no_call_named"        -> Enum.all?(cxt_player.calls, fn {name, _call} -> name not in opts end)
       "won_by_call"              -> context.win_source == :call
@@ -471,9 +486,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "kamicha_exists"      -> Utils.get_seat(context.seat, :kamicha) in state.available_seats
       "three_winners"       -> map_size(state.winners) == 3
       "hand_length_at_least" -> length(state.players[context.seat].hand ++ state.players[context.seat].draw) >= Enum.at(opts, 0, 0)
-      "current_turn_is"     -> state.turn == from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
+      "current_turn_is"     -> state.turn == from_seat_spec(state, context, Enum.at(opts, 0, "self"))
       "hand_is_dead"        ->
-        seat = from_seat_spec(state, context.seat, Enum.at(opts, 0, "self"))
+        seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         am_match_definitions = Map.get(state.rules, "win_definition", [])
         American.check_dead_hand(state, seat, am_match_definitions)
       "all_calls_deaden_hand" ->
@@ -505,7 +520,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     cond do
       is_binary(cond_spec) -> check_condition(state, cond_spec, context)
       is_map(cond_spec)    ->
-        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context.seat, cond_spec["as"])} else context end
+        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context, cond_spec["as"])} else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
       is_list(cond_spec)   -> Enum.any?(cond_spec, &check_cnf_condition(state, &1, context))
       true                 ->
@@ -518,7 +533,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     cond do
       is_binary(cond_spec) -> check_condition(state, cond_spec, context)
       is_map(cond_spec)    ->
-        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context.seat, cond_spec["as"])} else context end
+        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context, cond_spec["as"])} else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
       is_list(cond_spec)   -> Enum.all?(cond_spec, &check_dnf_condition(state, &1, context))
       true                 ->

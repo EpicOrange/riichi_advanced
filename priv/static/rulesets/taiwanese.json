@@ -396,11 +396,11 @@
   },
   "after_call": {
     "actions": [
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["set_callee_status", "pao"]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["set_callee_status", "pao"]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["manzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["manzu_3"], 5]]]]}], [["set_callee_status", "pao"]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["pinzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["pinzu_3"], 5]]]]}], [["set_callee_status", "pao"]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["souzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["souzu_3"], 5]]]]}], [["set_callee_status", "pao"]]]
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["manzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["manzu_3"], 5]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["pinzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["pinzu_3"], 5]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["souzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["souzu_3"], 5]]]]}], [["as", "callee", [["set_status", "pao"]]]]]
     ]
   },
   "after_start": {

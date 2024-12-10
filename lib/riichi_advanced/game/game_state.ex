@@ -33,7 +33,7 @@ defmodule Player do
     deferred_actions: [],
     deferred_context: %{},
     big_text: "",
-    status: [],
+    status: MapSet.new(),
     counters: %{},
     riichi_stick: false,
     riichi_discard_indices: nil,
@@ -436,7 +436,7 @@ defmodule RiichiAdvanced.GameState do
          nickname: &2.nickname,
          hand: hands[&1],
          auto_buttons: initial_auto_buttons,
-         status: Enum.filter(&2.status, fn status -> status in persistent_statuses end),
+         status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
          counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
        })
     |> Map.put(:actions, [])

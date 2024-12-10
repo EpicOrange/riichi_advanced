@@ -350,9 +350,9 @@
       "actions": [
         ["big_text", "Offer 0"],
         ["set_status", "final_charleston", "charleston_across_0"],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_toimen_status", "charleston_across_1"], ["set_toimen_status", "charleston_across_0"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_toimen_status", "charleston_across_2"], ["set_toimen_status", "charleston_across_0"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["unset_toimen_status", "charleston_across_3"], ["set_toimen_status", "charleston_across_0"]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["as", "toimen", [["unset_status", "charleston_across_1"], ["set_status", "charleston_across_0"]]]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["as", "toimen", [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_0"]]]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]]]]
       ],
       "unskippable": true
     },
@@ -363,8 +363,8 @@
         ["big_text", "Offer 1"],
         ["set_status", "final_charleston", "charleston_across_1"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_1"], ["set_status", "charleston_across_0"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_toimen_status", "charleston_across_2"], ["set_toimen_status", "charleston_across_1"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["unset_toimen_status", "charleston_across_3"], ["set_toimen_status", "charleston_across_1"]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["as", "toimen", [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_1"]]]]],
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_1"]]]]]
       ],
       "unskippable": true
     },
@@ -376,7 +376,7 @@
         ["set_status", "final_charleston", "charleston_across_2"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_0"]]],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_1"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["unset_toimen_status", "charleston_across_3"], ["set_toimen_status", "charleston_across_2"]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]]]]
       ],
       "unskippable": true
     },
@@ -510,7 +510,7 @@
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
           ["big_text", "Dead hand", "shimocha"],
           ["push_message", "declared a player's hand dead"],
-          ["set_shimocha_status", "dead_hand"],
+          ["as", "shimocha", [["set_status", "dead_hand"]]],
           ["when", [{"name": "current_turn_is", "opts": ["shimocha"]}], [["advance_turn"]]]
         ], [
           ["big_text", "Not dead", "shimocha"],
@@ -529,7 +529,7 @@
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
           ["big_text", "Dead hand", "toimen"],
           ["push_message", "declared a player's hand dead"],
-          ["set_toimen_status", "dead_hand"],
+          ["as", "toimen", [["set_status", "dead_hand"]]],
           ["when", [{"name": "current_turn_is", "opts": ["toimen"]}], [["advance_turn"]]]
         ], [
           ["big_text", "Not dead", "toimen"],
@@ -548,7 +548,7 @@
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
           ["big_text", "Dead hand", "kamicha"],
           ["push_message", "declared a player's hand dead"],
-          ["set_kamicha_status", "dead_hand"],
+          ["as", "kamicha", [["set_status", "dead_hand"]]],
           ["when", [{"name": "current_turn_is", "opts": ["kamicha"]}], [["advance_turn"]]]
         ], [
           ["big_text", "Not dead", "kamicha"],
