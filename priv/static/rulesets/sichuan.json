@@ -115,76 +115,30 @@
     ]
   ],
   "yaku": [
-    {
-      "display_name": "Root",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 1]]]]}]
-    },
-    {
-      "display_name": "Root",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 2]]]]}]
-    },
-    {
-      "display_name": "Root",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 3]]]]}]
-    },
-    {
-      "display_name": "Root",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 4]]]]}]
-    },
-    {
-      "display_name": "All Triplets",
-      "value": 1,
-      "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4], [["pair"], 1]]]]},
-        {"name": "not_match", "opts": [["calls"], [[[["pon", "daiminkan", "ankan", "kakan"], 4]]]]}
-      ]
-    },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 1]]]]}] },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 2]]]]}] },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 3]]]]}] },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 4]]]]}] },
+    { "display_name": "All Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4], [["pair"], 1]]]]}] },
     {
       "display_name": "Full Flush",
       "value": 2,
-      "when": [
-        [
-          {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
-          {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
-          {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
-        ]
-      ]
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]]
     },
-    {
-      "display_name": "Seven Pairs",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
-    },
-    {
-      "display_name": "Golden Single Wait",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["calls"], [[[["pon", "daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    {
-      "display_name": "Win After Kong",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kan"]}]
-    },
-    {
-      "display_name": "Robbing The Kong",
-      "value": 1,
-      "when": ["won_by_call"]
-    },
-    {
-      "display_name": "Shoot After Kong",
-      "value": 1,
-      "when": [{"name": "discarder_status", "opts": ["kan"]}]
-    },
-    {
-      "display_name": "Under The Sea",
-      "value": 1,
-      "when": ["no_tiles_remaining"]
-    }
+    { "display_name": "Seven Pairs", "value": 2, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
+    { "display_name": "Golden Single Wait", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Win After Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Robbing The Kong", "value": 1, "when": ["won_by_call"] },
+    { "display_name": "Shoot After Kong", "value": 1, "when": [{"name": "discarder_status", "opts": ["kan"]}] },
+    { "display_name": "Under The Sea", "value": 1, "when": ["no_tiles_remaining"] }
   ],
+  "yaku_precedence": {
+    "Golden Single Wait": ["All Triplets"]
+  },
   "score_calculation": {
     "scoring_method": "score_table",
     "payments_at_exhaustive_draw": true,
@@ -204,30 +158,12 @@
   },
   "play_restrictions": [
     [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
-    [["manzu"], [
-      {"name": "status", "opts": ["void_pinzu"]},
-      {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}
-    ]],
-    [["manzu"], [
-      {"name": "status", "opts": ["void_souzu"]},
-      {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}
-    ]],
-    [["pinzu"], [
-      {"name": "status", "opts": ["void_manzu"]},
-      {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}
-    ]],
-    [["pinzu"], [
-      {"name": "status", "opts": ["void_souzu"]},
-      {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}
-    ]],
-    [["souzu"], [
-      {"name": "status", "opts": ["void_manzu"]},
-      {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}
-    ]],
-    [["souzu"], [
-      {"name": "status", "opts": ["void_pinzu"]},
-      {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}
-    ]]
+    [["manzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]],
+    [["manzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
+    [["pinzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
+    [["pinzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
+    [["souzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
+    [["souzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]]
   ],
   "after_start": {
     "actions": [
@@ -530,7 +466,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call", "charleston_left", "charleston_across", "charleston_right"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call"],
   "display_wall": true,
   "initial_score": 0,
   "starting_tiles": 13,
