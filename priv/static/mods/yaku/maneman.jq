@@ -15,6 +15,12 @@
   ["set_counter_all", "maneman_shimocha", 0]
 ]
 |
+.after_call.actions += [
+  ["set_counter_all", "maneman_kamicha", -1],
+  ["set_counter_all", "maneman_toimen", -1],
+  ["set_counter_all", "maneman_shimocha", -1]
+]
+|
 .play_effects += [
   ["any", [
     # check and increment counters
