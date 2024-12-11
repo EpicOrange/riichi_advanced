@@ -86,7 +86,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
             |> Enum.flat_map(fn {_seat, player} -> player.calls end)
             |> Enum.flat_map(&get_joker_meld_tile(&1, :"1j"))
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
-          _ -> [{[context.tile], []}]
+          "tile" -> [{hand ++ [context.tile], calls}]
+          _ ->
+            IO.puts("Unhandled hand_calls spec #{inspect(item)}")
+            [{hand, calls}]
         end
       end |> Enum.concat()
     end
@@ -538,7 +541,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     cond do
       is_binary(cond_spec) -> check_condition(state, cond_spec, context)
       is_map(cond_spec)    ->
-        context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context, cond_spec["as"])} else context end
+        context = if Map.has_key?(cond_spec, "as") do %{context | orig_seat: context.seat, seat: from_seat_spec(state, context, cond_spec["as"])} else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
       is_list(cond_spec)   ->
         case cond_spec do

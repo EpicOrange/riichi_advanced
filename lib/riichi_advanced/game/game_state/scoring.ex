@@ -994,11 +994,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # return the complete winner object
     yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
-    payer = case win_source do
-      :draw    -> nil
-      :discard -> get_last_discard_action(state).seat
-      :call    -> get_last_call_action(state).seat
-    end
     %{
       seat: seat,
       player: %Player{ state.players[seat] | hand: arranged_hand, draw: arranged_draw, calls: arranged_calls },
@@ -1014,8 +1009,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
       point2_name: Map.get(score_rules, "point2_name", ""),
       minipoint_name: Map.get(score_rules, "minipoint_name", ""),
       minipoints: minipoints,
-      payer: payer,
-      pao_seat: Enum.find(state.available_seats, fn seat -> seat != payer && "pao" in state.players[seat].status end),
+      payer: case win_source do
+        :draw    -> nil
+        :discard -> get_last_discard_action(state).seat
+        :call    -> get_last_call_action(state).seat
+      end,
       winning_tile: new_winning_tile,
       right_display: cond do
         not Map.has_key?(score_rules, "right_display") -> nil
@@ -1041,6 +1039,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,
     }
+  end
+
+  def update_winner_pao(state, winner) do
+    Map.put(winner, :pao_seat, Enum.find(state.available_seats, fn seat -> seat != winner.payer && "pao" in state.players[seat].status end))
   end
 
 end

@@ -97,7 +97,7 @@
     {"id": "yaku/chuupin_raoyui", "name": "Chuupin Raoyui", "desc": "Local yaku. Mangan if you win with houtei (not haitei) on the 9p (9 circles)."},
     {"id": "yaku/shanron_chonchu", "name": "Shanron Chonchu", "desc": "Local yaku. Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu that don't share any numbers, plus a pinzu pair."},
     {"id": "yaku/chiishin_uushii", "name": "Chiishin Uushii", "desc": "Local yaku. Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."},
-    // {"id": "yaku/maneman", "name": "Maneshi Mangan", "desc": "Local yaku. If you copy an opponent's first row of discards exactly, they will pay mangan if you win. Calls invalidate."},
+    {"id": "yaku/maneman", "name": "Maneshi Mangan", "desc": "Local yaku. If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate."},
     "Yakuman",
     {"id": "yaku/renhou_yakuman", "conflicts": ["yaku/renhou_mangan"], "name": "Renhou Yakuman", "desc": "Enable renhou yakuman."},
     {"id": "yaku/paarenchan", "conflicts": ["yakuman_only"], "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
