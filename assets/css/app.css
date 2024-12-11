@@ -425,6 +425,7 @@ div.compass > div.direction {
   height: 50%;
   top: 50%;
   transform-origin: 50% 0%;
+  pointer-events: none;
 }
 div.compass.east > div.direction.east {transform: rotate(0deg); }
 div.compass.east > div.direction.south { transform: rotate(270deg); }
@@ -495,14 +496,38 @@ div.compass > div.direction > div.score-counter {
   width: calc(2 * var(--tile-size));
   height: calc(0.66 * var(--tile-size));
   left: calc(50% - (1 * var(--tile-size)));
-  bottom: calc(50% - (0.05 * var(--tile-size)));
+  top: calc(50% - (0.6 * var(--tile-size)));
   text-align: center;
   font-size: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   color: var(--tile-back);
+  pointer-events: initial;
+}
+div.compass > div.direction > div.score-counter.scientific {
+  font-size: calc(0.4 * var(--tile-size));
+}
+div.compass > div.direction > div.score-counter.relative {
+  color: lightgreen;
+}
+div.compass > div.direction > div.score-counter.negative {
+  color: red;
+}
+div.compass > div.direction > div.score-counter:hover,
+div.compass > div.direction > div.score-counter.scientific:hover {
+  width: calc(3 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  left: calc(50% - (1.5 * var(--tile-size)));
+  top: calc(50% - (0.25 * var(--tile-size)));
+  font-size: calc(0.6 * var(--tile-size));
+  background: black;
+  z-index: 10;
 }
 div.compass > div.direction > div.score-counter > b {
+  font-size: calc(0.5 * var(--tile-size));
   color: var(--tile-front);
+}
+div.compass > div.direction > div.score-counter:hover > b {
+  font-size: calc(0.75 * var(--tile-size));
 }
 div.compass > div.centerpiece {
   position: relative;
