@@ -856,7 +856,6 @@ defmodule RiichiAdvanced.GameState do
               {am_match_definitions, match_definitions} = Enum.split_with(state.rules[name], &is_binary/1)
               translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
               translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
-              IO.inspect(translated_am_match_definitions)
               translated_match_definitions ++ translated_am_match_definitions
             else
               if String.contains?(match_definition, " ") do
