@@ -481,7 +481,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
       end
       # send them according to dir
-      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: hand_tiles, status: Enum.uniq(&1.status ++ ["_charleston_completed"]) })
+      state = update_player(state, Utils.get_seat(hand_seat, dir), &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), draw: hand_tiles, status: MapSet.put(&1.status, "_charleston_completed") })
       state = Marking.mark_done(state, seat)
 
       # if everyone has charleston completed then we run after_charleston actions
