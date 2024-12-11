@@ -162,7 +162,7 @@ defmodule RiichiAdvanced.RoomState do
 
   def toggle_mod(state, mod_name, enabled) do
     state = put_in(state.mods[mod_name].enabled, enabled)
-    state = if enabled do
+    if enabled do
       # enable dependencies and disable conflicting mods
       state = for dep <- state.mods[mod_name].deps, reduce: state do
         state -> put_in(state.mods[dep].enabled, true)

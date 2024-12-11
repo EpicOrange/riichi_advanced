@@ -605,6 +605,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           else {key, val} end
         end))
         state = update_player(state, context.seat, fn player -> %Player{ player | hand: hand } end)
+        state
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
         state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)

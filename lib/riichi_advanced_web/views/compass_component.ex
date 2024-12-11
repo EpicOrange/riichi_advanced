@@ -57,9 +57,7 @@ defmodule RiichiAdvancedWeb.CompassComponent do
 
   def handle_event("compass_clicked", _assigns, socket) do
     socket = assign(socket, :show_relative_scores, true)
-    if socket.assigns.show_relative_scores_timer != nil do
-      Process.cancel_timer(socket.assigns.show_relative_scores_timer)
-    end
+    if Map.get(socket.assigns, :show_relative_scores_timer) != nil do Process.cancel_timer(socket.assigns.show_relative_scores_timer) end
     timer = send_update_after(self(), __MODULE__, [id: "compass", show_relative_scores: false, show_relative_scores_timer: nil], 2000)
     socket = assign(socket, :show_relative_scores_timer, timer)
     # notify ai

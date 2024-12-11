@@ -72,6 +72,7 @@ defmodule Game do
     west: nil,
     north: nil,
     messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+    calculate_playable_indices_pid: nil,
     # remember to edit :put_state if you change anything above
 
     # control variables
@@ -731,7 +732,11 @@ defmodule RiichiAdvanced.GameState do
       }
       state = for dir <- state.available_seats, Map.get(state, dir) == nil, reduce: state do
         state ->
-          {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, {RiichiAdvanced.AIPlayer, %{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}})
+          {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
+            id: RiichiAdvanced.AIPlayer,
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}]},
+            restart: :permanent
+          })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
           state = Map.put(state, dir, ai_pid)
 
@@ -944,11 +949,11 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def broadcast_state_change(state) do
-    # calculate playable indices for current turn player
-    state = update_player(state, state.turn, fn player -> %Player{ player | playable_indices: 
-      for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end
-    } end)
+  def broadcast_state_change(state, calculate_playable_indices \\ true) do
+    if calculate_playable_indices do
+      # async calculate playable indices for current turn player
+      GenServer.cast(self(), :calculate_playable_indices)
+    end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
     # reset anim
@@ -1409,4 +1414,31 @@ defmodule RiichiAdvanced.GameState do
     state = American.declare_dead_hand(state, seat, dead_seat)
     {:noreply, state}
   end
+
+  def handle_cast(:calculate_playable_indices, state) do
+    if state.calculate_playable_indices_pid do
+      Process.exit(state.calculate_playable_indices_pid, :kill)
+    end
+    self = self()
+    {:ok, pid} = Task.start(fn ->
+      player = state.players[state.turn]
+      IO.inspect({:running, state.turn, []})
+      GenServer.cast(self, {:set_playable_indices, state.turn, for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end})
+      IO.inspect({:done, state.turn, []})
+    end)
+    state = state
+    |> update_player(state.turn, &%Player{ &1 | playable_indices: []})
+    |> Map.put(:calculate_playable_indices_pid, pid)
+    {:noreply, state}
+  end
+
+  def handle_cast({:set_playable_indices, seat, playable_indices}, state) do
+    state = state
+    |> update_player(seat, &%Player{ &1 | playable_indices: playable_indices})
+    |> Map.put(:calculate_playable_indices_pid, nil)
+    state = broadcast_state_change(state, false)
+    IO.inspect({:set_playable_indices, seat, playable_indices})
+    {:noreply, state}
+  end
+
 end
