@@ -1,6 +1,6 @@
-def add_call_restriction($call):
+def add_call_conditions($call):
   if .buttons | has($call) then
-    .buttons[$call].call_restrictions += [{"name": "not_call_contains", "opts": [["4x"], 1]}]
+    .buttons[$call].call_conditions += [{"name": "not_call_contains", "opts": [["4x"], 1]}]
   else . end;
 
 .starting_tiles = 12
@@ -14,16 +14,16 @@ def add_call_restriction($call):
 |
 .play_restrictions += [[["4x"], []]]
 |
-add_call_restriction("chii")
+add_call_conditions("chii")
 |
-add_call_restriction("pon")
+add_call_conditions("pon")
 |
-add_call_restriction("daiminkan")
+add_call_conditions("daiminkan")
 |
-add_call_restriction("kakan")
+add_call_conditions("kakan")
 |
-add_call_restriction("ankan")
+add_call_conditions("ankan")
 |
-add_call_restriction("pei")
+add_call_conditions("pei")
 
 # TODO saki buttons?
