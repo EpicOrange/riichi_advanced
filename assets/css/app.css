@@ -2240,46 +2240,6 @@ div.title > div.title-advanced::before {
   background-repeat: no-repeat;
   z-index: -1;
 }
-
-div#container > input.rulesets-expand-checkbox + label {
-  position: absolute;
-  border-radius: 50%;
-  font-size: calc(0.6 * var(--tile-size));
-  width: calc(1 * var(--tile-size));
-  aspect-ratio: 1/1;
-  right: calc(0.5 * var(--tile-size));
-  top: calc(5.875 * var(--tile-size));
-  border: none;
-  padding: 0;
-  z-index: 3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: top 0.5s;
-}
-div#container > input.rulesets-expand-checkbox:checked + label {
-  top: calc(0.375 * var(--tile-size));
-}
-div#container > input.rulesets-expand-checkbox + label::before { content: "+"; }
-div#container > input.rulesets-expand-checkbox:checked + label::before { content: "–"; }
-div#container > form {
-  position: absolute;
-  width: calc(100% - 3 * var(--tile-size));
-  height: calc(7.5 * var(--tile-size));
-  top: calc(50% - 1.5 * var(--tile-size));
-  left: calc(1 * var(--tile-size));
-  padding: calc(0.5 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  transition: height 0.5s, top 0.5s;
-  background: #5D9166;
-  color: white;
-  font-size: calc(0.5 * var(--tile-size));
-  z-index: 2;
-}
-div#container > input.rulesets-expand-checkbox:checked ~ form {
-  height: calc(13 * var(--tile-size));
-  top: calc(50% - 7 * var(--tile-size));
-}
 div#container > div.index-bottom-buttons {
   position: absolute;
   right: 0;
@@ -2288,8 +2248,18 @@ div#container > div.index-bottom-buttons {
 div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
-
 div#container > form {
+  position: absolute;
+  width: calc(100% - 3 * var(--tile-size));
+  height: calc(7.5 * var(--tile-size));
+  top: calc(50% - 1.5 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  background: #609060;
+  color: white;
+  font-size: calc(0.5 * var(--tile-size));
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: space-around;
@@ -2428,7 +2398,7 @@ div.lobby > div.rooms {
   position: relative;
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  background: #FFFFFF3F;
+  background: #609060;
   width: calc(100% - 1 * var(--tile-size));
   height: calc(100% - 3 * var(--tile-size));
   top: calc(1 * var(--tile-size));
@@ -2496,20 +2466,6 @@ div.lobby > button.create-room {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* room screen */
 div.room {
   display: flex;
@@ -2535,16 +2491,17 @@ div.room > header > div.session {
 div.room > header > div.variant > a.tutorial-link {
   color: white;
 }
-
 div.room > div.seats,
 div.room > div.mods,
 div.room > div.custom-json {
   position: relative;
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  background: #FFFFFF3F;
+  background: #609060;
   width: calc(100% - 3 * var(--tile-size));
   left: calc(1 * var(--tile-size));
+  z-index: 1;
+  flex-shrink: 0;
 }
 div.room > div.seats {
   top: calc(1.5 * var(--tile-size));
@@ -2665,6 +2622,56 @@ div.room > div.custom-json > textarea {
   white-space: pre;
   box-sizing: border-box;
   font-size: calc(0.25 * var(--tile-size));
+}
+
+/* expand button for rulesets, mods, and custom ruleset entry */
+div#container > input.expand-checkbox + label {
+  position: absolute;
+  font-size: calc(0.6 * var(--tile-size));
+  color: white;
+  border-radius: 50%;
+  width: calc(1 * var(--tile-size));
+  aspect-ratio: 1/1;
+  border: none;
+  padding: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: top 0.5s, right 0.5s;
+}
+div#container > input.expand-checkbox.for-rulesets + label {
+  right: calc(0.5 * var(--tile-size));
+  top: calc(5.875 * var(--tile-size));
+}
+div#container > input.expand-checkbox.for-rulesets:checked + label {
+  top: calc(0.375 * var(--tile-size));
+}
+div#container > input.expand-checkbox.for-mods + label {
+  right: calc(0.5 * var(--tile-size));
+  top: calc(4.625 * var(--tile-size));
+}
+div#container > input.expand-checkbox.for-mods:checked + label {
+  right: calc(-0.5 * var(--tile-size));
+  top: calc(0.375 * var(--tile-size));
+} 
+div#container > input.expand-checkbox + label::before { content: "+"; }
+div#container > input.expand-checkbox:checked + label::before { content: "–"; }
+div#container > form,
+div#container > div.mods,
+div#container > div.custom-json {
+  transition: width 0.5s, height 0.5s, top 0.5s, left 0.5s;
+}
+div#container > input.expand-checkbox:checked ~ form {
+  height: calc(13 * var(--tile-size));
+  top: calc(50% - 7 * var(--tile-size));
+}
+div#container > input.expand-checkbox:checked ~ div.mods,
+div#container > input.expand-checkbox:checked ~ div.custom-json {
+  height: calc(100% - 1.5 * var(--tile-size));
+  width: calc(100% - 1 * var(--tile-size));
+  top: calc(-1.25 * var(--tile-size));
+  left: calc(0 * var(--tile-size));
 }
 
 /* top right (menu buttons, riichi stick display} */

@@ -124,6 +124,8 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <% end %>
         <% end %>
       </div>
+      <input type="checkbox" id="expand-checkbox" class="expand-checkbox for-mods" phx-update="ignore"/>
+      <label for="expand-checkbox"/>
       <%= if @ruleset == "custom" do %>
         <div class="mods-title">Ruleset</div>
         <div class="custom-json">

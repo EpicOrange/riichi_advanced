@@ -60,8 +60,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="tile 8m"></div>
         <div class="tile 7z"></div>
       </div>
-      <input type="checkbox" id="rulesets-expand-checkbox" class="rulesets-expand-checkbox" phx-update="ignore"/>
-      <label for="rulesets-expand-checkbox"/>
+      <input type="checkbox" id="expand-checkbox" class="expand-checkbox for-rulesets" phx-update="ignore"/>
+      <label for="expand-checkbox"/>
       <form phx-submit="redirect">
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
