@@ -320,8 +320,10 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:toggle_category, category_name}, state) do
+    mods = Enum.filter(state.mods, fn {_mod_name, mod} -> mod.category == category_name end)
+    enable = Enum.all?(mods, fn {_mod_name, mod} -> not mod.enabled end)
     state = for {mod_name, mod} <- state.mods, mod.category == category_name, reduce: state do
-      state -> toggle_mod(state, mod_name, not mod.enabled)
+      state -> toggle_mod(state, mod_name, enable)
     end
     state = broadcast_state_change(state)
     {:noreply, state}
