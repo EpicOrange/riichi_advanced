@@ -1,9 +1,6 @@
 defmodule RiichiAdvancedWeb.HandComponent do
   use RiichiAdvancedWeb, :live_component
 
-  # these calls get shown up top
-  @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
-
   def mount(socket) do
     socket = assign(socket, :your_hand?, false)
     socket = assign(socket, :revealed?, false)
@@ -247,7 +244,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.calls
     |> Enum.with_index()
-    |> Enum.reject(fn {{name, _call}, _i} -> name in @flower_names end)
+    |> Enum.reject(fn {{name, _call}, _i} -> name in Riichi.flower_names() end)
   end
 
   def prepare_flowers(assigns) do
@@ -255,7 +252,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.calls
     |> Enum.with_index()
-    |> Enum.filter(fn {{name, _call}, _i} -> name in @flower_names end)
+    |> Enum.filter(fn {{name, _call}, _i} -> name in Riichi.flower_names() end)
   end
 
   def prepare_aside(assigns) do
@@ -285,7 +282,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     # animate incoming calls
     socket = if Map.has_key?(assigns, :calls) && length(assigns.calls) > length(socket.assigns.calls) do
       {last_call_name, _last_call} = Enum.at(assigns.calls, -1)
-      socket = assign(socket, if last_call_name in @flower_names do :just_called_flower else :just_called end, true)
+      socket = assign(socket, if last_call_name in Riichi.flower_names() do :just_called_flower else :just_called end, true)
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, assigns.seat}])
       socket
     else socket end

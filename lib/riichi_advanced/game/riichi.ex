@@ -8,6 +8,10 @@ defmodule Riichi do
 
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
 
+  @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
+
+  def flower_names(), do: @flower_names
+
   def _offset_tile(tile, n, order, order_r) do
     if tile != nil do
       cond do
