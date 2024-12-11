@@ -9,7 +9,7 @@
 .isshoku_yonjun_definition = [[ [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]]], 1], [["pair"], 1] ]]
 |
 .after_call.actions += [
-  ["when", [{"name": "match", "opts": ["hand", "calls"], ["isshoku_yonjun"]}], [["as", "callee", [["set_status", "pao"]]]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls"], ["isshoku_yonjun"]]}], [["as", "callee", [["set_status", "pao"]]]]]
 ]
 |
 .score_calculation.pao_eligible_yaku += ["Isshoku Yonjun"]
