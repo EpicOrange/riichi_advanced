@@ -178,6 +178,14 @@ defmodule RiichiAdvanced.RoomState do
     end
   end
 
+  def toggle_category(state, category_name) do
+    mods = Enum.filter(state.mods, fn {_mod_name, mod} -> mod.category == category_name end)
+    enable = Enum.all?(mods, fn {_mod_name, mod} -> not mod.enabled end)
+    for {mod_name, mod} <- mods, mod.enabled != enable, reduce: state do
+      state -> toggle_mod(state, mod_name, enable)
+    end
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.session_id, "state_updated", %{"state" => state})
@@ -320,11 +328,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:toggle_category, category_name}, state) do
-    mods = Enum.filter(state.mods, fn {_mod_name, mod} -> mod.category == category_name end)
-    enable = Enum.all?(mods, fn {_mod_name, mod} -> not mod.enabled end)
-    state = for {mod_name, mod} <- state.mods, mod.category == category_name, reduce: state do
-      state -> toggle_mod(state, mod_name, enable)
-    end
+    state = toggle_category(state, category_name)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
