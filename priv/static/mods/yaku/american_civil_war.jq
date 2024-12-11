@@ -5,14 +5,14 @@ def replace_tenpai_check($source):
   |
   map(if . == $from then $to else . end);
 
-(if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"] else ["chii", "pon", "daiminkan", "kakan"] end) as $open_calls
+(if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan", "anfuun", "ankan"] else ["chii", "pon", "daiminkan", "kakan", "ankan"] end) as $all_calls
 |
 .yakuman += [
   {
     "display_name": "American Civil War",
     "value": 1,
     "when": [
-      {"name": "has_no_call_named", "opts": $open_calls},
+      {"name": "has_no_call_named", "opts": $all_calls},
       {"name": "match", "opts": [["hand", "winning_tile"], ["1861a 1865b NNN SSS"]]}
     ]
   }
