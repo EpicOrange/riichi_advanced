@@ -52,7 +52,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       push_message(state, [
         %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
         Utils.pt(tile)
-      ])
+      ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
       riichi = "just_reached" in state.players[seat].status
       state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
 
