@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.CompassComponent do
         <div class={["direction", dir]}>
           <div class={["riichi-tray", @turn == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
           <div class={["wind-marker", @turn == dir && "highlighted", @is_bot[dir] && "bot"]}><%= symbol %></div>
-          <div class={["score-counter", score < 0 && "negative", abs(score) >= 1000000 && "scientific"]} :if={dir in @available_seats}>
+          <div class={["score-counter", score < 0 && "negative", dir != @seat && @show_relative_scores && "relative", abs(score) >= 1000000 && "scientific"]} :if={dir in @available_seats}>
             <%= if abs(score) >= 1000000 && @score_e_notation do %>
               <%= if dir != @seat && @show_relative_scores && score >= 0 do "+" else "" end %><%= mantissa(score) %>e<b><%= exponent(score) %></b>
             <% else %>
