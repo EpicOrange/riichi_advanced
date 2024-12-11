@@ -3,7 +3,8 @@
   "available_mods": [
     {"id": "malaysian_five_point_minimum", "name": "Five Fan Minimum", "desc": "Only allow wins worth 5+ fan."},
     {"id": "malaysian_replaceable_fly_joker", "name": "Replaceable Fly Joker", "desc": "Allow swapping out fly jokers from your own pungs using the same tile."},
-    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
   "tutorial_link": "https://www.sloperama.com/mahjongg/malaysian.html",
   "wall": ["1p", "1p", "1p", "1p",

@@ -128,6 +128,7 @@
     {"id": "yaku/chousuushii", "name": "Chousuushii", "desc": "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."},
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
     {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
     {"id": "star_suit", "name": "Star Suit (beta)", "desc": "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."},
     {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},

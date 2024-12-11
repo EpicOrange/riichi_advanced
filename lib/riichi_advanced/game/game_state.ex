@@ -449,11 +449,6 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
 
-    # reveal hands if debug mode is on
-    state = if Debug.debug() do
-      update_all_players(state, fn _seat, player -> %Player{ player | hand_revealed: true } end)
-    else state end
-
     # initialize marking
     state = Marking.initialize_marking(state)
 

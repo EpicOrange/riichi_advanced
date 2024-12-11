@@ -9,7 +9,8 @@
     {"id": "head_bump", "name": "Head Bump", "desc": "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."},
     {"id": "hk_seven_pairs", "name": "Seven Pairs", "desc": "Add seven pairs as a possible winning hand, worth 4 fan."},
     "Other",
-    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",
   "wall": ["1m", "1m", "1m", "1m",

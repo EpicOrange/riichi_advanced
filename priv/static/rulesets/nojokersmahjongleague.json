@@ -18,7 +18,8 @@
     {"id": "immediate_kan_dora", "deps": ["kandora", "dora"], "name": "Immediate Kan Dora", "desc": "Flip kan dora immediately after daiminkan and kakan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
     {"id": "no_double_yakuman", "name": "No Double Yakuman", "desc": "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."},
-    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."}
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
