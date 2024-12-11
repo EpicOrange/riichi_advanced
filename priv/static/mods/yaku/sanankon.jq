@@ -4,12 +4,12 @@
     "value": 2,
     "when": [[
       # 0-1 open kontsu, hand must be 4 kontsu and a pair
-      {"name": "match", "opts": [["hand", "calls"], [[ [["chon", "chon_honors", "daiminfuun", "kafuun"], -2], [["kontsu"], 4], [["pair"], 1] ]]]},
+      {"name": "match", "opts": [["hand", "calls"], [[ [["chon", "chon_honors", "daiminfuun", "kafuun"], -2], [["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 4], [["pair"], 1] ]]]},
       # 0 open kontsu, hand must be 3 kontsu and a pair
-      {"name": "match", "opts": [["hand", "calls"], [[ [["chon", "chon_honors", "daiminfuun", "kafuun"], -1], [["kontsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]},
+      {"name": "match", "opts": [["hand", "calls"], [[ [["chon", "chon_honors", "daiminfuun", "kafuun"], -1], [["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]},
       [
         "won_by_draw",
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["chon", "chon_honors", "daiminfuun", "kafuun"], -1], [["kontsu"], 3], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1] ]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["chon", "chon_honors", "daiminfuun", "kafuun"], -1], [["kontsu", "kontsu_123", "kontsu_124", "kontsu_134", "kontsu_234", "kontsu_dragons"], 3], [["shuntsu", "koutsu", "kontsu"], 1], [["pair"], 1] ]]]}
       ]
     ]]
   },
