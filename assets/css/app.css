@@ -2617,12 +2617,16 @@ div.room > div.mods > div.mods-inner-container > div.mod-category > button.toggl
   color: black;
   border-width: 0;
   font-size: 75%;
-  transform: translateY(calc(-0.25 * var(--tile-size)));
+  transform: translateY(calc(var(--tile-size) / -4));
   border-radius: calc(0.25 * var(--tile-size));
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
   text-align: center;
+}
+div.room > div.mods > div.mods-inner-container > div.mod-category > button.toggle-category-button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / -8));
 }
 div.room > div.custom-json > textarea {
   position: absolute;
