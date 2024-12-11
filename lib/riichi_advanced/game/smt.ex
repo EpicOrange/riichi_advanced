@@ -248,7 +248,7 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def remove_group_keywords(group) do
-    if is_list(group) do Enum.reject(group, & &1 == "nojoker") |> Enum.sort() else group end
+    if is_list(group) do Enum.reject(group, & &1 in Riichi.group_keywords()) |> Enum.sort() else group end
   end
 
   def strip_restart(match_definition) do
@@ -395,7 +395,14 @@ defmodule RiichiAdvanced.SMT do
         unique_ix = Enum.find_index(match_definition, & &1 == "unique")
         tile_groups = groups
         |> Enum.map(&remove_group_keywords/1)
+        # reject groups that are already sets
         |> Enum.reject(& &1 in all_sets)
+        # reject groups that contain tiles that don't exist in our encoding
+        |> Enum.reject(&cond do
+          Utils.is_tile(&1) -> not Map.has_key?(encoding, &1 |> Utils.to_tile() |> Utils.strip_attrs())
+          is_list(&1) -> Enum.any?(&1, fn tile -> not Map.has_key?(encoding, tile |> Utils.to_tile() |> Utils.strip_attrs()) end)
+          true -> IO.inspect("Unrecognized group #{inspect(&1)}")
+        end)
         if Enum.empty?(tile_groups) do
           all_tile_groups
         else
@@ -554,7 +561,8 @@ defmodule RiichiAdvanced.SMT do
           {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} ->
             unique = unique_ix != nil && group_ix > unique_ix
             {set_ixs, tiles_ixs} = if unique do
-              [{[], [1+Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})]}]
+              ix = Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})
+              if ix do [{[], [1+ix]}] else [] end
             else
               groups
               |> Enum.map(&remove_group_keywords/1)
@@ -562,9 +570,7 @@ defmodule RiichiAdvanced.SMT do
               |> Enum.flat_map(fn {group, ix_set, ix_tile_group} -> cond do
                 is_integer(ix_set) -> [{[ix_set+1], []}]
                 is_integer(ix_tile_group) -> [{[], [ix_tile_group+1]}]
-                true ->
-                  IO.puts("Unhandled SMT group #{inspect(group, charlists: :as_lists)}.")
-                  []
+                true -> [] # perhaps group contains tiles not in our encoding, and so was filtered out of all_tile_groups
               end end)
             end
             |> Enum.unzip()

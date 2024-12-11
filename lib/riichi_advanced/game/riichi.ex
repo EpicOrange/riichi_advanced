@@ -169,6 +169,8 @@ defmodule Riichi do
 
   @group_keywords ["nojoker"]
 
+  def group_keywords(), do: @group_keywords
+
   def remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases \\ %{}) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     # t = System.os_time(:millisecond)

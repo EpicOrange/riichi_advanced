@@ -1422,9 +1422,7 @@ defmodule RiichiAdvanced.GameState do
     self = self()
     {:ok, pid} = Task.start(fn ->
       player = state.players[state.turn]
-      IO.inspect({:running, state.turn, []})
       GenServer.cast(self, {:set_playable_indices, state.turn, for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end})
-      IO.inspect({:done, state.turn, []})
     end)
     state = state
     |> update_player(state.turn, &%Player{ &1 | playable_indices: []})
@@ -1437,7 +1435,6 @@ defmodule RiichiAdvanced.GameState do
     |> update_player(seat, &%Player{ &1 | playable_indices: playable_indices})
     |> Map.put(:calculate_playable_indices_pid, nil)
     state = broadcast_state_change(state, false)
-    IO.inspect({:set_playable_indices, seat, playable_indices})
     {:noreply, state}
   end
 

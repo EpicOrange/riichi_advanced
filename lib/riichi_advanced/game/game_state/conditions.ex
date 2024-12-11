@@ -86,7 +86,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
             |> Enum.flat_map(fn {_seat, player} -> player.calls end)
             |> Enum.flat_map(&get_joker_meld_tile(&1, :"1j"))
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
-          "tile" -> [{hand ++ [context.tile], calls}]
           _ ->
             IO.puts("Unhandled hand_calls spec #{inspect(item)}")
             [{hand, calls}]
