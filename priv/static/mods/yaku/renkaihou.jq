@@ -11,7 +11,7 @@
 }
 |
 .functions.discard_passed += [
-  ["unset_status_all", "double_kan"]
+  ["as", "others", [["unset_status", "double_kan"]]]
 ]
 |
 .functions.do_kan_draw = [

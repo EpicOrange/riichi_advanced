@@ -525,7 +525,7 @@
     ],
     "discard_passed": [
       // unset temporary statuses from others
-      ["as", "others", [["just_reached", "unset_status", "kan", "pei"]]],
+      ["as", "others", [["unset_status", "just_reached", "kan", "pei"]]],
       // furiten check
       ["when_anyone",
         [[

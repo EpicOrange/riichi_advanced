@@ -452,7 +452,12 @@ defmodule Riichi do
       {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
         {result, keywords} -> case match_definition_elem do
           [groups, num] when num >= 1     ->
-            entry = {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
+            entry = if "unique" in keywords do
+              # can't remove one from a unique group, so take out the whole group
+              {List.delete_at(match_definition, i), keywords ++ [[groups, num]]}
+            else
+              {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
+            end
             {[entry | result], keywords}
           [_groups, num] when num < 1     -> {result, keywords}
           keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}

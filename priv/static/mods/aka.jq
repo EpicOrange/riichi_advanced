@@ -14,9 +14,7 @@
 |
 # count aka
 .before_win.actions += [
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["0m"], 1] ]]]}], [["add_counter", "aka", 1]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["0p"], 1] ]]]}], [["add_counter", "aka", 1]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["0s"], 1] ]]]}], [["add_counter", "aka", 1]]]
+  ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["0m","0p","0s"], 1] ]]]
 ]
 |
 # add aka yaku
