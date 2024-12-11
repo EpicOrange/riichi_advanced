@@ -923,7 +923,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       jokers = Map.keys(state.players[seat].tile_mappings)
-      if Utils.count_tiles(jokers, smt_hand) > 0 do
+      if Utils.count_tiles(smt_hand ++ call_tiles, jokers) > 0 do
         # run smt, but push a message if it takes more than 0.5 seconds
         smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings) end)
         notify_task = Task.async(fn ->
