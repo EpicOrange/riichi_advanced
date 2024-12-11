@@ -291,6 +291,7 @@ defmodule RiichiAdvanced.GameState do
   def get_last_call_action(state), do: state.actions |> Enum.drop_while(fn action -> action.action != :call end) |> Enum.at(0)
   def get_last_discard_action(state), do: state.actions |> Enum.drop_while(fn action -> action.action != :discard end) |> Enum.at(0)
   def update_action(state, seat, action, opts \\ %{}), do: Map.update!(state, :actions, &[opts |> Map.put(:seat, seat) |> Map.put(:action, action) | &1])
+  def clear_actions(state), do: Map.put(state, :actions, [])
 
   def show_error(state, message) do
     state = Map.update!(state, :error, fn err -> if err == nil do message else err <> "\n\n" <> message end end)
@@ -523,6 +524,10 @@ defmodule RiichiAdvanced.GameState do
     # after the after_win actions, check if pao was set, and add it onto the winner object
     winner = Scoring.update_winner_pao(state, winner)
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+
+    # for bloody end rules, make sure ai doesn't get frozen (due to discarding twice check)
+    # achieve this by clearing all actions, so there is no last discard action to check
+    state = clear_actions(state)
 
     state
   end
