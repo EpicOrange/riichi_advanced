@@ -7,5 +7,5 @@
 ]
 |
 .yaku_precedence += {
-  "清緑色": ["Ryuuiisou", "Kouitten"]
+  "清緑色": ["Ryuuiisou"]
 }

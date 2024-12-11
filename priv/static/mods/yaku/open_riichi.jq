@@ -30,5 +30,5 @@
 # have open riichi supercede regular riichi yaku
 .yaku_precedence += {
   "Open Riichi": ["Riichi"],
-  "Open Double Riichi": ["Open Riichi"]
+  "Open Double Riichi": ["Open Riichi", "Double Riichi"]
 }
