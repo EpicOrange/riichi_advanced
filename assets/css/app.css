@@ -2611,6 +2611,19 @@ div.room > div.mods > div.mods-inner-container > div.mod-category-spacer {
   min-height: 0.5em;
   margin-left: -0.5em;
 }
+div.room > div.mods > div.mods-inner-container > div.mod-category > button.toggle-category-button {
+  display: inline-block;
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  font-size: 75%;
+  transform: translateY(calc(-0.25 * var(--tile-size)));
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  text-align: center;
+}
 div.room > div.custom-json > textarea {
   position: absolute;
   background: #3f3f3f;
