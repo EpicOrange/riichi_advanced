@@ -18,7 +18,13 @@ defmodule RiichiAdvancedWeb.CompassComponent do
         <div class={["direction", dir]}>
           <div class={["riichi-tray", @turn == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
           <div class={["wind-marker", @turn == dir && "highlighted", @is_bot[dir] && "bot"]}><%= symbol %></div>
-          <div class="score-counter" :if={dir in @available_seats}><%= @score[dir] %></div>
+          <div class="score-counter" :if={dir in @available_seats}>
+            <%= if abs(@score[dir]) >= 1000000 && @score_e_notation do %>
+              <%= 1.0 * @score[dir] |> :erlang.float_to_binary() |> String.slice(0..3) %>e<b><%= @score[dir] |> abs() |> :math.log10() |> trunc() %></b>
+            <% else %>
+              <%= @score[dir] %>
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>

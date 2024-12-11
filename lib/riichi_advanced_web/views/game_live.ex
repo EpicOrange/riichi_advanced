@@ -170,6 +170,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
         display_riichi_sticks={@display_riichi_sticks}
         display_honba={@display_honba}
+        score_e_notation={Map.get(@state.rules, "score_e_notation", false)}
         available_seats={@state.available_seats}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>

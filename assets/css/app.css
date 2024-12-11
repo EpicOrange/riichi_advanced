@@ -501,6 +501,9 @@ div.compass > div.direction > div.score-counter {
   border-radius: calc(0.25 * var(--tile-size));
   color: var(--tile-back);
 }
+div.compass > div.direction > div.score-counter > b {
+  color: var(--tile-front);
+}
 div.compass > div.centerpiece {
   position: relative;
   text-align: center;
