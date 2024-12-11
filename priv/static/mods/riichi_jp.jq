@@ -58,7 +58,7 @@
   "Daichisei": "大七星",
   "Uushin Tsuukan": "五心通貫",
   "Sanrenkou": "三連刻",
-  "Honittsu": "混一気通貫",
+  "Sanshoku Ittsu": "混一気通貫",
   "Kyandonhou": "鏡同和",
   "Ryandoukou": "両同刻",
   "Choupaikou": "跳牌刻",
