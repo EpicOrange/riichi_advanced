@@ -1,7 +1,7 @@
 html, body {
   box-sizing: border-box;
   background: black;
-  font-family: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
+  font-family: "Open Sans", Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
   font-weight: normal;
   overflow-x: hidden;
   overflow-y: visible;

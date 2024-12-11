@@ -7,7 +7,7 @@ defmodule RiichiAdvancedWeb.Router do
     plug :fetch_live_flash
     plug :put_root_layout, html: {RiichiAdvancedWeb.Layouts, :root}
     plug :protect_from_forgery
-    plug :put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self'; style-src 'self' 'unsafe-inline';"}
+    plug :put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"}
   end
 
   pipeline :auth do
