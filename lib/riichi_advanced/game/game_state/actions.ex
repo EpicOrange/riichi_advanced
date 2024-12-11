@@ -593,7 +593,18 @@ defmodule RiichiAdvanced.GameState.Actions do
         if not state.log_loading_mode do
           Map.put(state, :game_active, false)
         else state end
-      "sort_hand"             -> update_player(state, context.seat, fn player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
+      "sort_hand"             ->
+        {hand, orig_ixs} = Enum.with_index(state.players[context.seat].hand)
+        |> Enum.sort_by(fn {tile, _ix} -> Utils.sort_value(tile) end)
+        |> Enum.unzip()
+        ix_map = Enum.with_index(orig_ixs) |> Map.new()
+        # map marked tiles' indices
+        state = update_in(state.marking[context.seat], &Enum.map(&1, fn {key, val} ->
+          if key == :hand do
+            {key, update_in(val.marked, fn marked -> Enum.map(marked, fn {tile, seat, ix} -> {tile, seat, Map.get(ix_map, ix, ix)} end) end)}
+          else {key, val} end
+        end))
+        state = update_player(state, context.seat, fn player -> %Player{ player | hand: hand } end)
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
         state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
