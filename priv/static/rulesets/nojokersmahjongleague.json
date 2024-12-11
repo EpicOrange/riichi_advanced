@@ -587,7 +587,7 @@
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]]}
+        [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
       ],
       "actions": [["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -622,7 +622,7 @@
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]]}
+        [{"name": "has_yaku_with_hand", "opts": [1]}, {"name": "has_yaku2_with_hand", "opts": [1]}]
       ],
       "actions": [["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     }

@@ -616,8 +616,8 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [1, ["yaku"]]},
-        {"name": "not_match", "opts": [["last_discard", "any_discard"], [[[["pair"], 1]]]]}
+        {"name": "not_match", "opts": [["last_discard", "any_discard"], [[[["pair"], 1]]]]},
+        {"name": "has_yaku_with_discard", "opts": [1]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
@@ -650,7 +650,7 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [1, ["yaku"]]}
+        {"name": "has_yaku_with_hand", "opts": [1]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]

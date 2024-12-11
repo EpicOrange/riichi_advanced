@@ -792,7 +792,7 @@
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [8, ["yaku", "meta_yaku", "extra_yaku"]]}
+        {"name": "has_yaku_with_discard", "opts": [8]}
       ],
       "actions": [
         ["big_text", "Hu"],
@@ -819,7 +819,7 @@
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ]
         ],
-        {"name": "has_yaku_with_call", "opts": [8, ["yaku", "meta_yaku", "extra_yaku"]]}
+        {"name": "has_yaku_with_call", "opts": [8]}
       ],
       "actions": [
         ["big_text", "Hu"],
@@ -839,7 +839,7 @@
         {"name": "status_missing", "opts": ["match_start", "won"]},
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [8, ["yaku", "meta_yaku", "extra_yaku"]]}
+        {"name": "has_yaku_with_hand", "opts": [8]}
       ],
       "actions": [
         ["big_text", "Zimo"],

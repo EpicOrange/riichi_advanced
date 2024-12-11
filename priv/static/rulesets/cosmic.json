@@ -33,7 +33,7 @@
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
-    {"id": "yakuman_only", "order": 1, "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
+    {"id": "yakuman_only", "conflicts": ["yaku/paarenchan"], "order": 1, "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
     {"id": "wareme", "name": "Wareme", "desc": "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."},
     {"id": "aotenjou", "order": 1, "name": "Aotenjou", "desc": "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."},
     {"id": "yakitori", "name": "Yakitori", "desc": "If you do not win any hands by the end of the game, you pay 4000 points to each player as a penalty."},
@@ -944,7 +944,7 @@
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [1, ["yaku"]]}
+        [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
       ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan"]
@@ -992,7 +992,7 @@
         {"name": "match", "opts": [["hand", "calls"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [1, ["yaku"]]}
+        [{"name": "has_yaku_with_hand", "opts": [1]}, {"name": "has_yaku2_with_hand", "opts": [1]}]
       ],
       "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     }

@@ -1,11 +1,11 @@
-def ryanhan_shibari($check):
+def ryanhan_shibari($check; $check_yakuman):
   [
     [
       {"name": "counter_at_most", "opts": ["paarenchan", 4]},
-      {"name": $check, "opts": [1, ["yaku", "meta_yaku"]]}
+      {"name": $check, "opts": [1]}
     ],
-    {"name": $check, "opts": [2, ["yaku", "meta_yaku"]]},
-    {"name": $check, "opts": [1, ["yakuman", "meta_yakuman"]]}
+    {"name": $check, "opts": [2]},
+    {"name": $check_yakuman, "opts": [1]}
   ] as $cond
   |
   (map(type == "object" and .name == $check) | index(true)) as $ix
@@ -44,8 +44,8 @@ def ryanhan_shibari($check):
 ]
 |
 # Ryanhan shibari for dealer at 5+ consecutive wins
-.buttons.ron.show_when |= ryanhan_shibari("has_yaku_with_discard")
+.buttons.ron.show_when |= ryanhan_shibari("has_yaku_with_discard"; "has_yaku2_with_discard")
 |
-.buttons.chankan.show_when |= ryanhan_shibari("has_yaku_with_call")
+.buttons.chankan.show_when |= ryanhan_shibari("has_yaku_with_call"; "has_yaku2_with_call")
 |
-.buttons.tsumo.show_when |= ryanhan_shibari("has_yaku_with_hand")
+.buttons.tsumo.show_when |= ryanhan_shibari("has_yaku_with_hand"; "has_yaku2_with_hand")

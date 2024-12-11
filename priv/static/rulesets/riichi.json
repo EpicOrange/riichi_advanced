@@ -43,7 +43,7 @@
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
     {"id": "no_kazoe_yakuman", "name": "No Kazoe Yakuman", "desc": "Disable kazoe yakuman. 13+ han is worth sanbaiman."},
     {"id": "no_double_yakuman", "name": "No Double Yakuman", "desc": "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."},
-    {"id": "yakuman_only", "order": 1, "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
+    {"id": "yakuman_only", "conflicts": ["yaku/paarenchan"], "order": 1, "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
     {"id": "wareme", "name": "Wareme", "desc": "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."},
     {"id": "aotenjou", "order": 1, "name": "Aotenjou", "desc": "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."},
     {"id": "yakitori", "name": "Yakitori", "desc": "If you do not win any hands by the end of the game, you pay 4000 points to each player as a penalty."},
@@ -66,7 +66,7 @@
     {"id": "yaku/tsubame_gaeshi", "name": "Tsubame Gaeshi", "desc": "Local yaku. 1 han if you win off a riichi declaration discard."},
     {"id": "yaku/shiiaru_raotai", "name": "Shiiaru Raotai", "desc": "Local yaku. 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."},
     {"id": "yaku/kanburi", "name": "Kanburi", "desc": "Local yaku. 1 han if you win off the tile discarded by a player who just called kan."},
-    {"id": "yaku/honors_chiitoitsu", "name": "Honors Chiitoitsu", "desc": "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds."},
+    {"id": "yaku/honors_chiitoitsu", "name": "Honors Chiitoitsu", "desc": "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."},
     {"id": "yaku/uushin_tsuukan", "name": "Uushin Tsuukan", "desc": "Local yaku. 1 han on top of ittsu if your winning tile is the 5 needed for ittsu."},
     // 2 han
     {"id": "yaku/open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
@@ -81,7 +81,7 @@
     {"id": "yaku/sanpuukou", "name": "Sanpuukou", "desc": "Local yaku. 2 han if you have three wind triplets."},
     {"id": "yaku/renkaihou", "name": "Renkaihou", "desc": "Local yaku. 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."},
     // 3 han
-    {"id": "yaku/isshoku_sanjun", "name": "Isshoku Sanjun", "desc": "Local yaku. 3 han if you have three of the exact same sequence in one suit, like 123m 123m 123m. Does not stack with iipeikou or sanrenkou."},
+    {"id": "yaku/isshoku_sanjun", "name": "Isshoku Sanjun", "desc": "Local yaku. 3 han if you have three of the exact same sequence in one suit, like 123m 123m 123m. Like iipeikou but three. Does not stack with iipeikou or sanrenkou."},
     {"id": "yaku/ittsu_chanta", "name": "Ittsu Chanta", "desc": "Local yaku. 2 han if you have ittsu, and if you ignore the 456, you have chanta (3 han if junchan). +1 han if closed. Does not stack with ittsu."},
     {"id": "yaku/tanfonhou", "name": "Tanfonhou", "desc": "Local yaku. 2 han if your hand contains no red. This means you can have only 248p23468s and honors except red dragon. 5 han intead (chintanfon) if no honor tiles, +1 han if closed."},
     {"id": "yaku/chinpeikou", "name": "Chinpeikou", "desc": "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits). Honor tile pairs are permitted (despite 'chin' being in the name)."},
@@ -93,9 +93,38 @@
     {"id": "yaku/ryanzou_chankan", "name": "Ryanzou Chankan", "desc": "Local yaku. Mangan if you win with chankan on the 2s (2 bamboo)."},
     {"id": "yaku/iipin_mouyue", "name": "Iipin Mouyue", "desc": "Local yaku. Mangan if you win with haitei (not houtei) on the 1p (1 circles)."},
     {"id": "yaku/chuupin_raoyui", "name": "Chuupin Raoyui", "desc": "Local yaku. Mangan if you win with houtei (not haitei) on the 9p (9 circles)."},
+    // {"id": "yaku/shanron_chonchu", "name": "Shanron Chonchu", "desc": "Local yaku. Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu that don't share any numbers, plus a pinzu pair."},
+    // {"id": "yaku/chiishin_uushii", "name": "Chiishin Uushii", "desc": "Local yaku. Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."},
+    // {"id": "yaku/maneman", "name": "Maneshi Mangan", "desc": "Local yaku. If you copy an opponent's first row of discards exactly, they will pay mangan if you win. Calls invalidate."},
     "Yakuman",
     {"id": "yaku/renhou_yakuman", "conflicts": ["yaku/renhou_mangan"], "name": "Renhou Yakuman", "desc": "Enable renhou yakuman."},
-    {"id": "yaku/paarenchan", "name": "Paarenchan", "desc": "The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
+    {"id": "yaku/paarenchan", "conflicts": ["yakuman_only"], "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
+    // {"id": "yaku/ishino_uenimo_sannen", "name": "Ishino Uenimo Sannen", "desc": "Local yakuman. If you win with double riichi and haitei/houtei, it's yakuman."},
+    // {"id": "yaku/toukanhou", "name": "Toukanhou", "desc": "Local yakuman. If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."},
+    // {"id": "yaku/shiisanpuutaa", "name": "Shiisanpuutaa", "desc": "Local yakuman. If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."},
+    // {"id": "yaku/shiisanuushi", "name": "Shiisanuushi", "desc": "Local yakuman. If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."},
+    // {"id": "yaku/suurenkou", "name": "Suurenkou", "desc": "Local yakuman. If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."},
+    // {"id": "yaku/suuchoupaikou", "name": "Suuchoupaikou", "desc": "Local yakuman. If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."},
+    // {"id": "yaku/daisharin", "name": "Daisharin etc.", "desc": "Local yakuman. If your hand is closed and your winning hand is 22334455667788 in one suit, it's yakuman."},
+    // {"id": "yaku/shousharin", "name": "Shousharin etc.", "desc": "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."},
+    // {"id": "yaku/isshoku_yonjun", "name": "Isshoku Yonjun", "desc": "Local yakuman. If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."},
+    // {"id": "yaku/hyakuman_goku", "name": "Hyakuman Goku", "desc": "Local yakuman. If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman."},
+    // {"id": "yaku/kachoufuugetsu", "name": "Kachoufuugetsu", "desc": "Local yakuman. If your hand is 555p (5 circles) + 111p (1 circles) + 111s (birds) + triplet of round or seat wind, it's yakuman."},
+    // {"id": "yaku/fuukasetsugetsu", "name": "Fuukasetsugetsu", "desc": "Local yakuman. If your hand is 555p (5 circles) + 111p (1 circles) + 555z (white dragon) + triplet of round or seat wind, it's yakuman."},
+    // {"id": "yaku/kouitten", "name": "Kouitten", "desc": "Local yakuman. Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons)."},
+    // {"id": "yaku/benikujaku", "name": "Benikujaku", "desc": "Local yakuman. Like ryuuiisou but red: you can only have 1579s and red dragon."},
+    // {"id": "yaku/kokuiisou", "name": "Kokuiisou", "desc": "Local yakuman. Like ryuuiisou but black: you can only have 248p and winds."},
+    // {"id": "yaku/ryuuiisourin", "name": "Ryuuiisourin", "desc": "Local yakuman. Like ryuuiisou but you have a pair of 5s (5 bamboo). This permits chiitoitsu hands."},
+    // {"id": "yaku/kouittenrin", "name": "Kouittenrin", "desc": "Local yakuman. Like kouitten but you have a pair of 5s (5 bamboo). This permits chiitoitsu hands."},
+    // {"id": "yaku/golden_gate_bridge", "name": "Golden Gate Bridge", "desc": "Local yakuman. If your hand contains 123 345 567 789 all in one suit, it's yakuman. No restrictions on your pair."},
+    // {"id": "yaku/american_civil_war", "name": "American Civil War", "desc": "Local yakuman. If you have no calls (not even ankan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and you have triplets of north and south winds, it's yakuman."},
+    // {"id": "yaku/tohoku_expressway", "name": "Tohoku Expressway", "desc": "Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman."},
+    // {"id": "yaku/tohoku_shinkansen", "name": "Tohoku Shinkansen", "desc": "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."},
+    // {"id": "yaku/blue_tunnel", "name": "Blue Tunnel", "desc": "Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman."},
+    // {"id": "yaku/chousangen", "name": "Chousangen", "desc": "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."},
+    // {"id": "yaku/junsei_ryuuiisou", "name": "Junsei Ryuuiisou", "desc": "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."},
+    // {"id": "yaku/chousuushi", "name": "Chousuushi", "desc": "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."}
+
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
@@ -121,9 +150,6 @@
     // {"id": "set", "name": "Set", "desc": "You are now playing the card game SET. Sets are no longer sequences or triplets -- instead the three tiles must all match on X property or all be different on X property for all X properties in {suit, suji, low/middle/high}."},
     // {"id": "double_wind_2_fu", "name": "Double Wind 2 Fu", "desc": "A pair of round+seat winds is worth 2 fu instead of 4 fu."},
     // {"id": "fives_are_honors", "name": "Fives Are Honors", "desc": "Fives are now honor tiles, and having a triplet of fives gives 1 han. Fives cannot be used in sequences."},
-    // local yaku:
-    // {"id": "iisousanshun", "name": "Iisousanshun", "desc": "Local yaku. 2/3 han (open/closed) for having three identical sequences of the same suit, like 234,234,234. Like iipeikou but three."},
-    // {"id": "hyakuman_goku", "name": "Hyakuman Goku", "desc": "Local yakuman achieved if your hand is purely character tiles whose numbers sum up to at least 100."},
   ],
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
   "wall": ["1m", "1m", "1m", "1m",
@@ -648,7 +674,7 @@
         {"name": "not_status", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [1, ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]]}
+        [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
       ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -683,7 +709,7 @@
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
         {"name": "not_status", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [1, ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]]}
+        [{"name": "has_yaku_with_hand", "opts": [1]}, {"name": "has_yaku2_with_hand", "opts": [1]}]
       ],
       "actions": [["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     }

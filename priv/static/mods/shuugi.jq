@@ -4,7 +4,7 @@
   ["add_counter", "shuugi_payment", "ura"],
   ["when", [{"name": "status", "opts": ["riichi", "shiro_pocchi"]}], [["add_counter", "shuugi_payment", 1]]],
   ["when", [{"name": "status", "opts": ["kindora"]}], [["add_counter", "shuugi_payment", 2]]],
-  ["when", [{"name": "has_yaku", "opts": [1, ["yakuman"]]}], [["set_status", "yakuman"], ["add_counter", "shuugi_payment", 5]]],
+  ["when", [{"name": "has_yaku2", "opts": [1]}], [["set_status", "yakuman"], ["add_counter", "shuugi_payment", 5]]],
   ["add_counter", "shuugi_payment", "toriuchi"],
   ["set_counter_all", "shuugi_payment", "shuugi_payment"],
   ["when", ["won_by_discard"], [
