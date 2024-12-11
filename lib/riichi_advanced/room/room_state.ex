@@ -160,6 +160,24 @@ defmodule RiichiAdvanced.RoomState do
     |> Enum.map(fn {mod, _opts} -> mod end)
   end
 
+  def toggle_mod(state, mod_name, enabled) do
+    state = put_in(state.mods[mod_name].enabled, enabled)
+    state = if enabled do
+      # enable dependencies and disable conflicting mods
+      state = for dep <- state.mods[mod_name].deps, reduce: state do
+        state -> put_in(state.mods[dep].enabled, true)
+      end
+      for conflict <- state.mods[mod_name].conflicts, reduce: state do
+        state -> put_in(state.mods[conflict].enabled, false)
+      end
+    else
+      # disable dependent mods
+      for {dep, opts} <- state.mods, mod_name in opts.deps, reduce: state do
+        state -> put_in(state.mods[dep].enabled, false)
+      end
+    end
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.session_id, "state_updated", %{"state" => state})
@@ -295,21 +313,15 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:toggle_mod, mod, enabled}, state) do
-    state = put_in(state.mods[mod].enabled, enabled)
-    state = if enabled do
-      # enable dependencies and disable conflicting mods
-      state = for dep <- state.mods[mod].deps, reduce: state do
-        state -> put_in(state.mods[dep].enabled, true)
-      end
-      for conflict <- state.mods[mod].conflicts, reduce: state do
-        state -> put_in(state.mods[conflict].enabled, false)
-      end
-    else
-      # disable dependent mods
-      for {dep, opts} <- state.mods, mod in opts.deps, reduce: state do
-        state -> put_in(state.mods[dep].enabled, false)
-      end
+  def handle_cast({:toggle_mod, mod_name, enabled}, state) do
+    state = toggle_mod(state, mod_name, enabled)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:toggle_category, category_name}, state) do
+    state = for {mod_name, mod} <- state.mods, mod.category == category_name, reduce: state do
+      state -> toggle_mod(state, mod_name, not mod.enabled)
     end
     state = broadcast_state_change(state)
     {:noreply, state}

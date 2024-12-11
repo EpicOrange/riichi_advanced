@@ -204,9 +204,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def handle_event("toggle_category", %{"category" => category}, socket) do
-    for {name, mod} <- socket.assigns.state.mods, mod.category == category do
-      GenServer.cast(socket.assigns.room_state, {:toggle_mod, name, not mod.enabled})
-    end
+    GenServer.cast(socket.assigns.room_state, {:toggle_category, category})
     {:noreply, socket}
   end
 
