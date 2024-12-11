@@ -1316,6 +1316,7 @@
       ["when", [{"name": "everyone_status", "opts": ["suufonrenda_4z"]}], [["pause", 1000], ["abortive_draw", "Suufon Renda"]]]
     ]]]],
     ["tanyaohai", [["unset_status", "nagashi"]]],
+    ["any", [["unset_status", "discards_empty"]]],
     ["2", [["when", [{"name": "status", "opts": ["takimi-haru"]}, {"name": "status_missing", "opts": ["extra_turn_taken"]}], [
       ["set_status", "extra_turn"],
       ["big_text", "Takimi Haru: extra turn!"],
@@ -1434,7 +1435,7 @@
   },
   "after_saki_start": {
     "actions": [
-      ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["add_attr", ["hand", "draw"], ["revealed"]], ["set_status", "double_score"]]],
+      ["when", [{"name": "status", "opts": ["jindai-komaki"]}], [["set_status", "double_score"]]],
       ["when", [{"name": "status", "opts": ["miyanaga-saki"]}], [["set_tile_alias", [["1z", "hand"], ["2z", "hand"], ["4z", "hand"]], ["3z"]]]],
       ["when", [{"name": "status", "opts": ["miyanaga-teru"]}], [["set_status", "multiply_honba_with_han"]]],
       ["when", [{"name": "status", "opts": ["senoo-kaori"]}], [["set_tile_ordering", ["1z", "2z", "3z", "4z"]], ["set_tile_ordering", ["5z", "6z", "7z"]]]],
