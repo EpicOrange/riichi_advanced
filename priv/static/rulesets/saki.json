@@ -901,6 +901,7 @@
       "Yakuman"
     ],
     "yaku_lists": ["yaku", "meta_yaku", "meta_yaku_2", "extra_yaku"],
+    "extra_yaku_lists": ["extra_yaku"],
     "yaku2_lists": ["yakuman"],
     "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
     "yaku2_overrides_yaku1": true,

@@ -637,6 +637,7 @@
       "Sextuple Yakuman"
     ],
     "yaku_lists": ["yaku", "extra_yaku"],
+    "extra_yaku_lists": ["extra_yaku"],
     "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
     "draw_tenpai_payments": [1000, 1500, 3000],
     "draw_nagashi_payments": [2000, 4000],

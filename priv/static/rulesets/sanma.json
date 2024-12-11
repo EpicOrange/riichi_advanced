@@ -483,6 +483,7 @@
     ],
     "yaku_lists": ["yaku", "extra_yaku"],
     "yaku2_lists": ["yakuman"],
+    "extra_yaku_lists": ["extra_yaku"],
     "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
     "yaku2_overrides_yaku1": true,
     "draw_tenpai_payments": [1000, 2000, 0],

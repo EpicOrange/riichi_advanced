@@ -142,6 +142,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
     |> Enum.map(fn {seat, _player} -> seat end)
   end
 
+  def get_yaku_lists(state) do
+    (get_in(state.rules["score_calculation"]["yaku_lists"]) || []) -- (get_in(state.rules["score_calculation"]["extra_yaku_lists"]) || [])
+  end
+
+  def get_yaku2_lists(state) do
+    (get_in(state.rules["score_calculation"]["yaku2_lists"]) || []) -- (get_in(state.rules["score_calculation"]["extra_yaku_lists"]) || [])
+  end
+
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
     negated = String.starts_with?(cond_spec, "not_")
     cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
@@ -191,14 +199,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_draw"              -> context.win_source == :draw
       "won_by_discard"           -> context.win_source == :discard
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
-      "has_yaku"                 -> context.seat in state.winner_seats && Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku_lists"]) || [], Enum.at(opts, 0, 1), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
-      "has_yaku2"                -> context.seat in state.winner_seats && Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku2_lists"]) || [], Enum.at(opts, 0, 1), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
-      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku_lists"]) || [], Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_yaku_with_discard"    -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku_lists"]) || [], Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
-      "has_yaku_with_call"       -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku_lists"]) || [], Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
-      "has_yaku2_with_hand"      -> Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku2_lists"]) || [], Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_yaku2_with_discard"   -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku2_lists"]) || [], Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
-      "has_yaku2_with_call"      -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, get_in(state.rules["score_calculation"]["yaku2_lists"]) || [], Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
+      "has_yaku"                 -> context.seat in state.winner_seats && Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
+      "has_yaku2"                -> context.seat in state.winner_seats && Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
+      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
+      "has_yaku_with_discard"    -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
+      "has_yaku_with_call"       -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
+      "has_yaku2_with_hand"      -> Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
+      "has_yaku2_with_discard"   -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), context.seat, last_action.tile, :discard)
+      "has_yaku2_with_call"      -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), context.seat, last_action.tile, :call)
       "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, :declared, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_declared_yaku_with_discard" -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, opts, :declared, context.seat, last_action.tile, :discard)
       "has_declared_yaku_with_call"    -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, opts, :declared, context.seat, last_action.tile, :call)
