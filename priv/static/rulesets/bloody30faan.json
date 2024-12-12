@@ -738,34 +738,40 @@
     {
       "display_name": "Three Number Hand",
       "value": 5,
-      "when": [[
-        3,
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["1m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["2m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["3m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["4m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["5m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["6m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["7m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["8m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["9m"], 1] ]]]}
-      ]]
+      "when": [
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]},
+        [
+          3,
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["1m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["2m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["3m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["4m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["5m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["6m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["7m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["8m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["9m"], 1] ]]]}
+        ]
+      ]
     },
     {
       "display_name": "Two Number Hand",
       "value": 10,
-      "when": [[
-        2,
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["1m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["2m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["3m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["4m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["5m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["6m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["7m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["8m"], 1] ]]]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["9m"], 1] ]]]}
-      ]]
+      "when": [
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]},
+        [
+          2,
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["1m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["2m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["3m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["4m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["5m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["6m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["7m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["8m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["9m"], 1] ]]]}
+        ]
+      ]
     },
     // (5) 偶然類
     { "display_name": "After a Flower", "value": 1, "when": [{"name": "status", "opts": ["joker"]}] },
