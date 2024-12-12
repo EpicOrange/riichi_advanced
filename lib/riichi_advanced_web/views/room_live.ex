@@ -5,6 +5,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     socket = socket
     |> assign(:session_id, params["id"])
     |> assign(:ruleset, params["ruleset"])
+    |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
@@ -35,6 +36,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       socket = socket
       |> assign(:room_state, room_state)
       |> assign(:state, state)
+      |> assign(:display_name, state.display_name)
 
       # fetch messages
       messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
@@ -75,7 +77,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <% end %>
         </label>
         <div class="variant">
-          Variant:&nbsp;<b><%= @ruleset %></b>
+          Variant:&nbsp;<b><%= @display_name %></b>
           <%= if @state.tutorial_link != nil do %>
             <br/>
             <a class="tutorial-link" href={@state.tutorial_link} target="_blank">

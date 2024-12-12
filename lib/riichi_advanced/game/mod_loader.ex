@@ -46,12 +46,12 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   @modpacks %{
-    # "sanma" => %{
-    #   display_name: "Sanma",
-    #   ruleset: "riichi",
-    #   mods: ["sanma"],
-    #   default_mods: [],
-    # }
+    "sanma" => %{
+      display_name: "Sanma",
+      ruleset: "riichi",
+      mods: ["sanma"],
+      default_mods: [],
+    }
   }
 
   defp read_ruleset_json(ruleset) do
@@ -73,6 +73,7 @@ defmodule RiichiAdvanced.ModLoader do
         mod_names = Map.get(modpack, :mods, [])
         display_name = Map.get(modpack, :display_name, ruleset)
         query = ".default_mods += #{mod_names_to_array(Map.get(modpack, :default_mods, []))} | .display_name = \"#{display_name}\""
+        query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = #{modpack.tutorial_link}" else "del(.tutorial_link)" end
         Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, read_ruleset_json(modpack.ruleset), "")
         |> apply_mods(mod_names, modpack.ruleset)
         |> JQ.query_string_with_string!(query)
