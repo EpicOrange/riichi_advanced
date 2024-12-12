@@ -153,6 +153,7 @@
     // {"id": "double_wind_2_fu", "name": "Double Wind 2 Fu", "desc": "A pair of round+seat winds is worth 2 fu instead of 4 fu."},
     // {"id": "fives_are_honors", "name": "Fives Are Honors", "desc": "Fives are now honor tiles, and having a triplet of fives gives 1 han. Fives cannot be used in sequences."},
   ],
+  "display_name": "Riichi",
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",

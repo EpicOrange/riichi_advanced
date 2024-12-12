@@ -30,6 +30,7 @@ defmodule Room do
     private: true,
     starting: false,
     started: false,
+    display_name: "",
     mods: %{},
     categories: [],
     tutorial_link: nil,
@@ -43,6 +44,7 @@ end
 
 
 defmodule RiichiAdvanced.RoomState do
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   use GenServer
 
   def start_link(init_data) do
@@ -64,14 +66,7 @@ defmodule RiichiAdvanced.RoomState do
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_room", state.ruleset, state.session_id))
 
     # read in the ruleset
-    ruleset_json = if state.ruleset == "custom" do
-      RiichiAdvanced.ETSCache.get(state.session_id, ["{}"], :cache_rulesets) |> Enum.at(0)
-    else
-      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
-        {:ok, ruleset_json} -> ruleset_json
-        {:error, _err}      -> nil
-      end
-    end
+    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.session_id)
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
@@ -113,6 +108,7 @@ defmodule RiichiAdvanced.RoomState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
+      display_name: Map.get(rules, "display_name", state.ruleset),
       mods: mods |> Map.new(fn mod -> {mod["id"], %{
         enabled: mod["id"] in default_mods,
         index: mod["index"],

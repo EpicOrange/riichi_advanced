@@ -37,6 +37,7 @@ end
 
 
 defmodule RiichiAdvanced.LobbyState do
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   use GenServer
 
   def start_link(init_data) do
@@ -57,12 +58,8 @@ defmodule RiichiAdvanced.LobbyState do
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_lobby", state.ruleset, ""))
 
     # read in the ruleset
-    ruleset_json = if state.ruleset != "custom" do
-      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
-        {:ok, ruleset_json} -> ruleset_json
-        {:error, _err}      -> nil
-      end
-    else "{}" end
+
+    ruleset_json = ModLoader.get_ruleset_json(state.ruleset)
 
     # put params and process ids into state
     state = Map.merge(state, %Lobby{

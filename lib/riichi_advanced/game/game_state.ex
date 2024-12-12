@@ -135,6 +135,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   use GenServer
 
   @timer 10
@@ -199,23 +200,12 @@ defmodule RiichiAdvanced.GameState do
     }
 
     # read in the ruleset
-    ruleset_json = if state.ruleset == "custom" do
-      RiichiAdvanced.ETSCache.get(state.session_id, ["{}"], :cache_rulesets) |> Enum.at(0)
-    else
-      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{state.ruleset <> ".json"}")) do
-        {:ok, ruleset_json} -> ruleset_json
-        {:error, _err}      -> nil
-      end
-    end
-
-    # strip comments
-    orig_ruleset_json = ruleset_json
-    ruleset_json = Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")
+    mods = Map.get(state, :mods, [])
+    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.session_id, not Enum.empty?(mods))
 
     # apply mods
-    mods = Map.get(state, :mods, [])
     ruleset_json = if state.ruleset != "custom" do
-      RiichiAdvanced.ModLoader.apply_mods(state.ruleset, ruleset_json, mods)
+      RiichiAdvanced.ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
     else ruleset_json end
     if not Enum.empty?(mods) do
       # cache mods
@@ -227,7 +217,7 @@ defmodule RiichiAdvanced.GameState do
       ruleset: state.ruleset,
       session_id: state.session_id,
       mods: state.mods,
-      ruleset_json: if Enum.empty?(mods) do orig_ruleset_json else ruleset_json end,
+      ruleset_json: ruleset_json,
       supervisor: supervisor,
       mutex: mutex,
       smt_solver: smt_solver,
