@@ -258,6 +258,9 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
+  "play_restrictions": [
+    [["flower"], []]
+  ],
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "double_kan"],
@@ -384,8 +387,9 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]]
+      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", "not_no_tiles_remaining", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]],
+      "unskippable": true
     }
   },
   "auto_buttons": {

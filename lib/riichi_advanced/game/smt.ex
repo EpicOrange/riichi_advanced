@@ -567,7 +567,7 @@ defmodule RiichiAdvanced.SMT do
               groups
               |> Enum.map(&remove_group_keywords/1)
               |> Enum.map(fn group -> {group, Enum.find_index(all_sets, & &1 == group), Enum.find_index(all_tile_groups, & &1 == {group, num, unique} || &1 == {[group], num, unique})} end)
-              |> Enum.flat_map(fn {group, ix_set, ix_tile_group} -> cond do
+              |> Enum.flat_map(fn {_group, ix_set, ix_tile_group} -> cond do
                 is_integer(ix_set) -> [{[ix_set+1], []}]
                 is_integer(ix_tile_group) -> [{[], [ix_tile_group+1]}]
                 true -> [] # perhaps group contains tiles not in our encoding, and so was filtered out of all_tile_groups

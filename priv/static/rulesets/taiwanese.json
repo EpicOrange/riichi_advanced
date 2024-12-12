@@ -356,7 +356,8 @@
   },
   "play_restrictions": [
     [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
-    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]]
+    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]],
+    [["flower"], []]
   ],
   "before_turn_change": {
     "actions": [
@@ -598,7 +599,7 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start", "flower"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start", "flower"]}, "not_just_discarded", "not_no_tiles_remaining", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
       "actions": [
         ["big_text", "Flower"],
         ["set_status", "flower"],
