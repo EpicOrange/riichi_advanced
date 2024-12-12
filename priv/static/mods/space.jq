@@ -1,3 +1,10 @@
+def fix_chanta_match_definition($new_groups):
+  map(if type == "array" then
+    map(
+      if type == "array" and any(.[0][]; . == "junchan_1") then .[0] += $new_groups else . end
+    )
+  else . end);
+
 # add open kokushi
 .kokushi_tenpai_definition += [
   [ "unique",
@@ -124,3 +131,31 @@ end
 .buttons |= if has("chii") then
   .chii.show_when |= map(if . == "kamicha_discarded" then "someone_else_just_discarded" else . end)
 else . end
+|
+# update chanta and junchan
+if any(.wall[]; . == "10m") then
+  # ten mod
+  .set_definitions += {
+    "junchan_space_1": ["9m","10m","1m"],
+    "junchan_space_2": ["10m","1m","2m"],
+    "junchan_space_3": ["9p","10p","1p"],
+    "junchan_space_4": ["10p","1p","2p"],
+    "junchan_space_5": ["9s","10s","1s"],
+    "junchan_space_6": ["10s","1s","2s"]
+  }
+else
+  .set_definitions += {
+    "junchan_space_1": ["8m","9m","1m"],
+    "junchan_space_2": ["9m","1m","2m"],
+    "junchan_space_3": ["8p","9p","1p"],
+    "junchan_space_4": ["9p","1p","2p"],
+    "junchan_space_5": ["8s","9s","1s"],
+    "junchan_space_6": ["9s","1s","2s"]
+  }
+end
+|
+.yaku |= map(.when |= walk(
+  if type == "object" and (.name == "match" or .name == "not_match") then
+    .opts[1] |= fix_chanta_match_definition(["junchan_space_1", "junchan_space_2", "junchan_space_3", "junchan_space_4", "junchan_space_5", "junchan_space_6"])
+  else . end
+))

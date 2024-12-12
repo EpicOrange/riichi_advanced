@@ -131,7 +131,7 @@
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
     {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
     {"id": "star_suit", "name": "Star Suit (beta)", "desc": "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."},
-    {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
+    {"id": "space", "order": 1, "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
     {"id": "galaxy", "conflicts": ["chinitsu"], "name": "Galaxy Mahjong", "desc": "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."},
     {"id": "no_honors", "conflicts": ["shiro_pocchi", "golden_chun", "blue_dragon"], "name": "No Honors", "desc": "Removes the honor tiles (winds and dragons) from the game."},
@@ -286,7 +286,11 @@
   "tenpai_14_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ]
+    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
@@ -339,31 +343,31 @@
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["iipeikou"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]}
       ]
     },
-    { "display_name": "Haku", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
-    { "display_name": "Hatsu", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
-    { "display_name": "Chun", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}] },
+    { "display_name": "Haku", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["haku"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}] },
+    { "display_name": "Hatsu", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["hatsu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}] },
+    { "display_name": "Chun", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["chun"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}] },
     {
       "display_name": "Round Wind",
       "value": 1,
       "when": [[
-        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
-        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
-        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
-        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
       "when": [[
-        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
     { "display_name": "Double Riichi", "value": 2, "when": [{"name": "status", "opts": ["double_riichi"]}] },
-    { "display_name": "Chiitoitsu", "value": 2, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
+    { "display_name": "Chiitoitsu", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
     {
       "display_name": "Chanta",
       "value": 1,
@@ -542,7 +546,7 @@
     // this is run after every call and discard, before the turn changes
     "turn_cleanup": [
       // if we just reached then place down a riichi stick
-      ["when", [{"name": "status", "opts": ["just_reached"]}], [["add_score", -1000], ["put_down_riichi_stick"]]],
+      ["when", [{"name": "status", "opts": ["just_reached"]}], [["as", "last_discarder", [["run", "put_down_riichi_stick"]]]]],
       // unset furiten (unless in riichi)
       ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
       // tenpai check
@@ -575,6 +579,11 @@
       ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
       ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
       ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+    ],
+    "put_down_riichi_stick": [
+      ["when", [{"name": "status_missing", "opts": ["put_down_riichi_stick"]}], [
+        ["add_score", -1000], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]
+      ]]
     ]
   },
   "before_turn_change": {
@@ -648,7 +657,8 @@
         "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
       },
       "upgrades": "pon",
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}],
+      // not sure why we have "not_just_discarded", "not_just_called" instead of "has_draw"
+      "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}],
       "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw"]]
     },
     "riichi": {
@@ -660,7 +670,7 @@
         {"name": "has_score", "opts": [1000]},
         "next_draw_possible",
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}
       ],
       "actions": [
         ["big_text", "Riichi"],

@@ -13,3 +13,5 @@
     ]
   }
 ]
+|
+.yaku_precedence.Chiitoitsu += ["Uumensai"]

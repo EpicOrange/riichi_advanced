@@ -51,6 +51,12 @@ defmodule RiichiAdvanced.ModLoader do
       ruleset: "riichi",
       mods: ["sanma"],
       default_mods: [],
+    },
+    "cosmic" => %{
+      display_name: "Cosmic Riichi",
+      ruleset: "riichi",
+      mods: ["cosmic_base"],
+      default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yakuman_13_han", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/isshoku_sanjun", "yaku/isshoku_yonjun"],
     }
   }
 
