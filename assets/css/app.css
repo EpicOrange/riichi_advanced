@@ -142,8 +142,15 @@ div.hand {
 div.self { z-index: 1; } /* your stuff goes above other people's stuff */
 div.hand, div.draws { z-index: 2; } /* so if they overlap with calls, the hand goes on top */
 div.hand.self, div.draws.self { z-index: 3; } /* your stuff goes above other people's stuff */
-div.tiles {
+div.tiles, div.call.aside {
   margin-left: calc(2 * var(--tile-size));
+  flex-wrap: wrap-reverse;
+  row-gap: calc(0.25 * var(--tile-size));
+  max-width: calc(17.5 * 0.75 * var(--tile-size));
+}
+div.call.aside {
+  justify-content: flex-end;
+  max-width: calc(5.5 * 0.75 * var(--tile-size));
 }
 div.calls {
   position: absolute;
@@ -1126,6 +1133,9 @@ div.buttons, div.call-buttons-container {
   right: calc(1.5 * var(--tile-size));
   align-items: flex-end;
   z-index: 10;
+}
+div.buttons.elevated, div.call-buttons-container.elevated {
+  bottom: calc(2.5 * var(--tile-size));
 }
 div.call-buttons-container {
   display: flex;
