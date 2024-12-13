@@ -1125,8 +1125,8 @@ defmodule RiichiAdvanced.GameState do
     tile_aliases = state.players[seat].tile_aliases
     score_rules = state.rules["score_calculation"]
     {_yakuman, _han, _minipoints, hand} = Enum.flat_map(win_definitions, &Riichi.remove_match_definition(tiles, [], ["almost" | &1], ordering, ordering_r, tile_aliases))
-    |> Enum.take(100)
-    |> Enum.map(fn {hand, calls} -> tiles -- hand end)
+    |> Enum.take(20)
+    |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
     |> Enum.uniq()
     |> Enum.map(fn hand ->
       state2 = update_player(state, seat, &%Player{ &1 | hand: hand })

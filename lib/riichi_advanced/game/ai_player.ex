@@ -321,7 +321,7 @@ defmodule RiichiAdvanced.AIPlayer do
         state = if not Map.has_key?(state, :minefield_hand) || Map.get(state, :minefield_tiles, []) != player.hand do
           state
           |> Map.put(:minefield_tiles, player.hand)
-          |> Map.put(:minefield_hand, GenServer.call(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win}))
+          |> Map.put(:minefield_hand, GenServer.call(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win}, 30000))
         else state end
         remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
         {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
