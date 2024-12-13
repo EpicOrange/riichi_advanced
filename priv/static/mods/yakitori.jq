@@ -13,8 +13,8 @@
 .before_conclusion.actions += [
   ["when_anyone", [{"name": "status", "opts": ["yakitori_unflipped"]}], [
     ["push_message", "pays everyone 4000 points for not winning any round"],
-    ["add_score", -4000], ["add_score", 4000, "shimocha"],
-    ["add_score", -4000], ["add_score", 4000, "toimen"],
-    ["add_score", -4000], ["add_score", 4000, "kamicha"]
+    ["subtract_score", 4000], ["add_score", 4000, "shimocha"],
+    ["subtract_score", 4000], ["add_score", 4000, "toimen"],
+    ["subtract_score", 4000], ["add_score", 4000, "kamicha"]
   ]]
 ]

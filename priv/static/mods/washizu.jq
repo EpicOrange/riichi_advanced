@@ -1,10 +1,3 @@
-def change_riichi_cost($cost):
-  map(
-    if .[0] == "when" and any(.[1][]; type == "object" and .name == "status" and .opts == ["just_reached"]) then
-      .[2] |= map(if .[0] == "add_score" then .[1] = $cost else . end)
-    else . end
-  );
-
 .wall |= (to_entries | map(if (.key % 4 != 0) then .value = [.value, "revealed", "transparent"] else . end) | map(.value))
 |
 # divide all scores by 10 (1000 pts -> 100 ccs)
@@ -27,15 +20,3 @@ def change_riichi_cost($cost):
 }
 |
 .initial_score = 2500
-|
-# old riichi cost (not using functions)
-.before_turn_change.actions |= change_riichi_cost(-100)
-|
-# old riichi cost (not using functions)
-.before_call.actions |= change_riichi_cost(-100)
-|
-# new riichi cost (using functions)
-.functions.turn_cleanup |= change_riichi_cost(-100)
-|
-# change score requirement for riichi
-.buttons.riichi.show_when |= map(if type == "object" and .name == "has_score" then .opts[0] = 100 else . end)

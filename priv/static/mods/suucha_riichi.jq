@@ -1,6 +1,6 @@
 .before_turn_change.actions = [
-  ["when", [{"name": "everyone_status", "opts": ["riichi"]}], [
-    ["add_score", -1000],
+  ["when", [{"name": "num_players", "opts": [4]}, {"name": "everyone_status", "opts": ["riichi"]}], [
+    ["subtract_score", "riichi_value"],
     ["put_down_riichi_stick"],
     ["unset_status", "just_reached"],
     ["pause", 1000],

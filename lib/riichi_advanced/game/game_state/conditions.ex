@@ -1,5 +1,6 @@
 
 defmodule RiichiAdvanced.GameState.Conditions do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
@@ -253,8 +254,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           :kamicha  -> draws_left >= 1
           :self     -> draws_left >= 4
         end
-      "has_score"                -> state.players[context.seat].score >= Enum.at(opts, 0, 0)
-      "has_score_below"          -> state.players[context.seat].score < Enum.at(opts, 0, 0)
+      "has_score"                -> state.players[context.seat].score >= Actions.interpret_amount(state, context, Enum.at(opts, 0, 0))
+      "has_score_below"          -> state.players[context.seat].score < Actions.interpret_amount(state, context, Enum.at(opts, 0, 0))
       "round_wind_is"            ->
         round_wind = Riichi.get_round_wind(state.kyoku, length(state.available_seats))
         case Enum.at(opts, 0, "east") do
@@ -526,6 +527,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             |> Enum.empty?()
         end
       "is_ai"               -> is_pid(Map.get(state, context.seat))
+      "num_players"         -> length(state.available_seats) == Enum.at(opts, 0, 4)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

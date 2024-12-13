@@ -1,10 +1,3 @@
-def change_riichi_cost($cost):
-  map(
-    if .[0] == "when" and any(.[1][]; type == "object" and .name == "status" and .opts == ["just_reached"]) then
-      .[2] |= map(if .[0] == "add_score" then .[1] = $cost else . end)
-    else . end
-  );
-
 def change_button_name($button; $text):
   .display_name = $button
   |
@@ -40,8 +33,6 @@ def change_button_name($button; $text):
   "win_with_pao_name": "Mah Jongg",
   "exhaustive_draw_name": "Draw",
 }
-|
-.functions.turn_cleanup |= change_riichi_cost(-10)
 |
 .buttons.chii |= change_button_name("Run"; "Run")
 |

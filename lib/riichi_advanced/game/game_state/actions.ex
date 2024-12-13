@@ -338,7 +338,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  defp interpret_amount(state, context, amt_spec) do
+  def interpret_amount(state, context, amt_spec) do
     case amt_spec do
       ["count_matches" | opts] ->
         # count how many times the given hand calls spec matches the given match definition
@@ -411,6 +411,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         else 0 end
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
+      ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0
+      ["honba_value" | _opts] -> get_in(state.rules["score_calculation"]["honba_value"]) || 0
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->
@@ -616,6 +618,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       "add_score"             ->
         recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
         amount = interpret_amount(state, context, [Enum.at(opts, 0, 0)])
+        for recipient <- recipients, reduce: state do
+          state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
+        end
+      "subtract_score"             ->
+        recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
+        amount = -interpret_amount(state, context, [Enum.at(opts, 0, 0)])
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
         end

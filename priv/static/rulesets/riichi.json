@@ -582,7 +582,7 @@
     ],
     "put_down_riichi_stick": [
       ["when", [{"name": "status_missing", "opts": ["put_down_riichi_stick"]}], [
-        ["add_score", -1000], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]
+        ["subtract_score", "riichi_value"], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]
       ]]
     ]
   },
@@ -667,7 +667,7 @@
         "our_turn",
         "has_draw",
         {"name": "status_missing", "opts": ["riichi"]},
-        {"name": "has_score", "opts": [1000]},
+        {"name": "has_score", "opts": ["riichi_value"]},
         "next_draw_possible",
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}

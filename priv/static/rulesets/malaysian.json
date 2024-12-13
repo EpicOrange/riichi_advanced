@@ -403,18 +403,18 @@
         ["add_counter", "fly", "count_matches", ["hand", "calls"], ["fly"]]
       ]],
       ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
-        ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
+        ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
         ["when", [{"name": "counter_equals", "opts": ["fly", 1]}], [["push_message", "is paid 50 from all players for having 1 fly tile"]]],
         ["when", [{"name": "counter_equals", "opts": ["fly", 2]}], [["push_message", "is paid 100 from all players for having 2 fly tiles"]]],
         ["when", [{"name": "counter_equals", "opts": ["fly", 3]}], [["push_message", "is paid 150 from all players for having 3 fly tiles"]]],
@@ -433,18 +433,18 @@
       ]],
       ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
         ["push_message", "is paid 50 from all players for each of their fly tiles"],
-        ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"]]]
+        ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]]
       ]]
     ]
   },
@@ -462,9 +462,9 @@
           [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ [["1y"], 4] ]]]}]
         ]], [
           ["push_message", "is paid 100 from all players for completing a set of flowers before the first turn"],
-          ["when", ["shimocha_exists"], [["add_score", 100], ["add_score", -100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 100], ["add_score", -100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 100], ["add_score", -100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]]
+          ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
+          ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
+          ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]]
         ]],
         ["draw"]
       ],
@@ -511,7 +511,7 @@
       "actions": [
         ["big_text", "Gong"], ["call"], ["change_turn", "self"],
         ["push_message", "is paid 100 from the discarder for calling gong"],
-        ["add_score", 100], ["add_score", -100, "last_discarder"], ["big_text", "  -100  ", "last_discarder"],
+        ["add_score", 100], ["subtract_score", 100, "last_discarder"], ["big_text", "  -100  ", "last_discarder"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw"]
@@ -526,9 +526,9 @@
       "actions": [
         ["big_text", "Gong"], ["self_call"],
         ["push_message", "is paid 100 from all players for making a concealed gong"],
-        ["when", ["shimocha_exists"], [["add_score", 100], ["add_score", -100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
-        ["when", ["toimen_exists"], [["add_score", 100], ["add_score", -100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
-        ["when", ["kamicha_exists"], [["add_score", 100], ["add_score", -100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]],
+        ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw"]
@@ -543,9 +543,9 @@
       "actions": [
         ["big_text", "Gong"], ["upgrade_call"],
         ["push_message", "is paid 50 from all players for upgrading a pong into a gong"],
-        ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
-        ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
-        ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]],
+        ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw"]
@@ -615,9 +615,9 @@
           [{"name": "match", "opts": [["call_choice"], [[ [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ [["1y"], 4] ]]]}]
         ]], [
           ["push_message", "is paid 50 from all players for completing a set of flowers"],
-          ["when", ["shimocha_exists"], [["add_score", 50], ["add_score", -50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 50], ["add_score", -50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 50], ["add_score", -50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]]
+          ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
+          ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
+          ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]]
         ]],
         ["set_status", "flower"],
         ["draw"]
