@@ -165,7 +165,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         tiles_left={length(@state.wall) - @state.wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
-        riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
+        riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
         riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
         score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
         display_riichi_sticks={@display_riichi_sticks}
@@ -309,7 +309,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           id="centerpiece-status-bar"
           tiles_left={length(@state.wall) - @state.wall_index}
           honba={@state.honba}
-          riichi_sticks={Utils.try_integer(@state.pot / (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1000))}
+          riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
           display_riichi_sticks={@display_riichi_sticks}
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />

@@ -8,13 +8,17 @@
 |
 .functions.do_kan_draw = [["set_status", "kan"], ["draw"]]
 |
-.initial_score = 100000
+.initial_score = 150000
+|
+.display_riichi_sticks = false
+|
+.display_honba = false
+|
+.score_calculation.riichi_value = 0
+|
+.score_calculation.honba_value = 0
 |
 .buttons |= del(.chii) | del(.pon) | del(.daiminkan)
-|
-.buttons.riichi.show_when |= map(select(. != {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}))
-|
-.play_restrictions |= map(select(. != [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]]))
 |
 .yakuman += [
   {"display_name": "_clear_yaku", "value": 1, "when": [{"name": "others_status", "opts": ["dead_hand"]}]}
@@ -38,4 +42,4 @@
   "_clear_yaku": [1,2,3,4,5,6]
 }
 |
-.default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora") | not))
+.default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi") | not))

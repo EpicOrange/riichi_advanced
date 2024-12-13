@@ -429,7 +429,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
 
         # handle motouchi naruka's scoring quirk
-        motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, Map.get(score_rules, "riichi_value", 1000))
+        motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, max(1, Map.get(score_rules, "riichi_value", 1000)))
         {ko_payment, oya_payment} = if "motouchi_naruka_increase_tsumo_payment" in state.players[winner.seat].status do
           push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} has tsumo payments increased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
           {ko_payment + motouchi_naruka_delta, oya_payment + motouchi_naruka_delta}
