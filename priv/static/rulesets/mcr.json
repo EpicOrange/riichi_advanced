@@ -847,7 +847,7 @@
     "flower": {
       "display_name": "Bu Hua",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]]
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["when", ["not_no_tiles_remaining"], [["draw"]]]]
     }
   },
   "auto_buttons": {

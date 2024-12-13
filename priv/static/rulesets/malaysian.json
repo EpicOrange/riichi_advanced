@@ -620,7 +620,7 @@
           ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]]
         ]],
         ["set_status", "flower"],
-        ["draw"]
+        ["when", ["not_no_tiles_remaining"], [["draw"]]]
       ]
     },
     "joker": {
