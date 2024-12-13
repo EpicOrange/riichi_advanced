@@ -76,6 +76,10 @@ defmodule RiichiAdvanced.GameState.Marking do
     |> Enum.flat_map(fn {_src, mark_info} -> mark_info.marked end)
   end
 
+  def is_marking?(marked_objects, source) do
+    not Enum.empty?(get_mark_infos(marked_objects, source))
+  end
+
   def is_done?(state, marking_player) do
     [{:done, val}] = get_mark_infos(state.marking[marking_player], :done)
     val

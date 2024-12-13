@@ -93,7 +93,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <div id="container" phx-hook="ClickListener">
+    <div id="container" class={[@ruleset == "minefield" && "minefield"]} phx-hook="ClickListener">
       <%= if Map.has_key?(@state.rules, "tile_images") do %>
         <.live_component module={RiichiAdvancedWeb.CustomTilesComponent} id="custom-tiles" tiles={@state.rules["tile_images"]}/>
       <% end %>
@@ -135,7 +135,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
         four_rows?={Map.get(@state.rules, "four_rows_discards", false)}
-        :for={{seat, player} <- @state.players} />
+        :for={{seat, player} <- @state.players}
+        :if={not Enum.empty?(player.pond)} />
       <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
         id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
@@ -147,6 +148,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
+        display_round_marker={Map.get(@state.rules, "display_round_marker", false)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
@@ -182,7 +184,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
-        <div class={["buttons", length(@state.players[@seat].hand) > 17 && "elevated"]} :if={@state.players[@seat].declared_yaku != []}>
+        <div class="buttons" :if={@state.players[@seat].declared_yaku != []}>
           <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}>Cancel</button>
@@ -204,7 +206,7 @@ defmodule RiichiAdvancedWeb.GameLive do
             <label for={"auto-button-" <> name} title={desc}><%= @state.rules["auto_buttons"][name]["display_name"] %></label>
           <% end %>
         </div>
-        <div class={["call-buttons-container", length(@state.players[@seat].hand) > 17 && "elevated"]}>
+        <div class="call-buttons-container">
           <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
             <%= if not Enum.empty?(choices) do %>
               <div class="call-buttons">

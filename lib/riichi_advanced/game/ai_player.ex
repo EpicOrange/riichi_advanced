@@ -124,6 +124,25 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
+  defp get_minefield_discard_danger(minefield_tiles, waits, wall, visible_tiles, tile, ordering, ordering_r) do
+    # really dumb heuristic for now
+    genbutsu = Utils.strip_attrs(visible_tiles -- minefield_tiles)
+    suji = Riichi.genbutsu_to_suji(genbutsu, ordering, ordering_r)
+    seen_count = Enum.count(visible_tiles, & &1 == tile)
+    centralness = cond do
+      Riichi.is_num?(tile, 2) -> 1
+      Riichi.is_num?(tile, 3) -> 2
+      Riichi.is_num?(tile, 4) -> 3
+      Riichi.is_num?(tile, 5) -> 3
+      Riichi.is_num?(tile, 6) -> 3
+      Riichi.is_num?(tile, 7) -> 2
+      Riichi.is_num?(tile, 8) -> 1
+      true                    -> 0
+    end
+    # true & higher numbers = don't discard
+    {tile not in genbutsu, tile in waits, tile not in suji, -seen_count, centralness}
+  end
+
   def handle_info(:initialize, state) do
     state = Map.put(state, :initialized, true)
     GenServer.cast(state.game_state, :notify_ai)
@@ -304,7 +323,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  def handle_info({:mark_tiles, %{player: player, players: players, revealed_tiles: revealed_tiles, wall: wall, marked_objects: marked_objects}}, state) do
+  def handle_info({:mark_tiles, %{player: player, players: players, visible_tiles: visible_tiles, revealed_tiles: revealed_tiles, wall: wall, marked_objects: marked_objects}}, state) do
     if state.initialized do
       state = %{ state | player: player }
       IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
@@ -316,15 +335,26 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
       |> Enum.shuffle()
 
-      # if we're playing minefield, filter for minefield hand
-      {state, choices} = if length(player.hand) == 34 do
-        state = if not Map.has_key?(state, :minefield_hand) || Map.get(state, :minefield_tiles, []) != player.hand do
-          state
-          |> Map.put(:minefield_tiles, player.hand)
-          |> Map.put(:minefield_hand, GenServer.call(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win}, 30000))
-        else state end
-        remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
-        {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
+      {state, choices} = if state.ruleset == "minefield" do
+        cond do
+          Marking.is_marking?(marked_objects, :hand) ->
+            # initial hand
+            state = if not Map.has_key?(state, :minefield_hand) || Map.get(state, :minefield_tiles, []) != player.hand do
+              minefield_hand = GenServer.call(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win}, 30000)
+              minefield_waits = Riichi.get_waits(player.hand, [], state.shanten_definitions.win, wall, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, true)
+              state
+              |> Map.put(:minefield_tiles, player.hand)
+              |> Map.put(:minefield_hand, minefield_hand)
+              |> Map.put(:minefield_waits, minefield_waits)
+            else state end
+            remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
+            {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
+          Marking.is_marking?(marked_objects, :aside) ->
+            # discard
+            choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, wall, visible_tiles, tile, player.tile_ordering, player.tile_ordering_r) end, &<=/2, fn -> nil end)
+            {state, if choice == nil do [] else [choice] end}
+          true -> {state, choices}
+        end
       else {state, choices} end
 
       case choices do

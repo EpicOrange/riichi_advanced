@@ -305,7 +305,7 @@ div.pond, div.secondary-pond {
   z-index: -1;
 }
 div.four-rows > div.pond {
-  width: calc(4.75 * var(--tile-size));
+  width: calc(5.25 * var(--tile-size));
 }
 div.four-rows > div.secondary-pond {
   width: calc(4 * var(--tile-size));
@@ -362,6 +362,11 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
     bottom: calc(1.75 * var(--tile-size));
     border-radius: calc(0.125 * var(--tile-size));
     opacity: 0.5;
+    margin: 0;
+    padding: 0;
+  }
+  div#container.minefield input.mobile-zoom-checkbox + label {
+    bottom: calc(6 * var(--tile-size));
   }
   input.mobile-zoom-checkbox + label::before {
     content: "+";
@@ -377,9 +382,6 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
   /* hover-zoom view of our own hand */
   input.mobile-zoom-checkbox:checked ~ div.hand.self {
     transform: scale(1.5);
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scrollbar-width: none;
     padding-top: calc(0.25 * var(--tile-size));
     left: calc(50% - (5.5 * var(--tile-size)));
     max-width: calc(11 * var(--tile-size));
@@ -388,8 +390,12 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
     margin-left: 0;
   }
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls {
-    transform: scale(calc(1 / 1.5));
-    transform-origin: 100% 50%;
+    transform: translateY(calc(-1.25 * var(--tile-size))) scale(calc(1 / 1.5));
+    transform-origin: 100% 100%;
+  }
+  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls > div.call.aside {
+    transform: scale(1.5);
+    transform-origin: 100% 100%;
   }
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles:hover::before,
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls:hover::before {
@@ -399,6 +405,10 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
   input.mobile-zoom-checkbox:checked ~ div.buttons,
   input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
     bottom: calc(1.75 * var(--tile-size));
+  }
+  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.buttons,
+  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
+    bottom: calc(4.75 * var(--tile-size));
   }
 }
 
@@ -639,7 +649,6 @@ div.corner-info {
   font-size: calc(0.5 * var(--tile-size));
   padding-top: calc(1.5 * var(--tile-size) - 0.75em);
   box-sizing: border-box;
-  z-index: 4;
   user-select: none;
 }
 div.corner-info:hover { z-index: 5; } /* hovered corner should cover other corners */
@@ -1134,8 +1143,10 @@ div.buttons, div.call-buttons-container {
   align-items: flex-end;
   z-index: 10;
 }
-div.buttons.elevated, div.call-buttons-container.elevated {
+div#container.minefield div.buttons, div#container.minefield div.call-buttons-container {
   bottom: calc(2.5 * var(--tile-size));
+  left: calc(2 * var(--tile-size));
+  right: auto;
 }
 div.call-buttons-container {
   display: flex;

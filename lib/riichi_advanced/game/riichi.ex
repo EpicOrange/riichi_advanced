@@ -1003,4 +1003,13 @@ defmodule Riichi do
     # |> IO.inspect(label: "result")
   end
 
+  def genbutsu_to_suji(genbutsu, ordering, ordering_r) do
+    Enum.flat_map(genbutsu, &cond do
+      Enum.any?([1,2,3], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, 6, ordering, ordering_r) in genbutsu do [offset_tile(&1, 3, ordering, ordering_r)] else [] end
+      Enum.any?([4,5,6], fn k -> Riichi.is_num?(&1, k) end) -> [offset_tile(&1, -3, ordering, ordering_r), offset_tile(&1, 3, ordering, ordering_r)]
+      Enum.any?([7,8,9], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, -6, ordering, ordering_r) in genbutsu do [offset_tile(&1, -3, ordering, ordering_r)] else [] end
+      true -> []
+    end)
+  end
+
 end

@@ -729,7 +729,7 @@ defmodule RiichiAdvanced.GameState do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -1286,7 +1286,7 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
           # IO.puts("Notifying #{seat} AI about marking")
-          send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
+          send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, visible_tiles: get_visible_tiles(state, seat), revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_marking, seat}])

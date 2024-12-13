@@ -6,9 +6,7 @@
 |
 .after_turn_change.actions |= map(
   if .[0] == "ite" and .[1] == ["no_tiles_remaining"] then
-    ["when", [{"name": "status", "opts": ["match_start"]}], [
-      ["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw_from_aside"], ["flip_draw_faceup"]]]
-    ]]
+    .[3] = []
   else . end
 )
 |
@@ -32,11 +30,19 @@
       ["mark", [["hand", 13, ["self"]]]],
       ["set_aside_marked_hand"],
       ["swap_hand_and_aside"],
-      ["flip_aside_facedown"],
-      ["shuffle_aside"],
       ["put_down_riichi_stick"],
-      ["set_status", "match_start", "riichi", "ippatsu"],
-      ["when", [{"name": "seat_is", "opts": ["east"]}], [["draw_from_aside"], ["flip_draw_faceup"]]]
+      ["set_status", "match_start", "riichi", "ippatsu"]
+    ],
+    "unskippable": true,
+    "cancellable": false
+  },
+  "discard": {
+    "display_name": "Select a tile to discard",
+    "show_when": ["our_turn", {"name": "status", "opts": ["match_start"]}, "not_has_draw", "not_just_discarded"],
+    "actions": [
+      ["mark", [["aside", 1, ["self"]]]],
+      ["draw_marked_aside"],
+      ["discard_draw"]
     ],
     "unskippable": true,
     "cancellable": false
@@ -47,11 +53,16 @@
   [{"name": "has_yaku_with_discard", "opts": [3, 60]}, {"name": "has_yaku_with_discard", "opts": [4, 30]}, {"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
 else . end)
 |
-.auto_buttons |= del(.["3_auto_no_call"])
-|
 .auto_buttons["2_auto_ron"].enabled_at_start = true
 |
+.auto_buttons |= del(.["3_auto_no_call"], .["4_auto_discard"])
+|
 .display_riichi_sticks = false
+|
+.display_round_marker = false
+|
+# this is just to make aside clickable
+.four_rows_discards = true
 |
 # dora counts towards mangan
 .score_calculation.extra_yaku_lists = []
