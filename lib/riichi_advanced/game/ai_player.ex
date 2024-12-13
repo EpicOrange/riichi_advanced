@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {:ok, state}
   end
 
-  defp choose_playable_tile(state, tiles, playables, visible_tiles, win_definition) do
+  defp choose_playable_tile(tiles, state, playables, visible_tiles, win_definition) do
     if not Enum.empty?(playables) do
       # rank each playable tile by the ukeire it gives for the next shanten step
       # TODO as well as heuristics provided by the ruleset
@@ -337,11 +337,13 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
       |> Enum.shuffle()
 
-      has_minefield_hand = Map.get(state, :minefield_tiles, nil) == player.hand
+      has_minefield_hand = if length(player.hand) == 34 do
+        Map.get(state, :minefield_tiles, nil) == player.hand
+      else Map.has_key?(state, :minefield_hand) end
       {state, choices} = if state.ruleset == "minefield" do
         cond do
-          Marking.is_marking?(marked_objects, :hand) ->
-            # initial hand
+          Marking.is_marking?(marked_objects, :hand) && length(player.hand) == 34 ->
+            # marking stage
             if has_minefield_hand do
               remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
               {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
@@ -349,11 +351,11 @@ defmodule RiichiAdvanced.AIPlayer do
               GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
               {state, []}
             end
-          Marking.is_marking?(marked_objects, :aside) ->
-            # discard
+          Marking.is_marking?(marked_objects, :aside) && length(player.hand) == 13 ->
+            # discard stage
             choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_ordering, player.tile_ordering_r) end, &<=/2, fn -> nil end)
             {state, if choice == nil do [] else [choice] end}
-          true -> {state, choices}
+          true -> {state, []}
         end
       else {state, choices} end
 
