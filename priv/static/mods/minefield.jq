@@ -52,3 +52,6 @@ else . end)
 .auto_buttons["2_auto_ron"].enabled_at_start = true
 |
 .display_riichi_sticks = false
+|
+# dora counts towards mangan
+.score_calculation.extra_yaku_lists = []

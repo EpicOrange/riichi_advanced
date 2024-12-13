@@ -86,6 +86,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "minefield" => %{
       display_name: "Minefield",
+      tutorial_link: "https://riichi.wiki/Minefield_mahjong",
       ruleset: "riichi",
       mods: ["minefield"],
       default_mods: ["kiriage_mangan"],
