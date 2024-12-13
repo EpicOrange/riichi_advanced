@@ -73,6 +73,7 @@ defmodule Game do
     north: nil,
     messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     calculate_playable_indices_pid: nil,
+    get_best_minefield_hand_pid: nil,
     # remember to edit :put_state if you change anything above
 
     # control variables
@@ -204,7 +205,7 @@ defmodule RiichiAdvanced.GameState do
     ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.session_id, not Enum.empty?(mods))
 
     # apply mods
-    ruleset_json = if state.ruleset != "custom" do
+    ruleset_json = if state.ruleset != "custom" && not Enum.empty?(mods) do
       RiichiAdvanced.ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
     else ruleset_json end
     if not Enum.empty?(mods) do
@@ -231,7 +232,7 @@ defmodule RiichiAdvanced.GameState do
 
     # decode the rules json
     {state, rules} = try do
-      case Jason.decode(ruleset_json) do
+      case Jason.decode(Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           IO.puts("Erroring json:")
@@ -729,7 +730,7 @@ defmodule RiichiAdvanced.GameState do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: shanten_definitions}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: shanten_definitions}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -926,6 +927,42 @@ defmodule RiichiAdvanced.GameState do
     Riichi.get_waits_and_ukeire(hand, calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, ordering, ordering_r, tile_aliases)
   end
 
+  def get_doras(state) do
+    Enum.flat_map(state.revealed_tiles, fn named_tile ->
+      dora_indicator = from_named_tile(state, named_tile)
+      (get_in(state.rules["dora_indicators"][Utils.tile_to_string(dora_indicator)]) || [])
+      |> Enum.map(&Utils.to_tile/1)
+    end)
+  end
+
+  def get_best_minefield_hand(state, seat, win_definitions, tiles, max_results \\ 100) do
+    # returns {yakuman, han, minipoints, hand}
+    ordering = state.players[seat].tile_ordering
+    ordering_r = state.players[seat].tile_ordering_r
+    tile_aliases = state.players[seat].tile_aliases
+    score_rules = state.rules["score_calculation"]
+    Enum.flat_map(win_definitions, &Riichi.remove_match_definition(tiles, [], ["almost" | &1], ordering, ordering_r, tile_aliases))
+    |> Enum.take(max_results)
+    |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
+    |> Enum.uniq()
+    |> Enum.map(fn hand ->
+      state2 = update_player(state, seat, &%Player{ &1 | hand: hand })
+      {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku_lists"], seat, [:any], :discard)
+      {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku2_lists"], seat, [:any], :discard)
+      han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
+      yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.sum()
+      {yakuman, han, minipoints, hand}
+    end)
+    |> Enum.max(&>=/2, fn ->
+      # take all doras and also take the most central tiles
+      doras = get_doras(state)
+      hand = tiles
+      |> Enum.sort_by(&{&1 in doras, Riichi.get_centralness(&1)})
+      |> Enum.take(-13)
+      {0, 0, 0, hand}
+    end)
+  end
+
   def push_message(state, message) do
     if not state.log_loading_mode do
       for {_seat, messages_state} <- state.messages_states, messages_state != nil do
@@ -1117,29 +1154,6 @@ defmodule RiichiAdvanced.GameState do
     {:reply, new_state, new_state}
   end
 
-  # for minefield ai
-  def handle_call({:get_best_minefield_hand, seat, win_definitions}, _from, state) do
-    tiles = state.players[seat].hand
-    ordering = state.players[seat].tile_ordering
-    ordering_r = state.players[seat].tile_ordering_r
-    tile_aliases = state.players[seat].tile_aliases
-    score_rules = state.rules["score_calculation"]
-    {_yakuman, _han, _minipoints, hand} = Enum.flat_map(win_definitions, &Riichi.remove_match_definition(tiles, [], ["almost" | &1], ordering, ordering_r, tile_aliases))
-    |> Enum.take(20)
-    |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
-    |> Enum.uniq()
-    |> Enum.map(fn hand ->
-      state2 = update_player(state, seat, &%Player{ &1 | hand: hand })
-      {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku_lists"], seat, [:any], :discard)
-      {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku2_lists"], seat, [:any], :discard)
-      han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
-      yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.sum()
-      {yakuman, han, minipoints, hand}
-    end)
-    |> Enum.max(&>=/2, fn -> {0, 0, 0, Enum.take(tiles, 13)} end)
-    {:reply, hand, state}
-  end
-
   def handle_cast({:initialize_game, log}, state) do
     state = initialize_new_round(state, log)
     {:noreply, state}
@@ -1261,7 +1275,7 @@ defmodule RiichiAdvanced.GameState do
         if Buttons.no_buttons_remaining?(state) do
           if is_pid(Map.get(state, state.turn)) do
             # IO.puts("Notifying #{state.turn} AI that it's their turn")
-            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn], wall: state.wall ++ state.dead_wall, visible_tiles: get_visible_tiles(state, state.turn)}})
+            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn], visible_tiles: get_visible_tiles(state, state.turn)}})
           end
         else
           Enum.each(state.available_seats, fn seat ->
@@ -1286,7 +1300,7 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
           # IO.puts("Notifying #{seat} AI about marking")
-          send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, visible_tiles: get_visible_tiles(state, seat), revealed_tiles: get_revealed_tiles(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
+          send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, visible_tiles: get_visible_tiles(state, seat), revealed_tiles: get_revealed_tiles(state), doras: get_doras(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_marking, seat}])
@@ -1329,7 +1343,7 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         if is_pid(Map.get(state, seat)) && seat == state.turn do
           # IO.puts("Notifying #{seat} AI that it's their turn")
-          send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], wall: state.wall ++ state.dead_wall, visible_tiles: get_visible_tiles(state, seat)}})
+          send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], visible_tiles: get_visible_tiles(state, seat)}})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:ai_ignore_buttons, seat}])
@@ -1462,4 +1476,41 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  # for minefield ai
+  def handle_cast({:get_best_minefield_hand, seat, win_definitions}, state) do
+    self = self()
+    {:ok, pid} = Task.start(fn ->
+      tiles = Utils.strip_attrs(state.players[seat].hand)
+      # look for certain hands
+      {_yakuman, _han, _minipoints, hand} = Enum.max([
+        # tsuuiisou
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
+        # chinitsu
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
+        # honitsu
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?(&1) || Riichi.is_jihai?(&1)), 10),
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) || Riichi.is_jihai?(&1)), 10),
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) || Riichi.is_jihai?(&1)), 10),
+        # tanyao
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
+        # chanta
+        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
+        # any hand
+        get_best_minefield_hand(state, seat, win_definitions, tiles, 10),
+      ])
+      # IO.inspect({yakuman, han, minipoints, hand})
+      GenServer.cast(self, {:set_best_minefield_hand, seat, tiles, hand})
+    end)
+    state = Map.put(state, :get_best_minefield_hand_pid, pid)
+    {:noreply, state}
+  end
+
+  def handle_cast({:set_best_minefield_hand, seat, tiles, hand}, state) do
+    send(Map.get(state, seat), {:set_best_minefield_hand, tiles, hand})
+    notify_ai_marking(state, seat)
+    state = Map.put(state, :get_best_minefield_hand_pid, nil)
+    {:noreply, state}
+  end
 end

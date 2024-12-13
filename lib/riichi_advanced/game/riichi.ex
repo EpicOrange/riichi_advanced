@@ -50,6 +50,7 @@ defmodule Riichi do
 
   def offset_tile(tile, n, order, order_r) do
     case tile do
+      :any -> :any
       {tile, attrs} -> {_offset_tile(tile, n, order, order_r), attrs}
       tile -> _offset_tile(tile, n, order, order_r)
     end    
@@ -765,18 +766,23 @@ defmodule Riichi do
     # rather than hardcoding
     wraps = "1m" in Map.get(ordering, "9m", [])
     possible_penchan_removed = if wraps do [] else
+      penchans = %{
+        :"3m" => [[:"1m", :"2m"]],
+        :"7m" => [[:"8m", :"9m"]],
+        :"3p" => [[:"1p", :"2p"]],
+        :"7p" => [[:"8p", :"9p"]],
+        :"3s" => [[:"1s", :"2s"]],
+        :"7s" => [[:"8s", :"9s"]],
+        :"2z" => [[:"3z", :"4z"]],
+        :"3z" => [[:"1z", :"2z"]],
+        :"5z" => [[:"6z", :"7z"]],
+        :"7z" => [[:"5z", :"6z"]]
+      }
+      penchans = Map.put(penchans, :any, Enum.concat(Map.values(penchans)))
       Enum.flat_map(winning_tiles, fn winning_tile ->
-        case Utils.strip_attrs(winning_tile) do
-          :"3m" -> try_remove_all_tiles(starting_hand, [:"1m", :"2m"], tile_aliases)
-          :"7m" -> try_remove_all_tiles(starting_hand, [:"8m", :"9m"], tile_aliases)
-          :"3p" -> try_remove_all_tiles(starting_hand, [:"1p", :"2p"], tile_aliases)
-          :"7p" -> try_remove_all_tiles(starting_hand, [:"8p", :"9p"], tile_aliases)
-          :"3s" -> try_remove_all_tiles(starting_hand, [:"1s", :"2s"], tile_aliases)
-          :"7s" -> try_remove_all_tiles(starting_hand, [:"8s", :"9s"], tile_aliases)
-          :"2z" -> if wraps do [] else try_remove_all_tiles(starting_hand, [:"3z", :"4z"], tile_aliases) end
-          :"3z" -> if wraps do [] else try_remove_all_tiles(starting_hand, [:"1z", :"2z"], tile_aliases) end
-          _     -> []
-        end |> Enum.map(fn hand -> {hand, fu+2} end)
+        Map.get(penchans, Utils.strip_attrs(winning_tile), [])
+        |> Enum.flat_map(&try_remove_all_tiles(starting_hand, &1, tile_aliases))
+        |> Enum.map(fn hand -> {hand, fu+2} end)
       end)
     end
     middle_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"2z", :"3z", :"6z"]
@@ -891,14 +897,14 @@ defmodule Riichi do
           pair_fu = calculate_pair_fu(pair_tile, seat_wind, round_wind)
           kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
           [fu + pair_fu + kontsu_fu]
-        true                                                   -> []
+        true                                                    -> []
       end
     end)
 
     # IO.inspect(winning_tiles)
     # IO.inspect(fus, charlists: :as_lists)
 
-    fu = if Enum.empty?(fus) do 0 else Enum.max(fus) end
+    fu = Enum.max([0 | fus])
 
     # if we can get (closed) pinfu, we should
     closed_pinfu_fu = if win_source == :draw do 22 else 30 end
@@ -1001,6 +1007,21 @@ defmodule Riichi do
       end
     end)
     # |> IO.inspect(label: "result")
+  end
+
+  def get_centralness(tile) do
+    cond do
+      Riichi.is_num?(tile, 1) -> 1
+      Riichi.is_num?(tile, 2) -> 2
+      Riichi.is_num?(tile, 3) -> 3
+      Riichi.is_num?(tile, 4) -> 4
+      Riichi.is_num?(tile, 5) -> 4
+      Riichi.is_num?(tile, 6) -> 4
+      Riichi.is_num?(tile, 7) -> 3
+      Riichi.is_num?(tile, 8) -> 2
+      Riichi.is_num?(tile, 9) -> 1
+      true                    -> 0
+    end
   end
 
   def genbutsu_to_suji(genbutsu, ordering, ordering_r) do

@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.ModLoader do
     |> then(&".enabled_mods += #{mod_names_to_array(mod_names)}"<>&1)
     # IO.puts(mod_contents)
 
-    IO.puts("Applying mods #{Enum.join(mod_names, ", ")}")
+    IO.puts("Applying mods [#{Enum.join(mod_names, ", ")}]")
     JQ.query_string_with_string!(ruleset_json, mod_contents)
   end
 

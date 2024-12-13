@@ -67,10 +67,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # trigger play effects
       if Map.has_key?(state.rules, "play_effects") do
-        doras = Enum.flat_map(state.revealed_tiles, fn named_tile ->
-          dora_indicator = from_named_tile(state, named_tile)
-          Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-        end)
+        doras = get_doras(state)
         for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile, doras: doras}), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end

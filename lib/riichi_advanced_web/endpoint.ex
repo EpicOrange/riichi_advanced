@@ -30,6 +30,7 @@ defmodule RiichiAdvancedWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
+    # plug :clear_mod_cache
     # plug Phoenix.Ecto.CheckRepoStatus, otp_app: :riichi_advanced
   end
 
@@ -58,6 +59,11 @@ defmodule RiichiAdvancedWeb.Endpoint do
     Headers: #{inspect(conn.req_headers)}
     """
 
+    conn
+  end
+
+  def clear_mod_cache(conn, _opts) do
+    :ets.delete_all_objects(:cache_mods)
     conn
   end
 end
