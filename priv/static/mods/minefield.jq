@@ -1,4 +1,4 @@
-.default_mods |= map(select(IN("kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan") | not))
+.default_mods |= map(select(IN("kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
 |
 .starting_tiles = 34
 |
@@ -52,6 +52,8 @@
 .buttons.ron.show_when |= map(if . == [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}] then
   [{"name": "has_yaku_with_discard", "opts": [3, 60]}, {"name": "has_yaku_with_discard", "opts": [4, 30]}, {"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
 else . end)
+|
+.buttons.ron.show_when |= [{"name": "status", "opts": ["match_start"]}] + .
 |
 .auto_buttons["2_auto_ron"].enabled_at_start = true
 |
