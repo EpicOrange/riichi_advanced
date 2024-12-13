@@ -17,8 +17,7 @@ defmodule RiichiAdvanced.ModLoader do
     mod_contents = mod_names
     |> Enum.map(&File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{&1 <> ".jq"}")))
     |> Enum.map(&String.trim/1)
-    |> Enum.map(&Regex.replace(~r{\s#.*}, &1, "")) # strip comments
-    |> Enum.map(&" | (#{&1}) as $_result\n|\n$_result")
+    |> Enum.map(&" | (#{&1}\n) as $_result\n|\n$_result")
     |> Enum.join()
     |> then(&".enabled_mods += #{mod_names_to_array(mod_names)}"<>&1)
     # IO.puts(mod_contents)
@@ -54,9 +53,36 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "cosmic" => %{
       display_name: "Cosmic Riichi",
+      tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU/edit",
       ruleset: "riichi",
       mods: ["cosmic_base"],
       default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yakuman_13_han", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/isshoku_sanjun", "yaku/isshoku_yonjun"],
+    },
+    "nojokersmahjongleague" => %{
+      display_name: "No Jokers Mahjong League 2024",
+      ruleset: "riichi",
+      mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
+      default_mods: ["show_waits"],
+    },
+    "space" => %{
+      display_name: "Space Mahjong",
+      tutorial_link: "https://riichi.wiki/Space_mahjong",
+      ruleset: "riichi",
+      mods: [],
+      default_mods: ["space"],
+    },
+    "galaxy" => %{
+      display_name: "Galaxy Mahjong",
+      tutorial_link: "https://www.youtube.com/watch?v=IDaKM7eU7zE",
+      ruleset: "riichi",
+      mods: [],
+      default_mods: ["galaxy"],
+    },
+    "chinitsu" => %{
+      display_name: "Chinitsu Challenge",
+      ruleset: "riichi",
+      mods: ["chinitsu_challenge"],
+      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman"],
     }
   }
 

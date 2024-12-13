@@ -49,8 +49,8 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     # wall = Enum.drop(assigns.wall, assigns.wall_index)
     # dead_wall = assigns.dead_wall
     # hidden
-    wall = List.duplicate(:"1x", length(assigns.wall) - assigns.wall_index)
-    dead_wall = List.duplicate(:"1x", length(assigns.dead_wall))
+    wall = List.duplicate(:"1x", max(0, length(assigns.wall) - assigns.wall_index))
+    dead_wall = List.duplicate(:"1x", max(0, length(assigns.dead_wall)))
 
     # show dora indicators in dead wall
     dead_wall = for ix <- assigns.revealed_tiles, is_integer(ix), reduce: dead_wall do
@@ -85,6 +85,23 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, seat, assigns.available_seats)
 
     case num_players do
+      2 ->
+        extra = rem(length(dead_wall), 2)
+        wall1 = Enum.take(final_wall, -assigns.dice_roll - extra) ++ Enum.take(final_wall, wall_length - assigns.dice_roll - extra)
+        wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
+
+        # insert spacer for dead wall
+        dead_wall_length = Integer.floor_div(length(dead_wall), 2)
+        {wall1, wall2} = cond do
+          assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall2, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
+          assigns.wall_index >= length(assigns.wall) -> {wall1, wall2} # no spacer in wall1 if we drew into the dead wall
+          assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall2}
+          true -> {wall1, wall2}
+        end
+        available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.viewer, &1))
+        turns = [break_dir, Utils.prev_turn(break_dir), Utils.prev_turn(break_dir, 2), Utils.prev_turn(break_dir, 3)]
+        |> Enum.filter(& &1 in available_dirs)
+        Enum.zip(turns, [wall1, wall2]) |> Map.new()
       3 ->
         extra = rem(length(dead_wall), 2)
         wall1 = Enum.take(final_wall, -assigns.dice_roll - extra) ++ Enum.take(final_wall, wall_length - assigns.dice_roll - extra)

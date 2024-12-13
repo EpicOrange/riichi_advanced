@@ -684,8 +684,8 @@ defmodule Riichi do
     Utils.next_turn(wind, rem(kyoku, 4))
   end
 
-  def get_east_player_seat(kyoku) do
-    Utils.next_turn(:east, rem(kyoku, 4))
+  def get_east_player_seat(kyoku, available_seats) do
+    Enum.at(available_seats, rem(kyoku, length(available_seats)))
   end
 
   def get_seat_scoring_offset(kyoku, seat, available_seats) do

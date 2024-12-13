@@ -448,7 +448,7 @@ defmodule RiichiAdvanced.GameState do
     state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
     
     # start the game
-    state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku))
+    state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku, state.available_seats))
 
     # run after_start actions
     state = if Map.has_key?(state.rules, "after_start") do
@@ -692,7 +692,7 @@ defmodule RiichiAdvanced.GameState do
 
   def should_end_game(state) do
     forced = state.round_result == :end_game # e.g. tobi
-    dealer = Riichi.get_east_player_seat(state.kyoku)
+    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
     agariyame = Map.get(state.rules, "agariyame", false) && state.round_result == :win && dealer in state.winner_seats
     tenpaiyame = Map.get(state.rules, "tenpaiyame", false) && state.round_result == :draw && "tenpai" in state.players[dealer].status
     forced || agariyame || tenpaiyame || if Map.has_key?(state.rules, "sudden_death_goal") do

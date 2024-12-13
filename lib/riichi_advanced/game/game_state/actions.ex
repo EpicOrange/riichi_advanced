@@ -180,7 +180,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # it should trigger on_turn_change, so don't mark the turn change as via_action
     if state.game_active do
       new_turn = if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end
-      new_turn = for _ <- 1..3, reduce: new_turn do
+      new_turn = for _ <- 1..4, reduce: new_turn do
         new_turn -> if new_turn in state.available_seats do
           new_turn
         else
@@ -1175,9 +1175,11 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def run_actions(state, actions, context) do
-    # if Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"] do
-    #   IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
-    # end
+    if Debug.debug_actions() do
+      if (Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"]) do
+        IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
+      end
+    end
     # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
     # IO.inspect(Process.info(self(), :current_stacktrace))
     {state, deferred_actions} = _run_actions(state, actions, context)

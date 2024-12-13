@@ -82,10 +82,6 @@ defmodule RiichiAdvanced.RoomState do
         {state, %{}}
     end
 
-    default_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
-      [mods] -> mods
-      []     -> Map.get(rules, "default_mods", [])
-    end
     {mods, categories} = for {item, i} <- Map.get(rules, "available_mods", []) |> Enum.with_index(), reduce: {[], []} do
       {result, categories} -> cond do
         is_map(item) -> {[item |> Map.put("index", i) |> Map.put("category", Enum.at(categories, 0, nil)) | result], categories}
@@ -93,6 +89,14 @@ defmodule RiichiAdvanced.RoomState do
       end
     end
     categories = Enum.reverse(categories)
+
+    available_mods = Enum.map(mods, & &1["id"])
+    default_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
+      [mods] -> mods
+      []     -> Map.get(rules, "default_mods", [])
+    end
+    |> Enum.filter(& &1 in available_mods)
+    |> Enum.uniq()
 
     # put params and process ids into state
     state = Map.merge(state, %Room{

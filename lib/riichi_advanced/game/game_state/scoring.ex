@@ -324,7 +324,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
     # determine dealer
-    is_dealer = Riichi.get_east_player_seat(state.kyoku) == winner.seat
+    is_dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats) == winner.seat
     # handle ryuumonbuchi touka's scoring quirk
     is_dealer = is_dealer || "score_as_dealer" in state.players[winner.seat].status
 
@@ -418,9 +418,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
       else # tsumo
         # for riichi, reverse-calculate the ko and oya parts of the total points
         split_oya_ko_payment = Map.get(score_rules, "split_oya_ko_payment", false)
-        {ko_payment, oya_payment} = if split_oya_ko_payment do
+        num_players = length(state.available_seats)
+        {ko_payment, oya_payment} = if split_oya_ko_payment && num_players >= 3 do
           han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-          num_players = length(state.available_seats)
           Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
         else
           self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
@@ -440,7 +440,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         else {ko_payment, oya_payment} end
 
         # have each payer pay their allotted share
-        dealer_seat = Riichi.get_east_player_seat(state.kyoku)
+        dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
         for payer <- winner.opponents, reduce: delta_scores do
           delta_scores ->
             payment = if payer == dealer_seat do oya_payment else ko_payment end
@@ -684,7 +684,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       processing_first_win = map_size(winners) == map_size(state.winners)
       if processing_first_win do
         {_seat, winner} = Enum.at(winners, 0)
-        dealer_seat = Riichi.get_east_player_seat(state.kyoku)
+        dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
         new_dealer_seat = cond do
           state.round_result == :draw -> dealer_seat # if there is no first winner, dealer stays the same
           map_size(winners) == 1      -> winner.seat # otherwise, the first winner becomes the next dealer
@@ -693,7 +693,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         Utils.get_relative_seat(dealer_seat, new_dealer_seat)
       else nil end
     else
-      if agarirenchan && Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku)) do :self else :shimocha end
+      if agarirenchan && Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku, state.available_seats)) do :self else :shimocha end
     end
 
     {state, delta_scores, delta_scores_reason, next_dealer}
@@ -752,8 +752,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do
           state ->
             oya_payment = pay_oya
-            ko_payment = if Riichi.get_east_player_seat(state.kyoku) == seat do pay_oya else pay_ko end
-            payment = if Riichi.get_east_player_seat(state.kyoku) == payer do oya_payment else ko_payment end
+            ko_payment = if Riichi.get_east_player_seat(state.kyoku, state.available_seats) == seat do pay_oya else pay_ko end
+            payment = if Riichi.get_east_player_seat(state.kyoku, state.available_seats) == payer do oya_payment else ko_payment end
 
             # handle kanbara satomi's scoring quirk
             payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
@@ -784,6 +784,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do Utils.try_integer(pay3 / 3) else -pay3 end} end)
             4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
           end
+          _ -> Map.new(state.available_seats, fn seat -> {seat, 0} end)
         end
 
         # handle kanbara satomi's scoring quirk
@@ -831,7 +832,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
 
     tenpairenchan = Map.get(score_rules, "tenpairenchan", false)
-    next_dealer = if tenpairenchan && tenpai[Riichi.get_east_player_seat(state.kyoku)] do :self else :shimocha end
+    next_dealer = if tenpairenchan && tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] do :self else :shimocha end
 
     {state, delta_scores, delta_scores_reason, next_dealer}
   end
@@ -941,7 +942,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
 
     # check if we're dealer
-    is_dealer = Riichi.get_east_player_seat(state.kyoku) == seat
+    is_dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats) == seat
     # handle ryuumonbuchi touka's scoring quirk
     score_as_dealer = "score_as_dealer" in state.players[seat].status
     if score_as_dealer do

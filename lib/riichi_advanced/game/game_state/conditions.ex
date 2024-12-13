@@ -525,6 +525,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             |> American.get_viable_am_match_definitions(context.seat, am_match_definitions)
             |> Enum.empty?()
         end
+      "is_ai"               -> is_pid(Map.get(state, context.seat))
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
