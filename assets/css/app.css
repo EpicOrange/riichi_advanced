@@ -43,31 +43,36 @@ main div#container {
   user-select: none;
 }
 main div.messages-container {
-  width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
-  height: calc(100% + var(--tile-size));
-  position: absolute;
-  top: calc(-0.5 * var(--tile-size));
-  user-select: text;
-  display: flex;
-}
-main div.messages-container > div.messages {
   position: absolute;
   background: #3f3f3f;
   border-radius: calc(0.25 * var(--tile-size));
   color: white;
+  width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
+  height: calc(100% + var(--tile-size));
+  top: calc(-0.5 * var(--tile-size));
+  font-size: calc(0.4 * var(--tile-size));
+  user-select: text;
+}
+main div.messages-container > div.messages {
   width: 100%;
-  height: 100%;
   white-space: wrap;
-  border: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow-y: auto;
   padding: 0.5rem;
   box-sizing: border-box;
 }
 main div.messages-container > div.messages span.bold {
   font-weight: 800;
+}
+/* make scrolling work */
+/* https://stackoverflow.com/a/78124664 */
+main div.messages-container {
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+}
+main div.messages-container > div.messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
@@ -93,6 +98,8 @@ main div.messages-container > div.messages span.bold {
     top: calc(100% + 1.5 * var(--tile-size));
     width: calc(100% + var(--tile-size));
     height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
+    flex-direction: column;
+    justify-content: flex-start;
   }
   main div.messages-container > div.messages {
     flex-direction: column-reverse;
