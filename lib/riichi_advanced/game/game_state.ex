@@ -1117,6 +1117,29 @@ defmodule RiichiAdvanced.GameState do
     {:reply, new_state, new_state}
   end
 
+  # for minefield ai
+  def handle_call({:get_best_minefield_hand, seat, win_definitions}, _from, state) do
+    tiles = state.players[seat].hand
+    ordering = state.players[seat].tile_ordering
+    ordering_r = state.players[seat].tile_ordering_r
+    tile_aliases = state.players[seat].tile_aliases
+    score_rules = state.rules["score_calculation"]
+    {_yakuman, _han, _minipoints, hand} = Enum.flat_map(win_definitions, &Riichi.remove_match_definition(tiles, [], ["almost" | &1], ordering, ordering_r, tile_aliases))
+    |> Enum.take(100)
+    |> Enum.map(fn {hand, calls} -> tiles -- hand end)
+    |> Enum.uniq()
+    |> Enum.map(fn hand ->
+      state2 = update_player(state, seat, &%Player{ &1 | hand: hand })
+      {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku_lists"], seat, [:any], :discard)
+      {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku2_lists"], seat, [:any], :discard)
+      han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
+      yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.sum()
+      {yakuman, han, minipoints, hand}
+    end)
+    |> Enum.max(&>=/2, fn -> {0, 0, 0, Enum.take(tiles, 13)} end)
+    {:reply, hand, state}
+  end
+
   def handle_cast({:initialize_game, log}, state) do
     state = initialize_new_round(state, log)
     {:noreply, state}
@@ -1362,7 +1385,10 @@ defmodule RiichiAdvanced.GameState do
   # marking calls
   def handle_cast({:mark_tile, marking_player, seat, index, source}, state) do
     state = Marking.mark_tile(state, marking_player, seat, index, source)
-    state = Marking.adjudicate_marking(state, marking_player)
+    state = Marking.adjudicate_marking(state)
+    if Marking.needs_marking?(state, marking_player) do
+      notify_ai_marking(state, marking_player)
+    end
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -1389,7 +1415,10 @@ defmodule RiichiAdvanced.GameState do
   # for log replays only
   def handle_cast({:put_marking, seat, marking}, state) do
     state = put_in(state.marking[seat], Log.decode_marking(marking))
-    state = Marking.adjudicate_marking(state, seat)
+    state = Marking.adjudicate_marking(state)
+    if Marking.needs_marking?(state, seat) do
+      notify_ai_marking(state, seat)
+    end
     state = broadcast_state_change(state)
     {:noreply, state}
   end

@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   def mount(params, _session, socket) do
     socket = socket
     |> assign(:ruleset, params["ruleset"])
+    |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:id, socket.id)
     |> assign(:lobby_state, nil)
@@ -37,6 +38,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       socket = socket
       |> assign(:lobby_state, lobby_state)
       |> assign(:state, state)
+      |> assign(:display_name, state.display_name)
 
       # fetch messages
       messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
@@ -61,7 +63,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     <div id="container" class="lobby" phx-hook="ClickListener">
       <header>
         <h1>Lobby</h1>
-        <div class="variant">Variant:&nbsp;<b><%= @ruleset %></b></div>
+        <div class="variant">Variant:&nbsp;<b><%= @display_name %></b></div>
       </header>
       <div class="rooms">
         <%= for {room_name, room} <- @state.rooms do %>

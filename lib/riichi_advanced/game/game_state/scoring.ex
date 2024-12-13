@@ -105,7 +105,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {state, assigned_winning_tile}
   end
 
-  def seat_scores_points(state, yaku_list_names, min_points, seat, winning_tile, win_source) do
+  def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
     joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
@@ -118,8 +118,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-      {yaku, _minipoints, _winning_tile} = get_best_yaku_from_lists(state, yaku_list_names, seat, [assigned_winning_tile], win_source)
-      case min_points do
+      {yaku, minipoints, _winning_tile} = get_best_yaku_from_lists(state, yaku_list_names, seat, [assigned_winning_tile], win_source)
+      minipoints >= min_minipoints && case min_points do
         :declared ->
           names = Enum.map(yaku, fn {name, _value} -> name end)
           Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)

@@ -10,7 +10,9 @@
 ] + .[$ix+1:]
 |
 # set ippatsu status on riichi
-.buttons.riichi.actions |= map(if .[0] == "set_status" then (. + ["ippatsu"]) else . end)
+if .buttons.riichi then
+  .buttons.riichi.actions |= map(if .[0] == "set_status" then (. + ["ippatsu"]) else . end)
+else . end
 |
 # unset ippatsu status before turn changes (this is before discard_passed, which is when just_reached gets cleared)
 .functions.turn_cleanup += [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]]]

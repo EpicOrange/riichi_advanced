@@ -595,7 +595,7 @@
   },
   "after_turn_change": {
     "actions": [
-      ["run", "discard_passed"],
+      ["unless", ["game_start"], [["run", "discard_passed"]]],
       // either draw a tile, or declare exhaustive draw
       ["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw"]]]
     ]

@@ -309,17 +309,30 @@ defmodule RiichiAdvanced.AIPlayer do
       state = %{ state | player: player }
       IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
       # for each source, generate all possible choices and pick one of them
-      Process.sleep(trunc(500 / @ai_speed))
+      Process.sleep(trunc(500 / @ai_speed)) 
       choices = marked_objects
+      |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() || (mark_info != nil && length(mark_info.marked) >= mark_info.needed) end)
       |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(source, players, revealed_tiles, player.num_scryed_tiles, wall) end)
-      choice = choices
       |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
       |> Enum.shuffle()
-      case choice do
+
+      # if we're playing minefield, filter for minefield hand
+      {state, choices} = if length(player.hand) == 34 do
+        state = if not Map.has_key?(state, :minefield_hand) || Map.get(state, :minefield_tiles, []) != player.hand do
+          state
+          |> Map.put(:minefield_tiles, player.hand)
+          |> Map.put(:minefield_hand, GenServer.call(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win}))
+        else state end
+        remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
+        {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
+      else {state, choices} end
+
+      case choices do
         [{{seat, source, _obj}, i} | _] -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
         _ ->
-          IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything: #{inspect(choice)}")
+          IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")
           IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
+          IO.puts(" >> #{state.seat}: My marking state was: #{inspect(marked_objects)}")
           GenServer.cast(state.game_state, {:clear_marked_objects, state.seat})
       end
       {:noreply, state}

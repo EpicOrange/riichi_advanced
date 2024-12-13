@@ -66,9 +66,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
                 <%= if not @your_turn? || i in @playable_indices do %>
-                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"])} data-id={i}></div>
+                  <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"], true)} data-id={i}></div>
                 <% else %>
-                  <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive", highlight && "highlight"])} data-id={i}></div>
+                  <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive", highlight && "highlight"], true)} data-id={i}></div>
                 <% end %>
               <% end %>
             <% end %>
@@ -76,9 +76,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws" :if={not Enum.empty?(@draw)}>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if not @your_turn? || i in @playable_indices do %>
-                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns)}></div>
+                <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [], true)}></div>
               <% else %>
-                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} data-id={i}></div>
+                <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive"], true)} data-id={i}></div>
               <% end %>
             <% end %>
           </div>
@@ -86,12 +86,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <% else %>
         <div class="tiles">
           <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
-            <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"])} data-id={i}></div>
+            <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"], true)} data-id={i}></div>
           <% end %>
         </div>
         <div class="draws" :if={not Enum.empty?(@draw)}>
           <%= for {tile, i} <- prepare_draw(assigns) do %>
-            <div class={Utils.get_tile_class(tile, i, assigns)}></div>
+            <div class={Utils.get_tile_class(tile, i, assigns, [], true)}></div>
           <% end %>
         </div>
       <% end %>

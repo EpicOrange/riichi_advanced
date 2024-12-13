@@ -83,6 +83,12 @@ defmodule RiichiAdvanced.ModLoader do
       ruleset: "riichi",
       mods: ["chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman"],
+    },
+    "minefield" => %{
+      display_name: "Minefield",
+      ruleset: "riichi",
+      mods: ["minefield"],
+      default_mods: ["kiriage_mangan"],
     }
   }
 

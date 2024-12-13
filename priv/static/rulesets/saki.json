@@ -1900,7 +1900,7 @@
         ["unset_status", "pon"],
         ["mark", [["discard", 1, ["match_called_tile"]]]],
         ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
-        ["set_aside_marked"]
+        ["set_aside_marked_discard"]
       ],
       "unskippable": true
     },
@@ -2006,7 +2006,7 @@
         ["unset_status", "about_to_draw"],
         ["mark", [["discard", 1, ["self"]]]],
         ["push_message", "drew one of their discards (Shibuya Takami)"], // TODO: say which one!
-        ["set_aside_marked"],
+        ["set_aside_marked_discard"],
         ["draw_from_aside"],
         ["add_attr", ["draw"], ["facedown", "no_discard"]]
       ],

@@ -31,6 +31,7 @@ defmodule Lobby do
     # state
     players: %{},
     rooms: %{},
+    display_name: ""
   ]
   use Accessible
 end
@@ -61,10 +62,25 @@ defmodule RiichiAdvanced.LobbyState do
 
     ruleset_json = ModLoader.get_ruleset_json(state.ruleset)
 
+    # parse the ruleset just to get the display name
+    {state, rules} = try do
+      case Jason.decode(Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+        {:ok, rules} -> {state, rules}
+        {:error, err} ->
+          state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+          {state, %{}}
+      end
+    rescue
+      ArgumentError ->
+        state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
+        {state, %{}}
+    end
+
     # put params and process ids into state
     state = Map.merge(state, %Lobby{
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
+      display_name: Map.get(rules, "display_name", state.ruleset),
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,

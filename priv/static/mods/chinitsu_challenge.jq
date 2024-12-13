@@ -18,7 +18,7 @@
 |
 .score_calculation.honba_value = 0
 |
-.buttons |= del(.chii) | del(.pon) | del(.daiminkan)
+.buttons |= del(.chii, .pon, .daiminkan)
 |
 .yakuman += [
   {"display_name": "_clear_yaku", "value": 1, "when": [{"name": "others_status", "opts": ["dead_hand"]}]}

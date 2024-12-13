@@ -192,19 +192,23 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def mark_tile(state, marking_player, seat, index, source) do
-    valid_mark_info_ix = state.marking[marking_player]
-    |> Enum.find_index(fn {src, mark_info} -> src == source && _can_mark?(state, marking_player, seat, index, source, mark_info) end)
-    update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
-      {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
-    end))
+    if not Enum.empty?(state.marking[marking_player]) do
+      valid_mark_info_ix = state.marking[marking_player]
+      |> Enum.find_index(fn {src, mark_info} -> src == source && _can_mark?(state, marking_player, seat, index, source, mark_info) end)
+      update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
+        {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
+      end))
+    else state end
   end
 
-  def clear_marked_objects(state, seat) do
-    update_in(state.marking[seat], &Enum.map(&1, fn {source, mark_info} -> {source, case source do
-      :done                          -> false
-      _ when source in @special_keys -> mark_info
-      _                              -> Map.put(mark_info, :marked, [])
-    end} end))
+  def clear_marked_objects(state, marking_player) do
+    if not Enum.empty?(state.marking[marking_player]) do
+      update_in(state.marking[marking_player], &Enum.map(&1, fn {source, mark_info} -> {source, case source do
+        :done                          -> false
+        _ when source in @special_keys -> mark_info
+        _                              -> Map.put(mark_info, :marked, [])
+      end} end))
+    else state end
   end
 
   def reset_marking(state, marking_player) do
@@ -212,35 +216,31 @@ defmodule RiichiAdvanced.GameState.Marking do
     state
   end
 
-  def adjudicate_marking(state, marking_player) do
-    state = if not needs_marking?(state, marking_player) do
-      # run actions, including the mark action that marks done
-      state = Actions.run_deferred_actions(state, %{seat: marking_player})
-      # only reset marking once the mark action marks it done
-      state = if is_done?(state, marking_player) do
-        state = Log.log(state, marking_player, :mark, %{marking: Log.encode_marking(state.marking[marking_player])})
+  # this is called after every marking action
+  def adjudicate_marking(state) do
+    # only continue if no one needs marking
+    if not Enum.any?(state.available_seats, &needs_marking?(state, &1)) do
+      for seat <- state.available_seats, not Enum.empty?(state.marking[seat]), reduce: state do
+        state ->
+          # run actions, including the mark action that marks done
+          state = Actions.run_deferred_actions(state, %{seat: seat})
+          # only reset marking once the mark action marks it done
+          if is_done?(state, seat) do
+            state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})
 
-        # run post-mark actions
-        [{:post_actions, post_actions}] = get_mark_infos(state.marking[marking_player], :post_actions)
-        if Debug.debug_actions() do
-          IO.puts("Running post-mark actions for #{marking_player}: #{inspect(post_actions)}")
-        end
-        state = Actions.run_actions(state, post_actions, %{seat: marking_player})
+            # run post-mark actions
+            # remember that some other action must have run to set :done
+            # in order for this to run at all
+            [{:post_actions, post_actions}] = get_mark_infos(state.marking[seat], :post_actions)
+            if Debug.debug_actions() do
+              IO.puts("Running post-mark actions for #{seat}: #{inspect(post_actions)}")
+            end
+            state = Actions.run_actions(state, post_actions, %{seat: seat})
 
-        state = reset_marking(state, marking_player)
-        state
-      else state end
-
-      # if we're still going, run deferred actions for everyone and then notify ai
-      state = if state.game_active do
-        state = Actions.resume_deferred_actions(state)
-        notify_ai(state)
-        state
-      else state end
-
-      state
+            state = reset_marking(state, seat)
+            state
+          else state end
+      end
     else state end
-    notify_ai_marking(state, marking_player)
-    state
   end
 end
