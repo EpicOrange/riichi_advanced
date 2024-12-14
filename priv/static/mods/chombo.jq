@@ -22,21 +22,19 @@ def disable_when_dead:
   ["pause", 500],
   ["big_text", "Chombo"],
   ["pause", 500],
-  ["advance_turn"],
-  ["when", ["our_turn"], [["advance_turn"]]]
+  ["uninterruptible_advance_turn"],
+  ["when", ["our_turn"], [["uninterruptible_advance_turn"]]]
 ]
 |
 .shown_statuses |= map(select(. != "furiten"))
 |
-.after_turn_change.actions |= map(
-  if .[0] == "ite" and .[1] == ["no_tiles_remaining"] then
-    ["ite", [{"name": "everyone_status", "opts": ["dead_hand"]}], [
-      ["abortive_draw", "Chombo Game"]
-    ], [
-      ["ite", [{"name": "status", "opts": ["dead_hand"]}], [["advance_turn"]], [.]]
-    ]]
-  else . end
-)
+.after_turn_change.actions |= [
+  ["ite", [{"name": "everyone_status", "opts": ["dead_hand"]}], [
+    ["abortive_draw", "Chombo Game"]
+  ], [
+    ["ite", [{"name": "status", "opts": ["dead_hand"]}], [["uninterruptible_advance_turn"]], .]
+  ]]
+]
 |
 # disable all buttons when dead
 .buttons |= (to_entries | map(.value |= disable_when_dead) | from_entries)

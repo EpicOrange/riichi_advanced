@@ -194,7 +194,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                 <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
               <% end %>
             <% else %>
-              <%= for {button, button_name} <- Enum.map(@state.players[@seat].buttons, fn button -> {button, if button == "skip" do "Skip" else @state.rules["buttons"][button]["display_name"] end} end) do %>
+              <%= for {button, button_name} <- Enum.map(@state.players[@seat].buttons, fn button -> {button, if button == "skip" do "Skip" else Map.get(@state.rules["buttons"][button], "display_name", "Button") end} end) do %>
                 <button class={["button", String.length(button_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= button_name %></button>
               <% end %>
             <% end %>

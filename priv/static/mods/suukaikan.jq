@@ -1,11 +1,17 @@
 # add suukantsu flag on 4th kan
 [["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]]] as $add_suukantsu
 |
-.buttons.daiminkan.actions += $add_suukantsu
+if .buttons | has("daiminkan") then
+  .buttons.daiminkan.actions += $add_suukantsu
+else . end
 |
-.buttons.ankan.actions += $add_suukantsu
+if .buttons | has("ankan") then
+  .buttons.ankan.actions += $add_suukantsu
+else . end
 |
-.buttons.kakan.actions += $add_suukantsu
+if .buttons | has("kakan") then
+  .buttons.kakan.actions += $add_suukantsu
+else . end
 |
 # trigger on fourth kan if not suukantsu
 .before_turn_change.actions += [

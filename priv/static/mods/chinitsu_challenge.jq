@@ -30,10 +30,7 @@
 |
 .after_turn_change.actions = [
   ["ite", [{"name": "others_status", "opts": ["dead_hand"]}], [
-    ["uninterruptible_draw", 1, "4x"],
-    ["merge_draw"],
-    ["uninterruptible_draw", 1, "4x"],
-    ["set_tile_alias", ["4x"], ["any"]],
+    ["cancel_deferred_actions"],
     ["win_by_draw"]
   ], .after_turn_change.actions]
 ]
@@ -42,4 +39,6 @@
   "_clear_yaku": [1,2,3,4,5,6]
 }
 |
-.default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi") | not))
+.default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai") | not))
+|
+.available_mods |= map(select(type != "object" or .id | IN("kyuushu_kyuuhai") | not))
