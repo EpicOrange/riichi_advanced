@@ -80,6 +80,13 @@ defmodule RiichiAdvanced.GameState.Marking do
     not Enum.empty?(get_mark_infos(marked_objects, source))
   end
 
+  def num_objects_needed(marked_objects) do
+    Keyword.values(marked_objects)
+    |> Enum.filter(&is_map/1)
+    |> Enum.map(fn mark_info -> mark_info.needed end)
+    |> Enum.sum()
+  end
+
   def is_done?(state, marking_player) do
     [{:done, val}] = get_mark_infos(state.marking[marking_player], :done)
     val
@@ -99,7 +106,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "match_suit"        ->
           if Riichi.is_suited?(tile) do
             Keyword.values(state.marking[marking_player])
-            |> Enum.filter(&Kernel.is_map/1)
+            |> Enum.filter(&is_map/1)
             |> Enum.map(fn mark_info -> mark_info.marked end)
             |> Enum.concat()
             |> Enum.all?(fn {tile2, _, _} -> Riichi.same_suit?(tile, tile2) end)
@@ -107,7 +114,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "match_number"        ->
           if Riichi.is_suited?(tile) do
             Keyword.values(state.marking[marking_player])
-            |> Enum.filter(&Kernel.is_map/1)
+            |> Enum.filter(&is_map/1)
             |> Enum.map(fn mark_info -> mark_info.marked end)
             |> Enum.concat()
             |> Enum.all?(fn {tile2, _, _} -> Riichi.same_number?(tile, tile2) end)

@@ -57,7 +57,13 @@ else . end)
 |
 .auto_buttons["2_auto_ron"].enabled_at_start = true
 |
-.auto_buttons |= del(.["3_auto_no_call"], .["4_auto_discard"])
+.auto_buttons |= del(.["3_auto_no_call"])
+|
+.auto_buttons["4_auto_discard"].actions = [
+  ["when", [{"name": "buttons_include", "opts": ["discard"]}], [["press_button", "discard"]]]
+]
+|
+.auto_buttons["4_auto_discard"].enabled_at_start = true
 |
 .display_riichi_sticks = false
 |

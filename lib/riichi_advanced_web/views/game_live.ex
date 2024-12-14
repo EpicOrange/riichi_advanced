@@ -186,7 +186,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <%= if @viewer != :spectator do %>
         <div class="buttons" :if={@state.players[@seat].declared_yaku != []}>
           <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
-            <button class="button" phx-cancellable-click="clear_marked_objects">Clear</button>
+            <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}>Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}>Cancel</button>
           <% else %>
             <%= if not Enum.empty?(@state.players[@seat].call_buttons) do %>
