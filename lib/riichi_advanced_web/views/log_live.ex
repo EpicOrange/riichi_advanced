@@ -176,6 +176,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
         dead_hand_buttons={false}
+        display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}

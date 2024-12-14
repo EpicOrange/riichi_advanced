@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
 
   def mount(socket) do
     socket = assign(socket, :display_round_marker, false)
+    socket = assign(socket, :dead_hand_buttons, false)
     {:ok, socket}
   end
 
