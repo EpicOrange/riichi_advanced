@@ -78,16 +78,16 @@
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "iishanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "ryanshanten_definition": [
@@ -96,8 +96,8 @@
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 10],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "sanshanten_definition": [
@@ -107,21 +107,21 @@
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 9],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
@@ -181,20 +181,20 @@
       "display_name": "Round Wind",
       "value": 1,
       "when": [[
-        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
-        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
-        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
-        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
     {
       "display_name": "Seat Wind",
       "value": 1,
       "when": [[
-        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
     { "display_name": "Small Three Dragons", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}] },
@@ -249,6 +249,7 @@
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
     "yaku_lists": ["yaku"],
+    "agarirenchan": true,
     "point_name": "Fan",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",

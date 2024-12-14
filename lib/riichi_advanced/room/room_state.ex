@@ -189,8 +189,8 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def reset_mods_to_default(state) do
-    state = for {mod_name, mod} <- state.mods, reduce: state do
-      state -> put_in(state.mods[mod_name].enabled, mod_name in state.default_mods)
+    for {mod_name, mod} <- state.mods, reduce: state do
+      state -> put_in(mod.enabled, mod_name in state.default_mods)
     end
   end
 

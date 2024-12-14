@@ -125,7 +125,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
           Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
         _ ->
           points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
-          IO.inspect(points)
           points >= min_points
       end
     end)

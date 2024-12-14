@@ -259,6 +259,7 @@ defmodule Riichi do
     if debug do
       IO.puts("======================================================")
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
+      IO.puts("Starting hand / calls: #{inspect(hand, charlists: :as_lists)} / #{inspect(calls, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(filtered_tile_aliases)}")
     end
     no_joker_index = Enum.find_index(match_definition, fn elem -> elem == "nojoker" end)
@@ -274,7 +275,7 @@ defmodule Riichi do
             if num == 0 do
               hand_calls # no op, this is created by decompose_match_definitions
             else
-              new_hand_calls = if unique && not exhaustive && Enum.all?(groups, &Utils.is_tile/1) do
+              new_hand_calls = if unique && not exhaustive && Enum.all?(groups, &not is_list(&1) && Utils.is_tile(&1)) do
                 # optimized routine for non-exhaustive unique tile-only groups
                 # note: this assumes no duplicate tiles in the group
                 for {hand, calls} <- hand_calls do
