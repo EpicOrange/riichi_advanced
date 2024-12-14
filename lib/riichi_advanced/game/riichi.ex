@@ -293,7 +293,7 @@ defmodule Riichi do
                         {tiles -- [tile], [call | matching_calls]}
                       else {tiles, matching_calls} end
                   end
-                  if length(matching_hand) + length(matching_calls) == num do
+                  if length(matching_hand) + length(matching_calls) >= num do
                     num_from_hand = min(num, length(matching_hand))
                     num_from_calls = min(num - num_from_hand, length(matching_calls))
                     hand = hand -- Enum.take(matching_hand, num_from_hand)

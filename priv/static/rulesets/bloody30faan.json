@@ -102,12 +102,7 @@
   },
   "tenpai_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
-    [ "exhaustive", "almost", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
-    [ "exhaustive", "almost", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ "exhaustive", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ],
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
@@ -196,9 +191,6 @@
   ],
   "win_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
-    [ "exhaustive", [["knit_straight1", "knit_straight2", "knit_triplets"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
-    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
-    [ "exhaustive", [["knit_short_straight1", "knit_short_straight2", "knit_terminal_seqs1", "knit_terminal_seqs2"], 2], [["pair"], 1] ],
     [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
@@ -229,21 +221,20 @@
     [ [["pair"], 1], "restart", "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
     [ [["pair"], 1], "restart", "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 13] ]
   ],
-  // to match 不搭七星, match 不搭七星_1, then match 不搭七星_2 to ensure there is one of each suited tile
+  // to match 不搭七星, match 十三不搭, then 不搭七星_1, then 不搭七星_2 to ensure there is one of each suited tile
   "不搭七星_1_definition": [
-    [ [["pair"], 1], "restart", "unique", [["1m","4m","7m","1p","4p","7p","1s","4s","7s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["2m","5m","8m","2p","5p","8p","2s","5s","8s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
-    [ [["pair"], 1], "restart", "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s"], 6], [["1z","2z","3z","4z","0z","6z","7z"], 7] ]
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1z","2z","3z","4z","0z","6z","7z"], 7] ]
   ],
   "不搭七星_2_definition": [
     [ "unique",
-      [["1z","2z","3z","4z","0z","6z","7z"], 7],
       [["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 1],
       [["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1],
       [["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]
@@ -830,7 +821,7 @@
       "display_name": "Knitted Honors",
       "value": 5,
       "when": [
-        {"name": "match", "opts": [["hand", "winning_tile"], ["十三不搭"]]}, // optimization
+        {"name": "match", "opts": [["hand", "winning_tile"], ["十三不搭"]]},
         {"name": "match", "opts": [["hand", "winning_tile"], ["不搭七星_1"]]},
         {"name": "match", "opts": [["hand", "winning_tile"], ["不搭七星_2"]]}
       ]
