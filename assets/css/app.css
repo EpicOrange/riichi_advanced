@@ -305,15 +305,17 @@ div.pond, div.secondary-pond {
   z-index: -1;
 }
 div.four-rows > div.pond {
-  width: calc(5.25 * var(--tile-size));
+  width: calc(5.125 * var(--tile-size));
+  height: calc(4 * var(--tile-size));
 }
 div.four-rows > div.secondary-pond {
-  width: calc(4 * var(--tile-size));
+  width: calc(4.375 * var(--tile-size));
   margin-left: calc(4.75 * var(--tile-size));
   margin-top: calc(0.25 * var(--tile-size));
   transform-origin: calc(-2.375 * var(--tile-size)) calc(-2.875 * var(--tile-size));
 }
-div:not(.four-rows) > div.pond::before, div.pond::after { content: ""; width: 100%; order: 1; }
+div:not(.four-rows) > div.pond::before,
+div:not(.four-rows) > div.pond::after { content: ""; width: 100%; order: 1; }
 .pond > .tile { order: 0; }
 .pond > .tile:nth-child(n+7) { order: 1; }
 .pond > .tile:nth-child(n+13) { order: 2; }
