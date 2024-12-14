@@ -2841,9 +2841,7 @@ div.log-control {
   justify-content: space-around;
   align-items: center;
 }
-div.log-control > button.back-button,
-div.log-control > button.play-button,
-div.log-control > button.next-button {
+div.log-control > button.log-control-button {
   height: calc(0.8 * var(--tile-size));
   background: transparent;
   border-width: 0;

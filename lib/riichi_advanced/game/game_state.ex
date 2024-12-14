@@ -478,7 +478,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :winner)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
-    Debounce.apply(state.timer_debouncer)
+    state = start_timer(state)
 
     winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
     state = update_player(state, seat, fn player -> %Player{ player | arranged_hand: winner.arranged_hand, arranged_calls: winner.arranged_calls } end)
@@ -540,7 +540,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
-    Debounce.apply(state.timer_debouncer)
+    state = start_timer(state)
 
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
 
@@ -568,7 +568,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
-    Debounce.apply(state.timer_debouncer)
+    state = start_timer(state)
 
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     state = Map.put(state, :delta_scores, delta_scores)
@@ -586,7 +586,7 @@ defmodule RiichiAdvanced.GameState do
         # reset timer
         state = Map.put(state, :timer, @timer)
         state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
-        Debounce.apply(state.timer_debouncer)
+        state = start_timer(state)
 
         state
       state.visible_screen == :winner -> # need to see score exchange screen
@@ -606,7 +606,7 @@ defmodule RiichiAdvanced.GameState do
         # reset timer
         state = Map.put(state, :timer, @timer)
         state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
-        Debounce.apply(state.timer_debouncer)
+        state = start_timer(state)
         
         state
       state.visible_screen == :scores -> # finished seeing the score exchange screen
@@ -1035,6 +1035,15 @@ defmodule RiichiAdvanced.GameState do
     state
   end
   
+  def start_timer(state) do
+    if state.log_loading_mode do
+      GenServer.cast(self(), :tick_timer)
+    else
+      Debounce.apply(state.timer_debouncer)
+    end
+    state
+  end
+
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
       :east in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
@@ -1364,17 +1373,20 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:tick_timer, state) do
-    if state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) do
-      state = Map.put(state, :timer, 0)
-      state = timer_finished(state)
-      state = broadcast_state_change(state)
-      {:noreply, state}
-    else
-      Debounce.apply(state.timer_debouncer)
-      state = Map.put(state, :timer, state.timer - 1)
-      state = broadcast_state_change(state)
-      {:noreply, state}
+    state = cond do
+      state.log_loading_mode    -> timer_finished(state)
+      state.timer == :cancelled -> Map.put(state, :timer, 0)
+      state.timer <= 0 || Enum.all?(state.players, fn {_seat, player} -> player.ready end) ->
+        state = Map.put(state, :timer, 0)
+        state = timer_finished(state)
+        state
+      true ->
+        Debounce.apply(state.timer_debouncer)
+        state = Map.put(state, :timer, state.timer - 1)
+        state
     end
+    state = broadcast_state_change(state)
+    {:noreply, state}
   end
 
   def handle_cast({:show_error, message}, state) do

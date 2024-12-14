@@ -125,7 +125,9 @@ defmodule RiichiAdvanced.LogControlState do
     for {button_data, seat_num} <- Enum.with_index(button_press_event["buttons"]) do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
-      GenServer.cast(state.game_state_pid, {:press_button, seat, button})
+      if button != nil do
+        GenServer.cast(state.game_state_pid, {:press_button, seat, button})
+      end
     end
     # after all buttons have been adjudicated,
     # may have to press call choice button or saki card
@@ -196,6 +198,7 @@ defmodule RiichiAdvanced.LogControlState do
   def handle_cast({:seek, kyoku_index, event_index}, state) do
     saved_state = GenServer.call(state.log_walker_pid, {:get_state, kyoku_index, event_index})
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, {:put_state, saved_state}))
+    state = Map.put(state, :timer, :cancelled)
     {:noreply, state}
   end
 
