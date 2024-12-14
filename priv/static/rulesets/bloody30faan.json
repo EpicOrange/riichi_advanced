@@ -49,9 +49,6 @@
     "quad": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
-    "knit_shuntsu1": [0, 11, 22],
-    "knit_shuntsu2": [0, 21, 12],
-    "knit_koutsu": [0, 10, 20],
     "knit_taatsu1": [0, 11],
     "knit_taatsu2": [0, 21],
     "knit_taatsu3": [0, 12],
@@ -178,10 +175,19 @@
     [ "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 9], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 1] ]
   ],
   "joker_tanki_tenpai_definition": [
-    [ "exhaustive", [["12j", "13j"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 4] ],
+    [ "exhaustive", [["12j", "13j"], 1], [["shuntsu", "koutsu"], 4] ],
     [ [["12j", "13j"], 1], [["pair"], 6] ],
     [ "unique", [["12j", "13j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j"], 1], [["13j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ]
+    [ "unique", [["12j"], 1], [["13j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["12j", "13j"], 1], [["1m","4m","7m","1p","4p","7p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["2m","5m","8m","2p","5p","8p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["12j", "13j"], 1], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
@@ -270,21 +276,21 @@
         [[0,0],[0,1,2],[3,4,5],[6,7,8],[8,8,8]]], 1] ]
   ],
   "兩連刻_definition": [
-    [ "exhaustive", "ignore_suit", [[[[0,0,0],[1,1,1]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", "ignore_suit", [[[[0,0,0],[1,1,1]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "小三連刻_definition": [
     [ "exhaustive", "ignore_suit", [[[[0,0,0],[1,1,1],[2,2]],
                                      [[0,0,0],[1,1],[2,2,2]],
-                                     [[0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+                                     [[0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ]
   ],
   "一色三連刻_definition": [
-    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "小一色四連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2],[3,3]],
                       [[0,0,0],[1,1,1],[2,2],[3,3,3]],
                       [[0,0,0],[1,1],[2,2,2],[3,3,3]],
-                      [[0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1] ]
+                      [[0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ]
   ],
   "一色四連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["pair"], 1] ]
@@ -295,11 +301,11 @@
                       [[0,0,0],[11,11],[22,22,22]],
                       [[0,0,0],[21,21],[12,12,12]],
                       [[0,0],[11,11,11],[22,22,22]],
-                      [[0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+                      [[0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 2] ]
   ],
   "三色連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22,22]],
-                      [[0,0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+                      [[0,0,0],[21,21,21],[12,12,12]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "小三色四連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22,22],[3,3]],
@@ -309,7 +315,7 @@
                       [[0,0,0],[11,11],[22,22,22],[3,3,3]],
                       [[0,0,0],[21,21],[12,12,12],[3,3,3]],
                       [[0,0],[11,11,11],[22,22,22],[3,3,3]],
-                      [[0,0],[21,21,21],[12,12,12],[3,3,3]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1] ]
+                      [[0,0],[21,21,21],[12,12,12],[3,3,3]]], 1], [["shuntsu", "koutsu"], 1] ]
   ],
   "三色四連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[11,11,11],[22,22,22],[3,3,3]],
@@ -329,7 +335,7 @@
   ],
   "兩同刻_definition": [
     [ "exhaustive", [[[[0,0,0],[10,10,10]],
-                      [[0,0,0],[20,20,20]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+                      [[0,0,0],[20,20,20]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "小三同刻_definition": [
     [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20]],
@@ -337,14 +343,14 @@
                       [[0,0,0],[10,10],[20,20,20]],
                       [[0,0,0],[20,20],[10,10,10]],
                       [[0,0],[10,10,10],[20,20,20]],
-                      [[0,0],[20,20,20],[10,10,10]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+                      [[0,0],[20,20,20],[10,10,10]]], 1], [["shuntsu", "koutsu"], 2] ]
   ],
   "三同刻_definition": [
     [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20,20]],
                       [[0,0,0],[10,10,10],[10,10,10]],
                       [[0,0,0],[20,20,20],[20,20,20]],
                       [[0,0,0],[0,0,0],[10,10,10]],
-                      [[0,0,0],[0,0,0],[20,20,20]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+                      [[0,0,0],[0,0,0],[20,20,20]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "四同刻_definition": [
     [ "exhaustive", [[[[0,0,0],[10,10,10],[20,20,20],[0,0,0]],
@@ -354,7 +360,7 @@
   "筋刻_definition": [
     [ "exhaustive", [[[[0,0,0],[3,3,3]],
                       [[0,0,0],[13,13,13]],
-                      [[0,0,0],[23,23,23]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+                      [[0,0,0],[23,23,23]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "小三筋刻_definition": [
     [ "exhaustive", [[[[0,0,0],[13,13,13],[26,26]],
@@ -362,29 +368,29 @@
                       [[0,0,0],[13,13],[26,26,26]],
                       [[0,0,0],[23,23],[16,16,16]],
                       [[0,0],[13,13,13],[26,26,26]],
-                      [[0,0],[23,23,23],[16,16,16]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+                      [[0,0],[23,23,23],[16,16,16]]], 1], [["shuntsu", "koutsu"], 2] ]
   ],
   "三筋刻_definition": [
     [ "exhaustive", [[[[0,0,0],[13,13,13],[26,26,26]],
-                      [[0,0,0],[23,23,23],[16,16,16]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+                      [[0,0,0],[23,23,23],[16,16,16]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "兩相逢_definition": [
-    [ "exhaustive", [[[[0,1,2],[10,11,12]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[10,11,12]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "2兩相逢_definition": [
     [ "exhaustive", [[[[0,1,2],[10,11,12]]], 2], [["pair"], 1] ]
   ],
   "三相逢_definition": [
-    [ "exhaustive", [[[[0,1,2],[10,11,12],[20,21,22]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[10,11,12],[20,21,22]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "一色三同順_definition": [
-    [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "一色四同順_definition": [
     [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]]], 1], [["pair"], 1] ]
   ],
   "連六_definition": [
-    [ "exhaustive", [[[[0,1,2],[3,4,5]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[3,4,5]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "2連六_definition": [
     [ "exhaustive", [[[[0,1,2],[3,4,5]]], 2], [["pair"], 1] ]
@@ -397,7 +403,7 @@
     [ "exhaustive", [[[[0,1,2],[0,1,2],[3,4,5],[3,4,5]]], 1], [["pair"], 1] ]
   ],
   "一般高_definition": [
-    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "雙般高_definition": [
     [ "exhaustive", [[[[0,1,2],[0,1,2]]], 2], [["pair"], 1] ]
@@ -412,41 +418,41 @@
                       [0,0,1,1,2,2,6,6,7,7,8,8]], 1], [["pair"], 1] ]
   ],
   "三色三步高_definition": [
-    [ "exhaustive", [[[[0,1,2],[11,12,13],[22,23,24]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ],
-    [ "exhaustive", [[[[0,1,2],[21,22,23],[12,13,14]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[11,12,13],[22,23,24]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,1,2],[21,22,23],[12,13,14]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "三色四步高_definition": [
     [ "exhaustive", [[[[0,1,2],[11,12,13],[22,23,24],[3,4,5]],
                       [[0,1,2],[21,22,23],[12,13,14],[3,4,5]]], 1], [["pair"], 1] ]
   ],
   "一色三步高_definition": [
-    [ "exhaustive", [[[[0,1,2],[1,2,3],[2,3,4]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[1,2,3],[2,3,4]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "一色四步高_definition": [
     [ "exhaustive", [[[[0,1,2],[1,2,3],[2,3,4],[3,4,5]]], 1], [["pair"], 1] ]
   ],
   "三色跳步高_definition": [
     [ "exhaustive", [[[[0,1,2],[12,13,14],[24,25,26]],
-                      [[0,1,2],[22,23,24],[14,15,16]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+                      [[0,1,2],[22,23,24],[14,15,16]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "一色跳步高_definition": [
-    [ "exhaustive", [[[[0,1,2],[2,3,4],[4,5,6]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[2,3,4],[4,5,6]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "金門大橋_definition": [
     [ "exhaustive", [[[[0,1,2],[2,3,4],[4,5,6],[6,7,8]]], 1], [["pair"], 1] ]
   ],
   "雜龍_definition": [
     [ "exhaustive", [[[[0,1,2],[13,14,15],[26,27,28]],
-                      [[0,1,2],[23,24,25],[16,17,18]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+                      [[0,1,2],[23,24,25],[16,17,18]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "清龍_definition": [
-    [ "exhaustive", [[[[0,1,2],[3,4,5],[6,7,8]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 1], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[3,4,5],[6,7,8]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
   ],
   "四歸二_definition": [
-    [ "exhaustive", [[[[0,0,0],[0,1,2]],[[0,1,2],[1,1,1]],[[0,1,2],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,0,0],[0,1,2]],[[0,1,2],[1,1,1]],[[0,1,2],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "四歸三_definition": [
-    [ "exhaustive", [[[[0,0],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[1,1]],[[0,1,2],[0,1,2],[2,2]],[[0,1,2],[1,1],[1,2,3]],[[0,1,2],[1,2,3],[2,2]],[[0,1,2],[2,2],[2,3,4]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+    [ "exhaustive", [[[[0,0],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[1,1]],[[0,1,2],[0,1,2],[2,2]],[[0,1,2],[1,1],[1,2,3]],[[0,1,2],[1,2,3],[2,2]],[[0,1,2],[2,2],[2,3,4]]], 1], [["shuntsu", "koutsu"], 2] ]
   ],
   "四歸四_definition": [
     [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[0,1,2],[1,2,3]],[[0,1,2],[0,1,2],[0,1,2],[2,3,4]],[[0,1,2],[0,1,2],[1,2,3],[1,2,3]],[[0,1,2],[0,1,2],[1,2,3],[2,3,4]],[[0,1,2],[0,1,2],[2,3,4],[2,3,4]],[[0,1,2],[1,2,3],[1,2,3],[1,2,3]],[[0,1,2],[1,2,3],[1,2,3],[2,3,4]],[[0,1,2],[1,2,3],[2,3,4],[2,3,4]],[[0,1,2],[2,3,4],[2,3,4],[2,3,4]]], 1], [["pair"], 1] ]
@@ -484,7 +490,7 @@
     [ "exhaustive",
       [[["2m","2m"],["5m","5m"],["8m","8m"],
         ["2p","2p"],["5p","5p"],["8p","8p"],
-        ["2s","2s"],["5s","5s"],["8s","8s"]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 4] ]
+        ["2s","2s"],["5s","5s"],["8s","8s"]], 1], [["shuntsu", "koutsu"], 4] ]
   ],
   "科大列車_definition": [
     [ "exhaustive",
@@ -560,7 +566,7 @@
     { "display_name": "Little Four Winds", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}] },
     { "display_name": "Big Four Winds", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}] },
     // (2) 么九類
-    { "display_name": "Terminal Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["老少順"], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]]]}] },
+    { "display_name": "Terminal Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["老少順"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]}] },
     { "display_name": "All Simples", "value": 2, "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },
     {
       "display_name": "Mixed Outside Hand",
@@ -644,10 +650,10 @@
         // 0-1 open triplets, hand must be 3 triplets and a pair
         {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
         // 0 open triplets, hand must be 2 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]},
         [
           "won_by_draw",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1]]]]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1]]]]}
         ]
       ]]
     },
