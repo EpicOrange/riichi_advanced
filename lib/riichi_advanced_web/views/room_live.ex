@@ -140,7 +140,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
             <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
               <div class="mod-category" :if={category}>
                 <%= category %>
-                <button class="toggle-category-button" phx-cancellable-click="toggle_category" phx-value-category={category}>Toggle all</button>
+                <button class="mod-menu-button" phx-cancellable-click="toggle_category" phx-value-category={category}>Toggle all</button>
               </div>
               <%= for {mod, mod_details} <- Enum.sort_by(mods, fn {_name, mod} -> mod.index end) do %>
                 <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
@@ -148,6 +148,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
               <% end %>
               <div class="mod-category-spacer"></div>
             <% end %>
+            <div class="reset-to-default-button">
+              <button class="mod-menu-button" phx-cancellable-click="reset_mods_to_default">Reset mods to default</button>
+            </div>
           </div>
         </div>
       <% end %>
@@ -207,6 +210,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def handle_event("toggle_category", %{"category" => category}, socket) do
     GenServer.cast(socket.assigns.room_state, {:toggle_category, category})
+    {:noreply, socket}
+  end
+
+  def handle_event("reset_mods_to_default", _assigns, socket) do
+    GenServer.cast(socket.assigns.room_state, :reset_mods_to_default)
     {:noreply, socket}
   end
 

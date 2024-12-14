@@ -2667,7 +2667,7 @@ div.room > div.mods > div.mods-inner-container > div.mod-category-spacer {
   min-height: 0.5em;
   margin-left: -0.5em;
 }
-div.room > div.mods > div.mods-inner-container > div.mod-category > button.toggle-category-button {
+div.room > div.mods > div.mods-inner-container button.mod-menu-button {
   display: inline-block;
   background: var(--tile-front);
   color: black;
@@ -2680,9 +2680,13 @@ div.room > div.mods > div.mods-inner-container > div.mod-category > button.toggl
   cursor: pointer;
   text-align: center;
 }
-div.room > div.mods > div.mods-inner-container > div.mod-category > button.toggle-category-button:active {
+div.room > div.mods > div.mods-inner-container button.mod-menu-button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / -8));
+}
+div.room > div.mods > div.mods-inner-container div.reset-to-default-button {
+  width: 100%;
+  text-align: center;
 }
 div.room > div.custom-json > textarea {
   position: absolute;

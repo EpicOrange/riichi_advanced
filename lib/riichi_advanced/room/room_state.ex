@@ -32,6 +32,7 @@ defmodule Room do
     started: false,
     display_name: "",
     mods: %{},
+    default_mods: [],
     categories: [],
     tutorial_link: nil,
     textarea: [@initial_textarea],
@@ -124,6 +125,7 @@ defmodule RiichiAdvanced.RoomState do
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
+      default_mods: default_mods,
       categories: categories,
       tutorial_link: if state.ruleset == "custom" do
         "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md"
@@ -183,6 +185,12 @@ defmodule RiichiAdvanced.RoomState do
     enable = Enum.all?(mods, fn {_mod_name, mod} -> not mod.enabled end)
     for {mod_name, mod} <- mods, mod.enabled != enable, reduce: state do
       state -> toggle_mod(state, mod_name, enable)
+    end
+  end
+
+  def reset_mods_to_default(state) do
+    state = for {mod_name, mod} <- state.mods, reduce: state do
+      state -> put_in(state.mods[mod_name].enabled, mod_name in state.default_mods)
     end
   end
 
@@ -329,6 +337,12 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_cast({:toggle_category, category_name}, state) do
     state = toggle_category(state, category_name)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:reset_mods_to_default, state) do
+    state = reset_mods_to_default(state)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
