@@ -462,10 +462,10 @@ defmodule Riichi do
     decomposed_match_definitions = for match_definition <- match_definitions do
       {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
         {result, keywords} -> case match_definition_elem do
-          [groups, num] when num == 1    ->
+          [groups, num] when num == 1     ->
             entry = {List.delete_at(match_definition, i), keywords ++ [[groups, 1]]}
             {[entry | result], keywords}
-          [groups, num] when num > 1     ->
+          [groups, num] when num > 1      ->
             entry = if "unique" in keywords do
               # can't remove one from a unique group, so take out the whole group
               {List.delete_at(match_definition, i), keywords ++ [[groups, num]]}

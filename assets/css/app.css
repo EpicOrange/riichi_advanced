@@ -157,6 +157,7 @@ div.calls {
   flex-direction: row-reverse;
   right: 0;
   z-index: -1;
+  width: 0;
 }
 div.flowers {
   right: calc(1.25 * var(--tile-size));
@@ -1129,10 +1130,10 @@ div.hand.just-called-flower > div.flowers > div.tile:last-child {
     transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-2 * var(--tile-width)));
   }
 }
-div.tile.sideways + div.tile.sideways::before {
+div.hand.just-called div.tile.sideways + div.tile.sideways::before {
   animation: slideDown 0.2s ease forwards;
 }
-div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
+div.hand.just-called div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
   animation: slideDown2 0.2s ease forwards;
 }
 

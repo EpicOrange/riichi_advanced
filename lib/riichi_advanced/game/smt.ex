@@ -617,7 +617,7 @@ defmodule RiichiAdvanced.SMT do
     # max_tiles_used_usages = tiles_used_usages |> Enum.map(fn {_ixs, assertions} -> length(assertions) end) |> Enum.max(&>=/2, fn -> 0 end)
     # optimization4 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most #{max_tiles_used_usages})\n  #{Enum.map(tile_group_indices, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")}))\n"] end
 
-    optimzation_call_jokers = for {call, i} <- calls, {tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
+    optimzation_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
       call = {"", Enum.map(call, &{&1, false})} # TODO replace this dumb call format
       tile = Utils.get_joker_meld_tile(call, jokers)
       IO.inspect(tile)

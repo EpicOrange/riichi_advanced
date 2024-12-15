@@ -1,6 +1,5 @@
 defmodule RiichiAdvanced.GameState.American do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
-  alias RiichiAdvanced.GameState.Conditions, as: Conditions
   import RiichiAdvanced.GameState
 
   # each american match definition is a string, like
