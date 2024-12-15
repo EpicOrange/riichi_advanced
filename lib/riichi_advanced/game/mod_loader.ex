@@ -82,7 +82,7 @@ defmodule RiichiAdvanced.ModLoader do
       display_name: "Chinitsu Challenge",
       ruleset: "riichi",
       mods: ["chinitsu_challenge"],
-      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman"],
+      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",

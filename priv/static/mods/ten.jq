@@ -10,21 +10,16 @@ def nine_to_ten:
     .
   end;
 
-# add the ten tiles (different for sanma and yonma)
-if any(.wall[]; . == "2m") then
-  .wall += [
-    "10m", "10m", "10m", "10m",
-    "10p", "10p", "10p", "10p",
-    "10s", "10s", "10s", "10s"
-  ]
-else
-  .wall |= (map(if . == "9m" then "10m" else . end) + [
-    "10p", "10p", "10p", "10p",
-    "10s", "10s", "10s", "10s"
-  ])
-end
+.wall |= nine_to_ten
 |
-# add ten
+# re-add the nine tiles
+if any(.wall[]; . == "2m") then .wall += ["10m", "10m", "10m", "10m"] else . end
+|
+if any(.wall[]; . == "2p") then .wall += ["10p", "10p", "10p", "10p"] else . end
+|
+if any(.wall[]; . == "2s") then .wall += ["10s", "10s", "10s", "10s"] else . end
+|
+# add ten ordering
 .after_start.actions += [
   ["set_tile_ordering", ["9m", "10m"]],
   ["set_tile_ordering", ["9p", "10p"]],

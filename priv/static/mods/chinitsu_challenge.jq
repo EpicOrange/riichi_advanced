@@ -1,6 +1,6 @@
 .num_players = 2
 |
-.wall |= map(select(IN("1s","2s","3s","4s","5s","6s","7s","8s","9s","10s")))
+.wall |= map(select(IN("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z")))
 |
 .initial_dead_wall_length = 0
 |
@@ -41,4 +41,4 @@
 |
 .default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai") | not))
 |
-.available_mods |= map(select(type != "object" or .id | IN("kyuushu_kyuuhai") | not))
+.available_mods |= map(select(type != "object" or (.id | IN("kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))
