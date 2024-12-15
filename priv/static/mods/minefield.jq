@@ -14,6 +14,10 @@
   ["when_everyone", [{"name": "status", "opts": ["match_start"]}, "not_has_aside"], [["pause", 1000], ["ryuukyoku"]]]
 ]
 |
+.play_restrictions = [
+  [["any"], ["not_is_drawn_tile"]]
+]
+|
 .yaku |= map(select(.display_name != "Round Wind"))
 |
 # remove all calls except for ron

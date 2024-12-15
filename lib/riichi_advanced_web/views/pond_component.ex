@@ -33,7 +33,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
             <% end %>
           <% end %>
         <% else %>
-          <div :for={{tile, i} <- Enum.take(Enum.with_index(@pond), 24)} class={["tile", Utils.strip_attrs(tile), @just_discarded? && i == length(@pond) - 1 && "just-played", i == @riichi_index && "sideways", Utils.has_attr?(tile, ["transparent"]) && "transparent"]}></div>
+          <div :for={{tile, i} <- Enum.take(Enum.with_index(@pond), 24)} class={Utils.get_tile_class(tile, i, assigns)}></div>
         <% end %>
       </div>
       <div class={[@id, "secondary-pond", @highlight? && "highlight"]} :if={@secondary_pond?}>

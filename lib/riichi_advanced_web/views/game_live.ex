@@ -135,8 +135,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
         four_rows?={Map.get(@state.rules, "four_rows_discards", false)}
-        :for={{seat, player} <- @state.players}
-        :if={not Enum.empty?(player.pond)} />
+        :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
         id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
