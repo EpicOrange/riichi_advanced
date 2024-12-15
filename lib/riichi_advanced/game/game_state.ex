@@ -1475,7 +1475,7 @@ defmodule RiichiAdvanced.GameState do
       GenServer.cast(self, {:set_playable_indices, state.turn, for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end})
     end)
     state = state
-    |> update_player(state.turn, &%Player{ &1 | playable_indices: []})
+    |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
     |> Map.put(:calculate_playable_indices_pid, pid)
     {:noreply, state}
   end
