@@ -7,19 +7,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   import RiichiAdvanced.GameState
 
-  # get the principal tile from a meld consisting of all one tile and jokers
-  def get_joker_meld_tile(call, joker_tile) do
-    call_tiles = Riichi.call_to_tiles(call)
-    non_joker_tiles = Enum.reject(call_tiles, &Utils.same_tile(&1, joker_tile))
-    has_joker = length(non_joker_tiles) < length(call_tiles)
-    has_nonjoker = length(non_joker_tiles) > 0
-    if has_joker && has_nonjoker do
-      [tile | rest] = non_joker_tiles
-      tile = Utils.strip_attrs(tile)
-      if Enum.all?(rest, &Utils.same_tile(&1, tile)) do [tile] else [] end
-    else [] end
-  end
-
   def get_hand_calls_spec(state, context, hand_calls_spec) do
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)
@@ -79,13 +66,15 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "self_joker_meld_tiles" ->
             # used in malaysian, this selects one nonjoker tile from own exposed calls containing a joker
             state.players[context.seat].calls
-            |> Enum.flat_map(&get_joker_meld_tile(&1, :"2y"))
+            |> Enum.map(&Utils.get_joker_meld_tile(&1, [:"2y"]))
+            |> Enum.reject(&is_nil/1)
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
           "anyone_joker_meld_tiles" ->
             # used in american, this selects one nonjoker tile from each exposed call containing a joker
             state.players
             |> Enum.flat_map(fn {_seat, player} -> player.calls end)
-            |> Enum.flat_map(&get_joker_meld_tile(&1, :"1j"))
+            |> Enum.map(&Utils.get_joker_meld_tile(&1, [:"1j"]))
+            |> Enum.reject(&is_nil/1)
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
           _ ->
             IO.puts("Unhandled hand_calls spec #{inspect(item)}")

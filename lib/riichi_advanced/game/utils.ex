@@ -318,4 +318,27 @@ defmodule Utils do
     ] ++ extra_classes
   end
 
+  # get the principal tile from a meld consisting of all one tile and jokers
+  def get_joker_meld_tile(call, joker_tiles) do
+    call_tiles = Riichi.call_to_tiles(call)
+    non_joker_tiles = Enum.reject(call_tiles, &Utils.count_tiles([&1], joker_tiles) > 0)
+    has_joker = length(non_joker_tiles) < length(call_tiles)
+    has_nonjoker = length(non_joker_tiles) > 0
+    if has_joker && has_nonjoker do
+      [tile | rest] = non_joker_tiles
+      tile = Utils.strip_attrs(tile)
+      if Enum.all?(rest, &Utils.same_tile(&1, tile)) do tile else nil end
+    else nil end
+  end
+
+  @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
+  def replace_jokers_in_calls(calls, joker_tiles) do
+    Enum.map(calls, fn {name, call} ->
+      if name in @pon_like_calls && Enum.any?(call, fn {tile, _sideways} -> Utils.count_tiles([tile], joker_tiles) > 0 end) do
+        meld_tile = get_joker_meld_tile({name, call}, joker_tiles)
+        {name, Enum.map(call, fn {_tile, sideways} -> {meld_tile, sideways} end)}
+      else {name, call} end
+    end)
+  end
+
 end

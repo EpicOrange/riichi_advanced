@@ -460,7 +460,6 @@ defmodule RiichiAdvanced.SMT do
       calls_decls = for {call, i} <- calls, reduce: [] do
         calls_decls ->
           call_smt = call
-          |> Enum.take(3) # ignore kans
           |> Enum.with_index()
           |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, encoding, length(hand)+i*3+ix, joker_ixs)}" end)
           calls_decls ++ ["(declare-const call#{i+1} (_ BitVec #{len}))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
@@ -617,7 +616,15 @@ defmodule RiichiAdvanced.SMT do
     # optimization3 = if Enum.empty?(all_sets) do [] else Enum.map(sumindices_usages, fn {ixs, assertions} -> "(assert (or (and #{Enum.map(ixs, fn i -> "(= (_ bv0 4) sumindices#{i})" end) |> Enum.join(" ")}) (and #{Enum.join(assertions, "\n  ")})))\n" end) end
     # max_tiles_used_usages = tiles_used_usages |> Enum.map(fn {_ixs, assertions} -> length(assertions) end) |> Enum.max(&>=/2, fn -> 0 end)
     # optimization4 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most #{max_tiles_used_usages})\n  #{Enum.map(tile_group_indices, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")}))\n"] end
-    optimizations = [] #optimization1 ++ optimization2 #++ optimization3
+
+    optimzation_call_jokers = for {call, i} <- calls, {tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
+      call = {"", Enum.map(call, &{&1, false})} # TODO replace this dumb call format
+      tile = Utils.get_joker_meld_tile(call, jokers)
+      IO.inspect(tile)
+      "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
+    end |> Enum.join()
+
+    optimizations = [optimzation_call_jokers] #optimization1 ++ optimization2 #++ optimization3
 
     match_assertions = "(assert (or#{Enum.reverse(match_assertions)}))\n"
 

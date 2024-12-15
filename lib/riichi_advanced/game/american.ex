@@ -335,20 +335,10 @@ defmodule RiichiAdvanced.GameState.American do
     else state end
   end
 
-  def replace_jokers_in_calls(calls) do
-    Enum.map(calls, fn {name, call} ->
-      if Enum.any?(call, fn {tile, _sideways} -> Utils.same_tile(tile, :"1j") end) do
-        # replace jokers so we don't have to use tile_aliases
-        [meld_tile] = Conditions.get_joker_meld_tile({name, call}, :"1j")
-        {name, Enum.map(call, fn {_tile, sideways} -> {meld_tile, sideways} end)}
-      else {name, call} end
-    end)
-  end
-
   def get_viable_am_match_definitions(state, seat, am_match_definitions) do
     # replace winner's hand with :any and check which win definitions match, return those
     hand = List.duplicate(:any, length(state.players[seat].hand) + 1)
-    calls = replace_jokers_in_calls(state.players[seat].calls)
+    calls = Utils.replace_jokers_in_calls(state.players[seat].calls, [:"1j"])
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
     Enum.filter(am_match_definitions, &Riichi.match_hand(hand, calls, translate_match_definitions(state, [&1]), ordering, ordering_r, %{}))
@@ -363,7 +353,7 @@ defmodule RiichiAdvanced.GameState.American do
     # use arrange_american_hand instead (this is why we kept around am_match_definition)
     visible_tiles = get_visible_tiles(state) |> Utils.strip_attrs()
     hand = Enum.shuffle(state.wall) -- visible_tiles
-    calls = replace_jokers_in_calls(state.players[seat].calls)
+    calls = Utils.replace_jokers_in_calls(state.players[seat].calls, [:"1j"])
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
