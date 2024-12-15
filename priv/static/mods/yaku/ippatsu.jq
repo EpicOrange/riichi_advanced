@@ -5,7 +5,7 @@
   {
     "display_name": "Ippatsu",
     "value": 1,
-    "when": [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}]
+    "when": [{"name": "status", "opts": ["ippatsu"]}]
   }
 ] + .[$ix+1:]
 |
@@ -18,5 +18,5 @@ else . end
 .functions.turn_cleanup += [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]]]
 |
 # unset ippatsu status on call
-.before_call.actions += [["unset_status", "ippatsu"]]
+.before_call.actions += [["unset_status_all", "ippatsu"]]
 

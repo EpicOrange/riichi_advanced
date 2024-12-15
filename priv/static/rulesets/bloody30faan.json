@@ -264,6 +264,30 @@
   "2不搭老少_definition": [
     [ [["knit_terminal_seqs1", "knit_terminal_seqs2"], 2] ]
   ],
+  "ryanankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "ryanankou_ron_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "sanankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "sanankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "suuankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "suuankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
   "副露九子連環_definition": [
     [ [[[[0,0,0],[0,1,2],[3,4,5],[6,7,8],[8,8]],
         [[0,0,0],[1,1],[2,3,4],[5,6,7],[8,8,8]],
@@ -645,42 +669,24 @@
       "display_name": "Two Concealed Triplets",
       "value": 2,
       "when": [[
-        // 0-2 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
-        // 0-1 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
-        // 0 open triplets, hand must be 2 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]},
-        [
-          "won_by_draw",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1]]]]}
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_ron"]]}]
       ]]
     },
     {
       "display_name": "Three Concealed Triplets",
       "value": 8,
       "when": [[
-        // 0-1 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
-        // 0 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
-        [
-          "won_by_draw",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1]]]]}
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_ron"]]}]
       ]]
     },
     {
       "display_name": "Four Concealed Triplets",
       "value": 15,
       "when": [[
-        // 0 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
-        [
-          "won_by_draw",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]}
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
       ]]
     },
     { "display_name": "Two Shifted Triplets", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩連刻"]]}] },

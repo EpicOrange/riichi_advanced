@@ -432,6 +432,18 @@
   "daisuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
   ],
+  "sanankou_tsumo_definition": [
+    // 0 open triplets, hand must be 3 triplets and a pair
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    // 0-1 open triplets, hand must be 4 triplets and a pair
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "sanankou_ron_definition": [
+    // 0 open triplets, hand must be 3 triplets and a pair
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    // 0-1 open triplets, hand must be 4 triplets and a pair
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
   "kakura_kurumi_tenpai_definition": [
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], -6], [["pair"], 5] ]
   ],
@@ -507,14 +519,8 @@
       "display_name": "Sanankou",
       "value": 2,
       "when": [[
-        // 0-1 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1] ]]]},
-        // 0 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1] ]]]},
-        [
-          "won_by_draw",
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_ron"]]}]
       ]]
     },
     { "display_name": "Shousangen", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]]]}] },

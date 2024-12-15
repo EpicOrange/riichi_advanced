@@ -31,7 +31,7 @@
       ["set_aside_marked_hand"],
       ["swap_hand_and_aside"],
       ["put_down_riichi_stick"],
-      ["set_status", "match_start", "riichi", "ippatsu"]
+      ["set_status", "match_start", "just_reached", "riichi", "ippatsu"]
     ],
     "unskippable": true,
     "cancellable": false

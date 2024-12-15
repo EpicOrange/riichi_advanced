@@ -61,3 +61,7 @@ end
 .meta_yaku |= fix_yaku
 |
 .meta_yakuman |= fix_yaku
+|
+.sanankou_tsumo_definition |= fix_match_definition
+|
+.sanankou_ron_definition |= fix_match_definition
