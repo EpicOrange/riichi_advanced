@@ -273,6 +273,7 @@ div.hand.toimen:hover { z-index: -1; }
 div.hand.shimocha div.tiles:hover::before,
 div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
+div.hand.marking { z-index: 10; }
 
 /* tile attrs */
 div.tile.reversed { transform: scaleX(-100%); }

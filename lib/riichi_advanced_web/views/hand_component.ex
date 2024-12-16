@@ -25,7 +25,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={[@id, @just_called && "just-called", @just_called_flower && "just-called-flower", @just_drew && "just-drew"]}>
+    <div class={[@id, @just_called && "just-called", @just_called_flower && "just-called-flower", @just_drew && "just-drew", not Enum.empty?(@marking) && "marking"]}>
       <%= if @your_hand? do %>
         <%= if not Enum.empty?(@marking) do %>
           <div class="tiles">
