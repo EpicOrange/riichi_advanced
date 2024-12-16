@@ -159,6 +159,10 @@ div.calls {
   z-index: -1;
   width: 0;
 }
+div.call {
+  /* we need this since the calls container is zero width */
+  flex-shrink: 0;
+}
 div.flowers {
   right: calc(1.25 * var(--tile-size));
   bottom: calc(1.25 * var(--tile-size));
