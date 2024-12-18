@@ -40,7 +40,7 @@ defmodule Player do
     hand_revealed: false,
     num_scryed_tiles: 0,
     declared_yaku: nil,
-    last_discard: nil, # for animation purposes only
+    last_discard: nil, # for animation purposes and to avoid double discarding
     winning_hand: nil,
     ready: false,
     arranged_hand: [],
@@ -486,7 +486,7 @@ defmodule RiichiAdvanced.GameState do
       Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: winning_tile, win_source: win_source})
     else state end
 
-    # reset animation
+    # reset animation (and allow discarding again, in bloody end rules)
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
@@ -530,10 +530,6 @@ defmodule RiichiAdvanced.GameState do
     # after the after_win actions, check if pao was set, and add it onto the winner object
     winner = Scoring.update_winner_pao(state, winner)
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-
-    # for bloody end rules, make sure ai doesn't get frozen (due to discarding twice check)
-    # achieve this by clearing all actions, so there is no last discard action to check
-    state = clear_actions(state)
 
     state
   end

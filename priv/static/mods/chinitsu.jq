@@ -22,4 +22,7 @@ end) as $wall
 # skip sichuan voided suit prompt
 if (.buttons | has("void_souzu")) then
   .after_charleston.actions += [["as", "everyone", [["unset_status", "round_start"], ["set_status", "void_manzu"]]]]
+  |
+  .
+  .buttons |= del(.void_manzu, .void_pinzu, .void_souzu)
 else . end
