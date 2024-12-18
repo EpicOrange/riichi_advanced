@@ -44,8 +44,14 @@ def ryanhan_shibari($check; $check_yakuman):
 ]
 |
 # Ryanhan shibari for dealer at 5+ consecutive wins
-.buttons.ron.show_when |= ryanhan_shibari("has_yaku_with_discard"; "has_yaku2_with_discard")
+if (.buttons | has("ron")) then
+  .buttons.ron.show_when |= ryanhan_shibari("has_yaku_with_discard"; "has_yaku2_with_discard")
+else . end
 |
-.buttons.chankan.show_when |= ryanhan_shibari("has_yaku_with_call"; "has_yaku2_with_call")
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when |= ryanhan_shibari("has_yaku_with_call"; "has_yaku2_with_call")
+else . end
 |
-.buttons.tsumo.show_when |= ryanhan_shibari("has_yaku_with_hand"; "has_yaku2_with_hand")
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo.show_when |= ryanhan_shibari("has_yaku_with_hand"; "has_yaku2_with_hand")
+else . end

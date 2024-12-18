@@ -254,6 +254,7 @@ defmodule RiichiAdvanced.GameState do
     shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(state, Map.get(state.rules, Atom.to_string(shanten) <> "_definition", []))} end)
     shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
       shanten_definitions ->
+        # IO.puts("Generating #{from} definitions")
         if length(shanten_definitions[from]) < 1000 do
           Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
         else
@@ -261,7 +262,7 @@ defmodule RiichiAdvanced.GameState do
         end
     end
     state = Map.put(state, :shanten_definitions, shanten_definitions)
-    IO.inspect(state.shanten_definitions)
+    # IO.inspect(state.shanten_definitions)
 
     state = Map.put(state, :available_seats, case Map.get(rules, "num_players", 4) do
       1 -> [:east]

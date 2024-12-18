@@ -1,5 +1,7 @@
 .default_mods |= map(select(IN("kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
 |
+.available_mods |= map(select(type != "object" or (.id | IN("drawless_riichi") | not)))
+|
 .starting_tiles = 34
 |
 .num_players = 2

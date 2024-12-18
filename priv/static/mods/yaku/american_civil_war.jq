@@ -21,8 +21,14 @@ def replace_tenpai_check($source):
 .win_definition += ["1861a 1865b NNN SSS"]
 |
 # replace tenpai check
-.buttons.ron.show_when |= replace_tenpai_check("last_discard")
+if (.buttons | has("ron")) then
+  .buttons.ron.show_when |= replace_tenpai_check("last_discard")
+else . end
 |
-.buttons.chankan.show_when |= replace_tenpai_check("last_called_tile")
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when |= replace_tenpai_check("last_called_tile")
+else . end
 |
-.buttons.tsumo.show_when |= replace_tenpai_check("draw")
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo.show_when |= replace_tenpai_check("draw")
+else . end
