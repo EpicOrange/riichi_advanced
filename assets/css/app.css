@@ -293,6 +293,7 @@ div.tile.transparent {
 div.tile.transparent.highlight,
 div.pond.highlight div.tile.transparent:last-child { --tile-brightness: 48%; }
 div.tile.transparent.inactive { opacity: 0.35; --tile-brightness: 60%; --tile-saturate: 100%; }
+div.tile.hidden { display: none; }
 
 /* ponds */
 div.pond, div.secondary-pond {

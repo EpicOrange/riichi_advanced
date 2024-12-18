@@ -299,6 +299,7 @@ defmodule Utils do
   def get_tile_class(tile, i, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = Utils.strip_attrs(tile)
     transparent = Utils.has_attr?(tile, ["transparent"])
+    hidden = Utils.has_attr?(tile, ["hidden"])
     reversed = transparent && id == :"1x"
     id = if reversed do Riichi.flip_faceup(tile) |> Utils.strip_attrs() else id end
     facedown = Utils.has_attr?(tile, ["facedown"]) && Map.get(assigns, :hover_index, nil) != i
@@ -310,6 +311,7 @@ defmodule Utils do
       "tile", id,
       facedown && "facedown",
       transparent && "transparent",
+      hidden && "hidden",
       reversed && "reversed",
       played && "played",
       sideways && "sideways",
