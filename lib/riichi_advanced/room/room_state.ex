@@ -166,10 +166,10 @@ defmodule RiichiAdvanced.RoomState do
     state = put_in(state.mods[mod_name].enabled, enabled)
     if enabled do
       # enable dependencies and disable conflicting mods
-      state = for dep <- state.mods[mod_name].deps, reduce: state do
+      state = for dep <- state.mods[mod_name].deps, Map.has_key?(state.mods, dep), reduce: state do
         state -> put_in(state.mods[dep].enabled, true)
       end
-      for conflict <- state.mods[mod_name].conflicts, reduce: state do
+      for conflict <- state.mods[mod_name].conflicts, Map.has_key?(state.mods, conflict), reduce: state do
         state -> put_in(state.mods[conflict].enabled, false)
       end
     else
