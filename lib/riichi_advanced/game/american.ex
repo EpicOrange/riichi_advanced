@@ -65,21 +65,15 @@ defmodule RiichiAdvanced.GameState.American do
         end
     end
   end
-  defp translate_american_match_definitions_suits(groups, suit, is_numeric?) do
+  defp translate_american_match_definitions_suits(groups, suit) do
     if suit != nil do
       for group <- groups do
         Enum.map(group, fn tile ->
           cond do
-            is_integer(tile) -> tile + case suit do
-                "m" -> 0
-                "p" -> 10
-                "s" -> 20
-              end
-            tile == "D" -> case suit do
-                "m" -> if is_numeric? do 100 else "7z" end
-                "p" -> if is_numeric? do 101 else "0z" end
-                "s" -> if is_numeric? do 102 else "6z" end
-              end
+            is_integer(tile) && suit == "A" -> tile + 0
+            is_integer(tile) && suit == "B" -> tile + 10
+            is_integer(tile) && suit == "C" -> tile + 20
+            tile == "D" -> "D" <> suit
             tile == "0" -> "0z"
             true -> tile <> suit
           end
@@ -129,24 +123,11 @@ defmodule RiichiAdvanced.GameState.American do
       parsed = for {suit, group} <- preprocess_american_match_definition(am_match_definition), reduce: %{unsuited: [], a: [], b: [], c: []} do
         parsed -> Map.update!(parsed, suit, & &1 ++ [group])
       end
-      a = not Enum.empty?(parsed.a)
-      b = not Enum.empty?(parsed.b)
-      c = not Enum.empty?(parsed.c)
-      permutations = cond do
-        a && b && c -> [["m", "p", "s"], ["m", "s", "p"], ["p", "m", "s"], ["p", "s", "m"], ["s", "m", "p"], ["s", "p", "m"]]
-        a && b && not c -> [["m", "p", nil], ["m", "s", nil], ["p", "s", nil], ["p", "m", nil], ["s", "m", nil], ["s", "p", nil]]
-        a && not b && not c -> [["m", nil, nil], ["p", nil, nil], ["s", nil, nil]]
-        not a && not b && not c -> [[nil, nil, nil]]
-        true ->
-          IO.inspect("Invalid suit specification in #{inspect(am_match_definition)}")
-          []
-      end
-      is_numeric? = Enum.any?(parsed.a ++ parsed.b ++ parsed.c, &Enum.any?(&1, fn tile -> is_integer(tile) end))
-      for [sa, sb, sc] <- permutations do
+      for [sa, sb, sc] <- [["A","B","C"], ["A","C","B"]] do
         parsed_groups =
-          translate_american_match_definitions_suits(parsed.a, sa, is_numeric?)
-          ++ translate_american_match_definitions_suits(parsed.b, sb, is_numeric?)
-          ++ translate_american_match_definitions_suits(parsed.c, sc, is_numeric?)
+          translate_american_match_definitions_suits(parsed.a, sa)
+          ++ translate_american_match_definitions_suits(parsed.b, sb)
+          ++ translate_american_match_definitions_suits(parsed.c, sc)
         {numeric, nonnumeric} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> is_integer(t) end))
         invalid_numeric = cond do
           Enum.empty?(numeric)         -> false

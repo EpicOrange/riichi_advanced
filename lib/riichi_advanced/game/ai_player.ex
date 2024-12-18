@@ -11,7 +11,7 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def init(state) do
     state = Map.put(state, :initialized, false)
-    state = Map.put(state, :shanten, 6)
+    state = Map.put(state, :shanten, -1)
     state = Map.put(state, :preselected_flower, nil)
     if Debug.debug_fast_ai() do
       :timer.apply_after(100, Kernel, :send, [self(), :initialize])
@@ -68,41 +68,31 @@ defmodule RiichiAdvanced.AIPlayer do
     ordering_r = state.player.tile_ordering_r
     tile_aliases = state.player.tile_aliases
     shanten_definitions = [
-      state.shanten_definitions.tenpai,
-      state.shanten_definitions.iishanten,
-      state.shanten_definitions.ryanshanten,
-      state.shanten_definitions.sanshanten
+      {-1, state.shanten_definitions.win},
+      {0,  state.shanten_definitions.tenpai},
+      {1,  state.shanten_definitions.iishanten},
+      {2,  state.shanten_definitions.ryanshanten},
+      {3,  state.shanten_definitions.sanshanten},
+      {4,  state.shanten_definitions.suushanten},
+      {5,  state.shanten_definitions.uushanten},
+      {6,  state.shanten_definitions.roushanten}
     ]
-    win_definitions = [
-      state.shanten_definitions.win,
-      state.shanten_definitions.tenpai,
-      state.shanten_definitions.iishanten,
-      state.shanten_definitions.ryanshanten
-    ]
-    shanten_definitions = Enum.zip(shanten_definitions, win_definitions) |> Enum.with_index()
-    # skip tenpai check if 2-shanten, skip tenpai and 1-shanten check if 3-shanten
-    shanten_definitions = case state.shanten do
-      2 -> shanten_definitions |> Enum.drop(1)
-      3 -> shanten_definitions |> Enum.drop(2)
-      _ -> shanten_definitions
-    end
-
-    # check if tenpai
-    {ret, shanten} = for {{shanten_definition, win_definition}, i} <- shanten_definitions, reduce: {nil, 6} do
+    shanten_definitions = Enum.drop(shanten_definitions, max(0, min(state.shanten, length(shanten_definitions) - 1) - 1))
+    {ret, shanten} = for {{i, shanten_definition}, {_j, win_definition}} <- Enum.zip(Enum.drop(shanten_definitions, 1), Enum.drop(shanten_definitions, -1)), reduce: {nil, 6} do
       {nil, _} ->
         ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, ordering, ordering_r, tile_aliases)
         |> choose_playable_tile(state, playables, visible_tiles, win_definition)
-        # if ret != nil do
-        #   IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
-        # end
+        if ret != nil do
+          IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
+        end
         {ret, i}
       ret -> ret
     end
 
-    if ret == nil do # shanten > 3
+    if ret == nil do # shanten > 6?
       ret = Riichi.get_disconnected_tiles(hand, ordering, ordering_r, tile_aliases)
       |> choose_playable_tile(state, playables, visible_tiles, nil)
-      {ret, 6}
+      {ret, :infinity}
     else {ret, shanten} end
   end
 
@@ -165,12 +155,12 @@ defmodule RiichiAdvanced.AIPlayer do
           # use our rudimentary AI for discarding
           # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
           {{tile, index}, shanten} = if Debug.debug() do
-            {Enum.at(playables, -1), 6}
+            {Enum.at(playables, -1), :infinity}
           else
             case choose_discard(state, playables, visible_tiles) do
               {nil, _} ->
                 # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
-                {Enum.at(playables, -1), 6} # tsumogiri, or last playable tile
+                {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
               t -> t
             end
           end

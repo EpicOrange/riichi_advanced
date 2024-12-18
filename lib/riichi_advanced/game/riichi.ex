@@ -1,45 +1,79 @@
 defmodule Riichi do
 
-  @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p",
-                :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s",
-                :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m",
-                :"1z"=>nil, :"2z"=>nil, :"3z"=>nil, :"4z"=>nil, :"5z"=>nil, :"6z"=>nil, :"7z"=>nil}
+  @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"101p",
+                :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"101s",
+                :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m", :"10s"=>:"101m",
+                :"0z"=>nil, :"1z"=>nil, :"2z"=>nil, :"3z"=>nil, :"4z"=>nil, :"5z"=>nil, :"6z"=>nil, :"7z"=>nil, :"8z"=>nil}
   def shift_suit(tile), do: @shift_suit[tile]
 
+  # for fu calculation only
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
 
   @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
-
   def flower_names(), do: @flower_names
 
-  def _offset_tile(tile, n, order, order_r) do
+  @fixed_offsets %{
+    "1A"  => :"1m",
+    "2A"  => :"2m",
+    "3A"  => :"3m",
+    "4A"  => :"4m",
+    "5A"  => :"5m",
+    "6A"  => :"6m",
+    "7A"  => :"7m",
+    "8A"  => :"8m",
+    "9A"  => :"9m",
+    "10A" => :"10m",
+    "DA"  => :"7z",
+    "1B"  => :"1p",
+    "2B"  => :"2p",
+    "3B"  => :"3p",
+    "4B"  => :"4p",
+    "5B"  => :"5p",
+    "6B"  => :"6p",
+    "7B"  => :"7p",
+    "8B"  => :"8p",
+    "9B"  => :"9p",
+    "10B" => :"10p",
+    "DB"  => :"0z",
+    "1C"  => :"1s",
+    "2C"  => :"2s",
+    "3C"  => :"3s",
+    "4C"  => :"4s",
+    "5C"  => :"5s",
+    "6C"  => :"6s",
+    "7C"  => :"7s",
+    "8C"  => :"8s",
+    "9C"  => :"9s",
+    "10C" => :"10s",
+    "DC"  => :"6z",
+  }
+
+  def is_offset(tile) do
+    is_integer(tile) or Map.has_key?(@fixed_offsets, tile)
+  end
+
+  def suit_to_offset(tile) do
+    cond do
+      is_manzu?(tile) -> 0
+      is_pinzu?(tile) -> 10
+      is_souzu?(tile) -> 20
+      true -> 0
+    end
+  end
+
+  def _offset_tile(tile, n, order, order_r, shift_dragons \\ false) do
     if tile != nil do
       cond do
-        n == 100 -> # dragon of the same suit, used in american
-          cond do
-            is_manzu?(tile) -> :"7z"
-            is_pinzu?(tile) -> :"0z"
-            is_souzu?(tile) -> :"6z"
-            true           -> tile
-          end
-        n == 101 -> # dragon of a different suit, used in american
-          cond do
-            is_manzu?(tile) -> :"0z"
-            is_pinzu?(tile) -> :"6z"
-            is_souzu?(tile) -> :"7z"
-            true           -> tile
-          end
-        n == 102 -> # dragon of a different suit, used in american
-          cond do
-            is_manzu?(tile) -> :"6z"
-            is_pinzu?(tile) -> :"7z"
-            is_souzu?(tile) -> :"0z"
-            true           -> tile
-          end
+        Map.has_key?(@fixed_offsets, n) -> _offset_tile(@fixed_offsets[n], suit_to_offset(tile), order, order_r, true)
         (n < 1 && n > -1) || n < -10 || n >= 30 ->
           tile
         n >= 10 ->
-          _offset_tile(shift_suit(tile), n-10, order, order_r)
+          cond do
+            shift_dragons && tile == :"7z" -> _offset_tile(:"0z", n-10, order, order_r, true)
+            shift_dragons && tile == :"0z" -> _offset_tile(:"6z", n-10, order, order_r, true)
+            shift_dragons && tile == :"6z" -> _offset_tile(:"7z", n-10, order, order_r, true)
+            true -> _offset_tile(shift_suit(tile), n-10, order, order_r)
+          end
         n < 0 ->
           _offset_tile(order_r[tile], n+1, order, order_r)
         true ->
@@ -184,7 +218,7 @@ defmodule Riichi do
       is_list(group) && not Enum.empty?(group) ->
         cond do
           # list of integers specifying a group of tiles
-          Enum.all?(group, &is_integer/1) ->
+          Enum.any?(group, &is_offset/1) ->
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
             all_tiles |> Enum.uniq() |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
@@ -193,7 +227,7 @@ defmodule Riichi do
             end)
           # list of lists of integers specifying multiple related subgroups of tiles
           # can include a "nojoker" keyword specifying that subgroups after it should not use jokers
-          Enum.all?(group, &is_list(&1) || &1 in @group_keywords) && Enum.all?(group, & &1 in @group_keywords || Enum.all?(&1, fn item -> is_integer(item) end)) ->
+          Enum.all?(group, &is_list(&1) || &1 in @group_keywords) && Enum.all?(group, & &1 in @group_keywords || Enum.all?(&1, fn item -> is_offset(item) end)) ->
             no_joker_index = Enum.find_index(group, fn elem -> elem == "nojoker" end)
             hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> apply_tile_aliases(tile_aliases)
@@ -1038,6 +1072,168 @@ defmodule Riichi do
       Enum.any?([7,8,9], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, -6, ordering, ordering_r) in genbutsu do [offset_tile(&1, -3, ordering, ordering_r)] else [] end
       true -> []
     end)
+  end
+
+  def compute_almost_group(group) do
+    cond do
+      # group of tiles
+      is_list(group) && not Enum.empty?(group) ->
+        cond do
+          # list of integers specifying a group of tiles
+          Enum.any?(group, &is_offset/1) ->
+            for {_tile, i} <- Enum.with_index(group) do
+              almost_group = List.delete_at(group, i)
+              lowest = almost_group |> Enum.filter(&is_integer/1) |> Enum.min(&<=/2, fn -> 0 end)
+              Enum.map(almost_group, &if is_integer(&1) do &1 - lowest else &1 end)
+            end
+          # list of lists of integers specifying multiple related subgroups of tiles
+          Enum.all?(group, &is_list(&1) || &1 in @group_keywords) && Enum.all?(group, & &1 in @group_keywords || Enum.all?(&1, fn item -> is_offset(item) end)) ->
+            for {subgroup, i} <- Enum.with_index(group), is_list(subgroup), {_tile, j} <- Enum.with_index(subgroup) do
+              almost_group = if length(subgroup) == 1 do List.delete_at(group, i) else List.update_at(group, i, &List.delete_at(&1, j)) end
+              lowest = almost_group |> Enum.filter(&is_list/1) |> Enum.concat() |> Enum.filter(&is_integer/1) |> Enum.min()
+              Enum.map(almost_group, fn subgroup -> if is_list(subgroup) do Enum.map(subgroup, & &1 - lowest) else subgroup end end)
+            end
+          # list of tiles
+          Enum.all?(group, &Utils.is_tile/1) ->
+            for {_tile, i} <- Enum.with_index(group) do
+              List.delete_at(group, i)
+            end
+          # single tile (with attrs)
+          Utils.is_tile(group) -> []
+          true ->
+            IO.puts("Unhandled group #{inspect(group)}")
+            []
+        end
+      # single tile (no attrs)
+      Utils.is_tile(group) -> []
+      # call
+      is_binary(group) -> []
+      true ->
+        IO.puts("Unhandled group #{inspect(group)}")
+        []
+    end |> Enum.uniq()
+  end
+
+  def combine_groups(match_definition) do
+    {result, _keywords, _acc} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], [], 0} do
+      {result, keywords, acc} ->
+        if "unique" in keywords do
+          # can't combine groups if we're marked unique
+          {[match_definition_elem | result], keywords, 0}
+        else
+          case {match_definition_elem, Enum.at(match_definition, i + 1)} do
+            {[groups, num], [next_groups, _next_num]} when groups == next_groups -> {result, keywords, acc + max(0, num)}
+            {[groups, num], _} -> {[[groups, num + acc] | result], keywords, 0}
+            {keyword, _} when is_binary(keyword) -> {[keyword | result], [keyword | keywords], 0}
+            _ -> {[match_definition_elem | result], keywords, 0}
+          end
+        end
+    end
+    Enum.reverse(result)
+  end
+
+  def groups_subsumes?(groups1, groups2) do
+    nojoker_ix_1 = Enum.find_index(groups1, & &1 == "nojoker")
+    nojoker_ix_2 = Enum.find_index(groups2, & &1 == "nojoker")
+    {joker1, ["nojoker" | nojoker1]} = if nojoker_ix_1 != nil do Enum.split(groups1, nojoker_ix_1) else {groups1, ["nojoker"]} end
+    {joker2, ["nojoker" | nojoker2]} = if nojoker_ix_2 != nil do Enum.split(groups2, nojoker_ix_2) else {groups2, ["nojoker"]} end
+    Enum.empty?(joker2 -- joker1) && Enum.empty?(nojoker2 -- ((joker1 -- joker2) ++ nojoker1))
+  end
+
+  # we're checking if match_definition1 matches equally or strictly more than match_definition2
+  def match_definition_subsumes?(match_definition1, match_definition2, keywords1 \\ [], keywords2 \\ [])
+  def match_definition_subsumes?(_match_definition1, [], keywords1, keywords2) do
+    # IO.inspect({keywords1, keywords2}, label: "iteration")
+    cond do
+      "exhaustive" not in keywords1 && "exhaustive" in keywords2 -> false
+      "debug" not in keywords1 && "debug" in keywords2 -> false
+      true -> true
+    end
+  end
+  def match_definition_subsumes?([], _match_definition2, _keywords1, _keywords2), do: false
+  def match_definition_subsumes?([match_definition_elem1 | match_definition1], [match_definition_elem2 | match_definition2], keywords1, keywords2) do
+    # IO.inspect({[match_definition_elem1 | match_definition1], [match_definition_elem2 | match_definition2]}, label: "iteration")
+    case {match_definition_elem1, match_definition_elem2} do
+      {_, r} when is_binary(r) -> match_definition_subsumes?([match_definition_elem1 | match_definition1], match_definition2, keywords1, [r | keywords2])
+      {l, _} when is_binary(l) -> match_definition_subsumes?(match_definition1, [match_definition_elem2 | match_definition2], [l | keywords1], keywords2)
+      {[groups1, num1], [groups2, num2]} ->
+        if groups_subsumes?(groups1, groups2) do
+          cond do
+            num1 == num2 || (num1 >= num2 && "unique" in keywords2) -> match_definition_subsumes?(match_definition1, match_definition2, keywords1, keywords2)
+            num1 >  num2 -> match_definition_subsumes?([[groups1, num1 - num2] | match_definition1], match_definition2, keywords1, keywords2)
+            num1 <  num2 -> match_definition_subsumes?(match_definition1, [[groups2, num2 - num1] | match_definition2], keywords1, keywords2)
+          end
+        else false end
+      _ -> false
+    end
+  end
+
+  # not only does this deduplicate, but it also removes match definitions subsumed by another
+  def deduplicate_match_definitions(match_definitions) do
+    for match_definition <- match_definitions, reduce: [] do
+      acc -> if Enum.any?(acc, &match_definition_subsumes?(&1, match_definition)) do
+        # IO.inspect(match_definition, label: "removed")
+        acc
+      else
+        [match_definition | acc]
+      end
+    end |> Enum.reverse()
+  end
+
+  def compute_almost_match_definition_at_index(match_definition, i, groups, num) do
+    new_groups = groups
+    |> Enum.flat_map(&compute_almost_group/1)
+    |> Enum.reject(&Enum.empty?/1)
+    |> Enum.uniq()
+    cond do
+      abs(num) <= 1 && Enum.empty?(new_groups) ->
+        match_definition
+        |> List.delete_at(i)
+      abs(num) <= 1 ->
+        match_definition
+        |> List.replace_at(i, [new_groups, num])
+      Enum.empty?(new_groups) ->
+        match_definition
+        |> List.replace_at(i, [groups, if num > 0 do num - 1 else num + 1 end])
+      true ->
+        match_definition
+        |> List.replace_at(i, [groups, if num > 0 do num - 1 else num + 1 end])
+        |> List.insert_at(i, [new_groups, if num > 0 do 1 else -1 end])
+    end
+    |> combine_groups()
+  end
+
+  def compute_almost_match_definitions(match_definitions) do
+    # first, decrement all lookaheads
+    match_definitions = for match_definition <- match_definitions do
+      for {match_definition_elem, i} <- Enum.reverse(Enum.with_index(match_definition)), reduce: match_definition do
+        match_definition -> case match_definition_elem do
+          [groups, num] when num <= 0 -> compute_almost_match_definition_at_index(match_definition, i, groups, num)
+          _ -> match_definition
+        end
+      end
+    end
+    # then remove one from each group
+    for match_definition <- match_definitions do
+      {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
+        {result, keywords} -> case match_definition_elem do
+          [groups, num] when num >= 1 ->
+            entry = compute_almost_match_definition_at_index(match_definition, i, groups, num)
+            {[entry | result], keywords}
+          keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}
+          _ -> {result, keywords}
+        end
+      end
+      Enum.reverse(result)
+    end
+    |> Enum.concat()
+    |> Enum.uniq()
+    # |> IO.inspect(label: "before deduplication")
+    |> deduplicate_match_definitions()
+    # |> then(fn result ->
+    #   IO.inspect(length(result), label: "result")
+    #   result
+    # end)
   end
 
 end

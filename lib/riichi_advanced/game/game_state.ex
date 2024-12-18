@@ -248,6 +248,21 @@ defmodule RiichiAdvanced.GameState do
     end
 
     state = Map.put(state, :rules, rules)
+
+    # generate shanten definitions if they don't exist in rules
+    shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
+    shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(state, Map.get(state.rules, Atom.to_string(shanten) <> "_definition", []))} end)
+    shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
+      shanten_definitions ->
+        if length(shanten_definitions[from]) < 1000 do
+          Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
+        else
+          Map.put(shanten_definitions, to, [])
+        end
+    end
+    state = Map.put(state, :shanten_definitions, shanten_definitions)
+    IO.inspect(state.shanten_definitions)
+
     state = Map.put(state, :available_seats, case Map.get(rules, "num_players", 4) do
       1 -> [:east]
       2 -> [:east, :west]
@@ -719,18 +734,11 @@ defmodule RiichiAdvanced.GameState do
 
   defp fill_empty_seats_with_ai(state) do
     if not state.log_seeking_mode do
-      shanten_definitions = %{
-        win: translate_match_definitions(state, Map.get(state.rules, "win_definition", [])),
-        tenpai: translate_match_definitions(state, Map.get(state.rules, "tenpai_definition", [])),
-        iishanten: translate_match_definitions(state, Map.get(state.rules, "iishanten_definition", [])),
-        ryanshanten: translate_match_definitions(state, Map.get(state.rules, "ryanshanten_definition", [])),
-        sanshanten: translate_match_definitions(state, Map.get(state.rules, "sanshanten_definition", []))
-      }
       state = for dir <- state.available_seats, Map.get(state, dir) == nil, reduce: state do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: shanten_definitions}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
