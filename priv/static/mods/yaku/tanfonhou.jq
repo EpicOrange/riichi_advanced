@@ -19,5 +19,6 @@
 ]
 |
 .yaku_precedence += {
-  "Chintanfon": ["Tanfonhou"]
+  "Chintanfon": ["Tanfonhou"],
+  "Ryuuiisou": ["Chintanfon"]
 }

@@ -15,3 +15,7 @@
 .score_calculation.pao_eligible_yaku += ["Isshoku Yonjun"]
 |
 .score_calculation.win_with_pao_name = "Sekinin Barai"
+|
+.yaku_precedence += {
+  "Isshoku Yonjun": ["Isshoku Sanjun", "Ryanpeikou"]
+}
