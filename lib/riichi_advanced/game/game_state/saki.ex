@@ -101,7 +101,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   def draw_saki_cards(state, num) do
     debug_card = Debug.debug_saki_card_ours()
     state = if debug_card != nil do
-      update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 3, debug_card) end)
+      update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 15, debug_card) end)
     else state end
 
     debug_card_2 = Debug.debug_saki_card_opponent()
@@ -161,7 +161,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   def disable_saki_card(state, targets) do
     for seat <- targets, reduce: state do
       state ->
-        update_in(state.players[seat].status, &Enum.map(&1, fn status ->
+        update_in(state.players[seat].status, &MapSet.new(&1, fn status ->
           if Map.has_key?(@card_names, status) do
             status <> "-disabled"
           else status end
@@ -172,7 +172,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   def enable_saki_card(state, targets) do
     for seat <- targets, reduce: state do
       state ->
-        update_in(state.players[seat].status, &Enum.map(&1, fn status ->
+        update_in(state.players[seat].status, &MapSet.new(&1, fn status ->
           if is_disabled_saki_card?(status) do
             String.slice(status, 0..-10//1)
           else status end
