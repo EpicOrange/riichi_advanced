@@ -77,7 +77,7 @@ defmodule Utils do
     end
   end
 
-  defp to_attr_tile(tile) do
+  def to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}
       tile          -> {tile, []}
@@ -176,19 +176,26 @@ defmodule Utils do
 
   # find all jokers that map to the same tile(s) as the given one
   # together with the tile(s) they are connected by
-  def adjacent_jokers(joker, tile_aliases) do
-    tile_aliases
-    |> Enum.filter(fn {_t, aliases} -> joker in aliases end)
-    |> Enum.flat_map(fn {t, aliases} -> [t | aliases] end)
-    |> Enum.uniq()
+  def apply_tile_aliases(joker, tile_aliases) do
+    if is_list(joker) do
+      Enum.flat_map(joker, &apply_tile_aliases(&1, tile_aliases))
+    else
+      {joker, joker_attrs} = to_attr_tile(joker)
+      any_tiles = Map.get(tile_aliases, :any, %{}) |> Map.values() |> Enum.concat()
+      Map.get(tile_aliases, joker, [])
+      |> Enum.filter(fn {attrs, _aliases} -> MapSet.subset?(MapSet.new(attrs), MapSet.new(joker_attrs)) end)
+      |> Enum.map(fn {_attrs, aliases} -> MapSet.new(aliases) end)
+      |> Enum.reduce(MapSet.new([joker | any_tiles]), &MapSet.union/2)
+      |> MapSet.to_list()
+    end
   end
 
   # tile1 must have at least the attributes of tile2
   def same_tile(tile1, tile2, tile_aliases \\ %{}) do
-    l1 = strip_attrs([tile1 | adjacent_jokers(tile1, tile_aliases)])
-    l2 = strip_attrs([tile2 | adjacent_jokers(tile2, tile_aliases)])
+    l1 = strip_attrs([tile1 | apply_tile_aliases(tile1, tile_aliases)])
+    l2 = strip_attrs([tile2 | apply_tile_aliases(tile2, tile_aliases)])
     same_id = :any in l1 || :any in l2
-    || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x"] end))
+    || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
     || Enum.any?(l1, fn tile -> tile in l2 end)
     {_, attrs2} = to_attr_tile(tile2)
     attrs_match = has_attr?(tile1, attrs2)

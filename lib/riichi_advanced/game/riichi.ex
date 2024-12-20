@@ -164,7 +164,7 @@ defmodule Riichi do
   def try_remove_all_tiles(hand, [], _tile_aliases, _ignore_suit, _initial), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, ignore_suit, _initial) do
     # t = System.os_time(:millisecond)
-    ret = for t <- [tile] ++ Map.get(tile_aliases, tile, []) ++ Map.get(tile_aliases, :any, []) do
+    ret = for t <- Utils.apply_tile_aliases(tile, tile_aliases) do
       hand
       |> Enum.with_index()
       |> Enum.filter(fn {hand_tile, _ix} -> if ignore_suit do Utils.same_number(hand_tile, t) else Utils.same_tile(hand_tile, t) end end)
@@ -197,15 +197,6 @@ defmodule Riichi do
     if ix != nil do [{hand, List.delete_at(calls, ix)}] else [] end
   end
 
-  defp apply_tile_aliases(tiles, tile_aliases) do
-    # add all aliases of the given tiles to tiles
-    Enum.flat_map(tiles, fn tile ->
-      [Utils.strip_attrs(tile), tile] ++ Enum.flat_map(tile_aliases, fn {from, to_tiles} ->
-        if Enum.any?(to_tiles, &Utils.same_tile(tile, &1)) do [from] else [] end
-      end) |> Enum.uniq()
-    end) |> Enum.uniq()
-  end
-
   @group_keywords ["nojoker"]
 
   def group_keywords(), do: @group_keywords
@@ -220,7 +211,7 @@ defmodule Riichi do
           # list of integers specifying a group of tiles
           Enum.any?(group, &is_offset/1) ->
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
-            |> apply_tile_aliases(tile_aliases)
+            |> Utils.apply_tile_aliases(tile_aliases)
             all_tiles |> Enum.uniq() |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
               tiles = Enum.map(group, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
               remove_from_hand_calls(hand, calls, tiles, tile_aliases, ignore_suit)
@@ -230,7 +221,7 @@ defmodule Riichi do
           Enum.all?(group, &is_list(&1) || &1 in @group_keywords) && Enum.all?(group, & &1 in @group_keywords || Enum.all?(&1, fn item -> is_offset(item) end)) ->
             no_joker_index = Enum.find_index(group, fn elem -> elem == "nojoker" end)
             hand ++ Enum.flat_map(calls, &call_to_tiles/1)
-            |> apply_tile_aliases(tile_aliases)
+            |> Utils.apply_tile_aliases(tile_aliases)
             |> Enum.uniq()
             |> Enum.reject(& &1 == :any)
             |> Enum.flat_map(fn base_tile ->
@@ -272,9 +263,15 @@ defmodule Riichi do
 
   def filter_irrelevant_tile_aliases(tile_aliases, all_tiles) do
     # filter out irrelevant tile aliases
-    tile_aliases
-    |> Enum.map(fn {tile, aliases} -> {tile, Enum.filter(aliases, fn t -> Enum.any?(all_tiles, &Utils.same_tile(&1, t)) end)} end)
-    |> Enum.reject(fn {_tile, aliases} -> Enum.empty?(aliases) end)
+    for {tile, attrs_aliases} <- tile_aliases do
+      new_attrs_aliases = for {attrs, aliases} <- attrs_aliases do
+        {attrs, Enum.filter(aliases, fn t -> Enum.any?(all_tiles, &Utils.same_tile(&1, t)) end)}
+      end
+      |> Enum.reject(fn {_attrs, aliases} -> Enum.empty?(aliases) end)
+      |> Map.new()
+      {tile, new_attrs_aliases}
+    end
+    |> Enum.reject(fn {_tile, attrs_aliases} -> Enum.empty?(attrs_aliases) end)
     |> Map.new()
   end
 
@@ -306,30 +303,56 @@ defmodule Riichi do
           "restart" -> [{hand, calls}]
           [groups, num] ->
             tile_aliases = if no_joker_index != nil && i > no_joker_index do %{} else filtered_tile_aliases end
-            new_hand_calls = if unique && not exhaustive && Enum.all?(groups, &not is_list(&1) && Utils.is_tile(&1)) do
-              # optimized routine for non-exhaustive unique tile-only groups
+            new_hand_calls = if unique && num > 0 && Enum.all?(groups, &not is_list(&1) && Utils.is_tile(&1)) do
+              # optimized routine for unique tile-only groups
               # note: this assumes no duplicate tiles in the group
               for {hand, calls} <- hand_calls do
-                tiles = Enum.map(groups, &Utils.to_tile/1) |> Enum.uniq()
-                {tiles, matching_hand} = for tile <- hand, reduce: {tiles, []} do
-                  {tiles, matching_hand} ->
-                    if Enum.any?(tiles, &Utils.same_tile(tile, &1, tile_aliases)) do
-                      {tiles -- [tile], [tile | matching_hand]}
-                    else {tiles, matching_hand} end
+                group_tiles = Enum.map(groups, &Utils.to_tile/1) |> Enum.uniq()
+                {group_tiles, matching_hand} = for tile <- hand, reduce: {group_tiles, []} do
+                  {group_tiles, matching_hand} ->
+                    if Utils.has_attr?(tile, ["draw"]) do
+                      IO.inspect({group_tiles, tile_aliases, Enum.map(group_tiles, &{&1, Utils.same_tile(tile, &1, tile_aliases)})})
+                    end
+                    if Enum.any?(group_tiles, &Utils.same_tile(tile, &1, tile_aliases)) do
+                      {group_tiles -- [tile], [tile | matching_hand]}
+                    else {group_tiles, matching_hand} end
                 end
-                {_tiles, matching_calls} = for call <- calls, reduce: {tiles, []} do
-                  {tiles, matching_calls} ->
-                    tile = Enum.find(call_to_tiles(call), & &1 in tiles)
+                {_tiles, matching_calls} = for call <- calls, reduce: {group_tiles, []} do
+                  {group_tiles, matching_calls} ->
+                    tile = Enum.find(call_to_tiles(call), & &1 in group_tiles)
                     if tile != nil do
-                      {tiles -- [tile], [call | matching_calls]}
-                    else {tiles, matching_calls} end
+                      {group_tiles -- [tile], [call | matching_calls]}
+                    else {group_tiles, matching_calls} end
+                end
+                if debug do
+                  IO.puts("Using optimized routine / #{inspect(hand)} / #{inspect(calls)} / #{inspect(matching_hand, charlists: :as_lists)} / #{inspect(matching_calls, charlists: :as_lists)}")
                 end
                 if length(matching_hand) + length(matching_calls) >= num do
-                  num_from_hand = min(num, length(matching_hand))
-                  num_from_calls = min(num - num_from_hand, length(matching_calls))
-                  hand = hand -- Enum.take(matching_hand, num_from_hand)
-                  calls = calls -- Enum.take(matching_calls, num_from_calls)
-                  [{hand, calls}]
+                  if exhaustive do
+                    # take all combinations of num tiles out of matching_hand
+                    # and remove them from hand
+                    for _ <- 1..num, reduce: [{hand, calls, matching_hand, matching_calls}] do
+                      acc ->
+                        acc = for {hand, calls, matching_hand, matching_calls} <- acc do
+                          from_hand = Enum.map(matching_hand, fn tile -> {hand -- [tile], calls, matching_hand -- [tile], matching_calls} end)
+                          from_calls = Enum.map(matching_hand, fn call -> {hand, calls -- [call], matching_hand, matching_calls -- [call]} end)
+                          from_hand ++ from_calls
+                        end |> Enum.concat() |> Enum.uniq()
+                        if debug do
+                          IO.puts("Acc (after removal):")
+                          for {hand, calls, matching_hand, matching_calls} <- acc do
+                            IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(matching_hand, charlists: :as_lists)} / #{inspect(matching_calls, charlists: :as_lists)}")
+                          end
+                        end
+                        acc
+                    end |> Enum.map(fn {hand, calls, _, _} -> {hand, calls} end)
+                  else
+                    num_from_hand = min(num, length(matching_hand))
+                    num_from_calls = min(num - num_from_hand, length(matching_calls))
+                    hand = hand -- Enum.take(matching_hand, num_from_hand)
+                    calls = calls -- Enum.take(matching_calls, num_from_calls)
+                    [{hand, calls}]
+                  end
                 else [] end
               end |> Enum.concat()
             else
@@ -793,7 +816,7 @@ defmodule Riichi do
     |> Enum.flat_map(&call_to_tiles/1)
     
     starting_hand = starting_hand ++ ton_tiles |> Utils.strip_attrs()
-    winning_tiles = apply_tile_aliases([winning_tile], tile_aliases) |> Utils.strip_attrs() |> Enum.uniq()
+    winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_aliases) |> Utils.strip_attrs() |> Enum.uniq()
     # initial fu
     fu = case win_source do
       :draw -> 22
@@ -859,7 +882,7 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile ->
+          hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_aliases) |> Enum.flat_map(fn base_tile ->
             case try_remove_all_tiles(hand, [base_tile, base_tile, base_tile], tile_aliases) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 8 else 4 end} end)
@@ -873,7 +896,7 @@ defmodule Riichi do
       for _ <- 1..4, reduce: hands_fu do
         all_hands ->
           Enum.flat_map(all_hands, fn {hand, fu} ->
-            {honors, suited} = hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases)
+            {honors, suited} = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_aliases)
             |> Enum.split_with(fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == nil end)
             # remove suited kontsu
             suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
@@ -898,7 +921,7 @@ defmodule Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          sequence_tiles = hand |> Enum.uniq() |> apply_tile_aliases(tile_aliases)
+          sequence_tiles = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_aliases)
           sequence_tiles = if enable_kontsu_fu do
             # honor sequences are considered mixed triplets, ignore them
             Enum.reject(sequence_tiles, fn base_tile -> offset_tile(base_tile, 10, ordering, ordering_r) == nil end)

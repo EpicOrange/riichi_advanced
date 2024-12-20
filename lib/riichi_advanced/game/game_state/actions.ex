@@ -491,6 +491,21 @@ defmodule RiichiAdvanced.GameState.Actions do
     ret
   end
 
+  defp set_tile_alias(state, seat, from_tiles, to_tiles) do
+    from_tiles = MapSet.new(from_tiles)
+    aliases = for to <- to_tiles, reduce: state.players[seat].tile_aliases do
+      aliases ->
+        {to, attrs} = Utils.to_attr_tile(to)
+        Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
+    end
+    state = update_player(state, seat, &%Player{ &1 | tile_aliases: aliases })
+    mappings = for from <- from_tiles, reduce: state.players[seat].tile_mappings do
+      mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
+    end
+    state = update_player(state, seat, &%Player{ &1 | tile_mappings: mappings })
+    state
+  end
+
   def add_attr_matching(tiles, attrs, tile_specs) do
     for tile <- tiles do
       if Riichi.tile_matches_all(tile_specs, %{tile: tile}) do
@@ -938,27 +953,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       "set_tile_alias"        ->
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
-        aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
-          aliases -> Map.update(aliases, to, Enum.uniq(from_tiles), fn from -> Enum.uniq(from ++ from_tiles) end)
-        end
-        state = update_player(state, context.seat, &%Player{ &1 | tile_aliases: aliases })
-        mappings = for from <- from_tiles, reduce: state.players[context.seat].tile_mappings do
-          mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
-        end
-        state = update_player(state, context.seat, &%Player{ &1 | tile_mappings: mappings })
-        state
+        set_tile_alias(state, context.seat, from_tiles, to_tiles)
       "set_tile_alias_all"        ->
         from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
         to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
-        aliases = for to <- to_tiles, reduce: state.players[context.seat].tile_aliases do
-          aliases -> Map.update(aliases, to, Enum.uniq(from_tiles), fn from -> Enum.uniq(from ++ from_tiles) end)
+        for seat <- state.available_seats, reduce: state do
+          state -> set_tile_alias(state, seat, from_tiles, to_tiles)
         end
-        state = update_all_players(state, fn _seat, player -> %Player{ player | tile_aliases: aliases } end)
-        mappings = for from <- from_tiles, reduce: state.players[context.seat].tile_mappings do
-          mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
-        end
-        state = update_all_players(state, fn _seat, player -> %Player{ player | tile_mappings: mappings } end)
-        state
       "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_aliases: %{}, tile_mappings: %{} })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
