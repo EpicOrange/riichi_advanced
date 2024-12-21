@@ -86,10 +86,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def from_seat_spec(state, context, seat_spec) do
     case seat_spec do
-      "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east)
-      "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south)
-      "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west)
-      "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north)
+      "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east, state.available_seats)
+      "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south, state.available_seats)
+      "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west, state.available_seats)
+      "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north, state.available_seats)
       "shimocha" -> Utils.get_seat(context.seat, :shimocha)
       "toimen" -> Utils.get_seat(context.seat, :toimen)
       "kamicha" -> Utils.get_seat(context.seat, :kamicha)

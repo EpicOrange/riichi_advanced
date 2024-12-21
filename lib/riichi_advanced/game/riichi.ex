@@ -741,8 +741,8 @@ defmodule Riichi do
     if ix == nil do nil else Enum.at(available_seats, Integer.mod(ix - kyoku, length(available_seats))) end
   end
 
-  def get_player_from_seat_wind(kyoku, wind) do
-    Utils.next_turn(wind, rem(kyoku, 4))
+  def get_player_from_seat_wind(kyoku, wind, available_seats) do
+    Utils.next_turn(wind, rem(kyoku, length(available_seats)))
   end
 
   def get_east_player_seat(kyoku, available_seats) do
