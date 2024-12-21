@@ -181,6 +181,11 @@
       "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["3g"], 1] ]]]}]
     },
     {
+      "display_name": "Four Season",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["calls"], [[[["4g"], 1]]]]}]
+    },
+    {
       "display_name": "East Wind",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
@@ -279,7 +284,7 @@
     {
       "display_name": "No Flowers",
       "value": 10,
-      "when": [] // removed by yaku_precedence if any flowers match
+      "when": [{"name": "not_match", "opts": [["calls"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a","1y"], 1] ]]]}]
     },
     {
       "display_name": "Four Gongs",
@@ -336,15 +341,9 @@
     }
   ],
   "yaku_precedence": {
-    "Face": ["No Flowers"],
-    "Four Faces": ["No Flowers"],
-    "Animal": ["No Flowers"],
-    "All Animals": ["No Flowers"],
-    "Seat Flower": ["No Flowers"],
-    "Seat Season": ["No Flowers"],
-    "All Flowers": ["No Flowers", "Seat Flower"],
-    "All Seasons": ["No Flowers", "Seat Season"],
-    "All Sixteen Flowers": ["No Flowers", "Face", "Four Faces", "Animal", "All Animals", "Seat Flower", "Seat Season", "All Flowers", "All Seasons"],
+    "All Flowers": ["Four Flower", "Seat Flower"],
+    "All Seasons": ["Four Season", "Seat Season"],
+    "All Sixteen Flowers": ["Face", "Four Faces", "Animal", "All Animals", "Seat Flower", "Seat Season", "All Flowers", "All Seasons"],
     "After Multiple Gongs": ["After a Gong"],
     "Full Flush": ["Half Flush"],
     "Big Four Winds": ["Small Four Winds"],
