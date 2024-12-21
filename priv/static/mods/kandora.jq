@@ -26,4 +26,6 @@ def insert_after_kan_draw($arr):
 |
 # dora flips immediately after ankan
 # set status to prevent dora flip after turn change
-.buttons.ankan.actions |= insert_after_kan_draw([["run", "flip_dora"], ["set_status", "skip_kan_dora_flip"]])
+if (.buttons | has("ankan")) then
+  .buttons.ankan.actions |= insert_after_kan_draw([["run", "flip_dora"], ["set_status", "skip_kan_dora_flip"]])
+else . end
