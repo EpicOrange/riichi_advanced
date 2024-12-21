@@ -23,6 +23,7 @@ defmodule Room do
     error: nil,
 
     # state
+    rules: nil,
     seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     available_seats: [],
     players: %{},
@@ -32,7 +33,6 @@ defmodule Room do
     started: false,
     display_name: "",
     mods: %{},
-    default_mods: [],
     categories: [],
     tutorial_link: nil,
     textarea: [@initial_textarea],
@@ -92,9 +92,9 @@ defmodule RiichiAdvanced.RoomState do
     categories = Enum.reverse(categories)
 
     available_mods = Enum.map(mods, & &1["id"])
-    default_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
+    starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
       [mods] -> mods
-      []     -> Map.get(rules, "default_mods", [])
+      []     -> Map.get(rules, "starting_mods", [])
     end
     |> Enum.filter(& &1 in available_mods)
     |> Enum.uniq()
@@ -110,12 +110,13 @@ defmodule RiichiAdvanced.RoomState do
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       session_id: state.session_id,
+      rules: rules,
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
       display_name: Map.get(rules, "display_name", state.ruleset),
       mods: mods |> Map.new(fn mod -> {mod["id"], %{
-        enabled: mod["id"] in default_mods,
+        enabled: mod["id"] in starting_mods,
         index: mod["index"],
         name: mod["name"],
         desc: mod["desc"],
@@ -125,7 +126,6 @@ defmodule RiichiAdvanced.RoomState do
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
-      default_mods: default_mods,
       categories: categories,
       tutorial_link: if state.ruleset == "custom" do
         "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md"
@@ -189,8 +189,9 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def reset_mods_to_default(state) do
-    for {mod_name, mod} <- state.mods, reduce: state do
-      state -> put_in(mod.enabled, mod_name in state.default_mods)
+    default_mods = Map.get(state.rules, "default_mods", [])
+    for {mod_name, _mod} <- state.mods, reduce: state do
+      state -> put_in(state.mods[mod_name].enabled, mod_name in default_mods)
     end
   end
 
