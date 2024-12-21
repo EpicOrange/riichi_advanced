@@ -430,7 +430,8 @@
       "value": 2,
       "when": [
         {"name": "has_no_call_named", "opts": ["pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]}
+        {"name": "match", "opts": [["hand", "calls"], [[[["koutsu"], 4]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}
       ]
     },
     { "display_name": "Tsuuiisou", "value": 1, "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","5z","6z","7z"]}] },
