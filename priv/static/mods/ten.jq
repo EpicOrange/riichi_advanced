@@ -13,11 +13,11 @@ def nine_to_ten:
 .wall |= nine_to_ten
 |
 # re-add the nine tiles
-if any(.wall[]; . == "2m") then .wall += ["10m", "10m", "10m", "10m"] else . end
+if any(.wall[]; . == "2m") then .wall += ["9m", "9m", "9m", "9m"] else . end
 |
-if any(.wall[]; . == "2p") then .wall += ["10p", "10p", "10p", "10p"] else . end
+if any(.wall[]; . == "2p") then .wall += ["9p", "9p", "9p", "9p"] else . end
 |
-if any(.wall[]; . == "2s") then .wall += ["10s", "10s", "10s", "10s"] else . end
+if any(.wall[]; . == "2s") then .wall += ["9s", "9s", "9s", "9s"] else . end
 |
 # add ten ordering
 .after_start.actions += [
