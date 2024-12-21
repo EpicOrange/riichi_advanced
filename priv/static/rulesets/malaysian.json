@@ -624,7 +624,7 @@
     },
     "joker": {
       "display_name": "Fly",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", "has_draw", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
       "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["draw"]]
     }
   },
