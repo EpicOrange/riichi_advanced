@@ -88,6 +88,7 @@ defmodule Utils do
     case tile do
       {tile, existing_attrs} -> {tile, Enum.uniq(existing_attrs ++ attrs)}
       _ when is_list(tile) -> Enum.map(tile, &add_attr(&1, attrs))
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &add_attr(&1, attrs))
       tile -> {tile, attrs}
     end
   end
@@ -100,6 +101,7 @@ defmodule Utils do
           remaining_attrs -> {tile, remaining_attrs}
         end
       _ when is_list(tile) -> Enum.map(tile, &remove_attr(&1, attrs))
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &remove_attr(&1, attrs))
       tile -> tile
     end
   end
@@ -108,6 +110,7 @@ defmodule Utils do
     case tile do
       {_tile, existing_attrs} -> Enum.all?(attrs, & &1 in existing_attrs)
       _ when is_list(tile) -> Enum.any?(tile, &has_attr?(&1, attrs))
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &has_attr?(&1, attrs))
       _ -> Enum.empty?(attrs)
     end
   end
@@ -116,6 +119,7 @@ defmodule Utils do
     case tile do
       {tile, _attrs} -> tile
       _ when is_list(tile) -> Enum.map(tile, &strip_attrs/1)
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &strip_attrs/1)
       tile -> tile
     end
   end
@@ -178,7 +182,8 @@ defmodule Utils do
   # together with the tile(s) they are connected by
   def apply_tile_aliases(joker, tile_aliases) do
     if is_list(joker) do
-      Enum.flat_map(joker, &apply_tile_aliases(&1, tile_aliases))
+      Enum.map(joker, &apply_tile_aliases(&1, tile_aliases))
+      |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else
       {joker, joker_attrs} = to_attr_tile(joker)
       any_tiles = Map.get(tile_aliases, :any, %{}) |> Map.values() |> Enum.concat()
@@ -186,14 +191,13 @@ defmodule Utils do
       |> Enum.filter(fn {attrs, _aliases} -> MapSet.subset?(MapSet.new(attrs), MapSet.new(joker_attrs)) end)
       |> Enum.map(fn {_attrs, aliases} -> MapSet.new(aliases) end)
       |> Enum.reduce(MapSet.new([joker | any_tiles]), &MapSet.union/2)
-      |> MapSet.to_list()
     end
   end
 
   # tile1 must have at least the attributes of tile2
   def same_tile(tile1, tile2, tile_aliases \\ %{}) do
-    l1 = strip_attrs([tile1 | apply_tile_aliases(tile1, tile_aliases)])
-    l2 = strip_attrs([tile2 | apply_tile_aliases(tile2, tile_aliases)])
+    l1 = strip_attrs(MapSet.put(apply_tile_aliases(tile1, tile_aliases), tile1))
+    l2 = strip_attrs(MapSet.put(apply_tile_aliases(tile2, tile_aliases), tile2))
     same_id = :any in l1 || :any in l2
     || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
     || Enum.any?(l1, fn tile -> tile in l2 end)

@@ -212,7 +212,7 @@ defmodule Riichi do
           Enum.any?(group, &is_offset/1) ->
             all_tiles = hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> Utils.apply_tile_aliases(tile_aliases)
-            all_tiles |> Enum.uniq() |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
+            all_tiles |> Enum.reject(& &1 == :any) |> Enum.flat_map(fn base_tile ->
               tiles = Enum.map(group, fn tile_or_offset -> if Utils.is_tile(tile_or_offset) do Utils.to_tile(tile_or_offset) else offset_tile(base_tile, tile_or_offset, ordering, ordering_r) end end)
               remove_from_hand_calls(hand, calls, tiles, tile_aliases, ignore_suit)
             end)
@@ -222,7 +222,6 @@ defmodule Riichi do
             no_joker_index = Enum.find_index(group, fn elem -> elem == "nojoker" end)
             hand ++ Enum.flat_map(calls, &call_to_tiles/1)
             |> Utils.apply_tile_aliases(tile_aliases)
-            |> Enum.uniq()
             |> Enum.reject(& &1 == :any)
             |> Enum.flat_map(fn base_tile ->
               for {set, i} <- Enum.with_index(group), set not in @group_keywords, reduce: [{hand, calls}] do
@@ -310,9 +309,6 @@ defmodule Riichi do
                 group_tiles = Enum.map(groups, &Utils.to_tile/1) |> Enum.uniq()
                 {group_tiles, matching_hand} = for tile <- hand, reduce: {group_tiles, []} do
                   {group_tiles, matching_hand} ->
-                    if Utils.has_attr?(tile, ["draw"]) do
-                      IO.inspect({group_tiles, tile_aliases, Enum.map(group_tiles, &{&1, Utils.same_tile(tile, &1, tile_aliases)})})
-                    end
                     if Enum.any?(group_tiles, &Utils.same_tile(tile, &1, tile_aliases)) do
                       {group_tiles -- [tile], [tile | matching_hand]}
                     else {group_tiles, matching_hand} end
@@ -565,7 +561,7 @@ defmodule Riichi do
             Map.put(filtered_tile_aliases, tile, tile_aliases[tile])
           else tile_aliases end
           if is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) do
-            MapSet.union(waits, MapSet.new([tile | Map.get(tile_aliases, tile, [])]))
+            MapSet.union(waits, Utils.apply_tile_aliases(tile, tile_aliases))
           else waits end
         end
       end
@@ -816,7 +812,7 @@ defmodule Riichi do
     |> Enum.flat_map(&call_to_tiles/1)
     
     starting_hand = starting_hand ++ ton_tiles |> Utils.strip_attrs()
-    winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_aliases) |> Utils.strip_attrs() |> Enum.uniq()
+    winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_aliases) |> Utils.strip_attrs()
     # initial fu
     fu = case win_source do
       :draw -> 22
