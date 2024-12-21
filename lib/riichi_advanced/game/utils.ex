@@ -194,10 +194,10 @@ defmodule Utils do
     end
   end
 
-  # tile1 must have at least the attributes of tile2
+  # tile1 must have at least the attributes of tile2 (or any of its aliases)
   def same_tile(tile1, tile2, tile_aliases \\ %{}) do
-    l1 = strip_attrs(MapSet.put(apply_tile_aliases(tile1, tile_aliases), tile1))
-    l2 = strip_attrs(MapSet.put(apply_tile_aliases(tile2, tile_aliases), tile2))
+    l1 = strip_attrs(MapSet.new([tile1]))
+    l2 = strip_attrs(apply_tile_aliases(tile2, tile_aliases))
     same_id = :any in l1 || :any in l2
     || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
     || Enum.any?(l1, fn tile -> tile in l2 end)
