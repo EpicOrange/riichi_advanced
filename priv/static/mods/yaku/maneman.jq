@@ -24,13 +24,13 @@
 .play_effects += [
   ["any", [
     # check and increment counters
-    ["when", [{"name": "counter_at_least", "opts": ["maneman_kamicha", 0]}, {"name": "match", "opts": [["kamicha_last_discard"], [[[["any"], 1]]]]}], [
+    ["when", ["kamicha_exists", {"name": "counter_at_least", "opts": ["maneman_kamicha", 0]}, {"name": "match", "opts": [["kamicha_last_discard"], [[[["any"], 1]]]]}], [
       ["ite", [{"name": "match", "opts": [["tile", "kamicha_last_discard"], [[[["pair"], 1]]]]}], [["add_counter", "maneman_kamicha", 1]], [["set_counter", "maneman_kamicha", -1]]]
     ]],
-    ["when", [{"name": "counter_at_least", "opts": ["maneman_toimen", 0]}, {"name": "match", "opts": [["toimen_last_discard"], [[[["any"], 1]]]]}], [
+    ["when", ["toimen_exists", {"name": "counter_at_least", "opts": ["maneman_toimen", 0]}, {"name": "match", "opts": [["toimen_last_discard"], [[[["any"], 1]]]]}], [
       ["ite", [{"name": "match", "opts": [["tile", "toimen_last_discard"], [[[["pair"], 1]]]]}], [["add_counter", "maneman_toimen", 1]], [["set_counter", "maneman_toimen", -1]]]
     ]],
-    ["when", [{"name": "counter_at_least", "opts": ["maneman_shimocha", 0]}, {"name": "match", "opts": [["shimocha_last_discard"], [[[["any"], 1]]]]}], [
+    ["when", ["shimocha_exists", {"name": "counter_at_least", "opts": ["maneman_shimocha", 0]}, {"name": "match", "opts": [["shimocha_last_discard"], [[[["any"], 1]]]]}], [
       ["ite", [{"name": "match", "opts": [["tile", "shimocha_last_discard"], [[[["pair"], 1]]]]}], [["add_counter", "maneman_shimocha", 1]], [["set_counter", "maneman_shimocha", -1]]]
     ]],
     # once counters reach 5, set maneman status
