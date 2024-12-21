@@ -37,6 +37,7 @@
   "Suuankou Tanki": "四暗刻単騎",
   "Tsuuiisou": "字一色",
   "Ryuuiisou": "緑一色",
+  "Junsei Ryuuiisou": "純正緑一色",
   "Chinroutou": "清老頭",
   "Chuurenpoutou": "九蓮宝燈",
   "Junsei Chuurenpoutou": "純正九蓮宝燈",

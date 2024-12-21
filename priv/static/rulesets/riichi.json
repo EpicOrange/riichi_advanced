@@ -123,7 +123,7 @@
     {"id": "yaku/tohoku_expressway", "name": "Tohoku Expressway", "desc": "Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman."},
     {"id": "yaku/tohoku_shinkansen", "name": "Tohoku Shinkansen", "desc": "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."},
     {"id": "yaku/blue_tunnel", "name": "Blue Tunnel", "desc": "Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman."},
-    {"id": "yaku/chinryuusou", "name": "Chinryuusou", "desc": "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."},
+    {"id": "yaku/junsei_ryuuiisou", "name": "Junsei Ryuuiisou", "desc": "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."},
     {"id": "yaku/chousangen", "name": "Chousangen", "desc": "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."},
     {"id": "yaku/chousuushii", "name": "Chousuushii", "desc": "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."},
     "Other",
