@@ -229,6 +229,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         id="display-wall"
         game_state={@game_state}
         viewer={@viewer}
+        seat={@seat}
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}

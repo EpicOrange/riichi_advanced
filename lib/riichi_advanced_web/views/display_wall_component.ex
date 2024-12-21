@@ -3,6 +3,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
   def mount(socket) do
     socket = assign(socket, :viewer, :spectator)
+    socket = assign(socket, :seat, :east)
     socket = assign(socket, :wall, [])
     socket = assign(socket, :dead_wall, [])
     socket = assign(socket, :wall_length, 136)
@@ -81,8 +82,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     # figure out where the wall break is relative to our seat
     num_players = length(assigns.available_seats)
     wall_length = trunc(Float.ceil(assigns.wall_length / num_players / 2))
-    seat = if assigns.viewer == :spectator do :east else assigns.viewer end
-    break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, seat, assigns.available_seats)
+    break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, assigns.seat, assigns.available_seats)
 
     case num_players do
       2 ->
@@ -98,7 +98,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
           assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall2}
           true -> {wall1, wall2}
         end
-        available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.viewer, &1))
+        available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.seat, &1))
         turns = [break_dir, Utils.prev_turn(break_dir), Utils.prev_turn(break_dir, 2), Utils.prev_turn(break_dir, 3)]
         |> Enum.filter(& &1 in available_dirs)
         Enum.zip(turns, [wall1, wall2]) |> Map.new()
@@ -116,7 +116,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
           assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall3}
           true -> {wall1, wall3}
         end
-        available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.viewer, &1))
+        available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.seat, &1))
         turns = [break_dir, Utils.prev_turn(break_dir), Utils.prev_turn(break_dir, 2), Utils.prev_turn(break_dir, 3)]
         |> Enum.filter(& &1 in available_dirs)
         Enum.zip(turns, [wall1, wall2, wall3]) |> Map.new()
