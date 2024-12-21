@@ -13,11 +13,11 @@ def nine_to_ten:
 .wall |= nine_to_ten
 |
 # re-add the same number of nine tiles as there are two tiles
-.wall += (map(select(. == "2m")) | [range(length)] | map("9m"))
+.wall |= . + map(select(. == "2m") | "9m")
 |
-.wall += (map(select(. == "2p")) | [range(length)] | map("9p"))
+.wall |= . + map(select(. == "2p") | "9m")
 |
-.wall += (map(select(. == "2s")) | [range(length)] | map("9s"))
+.wall |= . + map(select(. == "2s") | "9m")
 |
 # add ten ordering
 .after_start.actions += [
