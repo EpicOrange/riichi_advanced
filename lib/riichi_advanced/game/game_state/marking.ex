@@ -152,7 +152,6 @@ defmodule RiichiAdvanced.GameState.Marking do
             # TODO don't hardcode these
             call_type in ["chii", "pon", "daiminkan", "kakan"]
           end
-        "7z"                -> Utils.same_tile(tile, :"7z")
         "wind"              -> Riichi.is_wind?(tile)
         "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
@@ -172,8 +171,12 @@ defmodule RiichiAdvanced.GameState.Marking do
             _        -> false
           end
         _                   ->
-          GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
-          true
+          if Utils.is_tile(restriction) do
+            Utils.same_tile(tile, Utils.to_tile(restriction))
+          else
+            GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
+            true
+          end
       end
     end)
   end
