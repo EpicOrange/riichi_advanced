@@ -55,14 +55,11 @@ defmodule RiichiAdvancedWeb.GameLive do
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
       # init a new player and get the current state
-      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:new_player, socket})
+      {state, seat, spectator} = GenServer.call(game_state, {:new_player, socket})
       socket = socket
       |> assign(:game_state, game_state)
       |> assign(:state, state)
       |> assign(:seat, seat)
-      |> assign(:shimocha, shimocha)
-      |> assign(:toimen, toimen)
-      |> assign(:kamicha, kamicha)
       |> assign(:viewer, if spectator do :spectator else seat end)
       |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])

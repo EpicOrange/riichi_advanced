@@ -225,39 +225,39 @@ defmodule Utils do
   
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
-    next = cond do
-      seat == :east     -> :south
-      seat == :south    -> :west
-      seat == :west     -> :north
-      seat == :north    -> :east
-      seat == :self     -> :shimocha
-      seat == :shimocha -> :toimen
-      seat == :toimen   -> :kamicha
-      seat == :kamicha  -> :self
+    next = case seat do
+      :east     -> :south
+      :south    -> :west
+      :west     -> :north
+      :north    -> :east
+      :self     -> :shimocha
+      :shimocha -> :toimen
+      :toimen   -> :kamicha
+      :kamicha  -> :self
     end
     if iterations <= 0 do seat else next_turn(next, iterations - 1) end
   end
   def prev_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
-    prev = cond do
-      seat == :east     -> :north
-      seat == :south    -> :east
-      seat == :west     -> :south
-      seat == :north    -> :west
-      seat == :self     -> :kamicha
-      seat == :shimocha -> :self
-      seat == :toimen   -> :shimocha
-      seat == :kamicha  -> :toimen
+    prev = case seat do
+      :east     -> :north
+      :south    -> :east
+      :west     -> :south
+      :north    -> :west
+      :self     -> :kamicha
+      :shimocha -> :self
+      :toimen   -> :shimocha
+      :kamicha  -> :toimen
     end
     if iterations <= 0 do seat else prev_turn(prev, iterations - 1) end
   end
   
   def get_seat(seat, direction) do
-    cond do
-      direction == :shimocha -> next_turn(seat)
-      direction == :toimen   -> next_turn(seat, 2)
-      direction == :kamicha  -> next_turn(seat, 3)
-      direction == :self     -> next_turn(seat, 4)
+    case direction do
+      :shimocha -> next_turn(seat)
+      :toimen   -> next_turn(seat, 2)
+      :kamicha  -> next_turn(seat, 3)
+      :self     -> next_turn(seat, 4)
     end
   end
 
@@ -267,15 +267,6 @@ defmodule Utils do
       seat2 == next_turn(seat, 2) -> :toimen
       seat2 == next_turn(seat, 3) -> :kamicha
       seat2 == next_turn(seat, 4) -> :self
-    end
-  end
-  
-  def rotate_4([a,b,c,d], seat) do
-    case seat do
-      :east  -> [a,b,c,d]
-      :south -> [b,c,d,a]
-      :west  -> [c,d,a,b]
-      :north -> [d,a,b,c]
     end
   end
 

@@ -87,16 +87,13 @@ defmodule RiichiAdvancedWeb.LogLive do
 
 
       # init a new player and get the current state
-      [state, seat, shimocha, toimen, kamicha, spectator] = GenServer.call(game_state, {:spectate, socket})
+      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket})
 
       socket = socket
       |> assign(:game_state, game_state)
       |> assign(:log_control_state, log_control_state)
       |> assign(:state, state)
       |> assign(:seat, seat)
-      |> assign(:shimocha, shimocha)
-      |> assign(:toimen, toimen)
-      |> assign(:kamicha, kamicha)
       |> assign(:viewer, if spectator do :spectator else seat end)
       |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
       |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])

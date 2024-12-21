@@ -1063,14 +1063,14 @@ defmodule RiichiAdvanced.GameState do
       true                                          -> {:east, true}
     end
     state = add_player(state, socket, seat, spectator)
-    {:reply, [state] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
+    {:reply, {state, seat, spectator}, state}
   end
   
   def handle_call({:spectate, socket}, _from, state) do
     seat = :east
     spectator = true
     state = add_player(state, socket, seat, spectator)
-    {:reply, [state] ++ Utils.rotate_4([:east, :south, :west, :north], seat) ++ [spectator], state}
+    {:reply, {state, seat, spectator}, state}
   end
 
   def handle_call({:delete_player, seat}, _from, state) do
