@@ -341,13 +341,13 @@
     }
   ],
   "yaku_precedence": {
-    "All Flowers": ["Four Flower", "Seat Flower"],
-    "All Seasons": ["Four Season", "Seat Season"],
     "All Sixteen Flowers": ["Face", "Four Faces", "Animal", "All Animals", "Seat Flower", "Seat Season", "All Flowers", "All Seasons"],
     "After Multiple Gongs": ["After a Gong"],
     "Full Flush": ["Half Flush"],
-    "Big Four Winds": ["Small Four Winds"],
-    "Big Three Dragons": ["Small Three Dragons"],
+    "Big Four Winds": ["Small Four Winds", "East Wind", "North Wind", "Seat Wind"],
+    "Small Four Winds": ["East Wind", "North Wind", "Seat Wind"],
+    "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
+    "Small Three Dragons": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Four Concealed Triplets": ["All Triplets"]
   },
   "score_calculation": {
