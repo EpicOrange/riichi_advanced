@@ -347,7 +347,7 @@
     "After Multiple Gongs": ["After a Gong"],
     "Full Flush": ["Half Flush"],
     "Big Four Winds": ["Small Four Winds"],
-    "Big Three Dragons": ["Small Three Dragons"],
+    "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
     "Four Concealed Triplets": ["All Triplets"]
   },
   "score_calculation": {
