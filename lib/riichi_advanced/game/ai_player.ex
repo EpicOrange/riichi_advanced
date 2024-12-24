@@ -259,7 +259,7 @@ defmodule RiichiAdvanced.AIPlayer do
       end
       # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
       elapsed_time = System.os_time(:millisecond) - t
-      wait_time = trunc(500 / @ai_speed)
+      wait_time = trunc(1200 / @ai_speed)
       if elapsed_time < wait_time do
         Process.sleep(wait_time - elapsed_time)
       end
