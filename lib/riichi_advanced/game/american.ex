@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.GameState.American do
             # unsuited group
             groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
               case c do
-                "F" -> [[["1f","2f","3f","4f","1g","2g","3g","4g"], freq]]
+                "F" -> [[["unique","1f","2f","3f","4f","1g","2g","3g","4g"], freq]]
                 # below we use List.duplicate so that they can match calls
                 "Z" -> [[[List.duplicate("1z", freq),List.duplicate("2z", freq),List.duplicate("3z", freq),List.duplicate("4z", freq)], 1]]
                 "0" -> [[[List.duplicate("0z", freq)], 1]]
@@ -81,6 +81,12 @@ defmodule RiichiAdvanced.GameState.American do
       end
     else [] end
   end
+  defp combine_unique_groups(match_definition) do
+    # combine groups that are just [[["A","B"]], 1], [[["C","D"]], 1] into [["unique","A","B","C","D"], 4]
+    {simple_groups, complex_groups} = Enum.split_with(match_definition, fn elem -> case elem do [[group], 1] -> Enum.all?(group, &Utils.is_tile(&1) || Riichi.is_offset(&1)); _ -> false end end)
+    simple_group = Enum.flat_map(simple_groups, fn [[group], 1] -> group end)
+    complex_groups ++ if Enum.empty?(simple_group) do [] else [[["unique" | simple_group], length(simple_group)]] end
+  end
   defp translate_american_match_definitions_postprocess(match_definition) do
     # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
@@ -98,6 +104,7 @@ defmodule RiichiAdvanced.GameState.American do
       end
       num_tiles >= 3
     end)
+
     # for integer groups, make sure that the single tile subgroups are nojoker
     use_jokers = for [groups, num] <- use_jokers do
       groups = for group <- groups do
@@ -108,8 +115,17 @@ defmodule RiichiAdvanced.GameState.American do
       end
       [groups, num]
     end
+
+    use_jokers = combine_unique_groups(use_jokers)
+    nojokers = combine_unique_groups(nojokers)
+
     # ["debug"] ++
-    ["exhaustive"] ++ if Enum.empty?(nojokers) do use_jokers else use_jokers ++ ["nojoker"] ++ nojokers end
+    # ["exhaustive"] ++
+    if not Enum.empty?(use_jokers) and not Enum.empty?(nojokers) do
+      use_jokers ++ ["nojoker"] ++ nojokers
+    else
+      use_jokers ++ nojokers
+    end
   end
   defp _translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
@@ -129,16 +145,10 @@ defmodule RiichiAdvanced.GameState.American do
           ++ translate_american_match_definitions_suits(parsed.b, sb)
           ++ translate_american_match_definitions_suits(parsed.c, sc)
         {numeric, nonnumeric} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> is_integer(t) end))
-        invalid_numeric = cond do
-          Enum.empty?(numeric)         -> false
-          is_list(Enum.at(numeric, 0)) -> 0 not in Enum.concat(numeric)
-          true                         -> 0 not in numeric
-        end
-        if invalid_numeric do [] else
-          numeric = if Enum.empty?(numeric) do [] else [[[numeric], 1]] end
-          nonnumeric = Enum.map(nonnumeric, fn g -> [[g], 1] end)
-          [numeric ++ nonnumeric ++ parsed.unsuited]
-        end
+        numeric = Enum.concat(numeric)
+        numeric = if Enum.empty?(numeric) do [] else [[["unique" | numeric], length(numeric)]] end
+        nonnumeric = Enum.map(nonnumeric, fn g -> [[g], 1] end)
+        [numeric ++ nonnumeric ++ parsed.unsuited]
       end |> Enum.concat()
     end
     |> Enum.concat()
