@@ -81,5 +81,5 @@ walk(if . == "pei" then "pei_triplet" else . end)
 .buttons.pei = {
   "display_name": "Pei",
   "show_when": ["our_turn", "has_draw", "not_just_discarded", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}, {"name": "tile_not_drawn", "opts": ["kandraw_8"]}],
-  "actions": [["big_text", "Pei"], ["flower", "4z"], ["run", "do_kan_draw", {"status": "pei"}]]
+  "actions": [["big_text", "Pei"], ["flower", "4z"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]]
 }
