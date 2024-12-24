@@ -198,7 +198,6 @@ defmodule Riichi do
   end
 
   @group_keywords ["nojoker", "unique"]
-
   def group_keywords(), do: @group_keywords
 
   defp _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile) do
@@ -240,6 +239,7 @@ defmodule Riichi do
   end
 
   # @match_keywords ["almost", "exhaustive", "ignore_suit", "restart", "unique", "nojoker", "debug"]
+  # def match_keywords(), do: @match_keywords
 
   def filter_irrelevant_tile_aliases(tile_aliases, all_tiles) do
     # filter out irrelevant tile aliases
@@ -1253,7 +1253,5 @@ defmodule Riichi do
     #   result
     # end)
   end
-
-
 
 end

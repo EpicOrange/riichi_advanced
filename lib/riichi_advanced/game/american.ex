@@ -211,6 +211,7 @@ defmodule RiichiAdvanced.GameState.American do
         # 
 
         results = for {suit, group} <- preprocess_american_match_definition(am_match_definition), reduce: [{hand, []}] do
+          [] -> []
           hand_result ->
             # turn group into a match definition based on the base tile and suit
             # (we try every base tile <- hand)
@@ -276,7 +277,7 @@ defmodule RiichiAdvanced.GameState.American do
 
                 # postprocess the groups and add it to our result list
                 for {remaining_hand, new_group} <- groups_removed do
-                  # sort 2024 etc according to the match_definition
+                  # sort 2024, NEWS etc according to the match_definition
                   # must keep jokers in mind
                   new_group = case match_definition do
                     [[[group], 1]] ->
@@ -366,5 +367,106 @@ defmodule RiichiAdvanced.GameState.American do
       push_message(state, [%{text: "Possible hand: "}] ++ Enum.flat_map(arrangement, &Utils.ph/1))
     end
     Enum.empty?(arrangements)
+  end
+
+  def instantiate_match_definition(match_definition, base_tile, ordering, ordering_r) do
+    unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+    {joker, nojoker} = for {match_definition_elem, i} <- Enum.with_index(match_definition) do
+      unique = unique_ix != nil && i > unique_ix
+      case match_definition_elem do
+        [groups, num] when num >= 1 ->
+          unique = unique || "unique" in groups
+          nojoker_ix = Enum.find_index(groups, & &1 == "nojoker")
+          actual_groups = Enum.reject(groups, & &1 in Riichi.group_keywords())
+          hand = if unique do Enum.take(actual_groups, num) else List.duplicate(Enum.at(actual_groups, 0), num) |> Enum.concat() end
+          Enum.flat_map(hand, &cond do
+            Riichi.is_offset(&1) -> [Riichi.offset_tile(base_tile, &1, ordering, ordering_r)]
+            Utils.is_tile(&1) -> [Utils.to_tile(&1)]
+            true -> []
+          end)
+          |> Enum.split(if nojoker_ix != nil do nojoker_ix else length(hand) end)
+        _ -> {[], []}
+      end
+    end |> Enum.unzip()
+    {joker, nojoker} = {Enum.concat(joker), Enum.concat(nojoker)}
+    if nil in joker || nil in nojoker do nil else {joker, nojoker} end
+  end
+
+  def compute_american_shanten(state, seat, am_match_definitions) do
+    [{am_match_definition, pairing, arranged_hand}] = compute_closest_american_hands(state, seat, am_match_definitions, 1)
+    {am_match_definition, 13 - map_size(pairing), arranged_hand}
+  end
+
+  def compute_closest_american_hands(state, seat, am_match_definitions, num) do
+    hand = state.players[seat].hand
+    draw = state.players[seat].draw
+    calls = state.players[seat].calls
+    ordering = state.players[seat].tile_ordering
+    ordering_r = state.players[seat].tile_ordering_r
+    tile_aliases = state.players[seat].tile_aliases
+    
+    hand = hand ++ draw ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+    all_tiles = hand
+    |> Enum.uniq()
+    |> Utils.apply_tile_aliases(tile_aliases)
+    |> Enum.reject(& &1 == :any)
+
+    for am_match_definition <- am_match_definitions do
+      # TODO parallelize the outer loop here
+      {pairing, pairing_r, missing_tiles} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- all_tiles do
+        case instantiate_match_definition(match_definition, base_tile, ordering, ordering_r) do
+          nil -> []
+          {matching_hand_joker, matching_hand_nojoker} ->
+            # model the problem as a bipartite graph between indices of hand and matching_hand
+            adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Utils.same_tile(tile2, tile, tile_aliases) do j end} end)
+            adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Utils.same_tile(tile2, tile) do j end} end)
+            adj = Map.merge(adj_joker, adj_nojoker)
+            # use dfs to find augmenting path
+            {pairing, pairing_r} = for i <- Map.keys(adj), reduce: {%{}, %{}} do
+              {pairing, pairing_r} -> case compute_closest_american_hands_dfs(i, adj, pairing, pairing_r, MapSet.new()) do
+                {true, pairing, pairing_r, _} -> {pairing, pairing_r}
+                {false, _, _, _}              -> {pairing, pairing_r}
+              end
+            end
+            # get missing tiles for later use
+            matching_hand = matching_hand_joker ++ matching_hand_nojoker
+            missing_tiles = Enum.map(Enum.to_list(0..length(matching_hand)-1) -- Map.keys(pairing), fn j -> Enum.at(matching_hand, j) end)
+            [{pairing, pairing_r, missing_tiles}]
+        end
+      end
+      |> Enum.concat()
+      |> Enum.max_by(fn {pairing, _pairing_r, _missing_tiles} -> map_size(pairing) end)
+
+      {fixed_hand, missing_tiles} = for i <- Enum.to_list(0..length(hand)-1) -- Map.keys(pairing_r), reduce: {hand, missing_tiles} do
+        {fixed_hand, []}                  -> {fixed_hand, []}
+        {fixed_hand, [t | missing_tiles]} -> {List.replace_at(fixed_hand, i, Utils.add_attr(t, ["transparent"])), missing_tiles}
+      end
+      # depending on whether there is a draw or not, there should just be 0-1 missing tiles left
+      fixed_hand = fixed_hand ++ Utils.add_attr(missing_tiles, ["transparent"])
+      arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, [], ordering, ordering_r, tile_aliases)
+      {am_match_definition, pairing, arranged_hand}
+    end
+    |> Enum.sort_by(fn {_am_match_definition, pairing, _potential_hand} -> map_size(pairing) end, :desc)
+    |> Enum.take(num)
+  end
+
+  defp compute_closest_american_hands_dfs(i, adj, pairing, pairing_r, visited) do
+    Enum.reduce_while(Map.get(adj, i, []), {false, pairing, pairing_r, visited}, fn j, {_, pairing, pairing_r, visited} ->
+      if MapSet.member?(visited, j) do
+        {:cont, {false, pairing, pairing_r, visited}}
+      else
+        visited = MapSet.put(visited, j)
+        if not Map.has_key?(pairing_r, j) do
+          {:halt, {true, Map.put(pairing, i, j), Map.put(pairing_r, j, i), visited}}
+        else
+          {halt, pairing, pairing_r, visited} = compute_closest_american_hands_dfs(pairing_r[j], adj, pairing, pairing_r, visited)
+          if halt do
+            {:halt, {true, Map.put(pairing, i, j), Map.put(pairing_r, j, i), visited}}
+          else
+            {:cont, {false, pairing, pairing_r, visited}}
+          end
+        end
+      end
+    end)
   end
 end
