@@ -46,6 +46,7 @@ defmodule Player do
     arranged_hand: [],
     arranged_calls: [],
     playable_indices: [],
+    ai_thinking: false,
   ]
   use Accessible
 end
@@ -254,7 +255,7 @@ defmodule RiichiAdvanced.GameState do
     shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(state, Map.get(state.rules, Atom.to_string(shanten) <> "_definition", []))} end)
     shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
       shanten_definitions ->
-        # IO.puts("Generating #{from} definitions")
+        IO.puts("Generating #{to} definitions")
         if length(shanten_definitions[from]) < 1000 do
           Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
         else
@@ -964,7 +965,7 @@ defmodule RiichiAdvanced.GameState do
       hand = tiles
       |> Enum.sort_by(&{&1 in doras, Riichi.get_centralness(&1)})
       |> Enum.take(-13)
-      {0, 0, 0, hand}
+      if length(hand) == 13 do {0, 0, 0, hand} else {-1, -1, -1, []} end
     end)
   end
 
@@ -1314,6 +1315,8 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         if is_pid(Map.get(state, seat)) && Marking.needs_marking?(state, seat) do
           # IO.puts("Notifying #{seat} AI about marking")
+          state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
+          state = broadcast_state_change(state)
           send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, visible_tiles: get_visible_tiles(state, seat), revealed_tiles: get_revealed_tiles(state), doras: get_doras(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
         end
       else
@@ -1329,6 +1332,8 @@ defmodule RiichiAdvanced.GameState do
         call_choices = state.players[seat].call_buttons
         if is_pid(Map.get(state, seat)) && not Enum.empty?(call_choices) && not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
           # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+          state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
+          state = broadcast_state_change(state)
           send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})
         end
       else
@@ -1342,6 +1347,8 @@ defmodule RiichiAdvanced.GameState do
     if not state.log_loading_mode do
       if state.game_active do
         if is_pid(Map.get(state, seat)) do
+          state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
+          state = broadcast_state_change(state)
           send(Map.get(state, seat), {:declare_yaku, %{player: state.players[seat]}})
         end
       else
@@ -1357,12 +1364,21 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         if is_pid(Map.get(state, seat)) && seat == state.turn do
           # IO.puts("Notifying #{seat} AI that it's their turn")
+          state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
+          state = broadcast_state_change(state)
           send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], visible_tiles: get_visible_tiles(state, seat)}})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:ai_ignore_buttons, seat}])
       end
     end
+    {:noreply, state}
+  end
+
+  # this is called by AI when they start thinking of what tile to drop or mark
+  def handle_cast({:ai_thinking, seat}, state) do
+    state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1391,6 +1407,11 @@ defmodule RiichiAdvanced.GameState do
         state
     end
     state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:push_message, message}, state) do
+    push_message(state, message)
     {:noreply, state}
   end
 
@@ -1525,8 +1546,12 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:set_best_minefield_hand, seat, tiles, hand}, state) do
-    send(Map.get(state, seat), {:set_best_minefield_hand, tiles, hand})
-    notify_ai_marking(state, seat)
+    if length(hand) == 13 do
+      send(Map.get(state, seat), {:set_best_minefield_hand, tiles, hand})
+      notify_ai_marking(state, seat)
+    else
+      IO.inspect(hand, label: "#{seat} failed to calculate a valid minefield hand")
+    end
     state = Map.put(state, :get_best_minefield_hand_pid, nil)
     {:noreply, state}
   end

@@ -700,6 +700,19 @@ div.corner-info > div.dead-hand-button:hover {
   cursor: pointer;
   opacity: 1;
 }
+@keyframes aiThinking {
+  33% { content: ".."; }
+  67% { content: "..."; }
+}
+div.corner-info > div.ai-thinking::before {
+  position: absolute;
+  content: ".";
+  font-size: calc(1 * var(--tile-size));
+  color: var(--tile-front);
+  bottom: calc(50% - 0.5 * var(--tile-size));
+  left: calc(50% - 0.4 * var(--tile-size));
+  animation: aiThinking 3s linear forwards infinite;
+}
 
 /* tiles */
 div.tile {

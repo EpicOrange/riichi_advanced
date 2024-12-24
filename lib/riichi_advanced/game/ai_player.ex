@@ -157,6 +157,7 @@ defmodule RiichiAdvanced.AIPlayer do
           {{tile, index}, shanten} = if Debug.debug() do
             {Enum.at(playables, -1), :infinity}
           else
+            GenServer.cast(state.game_state, {:ai_thinking, state.seat})
             case choose_discard(state, playables, visible_tiles) do
               {nil, _} ->
                 # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
@@ -338,6 +339,7 @@ defmodule RiichiAdvanced.AIPlayer do
               remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
               {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
             else
+              GenServer.cast(state.game_state, {:ai_thinking, state.seat})
               GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
               {state, []}
             end
@@ -356,6 +358,9 @@ defmodule RiichiAdvanced.AIPlayer do
             IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")
             IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
             IO.puts(" >> #{state.seat}: My marking state was: #{inspect(marked_objects)}")
+            if state.ruleset == "minefield" do
+              IO.puts(" >> #{state.seat}: My minefield hand was: #{inspect(state.minefield_hand)}")
+            end
             GenServer.cast(state.game_state, {:clear_marked_objects, state.seat})
         end
       end

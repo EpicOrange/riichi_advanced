@@ -145,6 +145,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         num_players={length(@state.available_seats)}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
+        ai_thinking={@state.players[seat].ai_thinking}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}

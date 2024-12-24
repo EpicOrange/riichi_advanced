@@ -1263,6 +1263,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       if Debug.debug_actions() do
         IO.puts("\nAdjudicating actions!")
       end
+      # clear ai thinking
+      state = update_all_players(state, fn _seat, player -> %Player{ player | ai_thinking: false } end)
       # clear last discard
       state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
       # trigger all non-nil choices
