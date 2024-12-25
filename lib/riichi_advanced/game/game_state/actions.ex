@@ -1333,6 +1333,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       # clearing choices is done by evaluate_choices now
       # though i guess we could still do it here? no difference
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+
+      # postprocess the new state
+      state = broadcast_state_change(state, true)
+      
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
       state

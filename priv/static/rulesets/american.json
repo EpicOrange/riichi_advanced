@@ -287,6 +287,7 @@
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
           ["unset_status", "charleston_left"],
           ["merge_draw"],
+          ["sort_hand"],
           ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [["draw", 3, "1x"]]]
         ]],
         ["charleston_left"],
@@ -300,7 +301,7 @@
       "display_name": "Select three tiles to pass across",
       "show_when": [{"name": "status", "opts": ["charleston_across"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"], ["merge_draw"]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"], ["merge_draw"], ["sort_hand"]]],
         ["charleston_across"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_left"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]],
@@ -316,6 +317,7 @@
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
           ["unset_status", "charleston_right"],
           ["merge_draw"],
+          ["sort_hand"],
           ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [["draw", 3, "1x"]]]
         ]],
         ["charleston_right"],
@@ -648,7 +650,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn"],
+  "interruptible_actions": ["play_tile", "draw"],
   "initial_score": 0,
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,

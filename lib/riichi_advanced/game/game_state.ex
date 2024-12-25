@@ -993,10 +993,11 @@ defmodule RiichiAdvanced.GameState do
 
   def broadcast_state_change(state, postprocess \\ false) do
     state = if postprocess do
+      # IO.inspect("postprocessing")
       # async calculate playable indices for current turn player
       GenServer.cast(self(), :calculate_playable_indices)
       # populate closest_american_hands for all players
-      state = if Map.get(state.rules, "show_nearest_american_hand", false) do
+      state = if state.ruleset == "american" do
         update_all_players(state, fn seat, player ->
           postprocess_state = {player.hand, player.draw, player.calls}
           if postprocess_state != player.last_postprocess_state do
@@ -1248,7 +1249,6 @@ defmodule RiichiAdvanced.GameState do
       state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "", chosen_call_choice: nil, chosen_called_tile: nil, chosen_saki_card: nil })
       actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
       state = Actions.submit_actions(state, seat, "play_tile", actions)
-      state = broadcast_state_change(state, true)
       state
     else state end
     {:noreply, state}
@@ -1300,7 +1300,12 @@ defmodule RiichiAdvanced.GameState do
         if Buttons.no_buttons_remaining?(state) do
           if is_pid(Map.get(state, state.turn)) do
             # IO.puts("Notifying #{state.turn} AI that it's their turn")
-            send(Map.get(state, state.turn), {:your_turn, %{player: state.players[state.turn], visible_tiles: get_visible_tiles(state, state.turn)}})
+            params = %{
+              player: state.players[state.turn],
+              visible_tiles: get_visible_tiles(state, state.turn),
+              closest_american_hands: state.players[state.turn].closest_american_hands,
+            }
+            send(Map.get(state, state.turn), {:your_turn, params})
           end
         else
           Enum.each(state.available_seats, fn seat ->
@@ -1327,7 +1332,17 @@ defmodule RiichiAdvanced.GameState do
           # IO.puts("Notifying #{seat} AI about marking")
           state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
           state = broadcast_state_change(state)
-          send(Map.get(state, seat), {:mark_tiles, %{player: state.players[seat], players: state.players, visible_tiles: get_visible_tiles(state, seat), revealed_tiles: get_revealed_tiles(state), doras: get_doras(state), wall: Enum.drop(state.wall, state.wall_index), marked_objects: state.marking[seat]}})
+          params = %{
+            player: state.players[seat],
+            players: state.players,
+            visible_tiles: get_visible_tiles(state, seat),
+            revealed_tiles: get_revealed_tiles(state),
+            doras: get_doras(state),
+            wall: Enum.drop(state.wall, state.wall_index),
+            marked_objects: state.marking[seat],
+            closest_american_hands: state.players[state.turn].closest_american_hands,
+          }
+          send(Map.get(state, seat), {:mark_tiles, params})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai_marking, seat}])
