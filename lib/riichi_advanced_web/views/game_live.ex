@@ -275,6 +275,17 @@ defmodule RiichiAdvancedWeb.GameLive do
         available_seats={@state.available_seats}
         :if={Map.get(@state.rules, "display_wall", false)} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
+      <div class="display-am-hand-hover" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}></div>
+      <div class="display-am-hand-container" :if={Map.get(@state.rules, "show_nearest_american_hand", false) && not Enum.empty?(@state.players[@seat].closest_american_hands)}>
+        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].closest_american_hands do %>
+          <div class="display-am-hand" :if={arranged_hand})>
+            <%= for tile <- arranged_hand do %>
+              <div class={Utils.get_tile_class(tile)}></div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>

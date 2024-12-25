@@ -282,7 +282,7 @@ defmodule RiichiAdvanced.GameState.American do
                     [[[group], 1]] ->
                       group = if is_list(group) do group else [group] end
                       arrange_american_group(group, new_group, tile_aliases)
-                    _ -> new_group
+                    _ -> Utils.sort_tiles(new_group)
                   end
                   {remaining_hand, result ++ [new_group]}
                 end
@@ -370,24 +370,39 @@ defmodule RiichiAdvanced.GameState.American do
 
   def instantiate_match_definition(match_definition, base_tile, ordering, ordering_r) do
     unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+    nojoker_ix = Enum.find_index(match_definition, & &1 == "nojoker")
     {joker, nojoker} = for {match_definition_elem, i} <- Enum.with_index(match_definition) do
       unique = unique_ix != nil && i > unique_ix
       case match_definition_elem do
         [groups, num] when num >= 1 ->
           unique = unique || "unique" in groups
-          nojoker_ix = Enum.find_index(groups, & &1 == "nojoker")
-          actual_groups = Enum.reject(groups, & &1 in Riichi.group_keywords())
-          hand = if unique do Enum.take(actual_groups, num) else List.duplicate(Enum.at(actual_groups, 0), num) |> Enum.concat() end
-          Enum.flat_map(hand, &cond do
-            Riichi.is_offset(&1) -> [Riichi.offset_tile(base_tile, &1, ordering, ordering_r)]
-            Utils.is_tile(&1) -> [Utils.to_tile(&1)]
-            true -> []
+          nojoker_ix = if nojoker_ix != nil && i > nojoker_ix do 0 else Enum.find_index(groups, & &1 == "nojoker") end
+          hand = if unique do
+            # take until you get num actual groups
+            {result, _} = for group <- groups, reduce: {[], num} do
+              {result, 0} -> {result, 0}
+              {result, remaining} -> {[group | result], remaining - if group in Riichi.group_keywords() do 0 else 1 end}
+            end
+            Enum.reverse(result)
+          else
+            groups
+            |> Enum.reject(& &1 in Riichi.group_keywords())
+            |> Enum.at(0)
+            |> List.duplicate(num)
+            |> Enum.concat()
+          end
+          Enum.map(hand, &cond do
+            Riichi.is_offset(&1) -> Riichi.offset_tile(base_tile, &1, ordering, ordering_r)
+            Utils.is_tile(&1) -> Utils.to_tile(&1)
+            true -> :keyword # need to use a placeholder so that we can split by nojoker_ix later
           end)
           |> Enum.split(if nojoker_ix != nil do nojoker_ix else length(hand) end)
         _ -> {[], []}
       end
-    end |> Enum.unzip()
-    {joker, nojoker} = {Enum.concat(joker), Enum.concat(nojoker)}
+    end
+    |> Enum.unzip()
+    joker = joker |> Enum.concat() |> Enum.reject(& &1 == :keyword)
+    nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :keyword)
     if nil in joker || nil in nojoker do nil else {joker, nojoker} end
   end
 
@@ -418,7 +433,7 @@ defmodule RiichiAdvanced.GameState.American do
           {matching_hand_joker, matching_hand_nojoker} ->
             # model the problem as a bipartite graph between indices of hand and matching_hand
             adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Utils.same_tile(tile2, tile, tile_aliases) do j end} end)
-            adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Utils.same_tile(tile2, tile) do j end} end)
+            adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {length(matching_hand_joker) + i, for {tile2, j} <- Enum.with_index(hand), Utils.same_tile(tile2, tile) do j end} end)
             adj = Map.merge(adj_joker, adj_nojoker)
             # use dfs to find augmenting path
             {pairing, pairing_r} = for i <- Map.keys(adj), reduce: {%{}, %{}} do
@@ -429,6 +444,7 @@ defmodule RiichiAdvanced.GameState.American do
             end
             # get missing tiles for later use
             matching_hand = matching_hand_joker ++ matching_hand_nojoker
+            # IO.inspect({hand, matching_hand, pairing_r})
             missing_tiles = Enum.map(Enum.to_list(0..length(matching_hand)-1) -- Map.keys(pairing), fn j -> Enum.at(matching_hand, j) end)
             [{pairing, pairing_r, missing_tiles}]
         end
@@ -446,11 +462,14 @@ defmodule RiichiAdvanced.GameState.American do
         # depending on whether the player has a drawn tile, there should just be 0-1 missing tiles left
         fixed_hand = fixed_hand ++ Utils.add_attr(missing_tiles, ["transparent"])
         arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, [], ordering, ordering_r, tile_aliases)
+        |> Enum.intersperse([:"3x"])
+        |> Enum.concat()
         [{am_match_definition, pairing, arranged_hand}]
       end
     end
     |> Enum.concat()
     |> Enum.sort_by(fn {_am_match_definition, pairing, _potential_hand} -> map_size(pairing) end, :desc)
+    |> then(fn x -> IO.inspect(Enum.map(x, fn {a, p, _} -> {a, map_size(p)} end)); x end)
     |> Enum.take(num)
   end
 

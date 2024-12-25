@@ -2,6 +2,7 @@
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
   "wall": ["1m", "1m", "1m", "1m",

@@ -302,11 +302,14 @@ defmodule Riichi do
               tile_aliases = if nojoker do %{} else filtered_tile_aliases end
               # optimized routine for unique tile-only groups
               for {hand, calls} <- hand_calls do
-                group_tiles = Enum.map(groups, &Utils.to_tile/1) |> Enum.uniq()
+                group_tiles = groups
+                |> Enum.reject(& &1 in @group_keywords)
+                |> Enum.map(&Utils.to_tile/1)
+                |> Enum.uniq()
                 {_group_tiles, matching_hand} = for tile <- hand, reduce: {group_tiles, []} do
                   {group_tiles, matching_hand} ->
                     # certain groups can be marked nojoker
-                    {joker, nojoker} = Enum.split(group_tiles, Enum.find_index(group_tiles, fn elem -> elem == "nojoker" end))
+                    {joker, nojoker} = Enum.split(group_tiles, Enum.find_index(group_tiles, fn elem -> elem == "nojoker" end) || length(group_tiles))
                     joker = Enum.reject(joker, & &1 in @group_keywords)
                     nojoker = Enum.reject(nojoker, & &1 in @group_keywords)
                     cond do

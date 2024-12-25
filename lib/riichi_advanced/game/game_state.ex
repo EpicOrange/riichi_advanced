@@ -46,6 +46,8 @@ defmodule Player do
     arranged_hand: [],
     arranged_calls: [],
     playable_indices: [],
+    last_postprocess_state: nil,
+    closest_american_hands: [],
     ai_thinking: false,
   ]
   use Accessible
@@ -256,7 +258,7 @@ defmodule RiichiAdvanced.GameState do
     shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
       shanten_definitions ->
         IO.puts("Generating #{to} definitions")
-        if length(shanten_definitions[from]) < 1000 do
+        if length(shanten_definitions[from]) < 100 do
           Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
         else
           Map.put(shanten_definitions, to, [])
@@ -264,6 +266,7 @@ defmodule RiichiAdvanced.GameState do
     end
     state = Map.put(state, :shanten_definitions, shanten_definitions)
     # IO.inspect(state.shanten_definitions)
+    # IO.inspect(Map.new(state.shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
 
     state = Map.put(state, :available_seats, case Map.get(rules, "num_players", 4) do
       1 -> [:east]
@@ -476,6 +479,7 @@ defmodule RiichiAdvanced.GameState do
     state = Buttons.recalculate_buttons(state)
 
     notify_ai(state)
+    state = broadcast_state_change(state, true)
 
     state
   end
@@ -987,11 +991,21 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def broadcast_state_change(state, calculate_playable_indices \\ true) do
-    if calculate_playable_indices do
+  def broadcast_state_change(state, postprocess \\ false) do
+    state = if postprocess do
       # async calculate playable indices for current turn player
       GenServer.cast(self(), :calculate_playable_indices)
-    end
+      # populate closest_american_hands for all players
+      state = if Map.get(state.rules, "show_nearest_american_hand", false) do
+        update_all_players(state, fn seat, player ->
+          postprocess_state = {player.hand, player.draw, player.calls}
+          if postprocess_state != player.last_postprocess_state do
+            %Player{ player | last_postprocess_state: postprocess_state, closest_american_hands: American.compute_closest_american_hands(state, seat, Map.get(state.rules, "win_definition", []), 5) }
+          else player end
+        end)
+      else state end
+      state
+    else state end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
     # reset anim
@@ -1165,7 +1179,7 @@ defmodule RiichiAdvanced.GameState do
       timer: 0,
     })
     new_state = Map.merge(state, new_state)
-    new_state = broadcast_state_change(new_state)
+    new_state = broadcast_state_change(new_state, true)
     {:reply, new_state, new_state}
   end
 
@@ -1205,19 +1219,19 @@ defmodule RiichiAdvanced.GameState do
     state = Actions.temp_disable_play_tile(state, seat)
     # IO.puts("#{seat} moved tile from #{from} to #{to}")
     state = update_player(state, seat, &%Player{ &1 | hand: _reindex_hand(&1.hand, from, to) })
-    state = broadcast_state_change(state)
+    state = broadcast_state_change(state, true)
     {:noreply, state}
   end
 
   def handle_cast({:run_actions, actions, context}, state) do 
     state = Actions.run_actions(state, actions, context)
-    state = broadcast_state_change(state)
+    state = broadcast_state_change(state, true)
     {:noreply, state}
   end
 
   def handle_cast({:run_deferred_actions, context}, state) do 
     state = Actions.run_deferred_actions(state, context)
-    state = broadcast_state_change(state)
+    state = broadcast_state_change(state, true)
     {:noreply, state}
   end
 
@@ -1234,7 +1248,7 @@ defmodule RiichiAdvanced.GameState do
       state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "", chosen_call_choice: nil, chosen_called_tile: nil, chosen_saki_card: nil })
       actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
       state = Actions.submit_actions(state, seat, "play_tile", actions)
-      state = broadcast_state_change(state)
+      state = broadcast_state_change(state, true)
       state
     else state end
     {:noreply, state}
@@ -1245,15 +1259,11 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do
-    state = Buttons.press_call_button(state, seat, call_choice, called_tile)
-    state = broadcast_state_change(state)
-    {:noreply, state}
+    {:noreply, Buttons.press_call_button(state, seat, call_choice, called_tile)}
   end
   
   def handle_cast({:press_saki_card, seat, choice}, state) do
-    state = Buttons.press_call_button(state, seat, nil, nil, choice)
-    state = broadcast_state_change(state)
-    {:noreply, state}
+    {:noreply, Buttons.press_call_button(state, seat, nil, nil, choice)}
   end
 
   def handle_cast({:trigger_auto_button, seat, auto_button_name}, state) do

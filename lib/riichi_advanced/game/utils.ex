@@ -298,7 +298,7 @@ defmodule Utils do
     -Integer.floor_div(-nominal, 2) * 100
   end
 
-  def get_tile_class(tile, i, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
+  def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = Utils.strip_attrs(tile)
     transparent = Utils.has_attr?(tile, ["transparent"])
     hidden = Utils.has_attr?(tile, ["hidden"])
