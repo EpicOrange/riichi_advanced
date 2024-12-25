@@ -112,6 +112,7 @@ defmodule Game do
     # working game state (reset on new round)
     # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
     turn: :east,
+    awaiting_discard: true, # prevent double discards
     die1: 3,
     die2: 4,
     wall_index: 0,

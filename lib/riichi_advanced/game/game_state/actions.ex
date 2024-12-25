@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   # we use this to ensure no double discarding
   def can_discard(state, seat, ignore_turn \\ false) do
     our_turn = seat == state.turn
-    ((our_turn && state.players[seat].last_discard == nil) || ignore_turn)
+    ((our_turn && state.players[seat].last_discard == nil && state.awaiting_discard) || ignore_turn)
     && not has_unskippable_button?(state, seat)
     && Enum.empty?(state.players[seat].call_buttons)
     && not Marking.needs_marking?(state, seat)
@@ -62,12 +62,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       play_sound(state, Enum.random(click_sounds))
 
       # trigger play effects
-      if Map.has_key?(state.rules, "play_effects") do
+      state = if Map.has_key?(state.rules, "play_effects") do
         doras = get_doras(state)
         for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile, doras: doras}), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end
+
+      state = Map.put(state, :awaiting_discard, false)
+
+      state
     else
       IO.puts("#{seat} tried to play an unplayable tile: #{inspect(tile)}")
       state
@@ -163,6 +167,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       state = if Debug.debug() do
         update_all_players(state, fn _seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       else state end
+
+      state = Map.put(state, :awaiting_discard, true)
 
       state
     else state end
