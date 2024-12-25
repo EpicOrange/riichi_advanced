@@ -153,7 +153,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else state.rules["buttons"][button_name]["actions"] end
       state = Actions.submit_actions(state, seat, button_name, actions)
-      state = broadcast_state_change(state, true)
       state
     else
       IO.puts("#{seat} tried to press nonexistent button #{button_name}")
@@ -168,7 +167,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
       actions = state.rules["buttons"][button_name]["actions"]
       state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
-      state = broadcast_state_change(state, true)
       state
     else
       IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")

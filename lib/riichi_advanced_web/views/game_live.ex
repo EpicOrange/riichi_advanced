@@ -27,6 +27,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:hovered_call_choice, nil)
     |> assign(:playable_indices, [])
     |> assign(:preplayed_index, nil)
+    |> assign(:hide_buttons, false) # used to hide buttons on the client side after clicking one
 
     last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
       [mods] -> mods
@@ -181,7 +182,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
-        <div class="buttons" :if={@state.players[@seat].declared_yaku != []}>
+        <div class="buttons" :if={not @hide_buttons && @state.players[@seat].declared_yaku != []}>
           <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}>Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}>Cancel</button>
@@ -389,6 +390,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, name})
     socket = assign(socket, :hovered_called_tile, nil)
     socket = assign(socket, :hovered_call_choice, nil)
+    socket = assign(socket, :hide_buttons, true)
     {:noreply, socket}
   end
 
@@ -532,6 +534,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:preplayed_index, nil)
       |> assign(:revealed_tiles, RiichiAdvanced.GameState.get_revealed_tiles(state))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
+      |> assign(:hide_buttons, false)
       {:noreply, socket}
     else
       {:noreply, socket}
