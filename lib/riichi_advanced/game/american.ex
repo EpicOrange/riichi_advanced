@@ -81,19 +81,21 @@ defmodule RiichiAdvanced.GameState.American do
       end
     else [] end
   end
+
   defp combine_unique_groups(match_definition) do
     # combine groups that are just [[["A","B"]], 1], [[["C","D"]], 1] into [["unique","A","B","C","D"], 4]
     {simple_groups, complex_groups} = Enum.split_with(match_definition, fn elem -> case elem do [[group], 1] -> Enum.all?(group, &Utils.is_tile(&1) || Riichi.is_offset(&1)); _ -> false end end)
     simple_group = Enum.flat_map(simple_groups, fn [[group], 1] -> group end)
     complex_groups ++ if Enum.empty?(simple_group) do [] else [[["unique" | simple_group], length(simple_group)]] end
   end
+
   defp translate_american_match_definitions_postprocess(match_definition) do
     # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
       num_tiles = cond do
-        is_list(groups) && Enum.all?(groups, &is_list(&1) || &1 == "nojoker") ->
+        is_list(groups) && Enum.all?(groups, &is_list(&1) || &1 in Riichi.group_keywords()) ->
           groups
-          |> Enum.reject(& &1 == "nojoker")
+          |> Enum.reject(& &1 in Riichi.group_keywords())
           |> Enum.map(&cond do
             Enum.all?(&1, fn subgroup -> is_list(subgroup) end) -> length(Enum.at(&1, 0))
             Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end) -> length(&1)
@@ -105,27 +107,24 @@ defmodule RiichiAdvanced.GameState.American do
       num_tiles >= 3
     end)
 
-    # for integer groups, make sure that the single tile subgroups are nojoker
-    use_jokers = for [groups, num] <- use_jokers do
-      groups = for group <- groups do
-        if is_list(group) && Enum.all?(group, &is_list/1) do
-          {short, long} = Enum.split_with(group, &length(&1) <= 2)
-          if Enum.empty?(short) do long else long ++ ["nojoker"] ++ short end
-        else group end
-      end
-      [groups, num]
-    end
-
     use_jokers = combine_unique_groups(use_jokers)
-    nojokers = combine_unique_groups(nojokers)
+    nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ combine_unique_groups(nojokers) end
 
+    # add "nojokers" for unique groups as well
+    use_jokers = Enum.map(use_jokers, fn [groups, num] ->
+      cond do
+        is_list(groups) && "unique" in groups ->
+          {keywords, groups} = Enum.split_with(groups, & &1 in Riichi.group_keywords())
+          {jokers, nojokers} = Enum.split_with(Enum.frequencies(groups), fn {_tile, freq} -> freq >= 3 end)
+          jokers = Enum.flat_map(jokers, fn {tile, freq} -> List.duplicate(tile, freq) end)
+          nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ Enum.flat_map(nojokers, fn {tile, freq} -> List.duplicate(tile, freq) end) end
+          [keywords ++ jokers ++ nojokers, num]
+        true -> [groups, num]
+      end
+    end)
+    
     # ["debug"] ++
-    # ["exhaustive"] ++
-    if not Enum.empty?(use_jokers) and not Enum.empty?(nojokers) do
-      use_jokers ++ ["nojoker"] ++ nojokers
-    else
-      use_jokers ++ nojokers
-    end
+    use_jokers ++ nojokers
   end
   defp _translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
@@ -435,17 +434,22 @@ defmodule RiichiAdvanced.GameState.American do
         end
       end
       |> Enum.concat()
-      |> Enum.max_by(fn {pairing, _pairing_r, _missing_tiles} -> map_size(pairing) end)
+      |> Enum.max_by(fn {pairing, _pairing_r, _missing_tiles} -> map_size(pairing) end, &>=/2, fn -> {%{}, %{}, []} end)
 
-      {fixed_hand, missing_tiles} = for i <- Enum.to_list(0..length(hand)-1) -- Map.keys(pairing_r), reduce: {hand, missing_tiles} do
-        {fixed_hand, []}                  -> {fixed_hand, []}
-        {fixed_hand, [t | missing_tiles]} -> {List.replace_at(fixed_hand, i, Utils.add_attr(t, ["transparent"])), missing_tiles}
+      if map_size(pairing) == 0 do
+        []
+      else
+        {fixed_hand, missing_tiles} = for i <- Enum.to_list(0..length(hand)-1) -- Map.keys(pairing_r), reduce: {hand, missing_tiles} do
+          {fixed_hand, []}                  -> {fixed_hand, []}
+          {fixed_hand, [t | missing_tiles]} -> {List.replace_at(fixed_hand, i, Utils.add_attr(t, ["transparent"])), missing_tiles}
+        end
+        # depending on whether the player has a drawn tile, there should just be 0-1 missing tiles left
+        fixed_hand = fixed_hand ++ Utils.add_attr(missing_tiles, ["transparent"])
+        arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, [], ordering, ordering_r, tile_aliases)
+        [{am_match_definition, pairing, arranged_hand}]
       end
-      # depending on whether there is a draw or not, there should just be 0-1 missing tiles left
-      fixed_hand = fixed_hand ++ Utils.add_attr(missing_tiles, ["transparent"])
-      arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, [], ordering, ordering_r, tile_aliases)
-      {am_match_definition, pairing, arranged_hand}
     end
+    |> Enum.concat()
     |> Enum.sort_by(fn {_am_match_definition, pairing, _potential_hand} -> map_size(pairing) end, :desc)
     |> Enum.take(num)
   end
