@@ -2886,7 +2886,9 @@ div.centerpiece-status-bar > div.tiles-left {
 div.top-right-container > div.menu-buttons:not(:nth-last-child(1)),
 div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(2)),
 div.visible-waits-container > div.menu-buttons,
-div.visible-waits-container > div.centerpiece-status-bar {
+div.visible-waits-container > div.centerpiece-status-bar,
+div.display-am-hand-container > div.menu-buttons,
+div.display-am-hand-container > div.centerpiece-status-bar {
   display: none;
 }
 
