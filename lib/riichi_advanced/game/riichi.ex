@@ -161,10 +161,10 @@ defmodule Riichi do
   end
 
   def remove_tile(hand, tile, ignore_suit \\ false) do
-    Enum.with_index(hand)
-    |> Enum.filter(fn {hand_tile, _ix} -> if ignore_suit do Utils.same_number(hand_tile, tile) else Utils.same_tile(hand_tile, tile) end end)
-    |> Enum.uniq_by(fn {hand_tile, _ix} -> hand_tile end)
-    |> Enum.map(fn {_hand_tile, ix} -> List.delete_at(hand, ix) end)
+    case Enum.find_index(hand, &if ignore_suit do Utils.same_number(&1, tile) else Utils.same_tile(&1, tile) end) do
+      nil -> []
+      ix  -> [List.delete_at(hand, ix)]
+    end
   end
 
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, ignore_suit \\ false, _initial \\ true)
