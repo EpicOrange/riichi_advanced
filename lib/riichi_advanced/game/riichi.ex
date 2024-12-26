@@ -160,21 +160,21 @@ defmodule Riichi do
     end
   end
 
+  def remove_tile(hand, tile, ignore_suit \\ false) do
+    Enum.with_index(hand)
+    |> Enum.filter(fn {hand_tile, _ix} -> if ignore_suit do Utils.same_number(hand_tile, tile) else Utils.same_tile(hand_tile, tile) end end)
+    |> Enum.uniq_by(fn {hand_tile, _ix} -> hand_tile end)
+    |> Enum.map(fn {_hand_tile, ix} -> List.delete_at(hand, ix) end)
+  end
+
   def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, ignore_suit \\ false, _initial \\ true)
   def try_remove_all_tiles(hand, [], _tile_aliases, _ignore_suit, _initial), do: [hand]
   def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, ignore_suit, _initial) do
-    # t = System.os_time(:millisecond)
-    ret = for t <- Utils.apply_tile_aliases(tile, tile_aliases) do
-      hand
-      |> Enum.with_index()
-      |> Enum.filter(fn {hand_tile, _ix} -> if ignore_suit do Utils.same_number(hand_tile, t) else Utils.same_tile(hand_tile, t) end end)
-      |> Enum.flat_map(fn {_hand_tile, ix} -> try_remove_all_tiles(List.delete_at(hand, ix), tiles, tile_aliases, ignore_suit) end)
-    end |> Enum.concat() |> Enum.uniq()
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if initial && elapsed_time > 10 do
-    #   IO.puts("try_remove_all_tiles: #{inspect(hand)} #{inspect(tile)} #{inspect(elapsed_time)} ms")
-    # end
-    ret
+    # remove all tiles, with the first result removing non-jokers over jokers
+    [tile | (Utils.apply_tile_aliases(tile, tile_aliases) |> MapSet.delete(tile) |> MapSet.to_list())]
+    |> Enum.flat_map(&remove_tile(hand, &1, ignore_suit))
+    |> Enum.flat_map(&try_remove_all_tiles(&1, tiles, tile_aliases, ignore_suit))
+    |> Enum.uniq()
   end
 
   def remove_from_hand_calls(hand, calls, tiles, tile_aliases \\ %{}, ignore_suit \\ false) do
@@ -238,20 +238,10 @@ defmodule Riichi do
     end
   end
 
-  def remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases \\ %{}, base_suit \\ nil) do
+  def remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases \\ %{}, base_tiles \\ []) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     # t = System.os_time(:millisecond)
-    all_tiles = (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
-    |> Enum.uniq()
-    |> Utils.apply_tile_aliases(tile_aliases)
-    |> Enum.reject(& &1 == :any)
-    all_tiles = case base_suit do
-      :manzu -> Enum.reject(all_tiles, &is_pinzu?(&1) || is_souzu?(&1))
-      :pinzu -> Enum.reject(all_tiles, &is_manzu?(&1) || is_souzu?(&1))
-      :souzu -> Enum.reject(all_tiles, &is_manzu?(&1) || is_pinzu?(&1))
-      _      -> all_tiles
-    end
-    ret = all_tiles
+    ret = base_tiles
     |> Enum.map(&Task.async(fn -> _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, &1) end))
     |> Task.yield_many(timeout: :infinity)
     |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
@@ -368,11 +358,17 @@ defmodule Riichi do
               end |> Enum.concat()
             else
               tile_aliases = if (no_joker_index != nil && i > no_joker_index) do %{} else filtered_tile_aliases end
-              all_tiles = (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+              base_tiles = (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
               |> Enum.uniq()
               |> Utils.apply_tile_aliases(tile_aliases)
               |> Enum.reject(& &1 == :any)
               for base_suit <- [:manzu, :pinzu, :souzu] do
+                base_tiles = case base_suit do
+                  :manzu -> Enum.reject(base_tiles, &is_pinzu?(&1) || is_souzu?(&1))
+                  :pinzu -> Enum.reject(base_tiles, &is_manzu?(&1) || is_souzu?(&1))
+                  :souzu -> Enum.reject(base_tiles, &is_manzu?(&1) || is_pinzu?(&1))
+                  _      -> base_tiles
+                end
                 for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
                   [] -> []
                   hand_calls_groups ->
@@ -380,7 +376,7 @@ defmodule Riichi do
                       # IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
                       IO.puts("Acc (before removal):")
                       for {hand, calls, remaining_groups} <- hand_calls_groups do
-                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}")
+                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{base_suit}")
                       end
                     end
                     new_hand_calls_groups = if exhaustive do
@@ -389,7 +385,7 @@ defmodule Riichi do
                         nojoker = no_joker_index != nil && i > no_joker_index
                         tile_aliases = if nojoker do %{} else tile_aliases end
                         Task.async(fn ->
-                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_suit)
+                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tiles)
                           |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
                         end)
                       end
@@ -402,7 +398,7 @@ defmodule Riichi do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                           nojoker = no_joker_index != nil && i > no_joker_index
                           tile_aliases = if nojoker do %{} else tile_aliases end
-                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_suit)
+                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tiles)
                           |> Enum.take(1)
                           |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
                         result -> result
