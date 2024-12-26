@@ -42,12 +42,6 @@ end
 |
 .tenpai_definition |= fix_match_definition
 |
-.iishanten_definition |= fix_match_definition
-|
-.ryanshanten_definition |= fix_match_definition
-|
-.sanshanten_definition |= fix_match_definition
-|
 .tenpai_14_definition |= fix_match_definition
 |
 .win_definition |= fix_match_definition

@@ -37,5 +37,22 @@ add_call_conditions("kakan")
 add_call_conditions("ankan")
 |
 add_call_conditions("pei")
+|
+# cosmic buttons
+add_call_conditions("ton")
+|
+add_call_conditions("chon")
+|
+add_call_conditions("chon_honors")
+|
+add_call_conditions("daiminfuun")
+|
+add_call_conditions("anfuun")
+|
+add_call_conditions("kapon")
+|
+add_call_conditions("kakakan")
+|
+add_call_conditions("kafuun")
 
 # TODO saki buttons?
