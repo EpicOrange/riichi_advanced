@@ -305,7 +305,6 @@ defmodule Riichi do
                 group_tiles = groups
                 |> Enum.reject(& &1 in @group_keywords)
                 |> Enum.map(&Utils.to_tile/1)
-                |> Enum.uniq()
                 {_group_tiles, matching_hand} = for tile <- hand, reduce: {group_tiles, []} do
                   {group_tiles, matching_hand} ->
                     # certain groups can be marked nojoker
@@ -369,7 +368,8 @@ defmodule Riichi do
                     [] -> []
                     hand_calls_groups ->
                       if debug && base_tile == Enum.at(all_tiles, 0) do
-                        IO.puts("Base tile: #{inspect(base_tile)}\nHand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
+                        # IO.puts("Base tile: #{inspect(base_tile)}\nHand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
+                        IO.puts("Acc (before removal):")
                         for {hand, calls, remaining_groups} <- hand_calls_groups do
                           IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}")
                         end
