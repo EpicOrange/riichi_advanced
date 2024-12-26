@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_log false
   @debug_ai false
   @debug_buttons false
+  @debug_conditions false
   @print_smt false
   @skip_ruleset_caching false
 
@@ -19,6 +20,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_saki_card_opponent, do: @debug_saki_card_opponent
   def debug_actions, do: @debug_actions
   def debug_buttons, do: @debug_buttons
+  def debug_conditions, do: @debug_conditions
   def debug_ai, do: @debug_ai
   def debug_log, do: @debug_log
   def print_smt, do: @print_smt

@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
@@ -143,6 +144,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
+    t = System.os_time(:millisecond)
+
     negated = String.starts_with?(cond_spec, "not_")
     cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
     last_action = get_last_action(state)
@@ -525,6 +528,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
     #   IO.puts("#{context.tile}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
     # end
     # IO.puts("#{inspect(context)}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
+
+    if Debug.debug_conditions() do
+      elapsed_time = System.os_time(:millisecond) - t
+      if elapsed_time > 100 do
+        IO.puts("check_condition: #{inspect(elapsed_time)} ms to check #{inspect([cond_spec | opts])}")
+      end
+    end
+
     if negated do not result else result end
   end
 
