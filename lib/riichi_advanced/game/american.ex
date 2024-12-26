@@ -124,6 +124,7 @@ defmodule RiichiAdvanced.GameState.American do
     end)
     
     # ["debug"] ++
+    ["exhaustive"] ++ # TODO remove this, and instead make the match code never take jokers if at all possible
     use_jokers ++ nojokers
   end
   defp _translate_american_match_definitions(am_match_definitions) do
@@ -491,6 +492,10 @@ defmodule RiichiAdvanced.GameState.American do
       kept_tiles = Enum.map(Map.keys(pairing_r), fn i -> Enum.at(hand, i) end)
       fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["transparent"])
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, [], ordering, ordering_r, tile_aliases)
+      if arranged_hand == nil do
+        IO.puts("Failed to arrange #{inspect(fixed_hand)} into #{am_match_definition}")
+      end
+      arranged_hand = arranged_hand
       |> Enum.intersperse([:"3x"])
       |> Enum.concat()
       {am_match_definition, pairing_r, arranged_hand}

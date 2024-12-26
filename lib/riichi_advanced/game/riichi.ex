@@ -238,13 +238,19 @@ defmodule Riichi do
     end
   end
 
-  def remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases \\ %{}) do
+  def remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases \\ %{}, base_suit \\ nil) do
     # IO.puts("removing group #{inspect(group)} from hand #{inspect(hand)}")
     # t = System.os_time(:millisecond)
     all_tiles = (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
     |> Enum.uniq()
     |> Utils.apply_tile_aliases(tile_aliases)
     |> Enum.reject(& &1 == :any)
+    all_tiles = case base_suit do
+      :manzu -> Enum.reject(all_tiles, &is_pinzu?(&1) || is_souzu?(&1))
+      :pinzu -> Enum.reject(all_tiles, &is_manzu?(&1) || is_souzu?(&1))
+      :souzu -> Enum.reject(all_tiles, &is_manzu?(&1) || is_pinzu?(&1))
+      _      -> all_tiles
+    end
     ret = all_tiles
     |> Enum.map(&Task.async(fn -> _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, &1) end))
     |> Task.yield_many(timeout: :infinity)
@@ -366,49 +372,52 @@ defmodule Riichi do
               |> Enum.uniq()
               |> Utils.apply_tile_aliases(tile_aliases)
               |> Enum.reject(& &1 == :any)
-              for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
-                [] -> []
-                hand_calls_groups ->
-                  if debug do
-                    # IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
-                    IO.puts("Acc (before removal):")
-                    for {hand, calls, remaining_groups} <- hand_calls_groups do
-                      IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}")
+              for base_suit <- [:manzu, :pinzu, :souzu] do
+                for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
+                  [] -> []
+                  hand_calls_groups ->
+                    if debug do
+                      # IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
+                      IO.puts("Acc (before removal):")
+                      for {hand, calls, remaining_groups} <- hand_calls_groups do
+                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}")
+                      end
                     end
-                  end
-                  new_hand_calls_groups = if exhaustive do
-                    for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
-                      no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
-                      nojoker = no_joker_index != nil && i > no_joker_index
-                      tile_aliases = if nojoker do %{} else tile_aliases end
-                      Task.async(fn ->
-                        remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases)
-                        |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
-                      end)
-                    end
-                    |> Task.yield_many(timeout: :infinity)
-                    |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
-                    |> Enum.uniq()
-                  else
-                    for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords, reduce: [] do
-                      [] ->
+                    new_hand_calls_groups = if exhaustive do
+                      for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
                         no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                         nojoker = no_joker_index != nil && i > no_joker_index
                         tile_aliases = if nojoker do %{} else tile_aliases end
-                        remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases)
-                        |> Enum.take(1)
-                        |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
-                      result -> result
+                        Task.async(fn ->
+                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_suit)
+                          |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
+                        end)
+                      end
+                      |> Task.yield_many(timeout: :infinity)
+                      |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+                      |> Enum.uniq()
+                    else
+                      for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords, reduce: [] do
+                        [] ->
+                          no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
+                          nojoker = no_joker_index != nil && i > no_joker_index
+                          tile_aliases = if nojoker do %{} else tile_aliases end
+                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_suit)
+                          |> Enum.take(1)
+                          |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
+                        result -> result
+                      end
                     end
-                  end
-                  if debug do
-                    IO.puts("Acc (after removal):")
-                    for {hand, calls, remaining_groups} <- new_hand_calls_groups do
-                      IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}")
+                    if debug do
+                      IO.puts("Acc (after removal):")
+                      for {hand, calls, remaining_groups} <- new_hand_calls_groups do
+                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}")
+                      end
                     end
-                  end
-                  new_hand_calls_groups
+                    new_hand_calls_groups
+                end
               end
+              |> Enum.concat()
               |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
               |> Enum.uniq()
             end
