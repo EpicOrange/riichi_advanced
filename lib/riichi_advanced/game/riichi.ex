@@ -515,12 +515,14 @@ defmodule Riichi do
   # if called_tiles is an empty list, then we choose from our hand
   # example output: %{:"5m" => [[:"4m", :"6m"], [:"6m", :"7m"]]}
   def make_calls(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}) do
+    # t = System.os_time(:millisecond)
+
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     {calls_spec, tile_aliases, tile_mappings} = if Enum.at(calls_spec, 0) == "nojoker" do
       {Enum.drop(calls_spec, 1), %{}, %{}}
     else {calls_spec, tile_aliases, tile_mappings} end
-    for tile <- (if from_hand do hand else called_tiles end) do
+    ret = for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
         for choice <- [tile] ++ Map.get(tile_mappings, tile, []), reduce: [] do
@@ -531,6 +533,13 @@ defmodule Riichi do
         end |> Enum.map(fn tiles -> Utils.sort_tiles(tiles) end) |> Enum.uniq()
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
+
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("make_calls/can_call: #{inspect(elapsed_time)} ms")
+    # end
+    
+    ret
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 

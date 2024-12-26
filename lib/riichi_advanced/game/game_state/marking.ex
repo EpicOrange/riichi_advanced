@@ -157,7 +157,9 @@ defmodule RiichiAdvanced.GameState.Marking do
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
         "visible"           -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0
         "not_joker"         -> not Map.has_key?(state.players[marking_player].tile_mappings, tile)
-        "call_has_joker"    -> Utils.count_tiles(Riichi.call_to_tiles(tile), [:"1j"]) > 0
+        "call_has_joker"    ->
+          jokers = Map.keys(state.players[marking_player].tile_mappings)
+          Utils.count_tiles(Riichi.call_to_tiles(tile), jokers) > 0
         "not_riichi"        -> "riichi" not in state.players[marking_player].status || index >= length(state.players[marking_player].hand)
         "last_discard"      ->
           case source do

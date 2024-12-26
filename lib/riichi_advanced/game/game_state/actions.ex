@@ -170,6 +170,9 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       state = Map.put(state, :awaiting_discard, true)
 
+      # ensure playable_indices is populated for the new turn
+      state = broadcast_state_change(state, true)
+
       state
     else state end
   end
@@ -1340,9 +1343,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       # though i guess we could still do it here? no difference
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
 
-      # postprocess the new state
-      state = broadcast_state_change(state, true)
-      
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
       state

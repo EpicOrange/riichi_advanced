@@ -454,7 +454,7 @@ defmodule RiichiAdvanced.GameState.American do
               adj = Map.merge(adj_joker, adj_nojoker)
 
               # use dfs to find all augmenting paths, starting with valid edges in the previous pairing
-              {pairing, pairing_r, _missing_tiles} = acc
+              {pairing, _pairing_r, _missing_tiles} = acc
               # this actually leads to incorrect matchings (e.g. two A nodes matching with the same B node)
               # TODO fix
               # init_pairing = Enum.filter(pairing, fn {i, j} -> j in adj[i] end) |> Map.new()

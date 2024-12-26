@@ -480,7 +480,6 @@ defmodule RiichiAdvanced.GameState do
     state = Buttons.recalculate_buttons(state)
 
     notify_ai(state)
-    state = broadcast_state_change(state, true)
 
     state
   end
@@ -1006,6 +1005,7 @@ defmodule RiichiAdvanced.GameState do
           else player end
         end)
       else state end
+      # IO.inspect("postprocessing done")
       state
     else state end
     # IO.puts("broadcast_state_change called")
@@ -1227,13 +1227,13 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:run_actions, actions, context}, state) do 
     state = Actions.run_actions(state, actions, context)
-    state = broadcast_state_change(state, true)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
   def handle_cast({:run_deferred_actions, context}, state) do 
     state = Actions.run_deferred_actions(state, context)
-    state = broadcast_state_change(state, true)
+    state = broadcast_state_change(state)
     {:noreply, state}
   end
 
@@ -1392,7 +1392,12 @@ defmodule RiichiAdvanced.GameState do
           # IO.puts("Notifying #{seat} AI that it's their turn")
           state = update_player(state, seat, fn player -> %Player{ player | ai_thinking: true } end)
           state = broadcast_state_change(state)
-          send(Map.get(state, seat), {:your_turn, %{player: state.players[seat], visible_tiles: get_visible_tiles(state, seat)}})
+          params = %{
+            player: state.players[seat],
+            visible_tiles: get_visible_tiles(state, seat),
+            closest_american_hands: state.players[seat].closest_american_hands,
+          }
+          send(Map.get(state, seat), {:your_turn, params})
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), {:ai_ignore_buttons, seat}])
@@ -1529,6 +1534,7 @@ defmodule RiichiAdvanced.GameState do
     state = state
     |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
     |> Map.put(:calculate_playable_indices_pid, pid)
+    # IO.inspect("done calculating playable indices for #{state.turn}")
     {:noreply, state}
   end
 

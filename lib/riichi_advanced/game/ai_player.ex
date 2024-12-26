@@ -30,8 +30,7 @@ defmodule RiichiAdvanced.AIPlayer do
       ordering = state.player.tile_ordering
       ordering_r = state.player.tile_ordering_r
       tile_aliases = state.player.tile_aliases
-      # use ukeire (if we don't have wildcard jokers)
-      use_ukeire = map_size(state.player.tile_aliases) < 34
+      use_ukeire = Enum.empty?(tile_aliases)
       best_playables = if use_ukeire do
         playable_waits = playables
         |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
