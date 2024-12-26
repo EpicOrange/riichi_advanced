@@ -170,9 +170,6 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       state = Map.put(state, :awaiting_discard, true)
 
-      # ensure playable_indices is populated for the new turn
-      state = broadcast_state_change(state, true)
-
       state
     else state end
   end
@@ -189,7 +186,10 @@ defmodule RiichiAdvanced.GameState.Actions do
           if state.reversed_turn_order do Utils.prev_turn(new_turn) else Utils.next_turn(new_turn) end
         end
       end
-      change_turn(state, new_turn)
+      state = change_turn(state, new_turn)
+      # ensure playable_indices is populated for the new turn
+      state = broadcast_state_change(state, true)
+      state
     else
       # reschedule this turn change
       schedule_actions(state, state.turn, [["advance_turn"]], %{seat: state.turn})

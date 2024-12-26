@@ -481,6 +481,9 @@ defmodule RiichiAdvanced.GameState do
 
     notify_ai(state)
 
+    # ensure playable_indices is populated after the after_start actions
+    state = broadcast_state_change(state, true)
+
     state
   end
 
