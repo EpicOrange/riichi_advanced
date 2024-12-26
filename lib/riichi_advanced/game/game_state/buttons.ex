@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
@@ -81,7 +82,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def recalculate_buttons(state, interrupt_level \\ 100) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
-      # t = System.os_time(:millisecond)
+      t = System.os_time(:millisecond)
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
       buttons_before = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -95,10 +96,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
           else
             button_choices = state.rules["buttons"]
             |> Enum.filter(fn {name, button} ->
-                 calls_spec = Map.get(button, "call", [])
-                 upgrades = Map.get(button, "upgrades", [])
-                 Map.get(button, "interrupt_level", 100) >= interrupt_level && Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
-               end)
+              calls_spec = Map.get(button, "call", [])
+              upgrades = Map.get(button, "upgrades", [])
+
+              if Debug.debug_buttons() do
+                IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
+              end
+              Map.get(button, "interrupt_level", 100) >= interrupt_level && Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+            end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
                 {state, spec} = make_button_choices(state, seat, name, button)
@@ -118,10 +123,12 @@ defmodule RiichiAdvanced.GameState.Buttons do
           end
       end
 
-      # elapsed_time = System.os_time(:millisecond) - t
-      # if elapsed_time > 10 do
-      #   IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
-      # end
+      if Debug.debug_buttons() do
+        elapsed_time = System.os_time(:millisecond) - t
+        if elapsed_time > 10 do
+          IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
+        end
+      end
       
       new_button_choices = Map.new(new_button_choices)
       
@@ -153,6 +160,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else state.rules["buttons"][button_name]["actions"] end
       state = Actions.submit_actions(state, seat, button_name, actions)
+      state = broadcast_state_change(state) # show possible call buttons
       state
     else
       IO.puts("#{seat} tried to press nonexistent button #{button_name}")
@@ -167,6 +175,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
       actions = state.rules["buttons"][button_name]["actions"]
       state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
+      state = broadcast_state_change(state)
       state
     else
       IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")
