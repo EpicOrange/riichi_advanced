@@ -123,9 +123,9 @@ defmodule RiichiAdvanced.GameState.American do
       end
     end)
     
-    # note: rather than add "exhaustive" (which overloads the match code), change the match code to be more efficient
+    # note: do NOT add "exhaustive" (game will refuse to start)
 
-    ["debug"] ++
+    # ["debug"] ++
     use_jokers ++ nojokers
   end
   defp _translate_american_match_definitions(am_match_definitions) do
