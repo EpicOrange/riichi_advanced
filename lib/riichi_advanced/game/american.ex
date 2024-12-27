@@ -330,11 +330,12 @@ defmodule RiichiAdvanced.GameState.American do
 
   def get_viable_am_match_definitions(state, seat, am_match_definitions) do
     # replace winner's hand with :any and check which win definitions match, return those
-    hand = List.duplicate(:any, length(state.players[seat].hand) + 1)
-    calls = Utils.replace_jokers_in_calls(state.players[seat].calls, [:"1j"])
+    # TODO take into account concealed hands
+    hand = List.duplicate(:any, length(state.players[seat].hand) + length(state.players[seat].draw))
+    call_tiles = Utils.replace_jokers_in_calls(state.players[seat].calls, [:"1j"]) |> Enum.flat_map(&Riichi.call_to_tiles/1)
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
-    Enum.filter(am_match_definitions, &Riichi.match_hand(hand, calls, translate_match_definitions(state, [&1]), ordering, ordering_r, %{}))
+    Enum.filter(am_match_definitions, &Riichi.match_hand(hand ++ call_tiles, [], translate_match_definitions(state, [&1]), ordering, ordering_r))
   end
 
   def check_dead_hand(state, seat, am_match_definitions) do

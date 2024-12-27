@@ -160,16 +160,27 @@ defmodule Riichi do
     end
   end
 
-  def remove_tile(hand, tile, ignore_suit \\ false) do
-    case Enum.find_index(hand, &if ignore_suit do Utils.same_number(&1, tile) else Utils.same_tile(&1, tile) end) do
-      nil -> []
-      ix  -> [List.delete_at(hand, ix)]
+  def remove_tile(hand, tile, ignore_suit \\ false, acc \\ [])
+  def remove_tile([], _tile, _ignore_suit, _acc), do: []
+  def remove_tile([t | hand], tile, ignore_suit, acc) do
+    do_remove = if ignore_suit do Utils.same_number(t, tile) else Utils.same_tile(t, tile) end
+    if do_remove do
+      ret = [Enum.reduce(acc, hand, &[&1 | &2])]
+      # try not to remove :any if possible (important for american hands)
+      if t == :any do
+        case remove_tile(hand, tile, ignore_suit, [t | acc]) do
+          []  -> ret
+          ret -> ret
+        end
+      else ret end
+    else
+      remove_tile(hand, tile, ignore_suit, [t | acc])
     end
   end
 
   defp _try_remove_all_tiles(hand, [], _tile_aliases, _ignore_suit), do: [hand]
   defp _try_remove_all_tiles(hand, [tile | tiles], tile_aliases, ignore_suit) do
-    # remove all tiles, with the first result removing non-jokers over jokers
+    # remove all tiles, with the first result removing non-jokers over jokers or :any
     [tile | (Utils.apply_tile_aliases(tile, tile_aliases) |> MapSet.delete(tile) |> MapSet.to_list())]
     |> Enum.flat_map(&remove_tile(hand, &1, ignore_suit))
     |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_aliases, ignore_suit))
@@ -324,7 +335,8 @@ defmodule Riichi do
                 # end
                 matching_calls = [] # TODO fixme
                 if debug do
-                  IO.puts("Using optimized routine / #{inspect(hand)} / #{inspect(calls)} / #{inspect(matching_hand, charlists: :as_lists)} / #{inspect(matching_calls, charlists: :as_lists)}")
+                  IO.puts("Using optimized routine / #{inspect(hand)} / #{inspect(calls)} / #{inspect(groups, charlists: :as_lists)}")
+                  # IO.puts("#{inspect(matching_hand, charlists: :as_lists)} / #{inspect(matching_calls, charlists: :as_lists)}")
                 end
                 if length(matching_hand) + length(matching_calls) >= num do
                   if exhaustive do

@@ -1001,15 +1001,14 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state, postprocess \\ false) do
-    state = if postprocess do
+    if postprocess do
       # async calculate playable indices for current turn player
       GenServer.cast(self(), :calculate_playable_indices)
       # async populate closest_american_hands for all players
       if state.ruleset == "american" do
         GenServer.cast(self(), :calculate_closest_american_hands)
       end
-      state
-    else state end
+    end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
     # reset anim
@@ -1564,7 +1563,6 @@ defmodule RiichiAdvanced.GameState do
       # TODO maybe fix this by pausing the game at the start of this particular async calculation, and unpausing after
     end)
     state = state
-    |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
     |> Map.put(:calculate_closest_american_hands_pid, pid)
     # IO.puts("done calculating closest american hands")
     {:noreply, state}
