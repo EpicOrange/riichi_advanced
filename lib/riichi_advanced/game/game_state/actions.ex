@@ -170,6 +170,9 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       state = Map.put(state, :awaiting_discard, true)
 
+      # ensure playable_indices is populated for the new turn
+      state = broadcast_state_change(state, true)
+      
       state
     else state end
   end
@@ -187,8 +190,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       end
       state = change_turn(state, new_turn)
-      # ensure playable_indices is populated for the new turn
-      state = broadcast_state_change(state, true)
       state
     else
       # reschedule this turn change

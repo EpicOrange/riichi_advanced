@@ -372,7 +372,7 @@ defmodule RiichiAdvanced.GameState.American do
     Enum.empty?(arrangements)
   end
 
-  def instantiate_match_definition(match_definition, hand, base_tile, ordering, ordering_r) do
+  def instantiate_match_definition(match_definition, hand, calls, base_tile, ordering, ordering_r) do
     unique_ix = Enum.find_index(match_definition, & &1 == "unique")
     nojoker_ix = Enum.find_index(match_definition, & &1 == "nojoker")
     {joker, nojoker} = for {match_definition_elem, i} <- Enum.with_index(match_definition) do
@@ -411,9 +411,19 @@ defmodule RiichiAdvanced.GameState.American do
       end
     end
     |> Enum.unzip()
-    joker = joker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-    nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-    if nil in joker || nil in nojoker do nil else {joker, nojoker} end
+
+    # the instantiation must exactly include all of our existing calls, so check for this
+    all_joker_groups = Enum.flat_map(joker, fn item -> Enum.group_by(item, & &1) |> Map.values() end)
+    calls_match = calls
+    |> Utils.replace_jokers_in_calls([:"1j"])
+    |> Enum.map(&Riichi.call_to_tiles/1)
+    |> Utils.strip_attrs()
+    |> Enum.all?(& &1 in all_joker_groups)
+    if calls_match do
+      joker = joker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
+      nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
+      if nil in joker || nil in nojoker || length(joker) + length(nojoker) != 14 do nil else {joker, nojoker} end
+    else nil end
   end
 
   def compute_closest_american_hands(state, seat, am_match_definitions, num) do
@@ -425,10 +435,9 @@ defmodule RiichiAdvanced.GameState.American do
     tile_aliases = state.players[seat].tile_aliases
     
     hand = hand ++ draw ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
-    all_tiles = hand
-    |> Enum.uniq()
-    |> Utils.apply_tile_aliases(tile_aliases)
-    |> Enum.reject(& &1 == :any)
+    all_tiles = Riichi.collect_base_tiles(hand, [], tile_aliases)
+    |> Enum.flat_map(&[Riichi.offset_tile(&1, 10, ordering, ordering_r), Riichi.offset_tile(&1, 20, ordering, ordering_r)])
+    |> Enum.reject(&is_nil/1)
 
     # t = System.os_time(:millisecond)
 
@@ -438,11 +447,12 @@ defmodule RiichiAdvanced.GameState.American do
         # pairing_r = index map from our hand to am_match_definition
         # missing_tiles = all tiles in am_match_definition that aren't in our hand
         {_edge_cache, {_pairing, pairing_r, missing_tiles}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- all_tiles, reduce: {%{}, {%{}, %{}, []}} do
-          {edge_cache, acc} -> case instantiate_match_definition(match_definition, hand, base_tile, ordering, ordering_r) do
+          {edge_cache, acc} -> case instantiate_match_definition(match_definition, hand, calls, base_tile, ordering, ordering_r) do
             nil -> {edge_cache, acc}
             {matching_hand_joker, matching_hand_nojoker} ->
               # model the problem as a maximum matching problem on bipartite graph (indices of hand and indices of matching_hand)
-              # an edge exists if corresponding tiles are the same (Util.same_tile)
+              # an edge exists if corresponding tiles are the same (according to Utils.same_tile)
+
               # first populate edge cache with invocations of same_tile
               edge_cache = for tile <- Enum.uniq(matching_hand_joker), tile2 <- Enum.uniq(hand), not Map.has_key?(edge_cache, {tile2, tile, true}), reduce: edge_cache do
                 edge_cache -> Map.put(edge_cache, {tile2, tile, true}, Utils.same_tile(tile2, tile, tile_aliases))
@@ -456,15 +466,9 @@ defmodule RiichiAdvanced.GameState.American do
               adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {length(matching_hand_joker) + i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, false}) do j end} end)
               adj = Map.merge(adj_joker, adj_nojoker)
 
-              # use dfs to find all augmenting paths, starting with valid edges in the previous pairing
+              # use dfs to find all augmenting paths
               {pairing, _pairing_r, _missing_tiles} = acc
-              # this actually leads to incorrect matchings (e.g. two A nodes matching with the same B node)
-              # TODO fix
-              # init_pairing = Enum.filter(pairing, fn {i, j} -> j in adj[i] end) |> Map.new()
-              # init_pairing_r = Enum.filter(pairing_r, fn {i, j} -> i in adj[j] end) |> Map.new()
-              init_pairing = %{}
-              init_pairing_r = %{}
-              {new_pairing, new_pairing_r} = for i <- Map.keys(adj), reduce: {init_pairing, init_pairing_r} do
+              {new_pairing, new_pairing_r} = for i <- Map.keys(adj), reduce: {%{}, %{}} do
                 {pairing, pairing_r} -> case compute_closest_american_hands_dfs(i, adj, pairing, pairing_r, MapSet.new()) do
                   {true, pairing, pairing_r, _} -> {pairing, pairing_r}
                   {false, _, _, _}              -> {pairing, pairing_r}
@@ -495,13 +499,16 @@ defmodule RiichiAdvanced.GameState.American do
       fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["transparent"])
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, [], ordering, ordering_r, tile_aliases)
       if arranged_hand == nil do
-        IO.puts("Failed to arrange #{inspect(fixed_hand)} into #{am_match_definition}")
+        IO.puts("Failed to arrange #{inspect(hand)} => #{inspect(fixed_hand)} into #{am_match_definition}")
+        nil
+      else
+        arranged_hand = arranged_hand
+        |> Enum.intersperse([:"3x"])
+        |> Enum.concat()
+        {am_match_definition, pairing_r, arranged_hand}
       end
-      arranged_hand = arranged_hand
-      |> Enum.intersperse([:"3x"])
-      |> Enum.concat()
-      {am_match_definition, pairing_r, arranged_hand}
     end)
+    |> Enum.reject(&is_nil/1)
 
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
