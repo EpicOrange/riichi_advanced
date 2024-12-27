@@ -357,10 +357,9 @@ defmodule Riichi do
               |> Enum.concat()
             else
               tile_aliases = if (no_joker_index != nil && i > no_joker_index) do %{} else filtered_tile_aliases end
-              base_tiles = (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
-              |> Enum.uniq()
-              |> Utils.apply_tile_aliases(tile_aliases)
-              |> Enum.reject(& &1 == :any)
+              # unique makes it so all groups must be offset by the same tile
+              # (no such restriction for non-unique groups
+              base_tiles = collect_base_tiles(hand, calls, tile_aliases)
               for base_tile <- base_tiles do
                 for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
                   [] -> []
@@ -369,7 +368,7 @@ defmodule Riichi do
                       # IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
                       IO.puts("Acc (before removal):")
                       for {hand, calls, remaining_groups} <- hand_calls_groups do
-                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{inspect(base_tile)}")
+                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}")
                       end
                     end
                     new_hand_calls_groups = if exhaustive do
@@ -378,7 +377,11 @@ defmodule Riichi do
                         nojoker = no_joker_index != nil && i > no_joker_index
                         tile_aliases = if nojoker do %{} else tile_aliases end
                         Task.async(fn ->
-                          _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
+                          if unique do
+                            _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
+                          else
+                            remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tiles)
+                          end
                           |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
                         end)
                       end
@@ -391,7 +394,11 @@ defmodule Riichi do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                           nojoker = no_joker_index != nil && i > no_joker_index
                           tile_aliases = if nojoker do %{} else tile_aliases end
-                          _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
+                          if unique do
+                            _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
+                          else
+                            remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tiles)
+                          end
                           |> Enum.take(1)
                           |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
                         result -> result
@@ -634,6 +641,13 @@ defmodule Riichi do
     players[seat].discards ++ riichi_safe |> Utils.strip_attrs() |> Enum.uniq()
   end
 
+  def collect_base_tiles(hand, calls, tile_aliases) do
+    (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    |> Enum.uniq()
+    |> Utils.apply_tile_aliases(tile_aliases)
+    |> Enum.reject(& &1 == :any)
+  end
+
   def tile_matches(tile_specs, context) do
     Enum.any?(tile_specs, &case &1 do
       "any" -> true
@@ -661,9 +675,11 @@ defmodule Riichi do
       "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
       "dora" -> Utils.count_tiles([context.tile], context.doras) >= 1
       "kuikae" ->
+        player = context.players[context.seat]
+        base_tiles = collect_base_tiles(player.hand, player.calls, player.tile_aliases)
         potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["hand"])
-        triplet = remove_group(potential_set, [], [0,0,0], false, context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
-        sequence = remove_group(potential_set, [], [0,1,2], false, context.players[context.seat].tile_ordering, context.players[context.seat].tile_ordering_r, context.players[context.seat].tile_aliases)
+        triplet = remove_group(potential_set, [], [0,0,0], false, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, base_tiles)
+        sequence = remove_group(potential_set, [], [0,1,2], false, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, base_tiles)
         not Enum.empty?(triplet ++ sequence)
       _   ->
         # "1m", "2z" are also specs
