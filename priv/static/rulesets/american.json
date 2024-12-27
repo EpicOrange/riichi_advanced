@@ -492,7 +492,7 @@
     },
     "mahjong_draw": {
       "display_name": "Mah Jongg",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "match", "opts": [["hand", "call_tiles", "draw"], ["win"]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", "is_tenpai_american", {"name": "match", "opts": [["hand", "call_tiles", "draw"], ["win"]]}],
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
@@ -500,7 +500,7 @@
     },
     "mahjong_discard": {
       "display_name": "Mah Jongg",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", {"name": "not_match", "opts": [["last_discard"], [[[["1j"], 1]]]]}, {"name": "match", "opts": [["hand", "call_tiles", "last_discard"], ["win"]]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", "is_tenpai_american", {"name": "not_match", "opts": [["last_discard"], [[[["1j"], 1]]]]}, {"name": "match", "opts": [["hand", "call_tiles", "last_discard"], ["win"]]}],
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],

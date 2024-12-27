@@ -107,7 +107,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
-    joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    score_rules = state.rules["score_calculation"]
+    use_smt = Map.get(score_rules, "use_smt", true)
+    joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
     end

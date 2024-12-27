@@ -46,7 +46,6 @@ defmodule Player do
     arranged_hand: [],
     arranged_calls: [],
     playable_indices: [],
-    last_postprocess_state: nil,
     closest_american_hands: [],
     ai_thinking: false,
   ]
@@ -76,6 +75,7 @@ defmodule Game do
     north: nil,
     messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     calculate_playable_indices_pid: nil,
+    calculate_closest_american_hands_pid: nil,
     get_best_minefield_hand_pid: nil,
     # remember to edit :put_state if you change anything above
 
@@ -181,7 +181,7 @@ defmodule RiichiAdvanced.GameState do
     [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
     [{smt_solver, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("smt_solver", state.ruleset, state.session_id))
 
-    # initilize all debouncers
+    # initialize all debouncers
     {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :play_tile_debouncer_east, :reset_play_tile_debounce, :east)
     {:ok, play_tile_debouncer_south} = debounce_worker(debouncers, 100, :play_tile_debouncer_south, :reset_play_tile_debounce, :south)
     {:ok, play_tile_debouncer_west} = debounce_worker(debouncers, 100, :play_tile_debouncer_west, :reset_play_tile_debounce, :west)
@@ -278,11 +278,6 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :players, Map.new(state.available_seats, fn seat -> {seat, %Player{}} end))
     state = Log.init_log(state)
 
-    # initialize interruptible actions
-    interruptible_actions = Map.get(rules, "interrupt_levels", %{})
-    |> Map.merge(Map.new(Map.get(rules, "interruptible_actions", []), fn action -> {action, 100} end))
-    state = Map.put(state, :interruptible_actions, interruptible_actions)
-
     initial_score = Map.get(rules, "initial_score", 0)
 
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
@@ -318,6 +313,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def initialize_new_round(state, kyoku_log \\ nil) do
+    # t = System.os_time(:millisecond)
+
     rules = state.rules
     {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
@@ -477,12 +474,21 @@ defmodule RiichiAdvanced.GameState do
       Actions.run_actions(state, state.rules["after_start"]["actions"], %{seat: state.turn})
     else state end
 
+    # initialize interruptible actions
+    # we only do this after running change_turn and after_start, so that their actions can't be interrupted
+    interruptible_actions = Map.get(rules, "interrupt_levels", %{})
+    |> Map.merge(Map.new(Map.get(rules, "interruptible_actions", []), fn action -> {action, 100} end))
+    state = Map.put(state, :interruptible_actions, interruptible_actions)
+
+    # recalculate buttons at the start of the game
     state = Buttons.recalculate_buttons(state)
 
     notify_ai(state)
 
     # ensure playable_indices is populated after the after_start actions
     state = broadcast_state_change(state, true)
+
+    # IO.puts("initialize_new_round: #{inspect(System.os_time(:millisecond) - t)} ms")
 
     state
   end
@@ -996,19 +1002,12 @@ defmodule RiichiAdvanced.GameState do
 
   def broadcast_state_change(state, postprocess \\ false) do
     state = if postprocess do
-      # IO.inspect("postprocessing")
       # async calculate playable indices for current turn player
       GenServer.cast(self(), :calculate_playable_indices)
-      # populate closest_american_hands for all players
-      state = if state.ruleset == "american" do
-        update_all_players(state, fn seat, player ->
-          postprocess_state = {player.hand, player.draw, player.calls}
-          if postprocess_state != player.last_postprocess_state do
-            %Player{ player | last_postprocess_state: postprocess_state, closest_american_hands: American.compute_closest_american_hands(state, seat, Map.get(state.rules, "win_definition", []), 5) }
-          else player end
-        end)
-      else state end
-      # IO.inspect("postprocessing done")
+      # async populate closest_american_hands for all players
+      if state.ruleset == "american" do
+        GenServer.cast(self(), :calculate_closest_american_hands)
+      end
       state
     else state end
     # IO.puts("broadcast_state_change called")
@@ -1236,6 +1235,13 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:run_deferred_actions, context}, state) do 
     state = Actions.run_deferred_actions(state, context)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:recalculate_buttons, state) do 
+    state = Buttons.recalculate_buttons(state)
+    notify_ai(state)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -1537,7 +1543,30 @@ defmodule RiichiAdvanced.GameState do
     state = state
     |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
     |> Map.put(:calculate_playable_indices_pid, pid)
-    # IO.inspect("done calculating playable indices for #{state.turn}")
+    # IO.puts("done calculating playable indices for #{state.turn}")
+    {:noreply, state}
+  end
+
+  def handle_cast(:calculate_closest_american_hands, state) do
+    if state.calculate_closest_american_hands_pid do
+      Process.exit(state.calculate_closest_american_hands_pid, :kill)
+    end
+    self = self()
+    {:ok, pid} = Task.start(fn ->
+      win_definition = Map.get(state.rules, "win_definition", [])
+      for seat <- state.available_seats do
+        closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
+        GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
+      end
+      # some conditions (namely "is_tenpai_american") might have changed based on closest american hands, so recalculate buttons
+      GenServer.cast(self, :recalculate_buttons)
+      # note that this races the AI: the AI might act before closest_american_hands is calculated, so they may miss buttons that should be there
+      # TODO maybe fix this by pausing the game at the start of this particular async calculation, and unpausing after
+    end)
+    state = state
+    |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
+    |> Map.put(:calculate_closest_american_hands_pid, pid)
+    # IO.puts("done calculating closest american hands")
     {:noreply, state}
   end
 
@@ -1545,6 +1574,14 @@ defmodule RiichiAdvanced.GameState do
     state = state
     |> update_player(seat, &%Player{ &1 | playable_indices: playable_indices})
     |> Map.put(:calculate_playable_indices_pid, nil)
+    state = broadcast_state_change(state, false)
+    {:noreply, state}
+  end
+
+  def handle_cast({:set_closest_american_hands, seat, closest_american_hands}, state) do
+    state = state
+    |> update_player(seat, &%Player{ &1 | closest_american_hands: closest_american_hands})
+    |> Map.put(:calculate_closest_american_hands_pid, nil)
     state = broadcast_state_change(state, false)
     {:noreply, state}
   end
