@@ -167,28 +167,26 @@ defmodule Riichi do
     end
   end
 
-  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, ignore_suit \\ false, _initial \\ true)
-  def try_remove_all_tiles(hand, [], _tile_aliases, _ignore_suit, _initial), do: [hand]
-  def try_remove_all_tiles(hand, [tile | tiles], tile_aliases, ignore_suit, _initial) do
+  defp _try_remove_all_tiles(hand, [], _tile_aliases, _ignore_suit), do: [hand]
+  defp _try_remove_all_tiles(hand, [tile | tiles], tile_aliases, ignore_suit) do
     # remove all tiles, with the first result removing non-jokers over jokers
     [tile | (Utils.apply_tile_aliases(tile, tile_aliases) |> MapSet.delete(tile) |> MapSet.to_list())]
     |> Enum.flat_map(&remove_tile(hand, &1, ignore_suit))
-    |> Enum.flat_map(&try_remove_all_tiles(&1, tiles, tile_aliases, ignore_suit))
+    |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_aliases, ignore_suit))
     |> Enum.uniq()
   end
 
-  def remove_from_hand_calls(hand, calls, tiles, tile_aliases \\ %{}, ignore_suit \\ false) do
-    # from hand
-    from_hand = try_remove_all_tiles(hand, tiles, tile_aliases, ignore_suit) |> Enum.map(fn hand -> {hand, calls} end)
+  def try_remove_all_tiles(hand, tiles, tile_aliases \\ %{}, ignore_suit \\ false) do
+    if length(hand) >= length(tiles) do _try_remove_all_tiles(hand, tiles, tile_aliases, ignore_suit) else [] end
+  end
 
-    # from calls
-    matching_indices = calls |> Enum.map(&call_to_tiles/1) |> Enum.with_index() |> Enum.flat_map(fn {call, i} ->
-      case try_remove_all_tiles(call, tiles, tile_aliases, ignore_suit) do
-        [] -> []
-        _  -> [i]
-      end
-    end)
-    from_calls = Enum.map(matching_indices, fn i -> {hand, List.delete_at(calls, i)} end)
+  def remove_from_hand_calls(hand, calls, tiles, tile_aliases \\ %{}, ignore_suit \\ false) do
+    from_hand = try_remove_all_tiles(hand, tiles, tile_aliases, ignore_suit) |> Enum.map(fn hand -> {hand, calls} end)
+    from_calls = calls
+    |> Enum.map(&call_to_tiles/1)
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {call, i} -> if Enum.empty?(try_remove_all_tiles(call, tiles, tile_aliases, ignore_suit)) do [] else [i] end end)
+    |> Enum.map(&{hand, List.delete_at(calls, &1)})
     from_hand ++ from_calls |> Enum.uniq()
   end
 
@@ -355,20 +353,15 @@ defmodule Riichi do
                     [{hand, calls}]
                   end
                 else [] end
-              end |> Enum.concat()
+              end
+              |> Enum.concat()
             else
               tile_aliases = if (no_joker_index != nil && i > no_joker_index) do %{} else filtered_tile_aliases end
               base_tiles = (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
               |> Enum.uniq()
               |> Utils.apply_tile_aliases(tile_aliases)
               |> Enum.reject(& &1 == :any)
-              for base_suit <- [:manzu, :pinzu, :souzu] do
-                base_tiles = case base_suit do
-                  :manzu -> Enum.reject(base_tiles, &is_pinzu?(&1) || is_souzu?(&1))
-                  :pinzu -> Enum.reject(base_tiles, &is_manzu?(&1) || is_souzu?(&1))
-                  :souzu -> Enum.reject(base_tiles, &is_manzu?(&1) || is_pinzu?(&1))
-                  _      -> base_tiles
-                end
+              for base_tile <- base_tiles do
                 for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
                   [] -> []
                   hand_calls_groups ->
@@ -376,7 +369,7 @@ defmodule Riichi do
                       # IO.puts("Hand: #{inspect(hand)}\nCalls: #{inspect(calls)}\nAcc (before removal):")
                       IO.puts("Acc (before removal):")
                       for {hand, calls, remaining_groups} <- hand_calls_groups do
-                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{base_suit}")
+                        IO.puts("- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{inspect(base_tile)}")
                       end
                     end
                     new_hand_calls_groups = if exhaustive do
@@ -385,7 +378,7 @@ defmodule Riichi do
                         nojoker = no_joker_index != nil && i > no_joker_index
                         tile_aliases = if nojoker do %{} else tile_aliases end
                         Task.async(fn ->
-                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tiles)
+                          _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
                           |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
                         end)
                       end
@@ -398,7 +391,7 @@ defmodule Riichi do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                           nojoker = no_joker_index != nil && i > no_joker_index
                           tile_aliases = if nojoker do %{} else tile_aliases end
-                          remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tiles)
+                          _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
                           |> Enum.take(1)
                           |> Enum.map(fn {hand, calls} -> {hand, calls, if unique do List.delete_at(remaining_groups, i) else remaining_groups end} end)
                         result -> result
@@ -415,8 +408,8 @@ defmodule Riichi do
               end
               |> Enum.concat()
               |> Enum.map(fn {hand, calls, _} -> {hand, calls} end)
-              |> Enum.uniq()
             end
+            |> Enum.uniq()
             cond do
               num == 0 -> # forward lookahead
                 if Enum.empty?(new_hand_calls) do

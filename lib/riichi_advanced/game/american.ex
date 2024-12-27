@@ -223,7 +223,7 @@ defmodule RiichiAdvanced.GameState.American do
               :c -> [[[Enum.map(group, &translate_letter_to_tile_spec(&1, c, base_tile, ordering, ordering_r))], 1]]
             end
             [[groups, _]] = match_definition
-            invalid_match_definition = Enum.any?(groups, fn group -> group == nil || is_list(group) && nil in group end)
+            invalid_match_definition = Enum.any?(groups, fn group -> group == nil || (is_list(group) && nil in group) end)
             if not invalid_match_definition do
               # turn groups that look like [[["9m", "9m", "9m", "9m", "9m"]], 1] into [["9m"], 5]
               match_definition = for match_definition_elem <- match_definition do
@@ -248,6 +248,7 @@ defmodule RiichiAdvanced.GameState.American do
                 # remove the given match definition from hand to get a remaining_hand
                 # first try the fast and easy way of using no jokers
                 remaining_hands_nojoker = Riichi.remove_match_definition(hand, [], match_definition, ordering, ordering_r)
+                # IO.inspect({hand, match_definition, remaining_hands_nojoker})
                 remaining_hands = if Enum.empty?(remaining_hands_nojoker) && orig_num >= 3 do
                   # couldn't remove this group without using jokers, so we need to remove jokers
                   # note that we can only remove jokers if the group is 3+ tiles
@@ -430,7 +431,6 @@ defmodule RiichiAdvanced.GameState.American do
 
     # t = System.os_time(:millisecond)
 
-    # TODO parallelize the outer loop here
     ret = for am_match_definition <- am_match_definitions do
       Task.async(fn ->
         # pairing = index map from am_match_definition to our hand
