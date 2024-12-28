@@ -271,6 +271,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             false
         end
       "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
+      "aside_tile_count"         -> length(cxt_player.aside) in opts
       "hand_dora_count"       ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
