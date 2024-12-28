@@ -88,11 +88,11 @@ defmodule RiichiAdvanced.GameState.Buttons do
       buttons_before = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
       # IO.puts("Buttons before:")
       # IO.inspect(buttons_before)
-      {state, new_button_choices} = for {seat, _player} <- state.players, reduce: {state, []} do
+      {state, new_button_choices} = for {seat, player} <- state.players, reduce: {state, []} do
         {state, new_button_choices} ->
           if Actions.performing_intermediate_action?(state, seat) do
-            # don't regenerate buttons if we're performing an intermediate action
-            {state, [{seat, %{}} | new_button_choices]}
+            # don't regenerate buttons if the player already made a choice that hasn't been adjudicated yet
+            {state, new_button_choices}
           else
             button_choices = state.rules["buttons"]
             |> Enum.filter(fn {name, button} ->
@@ -135,7 +135,11 @@ defmodule RiichiAdvanced.GameState.Buttons do
       # IO.puts("Buttons after:")
       # IO.inspect(buttons)
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
-      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
+      state = update_all_players(state, fn seat, player ->
+        if Map.has_key?(buttons, seat) do
+          %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] }
+        else player end
+      end)
 
       # play button notify sound if buttons changed
       if not Enum.empty?(buttons) && buttons != buttons_before do

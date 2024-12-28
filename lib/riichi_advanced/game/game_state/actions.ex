@@ -1270,13 +1270,13 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp adjudicate_actions(state) do
     if state.game_active do
       lock = Mutex.await(state.mutex, __MODULE__)
+
       if Debug.debug_actions() do
-        IO.puts("\nAdjudicating actions!")
+        IO.puts("\nAdjudicating actions! Choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.choice} end))}")
+        # IO.puts("Button choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.button_choices} end))}")
       end
-      # clear ai thinking
-      state = update_all_players(state, fn _seat, player -> %Player{ player | ai_thinking: false } end)
-      # clear last discard
-      state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+      # clear ai thinking and last discard
+      state = update_all_players(state, fn _seat, player -> %Player{ player | ai_thinking: false, last_discard: nil } end)
       # trigger all non-nil choices
       state = for {seat, player} <- state.players, reduce: state do
         state ->
@@ -1334,9 +1334,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # done with all choices
       state = if not performing_intermediate_action?(state) do
-        state = if Buttons.no_buttons_remaining?(state) do
-          Buttons.recalculate_buttons(state, 0)
-        else state end
+        # state = if Buttons.no_buttons_remaining?(state) do
+        #   Buttons.recalculate_buttons(state, 0)
+        # else state end
         notify_ai(state)
         state
       else state end
