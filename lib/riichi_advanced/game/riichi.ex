@@ -192,13 +192,17 @@ defmodule Riichi do
   end
 
   def remove_from_hand_calls(hand, calls, tiles, tile_aliases \\ %{}, ignore_suit \\ false) do
-    from_hand = try_remove_all_tiles(hand, tiles, tile_aliases, ignore_suit) |> Enum.map(fn hand -> {hand, calls} end)
-    from_calls = calls
-    |> Enum.map(&call_to_tiles/1)
-    |> Enum.with_index()
-    |> Enum.flat_map(fn {call, i} -> if Enum.empty?(try_remove_all_tiles(call, tiles, tile_aliases, ignore_suit)) do [] else [i] end end)
-    |> Enum.map(&{hand, List.delete_at(calls, &1)})
-    from_hand ++ from_calls |> Enum.uniq()
+    if Enum.empty?(tiles) do
+      [{hand, calls}]
+    else
+      from_hand = try_remove_all_tiles(hand, tiles, tile_aliases, ignore_suit) |> Enum.map(fn hand -> {hand, calls} end)
+      from_calls = calls
+      |> Enum.map(&call_to_tiles/1)
+      |> Enum.with_index()
+      |> Enum.flat_map(fn {call, i} -> if Enum.empty?(try_remove_all_tiles(call, tiles, tile_aliases, ignore_suit)) do [] else [i] end end)
+      |> Enum.map(&{hand, List.delete_at(calls, &1)})
+      from_hand ++ from_calls |> Enum.uniq()
+    end
   end
 
   def try_remove_call(hand, calls, call_name) do
@@ -215,7 +219,7 @@ defmodule Riichi do
     |> Enum.split_with(&is_list/1)
     if Enum.empty?(subgroups) do
       # treat the whole group as its own subgroup
-      [tiles]
+      if Enum.empty?(tiles) do [] else [tiles] end
     else
       # treat each tile as an individual subgroup
       subgroups ++ Enum.map(tiles, &[&1])
@@ -238,8 +242,8 @@ defmodule Riichi do
           hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, tile_aliases, ignore_suit) end)
         end
         hand_calls
-      Utils.is_tile(group) -> remove_from_hand_calls(hand, calls, [Utils.to_tile(group)], tile_aliases, ignore_suit)
       is_offset(group) -> remove_from_hand_calls(hand, calls, [offset_tile(base_tile, group, ordering, ordering_r)], tile_aliases, ignore_suit)
+      Utils.is_tile(group) -> remove_from_hand_calls(hand, calls, [Utils.to_tile(group)], tile_aliases, ignore_suit)
       is_binary(group) -> try_remove_call(hand, calls, group)
       true ->
         IO.puts("Unhandled group #{inspect(group)}")

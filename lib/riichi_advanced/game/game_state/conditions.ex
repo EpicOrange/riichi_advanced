@@ -534,7 +534,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     if Debug.debug_conditions() do
       elapsed_time = System.os_time(:millisecond) - t
       if elapsed_time > 100 do
-        IO.puts("check_condition: #{inspect(elapsed_time)} ms to check #{inspect([cond_spec | opts])}")
+        IO.puts("check_condition: #{inspect(elapsed_time)} ms to check #{inspect([cond_spec | opts])} with context #{inspect(context)}")
       end
     end
 
