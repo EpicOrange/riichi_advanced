@@ -227,6 +227,17 @@ defmodule Utils do
     end |> Enum.sum()
   end
   
+  def match_tiles(hand, tiles, tile_aliases \\ %{}, unused \\ [], matches \\ [])
+  def match_tiles([], tiles, _tile_aliases, unused, matches), do: {Enum.reverse(unused), tiles, matches}
+  def match_tiles([tile | hand], tiles, tile_aliases, unused, matches) do
+    case Enum.find_index(tiles, &same_tile(tile, &1, tile_aliases)) do
+      nil -> match_tiles(hand, tiles, tile_aliases, [tile | unused], matches)
+      i   ->
+        {tile2, tiles} = List.pop_at(tiles, i)
+        match_tiles(hand, tiles, tile_aliases, unused, [{tile, tile2} | matches])
+    end
+  end
+  
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = case seat do

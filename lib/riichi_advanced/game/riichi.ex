@@ -310,33 +310,39 @@ defmodule Riichi do
             new_hand_calls = if unique && num > 0 && Enum.all?(groups, &not is_list(&1) && (Utils.is_tile(&1) || &1 in @group_keywords)) do
               tile_aliases = if nojoker do %{} else filtered_tile_aliases end
               # optimized routine for unique tile-only groups
+              group_tiles = groups
+              |> Enum.reject(& &1 in @group_keywords)
+              |> Enum.map(&Utils.to_tile/1)
               for {hand, calls} <- hand_calls do
-                group_tiles = groups
-                |> Enum.reject(& &1 in @group_keywords)
-                |> Enum.map(&Utils.to_tile/1)
-                {_group_tiles, matching_hand} = for tile <- hand, reduce: {group_tiles, []} do
-                  {group_tiles, matching_hand} ->
-                    # certain groups can be marked nojoker
-                    {joker, nojoker} = Enum.split(group_tiles, Enum.find_index(group_tiles, fn elem -> elem == "nojoker" end) || length(group_tiles))
-                    joker = Enum.reject(joker, & &1 in @group_keywords)
-                    nojoker = Enum.reject(nojoker, & &1 in @group_keywords)
-                    cond do
-                      Enum.any?(nojoker, &Utils.same_tile(tile, &1))             -> {group_tiles -- [tile], [tile | matching_hand]}
-                      Enum.any?(joker, &Utils.same_tile(tile, &1, tile_aliases)) -> {group_tiles -- [tile], [tile | matching_hand]}
-                      true                                                       -> {group_tiles, matching_hand}
+                # certain groups can be marked nojoker
+                {joker, nojoker} = Enum.split(group_tiles, Enum.find_index(group_tiles, fn elem -> elem == "nojoker" end) || length(group_tiles))
+                joker = Enum.reject(joker, & &1 in @group_keywords)
+                nojoker = Enum.reject(nojoker, & &1 in @group_keywords)
+                # hand
+                {hand, nojoker, matches1} = Utils.match_tiles(hand, nojoker)
+                {hand, joker, matches2} = Utils.match_tiles(hand, joker, tile_aliases)
+                matching_hand = Enum.map(matches1 ++ matches2, fn {tile, _tile2} -> tile end)
+                # calls
+                {nojoker, matching_calls} = for call <- calls, reduce: {nojoker, []} do
+                  {nojoker, matching_calls} ->
+                    call_tiles = call_to_tiles(call)
+                    case Enum.find_index(nojoker, &Utils.count_tiles(call_tiles, [&1]) > 0) do
+                      nil -> {nojoker, matching_calls}
+                      i   -> {List.delete_at(nojoker, i), [call | matching_calls]}
                     end
                 end
-                # {_tiles, matching_calls} = for call <- calls, reduce: {group_tiles, []} do
-                #   {group_tiles, matching_calls} ->
-                #     tile = Enum.find(call_to_tiles(call), & &1 in group_tiles)
-                #     if tile != nil do
-                #       {group_tiles -- [tile], [call | matching_calls]}
-                #     else {group_tiles, matching_calls} end
-                # end
-                matching_calls = [] # TODO fixme
+                {joker, matching_calls} = for call <- calls -- matching_calls, reduce: {joker, matching_calls} do
+                  {joker, matching_calls} ->
+                    call_tiles = call_to_tiles(call)
+                    case Enum.find_index(joker, &Utils.count_tiles(call_tiles, [&1], tile_aliases) > 0) do
+                      nil -> {joker, matching_calls}
+                      i   -> {List.delete_at(joker, i), [call | matching_calls]}
+                    end
+                end
                 if debug do
                   IO.puts("Using optimized routine / #{inspect(hand)} / #{inspect(calls)} / #{inspect(groups, charlists: :as_lists)}")
                   # IO.puts("#{inspect(matching_hand, charlists: :as_lists)} / #{inspect(matching_calls, charlists: :as_lists)}")
+                  # IO.puts("#{inspect(joker, charlists: :as_lists)} / #{inspect(nojoker, charlists: :as_lists)}")
                 end
                 if length(matching_hand) + length(matching_calls) >= num do
                   if exhaustive do

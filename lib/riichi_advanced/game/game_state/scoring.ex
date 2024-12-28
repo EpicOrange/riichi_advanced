@@ -962,7 +962,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
       Task.async(fn ->
         # replace 5z in joker assignment with 0z if 0z is present in the wall
-        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 1 do
+        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 0 do
           Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
         else joker_assignment end
 

@@ -241,7 +241,7 @@
     {
       "display_name": "No Flowers",
       "value": 10,
-      "when": [{"name": "not_match", "opts": [["calls"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a","1y"], 1] ]]]}]
+      "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a","1y"], 1] ]]]}]
     },
     {
       "display_name": "Four Gongs",
@@ -415,7 +415,7 @@
           [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}],
           [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}],
           [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}],
-          [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ [["1y"], 4] ]]]}]
+          [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 4] ]]]}]
         ]], [
           ["push_message", "is paid 100 from all players for completing a set of flowers before the first turn"],
           ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
@@ -435,7 +435,7 @@
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "chii": {
@@ -621,7 +621,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
   "num_players": 3,

@@ -88,7 +88,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       buttons_before = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
       # IO.puts("Buttons before:")
       # IO.inspect(buttons_before)
-      {state, new_button_choices} = for {seat, player} <- state.players, reduce: {state, []} do
+      {state, new_button_choices} = for seat <- state.available_seats, reduce: {state, []} do
         {state, new_button_choices} ->
           if Actions.performing_intermediate_action?(state, seat) do
             # don't regenerate buttons if the player already made a choice that hasn't been adjudicated yet
