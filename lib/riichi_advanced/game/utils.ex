@@ -312,6 +312,7 @@ defmodule Utils do
   def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = Utils.strip_attrs(tile)
     transparent = Utils.has_attr?(tile, ["transparent"])
+    inactive = Utils.has_attr?(tile, ["inactive"])
     hidden = Utils.has_attr?(tile, ["hidden"])
     reversed = transparent && id == :"1x"
     id = if reversed do Riichi.flip_faceup(tile) |> Utils.strip_attrs() else id end
@@ -324,6 +325,7 @@ defmodule Utils do
       "tile", id,
       facedown && "facedown",
       transparent && "transparent",
+      inactive && "inactive",
       hidden && "hidden",
       reversed && "reversed",
       played && "played",

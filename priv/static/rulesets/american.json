@@ -333,7 +333,7 @@
       "actions": [
         ["unset_status", "decide_charleston"],
         ["set_status", "second_charleston", "charleston_left"],
-        ["when", [{"name": "not_anyone_status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["final_charleston"]}], [["set_status_all", "second_charleston", "charleston_left"]]]
+        ["when", [{"name": "not_anyone_status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["final_charleston"]}], [["set_status_all", "second_charleston", "charleston_left"], ["recalculate_buttons"]]]
       ],
       "unskippable": true
     },
@@ -343,7 +343,8 @@
       "actions": [
         ["big_text", "Skip"],
         ["unset_status_all", "decide_charleston"],
-        ["set_status_all", "final_charleston"]
+        ["set_status_all", "final_charleston"],
+        ["recalculate_buttons"]
       ],
       "precedence_over": ["continue_charleston"],
       "unskippable": true
@@ -356,7 +357,8 @@
         ["set_status", "final_charleston", "charleston_across_0"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["as", "toimen", [["unset_status", "charleston_across_1"], ["set_status", "charleston_across_0"]]]]],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["as", "toimen", [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_0"]]]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]]]],
+        ["recalculate_buttons"]
       ],
       "unskippable": true
     },
@@ -368,7 +370,8 @@
         ["set_status", "final_charleston", "charleston_across_1"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_1"], ["set_status", "charleston_across_0"]]],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["as", "toimen", [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_1"]]]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_1"]]]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_1"]]]]],
+        ["recalculate_buttons"]
       ],
       "unskippable": true
     },
@@ -380,7 +383,8 @@
         ["set_status", "final_charleston", "charleston_across_2"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_0"]]],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_status", "charleston_across_2"], ["set_status", "charleston_across_1"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_3"]}], [["as", "toimen", [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]]]],
+        ["recalculate_buttons"]
       ],
       "unskippable": true
     },
@@ -392,7 +396,8 @@
         ["set_status", "final_charleston", "charleston_across_3"],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_0"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_0"]]],
         ["when", [{"name": "toimen_status", "opts": ["charleston_across_1"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_1"]]],
-        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]]
+        ["when", [{"name": "toimen_status", "opts": ["charleston_across_2"]}], [["unset_status", "charleston_across_3"], ["set_status", "charleston_across_2"]]],
+        ["recalculate_buttons"]
       ],
       "unskippable": true
     },
