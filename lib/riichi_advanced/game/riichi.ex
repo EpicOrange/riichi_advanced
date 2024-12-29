@@ -65,7 +65,7 @@ defmodule Riichi do
     if tile != nil do
       cond do
         Map.has_key?(@fixed_offsets, n) -> _offset_tile(@fixed_offsets[n], suit_to_offset(tile), order, order_r, true)
-        (n < 1 && n > -1) || n < -10 || n >= 30 ->
+        (n < 1 && n > -1) || n < -30 || n >= 30 ->
           tile
         n >= 10 ->
           cond do
@@ -74,19 +74,26 @@ defmodule Riichi do
             shift_dragons && tile == :"6z" -> _offset_tile(:"7z", n-10, order, order_r, true)
             true -> _offset_tile(shift_suit(tile), n-10, order, order_r)
           end
-        n < 0 ->
+        n <= -10 ->
+          cond do
+            shift_dragons && tile == :"7z" -> _offset_tile(:"6z", n+10, order, order_r, true)
+            shift_dragons && tile == :"0z" -> _offset_tile(:"7z", n+10, order, order_r, true)
+            shift_dragons && tile == :"6z" -> _offset_tile(:"0z", n+10, order, order_r, true)
+            true -> _offset_tile(shift_suit(shift_suit(tile)), n+10, order, order_r)
+          end
+        n <= -1 ->
           _offset_tile(order_r[tile], n+1, order, order_r)
-        true ->
+        true -> # n >= 1
           _offset_tile(order[tile], n-1, order, order_r)
       end
     else nil end
   end
 
-  def offset_tile(tile, n, order, order_r) do
+  def offset_tile(tile, n, order, order_r, shift_dragons \\ false) do
     case tile do
       :any -> :any
-      {tile, attrs} -> {_offset_tile(tile, n, order, order_r), attrs}
-      tile -> _offset_tile(tile, n, order, order_r)
+      {tile, attrs} -> {_offset_tile(tile, n, order, order_r, shift_dragons), attrs}
+      tile -> _offset_tile(tile, n, order, order_r, shift_dragons)
     end    
   end
 
@@ -667,7 +674,8 @@ defmodule Riichi do
   end
 
   def collect_base_tiles(hand, calls, tile_aliases) do
-    (hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    # we add one tile of each suit to account for fixed offsets
+    ([:"1m", :"1p", :"1s"] ++ hand ++ Enum.flat_map(calls, &call_to_tiles/1))
     |> Enum.uniq()
     |> Utils.apply_tile_aliases(tile_aliases)
     |> Enum.reject(& &1 == :any)
