@@ -36,7 +36,7 @@
            "2z", "2z", "2z", "2z",
            "3z", "3z", "3z", "3z",
            "4z", "4z", "4z", "4z",
-           "5z", "5z", "5z", "5z",
+           "0z", "0z", "0z", "0z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
@@ -753,6 +753,7 @@
     "chii": {
       "display_name": "Chi",
       "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chi"], ["call"], ["change_turn", "self"]],
       "call_conditions": [
@@ -762,6 +763,7 @@
     "pon": {
       "display_name": "Pung",
       "call": [[0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"],
@@ -776,6 +778,7 @@
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
@@ -791,6 +794,7 @@
       ],
       "call_conditions": [{"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}]
     },
+    // <TODO: turn concealed kongs face-up upon the hand ending>
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
@@ -809,6 +813,11 @@
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {
+        "kamicha": [["sideways", 0], "call_sideways", 1, 2],
+        "toimen": [0, ["sideways", 1], "call_sideways", 2],
+        "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
+      },
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
@@ -887,7 +896,7 @@
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "flower": {
-      "display_name": "Bu Hua",
+      "display_name": "Hua",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
       "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["when", ["not_no_tiles_remaining"], [["draw"]]]]
     }
