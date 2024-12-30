@@ -180,15 +180,16 @@ defmodule RiichiAdvanced.GameState.American do
     end
   end
   # ["2m", "0z", "2m", "4m"], [:"2m", :"1j", :"4m", :"0z"] => [:"2m", :"0z", :"1j", :"4m"]
-  def arrange_american_group([], tiles, _tile_aliases), do: tiles
-  def arrange_american_group([tile_spec | group], tiles, tile_aliases) do
+  def arrange_american_group(group, tiles, tile_aliases, acc \\ [])
+  def arrange_american_group([], tiles, _tile_aliases, acc), do: Enum.reverse(acc) ++ tiles
+  def arrange_american_group([tile_spec | group], tiles, tile_aliases, acc) do
     tile = Utils.to_tile(tile_spec)
     case Enum.find_index(tiles, &Utils.same_tile(&1, tile, tile_aliases)) do
       nil -> tiles
-      ix  -> [Enum.at(tiles, ix) | arrange_american_group(group, List.delete_at(tiles, ix), tile_aliases)]
+      ix  -> arrange_american_group(group, List.delete_at(tiles, ix), tile_aliases, [Enum.at(tiles, ix) | acc])
     end
   end
-  def arrange_american_hand(am_match_definitions, hand, calls, ordering, ordering_r, _tile_aliases) do
+  def arrange_american_hand(am_match_definitions, hand, calls, ordering, ordering_r, tile_aliases) do
     calls = Enum.map(calls, &Riichi.call_to_tiles/1)
     available_tiles = Enum.reduce(calls, MapSet.new(Utils.strip_attrs(hand)), &MapSet.union(&2, MapSet.new(Utils.strip_attrs(&1)))) |> MapSet.delete(:"1j")
     possible_base_tiles = available_tiles
@@ -222,6 +223,15 @@ defmodule RiichiAdvanced.GameState.American do
             :c -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, c))], 1]
           end
         end
+        # convert [[["9m", "9m", "9m", "9m", "9m"]], 1] -> [["9m"], 5]
+        |> Enum.map(fn [groups, num] ->
+          all_same = Enum.all?(groups, &is_list(&1) && Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
+          if all_same do
+            len = length(Enum.at(groups, 0))
+            groups = Enum.map(groups, &case &1 do [t | _] -> t; _ -> &1 end)
+            [groups, len * num]
+          else [groups, num] end
+        end)
         # calculate which base tiles will make the offsets in match_definition match the hand
         all_offsets = for [groups, _num] <- Enum.filter(match_definition, &is_list/1),
                           group <- Enum.reject(groups, & &1 in Riichi.group_keywords()),
@@ -244,21 +254,16 @@ defmodule RiichiAdvanced.GameState.American do
           for [groups, num] <- match_definition, reduce: {hand, calls, []} do
             {hand, calls, nil} -> {hand, calls, nil}
             {hand, calls, ret} ->
-              # convert [[["9m", "9m", "9m", "9m", "9m"]], 1] -> [["9m"], 5]
-              all_same = Enum.all?(groups, &is_list(&1) && Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
-              [groups, num] = if all_same do
-                len = length(Enum.at(groups, 0))
-                groups = Enum.map(groups, &case &1 do [t | _] -> t; _ -> &1 end)
-                [groups, len * num]
-              else [groups, num] end
-              # apply offset to integer groups
-              groups = Enum.map(groups, fn group -> if Riichi.is_offset(group) do Riichi.offset_tile(base_tile, group, ordering, ordering_r) else group end end)
-
+              # apply offsets
+              groups = Enum.map(groups, fn group -> cond do
+                Riichi.is_offset(group) -> apply_base_tile_to_offset(group, base_tile, ordering, ordering_r)
+                is_list(group) -> Enum.map(group, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+                true -> group
+              end end)
               # check if this matches a call exactly
               i = Enum.find_index(calls, fn call ->
                 jokerless = Utils.replace_jokers(call, [:"1j"])
-                group_tiles = Enum.map(groups, fn group -> Utils.to_tile(group) end)
-                Utils.count_tiles(jokerless, group_tiles) == num
+                Utils.count_tiles(jokerless, groups) == num
               end)
               if i != nil do
                 # if so, use that call directly
@@ -282,7 +287,14 @@ defmodule RiichiAdvanced.GameState.American do
                     {:halt, Riichi.try_remove_all_tiles(hand, List.duplicate(:"1j", num-(n-1))) |> Enum.at(0)}
                   end
                 end)
-                if new_hand != nil do {new_hand, calls, [(hand -- new_hand) | ret]} else {[], [], nil} end
+                if new_hand != nil do
+                  # sort 2024, NEWS etc according to the corresponding match_definition
+                  new_group = case {groups, num} do
+                    {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, hand -- new_hand, tile_aliases)
+                    _            -> Utils.sort_tiles(hand -- new_hand)
+                  end
+                  {new_hand, calls, [new_group | ret]}
+                else {[], [], nil} end
               end
           end
         end
