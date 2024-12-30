@@ -599,21 +599,24 @@
     { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] }
   ],
   "yaku_precedence": {
+      // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
+      // ==========
     // 88
-    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush"],
-    "Big Three Dragons": ["Little Three Dragons"],
-    "All Green": ["Full Flush"],
-    "Nine Gates": ["Full Flush"],
-    "Four Kongs": ["Three Kongs", "All Pungs"],
-    "Seven Shifted Pairs": ["Seven Pairs"],
-    "Thirteen Orphans": ["All Types", "Mixed Terminals"],
+    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
+    "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragons Pungs"],
+    "All Green": ["One Voided Suit"],
+    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit", "No Honors"],
+    "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
+    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "No Honors", "Single Wait"],
+    "Thirteen Orphans": ["All Types", "Mixed Terminals", "Concealed Hand", "Single Wait"],
     // 64
-    "All Terminals": ["Mixed Terminals"],
-    "Little Four Winds": ["Big Three Winds", "All Pungs"],
-    "Little Three Dragons": ["Two Dragons Pungs"],
-    "All Honor": ["Mixed Terminals", "Mixed Flush"],
-    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs"],
-    "Pure Terminal Chows": [],
+    "All Terminals": ["Mixed Terminals", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors"],
+    "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
+    "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
+    "All Honor": ["Mixed Terminals", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit"],
+    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
+    "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
+      // ----------
     // 48
     "Quadruple Chow": ["Pure Triple Chow"],
     "Four Pure Shifted Pungs": ["Pure Shifted Pungs", "All Pungs"],
