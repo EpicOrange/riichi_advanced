@@ -711,9 +711,7 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
-  "play_restrictions": [
-    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
-  ],
+  "play_restrictions": [],
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "flower"],
@@ -746,10 +744,22 @@
   ],
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "discards_empty"]
+      ["set_status_all", "first_turn", "discards_empty", "match_start"]
     ]
   },
   "buttons": {
+    "start_flower": {
+      "display_name": "Hua",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]]
+      "unskippable": true
+    },
+    "start_no_flower": {
+      "display_name": "Pass",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chi",
       "call": [[-2, -1], [-1, 1], [1, 2]],
@@ -794,7 +804,6 @@
       ],
       "call_conditions": [{"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}]
     },
-    // <TODO: turn concealed kongs face-up upon the hand ending>
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
