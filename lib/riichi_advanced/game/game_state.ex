@@ -391,7 +391,11 @@ defmodule RiichiAdvanced.GameState do
     else
       hands = Enum.zip(state.available_seats, kyoku_log["players"])
       |> Map.new(fn {seat, player} -> {seat, player["haipai"] |> Enum.map(&Utils.to_tile/1)} end)
-      wall = hands.east ++ hands.south ++ hands.west ++ hands.north ++ kyoku_log["wall"]
+      wall = Map.get(hands, :east, [])
+          ++ Map.get(hands, :south, [])
+          ++ Map.get(hands, :west, [])
+          ++ Map.get(hands, :north, [])
+          ++ kyoku_log["wall"]
       |> Enum.map(&Utils.to_tile/1)
 
       # reconstruct dead wall
@@ -417,8 +421,8 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:drawn_reserved_tiles, [])
 
       scores = kyoku_log["players"]
-      |> Enum.with_index()
-      |> Map.new(fn {player_obj, ix} -> {Log.from_seat(ix), player_obj["points"]} end)
+      |> Enum.zip(state.available_seats)
+      |> Map.new(fn {player_obj, seat} -> {seat, player_obj["points"]} end)
 
       # set other variables that log contains
       state = state
