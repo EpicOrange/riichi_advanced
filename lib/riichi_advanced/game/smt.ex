@@ -401,7 +401,7 @@ defmodule RiichiAdvanced.SMT do
         |> Enum.reject(&cond do
           Utils.is_tile(&1) -> not Map.has_key?(encoding, &1 |> Utils.to_tile() |> Utils.strip_attrs())
           is_list(&1) -> Enum.any?(&1, fn tile -> not Map.has_key?(encoding, tile |> Utils.to_tile() |> Utils.strip_attrs()) end)
-          true -> IO.inspect("Unrecognized group #{inspect(&1)}")
+          true -> IO.puts("Unrecognized group #{inspect(&1)}\nGroups are: #{inspect(groups)}")
         end)
         if Enum.empty?(tile_groups) do
           all_tile_groups

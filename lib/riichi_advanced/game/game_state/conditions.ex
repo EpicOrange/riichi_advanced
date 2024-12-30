@@ -305,14 +305,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
-        Enum.all?(winning_hand, fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
-      "winning_hand_and_tile_consists_of" ->
+        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
+        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
+      "winning_hand_not_tile_consists_of" ->
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
-        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
+        Enum.all?(winning_hand, fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)

@@ -484,7 +484,7 @@
         [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]
       ]
     },
-    { "display_name": "Tanyao", "value": 1, "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },
+    { "display_name": "Tanyao", "value": 1, "when": [{"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },
     {
       "display_name": "Iipeikou",
       "value": 1,
@@ -673,7 +673,7 @@
     { "display_name": "Reversible tiles", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "counter_at_least", "opts": ["warm_tiles", 14]}] },
     { "display_name": "Three-Sided Wait", "value": 1, "when": [{"name": "status", "opts": ["sagimori-arata"]}, {"name": "wait_count_at_least", "opts": [3, ["win"]]}] },
     { "display_name": "Single Wait", "value": 2, "when": [{"name": "status", "opts": ["takei-hisa"]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Takimi Haru", "value": 1, "when": [{"name": "status", "opts": ["takimi-haru"]}, {"name": "winning_hand_and_tile_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}] },
+    { "display_name": "Takimi Haru", "value": 1, "when": [{"name": "status", "opts": ["takimi-haru"]}, {"name": "winning_hand_consists_of", "opts": ["3m","4m","5m","6m","7m","3p","4p","5p","6p","7p","3s","4s","5s","6s","7s"]}] },
     { "display_name": "Furiten Tsumo", "value": 1, "when": [{"name": "status", "opts": ["atago-hiroe", "riichi", "furiten"]}, "won_by_draw"] },
     { "display_name": "Haku Tsumo", "value": 2, "when": [{"name": "status", "opts": ["karijuku-tomoe"]}, "won_by_draw", {"name": "match", "opts": [["winning_tile"], [[[["5z"], 1]]]]}] },
     { "display_name": "Nelly Virsaladze", "value": 1, "when": [{"name": "status", "opts": ["nelly-virsaladze"]}, {"name": "not_counter_equals", "opts": ["riichi_turn", 0]}, {"name": "counter_at_most", "opts": ["riichi_turn", 6]}] },
