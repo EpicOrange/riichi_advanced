@@ -3,31 +3,34 @@
 # add four blanks to wall
 .wall += ["5z", "5z", "5z", "5z"]
 |
+
 # make blanks undiscardable
 .play_restrictions += [ [["5z"], []] ]
 |
+
 # keep track of when discards exist (blanks can't be used if there are no discards)
-.after_turn_change_.actions += [ ["unset_status_all", "discards_empty"] ]
+.after_turn_change.actions += [ ["unset_status_all", "discards_empty"] ]
 |
-.after_start_.actions.first() += ["discards_empty"]
-|
-# make the blank a joker so that it can't be passed, or marked in discards
-.after_start_.actions += [ ["set_tile_alias_all", ["5z"], ["any"]] ]
+.after_start.actions[0] += ["discards_empty"]
 |
 
-# WIP SECTION: disallow Pung, Kong, Quint from having blanks
-#.buttons.1_am_pung.call_conditions.eq(1) <### TODO: CODE HERE to turn `{"name": "not_called_tile_contains", "opts": [["1j"], 1]},` into `{"name": "not_called_tile_contains", "opts": [["1j", "5z"], 1]},`>
-#|
-#.buttons.1_am_pung.call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
-#|
-#.buttons.2_am_kong.call_conditions.eq(1) <### TODO: CODE HERE to turn `{"name": "not_called_tile_contains", "opts": [["1j"], 1]},` into `{"name": "not_called_tile_contains", "opts": [["1j", "5z"], 1]},`>
-#|
-#.buttons.2_am_kong.call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
-#|
-#.buttons.3_am_quint.call_conditions.eq(1) <### TODO: CODE HERE to turn `{"name": "not_called_tile_contains", "opts": [["1j"], 1]},` into `{"name": "not_called_tile_contains", "opts": [["1j", "5z"], 1]},`>
-#|
-#.buttons.3_am_quint.call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
-#|
+# make the blank a joker so that it can't be passed, or marked in discards
+.after_start.actions += [ ["set_tile_alias_all", ["5z"], ["any"]] ]
+|
+
+# disallow Pung, Kong, Quint from having blanks
+.buttons."1_am_pung".call_conditions[1].opts[0] += ["5z"]
+|
+.buttons."1_am_pung".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
+|
+.buttons."2_am_kong".call_conditions[1].opts[0] += ["5z"]
+|
+.buttons."2_am_pung".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
+|
+.buttons."3_am_quint".call_conditions[1].opts[0] += ["5z"]
+|
+.buttons."3_am_quint".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
+|
 
 # WIP SECTION: Add blank swap button
 #.buttons.after("am_joker_swap") += ["am_blank_swap": {
@@ -45,9 +48,3 @@
 .buttons.mahjong_draw.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
 |
 .buttons.mahjong_discard.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
-
-
-
-
-
-
