@@ -8,6 +8,8 @@
 |
 .after_turn_change.actions |= map(
   if .[0] == "ite" and .[1] == ["no_tiles_remaining"] then
+    .[1] = [{"name": "aside_tile_count", "opts": [4]}]
+    |
     .[3] = []
   else . end
 )
@@ -74,6 +76,8 @@ else . end)
 .display_riichi_sticks = false
 |
 .display_round_marker = false
+|
+.display_wall = false
 |
 # this is just to make aside clickable
 .four_rows_discards = true

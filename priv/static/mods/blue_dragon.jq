@@ -49,6 +49,7 @@
   }
 ]
 |
-.yaku_precedence["Daisangen"] = ["Shousangen"]
-|
-.yaku_precedence["Daisuugen"] = ["Shousuugen"]
+.yaku_precedence += {
+  "Daisangen": ["Shousangen"],
+  "Daisuugen": ["Shousuugen"]
+}

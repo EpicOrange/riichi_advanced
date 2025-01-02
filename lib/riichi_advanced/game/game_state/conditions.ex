@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
@@ -143,6 +144,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
+    t = System.os_time(:millisecond)
+
     negated = String.starts_with?(cond_spec, "not_")
     cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
     last_action = get_last_action(state)
@@ -268,6 +271,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             false
         end
       "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
+      "aside_tile_count"         -> length(cxt_player.aside) in opts
       "hand_dora_count"       ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
@@ -301,14 +305,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
-        Enum.all?(winning_hand, fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
-      "winning_hand_and_tile_consists_of" ->
+        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
+        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
+      "winning_hand_not_tile_consists_of" ->
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
-        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
+        Enum.all?(winning_hand, fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)
@@ -517,6 +521,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
       "is_ai"               -> is_pid(Map.get(state, context.seat))
       "num_players"         -> length(state.available_seats) == Enum.at(opts, 0, 4)
+      "is_tenpai_american"  -> Enum.any?(state.players[context.seat].closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) >= 13 end)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
@@ -525,6 +530,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
     #   IO.puts("#{context.tile}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
     # end
     # IO.puts("#{inspect(context)}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
+
+    if Debug.debug_conditions() do
+      elapsed_time = System.os_time(:millisecond) - t
+      if elapsed_time > 100 do
+        IO.puts("check_condition: #{inspect(elapsed_time)} ms to check #{inspect([cond_spec | opts])} with context #{inspect(context)}")
+      end
+    end
+
     if negated do not result else result end
   end
 

@@ -15,5 +15,7 @@
 ]
 |
 .yaku_precedence += {
-  "Isshoku Sanjun": ["Iipeikou", "Sanankou", "Sanrenkou"]
+  "Isshoku Sanjun": ["Iipeikou", "Sanankou", "Sanrenkou", "Choupaikou", "Sujipaikou", "Chousankou"]
 }
+|
+.yaku_precedence["Suuankou"] += ["Isshoku Sanjun"]

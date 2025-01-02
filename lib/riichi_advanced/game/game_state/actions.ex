@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   # we use this to ensure no double discarding
   def can_discard(state, seat, ignore_turn \\ false) do
     our_turn = seat == state.turn
-    ((our_turn && state.players[seat].last_discard == nil) || ignore_turn)
+    ((our_turn && state.players[seat].last_discard == nil && state.awaiting_discard) || ignore_turn)
     && not has_unskippable_button?(state, seat)
     && Enum.empty?(state.players[seat].call_buttons)
     && not Marking.needs_marking?(state, seat)
@@ -62,12 +62,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       play_sound(state, Enum.random(click_sounds))
 
       # trigger play effects
-      if Map.has_key?(state.rules, "play_effects") do
+      state = if Map.has_key?(state.rules, "play_effects") do
         doras = get_doras(state)
         for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile, doras: doras}), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end
+
+      state = Map.put(state, :awaiting_discard, false)
+
+      state
     else
       IO.puts("#{seat} tried to play an unplayable tile: #{inspect(tile)}")
       state
@@ -164,6 +168,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         update_all_players(state, fn _seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
       else state end
 
+      state = Map.put(state, :awaiting_discard, true)
+
+      # ensure playable_indices is populated for the new turn
+      state = broadcast_state_change(state, true)
+      
       state
     else state end
   end
@@ -180,7 +189,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           if state.reversed_turn_order do Utils.prev_turn(new_turn) else Utils.next_turn(new_turn) end
         end
       end
-      change_turn(state, new_turn)
+      state = change_turn(state, new_turn)
+      state
     else
       # reschedule this turn change
       schedule_actions(state, state.turn, [["advance_turn"]], %{seat: state.turn})
@@ -1260,11 +1270,13 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp adjudicate_actions(state) do
     if state.game_active do
       lock = Mutex.await(state.mutex, __MODULE__)
+
       if Debug.debug_actions() do
-        IO.puts("\nAdjudicating actions!")
+        IO.puts("\nAdjudicating actions! Choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.choice} end))}")
+        # IO.puts("Button choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.button_choices} end))}")
       end
-      # clear last discard
-      state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+      # clear ai thinking and last discard
+      state = update_all_players(state, fn _seat, player -> %Player{ player | ai_thinking: false, last_discard: nil } end)
       # trigger all non-nil choices
       state = for {seat, player} <- state.players, reduce: state do
         state ->
@@ -1322,15 +1334,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # done with all choices
       state = if not performing_intermediate_action?(state) do
-        state = if Buttons.no_buttons_remaining?(state) do
-          Buttons.recalculate_buttons(state, 0)
-        else state end
+        # state = if Buttons.no_buttons_remaining?(state) do
+        #   Buttons.recalculate_buttons(state, 0)
+        # else state end
         notify_ai(state)
         state
       else state end
       # clearing choices is done by evaluate_choices now
       # though i guess we could still do it here? no difference
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
       state

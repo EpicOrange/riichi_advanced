@@ -7,5 +7,5 @@
 ]
 |
 .yaku_precedence += {
-  "Junsei Ryuuiisou": ["Ryuuiisou"]
+  "Junsei Ryuuiisou": ["Ryuuiisou", "Chinitsu"]
 }

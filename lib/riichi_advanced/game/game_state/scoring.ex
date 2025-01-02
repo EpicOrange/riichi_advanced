@@ -107,7 +107,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
     # t = System.system_time(:millisecond)
-    joker_assignments = if Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    score_rules = state.rules["score_calculation"]
+    use_smt = Map.get(score_rules, "use_smt", true)
+    joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
     end
@@ -960,7 +962,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
       Task.async(fn ->
         # replace 5z in joker assignment with 0z if 0z is present in the wall
-        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 1 do
+        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 0 do
           Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
         else joker_assignment end
 

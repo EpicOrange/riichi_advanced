@@ -30,8 +30,7 @@ defmodule RiichiAdvanced.AIPlayer do
       ordering = state.player.tile_ordering
       ordering_r = state.player.tile_ordering_r
       tile_aliases = state.player.tile_aliases
-      # use ukeire (if we don't have wildcard jokers)
-      use_ukeire = map_size(state.player.tile_aliases) < 34
+      use_ukeire = Enum.empty?(tile_aliases)
       best_playables = if use_ukeire do
         playable_waits = playables
         |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
@@ -82,7 +81,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {nil, _} ->
         ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, ordering, ordering_r, tile_aliases)
         |> choose_playable_tile(state, playables, visible_tiles, win_definition)
-        if ret != nil do
+        if Debug.debug_ai() && ret != nil do
           IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
         end
         {ret, i}
@@ -94,6 +93,25 @@ defmodule RiichiAdvanced.AIPlayer do
       |> choose_playable_tile(state, playables, visible_tiles, nil)
       {ret, :infinity}
     else {ret, shanten} end
+  end
+
+  defp choose_american_discard(state, playables, closest_american_hands) do
+    # get shanten
+    shanten = closest_american_hands
+    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> 13 - map_size(pairing_r) end)
+    |> Enum.min(&<=/2, fn -> :infinity end)
+    # take only the best closest hands
+    closest_american_hands = Enum.filter(closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (13 - map_size(pairing_r)) end)
+    # rank playables by how often they appear in closest hands
+    usages = for {_am_match_definition, pairing_r, _arranged_hand} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
+      usages -> Map.merge(usages, Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
+    end
+    ret = playables
+    |> Enum.min_by(fn {_tile, i} -> usages[i] end, &<=/2, fn -> nil end)
+    if Debug.debug_ai() && ret != nil do
+      IO.puts(" >> #{state.seat}: I'm currently #{shanten}-shanten!")
+    end
+    {ret, shanten}
   end
 
   defp get_mark_choices(state, source, players, revealed_tiles, num_scryed_tiles) do
@@ -132,7 +150,7 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info({:your_turn, params}, state) do
     t = System.os_time(:millisecond)
-    %{player: player, visible_tiles: visible_tiles} = params
+    %{player: player, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
     if state.initialized do
       state = Map.put(state, :player, player)
       if GenServer.call(state.game_state, {:can_discard, state.seat}) do
@@ -153,19 +171,35 @@ defmodule RiichiAdvanced.AIPlayer do
           # pick the last playable tile (the draw)
           # {_tile, index} = Enum.at(playables, -1)
           # use our rudimentary AI for discarding
-          # IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
-          {{tile, index}, shanten} = if Debug.debug() do
-            {Enum.at(playables, -1), :infinity}
-          else
-            case choose_discard(state, playables, visible_tiles) do
-              {nil, _} ->
-                # IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
-                {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
-              t -> t
-            end
+          if Debug.debug_ai() do
+            IO.puts(" >> #{state.seat}: Hand: #{inspect(Utils.sort_tiles(player.hand ++ player.draw))}")
+          end
+          GenServer.cast(state.game_state, {:ai_thinking, state.seat})
+          {{tile, index}, shanten} = cond do
+            Debug.debug() -> {Enum.at(playables, -1), :infinity} # tsumogiri
+            state.ruleset == "american" ->
+              case choose_american_discard(state, playables, closest_american_hands) do
+                {nil, _} ->
+                  if Debug.debug_ai() do
+                    IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
+                  end
+                  {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
+                t -> t
+              end
+            true ->
+              case choose_discard(state, playables, visible_tiles) do
+                {nil, _} ->
+                  if Debug.debug_ai() do
+                    IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
+                  end
+                  {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
+                t -> t
+              end
           end
           state = Map.put(state, :shanten, shanten)
-          # IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
+          if Debug.debug_ai() do
+            IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
+          end
           elapsed_time = System.os_time(:millisecond) - t
           wait_time = trunc(1200 / @ai_speed)
           if elapsed_time < wait_time do
@@ -192,11 +226,15 @@ defmodule RiichiAdvanced.AIPlayer do
           end
           {:noreply, state}
         else
-          IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
+          if Debug.debug_ai() do
+            IO.puts(" >> #{state.seat}: It's my turn to play a tile, but there are no tiles I can play")
+          end
           {:noreply, state}
         end
       else
-        IO.puts(" >> #{state.seat}: You said it's my turn to play a tile, but I am not in a state in which I can discard")
+        if Debug.debug_ai() do
+          IO.puts(" >> #{state.seat}: You said it's my turn to play a tile, but I am not in a state in which I can discard")
+        end
         {:noreply, state}
       end
     else
@@ -236,6 +274,8 @@ defmodule RiichiAdvanced.AIPlayer do
           "tsumo" in player.buttons -> "tsumo"
           "hu" in player.buttons -> "hu"
           "zimo" in player.buttons -> "zimo"
+          "mahjong_discard" in player.buttons -> "mahjong_discard"
+          "mahjong_draw" in player.buttons -> "mahjong_draw"
           "riichi" in player.buttons -> "riichi"
           "ankan" in player.buttons -> "ankan"
           # "daiminkan" in player.buttons -> "daiminkan"
@@ -256,9 +296,11 @@ defmodule RiichiAdvanced.AIPlayer do
           true -> Enum.random(player.buttons)
         end
       end
-      # IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
+      if Debug.debug_ai() do
+        IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
+      end
       elapsed_time = System.os_time(:millisecond) - t
-      wait_time = trunc(500 / @ai_speed)
+      wait_time = trunc(1200 / @ai_speed)
       if elapsed_time < wait_time do
         Process.sleep(wait_time - elapsed_time)
       end
@@ -290,12 +332,16 @@ defmodule RiichiAdvanced.AIPlayer do
         else
           {called_tile, Enum.random(player.call_buttons[called_tile])}
         end
-        # IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
+        if Debug.debug_ai() do
+          IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
+        end
         Process.sleep(trunc(500 / @ai_speed))
         GenServer.cast(state.game_state, {:press_call_button, state.seat, call_choice, called_tile})
       else
         [choice] = Enum.random(player.call_buttons["saki"])
-        # IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
+        if Debug.debug_ai() do
+          IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
+        end
         Process.sleep(trunc(500 / @ai_speed))
         GenServer.cast(state.game_state, {:press_saki_card, state.seat, choice})
       end
@@ -315,10 +361,12 @@ defmodule RiichiAdvanced.AIPlayer do
     {:noreply, state}
   end
 
-  def handle_info({:mark_tiles, %{player: player, players: players, visible_tiles: visible_tiles, revealed_tiles: revealed_tiles, doras: doras, marked_objects: marked_objects}}, state) do
+  def handle_info({:mark_tiles, %{player: player, players: players, visible_tiles: visible_tiles, revealed_tiles: revealed_tiles, doras: doras, marked_objects: marked_objects, closest_american_hands: closest_american_hands}}, state) do
     if state.initialized do
       state = Map.put(state, :player, player)
-      IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
+      if Debug.debug_ai() do
+        IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
+      end
       # for each source, generate all possible choices and pick one of them
       Process.sleep(trunc(500 / @ai_speed)) 
       choices = marked_objects
@@ -330,32 +378,46 @@ defmodule RiichiAdvanced.AIPlayer do
       has_minefield_hand = if length(player.hand) == 34 do
         Map.get(state, :minefield_tiles, nil) == player.hand
       else Map.has_key?(state, :minefield_hand) end
-      {state, choices} = if state.ruleset == "minefield" do
-        cond do
-          Marking.is_marking?(marked_objects, :hand) && length(player.hand) == 34 ->
-            # marking stage
-            if has_minefield_hand do
-              remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
-              {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
-            else
-              GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
-              {state, []}
-            end
-          Marking.is_marking?(marked_objects, :aside) && length(player.hand) == 13 ->
-            # discard stage
-            choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_ordering, player.tile_ordering_r) end, &<=/2, fn -> nil end)
-            {state, if choice == nil do [] else [choice] end}
-          true -> {state, []}
-        end
-      else {state, choices} end
+      {state, choices} = case state.ruleset do
+        "minefield" ->
+          cond do
+            Marking.is_marking?(marked_objects, :hand) && length(player.hand) == 34 ->
+              # marking stage
+              if has_minefield_hand do
+                remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
+                {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
+              else
+                GenServer.cast(state.game_state, {:ai_thinking, state.seat})
+                GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
+                {state, []}
+              end
+            Marking.is_marking?(marked_objects, :aside) && length(player.hand) == 13 ->
+              # discard stage
+              choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_ordering, player.tile_ordering_r) end, &<=/2, fn -> nil end)
+              {state, if choice == nil do [] else [choice] end}
+            true -> {state, []}
+          end
+        "american" ->
+          playables = Enum.map(choices, fn {{_seat, _source, obj}, i} -> {obj, i} end)
+          case choose_american_discard(state, playables, closest_american_hands) do
+            {nil, _} -> {state, []}
+            {{_, i}, _} -> {state, Enum.filter(choices, fn {_, j} -> i == j end)}
+          end
+        _ -> {state, choices}
+      end
 
       if state.ruleset != "minefield" || has_minefield_hand do
         case choices do
           [{{seat, source, _obj}, i} | _] -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
           _ ->
-            IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")
-            IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
-            IO.puts(" >> #{state.seat}: My marking state was: #{inspect(marked_objects)}")
+            if Debug.debug_ai() do
+              IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")
+              IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
+              IO.puts(" >> #{state.seat}: My marking state was: #{inspect(marked_objects)}")
+              if state.ruleset == "minefield" do
+                IO.puts(" >> #{state.seat}: My minefield hand was: #{inspect(state.minefield_hand)}")
+              end
+            end
             GenServer.cast(state.game_state, {:clear_marked_objects, state.seat})
         end
       end
@@ -368,7 +430,9 @@ defmodule RiichiAdvanced.AIPlayer do
   def handle_info({:declare_yaku, %{player: player}}, state) do
     if state.initialized do
       state = %{ state | player: player }
-      IO.puts(" >> #{state.seat}: It's my turn to declare yaku!")
+      if Debug.debug_ai() do
+        IO.puts(" >> #{state.seat}: It's my turn to declare yaku!")
+      end
       GenServer.cast(state.game_state, {:declare_yaku, state.seat, ["Riichi"]})
       {:noreply, state}
     else

@@ -138,7 +138,7 @@
     {"id": "shiro_pocchi", "order": 2, "conflicts": ["no_honors", "chinitsu"], "name": "Shiro Pocchi", "desc": "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."},
     {"id": "golden_chun", "deps": ["shiro_pocchi"], "conflicts": ["no_honors", "chinitsu"], "name": "Golden Chun", "desc": "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which acts as a joker for any five, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."},
     {"id": "blue_dragon", "conflicts": ["no_honors", "chinitsu"], "name": "Blue Dragon (beta)", "desc": "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."},
-    {"id": "shouhai", "name": "Shouhai", "desc": "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."},
+    {"id": "shouhai", "order": 3, "name": "Shouhai", "desc": "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."},
     {"id": "chinitsu", "conflicts": ["aka", "aka_4", "yaku/mondeikou", "galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
     {"id": "washizu", "order": 1, "name": "Washizu", "desc": "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."},
     {"id": "calls_are_forced", "conflicts": ["chombo"], "name": "Calls Are Forced", "desc": "Forces you to make all available calls, including riichi. You still get to choose if multiple calls are available."},
@@ -242,7 +242,7 @@
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique",
@@ -252,7 +252,7 @@
   ],
   // used to check for riichi eligibility
   "tenpai_14_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
     [ "unique",
@@ -267,7 +267,7 @@
     ]
   ],
   "win_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
     [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
@@ -275,7 +275,7 @@
     ]
   ],
   "standard_win_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ]
   ],
   "shousuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]],
@@ -314,7 +314,7 @@
         [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]
       ]
     },
-    { "display_name": "Tanyao", "value": 1, "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },
+    { "display_name": "Tanyao", "value": 1, "when": [{"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },
     {
       "display_name": "Iipeikou",
       "value": 1,
@@ -455,10 +455,14 @@
     "Double Riichi": ["Riichi"],
     "Chinitsu": ["Honitsu"],
     "Chiitoitsu": ["Iipeikou"],
+    "Toitoi": ["Iipeikou"],
+    "Sanankou": ["Iipeikou"],
     "Ryanpeikou": ["Iipeikou", "Chiitoitsu"],
     "Junchan": ["Chanta"],
     "Honroutou": ["Chanta", "Junchan"],
+    "Suuankou": ["Toitoi", "Sanankou"],
     "Suuankou Tanki": ["Suuankou"],
+    "Chuurenpoutou": ["Chinitsu"],
     "Junsei Chuurenpoutou": ["Chuurenpoutou"],
     "Kokushi Musou Juusan Menmachi": ["Kokushi Musou"],
     "Daisuushii": ["Shousuushii"]

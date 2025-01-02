@@ -700,6 +700,20 @@ div.corner-info > div.dead-hand-button:hover {
   cursor: pointer;
   opacity: 1;
 }
+@keyframes aiThinking {
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+div.corner-info > div.ai-thinking::before {
+  position: absolute;
+  content: "";
+  font-size: calc(1 * var(--tile-size));
+  color: var(--tile-front);
+  bottom: calc(50% - 0.5 * var(--tile-size));
+  left: calc(50% - 0.4 * var(--tile-size));
+  animation: aiThinking 3s linear forwards infinite;
+}
 
 /* tiles */
 div.tile {
@@ -1267,7 +1281,7 @@ div.visible-waits-container {
   flex-flow: row wrap;
   justify-content: center;
   align-items: flex-end;
-  z-index: 10;
+  z-index: 100;
 }
 div.visible-waits {
   background: #0000007F;
@@ -1287,6 +1301,44 @@ div.visible-waits > div.visible-wait {
   row-gap: calc(0.25 * var(--tile-size));
 }
 
+/* nearest american hands */
+div.display-am-hand-hover::before {
+  content: "(nearest hands)";
+  background: gray;
+  position: absolute;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
+  right: 0;
+}
+div.display-am-hand-container {
+  position: absolute;
+  display: none;
+  width: calc(100% - 2 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
+  bottom: calc(2.5 * var(--tile-size));
+  background: #0000007F;
+  font-size: calc(0.4 * var(--tile-size));
+  color: white;
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size));
+  padding-top: calc(0.5 * var(--tile-size));
+}
+div.display-am-hand-hover:hover + div.display-am-hand-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 100;
+  row-gap: calc(0.5 * var(--tile-size));
+}
+div.display-am-hand {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+}
 
 /* revealed tiles */
 div.revealed-tiles {
@@ -2834,7 +2886,9 @@ div.centerpiece-status-bar > div.tiles-left {
 div.top-right-container > div.menu-buttons:not(:nth-last-child(1)),
 div.top-right-container > div.centerpiece-status-bar:not(:nth-last-child(2)),
 div.visible-waits-container > div.menu-buttons,
-div.visible-waits-container > div.centerpiece-status-bar {
+div.visible-waits-container > div.centerpiece-status-bar,
+div.display-am-hand-container > div.menu-buttons,
+div.display-am-hand-container > div.centerpiece-status-bar {
   display: none;
 }
 

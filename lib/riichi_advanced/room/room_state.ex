@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.RoomState do
     available_mods = Enum.map(mods, & &1["id"])
     starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
       [mods] -> mods
-      []     -> Map.get(rules, "starting_mods", [])
+      []     -> Map.get(rules, "default_mods", [])
     end
     |> Enum.filter(& &1 in available_mods)
     |> Enum.uniq()

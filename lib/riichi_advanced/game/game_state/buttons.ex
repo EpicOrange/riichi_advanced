@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Log, as: Log
   import RiichiAdvanced.GameState
@@ -81,24 +82,28 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def recalculate_buttons(state, interrupt_level \\ 100) do
     if state.game_active && Map.has_key?(state.rules, "buttons") do
-      # t = System.os_time(:millisecond)
+      t = System.os_time(:millisecond)
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
       buttons_before = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
       # IO.puts("Buttons before:")
       # IO.inspect(buttons_before)
-      {state, new_button_choices} = for {seat, _player} <- state.players, reduce: {state, []} do
+      {state, new_button_choices} = for seat <- state.available_seats, reduce: {state, []} do
         {state, new_button_choices} ->
           if Actions.performing_intermediate_action?(state, seat) do
-            # don't regenerate buttons if we're performing an intermediate action
-            {state, [{seat, %{}} | new_button_choices]}
+            # don't regenerate buttons if the player already made a choice that hasn't been adjudicated yet
+            {state, new_button_choices}
           else
             button_choices = state.rules["buttons"]
             |> Enum.filter(fn {name, button} ->
-                 calls_spec = Map.get(button, "call", [])
-                 upgrades = Map.get(button, "upgrades", [])
-                 Map.get(button, "interrupt_level", 100) >= interrupt_level && Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
-               end)
+              calls_spec = Map.get(button, "call", [])
+              upgrades = Map.get(button, "upgrades", [])
+
+              if Debug.debug_buttons() do
+                IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
+              end
+              Map.get(button, "interrupt_level", 100) >= interrupt_level && Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+            end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
                 {state, spec} = make_button_choices(state, seat, name, button)
@@ -118,17 +123,23 @@ defmodule RiichiAdvanced.GameState.Buttons do
           end
       end
 
-      # elapsed_time = System.os_time(:millisecond) - t
-      # if elapsed_time > 10 do
-      #   IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
-      # end
+      if Debug.debug_buttons() do
+        elapsed_time = System.os_time(:millisecond) - t
+        if elapsed_time > 10 do
+          IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
+        end
+      end
       
       new_button_choices = Map.new(new_button_choices)
       
       # IO.puts("Buttons after:")
       # IO.inspect(buttons)
       buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
-      state = update_all_players(state, fn seat, player -> %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] } end)
+      state = update_all_players(state, fn seat, player ->
+        if Map.has_key?(buttons, seat) do
+          %Player{ player | buttons: buttons[seat], button_choices: new_button_choices[seat] }
+        else player end
+      end)
 
       # play button notify sound if buttons changed
       if not Enum.empty?(buttons) && buttons != buttons_before do
@@ -153,7 +164,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else state.rules["buttons"][button_name]["actions"] end
       state = Actions.submit_actions(state, seat, button_name, actions)
-      state = broadcast_state_change(state)
+      state = broadcast_state_change(state) # show possible call buttons
       state
     else
       IO.puts("#{seat} tried to press nonexistent button #{button_name}")

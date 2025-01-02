@@ -27,6 +27,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:hovered_call_choice, nil)
     |> assign(:playable_indices, [])
     |> assign(:preplayed_index, nil)
+    |> assign(:hide_buttons, false) # used to hide buttons on the client side after clicking one
 
     last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
       [mods] -> mods
@@ -145,6 +146,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         num_players={length(@state.available_seats)}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
+        ai_thinking={@state.players[seat].ai_thinking}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
@@ -180,7 +182,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
-        <div class="buttons" :if={@state.players[@seat].declared_yaku != []}>
+        <div class="buttons" :if={not @hide_buttons && @state.players[@seat].declared_yaku != []}>
           <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}>Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}>Cancel</button>
@@ -273,6 +275,17 @@ defmodule RiichiAdvancedWeb.GameLive do
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}
         :if={Map.get(@state.rules, "display_wall", false)} />
+      <div class={["big-text"]} :if={@loading}>Loading...</div>
+      <div class="display-am-hand-hover" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}></div>
+      <div class="display-am-hand-container" :if={Map.get(@state.rules, "show_nearest_american_hand", false) && not Enum.empty?(@state.players[@seat].closest_american_hands)}>
+        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].closest_american_hands do %>
+          <div class="display-am-hand" :if={arranged_hand})>
+            <%= for tile <- arranged_hand do %>
+              <div class={Utils.get_tile_class(tile)}></div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
@@ -377,6 +390,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, name})
     socket = assign(socket, :hovered_called_tile, nil)
     socket = assign(socket, :hovered_call_choice, nil)
+    socket = assign(socket, :hide_buttons, true)
     {:noreply, socket}
   end
 
@@ -520,6 +534,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:preplayed_index, nil)
       |> assign(:revealed_tiles, RiichiAdvanced.GameState.get_revealed_tiles(state))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
+      |> assign(:hide_buttons, false)
       {:noreply, socket}
     else
       {:noreply, socket}

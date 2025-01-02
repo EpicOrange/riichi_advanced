@@ -157,7 +157,9 @@ defmodule RiichiAdvanced.GameState.Marking do
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
         "visible"           -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0
         "not_joker"         -> not Map.has_key?(state.players[marking_player].tile_mappings, tile)
-        "call_has_joker"    -> Utils.count_tiles(Riichi.call_to_tiles(tile), [:"1j"]) > 0
+        "call_has_joker"    ->
+          jokers = Map.keys(state.players[marking_player].tile_mappings)
+          Utils.count_tiles(Riichi.call_to_tiles(tile), jokers) > 0
         "not_riichi"        -> "riichi" not in state.players[marking_player].status || index >= length(state.players[marking_player].hand)
         "last_discard"      ->
           case source do
@@ -234,7 +236,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   def adjudicate_marking(state) do
     # only continue if no one needs marking
     if not Enum.any?(state.available_seats, &needs_marking?(state, &1)) do
-      for seat <- state.available_seats, not Enum.empty?(state.marking[seat]), reduce: state do
+      state = for seat <- state.available_seats, not Enum.empty?(state.marking[seat]), reduce: state do
         state ->
           # run actions, including the mark action that marks done
           state = Actions.run_deferred_actions(state, %{seat: seat})
@@ -255,6 +257,9 @@ defmodule RiichiAdvanced.GameState.Marking do
             state
           else state end
       end
+      # ensure playable_indices is populated for the new turn
+      state = broadcast_state_change(state, true)
+      state
     else state end
   end
 end
