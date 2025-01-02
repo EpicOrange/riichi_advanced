@@ -32,19 +32,19 @@
 .buttons."3_am_quint".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
 |
 
-# WIP SECTION: Add blank swap button
-#.buttons.after("am_joker_swap") += ["am_blank_swap": {
-#      "display_name": "Swap blank for discard",
-#      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand", "discards_empty"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand"], [[[["5z"], 1]]]]}],
-#      "actions": [
-#        ["big_text", "Swap"],
-#        ["mark", [["discard", 1, ["not_joker"]], ["hand", 1, ["5z"]] ]],
-#        ["push_message", "swapped a discard with a blank from hand"],
-#        ["swap_marked_hand_and_discard"],
-#        ["recalculate_buttons"] // allow Mah-Jongg/joker swap to pop up
-#      ]
-#    }]
-#|
+# TODO: figure out how to put am_blank_swap directly after am_joker_swap instead of after any other item
+.buttons += {"am_blank_swap": {
+      "display_name": "Swap blank for discard",
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand", "discards_empty"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand"], [[[["5z"], 1]]]]}],
+      "actions": [
+        ["big_text", "Swap"],
+        ["mark", [["discard", 1, ["not_joker"]], ["hand", 1, ["5z"]] ]],
+        ["push_message", "swapped a discard with a blank from hand"],
+        ["swap_marked_hand_and_discard"],
+        ["recalculate_buttons"] #allow Mah-Jongg/joker swap to pop up
+      ]
+    }}
+|
 .buttons.mahjong_draw.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
 |
 .buttons.mahjong_discard.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
