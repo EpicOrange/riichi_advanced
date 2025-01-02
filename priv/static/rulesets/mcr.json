@@ -535,7 +535,7 @@
       ]]
     },
     { "display_name": "Concealed Hand", "value": 2, "when": ["won_by_discard", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
-    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}] },
+    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "5z", "6z", "7z"], 1]]]]}] },
     { "display_name": "Tile Hog", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
     { "display_name": "Double Pung", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["double_pung"]]}] },
     {
