@@ -243,6 +243,7 @@
   "兩連刻_definition": [
     [ "exhaustive", "ignore_suit", [[[[0,0,0],[1,1,1]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
+    // TODO: This definition currently marks 77889999m778899p as Three Small Shifted Triplets. I think "ignore_suit" might be causing the problem here, but there's no documentation on what "ignore_suit" does. 
   "小三連刻_definition": [
     [ "exhaustive", "ignore_suit", [[[[0,0,0],[1,1,1],[2,2]],
                                      [[0,0,0],[1,1],[2,2,2]],
@@ -344,6 +345,11 @@
   ],
   "2兩相逢_definition": [
     [ "exhaustive", [[[[0,1,2],[10,11,12]]], 2], [["pair"], 1] ]
+  ]
+    // but NOT if the two 兩相逢 are the same numbers:
+  "2兩相逢_exception_definition": [
+    [ "exhaustive", [[[[0,1,2],[0,1,2],[10,11,12],[10,11,12]]], 1], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,1,2],[0,1,2],[10,11,12],[20,21,22]]], 1], [["pair"], 1] ]
   ],
   "三相逢_definition": [
     [ "exhaustive", [[[[0,1,2],[10,11,12],[20,21,22]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
@@ -648,6 +654,7 @@
     // (2) 順子類
     { "display_name": "Double Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["兩相逢"]]}] },
     { "display_name": "Double Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2兩相逢"]]}] },
+    { "display_name": "Double Sequences", "value": -1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2兩相逢_exception"]]}] },
     { "display_name": "Triple Sequences", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}] },
     { "display_name": "Pure Triple Sequence", "value": 10, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}] },
     { "display_name": "Pure Quadruple Sequence", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}] },
