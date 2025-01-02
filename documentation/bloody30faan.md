@@ -27,7 +27,7 @@ There are four winning hand configurations in B30FJ:
 
 For more information about knitted sets, refer to the relevant section below (Knitted Hands).
 
-Bloody end rules are enabled, meaning after the first win, remaining players continue playing until three players have won, or until the wall is exhausted. Multiple players may win off the same discard.
+Bloody end rules are enabled, meaning after the first win, remaining players continue playing until three players have won, or until the wall is exhausted. Multiple players may win off the same discard. Wins do not skip turns.
 
 In addition, if the wait tile is a single-tile wait for a pair on the Baida or Suit joker, one can only win by self-draw.
 
@@ -140,7 +140,7 @@ For the following, triplets can include kongs.
 ### Sequences
 
 - __All Sequences__ (2 faan): All of your sets are sequences.
-- __Double Sequences__ (1 faan): You have two of the same sequence in different suits. It is possible to get this one twice by having two of another sequence, which gives you a total of 2 faan.
+- __Double Sequences__ (1 faan): You have two of the same sequence in different suits. It is possible to get this one twice by also having two of a different-numbered sequence, which gives you a total of 2 faan.
 - __Triple Sequences__ (5 faan): You have three of the same sequence in different suits.
 - __Pure Triple Sequence__ (10 faan): You have three of the same sequence in the same suit.
 - __Pure Quadruple Sequence__ (30 faan): You have four of the same sequence in the same suit.
@@ -177,7 +177,7 @@ Note that you are only awarded the highest scoring of the three Tile Hogs.
 - __All Like Numbers__ (8 faan): All of your sets and your pair use contain the same number. e.g. 44 234 345 345 456 all contain 4.
 - __All Odds__ (5 faan): Your hand consists of odd numbers only.
 - __All Evens__ (5 faan): Your hand consists of even numbers only.
-- __All Central__ (5 faan): Your hand consists of 456 only. Stacks with Three Number Hand below.
+- __One Suji Only__ (5 faan): Your hand consists of 147 only, 258 only, or 369 only. Stacks with Three Number Hand below.
 - __Three Number Hand__ (5 faan): Your hand consists of three numbers only.
 - __Two Number Hand__ (10 faan): Instead, your hand consists of two numbers only.
 
@@ -215,7 +215,7 @@ The following are related to seven-pair hands.
 
 ### Knitted Hands
 
-- __Thirteen Unconnected__ (5 faan): All of your tiles are disconnected, i.e. 3 away from each other or more. You also have a pair of one of the tiles. In addition, the suited tiles among them must form a partial knitted triplets or a partial knitted straight.
+- __Thirteen Unconnected__ (5 faan): All of your tiles are disconnected, i.e. 3 away from each other or more. You also have a pair of one of the tiles. In addition, the suited tiles among them must form a partial knitted triplets or a partial knitted straight, and you must have one tile of each type. Does not stack with All Types.
 - __Knitted Short Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s which counts as two sets. You can get this twice for a total of 10 faan.
 - __Knitted Terminal Sequences__ (5 faan): You have e.g. 1m 2p 3s 7m 8p 9s which counts as two sets. You can get this twice for a total of 10 faan.
 - __Knitted Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s 7m 8p 9s which counts as three sets.
@@ -227,7 +227,7 @@ The following are related to seven-pair hands.
 - __Eyes of the General__ (1 faan): Your pair is 22, 55, or 88.
 - __Chicken Hand__ (15 faan): You score none of the other hands. e.g. 123m345p3344z + J77s, winning on 3z after 10 tiles have been discarded
 - __University Train__ (20 faan): You have a pair of red dragons, plus a pure straight (123456789) of any suit, plus either a triplet of threes or a kong of fours.
-- __Thirteen Orphans__ (20 faan): You have one of each terminal and honor tile, plus one extra terminal/honor.
+- __Thirteen Orphans__ (20 faan): You have one of each terminal and honor tile, plus one extra terminal/honor. Does not stack with All Types.
 - __Thirteen Orphans__ (25 faan): Same, but you use at most three jokers.
 - __Thirteen Orphans__ (30 faan): Same, but you use at most one joker.
 
