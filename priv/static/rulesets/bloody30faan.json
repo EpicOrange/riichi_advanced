@@ -701,6 +701,7 @@
     {
       "display_name": "Three Number Hand",
       "value": 5,
+        // TODO: Fix this so it ignores jokers declared as flowers, but it doesn't ignore jokers in calls/hand (e.g. 111666777m67Jp66s)
       "when": [
         {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]},
         [
