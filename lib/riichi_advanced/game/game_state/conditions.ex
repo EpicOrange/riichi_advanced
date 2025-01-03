@@ -521,7 +521,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
       "is_ai"               -> is_pid(Map.get(state, context.seat))
       "num_players"         -> length(state.available_seats) == Enum.at(opts, 0, 4)
-      "is_tenpai_american"  -> Enum.any?(state.players[context.seat].closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) >= 13 end)
+      "is_tenpai_american"  ->
+        player = state.players[context.seat]
+        Enum.any?(player.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
