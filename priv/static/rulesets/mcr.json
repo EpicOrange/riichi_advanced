@@ -493,7 +493,7 @@
         ]]]}
       ]
     },
-    { "display_name": "Melded Hand", "value": 6, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Melded Hand", "value": 6, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan"], 4]]]]}] },
     { "display_name": "Two Dragons Pungs", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["two_dragons"]]}] },
     { "display_name": "Two Kongs", "value": 6, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1], [["daiminkan", "kakan"], 1]]]]}] },
     // 4
@@ -535,7 +535,7 @@
       ]]
     },
     { "display_name": "Concealed Hand", "value": 2, "when": ["won_by_discard", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
-    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}] },
+    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}] },
     { "display_name": "Tile Hog", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
     { "display_name": "Double Pung", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["double_pung"]]}] },
     {
@@ -599,67 +599,72 @@
     { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] }
   ],
   "yaku_precedence": {
+      // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
+      // ==========
     // 88
-    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush"],
-    "Big Three Dragons": ["Little Three Dragons"],
-    "All Green": ["Full Flush"],
-    "Nine Gates": ["Full Flush"],
-    "Four Kongs": ["Three Kongs", "All Pungs"],
-    "Seven Shifted Pairs": ["Seven Pairs"],
-    "Thirteen Orphans": ["All Types", "Mixed Terminals"],
+    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
+    "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragons Pungs"],
+    "All Green": ["One Voided Suit"],
+    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit", "No Honors"],
+    "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
+    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "No Honors", "Single Wait"],
+    "Thirteen Orphans": ["All Types", "Mixed Terminals", "Concealed Hand", "Single Wait"],
     // 64
-    "All Terminals": ["Mixed Terminals"],
-    "Little Four Winds": ["Big Three Winds", "All Pungs"],
-    "Little Three Dragons": ["Two Dragons Pungs"],
-    "All Honor": ["Mixed Terminals", "Mixed Flush"],
-    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs"],
-    "Pure Terminal Chows": [],
+    "All Terminals": ["Mixed Terminals", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
+    "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
+    "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
+    "All Honor": ["Mixed Terminals", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
+    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
+    "Pure Terminal Chows": ["All Sequences", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
     // 48
-    "Quadruple Chow": ["Pure Triple Chow"],
+    "Quadruple Chow": ["Pure Triple Chow", "Pure Double Chow", "Tile Hog"],
     "Four Pure Shifted Pungs": ["Pure Shifted Pungs", "All Pungs"],
     // 32
-    "Four Pure Shifted Chows": ["Pure Shifted Chows", "All Chows"],
-    "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Two Concealed Kongs"],
-    "Mixed Terminals": [],
+      // Double-check Four Pure Shifted Chows; apparently it overrides Short Straight and Two Terminal Chows, despite neither being mandatory with this.
+    "Four Pure Shifted Chows": ["Pure Shifted Chows"],
+      // Double-check whether Three Kongs overrides Concealed Kong and/or Open Kong.
+    "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Two Concealed Kongs", "Concealed Kong", "Open Kong"],
+    "Mixed Terminals": ["Pung of Terminals", "Pung of Honors", "Outside Hand", "All Pungs"],
     // 24
-    "Seven Pairs": [],
-    "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles"],
-    "All Even Pungs": ["All Pungs"],
-    "Full Flush": ["Mixed Flush"],
+    "Seven Pairs": ["Concealed Hand", "Single Wait"],
+    "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles", "All Types", "Concealed Hand"],
+    "All Even Pungs": ["All Pungs", "No Honors", "All Simples"],
+    "Full Flush": ["Mixed Flush", "One Voided Suit"],
     "Pure Triple Chow": ["Pure Double Chow"],
     "Pure Shifted Pungs": [],
-    "Upper Tiles": ["Upper Four"],
-    "Middle Tiles": [],
-    "Lower Tiles": ["Lower Four"],
+    "Upper Tiles": ["Upper Four", "No Honors"],
+    "Middle Tiles": ["All Simples", "No Honors"],
+    "Lower Tiles": ["Lower Four", "No Honors"],
     // 16
-    "Pure Straight": ["Short Straight"],
-    "Three-Suited Terminal Chows": ["Two Terminal Chows"],
+    "Pure Straight": ["Short Straight", "Two Terminal Chows"],
+    "Three-Suited Terminal Chows": ["Two Terminal Chows", "All Sequences", "Mixed Double Chow", "No Honors"],
     "Pure Shifted Chows": [],
-    "All Fives": [],
-    "Triple Pung": [],
+    "All Fives": ["No Honors", "All Simples"],
+    "Triple Pung": ["Double Pung"],
     "Three Concealed Pungs": ["Two Concealed Pungs"],
     // 12
-    "Lesser Honors and Knitted Tiles": [],
+    "Lesser Honors and Knitted Tiles": ["All Types", "Concealed Hand"],
     "Knitted Straight": [],
-    "Upper Four": [],
-    "Lower Four": [],
-    "Big Three Winds": [],
+    "Upper Four": ["No Honors"],
+    "Lower Four": ["No Honors"],
+      // Hmmm, we need to bar pungs of winds specifically, but it's possible to still end up with a pung of dragons. And we mustn't bar Round/Seat Wind because it's possible to get Big Three Winds without it.
+    "Big Three Winds": ["Pung of Honors"],
     // 8
     "Mixed Straight": [],
-    "Reversible Tiles": [],
+    "Reversible Tiles": ["One Voided Suit"],
     "Mixed Triple Chow": ["Mixed Double Chow"],
     "Mixed Shifted Pungs": [],
-    "Last Tile Draw": [],
+    "Last Tile Draw": ["Self-Drawn"],
     "Last Tile Claim": [],
-    "Out with Replacement Tile": [],
-    "Robbing a Kong": [],
+    "Out with Replacement Tile": ["Self-Drawn"],
+    "Robbing a Kong": ["Last Tile"],
     "Two Concealed Kongs": ["Concealed Kong", "Two Concealed Pungs"],
     // 6
     "All Pungs": [],
     "Mixed Flush": ["One Voided Suit"],
     "Mixed Shifted Chows": [],
     "All Types": [],
-    "Melded Hand": [],
+    "Melded Hand": ["Single Wait"],
     "Two Dragons Pungs": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Two Kongs": ["Open Kong", "Concealed Kong"],
     // 4
@@ -674,12 +679,12 @@
     "Prevalent Wind": [],
     "Seat Wind": [],
     "Concealed Hand": [],
-    "All Sequences": [],
+    "All Sequences": ["No Honors"],
     "Tile Hog": [],
     "Double Pung": [],
     "Two Concealed Pungs": [],
     "Concealed Kong": [],
-    "All Simples": [],
+    "All Simples": ["No Honors"],
     // 1
     "Pure Double Chow": [],
     "Mixed Double Chow": [],
@@ -691,6 +696,7 @@
     "One Voided Suit": [],
     "No Honors": [],
     "Self Drawn": []
+      // ----------
   },
   "score_calculation": {
     "scoring_method": "multiplier",
