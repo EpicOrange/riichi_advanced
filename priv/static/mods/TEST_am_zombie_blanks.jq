@@ -1,4 +1,7 @@
-# my very shitty attempt at writing jQuery mod for zombie blanks --Soph.
+# my somewhat shitty attempt at writing jQuery mod for zombie blanks --Soph.
+
+# TODO: Figure out how to make this mod work with "Show Nearest Hands".
+# UPDATE: I have no clue how to do that, the "Show Nearest Hands" mod just toggles on the option called `.show_nearest_american_hand`, and I don't know where this option is defined. This is a job for Dani lol
 
 # add four blanks to wall
 .wall += ["5z", "5z", "5z", "5z"]
