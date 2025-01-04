@@ -25,14 +25,15 @@
 |
 .buttons."2_am_kong".call_conditions[1].opts[0] += ["5z"]
 |
-.buttons."2_am_pung".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
+.buttons."2_am_kong".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
 |
 .buttons."3_am_quint".call_conditions[1].opts[0] += ["5z"]
 |
 .buttons."3_am_quint".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
 |
 
-# TODO: figure out how to put am_blank_swap directly after am_joker_swap instead of after any other item
+# WIP SECTION: Add blank swap button
+# TODO: figure out how to put am_blank_swap after am_joker_swap
 .buttons += {"am_blank_swap": {
       "display_name": "Swap blank for discard",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand", "discards_empty"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand"], [[[["5z"], 1]]]]}],
