@@ -82,12 +82,16 @@ defmodule RiichiAdvanced.GameState.American do
     else [] end
   end
 
-  defp combine_unique_groups(match_definition) do
-    # combine groups that are just [[["A","B"]], 1], [[["C","D"]], 1] into [["unique","A","B","C","D"], 4]
-    {simple_groups, complex_groups} = Enum.split_with(match_definition, fn elem -> case elem do [[group], 1] -> Enum.all?(group, &Utils.is_tile(&1) || Riichi.is_offset(&1)); _ -> false end end)
-    simple_group = Enum.flat_map(simple_groups, fn [[group], 1] -> group end)
-    complex_groups ++ if Enum.empty?(simple_group) do [] else [[["unique" | simple_group], length(simple_group)]] end
-  end
+  # # deprecated
+  # # this breaks call matching, so we no longer do this (TODO remove)
+  # # e.g. two groups ABC and DEF can match a call ABC and a call DEF,
+  # # but a combined group ABCDEF can't match the call ABC or the call DEF
+  # defp combine_unique_groups(match_definition) do
+  #   # combine groups that are just [[["A","B"]], 1], [[["C","D"]], 1] into [["unique","A","B","C","D"], 4]
+  #   {simple_groups, complex_groups} = Enum.split_with(match_definition, fn elem -> case elem do [[group], 1] -> Enum.all?(group, &Utils.is_tile(&1) || Riichi.is_offset(&1)); _ -> false end end)
+  #   simple_group = Enum.flat_map(simple_groups, fn [[group], 1] -> group end)
+  #   complex_groups ++ if Enum.empty?(simple_group) do [] else [[["unique" | simple_group], length(simple_group)]] end
+  # end
 
   defp translate_american_match_definitions_postprocess(match_definition) do
     # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
@@ -107,8 +111,7 @@ defmodule RiichiAdvanced.GameState.American do
       num_tiles >= 3
     end)
 
-    use_jokers = combine_unique_groups(use_jokers)
-    nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ combine_unique_groups(nojokers) end
+    nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ nojokers end
 
     # add "nojokers" for unique groups as well
     use_jokers = Enum.map(use_jokers, fn [groups, num] ->
@@ -242,14 +245,14 @@ defmodule RiichiAdvanced.GameState.American do
           # offset_tiles can contain more than available_tiles because it can have all flowers, while available_tiles doesn't
           MapSet.subset?(available_tiles, offset_tiles)
         end)
-        if Enum.empty?(base_tiles) && [a,b,c] == Enum.at(permutations, -1) do # debug
-          IO.puts("arrange_american_hand: no base tiles found for hand #{inspect(hand)} / #{inspect(calls)}\n  available_tiles: #{inspect(available_tiles)}\n  all_offsets: #{inspect(all_offsets)}")
-          for base_tile <- possible_base_tiles do
-            offset_tiles = MapSet.new(all_offsets, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
-            missing = MapSet.difference(available_tiles, offset_tiles)
-            IO.puts("applying #{base_tile} to offsets gives #{inspect(MapSet.to_list(offset_tiles))}, missing #{inspect(MapSet.to_list(missing))}")
-          end
-        end
+        # if Enum.empty?(base_tiles) && [a,b,c] == Enum.at(permutations, -1) do # debug
+        #   IO.puts("arrange_american_hand: no base tiles found for hand #{am_match_definition} #{inspect(hand)} / #{inspect(calls)}\n  available_tiles: #{inspect(available_tiles)}\n  all_offsets: #{inspect(all_offsets)}\n  match_definition: #{inspect(match_definition, charlists: :as_lists)}\n  #{inspect([a,b,c])}")
+        #   for base_tile <- possible_base_tiles do
+        #     offset_tiles = MapSet.new(all_offsets, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+        #     missing = MapSet.difference(available_tiles, offset_tiles)
+        #     IO.puts("applying #{base_tile} to offsets gives #{inspect(MapSet.to_list(offset_tiles))}, missing #{inspect(MapSet.to_list(missing))}")
+        #   end
+        # end
         arrangements = for base_tile <- base_tiles do
           for [groups, num] <- match_definition, reduce: {hand, calls, []} do
             {hand, calls, nil} -> {hand, calls, nil}
@@ -258,6 +261,7 @@ defmodule RiichiAdvanced.GameState.American do
               groups = Enum.map(groups, fn group -> cond do
                 Riichi.is_offset(group) -> apply_base_tile_to_offset(group, base_tile, ordering, ordering_r)
                 is_list(group) -> Enum.map(group, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+                Utils.is_tile(group) -> Utils.to_tile(group)
                 true -> group
               end end)
               # check if this matches a call exactly
@@ -274,9 +278,14 @@ defmodule RiichiAdvanced.GameState.American do
                 new_hand = Enum.reduce_while(1..num, hand, fn n, hand ->
                   # first phase: remove a nonjoker
                   new_hand = Enum.find_value(groups, fn group ->
+                    # calls were taken care of above, so we can just focus on hand
                     case Riichi._remove_group(hand, [], group, false, ordering, ordering_r, %{}, base_tile) do
                       [{hand, _} | _] -> hand
-                      []              -> nil
+                      []              ->
+                        # if am_match_definition == "NN EEE 2024a WWW SS" do
+                        #   IO.puts("Failed to remove #{inspect(group)} from #{inspect(hand)} / #{inspect(calls)}")
+                        # end
+                        nil
                     end
                   end)
                   if new_hand != nil do
@@ -294,7 +303,12 @@ defmodule RiichiAdvanced.GameState.American do
                     _            -> Utils.sort_tiles(hand -- new_hand)
                   end
                   {new_hand, calls, [new_group | ret]}
-                else {[], [], nil} end
+                else
+                  # if am_match_definition == "NN EEE 2024a WWW SS" do
+                  #   IO.puts("Failed to complete #{inspect(match_definition)} for #{inspect(hand)} / #{inspect(calls)}")
+                  # end
+                  {[], [], nil}
+                end
               end
           end
         end
@@ -476,16 +490,11 @@ defmodule RiichiAdvanced.GameState.American do
               # build adj graph from these cached edges
               adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, true}) do j end} end)
               adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {length(matching_hand_joker) + i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, false}) do j end} end)
-              adj = Map.merge(adj_joker, adj_nojoker)
+              {new_pairing, new_pairing_r} = Map.merge(adj_joker, adj_nojoker)
+              |> Utils.maximum_bipartite_matching()
 
               # use dfs to find all augmenting paths
               {pairing, _pairing_r, _missing_tiles} = acc
-              {new_pairing, new_pairing_r} = for i <- Map.keys(adj), reduce: {%{}, %{}} do
-                {pairing, pairing_r} -> case compute_closest_american_hands_dfs(i, adj, pairing, pairing_r, MapSet.new()) do
-                  {true, pairing, pairing_r, _} -> {pairing, pairing_r}
-                  {false, _, _, _}              -> {pairing, pairing_r}
-                end
-              end
 
               # keep the best matching
               acc = if map_size(new_pairing) > map_size(pairing) do
@@ -504,6 +513,7 @@ defmodule RiichiAdvanced.GameState.American do
     |> Enum.sort_by(fn {_am_match_definition, pairing_r, _missing_tiles} -> map_size(pairing_r) end, :desc)
     # |> then(fn x -> IO.inspect(Enum.map(x, fn {a, p, _} -> {a, map_size(p)} end)); x end)
     |> Enum.take(num)
+    |> Enum.reject(fn {_am_match_definition, pairing_r, _missing_tiles} -> Enum.empty?(pairing_r) end)
     |> Enum.map(fn {am_match_definition, pairing_r, missing_tiles} ->
       # replace unmatched tiles in hand with missing tiles
       kept_tiles = Enum.map(Map.keys(pairing_r), fn i -> Enum.at(hand, i) end)
@@ -529,25 +539,5 @@ defmodule RiichiAdvanced.GameState.American do
     # end
 
     ret
-  end
-
-  defp compute_closest_american_hands_dfs(i, adj, pairing, pairing_r, visited) do
-    Enum.reduce_while(Map.get(adj, i, []), {false, pairing, pairing_r, visited}, fn j, {_, pairing, pairing_r, visited} ->
-      if MapSet.member?(visited, j) do
-        {:cont, {false, pairing, pairing_r, visited}}
-      else
-        visited = MapSet.put(visited, j)
-        if not Map.has_key?(pairing_r, j) do
-          {:halt, {true, Map.put(pairing, i, j), Map.put(pairing_r, j, i), visited}}
-        else
-          {halt, pairing, pairing_r, visited} = compute_closest_american_hands_dfs(pairing_r[j], adj, pairing, pairing_r, visited)
-          if halt do
-            {:halt, {true, Map.put(pairing, i, j), Map.put(pairing_r, j, i), visited}}
-          else
-            {:cont, {false, pairing, pairing_r, visited}}
-          end
-        end
-      end
-    end)
   end
 end

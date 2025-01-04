@@ -227,6 +227,7 @@ defmodule Utils do
     end |> Enum.sum()
   end
   
+  # greedy algorithm
   def match_tiles(hand, tiles, tile_aliases \\ %{}, unused \\ [], matches \\ [])
   def match_tiles([], tiles, _tile_aliases, unused, matches), do: {Enum.reverse(unused), tiles, matches}
   def match_tiles([tile | hand], tiles, tile_aliases, unused, matches) do
@@ -366,4 +367,32 @@ defmodule Utils do
     end)
   end
 
+  defp maximum_bipartite_matching_dfs(i, adj, pairing, pairing_r, visited \\ MapSet.new()) do
+    Enum.reduce_while(Map.get(adj, i, []), {false, pairing, pairing_r, visited}, fn j, {_, pairing, pairing_r, visited} ->
+      if MapSet.member?(visited, j) do
+        {:cont, {false, pairing, pairing_r, visited}}
+      else
+        visited = MapSet.put(visited, j)
+        if not Map.has_key?(pairing_r, j) do
+          {:halt, {true, Map.put(pairing, i, j), Map.put(pairing_r, j, i), visited}}
+        else
+          {halt, pairing, pairing_r, visited} = maximum_bipartite_matching_dfs(pairing_r[j], adj, pairing, pairing_r, visited)
+          if halt do
+            {:halt, {true, Map.put(pairing, i, j), Map.put(pairing_r, j, i), visited}}
+          else
+            {:cont, {false, pairing, pairing_r, visited}}
+          end
+        end
+      end
+    end)
+  end
+
+  def maximum_bipartite_matching(adj) do
+    for i <- Map.keys(adj), reduce: {%{}, %{}} do
+      {pairing, pairing_r} -> case maximum_bipartite_matching_dfs(i, adj, pairing, pairing_r) do
+        {true, pairing, pairing_r, _} -> {pairing, pairing_r}
+        {false, _, _, _}              -> {pairing, pairing_r}
+      end
+    end
+  end
 end

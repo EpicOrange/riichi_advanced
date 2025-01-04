@@ -36,7 +36,7 @@
            "2z", "2z", "2z", "2z",
            "3z", "3z", "3z", "3z",
            "4z", "4z", "4z", "4z",
-           "5z", "5z", "5z", "5z",
+           "0z", "0z", "0z", "0z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
@@ -69,14 +69,14 @@
     "nan": ["2z", "2z", "2z"],
     "shaa": ["3z", "3z", "3z"],
     "pei": ["4z", "4z", "4z"],
-    "haku": ["5z", "5z", "5z"],
+    "haku": ["0z", "0z", "0z"],
     "hatsu": ["6z", "6z", "6z"],
     "chun": ["7z", "7z", "7z"],
     "ton_pair": ["1z", "1z"],
     "nan_pair": ["2z", "2z"],
     "shaa_pair": ["3z", "3z"],
     "pei_pair": ["4z", "4z"],
-    "haku_pair": ["5z", "5z"],
+    "haku_pair": ["0z", "0z"],
     "hatsu_pair": ["6z", "6z"],
     "chun_pair": ["7z", "7z"],
     "junchan_1": ["1m","1m","1m"],
@@ -97,7 +97,7 @@
     "junchan_pair_4": ["9m","9m"],
     "junchan_pair_5": ["9p","9p"],
     "junchan_pair_6": ["9s","9s"],
-    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"],
+    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
   "tenpai_definition": [
@@ -107,30 +107,30 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2"], 1] ],
     [ [["koutsu"], -1], [["pair"], 6] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 13] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 13] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 13] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 13] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 13] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 13] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 13] ]
   ],
   "iishanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 12] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 12] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 12] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 12] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 12] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 12] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ]
   ],
   "ryanshanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 1] ],
@@ -139,15 +139,15 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ [["pair"], 4] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 10],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 11] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 11] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 11] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 11] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 11] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 11] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 11] ]
   ],
   "sanshanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
@@ -157,20 +157,20 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ [["pair"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 9],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 10] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 10] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 10] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 10] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 10] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 10] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 10] ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "win_definition": [
@@ -178,15 +178,15 @@
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2"], 1] ],
     [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 14] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 14] ]
   ],
   "ryanankou_tsumo_definition": [
     // 0 open triplets, hand must be 2 triplets and a pair
@@ -252,20 +252,20 @@
     [[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]
   ],
   "greater_knitted_definition": [
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s"], 7], [["1z","2z","3z","4z","5z","6z","7z"], 7] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s"], 7], [["1z","2z","3z","4z","5z","6z","7z"], 7] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s"], 7], [["1z","2z","3z","4z","5z","6z","7z"], 7] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s"], 7], [["1z","2z","3z","4z","5z","6z","7z"], 7] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s"], 7], [["1z","2z","3z","4z","5z","6z","7z"], 7] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s"], 7], [["1z","2z","3z","4z","5z","6z","7z"], 7] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 7] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s"], 7], [["1z","2z","3z","4z","0z","6z","7z"], 7] ]
   ],
   "lesser_knitted_definition": [
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","5z","6z","7z"], 14] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","5z","6z","7z"], 14] ]
+    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 14] ],
+    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 14] ]
   ],
   "knitted_straight_definition": [
     [ [["knit_straight1", "knit_straight2"], 1] ]
@@ -407,7 +407,7 @@
     { "display_name": "All Terminals", "value": 64, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}] },
     { "display_name": "Little Four Winds", "value": 64, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}] },
     { "display_name": "Little Three Dragons", "value": 64, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}] },
-    { "display_name": "All Honor", "value": 64, "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "5z", "6z", "7z"]}] },
+    { "display_name": "All Honor", "value": 64, "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z"]}] },
     {
       "display_name": "Four Concealed Pungs",
       "value": 64,
@@ -423,7 +423,7 @@
     // 32
     { "display_name": "Four Pure Shifted Chows", "value": 32, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["four_pure_shifted_chows"]]}] },
     { "display_name": "Three Kongs", "value": 32, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}] },
-    { "display_name": "Mixed Terminals", "value": 32, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]}] },
+    { "display_name": "Mixed Terminals", "value": 32, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
     // 24
     { "display_name": "Seven Pairs", "value": 24, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
     { "display_name": "Greater Honors and Knitted Tiles", "value": 24, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["greater_knitted"]]}] },
@@ -460,7 +460,7 @@
     { "display_name": "Big Three Winds", "value": 12, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}] },
     // 8
     { "display_name": "Mixed Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_straight"]]}] },
-    { "display_name": "Reversible Tiles", "value": 24, "when": [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","8p","9p","2s","4s","5s","6s","8s","9s","5z"]}] },
+    { "display_name": "Reversible Tiles", "value": 24, "when": [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","8p","9p","2s","4s","5s","6s","8s","9s","0z"]}] },
     { "display_name": "Mixed Triple Chow", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_triple_chow"]]}] },
     { "display_name": "Mixed Shifted Pungs", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_shifted_pungs"]]}] },
     { "display_name": "Last Tile Draw", "value": 2, "when": ["won_by_draw", "no_tiles_remaining"] },
@@ -474,9 +474,9 @@
       "display_name": "Mixed Flush",
       "value": 6,
       "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
       ]]
     },
     { "display_name": "Mixed Shifted Chows", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_shifted_chows"]]}] },
@@ -489,11 +489,11 @@
           [["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1],
           [["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1],
           [["1z","2z","3z","4z"], 1],
-          [["5z","6z","7z"], 1]
+          [["0z","6z","7z"], 1]
         ]]]}
       ]
     },
-    { "display_name": "Melded Hand", "value": 6, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Melded Hand", "value": 6, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan"], 4]]]]}] },
     { "display_name": "Two Dragons Pungs", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["two_dragons"]]}] },
     { "display_name": "Two Kongs", "value": 6, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1], [["daiminkan", "kakan"], 1]]]]}] },
     // 4
@@ -535,7 +535,7 @@
       ]]
     },
     { "display_name": "Concealed Hand", "value": 2, "when": ["won_by_discard", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
-    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}] },
+    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}] },
     { "display_name": "Tile Hog", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
     { "display_name": "Double Pung", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["double_pung"]]}] },
     {
@@ -570,12 +570,12 @@
       "display_name": "One Voided Suit",
       "value": 1,
       "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"]}
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
       ]]
     },
-    { "display_name": "No Honors", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "5z", "6z", "7z"], 1]]]]}] },
+    { "display_name": "No Honors", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}] },
     { "display_name": "Self Drawn", "value": 1, "when": ["won_by_draw"] },
     { "display_name": "Edge Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["edge_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Closed Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
@@ -599,67 +599,72 @@
     { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] }
   ],
   "yaku_precedence": {
+      // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
+      // ==========
     // 88
-    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush"],
-    "Big Three Dragons": ["Little Three Dragons"],
-    "All Green": ["Full Flush"],
-    "Nine Gates": ["Full Flush"],
-    "Four Kongs": ["Three Kongs", "All Pungs"],
-    "Seven Shifted Pairs": ["Seven Pairs"],
-    "Thirteen Orphans": ["All Types", "Mixed Terminals"],
+    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
+    "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragons Pungs"],
+    "All Green": ["One Voided Suit"],
+    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit", "No Honors"],
+    "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
+    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "No Honors", "Single Wait"],
+    "Thirteen Orphans": ["All Types", "Mixed Terminals", "Concealed Hand", "Single Wait"],
     // 64
-    "All Terminals": ["Mixed Terminals"],
-    "Little Four Winds": ["Big Three Winds", "All Pungs"],
-    "Little Three Dragons": ["Two Dragons Pungs"],
-    "All Honor": ["Mixed Terminals", "Mixed Flush"],
-    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs"],
-    "Pure Terminal Chows": [],
+    "All Terminals": ["Mixed Terminals", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
+    "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
+    "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
+    "All Honor": ["Mixed Terminals", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
+    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
+    "Pure Terminal Chows": ["All Sequences", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
     // 48
-    "Quadruple Chow": ["Pure Triple Chow"],
+    "Quadruple Chow": ["Pure Triple Chow", "Pure Double Chow", "Tile Hog"],
     "Four Pure Shifted Pungs": ["Pure Shifted Pungs", "All Pungs"],
     // 32
-    "Four Pure Shifted Chows": ["Pure Shifted Chows", "All Chows"],
-    "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Two Concealed Kongs"],
-    "Mixed Terminals": [],
+      // Double-check Four Pure Shifted Chows; apparently it overrides Short Straight and Two Terminal Chows, despite neither being mandatory with this.
+    "Four Pure Shifted Chows": ["Pure Shifted Chows"],
+      // Double-check whether Three Kongs overrides Concealed Kong and/or Open Kong.
+    "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Two Concealed Kongs", "Concealed Kong", "Open Kong"],
+    "Mixed Terminals": ["Pung of Terminals", "Pung of Honors", "Outside Hand", "All Pungs"],
     // 24
-    "Seven Pairs": [],
-    "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles"],
-    "All Even Pungs": ["All Pungs"],
-    "Full Flush": ["Mixed Flush"],
+    "Seven Pairs": ["Concealed Hand", "Single Wait"],
+    "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles", "All Types", "Concealed Hand"],
+    "All Even Pungs": ["All Pungs", "No Honors", "All Simples"],
+    "Full Flush": ["Mixed Flush", "One Voided Suit"],
     "Pure Triple Chow": ["Pure Double Chow"],
     "Pure Shifted Pungs": [],
-    "Upper Tiles": ["Upper Four"],
-    "Middle Tiles": [],
-    "Lower Tiles": ["Lower Four"],
+    "Upper Tiles": ["Upper Four", "No Honors"],
+    "Middle Tiles": ["All Simples", "No Honors"],
+    "Lower Tiles": ["Lower Four", "No Honors"],
     // 16
-    "Pure Straight": ["Short Straight"],
-    "Three-Suited Terminal Chows": ["Two Terminal Chows"],
+    "Pure Straight": ["Short Straight", "Two Terminal Chows"],
+    "Three-Suited Terminal Chows": ["Two Terminal Chows", "All Sequences", "Mixed Double Chow", "No Honors"],
     "Pure Shifted Chows": [],
-    "All Fives": [],
-    "Triple Pung": [],
+    "All Fives": ["No Honors", "All Simples"],
+    "Triple Pung": ["Double Pung"],
     "Three Concealed Pungs": ["Two Concealed Pungs"],
     // 12
-    "Lesser Honors and Knitted Tiles": [],
+    "Lesser Honors and Knitted Tiles": ["All Types", "Concealed Hand"],
     "Knitted Straight": [],
-    "Upper Four": [],
-    "Lower Four": [],
-    "Big Three Winds": [],
+    "Upper Four": ["No Honors"],
+    "Lower Four": ["No Honors"],
+      // Hmmm, we need to bar pungs of winds specifically, but it's possible to still end up with a pung of dragons. And we mustn't bar Round/Seat Wind because it's possible to get Big Three Winds without it.
+    "Big Three Winds": ["Pung of Honors"],
     // 8
     "Mixed Straight": [],
-    "Reversible Tiles": [],
+    "Reversible Tiles": ["One Voided Suit"],
     "Mixed Triple Chow": ["Mixed Double Chow"],
     "Mixed Shifted Pungs": [],
-    "Last Tile Draw": [],
+    "Last Tile Draw": ["Self-Drawn"],
     "Last Tile Claim": [],
-    "Out with Replacement Tile": [],
-    "Robbing a Kong": [],
+    "Out with Replacement Tile": ["Self-Drawn"],
+    "Robbing a Kong": ["Last Tile"],
     "Two Concealed Kongs": ["Concealed Kong", "Two Concealed Pungs"],
     // 6
     "All Pungs": [],
     "Mixed Flush": ["One Voided Suit"],
     "Mixed Shifted Chows": [],
     "All Types": [],
-    "Melded Hand": [],
+    "Melded Hand": ["Single Wait"],
     "Two Dragons Pungs": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Two Kongs": ["Open Kong", "Concealed Kong"],
     // 4
@@ -674,12 +679,12 @@
     "Prevalent Wind": [],
     "Seat Wind": [],
     "Concealed Hand": [],
-    "All Sequences": [],
+    "All Sequences": ["No Honors"],
     "Tile Hog": [],
     "Double Pung": [],
     "Two Concealed Pungs": [],
     "Concealed Kong": [],
-    "All Simples": [],
+    "All Simples": ["No Honors"],
     // 1
     "Pure Double Chow": [],
     "Mixed Double Chow": [],
@@ -691,6 +696,7 @@
     "One Voided Suit": [],
     "No Honors": [],
     "Self Drawn": []
+      // ----------
   },
   "score_calculation": {
     "scoring_method": "multiplier",
@@ -711,9 +717,7 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
-  "play_restrictions": [
-    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
-  ],
+  "play_restrictions": [],
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "flower"],
@@ -746,13 +750,26 @@
   ],
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "discards_empty"]
+      ["set_status_all", "first_turn", "discards_empty", "match_start"]
     ]
   },
   "buttons": {
+    "start_flower": {
+      "display_name": "Hua",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]]
+      "unskippable": true
+    },
+    "start_no_flower": {
+      "display_name": "Pass",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chi",
       "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chi"], ["call"], ["change_turn", "self"]],
       "call_conditions": [
@@ -762,6 +779,7 @@
     "pon": {
       "display_name": "Pung",
       "call": [[0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"],
@@ -776,6 +794,7 @@
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
@@ -809,6 +828,11 @@
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {
+        "kamicha": [["sideways", 0], "call_sideways", 1, 2],
+        "toimen": [0, ["sideways", 1], "call_sideways", 2],
+        "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
+      },
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
@@ -887,7 +911,7 @@
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "flower": {
-      "display_name": "Bu Hua",
+      "display_name": "Hua",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
       "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["when", ["not_no_tiles_remaining"], [["draw"]]]]
     }

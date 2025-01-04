@@ -12,6 +12,13 @@
 |
 .shiisanpuutaa_definition = [[ [["pair"], 1], [["pair", "ryanmen/penchan", "kanchan"], -1] ]]
 |
-.win_definition += .shiisanpuutaa_definition
-|
-.tenpai_definition += .shiisanpuutaa_definition
+.buttons.shiisanpuutaa = {
+  "display_name": "Tsumo",
+  "show_when": [
+    "our_turn",
+    "has_draw",
+    {"name": "status", "opts": ["discards_empty"]},
+    {"name": "match", "opts": [["hand", "draw"], ["shiisanpuutaa"]]}
+  ],
+  "actions": [["set_counter", "fu", 30], ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
+}

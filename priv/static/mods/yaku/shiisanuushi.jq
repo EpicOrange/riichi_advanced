@@ -12,6 +12,13 @@
 |
 .shiisanuushi_definition = [[ [["pair", "ryanmen/penchan", "kanchan"], -1] ]]
 |
-.win_definition += .shiisanuushi_definition
-|
-.tenpai_definition += .shiisanuushi_definition
+.buttons.shiisanuushi = {
+  "display_name": "Tsumo",
+  "show_when": [
+    "our_turn",
+    "has_draw",
+    {"name": "status", "opts": ["discards_empty"]},
+    {"name": "match", "opts": [["hand", "draw"], ["shiisanuushi"]]}
+  ],
+  "actions": [["set_counter", "fu", 30], ["big_text", "Tsumo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
+}

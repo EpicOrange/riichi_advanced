@@ -142,7 +142,7 @@
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [["debug", [["1f"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}]
     },
     {
       "display_name": "Seat Flower",
