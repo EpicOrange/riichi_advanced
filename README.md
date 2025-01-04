@@ -12,7 +12,7 @@ Multipurpose extensible mahjong client featuring the following:
 All of this is live at <https://riichiadvanced.com/>, and the Discord is here: <https://discord.gg/5QQHmZQavP>
 
 This project is currently in beta, please help us test for bugs in the discord linked above!
-The planned v1.0 release date is 2025 New Years, so stay posted!
+The planned v1.0 release date is Feb 1 2025, so stay posted!
 
 ## Documentation
 
