@@ -204,6 +204,10 @@ defmodule RiichiAdvanced.AIPlayer do
           wait_time = trunc(1200 / @ai_speed)
           if elapsed_time < wait_time do
             Process.sleep(wait_time - elapsed_time)
+          else
+            if Debug.debug_ai() do
+              IO.puts(" >> #{state.seat}: Took #{System.os_time(:millisecond) - t} ms to come to a decision")
+            end
           end
 
           # if we're about to discard a joker/flower, call it instead
@@ -300,9 +304,15 @@ defmodule RiichiAdvanced.AIPlayer do
         IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
       end
       elapsed_time = System.os_time(:millisecond) - t
-      wait_time = trunc(1200 / @ai_speed)
-      if elapsed_time < wait_time do
-        Process.sleep(wait_time - elapsed_time)
+      wait_time = trunc(120 / @ai_speed)
+      if button_name != "skip" do
+        if elapsed_time < wait_time do
+          Process.sleep(wait_time - elapsed_time)
+        else
+          if Debug.debug_ai() do
+            IO.puts(" >> #{state.seat}: Took #{System.os_time(:millisecond) - t} ms to come to a decision")
+          end
+        end
       end
       if button_name == "skip" && state.seat == turn && Enum.empty?(player.deferred_actions) do
         GenServer.cast(state.game_state, {:ai_ignore_buttons, state.seat})
