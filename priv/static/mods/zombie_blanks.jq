@@ -1,4 +1,4 @@
-# my somewhat shitty attempt at writing jQuery mod for zombie blanks --Soph.
+# my somewhat shitty attempt at writing jQuery mod for zombie blanks in NMJL. might become an actual mod applicable to other variants too if it gets worked on more. --Soph.
 
 # TODO: Figure out how to make this mod work with "Show Nearest Hands".
 # UPDATE: I have no clue how to do that, the "Show Nearest Hands" mod just toggles on the option called `.show_nearest_american_hand`, and I don't know where this option is defined. This is a job for Dani lol
