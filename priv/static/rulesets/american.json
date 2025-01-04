@@ -540,7 +540,7 @@
       "actions": [["big_text", "Quint"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
-    "1_am_joker_swap": {
+    "am_joker_swap": {
       "display_name": "Swap for exposed joker",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}],
       "actions": [
@@ -549,7 +549,7 @@
         ["swap_out_fly_joker", "1j"]
       ]
     },
-    "999_mahjong_draw": {
+    "mahjong_draw": {
       "display_name": "Mah Jongg",
       "show_when": [
         {"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", "is_tenpai_american",
@@ -566,7 +566,7 @@
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
-    "999_mahjong_discard": {
+    "mahjong_discard": {
       "display_name": "Mah Jongg",
       "show_when": [
         {"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", "is_tenpai_american",
