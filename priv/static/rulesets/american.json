@@ -259,7 +259,7 @@
   },
   "after_start": {
     "actions": [
-      // ["set_status_all", "match_start", "first_charleston", "charleston_right"],
+      ["set_status_all", "match_start", "first_charleston", "charleston_right"],
       ["set_tile_alias_all", ["1j"], ["any"]]
     ]
   },
