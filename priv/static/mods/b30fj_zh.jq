@@ -79,7 +79,7 @@
   "All Like Numbers": "滿庭芳",
   "All Odds": "全單數",
   "All Evens": "全雙數",
-  "All Central": "全筋數",
+  "One Suji Only": "全筋數",
   "Three Number Hand": "三數",
   "Two Number Hand": "兩數",
   "After a Flower": "花摸",

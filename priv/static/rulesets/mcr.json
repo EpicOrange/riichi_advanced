@@ -36,7 +36,7 @@
            "2z", "2z", "2z", "2z",
            "3z", "3z", "3z", "3z",
            "4z", "4z", "4z", "4z",
-           "5z", "5z", "5z", "5z",
+           "0z", "0z", "0z", "0z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
@@ -711,9 +711,7 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
-  "play_restrictions": [
-    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
-  ],
+  "play_restrictions": [],
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "flower"],
@@ -746,13 +744,26 @@
   ],
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "discards_empty"]
+      ["set_status_all", "first_turn", "discards_empty", "match_start"]
     ]
   },
   "buttons": {
+    "start_flower": {
+      "display_name": "Hua",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]]
+      "unskippable": true
+    },
+    "start_no_flower": {
+      "display_name": "Pass",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
+      "unskippable": true
+    },
     "chii": {
       "display_name": "Chi",
       "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chi"], ["call"], ["change_turn", "self"]],
       "call_conditions": [
@@ -762,6 +773,7 @@
     "pon": {
       "display_name": "Pung",
       "call": [[0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"],
@@ -776,6 +788,7 @@
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
@@ -809,6 +822,11 @@
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {
+        "kamicha": [["sideways", 0], "call_sideways", 1, 2],
+        "toimen": [0, ["sideways", 1], "call_sideways", 2],
+        "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
+      },
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
@@ -887,7 +905,7 @@
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "flower": {
-      "display_name": "Bu Hua",
+      "display_name": "Hua",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
       "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["when", ["not_no_tiles_remaining"], [["draw"]]]]
     }
