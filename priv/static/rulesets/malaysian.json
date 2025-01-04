@@ -238,6 +238,7 @@
       "value": 10,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
     },
+      // TODO: Fix that this somehow gets awarded even when you do have flowers.
     {
       "display_name": "No Flowers",
       "value": 10,
@@ -306,6 +307,7 @@
     "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
     "Small Three Dragons": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Four Concealed Triplets": ["All Triplets"]
+    "All Honors": ["Half Flush"]
   },
   "score_calculation": {
     "scoring_method": "multiplier",
