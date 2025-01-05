@@ -282,6 +282,10 @@ defmodule RiichiAdvanced.GameState do
 
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
 
+    state = if not Enum.empty?(Debug.debug_am_match_definitions()) do
+      put_in(state.rules["show_nearest_american_hand"], true)
+    else state end
+
     # generate a UUID
     state = Map.put(state, :ref, Ecto.UUID.generate())
 

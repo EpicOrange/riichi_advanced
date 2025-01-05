@@ -5,6 +5,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_fast_ai false
   @debug_saki_card_ours nil
   @debug_saki_card_opponent nil
+  @debug_am_match_definitions []
   @debug_actions false
   @debug_log false
   @debug_ai false
@@ -18,6 +19,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_fast_ai, do: @debug_fast_ai
   def debug_saki_card_ours, do: @debug_saki_card_ours
   def debug_saki_card_opponent, do: @debug_saki_card_opponent
+  def debug_am_match_definitions, do: @debug_am_match_definitions
   def debug_actions, do: @debug_actions
   def debug_buttons, do: @debug_buttons
   def debug_conditions, do: @debug_conditions

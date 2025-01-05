@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.GameState.American do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   import RiichiAdvanced.GameState
 
   # each american match definition is a string, like
@@ -93,7 +94,7 @@ defmodule RiichiAdvanced.GameState.American do
   #   complex_groups ++ if Enum.empty?(simple_group) do [] else [[["unique" | simple_group], length(simple_group)]] end
   # end
 
-  defp translate_american_match_definitions_postprocess(match_definition) do
+  defp translate_american_match_definitions_postprocess({am_match_definition, match_definition}) do
     # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
       num_tiles = cond do
@@ -118,9 +119,15 @@ defmodule RiichiAdvanced.GameState.American do
       cond do
         is_list(groups) && "unique" in groups ->
           {keywords, groups} = Enum.split_with(groups, & &1 in Riichi.group_keywords())
-          {jokers, nojokers} = Enum.split_with(Enum.frequencies(groups), fn {_tile, freq} -> freq >= 3 end)
-          jokers = Enum.flat_map(jokers, fn {tile, freq} -> List.duplicate(tile, freq) end)
-          nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ Enum.flat_map(nojokers, fn {tile, freq} -> List.duplicate(tile, freq) end) end
+          {jokers, nojokers} = if groups == ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"] do
+            # flowers are treated specially
+            if num >= 3 do {groups, []} else {[], groups} end
+          else
+            {jokers, nojokers} = Enum.split_with(Enum.frequencies(groups), fn {_tile, freq} -> freq >= 3 end)
+            jokers = Enum.flat_map(jokers, fn {tile, freq} -> List.duplicate(tile, freq) end)
+            nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ Enum.flat_map(nojokers, fn {tile, freq} -> List.duplicate(tile, freq) end) end
+            {jokers, nojokers}
+          end
           [keywords ++ jokers ++ nojokers, num]
         true -> [groups, num]
       end
@@ -128,8 +135,10 @@ defmodule RiichiAdvanced.GameState.American do
     
     # note: do NOT add "exhaustive" (game will refuse to start)
 
-    # ["debug"] ++
-    use_jokers ++ nojokers
+    ret = use_jokers ++ nojokers
+    if am_match_definition in Debug.debug_am_match_definitions() do
+      ["debug"] ++ ret
+    else ret end
   end
   defp _translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
@@ -153,7 +162,9 @@ defmodule RiichiAdvanced.GameState.American do
         numeric = if Enum.empty?(numeric) do [] else [[["unique" | numeric], length(numeric)]] end
         nonnumeric = Enum.map(nonnumeric, fn g -> [[g], 1] end)
         [numeric ++ nonnumeric ++ parsed.unsuited]
-      end |> Enum.concat()
+      end
+      |> Enum.concat()
+      |> Enum.map(&{am_match_definition, &1})
     end
     |> Enum.concat()
     |> Enum.map(&translate_american_match_definitions_postprocess/1)
@@ -488,15 +499,15 @@ defmodule RiichiAdvanced.GameState.American do
               end
 
               # build adj graph from these cached edges
+              # and use dfs to find all augmenting paths
+              # TODO change to bfs
               adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, true}) do j end} end)
               adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {length(matching_hand_joker) + i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, false}) do j end} end)
               {new_pairing, new_pairing_r} = Map.merge(adj_joker, adj_nojoker)
               |> Utils.maximum_bipartite_matching()
 
-              # use dfs to find all augmenting paths
-              {pairing, _pairing_r, _missing_tiles} = acc
-
               # keep the best matching
+              {pairing, _pairing_r, _missing_tiles} = acc
               acc = if map_size(new_pairing) > map_size(pairing) do
                 # get missing tiles for later use
                 missing_tiles = Enum.map(Enum.to_list(0..length(matching_hand)-1) -- Map.keys(new_pairing), fn j -> Enum.at(matching_hand, j) end)
