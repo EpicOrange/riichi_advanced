@@ -65,7 +65,7 @@ Here is a breakdown of all the directories:
 
 ## Running the server
 
-This process requires installing Elixir (≥ 1.14) and `npm`.
+First, install Elixir (≥ 1.14), `npm`, `z3`, and `jq`.
 
 Then run:
 
@@ -84,4 +84,12 @@ Then run:
     # Start the server
     iex -S mix phx.server
 
-This should start the server up at `https://localhost:4000`. (Make sure to use https! http doesn't work locally for some reason.) Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
+This should start the server up at `https://localhost:4000`. (Make sure to use `https`! `http` doesn't work locally for some reason.) Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
+
+## Acknowledgements
+
+Thank you to everyone on Discord for playtesting and bug reports! Also, special thanks to the following sites for offering English-based rulesets:
+
+- [Mahjong Pros](https://mahjongpros.com/)
+- [Sloperama](https://www.sloperama.com/mahjongg/index.html)
+- [Mahjong Picture Guide](www.mahjongpictureguide.com)
