@@ -234,10 +234,11 @@
     //   "value": 1,
     //   "when": ["won_by_draw"]
     // },
+      // Note that Fully Concealed Hand also requires a win by self-draw. (Otherwise it's just Concealed Hand.)
     {
       "display_name": "Fully Concealed Hand",
       "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
+      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, "won_by_draw"]
     },
     {
       "display_name": "Final Tile",
@@ -737,7 +738,7 @@
         ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
         ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
       ],
-      "enabled_at_start": false
+      "enabled_at_start": true
     },
     "4_auto_no_call": {
       "display_name": "C",
