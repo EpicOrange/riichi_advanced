@@ -565,14 +565,7 @@
     { "display_name": "Unbreakable Principle", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] }
   ],
   "extra_yaku": [
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1g"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] }
+    { "display_name": "Flower Tiles", "value": "flower", "when": [{"name": "counter_at_least", "opts": ["flower", 1]}]}
   ],
   "yaku_precedence": {
       // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
@@ -684,6 +677,7 @@
     "self_draw_multiplier": 1,
     "self_draw_penalty": 8,
     "yaku_lists": ["yaku", "meta_yaku", "extra_yaku"],
+    "extra_yaku_lists": ["extra_yaku"],
     "point_name": "Pts",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
@@ -711,6 +705,10 @@
   },
   "after_call": {
     "actions": [["set_status", "call_made"]]
+  },
+  "before_win": {
+    // count number of flowers in hand only before win happens
+    "actions": [ ["add_counter", "flower", "count_matches", ["flowers"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]] ]
   },
   "after_win": {
     "actions": [["flip_all_calls_faceup"]]
@@ -867,7 +865,7 @@
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
-      "display_name": "Zimo",
+      "display_name": "Hu",
       "show_when": [
         "our_turn",
         "has_draw",
@@ -878,7 +876,7 @@
         {"name": "has_yaku_with_hand", "opts": [8]}
       ],
       "actions": [
-        ["big_text", "Zimo"],
+        ["big_text", "Hu"],
         ["pause", 1000],
         ["reveal_hand"],
         ["set_status", "won"],
