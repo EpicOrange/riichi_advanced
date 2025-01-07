@@ -83,17 +83,6 @@ defmodule RiichiAdvanced.GameState.American do
     else [] end
   end
 
-  # # deprecated
-  # # this breaks call matching, so we no longer do this (TODO remove)
-  # # e.g. two groups ABC and DEF can match a call ABC and a call DEF,
-  # # but a combined group ABCDEF can't match the call ABC or the call DEF
-  # defp combine_unique_groups(match_definition) do
-  #   # combine groups that are just [[["A","B"]], 1], [[["C","D"]], 1] into [["unique","A","B","C","D"], 4]
-  #   {simple_groups, complex_groups} = Enum.split_with(match_definition, fn elem -> case elem do [[group], 1] -> Enum.all?(group, &Utils.is_tile(&1) || Riichi.is_offset(&1)); _ -> false end end)
-  #   simple_group = Enum.flat_map(simple_groups, fn [[group], 1] -> group end)
-  #   complex_groups ++ if Enum.empty?(simple_group) do [] else [[["unique" | simple_group], length(simple_group)]] end
-  # end
-
   defp translate_american_match_definitions_postprocess({am_match_definition, match_definition}) do
     # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
@@ -157,11 +146,11 @@ defmodule RiichiAdvanced.GameState.American do
           translate_american_match_definitions_suits(parsed.a, sa)
           ++ translate_american_match_definitions_suits(parsed.b, sb)
           ++ translate_american_match_definitions_suits(parsed.c, sc)
-        {numeric, nonnumeric} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> is_integer(t) end))
-        numeric = Enum.concat(numeric)
-        numeric = if Enum.empty?(numeric) do [] else [[["unique" | numeric], length(numeric)]] end
-        nonnumeric = Enum.map(nonnumeric, fn g -> [[g], 1] end)
-        [numeric ++ nonnumeric ++ parsed.unsuited]
+        {offsets, nonoffsets} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> Riichi.is_offset(t) end))
+        offsets = Enum.concat(offsets)
+        offsets = if Enum.empty?(offsets) do [] else [[["unique" | offsets], length(offsets)]] end
+        nonoffsets = Enum.map(nonoffsets, fn g -> [[g], 1] end)
+        [offsets ++ nonoffsets ++ parsed.unsuited]
       end
       |> Enum.concat()
       |> Enum.map(&{am_match_definition, &1})
