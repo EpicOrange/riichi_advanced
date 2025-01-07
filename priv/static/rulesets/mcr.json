@@ -224,30 +224,6 @@
     // 0 open triplets, hand must be 4 triplets and a pair
     [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
   ],
-  "ryanankou_tsumo_definition": [
-    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
-    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
-    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1] ]
-  ],
-  "ryanankou_ron_definition": [
-    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
-    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
-    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
-  ],
-  "sanankou_tsumo_definition": [
-    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
-    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1] ]
-  ],
-  "sanankou_ron_definition": [
-    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
-    [ "exhaustive", [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
-  ],
-  "suuankou_tsumo_definition": [
-    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
-  ],
-  "suuankou_ron_definition": [
-    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
-  ],
   "any_flower_definition": [
     [[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]
   ],
@@ -757,7 +733,7 @@
     "start_flower": {
       "display_name": "Hua",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]]
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]],
       "unskippable": true
     },
     "start_no_flower": {

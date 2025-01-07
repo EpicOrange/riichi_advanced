@@ -347,24 +347,25 @@ defmodule Riichi do
                   {ret, joker, nojoker, to_remove_num} ->
                     tiles = if is_hand do call else call_to_tiles(call) end
                     num_tiles = length(tiles)
-                    if to_remove_num > num_tiles do
-                      adj_joker   = Map.new(Enum.with_index(joker),   fn {tile, i} -> {i,                 for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, tile_aliases)  do j end} end)
-                      adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile)                do j end} end)
-                      adj = Map.merge(adj_joker, adj_nojoker)
-                      {pairing, pairing_r} = Utils.maximum_bipartite_matching(adj)
-                      if map_size(pairing) == num_tiles do
-                        n = length(joker)
-                        {from_joker, from_nojoker} = pairing |> Map.keys() |> Enum.sort(:desc) |> Enum.split_while(fn i -> i >= n end)
-                        nojoker = for i <- from_nojoker, reduce: nojoker do nojoker -> List.delete_at(nojoker, i - n) end
-                        joker   = for i <- from_joker,   reduce: joker   do joker   -> List.delete_at(joker,   i    ) end
-                        ret = if is_hand do # is hand, so we keep all unmatched tiles
-                          hand = for j <- pairing_r |> Map.keys() |> Enum.sort(:desc), reduce: tiles do hand -> List.delete_at(hand, j) end
-                          [hand | ret]
-                        else ret end # not hand, so we discard all unmatched tiles
-                        {ret, joker, nojoker, to_remove_num - num_tiles}
-                      else {[call | ret], joker, nojoker, to_remove_num} end
+                    adj_joker   = Map.new(Enum.with_index(joker),   fn {tile, i} -> {i,                 for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, tile_aliases)  do j end} end)
+                    adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile)                do j end} end)
+                    adj = Map.merge(adj_joker, adj_nojoker)
+                    {pairing, pairing_r} = Utils.maximum_bipartite_matching(adj)
+                    consumes_call = map_size(pairing) == num_tiles
+                    consumes_match = map_size(pairing) == to_remove_num
+                    if consumes_call || consumes_match do
+                      n = length(joker) 
+                      {from_joker, from_nojoker} = pairing |> Map.keys() |> Enum.sort(:desc) |> Enum.split_while(fn i -> i >= n end)
+                      nojoker = for i <- from_nojoker, reduce: nojoker do nojoker -> List.delete_at(nojoker, i - n) end
+                      joker   = for i <- from_joker,   reduce: joker   do joker   -> List.delete_at(joker,   i    ) end
+                      ret = if is_hand do # is hand, so we keep all unmatched tiles
+                        hand = for j <- pairing_r |> Map.keys() |> Enum.sort(:desc), reduce: tiles do hand -> List.delete_at(hand, j) end
+                        [hand | ret]
+                      else ret end # not hand, so we discard all unmatched tiles
+                      {ret, joker, nojoker, to_remove_num - map_size(pairing)}
                     else {[call | ret], joker, nojoker, to_remove_num} end
                 end
+                # check that match is consumed
                 if to_remove_num == 0 do [{hand, calls}] else [] end
               end)
               |> Enum.uniq()
