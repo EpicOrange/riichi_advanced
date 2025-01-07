@@ -565,7 +565,7 @@
     { "display_name": "Unbreakable Principle", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] }
   ],
   "extra_yaku": [
-    { "display_name": "Flower Tiles", "value": "flower", "when": [{"name": "counter_at_least", "opts": ["flower", 1]}]}
+    { "display_name": "Flower Tiles", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower", 1]}]}
   ],
   "yaku_precedence": {
       // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
@@ -708,7 +708,7 @@
   },
   "before_win": {
     // count number of flowers in hand only before win happens
-    "actions": [ ["add_counter", "flower", "count_matches", ["flowers"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]] ]
+    "actions": [ ["add_counter", "flower_count", "count_matches", ["flowers"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]] ]
   },
   "after_win": {
     "actions": [["flip_all_calls_faceup"]]
