@@ -65,6 +65,8 @@ The following Cards are supported by Riichi Advanced:
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 
+[TODO: implement these free cards.]
+
 To read the Card (using the free ILoveMahj Card as an example):
 
 - Tiles that are grouped together are a single group, while tiles that are separated are not.
