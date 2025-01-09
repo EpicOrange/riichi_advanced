@@ -10,7 +10,7 @@ American Mah-Jongg differs from the "base Asian mahjong variant" many ways:
 - Upon declaring a Kong or Quint, no replacement tiles are drawn. That is, hands are always exactly 13 tiles large before one's turn begins, winning on exactly 14.
 - Chow may not be declared. In fact, sequences of tiles are treated identically to sets of unrelated single tiles.
 - Quints may be declared, thanks to the existence of Jokers.
-- Flower declarations don't exist. Instead, flowers are all treated identically, like any other tile, and may form Pungs or Kongs or Quints.
+- Flower declarations don't exist. Instead, flowers and seasons are all treated as identical flowers, and may form Pungs or Kongs or Quints.
 
 ## Exposures
 
