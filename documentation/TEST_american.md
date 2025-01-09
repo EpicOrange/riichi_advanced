@@ -1,29 +1,32 @@
 # [WIP] American Mah-Jongg (NMJL-style)
 
-The wall for American consists of the 1-9 character tiles (Craks), 1-9 circle tiles (Dots), 1-9 bamboo tiles (Bams), the four wind tiles, the three dragon tiles, the four flower tiles, the four season tiles, and eight American joker tiles.
+This documentation file contains the rules of American Mah-Jongg (NMJL-style), as might be implemented in an online client like Riichi Advanced. Full rules for real-life play may be found in the official rulebook published by the National Mah-Jongg League, [*Mah Jongg Made Easy*](https://www.nationalmahjonggleague.org/store.aspx).
 
-American Mah-Jongg differs from the "base Asian mahjong variant" many ways:
+Note that American Mah-Jongg differs from the "base Asian mahjong variant" in many ways, so your knowledge of those variants may not necessarily transfer.
 
 ## Fundamentals
 
+-  The wall for American consists of the 1-9 character tiles (Craks), 1-9 circle tiles (Dots), 1-9 bamboo tiles (Bams), the four wind tiles, the three dragon tiles, the four flower tiles, the four season tiles, and eight American joker tiles.
 - Winning hands are no longer four sets and a pair, but are instead determined by a Card of winning hands (which usually changes annually, depending on which Card you use).
 - Upon declaring a Kong or Quint, no replacement tiles are drawn. That is, hands are always exactly 13 tiles large before one's turn begins, winning on exactly 14.
 - Chow may not be declared. In fact, sequences of tiles are treated identically to sets of unrelated single tiles.
 - Quints may be declared, thanks to the existence of Jokers.
-- Flower declarations don't exist. Instead, flowers and seasons are all treated as identical flowers, and may form Pungs or Kongs or Quints.
+- Flower declarations don't exist.
+- Flowers and seasons are all treated as identical flowers, and may form Pungs or Kongs or Quints. Flowers may be discarded.
 
 ## Exposures
 
 - A Pung/Kong/Quint is specifically a set of three/four/five **identical** tiles.
-- An exposed Pung/Kong/Quint is called an "exposure".
 - All other groups of tiles are either singles, pairs, or sets of singles. (e.g. NEWS, 2025, 123)
+- An exposed Pung/Kong/Quint is called an "exposure".
+- Discarded tiles may be called for exposures and for Mah Jongg. They may not be called to form singles, pairs, or sets of singles.
+- When two players call the same discard, Mah Jongg takes precedence over an exposure. Ties are broken in favour of whoever is next in turn order.
 
 ## Jokers
 
 - Tiles that aren't jokers are called "naturals".
-- American jokers may be used only in Pungs, Kongs, or Quints (and never in singles, pairs, or sets of singles).
-- Jokers may be discarded, and discarded jokers may not be called for exposure or for Mah Jongg.
-- An exposure must be made from a discarded natural, plus matching naturals/jokers from a player's hand.
+- Jokers may be used only in Pungs, Kongs, or Quints (and never in singles, pairs, or sets of singles).
+- Jokers may be discarded, and discarded jokers may not be called for any reason (whether for exposure or for Mah Jongg).
 - As many jokers as desired may be used in a Pung/Kong/Quint, whether it is exposed/concealed.
 - Suppose a player has an exposure containing a joker. A player who has a (concealed) natural in their hand matching that exposure may, on their turn, swap their natural with that joker. (This includes swapping a natural from one's own hand with a joker from one's own exposure.)
 
@@ -31,7 +34,7 @@ American Mah-Jongg differs from the "base Asian mahjong variant" many ways:
 
 The following Cards are supported by Riichi Advanced:
 
-- [NMJL 2024](https://www.nationalmahjonggleague.org/store.aspx#) (cost: 14USD)
+- [NMJL 2024](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
@@ -56,11 +59,17 @@ To read the Card (using the free ILoveMahj Card as an example):
 
 ## Scoring
 
+- A hand that is NOT from the Singles and Pairs category, and does not contain any jokers, has its score doubled.
 - If the hand was won by a discard, the discarder pays twice this score, while everyone else pays this score.
 - If this hand was won by self-draw, everyone pays twice this score.
-- A hand that is NOT from the Singles and Pairs category, and does not contain any jokers, has its score doubled.
 - If the last move by the winner before declaring Mah Jongg was to perform a joker exchange, this counts as a win by self-draw no matter whose exposure the joker was swapped from, or whether that player's turn started by calling someone's discard.
 [comment]: # The NMJL's rules aren't actually too clear on this point. I've asked someone to send in a letter for clarification.
+
+## Death Challenge
+
+- If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge.
+- If the Death Challenge is valid, that player is dead.
+- If it is invalid, the challenger [TODO: say what happens to the challenger]
 
 
 
