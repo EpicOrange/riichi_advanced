@@ -106,3 +106,12 @@ To read the Card (using the free ILoveMahj Card as an example):
 ## Another Game
 
 - Dealership always passes to the next player, regardless of whether the current dealer wins.
+
+## Notes specific to Riichi Advanced
+
+- Riichi Advanced will not let you make an incorrect exposure or Mah Jongg in error.
+- Riichi Advanced will not require you to name every discard.
+- Riichi Advanced will pause the game and keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass it up.
+- Riichi Advanced will never incorrectly draw a tile when it shouldn't, or discard a tile when it shouldn't.
+- Riichi Advanced requires you to name what kind of exposure you're calling for.
+- Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
