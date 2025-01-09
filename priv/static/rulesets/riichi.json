@@ -60,6 +60,8 @@
     {"id": "ura", "deps": ["dora"], "name": "Ura", "desc": "Enables ura dora."},
     {"id": "aka", "conflicts": ["chinitsu"], "name": "Aka", "desc": "Enables aka dora (red fives)."},
     {"id": "aka_4", "deps": ["aka"], "conflicts": ["chinitsu"], "name": "Fourth Aka", "desc": "Adds another red five (of circles)."},
+    {"id": "aka_6", "deps": ["aka_4", "aka"], "conflicts": ["chinitsu"], "name": "Six Aka", "desc": "Adds another two red fives (of characters and bamboos)."},
+    {"id": "aka_12", "deps": ["aka_6", "aka_4", "aka"], "conflicts": ["chinitsu"], "name": "Twelve Aka", "desc": "Changes all fives to red fives."},
     {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
     "Yaku",
     // 1 han
