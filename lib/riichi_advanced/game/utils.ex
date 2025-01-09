@@ -368,53 +368,59 @@ defmodule Utils do
   end
   
   def maximum_bipartite_matching(adj, pairing \\ %{}, pairing_r \\ %{}) do
-    {pairing, pairing_r, visited, _visited_r} = maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r)
-    if Enum.empty?(visited) do
-      {pairing, pairing_r}
-    else
+    orig_size = map_size(pairing)
+    {pairing, pairing_r} = maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r)
+    if map_size(pairing) > orig_size do
       maximum_bipartite_matching(adj, pairing, pairing_r)
-    end
+    else {pairing, pairing_r} end
   end
-
-  # returns {pairing, pairing_r, visited, visited_r}
   defp maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r) do
     start_pts = Map.keys(adj) -- Map.keys(pairing)
-    layers = {start_pts, MapSet.new(start_pts)}
-    |> Stream.iterate(fn {prev_layer, visited} ->
-      new_layer = prev_layer
+    {layers, _, _, _} = Enum.reduce_while(1..map_size(adj), {[], start_pts, MapSet.new(start_pts), MapSet.new()}, fn _, {layers, prev_layer, visited, visited_r} ->
+      opp_layer = prev_layer
       |> Enum.flat_map(fn u -> Enum.reject(adj[u], &Map.get(pairing, u) == &1) end)
       |> Enum.uniq()
-      |> Enum.map(&Map.get(pairing_r, &1))
-      |> Enum.reject(&is_nil/1)
-      |> Enum.reject(& &1 in visited)
-      {new_layer, MapSet.union(visited, MapSet.new(new_layer))}
-    end)
-    |> Enum.take_while(fn {layer, _visited} -> not Enum.empty?(layer) end)
-    |> Enum.to_list()
-    |> Enum.map(fn {layer, _visited} -> layer end)
+      |> Enum.reject(& &1 in visited_r)
 
-    for from <- start_pts, reduce: {pairing, pairing_r, MapSet.new(), MapSet.new()} do
-      {pairing, pairing_r, visited, visited_r} ->
-        case maximum_bipartite_matching_hopcroft_karp_dfs(from, adj, pairing, pairing_r, visited, visited_r) do
-          {pairing, pairing_r, visited, visited_r, true} -> {pairing, pairing_r, visited, visited_r}
-          _                                              -> {pairing, pairing_r, visited, visited_r}
+      new_layer = opp_layer
+      |> Enum.map(&Map.get(pairing_r, &1, nil))
+      |> Enum.uniq()
+      |> Enum.reject(& &1 in visited)
+
+      visited = MapSet.union(visited, MapSet.new(new_layer))
+      visited_r = MapSet.union(visited_r, MapSet.new(opp_layer))
+      acc = {[MapSet.new(new_layer) | layers], new_layer, visited, visited_r}
+      if nil in new_layer || MapSet.size(visited) == map_size(adj) do
+        {:halt, acc}
+      else
+        {:cont, acc}
+      end
+    end)
+    layers = Enum.reverse([MapSet.new() | layers])
+    for from <- start_pts, reduce: {pairing, pairing_r} do
+      {pairing, pairing_r} ->
+        case maximum_bipartite_matching_hopcroft_karp_dfs(from, adj, layers, pairing, pairing_r) do
+          {pairing, pairing_r, _layer, true} -> {pairing, pairing_r}
+          _                                  -> {pairing, pairing_r}
         end
     end
   end
-
-  defp maximum_bipartite_matching_hopcroft_karp_dfs(u, adj, pairing, pairing_r, visited, visited_r) do
-    if u not in visited do
-      Enum.reduce_while(adj[u], {pairing, pairing_r, MapSet.put(visited, u), visited_r, false}, fn v, {pairing, pairing_r, visited, visited_r, _found} ->
-        if v not in visited_r do
-          case Map.get(pairing_r, v) do
-            nil    -> {:halt, {Map.put(pairing, u, v), Map.put(pairing_r, v, u), visited, visited_r, true}}
-            next_u -> case maximum_bipartite_matching_hopcroft_karp_dfs(next_u, adj, pairing, pairing_r, visited, MapSet.put(visited_r, v)) do
-              {pairing, pairing_r, visited, visited_r, true} -> {:halt, {Map.put(pairing, u, v), Map.put(pairing_r, v, u), visited, visited_r, true}}
-              _                                              -> {:cont, {pairing, pairing_r, visited, visited_r, false}}
+  defp maximum_bipartite_matching_hopcroft_karp_dfs(nil, _adj, _layers, pairing, pairing_r) do
+    {pairing, pairing_r, MapSet.new(), true}
+  end
+  defp maximum_bipartite_matching_hopcroft_karp_dfs(u, adj, [layer | layers], pairing, pairing_r) do
+    Enum.reduce_while(adj[u], {pairing, pairing_r, layer, false}, fn v, {pairing, pairing_r, layer, _found} ->
+      case Map.get(pairing_r, v) do
+        nil    -> {:halt, {Map.put(pairing, u, v), Map.put(pairing_r, v, u), MapSet.new(), true}}
+        next_u ->
+          if next_u in layer do
+            layer = MapSet.delete(layer, next_u)
+            case maximum_bipartite_matching_hopcroft_karp_dfs(next_u, adj, layers, pairing, pairing_r) do
+              {pairing, pairing_r, _layer, true} -> {:halt, {Map.put(pairing, u, v), Map.put(pairing_r, v, u), MapSet.new(), true}}
+              _                                  -> {:cont, {pairing, pairing_r, layer, false}}
             end
-          end
-        else {:cont, {pairing, pairing_r, visited, visited_r, false}} end
-      end)
-    else {pairing, pairing_r, visited, visited_r, false} end
+          else {:cont, {pairing, pairing_r, layer, false}} end
+      end
+    end)
   end
 end
