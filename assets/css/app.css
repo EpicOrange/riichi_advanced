@@ -2028,7 +2028,7 @@ div.placement > div.placement-place::before {
 div.placement span.placement-score {
   margin-left: calc(0.5 * var(--tile-size));
 }
-div.game-modal-container > a.goto-index-button {
+div.game-modal-container > button.end-back-button {
   position: absolute;
   width: 100%;
   height: calc(1 * var(--tile-size));
@@ -2044,7 +2044,7 @@ div.game-modal-container > a.goto-index-button {
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
 }
-div.game-modal-container > a.goto-index-button:active {
+div.game-modal-container > button.end-back-button:active {
   bottom: 0;
   filter: none;
 }
