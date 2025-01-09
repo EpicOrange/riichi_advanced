@@ -306,7 +306,7 @@
     "Small Four Winds": ["East Wind", "North Wind", "Seat Wind"],
     "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
     "Small Three Dragons": ["White Dragon", "Green Dragon", "Red Dragon"],
-    "Four Concealed Triplets": ["All Triplets"]
+    "Four Concealed Triplets": ["All Triplets"],
     "All Honors": ["Half Flush"]
   },
   "score_calculation": {
