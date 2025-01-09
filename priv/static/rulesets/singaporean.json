@@ -4,6 +4,10 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+    // NOTE 2025-01-09: It's looking like the rules from MahjongPros
+    // aren't very clearly-written. I think it's best to wait until
+    // we get a good, clearly-written ruleset for Singaporean mahjong
+    // before we try to make any more changes to the implementation.
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-singaporean-mahjong",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
