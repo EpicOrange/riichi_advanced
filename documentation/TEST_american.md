@@ -49,7 +49,7 @@ To read the Card (using the free ILoveMahj Card as an example):
 - The categories of Any Like Number, Quints, and Consecutive Runs are all "flexible", meaning that unless stated otherwise, any like numbers/consecutive numbers may be used to form these hands.
     - For instance, Consecutive Run #3 may also be formed with 44 5555 6666 7777. (But it can't be formed with 4444 5555 6666 77.)
 - By contrast, all other categories are "fixed", meaning that ONLY the numbers shown may be used to form these hands.
-    - For instance, 13579 #3 may NOT be formed with 3333 5555 555 777 (even if they would be in the correct suits).
+    - For instance, 13579 #3 may NOT be formed with 3333 5555 555 777.
 - Within a hand, any instance of `+`, `-`, `x`, `/`, `=`, or anything else that isn't a number or letter, is only there for aesthetics and should be ignored. (Usually, in the Math section.)
 - To the right of each hand, an `x` indicates that the hand may contain exposures, while a `c` indicates that a hand MUST be concealed (except for the winning tile).
 - To the right of each hand, the base score of each hand is shown.
