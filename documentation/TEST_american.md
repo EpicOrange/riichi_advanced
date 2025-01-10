@@ -65,19 +65,19 @@ The following Cards are supported by Riichi Advanced:
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 
-[TODO: implement these free cards.]
+[TODO: implement these free Cards. Just the AMJfE Card left.]
 
 To read the Card (using the free ILoveMahj Card as an example):
 
 - Tiles that are grouped together are a single group, while tiles that are separated are not.
     - For instance, 2468 #1 requires a Kong of flowers, a single 2, a pair of 4, a Pung of 6 and a Kong of 8. This hand cannot be achieved by calling a Pung of flowers, and then having one extra flower in one's hand.
-- Exposures do not have to be made in the order shown on the card.
+- Exposures do not have to be made in the order shown on the Card.
     - For instance, 2468 #1 may be made with a Kong of 8, then a Kong of Flowers, then a Pung of 6.
 - Different colours (red, green, and black/blue) represent different suits. Note that a red number does NOT always correspond to Craks; green does NOT always correspond to Bams, and black/blue does NOT always correspond to Dots.
     - For instance, 2468 #3 requires Pungs of 2 and 4 of one suit (not necessarily Craks), and kongs of 6 and 8 of a second suit (not necessarily Bams, but must be different from the first suit).
 - The three dragons are all considered suited; the red dragon belongs to the Craks suit, the green dragon with the Bams suit, and the white dragon with the Dots suit. Winds and flowers are unsuited.
     - For instance, 2468 #6 must have the Kong of Dragons be of a different suit from the Kongs of 4 and 8. If one has a Kong of 4 Bam, and a Kong of 8 Crak, then the Dragons must be of the Dots suit; i.e. it must be a White Dragon.
-- A 0 on the card represents a white dragon. When a white dragon is used this way, it is whichever suit it needs to be to fit that winning hand on the Card.
+- A 0 on the Card represents a white dragon. When a white dragon is used as a 0, it is considered suitless (even if the Card represents it in colour).
     - For instance, Singles And Pairs #7 must be formed with three white dragons. Note that because they are separated, this hand cannot be achieved by calling a Pung of white dragons.
 - 0s are NOT considered consecutive to 1 or to 9.
 - The categories of Any Like Number, Quints, and Consecutive Runs are all "flexible", meaning that unless stated otherwise, any like numbers/consecutive numbers may be used to form these hands.
