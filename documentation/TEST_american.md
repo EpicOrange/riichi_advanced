@@ -102,7 +102,7 @@ To read the Card (using the free ILoveMahj Card as an example):
 
 - If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge.
 - If the Death Challenge is valid, that player is now dead. If not, the challenger is now dead. (Note that this is different from *MJME*, where an incorrect Death Challenge results in the challenger paying 50¢ to the challenged.)
-- Dead players no longer draw, discard, call discards for exposure or Mah Jongg, or perform joker exchanges. [TODO: Check whether NMJL Rules also forbid them from calling other players dead.]
+- Dead players may no longer draw, discard, call discards for exposure or Mah Jongg, perform joker exchanges, or declare other players dead. However, they still pay in the event of someone else winning. [TODO: Check whether Riichi Advanced's implementation follows this.]
 
 - Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded. Also check what the NMJL Rules say about being declared dead after making an exposure then a joker exchange but before discard.]
 - Multiple players can go dead in a round. [TODO: Implement the scenario that if 3 players are declared dead, the hand is aborted.]
