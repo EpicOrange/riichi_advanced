@@ -1,5 +1,5 @@
-"win_definition": [
-    // 2468
+.win_definition = [
+    # 2468
     "FFFF 2a 44a 666a 8888a",
     "22a 4444a 666b 666c 88a",
     "222a 444a 6666b 8888b",
@@ -7,13 +7,13 @@
     "FF 4444a 8888a DDDDa",
     "FF 4444a 8888b DDDDc",
     "FF 2222a 44b 66b 8888c",
-    "222a 444a 666a 888a DDa", // concealed
-    // Any Like Numbers
+    "222a 444a 666a 888a DDa", # concealed
+    # Any Like Numbers
     "FFFF XXXX0a XX0b XXXX0c",
     "FF XXXX0a DDa XXXX0b DDb",
     "FFF XXXX0a DDDDb XXXX0c",
-    "XX0a DDa XXX0b DDDb XXXX0c", // concealed
-    // Math
+    "XX0a DDa XXX0b DDDb XXXX0c", # concealed
+    # Math
     "FFFF 4444a 8888b 32c",
     "DDDDa 3333b 7777c 21a",
     "FF 3333a 4444a 7777a",
@@ -22,15 +22,15 @@
     "FFFF 5555a 6666b 11c",
     "DDa 8888a 3333a 5555a",
     "DDa 8888b 3333c 5555a",
-    "333a 444a 555a 222a 00", // concealed
-    // Quints
+    "333a 444a 555a 222a 00", # concealed
+    # Quints
     "XXXXX0a XXXX1a XXX2a XX3a",
     "FFFFF DDDDDa XXXX0a",
     "11111a 3333a 555a DDa",
     "55555a 7777a 999a DDa",
     "FFFFF 33a 666a 9999a",
     "FFFFF 33a 666b 9999c",
-    // Consecutive Run
+    # Consecutive Run
     "11a 22a 333a 444a 5555a",
     "55a 66a 777a 888a 9999a",
     "XX0a XXXX1a XXXX2a XXXX3a",
@@ -38,8 +38,8 @@
     "FFF XXXX0a XXXX1b DDDc",
     "XXXX0a XX1b XX1a XX1c XXXX2a",
     "FF XX0a XXX1a XX2b XXX3b DDc",
-    "XXX0a XX1a XXX2a DDDb DDDc", // concealed
-    // 13579
+    "XXX0a XX1a XXX2a DDDb DDDc", # concealed
+    # 13579
     "11a 333a 5555a 777a 99a",
     "11a 333a 5555b 777c 99c",
     "1111a 3333a 333b 555b",
@@ -49,39 +49,40 @@
     "11a 333a DDDDc 333b 55b",
     "55a 777a DDDDc 777b 99b",
     "11a 33a 55a 7777b 9999c",
-    "111a 3333b 555c NEWS", // concealed
-    "555a 7777b 999c NEWS", // concealed
-    // Winds and Dragons
+    "111a 3333b 555c NEWS", # concealed
+    "555a 7777b 999c NEWS", # concealed
+    # Winds and Dragons
     "NNNN EEE WWW SSSS",
     "FF DDDDa NEWS DDDDb",
-    "FF NNNN RR SSSS", // [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
-    "FF EEEE GG WWWW", // [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
+    "FF NNNN RR SSSS", # [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
+    "FF EEEE GG WWWW", # [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
     "FFFF N EE WWW SSSS",
     "FF NN XXXX0a XXXX1b SS",
     "FF EE XXXX0a XXXX1b WW",
     "NNNN DDa DDb DDc SSSS",
     "EEEE DDa DDb DDc WWWW",
-    "NN 111a 1111b 111c SS", "NN 333a 3333b 333c SS", "NN 555a 5555b 555c SS", "NN 777a 7777b 777c SS", "NN 999a 9999b 999c SS", // concealed
-    "EE 222a 2222b 222c WW", "EE 444a 4444b 444c WW", "EE 666a 6666b 666c WW", "EE 888a 8888b 888c WW", // concealed
-    // 369
+    "NN 111a 1111b 111c SS", "NN 333a 3333b 333c SS", "NN 555a 5555b 555c SS", "NN 777a 7777b 777c SS", "NN 999a 9999b 999c SS", # concealed
+    "EE 222a 2222b 222c WW", "EE 444a 4444b 444c WW", "EE 666a 6666b 666c WW", "EE 888a 8888b 888c WW", # concealed
+    # 369
     "33a 666a 333b 66b 9999c",
     "FFFF 33a 666a 99a DDDa",
     "3333a 66a 9999a DDDDa",
     "FF 3333a 6666a 9999a",
     "FF 3333a 6666b 9999c",
     "FF 33a 66a 99a DDDb DDDc",
-    "FF 3a 66a 999a 3b 66b 999b", // concealed
-    // Singles and Pairs
-    "NN EE WW SS 11a 11b 11c", // concealed
-    "FF 11a 33a 55a 77a 99a DDa", // concealed
-    "XX0a XX1a XX2a XX3a XX4a XX5a DDa", // concealed
-    "FF 2a 4a 66a 88a 22b 44b 6b 8b", // concealed
-    "3a 66a 3b 66b 99b 33c 66c 99c", // concealed
-    "FF XX0a XX1a XX2a DDb DDc DDa", // concealed
-    "FF 0123a 0123b 0123c" //concealed
-  ],
-  "open_win_definition": [
-    // 2468
+    "FF 3a 66a 999a 3b 66b 999b", # concealed
+    # Singles and Pairs
+    "NN EE WW SS 11a 11b 11c", # concealed
+    "FF 11a 33a 55a 77a 99a DDa", # concealed
+    "XX0a XX1a XX2a XX3a XX4a XX5a DDa", # concealed
+    "FF 2a 4a 66a 88a 22b 44b 6b 8b", # concealed
+    "3a 66a 3b 66b 99b 33c 66c 99c", # concealed
+    "FF XX0a XX1a XX2a DDb DDc DDa", # concealed
+    "FF 0123a 0123b 0123c" #concealed
+  ]
+|
+.open_win_definition = [
+    # 2468
     "FFFF 2a 44a 666a 8888a",
     "22a 4444a 666b 666c 88a",
     "222a 444a 6666b 8888b",
@@ -89,11 +90,11 @@
     "FF 4444a 8888a DDDDa",
     "FF 4444a 8888b DDDDc",
     "FF 2222a 44b 66b 8888c",
-    // Any Like Numbers
+    # Any Like Numbers
     "FFFF XXXX0a XX0b XXXX0c",
     "FF XXXX0a DDa XXXX0b DDb",
     "FFF XXXX0a DDDDb XXXX0c",
-    // Math
+    # Math
     "FFFF 4444a 8888b 32c",
     "DDDDa 3333b 7777c 21a",
     "FF 3333a 4444a 7777a",
@@ -102,14 +103,14 @@
     "FFFF 5555a 6666b 11c",
     "DDa 8888a 3333a 5555a",
     "DDa 8888b 3333c 5555a",
-    // Quints
+    # Quints
     "XXXXX0a XXXX1a XXX2a XX3a",
     "FFFFF DDDDDa XXXX0a",
     "11111a 3333a 555a DDa",
     "55555a 7777a 999a DDa",
     "FFFFF 33a 666a 9999a",
     "FFFFF 33a 666b 9999c",
-    // Consecutive Run
+    # Consecutive Run
     "11a 22a 333a 444a 5555a",
     "55a 66a 777a 888a 9999a",
     "XX0a XXXX1a XXXX2a XXXX3a",
@@ -117,7 +118,7 @@
     "FFF XXXX0a XXXX1b DDDc",
     "XXXX0a XX1b XX1a XX1c XXXX2a",
     "FF XX0a XXX1a XX2b XXX3b DDc",
-    // 13579
+    # 13579
     "11a 333a 5555a 777a 99a",
     "11a 333a 5555b 777c 99c",
     "1111a 3333a 333b 555b",
@@ -127,25 +128,26 @@
     "11a 333a DDDDc 333b 55b",
     "55a 777a DDDDc 777b 99b",
     "11a 33a 55a 7777b 9999c",
-    // Winds and Dragons
+    # Winds and Dragons
     "NNNN EEE WWW SSSS",
     "FF DDDDa NEWS DDDDb",
-    "FF NNNN RR SSSS", // [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
-    "FF EEEE GG WWWW", // [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
+    "FF NNNN RR SSSS", # [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
+    "FF EEEE GG WWWW", # [TODO: Check whether "red dragon only" and "green dragon only" are implemented. If not, this line will throw up a parser error.]
     "FFFF N EE WWW SSSS",
     "FF NN XXXX0a XXXX1b SS",
     "FF EE XXXX0a XXXX1b WW",
     "NNNN DDa DDb DDc SSSS",
     "EEEE DDa DDb DDc WWWW",
-    // 369
+    # 369
     "33a 666a 333b 66b 9999c",
     "FFFF 33a 666a 99a DDDa",
     "3333a 66a 9999a DDDDa",
     "FF 3333a 6666a 9999a",
     "FF 3333a 6666b 9999c",
     "FF 33a 66a 99a DDDb DDDc"
-  ],
-  "yaku": [
+  ]
+|
+.yaku = [
     { "display_name": "2468 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2a 44a 666a 8888a"]}] },
     { "display_name": "2468 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 4444a 666b 666c 88a"]]}] },
     { "display_name": "2468 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 444a 6666b 8888b"]]}] },
@@ -217,4 +219,4 @@
     { "display_name": "Singles and Pairs #5", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["3a 66a 3b 66b 99b 33c 66c 99c"]]} ] },
     { "display_name": "Singles and Pairs #6", "value": 60, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XX0a XX1a XX2a DDb DDc DDa"]]} ] },
     { "display_name": "Singles and Pairs #7", "value": 75, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 0123a 0123b 0123c"]]} ] }
-  ],
+  ]
