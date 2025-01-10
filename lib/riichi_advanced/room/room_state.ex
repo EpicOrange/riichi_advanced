@@ -68,6 +68,7 @@ defmodule RiichiAdvanced.RoomState do
 
     # read in the ruleset
     ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.session_id)
+    config = ModLoader.get_config_json(state.ruleset, state.session_id)
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
@@ -132,7 +133,11 @@ defmodule RiichiAdvanced.RoomState do
       else
         Map.get(rules, "tutorial_link", nil)
       end,
-      textarea: [Delta.Op.insert(ruleset_json)],
+      textarea: if state.ruleset == "custom" do
+        [Delta.Op.insert(ruleset_json)]
+      else
+        [Delta.Op.insert(config)]
+      end,
     })
 
     # check if a lobby exists. if so, notify the lobby that this room now exists
@@ -364,7 +369,14 @@ defmodule RiichiAdvanced.RoomState do
         RiichiAdvanced.ETSCache.put(state.session_id, ruleset_json, :cache_rulesets)
       end
     end
-    game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
+    config = if state.ruleset != "custom" do
+      config = Enum.at(state.textarea, 0)["insert"]
+      if config != nil do
+        RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, config, :cache_configs)
+      end
+      config
+    else nil end
+    game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
         IO.puts("Starting game session #{state.session_id}")

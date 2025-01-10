@@ -4,7 +4,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
-  "tutorial_link": "http://mahjong-europe.org/portal/images/docs/mcr_EN.pdf",
+  "tutorial_link": "https://ooyamaneko.net/download/mahjong/mcr/MCR_2014_en.pdf",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -383,7 +383,7 @@
     { "display_name": "All Terminals", "value": 64, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}] },
     { "display_name": "Little Four Winds", "value": 64, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}] },
     { "display_name": "Little Three Dragons", "value": 64, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}] },
-    { "display_name": "All Honor", "value": 64, "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z"]}] },
+    { "display_name": "All Honors", "value": 64, "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z"]}] },
     {
       "display_name": "Four Concealed Pungs",
       "value": 64,
@@ -399,7 +399,7 @@
     // 32
     { "display_name": "Four Pure Shifted Chows", "value": 32, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["four_pure_shifted_chows"]]}] },
     { "display_name": "Three Kongs", "value": 32, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}] },
-    { "display_name": "Mixed Terminals", "value": 32, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
+    { "display_name": "All Terminals and Honors", "value": 32, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
     // 24
     { "display_name": "Seven Pairs", "value": 24, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
     { "display_name": "Greater Honors and Knitted Tiles", "value": 24, "when": [{"name": "match", "opts": [["hand", "winning_tile"], ["greater_knitted"]]}] },
@@ -442,12 +442,12 @@
     { "display_name": "Last Tile Draw", "value": 2, "when": ["won_by_draw", "no_tiles_remaining"] },
     { "display_name": "Last Tile Claim", "value": 2, "when": ["won_by_discard", "no_tiles_remaining"] },
     { "display_name": "Out with Replacement Tile", "value": 1, "when": [{"name": "not_status_missing", "opts": ["kan"]}] },
-    { "display_name": "Robbing a Kong", "value": 5, "when": ["won_by_call"] },
+    { "display_name": "Robbing The Kong", "value": 5, "when": ["won_by_call"] },
     { "display_name": "Two Concealed Kongs", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
     // 6
     { "display_name": "All Pungs", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
     {
-      "display_name": "Mixed Flush",
+      "display_name": "Half Flush",
       "value": 6,
       "when": [[
         {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
@@ -511,7 +511,7 @@
       ]]
     },
     { "display_name": "Concealed Hand", "value": 2, "when": ["won_by_discard", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
-    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}] },
+    { "display_name": "All Chows", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}] },
     { "display_name": "Tile Hog", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
     { "display_name": "Double Pung", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["double_pung"]]}] },
     {
@@ -541,7 +541,7 @@
     { "display_name": "Pung of Honors", "value": 1, "when": [{"name": "not_round_wind_is", "opts": ["south"]}, {"name": "not_seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}] },
     { "display_name": "Pung of Honors", "value": 1, "when": [{"name": "not_round_wind_is", "opts": ["west"]}, {"name": "not_seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}] },
     { "display_name": "Pung of Honors", "value": 1, "when": [{"name": "not_round_wind_is", "opts": ["north"]}, {"name": "not_seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}] },
-    { "display_name": "Open Kong", "value": 1, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}] },
+    { "display_name": "Melded Kong", "value": 1, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}] },
     {
       "display_name": "One Voided Suit",
       "value": 1,
@@ -552,60 +552,52 @@
       ]]
     },
     { "display_name": "No Honors", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]}] },
-    { "display_name": "Self Drawn", "value": 1, "when": ["won_by_draw"] },
+    { "display_name": "Self-Drawn", "value": 1, "when": ["won_by_draw"] },
     { "display_name": "Edge Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["edge_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Closed Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] }
   ],
   "meta_yaku": [
     { "display_name": "Chicken Hand", "value": 12, "when": ["has_no_yaku"] },
-    // ad-hoc implementation of Unbreakable Principle; just subtract the value of the offending yaku
-    { "display_name": "Unbreakable Principle", "value": -1, "when": [{"name": "has_existing_yaku", "opts": [["Mixed Double Chow", 2], ["Two Terminal Chows", 2]]}] },
-    { "display_name": "Unbreakable Principle", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Mixed Straight", "Mixed Double Chow", "Short Straight"]}] },
-    { "display_name": "Unbreakable Principle", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] }
+    // ad-hoc implementation of Exclusionary Rule; just subtract the value of the offending yaku
+    { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": [["Mixed Double Chow", 2], ["Two Terminal Chows", 2]]}] },
+    { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Mixed Straight", "Mixed Double Chow", "Short Straight"]}] },
+    { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] }
   ],
   "extra_yaku": [
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1g"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}] },
-    { "display_name": "Flower Tiles", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] }
+    { "display_name": "Flower Tiles", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower", 1]}]}
   ],
   "yaku_precedence": {
       // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
       // ==========
     // 88
-    "Big Four Winds": ["Little Four Winds", "All Pungs", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
+    "Big Four Winds": ["Little Four Winds", "All Pungs", "Half Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
     "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragons Pungs"],
     "All Green": ["One Voided Suit"],
     "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit", "No Honors"],
     "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
     "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "No Honors", "Single Wait"],
-    "Thirteen Orphans": ["All Types", "Mixed Terminals", "Concealed Hand", "Single Wait"],
+    "Thirteen Orphans": ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"],
     // 64
-    "All Terminals": ["Mixed Terminals", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
+    "All Terminals": ["All Terminals and Honors", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
     "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
     "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
-    "All Honor": ["Mixed Terminals", "Mixed Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
+    "All Honors": ["All Terminals and Honors", "Half Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
     "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
-    "Pure Terminal Chows": ["All Sequences", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
+    "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
     // 48
     "Quadruple Chow": ["Pure Triple Chow", "Pure Double Chow", "Tile Hog"],
     "Four Pure Shifted Pungs": ["Pure Shifted Pungs", "All Pungs"],
     // 32
-      // Double-check Four Pure Shifted Chows; apparently it overrides Short Straight and Two Terminal Chows, despite neither being mandatory with this.
-    "Four Pure Shifted Chows": ["Pure Shifted Chows"],
-      // Double-check whether Three Kongs overrides Concealed Kong and/or Open Kong.
-    "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Two Concealed Kongs", "Concealed Kong", "Open Kong"],
-    "Mixed Terminals": ["Pung of Terminals", "Pung of Honors", "Outside Hand", "All Pungs"],
+    "Four Pure Shifted Chows": ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows"],
+      // Apparently Three Kongs can combine with Concealed Kong and Two Concealed Kongs.
+    "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Melded Kong"],
+    "All Terminals and Honors": ["Pung of Terminals", "Pung of Honors", "Outside Hand", "All Pungs"],
     // 24
     "Seven Pairs": ["Concealed Hand", "Single Wait"],
     "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles", "All Types", "Concealed Hand"],
     "All Even Pungs": ["All Pungs", "No Honors", "All Simples"],
-    "Full Flush": ["Mixed Flush", "One Voided Suit"],
+    "Full Flush": ["Half Flush", "One Voided Suit"],
     "Pure Triple Chow": ["Pure Double Chow"],
     "Pure Shifted Pungs": [],
     "Upper Tiles": ["Upper Four", "No Honors"],
@@ -613,7 +605,7 @@
     "Lower Tiles": ["Lower Four", "No Honors"],
     // 16
     "Pure Straight": ["Short Straight", "Two Terminal Chows"],
-    "Three-Suited Terminal Chows": ["Two Terminal Chows", "All Sequences", "Mixed Double Chow", "No Honors"],
+    "Three-Suited Terminal Chows": ["Two Terminal Chows", "All Chows", "Mixed Double Chow", "No Honors"],
     "Pure Shifted Chows": [],
     "All Fives": ["No Honors", "All Simples"],
     "Triple Pung": ["Double Pung"],
@@ -633,20 +625,20 @@
     "Last Tile Draw": ["Self-Drawn"],
     "Last Tile Claim": [],
     "Out with Replacement Tile": ["Self-Drawn"],
-    "Robbing a Kong": ["Last Tile"],
+    "Robbing The Kong": ["Last Tile"],
     "Two Concealed Kongs": ["Concealed Kong", "Two Concealed Pungs"],
     // 6
     "All Pungs": [],
-    "Mixed Flush": ["One Voided Suit"],
+    "Half Flush": ["One Voided Suit"],
     "Mixed Shifted Chows": [],
     "All Types": [],
     "Melded Hand": ["Single Wait"],
     "Two Dragons Pungs": ["White Dragon", "Green Dragon", "Red Dragon"],
-    "Two Kongs": ["Open Kong", "Concealed Kong"],
+    "Two Kongs": ["Melded Kong", "Concealed Kong"],
     // 4
     "Outside Hand": [],
-    "Fully Concealed Hand": ["Self Drawn", "Concealed Hand"],
-    "Two Melded Kongs": ["Open Kong"],
+    "Fully Concealed Hand": ["Self-Drawn", "Concealed Hand"],
+    "Two Melded Kongs": ["Melded Kong"],
     "Last Tile": [],
     // 2
     "White Dragon": [],
@@ -655,7 +647,7 @@
     "Prevalent Wind": [],
     "Seat Wind": [],
     "Concealed Hand": [],
-    "All Sequences": ["No Honors"],
+    "All Chows": ["No Honors"],
     "Tile Hog": [],
     "Double Pung": [],
     "Two Concealed Pungs": [],
@@ -668,10 +660,10 @@
     "Two Terminal Chows": [],
     "Pung of Terminals": [],
     "Pung of Honors": [],
-    "Open Kong": [],
+    "Melded Kong": [],
     "One Voided Suit": [],
     "No Honors": [],
-    "Self Drawn": []
+    "Self-Drawn": []
       // ----------
   },
   "score_calculation": {
@@ -684,6 +676,7 @@
     "self_draw_multiplier": 1,
     "self_draw_penalty": 8,
     "yaku_lists": ["yaku", "meta_yaku", "extra_yaku"],
+    "extra_yaku_lists": ["extra_yaku"],
     "point_name": "Pts",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
@@ -711,6 +704,10 @@
   },
   "after_call": {
     "actions": [["set_status", "call_made"]]
+  },
+  "before_win": {
+    // count number of flowers in hand only before win happens
+    "actions": [ ["add_counter", "flower_count", "count_matches", ["flowers"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]] ]
   },
   "after_win": {
     "actions": [["flip_all_calls_faceup"]]
@@ -867,7 +864,7 @@
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
-      "display_name": "Zimo",
+      "display_name": "Hu",
       "show_when": [
         "our_turn",
         "has_draw",
@@ -878,7 +875,7 @@
         {"name": "has_yaku_with_hand", "opts": [8]}
       ],
       "actions": [
-        ["big_text", "Zimo"],
+        ["big_text", "Hu"],
         ["pause", 1000],
         ["reveal_hand"],
         ["set_status", "won"],
