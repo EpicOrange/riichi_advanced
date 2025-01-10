@@ -406,24 +406,18 @@
     },
   ],
   "yaku_precedence": {
-    // "Seat Flower": ["No Flowers"],
-    // "Seat Season": ["No Flowers"],
-    // "Animal Tiles": ["No Flowers"],
-    // "All Flowers": [],
-    // "All Seasons": [],
-    // "All Animals": ["Animal Tiles"],
+    "All Animals": ["Animal Tiles"],
     "Big Ping Hu": ["Little Ping Hu"],
     "Three Lesser Scholars": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Full Flush": ["Half Flush"],
-    "All Terminals Or Honors" ["White Dragon", "Green Dragon", "Red Dragon", "Prevailing Wind", "Seat Wind"],
+    "All Terminals Or Honors": ["White Dragon", "Green Dragon", "Red Dragon", "Prevailing Wind", "Seat Wind"],
     "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind", "Half Flush"],
     "Seven Flowers": ["All Flowers", "All Seasons"],
-    
     "Eight Flowers": ["Seven Flowers", "All Flowers", "All Seasons"],
-    "Three Great Scholars": ["Three Lesser Scholars", "White Dragon", "Green Dragon", "Red Dragon"],
-    "Four Great Blessings": ["Four Lesser Blessings", "Prevailing Wind", "Seat Wind", "Half Flush"],
     "Hidden Treasure": ["Triplets Hand"],
     "All Green": ["Half Flush", "Full Flush"]
+    "Three Great Scholars": ["Three Lesser Scholars", "White Dragon", "Green Dragon", "Red Dragon"],
+    "Four Great Blessings": ["Four Lesser Blessings", "Prevailing Wind", "Seat Wind", "Half Flush"]
   },
   "score_calculation": {
     "scoring_method": "score_table",
