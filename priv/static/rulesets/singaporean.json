@@ -391,7 +391,7 @@
       "when": [{"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]}]
     },
     {
-      "display_name": "Ping Wu",
+      "display_name": "Ping Hu",
       "value": 4,
       "when": [
         {"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]},
@@ -440,6 +440,7 @@
     "Seven Flowers": ["All Flowers", "All Seasons"],
     "Eight Flowers": ["Seven Flowers"],
     "Full Color Game": ["Half Color Game"],
+    "Ping Hu": ["All Chow Game"],
     "Three Lesser Scholars": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Three Great Scholars": ["Three Lesser Scholars"],
     "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind"],
