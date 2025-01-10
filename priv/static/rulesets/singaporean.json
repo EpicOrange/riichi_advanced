@@ -1,13 +1,13 @@
 {
+    // TODO (2025-01-10):
+    // * Implement the various Pao rules.
+    // * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
+    // * Flower replacement can't be discarded normally for some reason. Dunno why. (Should probably check whether this is still the case.)
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
-    // NOTE 2025-01-09: It's looking like the rules from MahjongPros
-    // aren't very clearly-written. I think it's best to wait until
-    // we get a good, clearly-written ruleset for Singaporean mahjong
-    // before we try to make any more changes to the implementation.
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-singaporean-mahjong",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -141,12 +141,27 @@
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "any_flower_definition": [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a"], 1] ]],
   "yaku": [
-    // Flowers
-    // {
-    //   "display_name": "No Flowers",
-    //   "value": 1,
-    //   "when": [] // removed by yaku_precedence if any of the below flowers match
-    // },
+      // 1 tai
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["1a"], 1]]]]}]
+    },
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["2a"], 1]]]]}]
+    },
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["3a"], 1]]]]}]
+    },
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["4a"], 1]]]]}]
+    },
     {
       "display_name": "Seat Flower",
       "value": 1,
@@ -188,108 +203,6 @@
       "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
     },
     {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["1a"], 1]]]]}]
-    },
-    {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["2a"], 1]]]]}]
-    },
-    {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["3a"], 1]]]]}]
-    },
-    {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["4a"], 1]]]]}]
-    },
-    {
-      "display_name": "All Flowers",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], ["all_flowers"]]}]
-    },
-    {
-      "display_name": "All Seasons",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], ["all_seasons"]]}]
-    },
-    {
-      "display_name": "All Animals",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["calls"], ["all_animals"]]}]
-    },
-    {
-      "display_name": "Seven Flowers",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls"], ["7_flowers"]]}]
-    },
-    {
-      "display_name": "Eight Flowers",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls"], ["8_flowers"]]}]
-    },
-    // Winning methods
-    // {
-    //   "display_name": "Self Draw",
-    //   "value": 1,
-    //   "when": ["won_by_draw"]
-    // },
-      // Note that Fully Concealed Hand also requires a win by self-draw. (Otherwise it's just Concealed Hand.)
-    {
-      "display_name": "Fully Concealed Hand",
-      "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, "won_by_draw"]
-    },
-    {
-      "display_name": "Final Tile",
-      "value": 1,
-      "when": ["no_tiles_remaining"]
-    },
-    {
-      "display_name": "After a Flower",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["flower"]}]
-    },
-    {
-      "display_name": "After a Kong",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kan"]}]
-    },
-    // {
-    //   "display_name": "After Multiple Kongs",
-    //   "value": 8,
-    //   "when": [{"name": "status", "opts": ["double_kan"]}]
-    // },
-    {
-      "display_name": "Robbing a Kong",
-      "value": 1,
-      "when": ["won_by_call"]
-    },
-    // Suit-based hands
-    {
-      "display_name": "Half Color Game",
-      "value": 2,
-      "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
-      ]]
-    },
-    {
-      "display_name": "Full Color Game",
-      "value": 4,
-      "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
-        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
-        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
-      ]]
-    },
-    // Honor tiles
-    {
       "display_name": "White Dragon",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
@@ -325,88 +238,137 @@
       ]]
     },
     {
+      "display_name": "Little Ping Hu",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}]
+    },
+      // Note that Fully Concealed Hand also requires a win by self-draw. (Otherwise it's just Concealed Hand.)
+    {
+      "display_name": "Fully Concealed Hand",
+      "value": 1,
+      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, "won_by_draw"]
+    },
+    {
+      "display_name": "Final Tile",
+      "value": 1,
+      "when": ["no_tiles_remaining"]
+    },
+    {
+      "display_name": "After a Flower",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["flower"]}]
+    },
+    {
+      "display_name": "After a Kong",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kan"]}]
+    },
+    {
+      "display_name": "Robbing a Kong",
+      "value": 1,
+      "when": ["won_by_call"]
+    },
+      // 2 tai
+    {
+      "display_name": "All Flowers",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["calls"], ["all_flowers"]]}]
+    },
+    {
+      "display_name": "All Seasons",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["calls"], ["all_seasons"]]}]
+    },
+    {
+      "display_name": "Half Flush",
+      "value": 2,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
+      ]]
+    },
+    {
+      "display_name": "All Pungs",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
+    },
+      // 3 tai
+    {
       "display_name": "Three Lesser Scholars",
       "value": 3,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}]
     },
+      // 4 tai
     {
-      "display_name": "Three Great Scholars",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
+      "display_name": "Full Flush",
+      "value": 4,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]]
+    },
+    {
+      "display_name": "Big Ping Hu",
+      "value": 4,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]},
+        {"name": "counter_at_most", "opts": ["flowers", 0]}
+      ]
+    },
+    {
+      "display_name": "All Terminals Or Honors",
+      "value": 4,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
     },
     {
       "display_name": "Four Lesser Blessings",
       "value": 4,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}]
     },
+      // 5 tai (limit)
     {
-      "display_name": "Four Great Blessings",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
+      "display_name": "Seven Flowers",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls"], ["7_flowers"]]}]
+    },
+    {
+      "display_name": "Eight Flowers",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls"], ["8_flowers"]]}]
+    },
+    {
+      "display_name": "All Animals",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["calls"], ["all_animals"]]}]
     },
     {
       "display_name": "All Honors",
       "value": 5,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}]
     },
-    // Triplet hands
     {
-      "display_name": "Triplets Hand",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
-    },
-    {
-      "display_name": "All Pong Game",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["calls"], [[[["koutsu"], 4]]]]}]
+      "display_name": "All Terminals",
+      "value": 5,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
     },
     {
       "display_name": "Hidden Treasure",
       "value": 5,
       "when": [[
-        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
-        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}]
       ]]
     },
     {
-      "display_name": "Half 1s and 9s Game",
-      "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
-    },
-    {
-      "display_name": "All 1s and 9s Game",
-      "value": 5,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
-    },
-    {
-      "display_name": "Eighteen Arhats",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    // Sequence hands
-    {
-      "display_name": "Sequence Hand",
-      "value": 4,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}]
-    },
-    {
-      "display_name": "All Chow Game",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]}]
-    },
-    {
-      "display_name": "Ping Hu",
-      "value": 4,
-      "when": [
-        {"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]},
-        {"name": "counter_at_most", "opts": ["flowers", 0]}
-      ]
-    },
-    // Others
-    {
-      "display_name": "Thirteen Wonders",
+      "display_name": "Thirteen Orphans",
       "value": 5,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
+    },
+    {
+      "display_name": "All Green",
+      "value": 4,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","6s","8s","6z"]}]
     },
     {
       "display_name": "Nine Gates",
@@ -414,9 +376,14 @@
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
     },
     {
-      "display_name": "Pure Green Suit",
-      "value": 4,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","6s","8s","6z"]}]
+      "display_name": "Eighteen Arhats",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
+    },
+    {
+      "display_name": "Kong On Kong",
+      "value": 5,
+      "when": [{"name": "status", "opts": ["double_kan"]}]
     },
     {
       "display_name": "Heavenly Hand",
@@ -428,30 +395,37 @@
       "value": 5,
       "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"]
     },
+      // 10 tai (double limit)
     {
-      "display_name": "Humanly Hand",
-      "value": 5,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"]
-    }
+      "display_name": "Three Great Scholars",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
+    },
+    {
+      "display_name": "Four Great Blessings",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
+    },
   ],
   "yaku_precedence": {
     // "Seat Flower": ["No Flowers"],
     // "Seat Season": ["No Flowers"],
     // "Animal Tiles": ["No Flowers"],
-    "All Flowers": ["Seat Flower"],
-    "All Seasons": ["Seat Season"],
-    "All Animals": ["Animal Tiles"],
-    "Seven Flowers": ["All Flowers", "All Seasons"],
-    "Eight Flowers": ["Seven Flowers"],
-    "Full Color Game": ["Half Color Game"],
-    "Ping Hu": ["All Chow Game"],
+    // "All Flowers": [],
+    // "All Seasons": [],
+    // "All Animals": ["Animal Tiles"],
+    "Big Ping Hu": ["Little Ping Hu"],
     "Three Lesser Scholars": ["White Dragon", "Green Dragon", "Red Dragon"],
-    "Three Great Scholars": ["Three Lesser Scholars"],
-    "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind"],
-    "Four Great Blessings": ["Four Lesser Blessings"],
-    "Earthly Hand": ["Humanly Hand"],
+    "Full Flush": ["Half Flush"],
+    "All Terminals Or Honors" ["White Dragon", "Green Dragon", "Red Dragon", "Prevailing Wind", "Seat Wind"],
+    "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind", "Half Flush"],
+    "Seven Flowers": ["All Flowers", "All Seasons"],
+    
+    "Eight Flowers": ["Seven Flowers", "All Flowers", "All Seasons"],
+    "Three Great Scholars": ["Three Lesser Scholars", "White Dragon", "Green Dragon", "Red Dragon"],
+    "Four Great Blessings": ["Four Lesser Blessings", "Prevailing Wind", "Seat Wind", "Half Flush"],
     "Hidden Treasure": ["Triplets Hand"],
-    "Pure Green Suit": ["Half Color Game", "Full Color Game"]
+    "All Green": ["Half Flush", "Full Flush"]
   },
   "score_calculation": {
     "scoring_method": "score_table",
@@ -464,12 +438,11 @@
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",
-    "win_by_discard_name_2": "Double Hu",
-    "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
   "play_restrictions": [
+      // TODO: This seems to be causing a bug where the flower replacement can't be discarded. Not sure why.
     [["flower"], []]
   ],
   "before_turn_change": {
