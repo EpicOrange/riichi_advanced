@@ -242,7 +242,6 @@
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}]
     },
-      // Note that Fully Concealed Hand also requires a win by self-draw. (Otherwise it's just Concealed Hand.)
     {
       "display_name": "Fully Concealed Hand",
       "value": 1,
@@ -353,12 +352,11 @@
       "value": 5,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
     },
+      // Hidden Treasure has to be self-drawn, unlike normal Four Concealed Triplets.
     {
       "display_name": "Hidden Treasure",
       "value": 5,
-      "when": [[
-        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}]
-      ]]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}, "won_by_draw"]
     },
     {
       "display_name": "Thirteen Orphans",
