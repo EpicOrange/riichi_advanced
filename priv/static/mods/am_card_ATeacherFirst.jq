@@ -63,6 +63,11 @@
     "333a 6666a 333b 9999b"
   ]
 |
+.singles_win_definition = [
+    "NEWS 1234567890a",
+    "112a 334a 556b 778b DDc"
+  ]
+|
 .yaku = [
     { "display_name": "2016 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NNN EE WW SSS 2016a"]]}] },
     { "display_name": "2016 #2", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2016a 111b 111c"]]}] },
