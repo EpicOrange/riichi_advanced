@@ -53,6 +53,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
         ]})
         socket
       else socket end
+
+      case Enum.find(state.seats, fn {_seat, seat_contents} -> seat_contents == nil end) do
+        nil -> :ok
+        {seat, _} -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
+      end
+
       {:ok, socket}
     else
       {:ok, socket}
