@@ -274,6 +274,7 @@ div.hand.shimocha div.tiles:hover::before,
 div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
 div.hand.marking { z-index: 10; }
+div.hand.marking.self { z-index: 11; }
 
 /* tile attrs */
 div.tile.reversed { transform: scaleX(-100%); }
@@ -2028,7 +2029,7 @@ div.placement > div.placement-place::before {
 div.placement span.placement-score {
   margin-left: calc(0.5 * var(--tile-size));
 }
-div.game-modal-container > a.goto-index-button {
+div.game-modal-container > button.end-back-button {
   position: absolute;
   width: 100%;
   height: calc(1 * var(--tile-size));
@@ -2044,7 +2045,7 @@ div.game-modal-container > a.goto-index-button {
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
 }
-div.game-modal-container > a.goto-index-button:active {
+div.game-modal-container > button.end-back-button:active {
   bottom: 0;
   filter: none;
 }
@@ -2591,51 +2592,98 @@ div.lobby > button.create-room {
 div.room {
   display: flex;
   position: relative;
-  flex-direction: column;
   row-gap: calc(0.25 * var(--tile-size));
+  font-size: calc(1 * var(--tile-size));
   color: white;
 }
 div.room > header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: calc(0.5 * var(--tile-size));
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  column-gap: calc(0.5 * var(--tile-size));
   position: absolute;
-  top: calc(-1 * var(--tile-size));
-  width: 100%;
+  top: calc(0 * var(--tile-size));
 }
-div.room > header > div.session {
+div.room > header > h3 {
+  width: 100%;
+  margin: 0;
+}
+div.room > header > div.session,
+div.room > header > label.private-toggle-label {
   display: flex;
   flex-direction: row;
   align-items: center;
+  font-size: calc(0.9 * var(--tile-size));
 }
-div.room > header > div.variant > a.tutorial-link {
+div.room > header > div.session {
+  border: calc(0.05 * var(--tile-size)) solid white;
+  padding: calc(0.25 * var(--tile-size));
+  border-radius: calc(0.5 * var(--tile-size));
+}
+div.room > header > div.session > div.tile,
+div.room > div.sidebar > a > svg {
+  transform: translateY(calc(0.125 * var(--tile-size)));
+}
+div.room > div.sidebar {
+  font-size: calc(1 * var(--tile-size));
+  position: absolute;
+  right: 0;
+  width: 50%;
+}
+div.room > div.sidebar > a {
+  white-space: nowrap;
+  position: absolute;
   color: white;
+  right: 0;
 }
-div.room > div.seats,
-div.room > div.mods,
-div.room > div.custom-json {
+div.room > div.sidebar > label.room-settings-toggle {
+  background: none;
+  text-decoration: underline;
+}
+div.room div.room-settings {
   position: relative;
   padding: calc(0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  background: #609060;
+  background-color: #609060;
   width: calc(100% - 3 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   z-index: 1;
   flex-shrink: 0;
 }
+div.room > div.room-settings {
+  display: none;
+}
+div.room > input#room-settings-toggle:checked + div.room-settings {
+  display: block;
+  position: absolute;
+  width: calc(100% - 1 * var(--tile-size));
+  height: calc(100% - 4.25 * var(--tile-size));
+  left: 0;
+  top: calc(3.25 * var(--tile-size));
+  z-index: 2;
+  overflow-y: auto;
+}
 div.room > div.seats {
-  top: calc(1.5 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
+  position: relative;
+  padding: calc(0.5 * var(--tile-size));
+  width: calc(100% - 1 * var(--tile-size));
+  top: calc(5.5 * var(--tile-size));
+  left: 0;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: flex-start;
+  row-gap: calc(0.125 * var(--tile-size));
 }
 div.room > div.seats > div.player-slot {
+  display: flex;
+  flex-direction: row;
+  column-gap: calc(0.125 * var(--tile-size));
   position: relative;
-  width: 20%;
+  height: calc(1.5 * var(--tile-size));
 }
 div.room > div.seats > div.player-slot > .player-slot-button,
-div.room > div.seats-buttons > button {
+div.room button {
   background: var(--tile-front);
   color: black;
   border-width: 0;
@@ -2643,96 +2691,84 @@ div.room > div.seats-buttons > button {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-  vertical-align: center;
-  flex-direction: column;
 }
-div.room > div.seats > div.player-slot > .player-slot-button {
-  position: absolute;
-  top: calc(0.45 * var(--tile-size));
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-  font-size: calc(0.5 * var(--tile-size));
-  width: 100%;
-  height: calc(0.6 * var(--tile-size));
-}
-div.room > div.seats > div.player-slot > div.player-slot-label {
-  position: absolute;
-  top: calc(-0.55 * var(--tile-size));
-  text-align: center;
-  font-size: calc(0.75 * var(--tile-size));
-  color: white;
-  width: 100%;
-}
-div.room > div.seats > div.player-slot.filled > .player-slot-button {
-  filter: none;
-  cursor: default;
-  font-size: calc(0.35 * var(--tile-size));
-  height: calc(0.75 * var(--tile-size));
-}
-div.room > div.seats > div.player-slot > button:active,
-div.room > div.seats-buttons > button:active {
+div.room button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
   z-index: 1;
 }
-div.room > div.seats-buttons {
-  display: flex;
-  position: absolute;
-  width: calc(11 * var(--tile-size));
+div.room > div.room-settings button {
+  transform: translateY(calc(-0.25 * var(--tile-size)));
+}
+div.room > div.room-settings button:active {
+  transform: translateY(calc(-0.125 * var(--tile-size)));
+}
+div.room > div.seats > div.player-slot > div.player-slot-label,
+div.room > div.seats > div.player-slot > div.player-slot-name {
+  font-size: calc(1 * var(--tile-size));
+  color: white;
+}
+div.room > div.seats > div.player-slot > div.player-slot-label {
+  background-color: #0000003F;
+  width: calc(1.5 * var(--tile-size));
+  height: calc(1.5 * var(--tile-size));
   text-align: center;
-  top: calc(4 * var(--tile-size));
-  left: calc(4 * var(--tile-size));
-  font-size: calc(0.4 * var(--tile-size));
-  justify-content: start;
+}
+div.room > div.seats > div.player-slot > div.player-slot-name {
+  flex-grow: 1;
+  text-align: left;
+  padding-left: calc(0.125 * var(--tile-size));
+  background-color: #0000003F;
+}
+div.room > div.seats > div.player-slot > div.player-slot-name.empty {
+  opacity: 0.5;
+}
+div.room > div.seats > div.player-slot > button {
+  font-size: calc(1 * var(--tile-size));
+  width: calc(1.2 * var(--tile-size));
+  height: calc(1.2 * var(--tile-size));
+}
+div.room > div.seats > label.shuffle-seats {
+  font-size: calc(1 * var(--tile-size));
+}
+div.room > div.seats > button.start-game-button {
+  display: flex;
+  width: 100%;
+  text-align: center;
+  bottom: 0;
+  font-size: calc(1 * var(--tile-size));
+  justify-content: center;
   align-items: center;
   column-gap: calc(0.25 * var(--tile-size));
 }
-div.room > div.seats-buttons > button.get-up-button,
-div.room > div.seats-buttons > button.start-game-button {
-  font-size: calc(0.4 * var(--tile-size));
-}
-div.room > div.mods,
-div.room > div.custom-json {
+div.room div.mods,
+div.room div.custom-json {
   top: calc(3 * var(--tile-size));
   height: calc(9 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
 }
-div.room > div.mods > div.mods-inner-container {
+div.room div.mods > div.mods-inner-container {
   width: 100%;
 }
 div.room div.mods-title {
-  position: absolute;
-  top: calc(3.75 * var(--tile-size));
-  left: 0;
   font-size: calc(1 * var(--tile-size));
-  width: calc(3.5 * var(--tile-size));
   text-align: center;
 }
-div.room > div.mods {
-  overflow: auto;
+div.room div.mods {
   padding-top: calc(0.25 * var(--tile-size));
   padding-bottom: calc(0.25 * var(--tile-size));
 }
-div.room > div.mods.mods-saki > div.mods-inner-container {
+div.room div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
   padding-right: 100%;
 }
-div.room > div.mods > div.mods-inner-container > div.mod-category,
-div.room > div.mods > div.mods-inner-container > div.mod-category-spacer {
+div.room div.mods > div.mods-inner-container > div.mod-category,
+div.room div.mods > div.mods-inner-container > div.mod-category-spacer {
   width: 100%;
   min-height: 0.5em;
   margin-left: -0.5em;
 }
-div.room > div.mods > div.mods-inner-container button.mod-menu-button {
+div.room div.mods > div.mods-inner-container button.mod-menu-button {
   display: inline-block;
   background: var(--tile-front);
   color: black;
@@ -2745,15 +2781,15 @@ div.room > div.mods > div.mods-inner-container button.mod-menu-button {
   cursor: pointer;
   text-align: center;
 }
-div.room > div.mods > div.mods-inner-container button.mod-menu-button:active {
+div.room div.mods > div.mods-inner-container button.mod-menu-button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / -8));
 }
-div.room > div.mods > div.mods-inner-container div.reset-to-default-button {
+div.room div.mods > div.mods-inner-container div.reset-to-default-button {
   width: 100%;
   text-align: center;
 }
-div.room > div.custom-json > textarea {
+div.room div.custom-json > textarea {
   position: absolute;
   background: #3f3f3f;
   color: white;
@@ -2765,6 +2801,33 @@ div.room > div.custom-json > textarea {
   box-sizing: border-box;
   font-size: calc(0.25 * var(--tile-size));
 }
+/* tab system for mods/config */
+div.room-settings > input[type="radio"] {
+  display: none;
+}
+div.room-settings > input[type="radio"] + label {
+  margin: auto;
+}
+div.room-settings > input:not(:checked) + label {
+  opacity: 0.5;
+}
+div.room-settings > input#mods-tab:not(:checked) ~ div.mods,
+div.room-settings > input#config-tab:not(:checked) ~ div.config {
+  display: none;
+}
+div.config {
+  width: 100%;
+  height: 100%;
+  font-size: calc(0.25 * var(--tile-size));
+}
+div.config > textarea {
+  width: 100%;
+  height: 100%;
+  background: #3f3f3f;
+  color: white;
+  white-space: pre;
+}
+
 
 /* expand button for rulesets, mods, and custom ruleset entry */
 div#container > input.expand-checkbox + label {

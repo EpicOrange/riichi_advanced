@@ -395,7 +395,7 @@
       "when": [{"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]}]
     },
     {
-      "display_name": "Ping Wu",
+      "display_name": "Ping Hu",
       "value": 4,
       "when": [
         {"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]},
@@ -444,6 +444,7 @@
     "Seven Flowers": ["All Flowers", "All Seasons"],
     "Eight Flowers": ["Seven Flowers"],
     "Full Color Game": ["Half Color Game"],
+    "Ping Hu": ["All Chow Game"],
     "Three Lesser Scholars": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Three Great Scholars": ["Three Lesser Scholars"],
     "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind"],
@@ -631,7 +632,7 @@
         {"name": "has_yaku_with_discard", "opts": [1]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["ron", "chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
       "display_name": "Hu",
@@ -652,7 +653,7 @@
         {"name": "not_match", "opts": [["last_called_tile", "any_discard"], [[[["pair"], 1]]]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chankan", "chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Zimo",

@@ -21,7 +21,7 @@ defmodule RiichiAdvancedWeb.EndWindowComponent do
           <% end %>
         </div>
       </div>
-      <.link href={~p"/"} class="goto-index-button">Return to menu</.link>
+      <button class="end-back-button" phx-cancellable-click="back">Return to room config</button>
     </div>
     """
   end

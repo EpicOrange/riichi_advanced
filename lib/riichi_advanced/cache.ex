@@ -17,6 +17,9 @@ defmodule RiichiAdvanced.ETSCache do
     # Cache for custom rulesets
     :ets.new(:cache_rulesets, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
 
+    # Cache for configs
+    :ets.new(:cache_configs, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
+
     {:ok, %{}}
   end
 
