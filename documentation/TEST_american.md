@@ -42,11 +42,11 @@ Note that American Mah-Jongg differs from the "base Asian mahjong variant" in ma
         - First pass: Each player passes three tiles from their hand to the player to their right.
         - Second pass: Each player passes three tiles from their hand to the player opposite.
         - Third pass: Each player passes three tiles from their hand to the player to their left. Optionally, a player may opt to Blind Pass.
-    - Second Charleston (optional; any player may prevent the Second Charleston for the entire table, and move straight to the Courtesy Pass):
+    - Second Charleston (optional; only if everyone agrees to it):
         - Fourth pass: Each player passes three tiles from their hand to the player to their left.
         - Fifth pass: Each player passes three tiles from their hand to the player opposite.
         - Sixth pass: Each player passes three tiles from their hand to the player to their right. Optionally, a player may opt to Blind Pass.
-    - Courtesy Pass:
+    - Courtesy Pass (mandatory):
         - Seventh pass: Each player names a number of tiles to pass, between 0 and 3. Between them and the player opposite them, they pass the minimum of the two numbers named by them.
 - Blind Pass: When a player blind-passes some tiles, they pass fewer than three tiles from their hand, and make up the rest of the three tiles to be passed with tiles that are about to be passed to them.
     - For instance, if a player opts to blind-pass a tile during the third pass, they may pass only two tiles from their hand to pass to their left, and a third tile to pass to their left, which will be randomly chosen from the tiles about to be passed to them by the player to their right.
@@ -54,7 +54,7 @@ Note that American Mah-Jongg differs from the "base Asian mahjong variant" in ma
     - If multiple players wish to blind-pass, the player who blind-passes the fewest tiles passes first.
     - If everyone wishes to blind-pass three tiles, no pass occurs.
 - Jokers may not be passed during the Charleston.
-- If East has a winning hand before the First Charleston, they may instantly declare a win. The game ends before the First Charleston begins. (This does NOT apply if East obtains a winning hand during the Charleston.)
+- If East has a winning hand before the First Charleston, they may instantly declare a win. The game ends before the First Charleston begins. (This does NOT apply if East obtains a winning hand during the Charleston.) [TODO: Check whether this is implemented.]
 
 ## Card
 
@@ -102,9 +102,9 @@ To read the Card (using the free ILoveMahj Card as an example):
 
 - If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge.
 - If the Death Challenge is valid, that player is now dead. If not, the challenger is now dead. (Note that this is different from *MJME*, where an incorrect Death Challenge results in the challenger paying 50¢ to the challenged.)
-- Dead players no longer draw, discard, call discards for exposure or Mah Jongg, or perform joker exchanges.
+- Dead players no longer draw, discard, call discards for exposure or Mah Jongg, or perform joker exchanges. [TODO: Check whether NMJL Rules also forbid them from calling other players dead.]
 
-- Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded.]
+- Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded. Also check what the NMJL Rules say about being declared dead after making an exposure then a joker exchange but before discard.]
 - Multiple players can go dead in a round. [TODO: Implement the scenario that if 3 players are declared dead, the hand is aborted.]
 
 ## Another Game
