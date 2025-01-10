@@ -147,6 +147,16 @@
     "FF 33a 66a 99a DDDb DDDc"
   ]
 |
+.singles_win_definition = [
+    "NN EE WW SS 11a 11b 11c",
+    "FF 11a 33a 55a 77a 99a DDa",
+    "XX0a XX1a XX2a XX3a XX4a XX5a DDa",
+    "FF 2a 4a 66a 88a 22b 44b 6b 8b",
+    "3a 66a 3b 66b 99b 33c 66c 99c",
+    "FF XX0a XX1a XX2a DDb DDc DDa",
+    "FF 0123a 0123b 0123c"
+  ]
+|
 .yaku = [
     { "display_name": "2468 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2a 44a 666a 8888a"]]}] },
     { "display_name": "2468 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 4444a 666b 666c 88a"]]}] },
