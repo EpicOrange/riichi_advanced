@@ -98,16 +98,21 @@ To read the Card (using the free ILoveMahj Card as an example):
 
 ## Death Challenge
 
+[TODO: Check implementation of this in Riichi Advanced.]
+
 - If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge.
-- If the Death Challenge is valid, that player no longer draws or discards. Any exposures made on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not.
-- If it is invalid, the challenger pays 50¢ to the defender, and the game continues. (Note that Riichi Advanced's implementation is different from the *MJME* rules.) [TODO: Check whether this is in fact how this is implemented in Riichi Advanced.]
-- Multiple players can go dead in a round. [TODO: Check whether these scenarios are implemented in Riichi Advanced.]
+- If the Death Challenge is valid, that player is now dead. If not, the challenger is now dead. (Note that this is different from *MJME*, where an incorrect Death Challenge results in the challenger paying 50¢ to the challenged.)
+- Dead players no longer draw, discard, call discards for exposure or Mah Jongg, or perform joker exchanges.
+
+- Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded.]
+- Multiple players can go dead in a round. [TODO: Implement the scenario that if 3 players are declared dead, the hand is aborted.]
 
 ## Another Game
 
 - Dealership always passes to the next player, regardless of whether the current dealer wins.
 
-## Notes specific to Riichi Advanced
+---
+## Summary of differences between Riichi Advanced and real-life play/other clients
 
 - Riichi Advanced will not let you make an incorrect exposure or Mah Jongg in error.
 - Riichi Advanced will not require you to name every discard.
@@ -115,3 +120,4 @@ To read the Card (using the free ILoveMahj Card as an example):
 - Riichi Advanced will never incorrectly draw a tile when it shouldn't, or discard a tile when it shouldn't.
 - Riichi Advanced requires you to name what kind of exposure you're calling for.
 - Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
+- Death Challenges are adjudicated instantly, and an incorrect challenge results in the challenger's hand being dead.
