@@ -59,6 +59,7 @@ defmodule Game do
     session_id: nil,
     ruleset_json: nil,
     mods: nil,
+    config: nil,
     # pids
     supervisor: nil,
     mutex: nil,
@@ -152,7 +153,8 @@ defmodule RiichiAdvanced.GameState do
       %{
         session_id: Keyword.get(init_data, :session_id),
         ruleset: Keyword.get(init_data, :ruleset),
-        mods: Keyword.get(init_data, :mods, [])
+        mods: Keyword.get(init_data, :mods, []),
+        config: Keyword.get(init_data, :config, nil),
       },
       name: Keyword.get(init_data, :name))
   end
@@ -217,11 +219,17 @@ defmodule RiichiAdvanced.GameState do
       RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, mods, :cache_mods)
     end
 
+    # apply config
+    ruleset_json = if state.config != nil do
+      JQ.merge_jsons!(ruleset_json, Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, state.config, ""))
+    else ruleset_json end
+
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
       ruleset: state.ruleset,
       session_id: state.session_id,
       mods: state.mods,
+      config: state.config,
       ruleset_json: ruleset_json,
       supervisor: supervisor,
       mutex: mutex,
@@ -349,6 +357,32 @@ defmodule RiichiAdvanced.GameState do
           Map.merge(hands, Enum.zip(state.available_seats, tiles) |> Map.new())
         else hands end
       end
+
+      # "starting_hand" debug key
+      hands = if Map.has_key?(state.rules, "starting_hand") do
+        for {seat, starting_hand} <- state.rules["starting_hand"], reduce: hands do
+          hands ->
+            seat = case seat do
+              "east" -> :east
+              "south" -> :south
+              "west" -> :west
+              "north" -> :north
+              _ -> nil
+            end
+            starting_hand = Enum.map(starting_hand, &Utils.to_tile/1)
+            if seat != nil do Map.put(hands, seat, starting_hand) else hands end
+        end
+      else hands end
+      # "starting_draws" debug key
+      wall = if Map.has_key?(state.rules, "starting_draws") do
+        initial_ix = starting_tiles*4
+        replacements = state.rules["starting_draws"]
+        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.with_index()
+        for {tile, i} <- replacements, reduce: wall do
+          wall -> List.replace_at(wall, initial_ix + i, tile)
+        end
+      else wall end
 
       # reserve some tiles in the dead wall
       reserved_tile_names = Map.get(rules, "reserved_tiles", [])

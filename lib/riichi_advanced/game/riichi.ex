@@ -355,14 +355,16 @@ defmodule Riichi do
                     consumes_match = map_size(pairing) == to_remove_num
                     if consumes_call || consumes_match do
                       n = length(joker) 
-                      {from_joker, from_nojoker} = pairing |> Map.keys() |> Enum.sort(:desc) |> Enum.split_while(fn i -> i >= n end)
+                      to_remove = pairing |> Map.keys() |> Enum.take(to_remove_num)
+                      {from_joker, from_nojoker} = to_remove |> Enum.sort(:desc) |> Enum.split_while(fn i -> i >= n end)
                       nojoker = for i <- from_nojoker, reduce: nojoker do nojoker -> List.delete_at(nojoker, i - n) end
                       joker   = for i <- from_joker,   reduce: joker   do joker   -> List.delete_at(joker,   i    ) end
                       ret = if is_hand do # is hand, so we keep all unmatched tiles
-                        hand = for j <- pairing_r |> Map.keys() |> Enum.sort(:desc), reduce: tiles do hand -> List.delete_at(hand, j) end
+                        to_remove_r = pairing_r |> Map.keys() |> Enum.take(to_remove_num)
+                        hand = for j <- to_remove_r |> Enum.sort(:desc), reduce: tiles do hand -> List.delete_at(hand, j) end
                         [hand | ret]
                       else ret end # not hand, so we discard all unmatched tiles
-                      {ret, joker, nojoker, to_remove_num - map_size(pairing)}
+                      {ret, joker, nojoker, to_remove_num - length(to_remove)}
                     else {[call | ret], joker, nojoker, to_remove_num} end
                 end
                 # check that match is consumed

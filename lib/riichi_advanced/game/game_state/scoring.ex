@@ -636,6 +636,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
       delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
     end
 
+    # multiply by delta_score_multiplier counter, if it exists
+    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta * Map.get(state.players[seat].counters, "delta_score_multiplier", 1)} end)
+
     # add delta_score counter, if it exists
     delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
 

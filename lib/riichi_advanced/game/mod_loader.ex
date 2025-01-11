@@ -124,4 +124,20 @@ defmodule RiichiAdvanced.ModLoader do
       end
     end
   end
+
+  @default_config """
+  {
+    // "starting_hand": {
+    //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
+    // },
+    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+  }
+  """
+
+  def get_config_json(ruleset, session_id) do
+    case RiichiAdvanced.ETSCache.get({ruleset, session_id}, [@default_config], :cache_configs) do
+      [ruleset_json] -> ruleset_json
+      _ -> @default_config
+    end
+  end
 end

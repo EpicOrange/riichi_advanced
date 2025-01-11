@@ -28,7 +28,7 @@ defmodule RiichiAdvanced.GameState.American do
         cond do
           # unsuited groups include F (flowers), Z (winds), 0 (5z), and any wind group (NNN, NEWS, EW, etc)
           # the rest (1-9, D (dragons), X (relative)) are suited
-          t in ["F", "Z", "0", "N", "E", "W", "S"] ->
+          t in ["F", "Z", "0", "R", "G", "N", "E", "W", "S"] ->
             # unsuited group
             groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
               case c do
@@ -36,6 +36,8 @@ defmodule RiichiAdvanced.GameState.American do
                 # below we use List.duplicate so that they can match calls
                 "Z" -> [[[List.duplicate("1z", freq),List.duplicate("2z", freq),List.duplicate("3z", freq),List.duplicate("4z", freq)], 1]]
                 "0" -> [[[List.duplicate("0z", freq)], 1]]
+                "R" -> [[[List.duplicate("7z", freq)], 1]]
+                "G" -> [[[List.duplicate("6z", freq)], 1]]
                 "N" -> [[[List.duplicate("4z", freq)], 1]]
                 "E" -> [[[List.duplicate("1z", freq)], 1]]
                 "W" -> [[[List.duplicate("3z", freq)], 1]]
@@ -75,6 +77,8 @@ defmodule RiichiAdvanced.GameState.American do
             is_integer(tile) && suit == "B" -> tile + 10
             is_integer(tile) && suit == "C" -> tile + 20
             tile == "D" -> "D" <> suit
+            tile == "R" -> "7z"
+            tile == "G" -> "6z"
             tile == "0" -> "0z"
             true -> tile <> suit
           end

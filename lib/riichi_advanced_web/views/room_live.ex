@@ -11,6 +11,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:room_state, nil)
     |> assign(:messages, [])
+    |> assign(:symbols, %{east: "東", south: "南", west: "西", north: "北"})
     |> assign(:state, %Room{})
     if socket.root_pid != nil do
       # start a new room process, if it doesn't exist already
@@ -52,6 +53,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
         ]})
         socket
       else socket end
+
+      case Enum.find(state.seats, fn {_seat, seat_contents} -> seat_contents == nil end) do
+        nil -> :ok
+        {seat, _} -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
+      end
+
       {:ok, socket}
     else
       {:ok, socket}
@@ -62,55 +69,105 @@ defmodule RiichiAdvancedWeb.RoomLive do
     ~H"""
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
-        <h1>Room</h1>
-        <div class="session">Room:&nbsp;
+        <h3><%= @display_name %></h3>
+        <div class="session">
           <%= for tile <- String.split(@session_id, ",") do %>
             <div class={["tile", tile]}></div>
           <% end %>
         </div>
-        <input id="private-toggle" type="checkbox" class="private-toggle" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={@state.private}>
-        <label for="private-toggle">
+        <input id="private-toggle" type="checkbox" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={not @state.private}>
+        <label for="private-toggle" class="private-toggle-label">
           <%= if @state.private do %>
             Private
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
+              <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
+            </svg>
           <% else %>
             Public
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
+              <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14v3m4-6V7a3 3 0 1 1 6 0v4M5 11h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
+            </svg>
           <% end %>
         </label>
-        <div class="variant">
-          Variant:&nbsp;<b><%= @display_name %></b>
-          <%= if @state.tutorial_link != nil do %>
-            <br/>
-            <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
-              <%= if @ruleset == "custom" do %>
-                (Documentation)
-              <% else %>
-                (Rules)
-              <% end %>
-            </a>
-          <% end %>
-        </div>
       </header>
-      <div class="seats">
-        <%= for seat <- @state.available_seats do %>
-          <%= if @state.seats[seat] != nil do %>
-            <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
-              <div class="player-slot-button"><%= @state.seats[seat].nickname %></div>
-              <div class="player-slot-label"><%= seat %></div>
+      <div class="sidebar">
+        <%= if @state.tutorial_link != nil do %>
+          <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
+            <%= if @ruleset == "custom" do %>
+              Documentation
+            <% else %>
+              Rules
+            <% end %>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
+              <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
+            </svg>
+          </a>
+        <% end %>
+        <br/>
+        <label for="room-settings-toggle" class="room-settings-toggle">
+          Room settings
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
+            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>
+            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          </svg>
+        </label>
+      </div>
+      <input id="room-settings-toggle" type="checkbox" phx-update="ignore">
+      <div class="room-settings">
+        <%= if false do %>
+          <input type="checkbox" id="expand-checkbox" class="expand-checkbox for-mods" phx-update="ignore"/>
+          <label for="expand-checkbox"/>
+        <% end %>
+        <%= if @ruleset == "custom" do %>
+          <div class="mods-title">Ruleset</div>
+          <div class="custom-json">
+            <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
+          </div>
+        <% else %>
+          <input type="radio" id="mods-tab" name="room-settings-tab" checked phx-update="ignore">
+          <label for="mods-tab" class="mods-title">Mods</label>
+          <input type="radio" id="config-tab" name="room-settings-tab" checked phx-update="ignore">
+          <label for="config-tab" class="mods-title">Config</label>
+          <div class={["mods", "mods-#{@state.ruleset}"]}>
+            <div class="mods-inner-container">
+              <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
+                <div class="mod-category" :if={category}>
+                  <%= category %>
+                  <button class="mod-menu-button" phx-cancellable-click="toggle_category" phx-value-category={category}>Toggle all</button>
+                </div>
+                <%= for {mod, mod_details} <- Enum.sort_by(mods, fn {_name, mod} -> mod.index end) do %>
+                  <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
+                  <label for={mod} title={mod_details.desc} class={["mod", mod_details.class]}><%= mod_details.name %></label>
+                <% end %>
+                <div class="mod-category-spacer"></div>
+              <% end %>
+              <div class="reset-to-default-button">
+                <button class="mod-menu-button" phx-cancellable-click="reset_mods_to_default">Reset mods to default</button>
+              </div>
             </div>
-          <% else %>
-            <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
-              <button class="player-slot-button" phx-cancellable-click="sit" phx-value-seat={seat}>Sit</button>
-              <div class="player-slot-label"><%= seat %></div>
-            </div>
-          <% end %>
+          </div>
+          <div class="config">
+            <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="config-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
+          </div>
         <% end %>
       </div>
-      <div class="seats-buttons">
-        <input id="shuffle-seats" type="checkbox" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
-        <label for="shuffle-seats">Shuffle seats on start?</label>
-        <%= if Enum.any?(@state.seats, fn {_seat, player} -> player != nil && player.id == @id end) do %>
-          <button class="get-up-button" phx-cancellable-click="get_up">Get up</button>
+      <div class="seats">
+        <%= for seat <- @state.available_seats do %>
+          <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
+          <div class="player-slot-label"><%= @symbols[seat] %></div>
+          <%= if @state.seats[seat] != nil do %>
+            <div class="player-slot-name"><%= @state.seats[seat].nickname %></div>
+            <%= if @state.seats[seat].id == @id do %>
+              <button class="get-up-button" phx-cancellable-click="get_up">–</button>
+            <% end %>
+          <% else %>
+            <div class="player-slot-name empty">Empty</div>
+            <button class="player-slot-button" phx-cancellable-click="sit" phx-value-seat={seat}>+</button>
+          <% end %>
+          </div>
         <% end %>
+        <input id="shuffle-seats" type="checkbox" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
+        <label for="shuffle-seats" class="shuffle-seats">Shuffle seats on start?</label>
         <%= if not Enum.all?(@state.seats, fn {_seat, player} -> player == nil end) do %>
           <%= if @state.starting do %>
             <button class="start-game-button">
@@ -126,34 +183,6 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <% end %>
         <% end %>
       </div>
-      <input type="checkbox" id="expand-checkbox" class="expand-checkbox for-mods" phx-update="ignore"/>
-      <label for="expand-checkbox"/>
-      <%= if @ruleset == "custom" do %>
-        <div class="mods-title">Ruleset</div>
-        <div class="custom-json">
-          <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
-        </div>
-      <% else %>
-        <div class="mods-title">Mods</div>
-        <div class={["mods", "mods-#{@state.ruleset}"]}>
-          <div class="mods-inner-container">
-            <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
-              <div class="mod-category" :if={category}>
-                <%= category %>
-                <button class="mod-menu-button" phx-cancellable-click="toggle_category" phx-value-category={category}>Toggle all</button>
-              </div>
-              <%= for {mod, mod_details} <- Enum.sort_by(mods, fn {_name, mod} -> mod.index end) do %>
-                <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
-                <label for={mod} title={mod_details.desc} class={["mod", mod_details.class]}><%= mod_details.name %></label>
-              <% end %>
-              <div class="mod-category-spacer"></div>
-            <% end %>
-            <div class="reset-to-default-button">
-              <button class="mod-menu-button" phx-cancellable-click="reset_mods_to_default">Reset mods to default</button>
-            </div>
-          </div>
-        </div>
-      <% end %>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />

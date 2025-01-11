@@ -168,6 +168,14 @@
     "FFFF 3333a 5555b 15c", "FFFF 5555a 7777b 35c",
     "11a 33a 333b 555b DDDDc", "55a 77a 777b 999b DDDDc"
   ],
+  "singles_win_definition": [
+    "FF 22a 46a 88a 22b 46b 88b",
+    "FF 11a 33a 55a 55b 77b 99b",
+    "112a 11223b 112233c", "998a 99887b 998877c",
+    "FF 33a 66a 99a 369b 369c",
+    "XX0a XX1a XX2a XX3a XX4a DDb DDc",
+    "2024a NN EW SS 2024b"
+  ],
   "yaku": [
     { "display_name": "2024 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 000 2222b 4444b"]]}] },
     { "display_name": "2024 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2222a 0000 24b"]]}] },
@@ -331,6 +339,18 @@
         ["unset_status_all", "start_blind_pass"],
         ["push_system_message", "Select any number of the upside-down tiles to blind-pass that many tiles"],
         ["set_status_all", "blind_pass_right"]
+      ]]
+    ]
+  },
+  "before_win": {
+    "actions": [
+      // jokerless bonus
+      ["when", [
+        {"name": "not_match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["1j"], 1]]]]},
+        {"name": "not_match", "opts": [["hand", "call_tiles", "winning_tile"], ["singles_win"]]}
+      ], [
+        ["push_message", "gets double score for a jokerless hand"],
+        ["set_counter_all", "delta_score_multiplier", 2]
       ]]
     ]
   },

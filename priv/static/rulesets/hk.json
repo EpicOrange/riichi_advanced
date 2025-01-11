@@ -8,6 +8,8 @@
     {"id": "remove_flowers", "conflicts": ["seven_flower_win"], "name": "Remove Flowers", "desc": "Remove all eight flowers from the wall."},
     {"id": "head_bump", "name": "Head Bump", "desc": "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."},
     {"id": "hk_seven_pairs", "name": "Seven Pairs", "desc": "Add seven pairs as a possible winning hand, worth 4 fan."},
+    {"id": "hk_everyone_pays", "name": "Everyone Pays On Discard", "desc": "Discarder pays 2x hand value, other players pay 1x."},
+      // {"id": "hk_discarder_pays_for_all", "conflicts": ["hk_everyone_pays"], "name": "Discarder Pays For All", "desc": "Discarder pays 4x hand value, other players pay nothing."},
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
