@@ -197,7 +197,7 @@
     // Sequence hands
     { "display_name": "All Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}] },
     // Others
-    { "display_name": "Thirteen Orphans", "value": 13, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
+    { "display_name": "Thirteen Orphans", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}] },
     { "display_name": "Nine Gates", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}] },
     { "display_name": "Blessing of Heaven", "value": 13, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
     { "display_name": "Blessing of Earth", "value": 13, "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"] },
