@@ -70,7 +70,7 @@
     "22a 44a 66a 8888b 8888a",
     "22a 44a 444b 666b 8888c",
     "222a 444a 6666a 8888a",
-    "222a 888a DDDDb DDDDc,
+    "222a 888a DDDDb DDDDc",
     # Any Like Numbers
     "FF XXXX0a XXXX0b XXXX0c",
     # Addition: Heavenly 11s
