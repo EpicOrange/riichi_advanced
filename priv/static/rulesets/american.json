@@ -3,7 +3,10 @@
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
-    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
+    {"id": "am_card_ILoveMahj", "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
+    {"id": "am_card_ATeacherFirst", "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
+    {"id": "BETA_am_card_AMJForEveryone", "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."},
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
