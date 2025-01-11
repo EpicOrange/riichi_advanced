@@ -9,7 +9,7 @@
     // * Three Lesser Scholars isn't scored for some reason?
     // * [FIXED, I think] Apparently 111m999m111p11s33z, won on discarded 3m, was scored for Thirteen Orphans and Hidden Treasure.
     // * Apparently chankan isn't working. Unclear whether this is `singapore.json`-specific or whether it's global to all variants.
-    // * [figured out cause] East should have the option to ankan on their starting turn, but currently doesn't? [This is because `match_start`, which restricts ankans, is set at the start of the match, but only goes away at the first *discard*.]
+    // * [FIXED, I think] East should have the option to ankan on their starting turn, but currently doesn't? [This is because ankans are only allowed when we have a draw, but we merge our draw into our hand after declaring "No Flowers".]
     // * [FIXED, I think] Heavenly Hand is apparently scored wrong (can be scored after call(s), can be scored by someone other than East).
     // * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments. 
   "default_mods": ["show_waits"],
@@ -552,7 +552,7 @@
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
       "unskippable": true
     },
     "chii": {
