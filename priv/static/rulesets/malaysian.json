@@ -437,7 +437,7 @@
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "chii": {
