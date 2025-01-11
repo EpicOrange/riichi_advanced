@@ -6,6 +6,48 @@ See also [MahjongPros' ruleset](https://mahjongpros.com/blogs/how-to-play/beginn
 
 Note that American Mah-Jongg differs from the "base Asian mahjong variant" in many ways, so your knowledge of those variants may not necessarily transfer.
 
+---
+## TL;DR summary for American Mah-Jongg players:
+
+Here are differences between Riichi Advanced and real life/other mahjong clients:
+
+- Riichi Advanced will not let you draw a tile when you shouldn't, or discard a tile when you shouldn't.
+- Riichi Advanced will not let you make an incorrect exposure (i.e. one that isn't a Pung, Kong, or Quint) or Mah Jongg in error. It will, however, let you make exposures that would make your hand dead due to no hand on the Card being possible.
+- Riichi Advanced requires you to name what kind of exposure you're calling for (Pung/Kong/Quint).
+- Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
+- Riichi Advanced will not require you to name every discard.
+- Riichi Advanced will pause the game and keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass it up.
+- Death Challenges are currently not implemented. But when they are, they will be adjudicated instantly, and an incorrect challenge results in the challenger's hand being dead.
+- Other differences listed in the "TODOS" section below:
+
+---
+## TODOS:
+
+- Implement Heavenly Hand (East winning before the Charleston begins).
+- Implement the 75-point hand on the AMJfE Card. Currently it's unimplemented because it would require us to write down 98 different hands.
+- Check how the NMJL rules on the scenario "a player performs a Joker Exchange, then declares Mah Jongg; is it a win by self-draw?", in the following three cases:
+  - The Joker Exchange was with someone else's exposure;
+  - The Joker Exchange was with their own exposure from a previous turn;
+  - The Joker Exchange was with their own exposure that they exposed on the same turn, just prior to attempting the Joker Exchange.
+- Death Challenges:
+  - Check whether this is implemented at all.
+  - Implement the various scenarios of multiple players being declared dead.
+  - Confirm with the NMJL as to which exposures may be joker-swapped after a player is declared dead, in the following cases:
+    - A player exposes FJJ (2024 NMJL Card), and is declared dead before their next action (joker exchange or discard); [NOTE: There is no hand on the 2024 NMJL Card with a Pung of Flowers.]
+    - A player exposes FJJ (2024 NMJL Card), and is declared dead after they attempt a joker exchange, but before their next action;
+    - A player exposes FJJ (2024 NMJL Card), and is declared dead after they attempt multiple joker exchanges, but before their next action;
+    - A player exposes FJJ (2024 NMJL Card), and is declared dead after their discard;
+    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead before their next action; [NOTE: There are hands on the 2024 NMJL Card with a Pung of 1 or a Pung of 8, but not both simultaneously.]
+    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead after they attempt a joker exchange, but before their next action;
+    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead after they attempt multiple joker exchanges, but before their next action;
+    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead after their discard;
+    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead before their next action; [NOTE: There is only one hand on the 2024 NMJL Card with both a Pung of 1 and a Pung of N, and it is concealed only.]
+    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead after they attempt a joker exchange, but before their next action;
+    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead after they attempt multiple joker exchanges, but before their next action;
+    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead after their discard.
+
+---
+
 ## Fundamentals
 
 -  The wall for American consists of the 1-9 character tiles (Craks), 1-9 circle tiles (Dots), 1-9 bamboo tiles (Bams), the four wind tiles, the three dragon tiles, the four flower tiles, the four season tiles, and eight American joker tiles.
@@ -54,7 +96,7 @@ Note that American Mah-Jongg differs from the "base Asian mahjong variant" in ma
     - If multiple players wish to blind-pass, the player who blind-passes the fewest tiles passes first.
     - If everyone wishes to blind-pass three tiles, no pass occurs.
 - Jokers may not be passed during the Charleston.
-- If East has a winning hand before the First Charleston, they may instantly declare a win. The game ends before the First Charleston begins. (This does NOT apply if East obtains a winning hand during the Charleston.) [TODO: Check whether this is implemented.]
+- If East has a winning hand before the First Charleston, they may instantly declare a win. The game ends before the First Charleston begins. (This does NOT apply if East obtains a winning hand during the Charleston.) [TODO: Implement this.]
 
 ## Card
 
@@ -65,7 +107,7 @@ The following Cards are supported by Riichi Advanced:
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 
-[TODO: implement these free Cards. Just the AMJfE Card left.]
+[TODO: implement the 75-point hand on the AMJfE Card.]
 
 To read the Card (using the free ILoveMahj Card as an example):
 
@@ -98,26 +140,15 @@ To read the Card (using the free ILoveMahj Card as an example):
 
 ## Death Challenge
 
-[TODO: Check implementation of this in Riichi Advanced.]
+[TODO: Check whether implementation of this in Riichi Advanced exists.]
 
-- If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge.
+- If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge. [TODO: Check whether Riichi Advanced has Death Challenges implemented.]
 - If the Death Challenge is valid, that player is now dead. If not, the challenger is now dead. (Note that this is different from *MJME*, where an incorrect Death Challenge results in the challenger paying 50¢ to the challenged.)
-- Dead players may no longer draw, discard, call discards for exposure or Mah Jongg, perform joker exchanges, or declare other players dead. However, they still pay in the event of someone else winning. [TODO: Check whether Riichi Advanced's implementation follows this.]
+- Dead players may no longer draw, discard, call discards for exposure or Mah Jongg, perform joker exchanges, or declare other players dead. However, they still pay in the event of someone else winning.
 
-- Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded. Also check what the NMJL Rules say about being declared dead after making an exposure then a joker exchange but before discard.]
+- Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded. Also check what the NMJL Rules say about being declared dead after making an exposure then a joker exchange but before discard.] [**UPDATE 2025-01-11**: Apparently the NMJL's own rules on this are very unclearly-worded. I'll have to ask someone to send in a letter for clarification.]
 - Multiple players can go dead in a round. [TODO: Implement the scenario that if 3 players are declared dead, the hand is aborted.]
 
 ## Another Game
 
 - Dealership always passes to the next player, regardless of whether the current dealer wins.
-
----
-## Summary of differences between Riichi Advanced and real-life play/other clients
-
-- Riichi Advanced will not let you make an incorrect exposure or Mah Jongg in error.
-- Riichi Advanced will not require you to name every discard.
-- Riichi Advanced will pause the game and keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass it up.
-- Riichi Advanced will never incorrectly draw a tile when it shouldn't, or discard a tile when it shouldn't.
-- Riichi Advanced requires you to name what kind of exposure you're calling for.
-- Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
-- Death Challenges are adjudicated instantly, and an incorrect challenge results in the challenger's hand being dead.
