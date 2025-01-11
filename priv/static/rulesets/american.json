@@ -3,7 +3,8 @@
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
-    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
+    {"id": "zombie_blanks", "name": "Zombie Blanks", "desc": "Adds four \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."}
   ],
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
