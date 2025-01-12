@@ -40,6 +40,7 @@
     {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
+    {"id": "double_round_wind", "name": "Double Round Wind", "desc": "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
     {"id": "pao_rinshan", "name": "Suukantsu Pao", "desc": "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."},
     {"id": "pao_suukantsu", "name": "Rinshan Pao", "desc": "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."},
