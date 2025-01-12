@@ -12,6 +12,8 @@
     // * [FIXED, I think] East should have the option to ankan on their starting turn, but currently doesn't? [This is because ankans are only allowed when we have a draw, but we merge our draw into our hand after declaring "No Flowers".]
     // * [FIXED, I think] Heavenly Hand is apparently scored wrong (can be scored after call(s), can be scored by someone other than East).
     // * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments. 
+    // TODO (2025-01-12):
+    // * [FIXED, I think] Apparently Ping Hu also can't have the pair be yakuhai.
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
@@ -252,7 +254,13 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]},
         {"name": "match", "opts": [["hand"], [["any"], 2]]},
-        {"name": "wait_count_at_least", "opts": [2, ["win"]]}
+        {"name": "wait_count_at_least", "opts": [2, ["win"]]},
+        [
+          [{"name": "seat_is", "opts": ["east"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["ton_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["south"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["nan_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["west"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["north"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}]
+        ]
       ]
     },
     {
@@ -328,7 +336,13 @@
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]},
         {"name": "match", "opts": [["hand"], [["any"], 2]]},
         {"name": "wait_count_at_least", "opts": [2, ["win"]]},
-        {"name": "counter_at_most", "opts": ["flowers", 0]}
+        {"name": "counter_at_most", "opts": ["flowers", 0]},
+        [
+          [{"name": "seat_is", "opts": ["east"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["ton_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["south"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["nan_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["west"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["north"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}]
+        ]
       ]
     },
     {
