@@ -41,6 +41,8 @@
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
+    {"id": "pao_rinshan", "name": "Suukantsu Pao", "desc": "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."},
+    {"id": "pao_suukantsu", "name": "Rinshan Pao", "desc": "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."},
     {"id": "no_kazoe_yakuman", "name": "No Kazoe Yakuman", "desc": "Disable kazoe yakuman. 13+ han is worth sanbaiman."},
     {"id": "no_double_yakuman", "name": "No Double Yakuman", "desc": "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."},
     {"id": "yakuman_only", "conflicts": ["yaku/paarenchan"], "order": 1, "name": "Yakuman Only", "desc": "Allow only yakuman-scoring hands."},
@@ -149,8 +151,6 @@
 
     // pending mod ideas:
     // {"id": "sakizuke_nashi", "name": "Sakizuke", "desc": "Your hand cannot win unless it is guaranteed a yaku. For example, if you are waiting on red dragon and 3s, but 3s would grant no yaku, you are not allowed to win on the red dragon either."},
-    // {"id": "suukantsu_pao", "deps": ["pao"], "name": "Suukantsu Pao", "desc": "You are also responsible for payments if you deal the last kan tile called for a suukantsu hand."},
-    // {"id": "rinshan_pao", "name": "Rinshan Pao", "desc": "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."},
     // {"id": "set", "name": "Set", "desc": "You are now playing the card game SET. Sets are no longer sequences or triplets -- instead the three tiles must all match on X property or all be different on X property for all X properties in {suit, suji, low/middle/high}."},
     // {"id": "double_wind_2_fu", "name": "Double Wind 2 Fu", "desc": "A pair of round+seat winds is worth 2 fu instead of 4 fu."},
     // {"id": "fives_are_honors", "name": "Fives Are Honors", "desc": "Fives are now honor tiles, and having a triplet of fives gives 1 han. Fives cannot be used in sequences."},
