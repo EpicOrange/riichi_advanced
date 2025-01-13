@@ -32,19 +32,23 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Death Challenges:
   - Check whether this is implemented at all.
   - Implement the various scenarios of multiple players being declared dead.
-  - Confirm with the NMJL as to which exposures may be joker-swapped after a player is declared dead, in the following cases:
-    - A player exposes FJJ (2024 NMJL Card), and is declared dead before their next action (joker exchange or discard); [NOTE: There is no hand on the 2024 NMJL Card with a Pung of Flowers.]
-    - A player exposes FJJ (2024 NMJL Card), and is declared dead after they attempt a joker exchange, but before their next action;
-    - A player exposes FJJ (2024 NMJL Card), and is declared dead after they attempt multiple joker exchanges, but before their next action;
-    - A player exposes FJJ (2024 NMJL Card), and is declared dead after their discard;
-    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead before their next action; [NOTE: There are hands on the 2024 NMJL Card with a Pung of 1 or a Pung of 8, but not both simultaneously.]
-    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead after they attempt a joker exchange, but before their next action;
-    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead after they attempt multiple joker exchanges, but before their next action;
-    - A player exposes 11J 88J (2024 NMJL Card) in that order, and is declared dead after their discard;
-    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead before their next action; [NOTE: There is only one hand on the 2024 NMJL Card with both a Pung of 1 and a Pung of N, and it is concealed only.]
-    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead after they attempt a joker exchange, but before their next action;
-    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead after they attempt multiple joker exchanges, but before their next action;
-    - A player exposes 11J NNJ (2024 NMJL Card) in that order, and is declared dead after their discard.
+  - Confirm with the NMJL as to which exposures may be joker-swapped after a player is declared dead, in the following cases (2024 NMJL Card):
+    ![image](https://github.com/user-attachments/assets/52db32f6-744b-4e73-a3e6-9800df815f09)
+  - Notes on each column:
+    1. NEWS cannot be melded. Players did not notice this exposure was made until the second exposure was called. (Not possible in Riichi Advanced, included for completeness.)
+    2. No hand on the 2024 NMJL Card with FFJ. Players did not notice this exposure was made until the second exposure was called.
+    3. No hand on the 2024 NMJL Card with 11J 8*. But either exposure on its own would be fine.
+    4. Only hand on the 2024 NMJL Card with 33J 66J off-suit must be concealed (369 #7). (But 33J 666J can be exposed CR #7.)
+    5. Only hand on the 2024 NMJL Card with NNJ 11J must be concealed (W&D #7). (But NNJ 111J can be W&D #3.)
+    6. Only hand on the 2024 NMJL Card with 11J N* must be concealed (W&D #7). (11J NNNJ is not a hand on the card.)
+    7. Player is short a tile. (Not possible in Riichi Advanced, included for completeness.)
+  - Notes on each row:
+    1. Not possible in Riichi Advanced. Included for completeness.
+    2. Will be treated differently from IRL, since there is no way to change an exposure after it's called in Riichi Advanced. Will likely be treated like row 3.
+    3. Applicable to Riichi Advanced.
+    4. Applicable to Riichi Advanced.
+    5. Applicable to Riichi Advanced.
+    6. Not possible in Riichi Advanced. Included for completeness.
 
 ---
 
