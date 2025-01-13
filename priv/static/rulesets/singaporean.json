@@ -2,7 +2,7 @@
     // TODO (2025-01-10):
     // * Implement the various Pao rules.
     // * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
-    // * [FIXED, I think] Flower replacement can't be discarded normally for some reason. Dunno why. (Should probably check whether this is still the case.)
+    // * [2025-01-13: not fixed, can't figure out why it happens] Flower replacement can't be discarded normally for some reason. Dunno why.
     // TODO (2025-01-11):
     // * Check whether all bugs below still exist. If yes, fix.
     // * [FIXED, I think] Apparently Ping Hu requires multiple waits, EXCEPT if it's a win by self-draw, EXCEPT that Ping Hu cannot be awarded for fully-melded hands (even if self-drawn).
@@ -464,6 +464,7 @@
   "play_restrictions": [
       // TODO: This seems to be causing a bug where the flower replacement can't be discarded. Not sure why.
       // UPDATE: Looks like the bug was elsewhere. Hopefully fixed now.
+      // UPDATE: Nope.
     [["flower"], []]
   ],
   "before_turn_change": {
@@ -482,6 +483,7 @@
   "before_call": {
     "actions": [
         ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status_all", "discards_empty"]]]
+    ]
   },
   "after_call": {
     "actions": [
