@@ -484,7 +484,8 @@
       "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_0"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_0"]}],
       "actions": [
         ["unset_status", "final_charleston", "charleston_across_0"],
-        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
+        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]],
+		    ["recalculate_buttons"]
       ],
       "unskippable": true,
       "cancellable": false
