@@ -480,7 +480,8 @@
     ]
   },
   "before_call": {
-    "actions": [["run", "turn_cleanup"], ["unset_status_all", "discards_empty"]]
+    "actions": [
+        ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status_all", "discards_empty"]]]
   },
   "after_call": {
     "actions": [
