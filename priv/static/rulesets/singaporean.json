@@ -2,7 +2,7 @@
     // TODO (2025-01-10):
     // * Implement the various Pao rules.
     // * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
-    // * Flower replacement can't be discarded normally for some reason. Dunno why. (Should probably check whether this is still the case.)
+    // * [FIXED, I think] Flower replacement can't be discarded normally for some reason. Dunno why. (Should probably check whether this is still the case.)
     // TODO (2025-01-11):
     // * Check whether all bugs below still exist. If yes, fix.
     // * [FIXED, I think] Apparently Ping Hu requires multiple waits, EXCEPT if it's a win by self-draw, EXCEPT that Ping Hu cannot be awarded for fully-melded hands (even if self-drawn).
@@ -140,7 +140,6 @@
   ],
   "cat_and_mouse_definition": [[ "unique", [["1a","2a"], 2] ]],
   "chicken_and_centipede_definition": [[ "unique", [["3a","4a"], 2] ]],
-  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
   "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
   "all_animals_definition": [[ "unique", [["1a","2a","3a","4a"], 4] ]],
@@ -432,7 +431,7 @@
       "display_name": "Four Great Blessings",
       "value": 10,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
-    },
+    }
   ],
   "yaku_precedence": {
     "All Animals": ["Animal Tiles"],
@@ -444,7 +443,7 @@
     "Seven Flowers": ["All Flowers", "All Seasons"],
     "Eight Flowers": ["Seven Flowers", "All Flowers", "All Seasons"],
     "Hidden Treasure": ["Triplets Hand"],
-    "All Green": ["Half Flush", "Full Flush"]
+    "All Green": ["Half Flush", "Full Flush"],
     "Three Great Scholars": ["Three Lesser Scholars", "White Dragon", "Green Dragon", "Red Dragon"],
     "Four Great Blessings": ["Four Lesser Blessings", "Prevailing Wind", "Seat Wind", "Half Flush"]
   },
@@ -464,6 +463,7 @@
   },
   "play_restrictions": [
       // TODO: This seems to be causing a bug where the flower replacement can't be discarded. Not sure why.
+      // UPDATE: Looks like the bug was elsewhere. Hopefully fixed now.
     [["flower"], []]
   ],
   "before_turn_change": {
@@ -559,7 +559,8 @@
           ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
           ["pause", 1000]
         ]],
-        ["draw"]
+        ["draw"],
+        ["recalculate_buttons"]
       ],
       "unskippable": true
     },
@@ -739,7 +740,8 @@
           ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
           ["pause", 1000]
         ]],
-        ["when", ["not_no_tiles_remaining"], [["draw"]]]
+        ["when", ["not_no_tiles_remaining"], [["draw"]]],
+        ["recalculate_buttons"]
       ]
     }
   },
