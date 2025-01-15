@@ -2682,7 +2682,6 @@ div.room > div.seats > div.player-slot {
   position: relative;
   height: calc(1.5 * var(--tile-size));
 }
-div.room > div.seats > div.player-slot > .player-slot-button,
 div.room button {
   background: var(--tile-front);
   color: black;
@@ -2719,6 +2718,7 @@ div.room > div.seats > div.player-slot > div.player-slot-name {
   text-align: left;
   padding-left: calc(0.125 * var(--tile-size));
   background-color: #0000003F;
+  cursor: pointer;
 }
 div.room > div.seats > div.player-slot > div.player-slot-name.empty {
   opacity: 0.5;
