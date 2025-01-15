@@ -108,7 +108,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
   end
 
   def from_seats_spec(state, context, seat_spec) do
-    negated = String.starts_with?(seat_spec, "not_")
+    negated = is_binary(seat_spec) && String.starts_with?(seat_spec, "not_")
     seat_spec = if negated do String.slice(seat_spec, 4..-1//1) else seat_spec end
     seats = case seat_spec do
       "all" -> state.available_seats
