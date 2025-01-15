@@ -276,12 +276,12 @@
     "actions": [
       ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [
         ["unset_status_all", "blind_pass_left"],
-        ["when_anyone", [], [["delete_tiles", "1x"]]],
-        ["when_anyone", [], [
+        ["as", "everyone", [["delete_tiles", "1x"]]],
+        ["as", "everyone", [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "kamicha"]
         ]],
-        ["when_anyone", [], [
+        ["as", "everyone", [
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
@@ -291,7 +291,7 @@
           ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "kamicha", 1]]],
           ["unset_status", "pass_1", "pass_2", "pass_3"]
         ]],
-        ["when_anyone", [], [
+        ["as", "everyone", [
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
@@ -304,12 +304,12 @@
       ]],
       ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [
         ["unset_status_all", "blind_pass_right"],
-        ["when_anyone", [], [["delete_tiles", "1x"]]],
-        ["when_anyone", [], [
+        ["as", ["east", "north", "west", "south"], [["delete_tiles", "1x"]]],
+        ["as", ["east", "north", "west", "south"], [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "shimocha"]
         ]],
-        ["when_anyone", [], [
+        ["as", ["east", "north", "west", "south"], [
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
@@ -319,7 +319,7 @@
           ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "shimocha", 1]]],
           ["unset_status", "pass_1", "pass_2", "pass_3"]
         ]],
-        ["when_anyone", [], [
+        ["as", ["east", "north", "west", "south"], [
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
           ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
