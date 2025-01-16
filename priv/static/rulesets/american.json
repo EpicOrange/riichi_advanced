@@ -689,7 +689,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard"]}
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]}
         ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -701,7 +701,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]},
           {"name": "not_match", "opts": [["last_discard", "hand_any"], [[ "nojoker", [["pair"], 1] ]]]}
         ], [["press_button", "skip"]]]
       ],
@@ -714,7 +714,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]},
           "all_calls_deaden_hand"
         ], [["press_button", "skip"]]]
       ],
@@ -723,7 +723,7 @@
     "6_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["has_draw", {"name": "buttons_exclude", "opts": ["am_joker_swap"]}], [["discard_draw"]]]],
       "enabled_at_start": false
     },
     "7_auto_discard_nonmatching": {
@@ -732,6 +732,7 @@
       "actions": [
         ["when", [
           "has_draw",
+          {"name": "buttons_exclude", "opts": ["am_joker_swap"]},
           [
             {"name": "not_match", "opts": [["hand"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]},
             {"name": "not_match", "opts": [["draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}
