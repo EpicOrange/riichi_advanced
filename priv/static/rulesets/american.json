@@ -251,6 +251,32 @@
   "play_restrictions": [
     [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]]
   ],
+  "functions": {
+    "blind_pass_left": [
+      ["as", ["east", "north", "west", "south"], [
+        ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_2"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_3"]]],
+        ["subtract_counter", "to_pass", "count_draws", "self"],
+        ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "kamicha", 1]]],
+        ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "kamicha", 1]]],
+        ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "kamicha", 1]]],
+        ["unset_status", "pass_1", "pass_2", "pass_3"]
+      ]]
+    ],
+    "blind_pass_right": [
+      ["as", ["east", "south", "west", "north"], [
+        ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_2"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_3"]]],
+        ["subtract_counter", "to_pass", "count_draws", "self"],
+        ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "shimocha", 1]]],
+        ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "shimocha", 1]]],
+        ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "shimocha", 1]]],
+        ["unset_status", "pass_1", "pass_2", "pass_3"]
+      ]]
+    ]
+  },
   "before_turn_change": {
     "actions": [
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
@@ -280,54 +306,22 @@
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "kamicha"]
         ]],
-        ["as", "everyone", [
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
-          ["subtract_counter", "to_pass", "count_draws", "self"],
-          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "kamicha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "kamicha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "kamicha", 1]]],
-          ["unset_status", "pass_1", "pass_2", "pass_3"]
-        ]],
-        ["as", "everyone", [
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
-          ["subtract_counter", "to_pass", "count_draws", "self"],
-          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "kamicha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "kamicha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "kamicha", 1]]],
-          ["unset_status", "pass_1", "pass_2", "pass_3"]
-        ]]
+        ["run", "blind_pass_left"],
+        ["run", "blind_pass_left"],
+        ["run", "blind_pass_left"],
+        ["run", "blind_pass_left"]
       ]],
       ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [
         ["unset_status_all", "blind_pass_right"],
-        ["as", ["east", "north", "west", "south"], [["delete_tiles", "1x"]]],
-        ["as", ["east", "north", "west", "south"], [
+        ["as", "everyone", [["delete_tiles", "1x"]]],
+        ["as", "everyone", [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "shimocha"]
         ]],
-        ["as", ["east", "north", "west", "south"], [
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
-          ["subtract_counter", "to_pass", "count_draws", "self"],
-          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "shimocha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "shimocha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "shimocha", 1]]],
-          ["unset_status", "pass_1", "pass_2", "pass_3"]
-        ]],
-        ["as", ["east", "north", "west", "south"], [
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 1]}], [["set_status", "pass_1"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 2]}], [["set_status", "pass_1", "pass_2"]]],
-          ["when", [{"name": "counter_at_least", "opts": ["to_pass", 3]}], [["set_status", "pass_1", "pass_2", "pass_3"]]],
-          ["subtract_counter", "to_pass", "count_draws", "self"],
-          ["when", [{"name": "status", "opts": ["pass_1"]}], [["pass_draws", "shimocha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_2"]}], [["pass_draws", "shimocha", 1]]],
-          ["when", [{"name": "status", "opts": ["pass_3"]}], [["pass_draws", "shimocha", 1]]],
-          ["unset_status", "pass_1", "pass_2", "pass_3"]
-        ]]
+        ["run", "blind_pass_right"],
+        ["run", "blind_pass_right"],
+        ["run", "blind_pass_right"],
+        ["run", "blind_pass_right"]
       ]],
       ["when", [{"name": "anyone_status", "opts": ["start_blind_pass", "charleston_left"]}], [
         ["unset_status_all", "start_blind_pass"],
@@ -695,7 +689,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard"]}
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]}
         ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -707,7 +701,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]},
           {"name": "not_match", "opts": [["last_discard", "hand_any"], [[ "nojoker", [["pair"], 1] ]]]}
         ], [["press_button", "skip"]]]
       ],
@@ -720,7 +714,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]},
           "all_calls_deaden_hand"
         ], [["press_button", "skip"]]]
       ],
@@ -729,7 +723,7 @@
     "6_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["has_draw", {"name": "buttons_exclude", "opts": ["am_joker_swap"]}], [["discard_draw"]]]],
       "enabled_at_start": false
     },
     "7_auto_discard_nonmatching": {
@@ -738,6 +732,7 @@
       "actions": [
         ["when", [
           "has_draw",
+          {"name": "buttons_exclude", "opts": ["am_joker_swap"]},
           [
             {"name": "not_match", "opts": [["hand"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]},
             {"name": "not_match", "opts": [["draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}
