@@ -465,7 +465,7 @@ defmodule RiichiAdvanced.GameState.American do
     tile_aliases = state.players[seat].tile_aliases
     
     hand = hand ++ draw
-    base_tiles = Riichi.collect_base_tiles(hand, [], tile_aliases)
+    base_tiles = Riichi.collect_base_tiles(hand, calls, tile_aliases)
 
     # t = System.os_time(:millisecond)
 
@@ -492,8 +492,7 @@ defmodule RiichiAdvanced.GameState.American do
               end
 
               # build adj graph from these cached edges
-              # and use dfs to find all augmenting paths
-              # TODO change to bfs
+              # and use hopcroft-karp to find maximum matching
               adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, true}) do j end} end)
               adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {length(matching_hand_joker) + i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, false}) do j end} end)
               {new_pairing, new_pairing_r} = Map.merge(adj_joker, adj_nojoker)
