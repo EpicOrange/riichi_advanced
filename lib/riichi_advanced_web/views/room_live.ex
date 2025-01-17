@@ -54,9 +54,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
         socket
       else socket end
 
-      case Enum.find(state.seats, fn {_seat, seat_contents} -> seat_contents == nil end) do
-        nil -> :ok
-        {seat, _} -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
+      case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
+        nil  -> :ok
+        seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
       end
 
       {:ok, socket}
@@ -126,7 +126,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <% else %>
           <input type="radio" id="mods-tab" name="room-settings-tab" checked phx-update="ignore">
           <label for="mods-tab" class="mods-title">Mods</label>
-          <input type="radio" id="config-tab" name="room-settings-tab" checked phx-update="ignore">
+          <input type="radio" id="config-tab" name="room-settings-tab" phx-update="ignore">
           <label for="config-tab" class="mods-title">Config</label>
           <div class={["mods", "mods-#{@state.ruleset}"]}>
             <div class="mods-inner-container">
@@ -156,13 +156,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
           <div class="player-slot-label"><%= @symbols[seat] %></div>
           <%= if @state.seats[seat] != nil do %>
-            <div class="player-slot-name"><%= @state.seats[seat].nickname %></div>
+            <div class="player-slot-name" phx-cancellable-click="get_up"><%= @state.seats[seat].nickname %></div>
             <%= if @state.seats[seat].id == @id do %>
-              <button class="get-up-button" phx-cancellable-click="get_up">–</button>
+              <button class="player-slot-button" phx-cancellable-click="get_up">–</button>
             <% end %>
           <% else %>
-            <div class="player-slot-name empty">Empty</div>
-            <button class="player-slot-button" phx-cancellable-click="sit" phx-value-seat={seat}>+</button>
+            <div class="player-slot-name empty" phx-cancellable-click="sit" phx-value-seat={seat}>Empty</div>
           <% end %>
           </div>
         <% end %>
@@ -210,6 +209,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def handle_event("sit", %{"seat" => seat}, socket) do
+    seat = case seat do
+      "south" -> :south
+      "west"  -> :west
+      "north" -> :north
+      _       -> :east
+    end
     GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
     {:noreply, socket}
   end

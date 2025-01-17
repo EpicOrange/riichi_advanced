@@ -306,12 +306,6 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:sit, socket_id, seat}, state) do
-    seat = case seat do
-      "south" -> :south
-      "west"  -> :west
-      "north" -> :north
-      _       -> :east
-    end
     state = if state.seats[seat] == nil do
       state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
       # state = put_in(state.seats[seat], state.players[socket_id])

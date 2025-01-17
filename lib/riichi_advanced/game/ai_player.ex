@@ -408,10 +408,23 @@ defmodule RiichiAdvanced.AIPlayer do
             true -> {state, []}
           end
         "american" ->
-          playables = Enum.map(choices, fn {{_seat, _source, obj}, i} -> {obj, i} end)
-          case choose_american_discard(state, playables, closest_american_hands) do
-            {nil, _} -> {state, []}
-            {{_, i}, _} -> {state, Enum.filter(choices, fn {_, j} -> i == j end)}
+          if Marking.is_marking?(marked_objects, :call) do
+            # we're swapping out a joker
+            # check if any of our choices is a call
+            if Enum.any?(choices, fn {{_seat, source, _obj}, _i} -> source == :call end) do
+              # select the call first
+              {state, Enum.filter(choices, fn {{_seat, source, _obj}, _i} -> source == :call end)}
+            else
+              # if we selected a call already, select the first valid tile
+              {state, choices}
+            end
+          else
+            # otherwise, we're selecting for charleston
+            playables = Enum.map(choices, fn {{_seat, _source, obj}, i} -> {obj, i} end)
+            case choose_american_discard(state, playables, closest_american_hands) do
+              {nil, _} -> {state, []}
+              {{_, i}, _} -> {state, Enum.filter(choices, fn {_, j} -> i == j end)}
+            end
           end
         _ -> {state, choices}
       end
