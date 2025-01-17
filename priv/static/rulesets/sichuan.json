@@ -470,6 +470,37 @@
       "desc": "Automatically discard your drawn tile.",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
+    },
+      // have to figure out how to get the autobutton to discard the leftmost tile
+    "5_auto_void": {
+      "display_name": "DV",
+      "desc": "Automatically discard the leftmost tile of your voided suit.",
+      "actions": [["when",
+          [
+            {"name": "status", "opts": ["void_manzu"]},
+            {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}
+          ],
+            // replace with a function that discards the leftmost tile
+          [["discard_draw"]]
+        ],
+        ["when",
+          [
+            {"name": "status", "opts": ["void_pinzu"]},
+            {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}
+          ],
+            // replace with a function that discards the leftmost tile
+          [["discard_draw"]]
+        ],
+        ["when",
+          [
+            {"name": "status", "opts": ["void_souzu"]},
+            {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}
+          ],
+            // replace with a function that discards the leftmost tile
+          [["discard_draw"]]
+        ]
+      ]
+      "enabled_at_start": false
     }
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call"],
