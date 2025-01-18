@@ -455,6 +455,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0
       ["honba_value" | _opts] -> get_in(state.rules["score_calculation"]["honba_value"]) || 0
+      ["fu" | _opts] ->
+        player = state.players[context.seat]
+        score_rules = state.rules["score_calculation"]
+        enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
+        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
+        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Riichi.get_seat_wind(state.kyoku, context.seat, state.available_seats), Riichi.get_round_wind(state.kyoku, length(state.available_seats)), player.tile_ordering, player.tile_ordering_r, player.tile_aliases, enable_kontsu_fu)
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->

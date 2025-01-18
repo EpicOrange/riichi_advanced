@@ -583,6 +583,11 @@
   "play_effects": [
     ["any", [["unset_status", "discards_empty"]]]
   ],
+  "before_win": {
+    "actions": [
+      ["set_counter", "fu", "fu"]
+    ]
+  },
   "after_start": {
     "actions": [["set_status_all", "discards_empty"]]
   },
