@@ -80,38 +80,77 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def draw_tile(state, seat, num, tile_spec \\ nil, to_aside \\ false) do
     if num > 0 do
-      {tile_name, wall_index} = if tile_spec != nil do {tile_spec, state.wall_index} else {Enum.at(state.wall, state.wall_index, nil), state.wall_index + 1} end
-      if tile_name == nil do
-        # move a dead wall tile over
-        if not Enum.empty?(state.dead_wall) do
-          {wall_tiles, dead_wall} = Enum.split(state.dead_wall, 1)
-          state = Map.put(state, :wall, state.wall ++ wall_tiles)
-          state = Map.put(state, :dead_wall, dead_wall)
-          draw_tile(state, seat, num, tile_spec, to_aside)
-        else
-          IO.puts("#{seat} tried to draw a nil tile!")
-          state
-        end
+      {tile_name, wall_index} = if tile_spec != nil do
+        # we're drawing a specific tile, so keep the wall index the same
+        {tile_spec, state.wall_index}
       else
-        state = if is_binary(tile_name) && tile_name in state.reserved_tiles do
-          Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
-        else state end
-        tile = from_named_tile(state, tile_name) |> Utils.add_attr(["draw"])
-        state = if not to_aside do
-          state = update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
-          state = Map.put(state, :wall_index, wall_index)
-          state = update_action(state, seat, :draw, %{tile: tile})
-          kan_draw = "kan" in state.players[seat].status
-          state = Log.log(state, seat, :draw, %{tile: Utils.strip_attrs(tile), kan_draw: kan_draw})
-          state
-        else
-          state = update_player(state, seat, &%Player{ &1 | aside: [tile | &1.aside] })
-          state = Map.put(state, :wall_index, wall_index)
-          state
-        end
+        # take the next tile from the wall, and increment the wall index
+        {Enum.at(state.wall, state.wall_index, nil), state.wall_index + 1}
+      end
+      cond do
+        # we're drawing from the opposite end of the wall
+        tile_name == "opposite_end" ->
+          # check if there's any tiles left in the dead wall (if any)
+          cond do
+            state.dead_wall_index < length(state.dead_wall) ->
+              tile = Enum.at(state.dead_wall, -1-state.dead_wall_index)
+              state
+              |> Map.put(:dead_wall_index, state.dead_wall_index + 1)
+              |> draw_tile(seat, 1, tile, to_aside)
+              |> draw_tile(seat, num - 1, tile_spec, to_aside)
+            not Enum.empty?(state.wall) ->
+              # move the last tile of the wall to the dead wall, and then draw it
+              {wall, [tile]} = Enum.split(state.wall, -1)
+              dead_wall = [tile | state.dead_wall]
+              state
+              |> Map.put(:wall, wall)
+              |> Map.put(:dead_wall, dead_wall)
+              |> Map.put(:dead_wall_index, state.dead_wall_index + 1)
+              |> draw_tile(seat, 1, tile, to_aside)
+              |> draw_tile(seat, num - 1, tile_spec, to_aside)
+            true ->
+              # both walls are exhausted, draw nothing
+              IO.puts("#{seat} tried to draw a nil tile!")
+              state
+          end
+        # the wall is exhausted and we're not drawing a specific tile
+        tile_name == nil ->
+          # move a dead wall tile over
+          if not Enum.empty?(state.dead_wall) do
+            {wall_tile, dead_wall} = Enum.split(state.dead_wall, 1)
+            state
+            |> Map.put(:wall, state.wall ++ wall_tile)
+            |> Map.put(:dead_wall, dead_wall)
+            |> draw_tile(seat, num, tile_spec, to_aside)
+          else
+            IO.puts("#{seat} tried to draw a nil tile!")
+            state
+          end
+        # otherwise, we draw a tile as normal
+        true ->
+          # if we're drawing a specific tile, update drawn_reserved_tiles with that tile
+          state = if is_binary(tile_name) && tile_name in state.reserved_tiles do
+            Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
+          else state end
+          # grab the named tile (no op if the tile name is a normal tile)
+          tile = from_named_tile(state, tile_name) |> Utils.add_attr(["draw"])
+          state = if not to_aside do
+            # draw to hand
+            state
+            |> update_player(seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
+            |> Map.put(:wall_index, wall_index)
+            |> update_action(seat, :draw, %{tile: tile})
+            |> Log.log(seat, :draw, %{tile: Utils.strip_attrs(tile), kan_draw: "kan" in state.players[seat].status})
+          else
+            # draw to aside
+            state
+            |> update_player(seat, &%Player{ &1 | aside: [tile | &1.aside] })
+            |> Map.put(:wall_index, wall_index)
+            # TODO: log this
+          end
 
-        # IO.puts("wall index is now #{get_state().wall_index}")
-        draw_tile(state, seat, num - 1, tile_spec, to_aside)
+          # IO.puts("wall index is now #{get_state().wall_index}")
+          draw_tile(state, seat, num - 1, tile_spec, to_aside)
       end
     else
       # run after_draw actions            

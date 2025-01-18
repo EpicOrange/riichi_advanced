@@ -274,6 +274,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         die2={@state.die2}
         dice_roll={@state.die1 + @state.die2}
         wall_index={@state.wall_index}
+        dead_wall_index={@state.dead_wall_index}
         revealed_tiles={@state.revealed_tiles}
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
