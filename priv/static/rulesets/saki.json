@@ -1761,7 +1761,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -1779,7 +1780,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_dora_indicator"],
+          ["swap_tiles", {"hand": ["marked"]}, {"revealed_tile": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -1838,7 +1840,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["advance_turn"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
         ]]
@@ -1990,7 +1993,8 @@
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
         ["mark", [["hand", 1, ["not_riichi"]]]],
-        ["swap_marked_with_aside"],
+        ["swap_tiles", {"hand": ["marked"]}, "aside"],
+        ["clear_marking"],
         ["push_message", "swapped a tile from hand with the tile they set aside (Onjouji Toki)"],
         ["recalculate_buttons"] // allow tsumo to pop up
       ]
@@ -2105,7 +2109,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -2131,7 +2136,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -2558,7 +2564,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -2846,7 +2853,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_scry"],
+          ["swap_tiles", {"hand": ["marked"]}, {"scry": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
@@ -2870,7 +2878,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_scry"],
+          ["swap_tiles", {"hand": ["marked"]}, {"scry": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
@@ -2896,7 +2905,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_dora_indicator"],
+          ["swap_tiles", {"hand": ["marked"]}, {"revealed_tile": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
@@ -4506,7 +4516,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["recalculate_buttons", "play_tile", "check_discard_passed", "advance_turn", "draw", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
+  "interruptible_actions": ["recalculate_buttons", "play_tile", "check_discard_passed", "advance_turn", "draw", "draw_from_aside", "swap_tiles", "clear_marking"],
   "shown_statuses": ["furiten"],
   "persistent_statuses": ["hanada-kirame_exhausted", "matsumi_kuro_dora_disabled"],
   "display_riichi_sticks": true,

@@ -593,10 +593,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       {"draw", false} -> player.draw |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
       {"aside", false} -> player.aside |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
       {"calls", false} -> player.calls |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
+      {"discard", false} -> player.pond |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
+      {"revealed_tile", false} -> [] # unimplemented
+      {"scry", false} -> [] # unimplemented
       {"hand", true} -> Marking.get_marked(marked_objects, :hand)
-      {"draw", true} -> [] # TODO split marked_objects for this?
+      {"draw", true} -> [] # unimplemented
       {"aside", true} -> Marking.get_marked(marked_objects, :aside)
       {"calls", true} -> Marking.get_marked(marked_objects, :calls)
+      {"discard", true} -> Marking.get_marked(marked_objects, :discard)
+      {"revealed_tile", true} -> Marking.get_marked(marked_objects, :revealed_tile)
+      {"scry", true} -> Marking.get_marked(marked_objects, :scry)
       _ -> 
         IO.puts("Unknown move_tiles target #{inspect(source)}")
         []
@@ -624,21 +630,27 @@ defmodule RiichiAdvanced.GameState.Actions do
                 update_player(state, seat2, &%Player{ &1 | draw: List.replace_at(&1.draw, ix2 - hand_length, tile1) })
               end
             "draw" -> update_player(state, seat2, &%Player{ &1 | draw: List.replace_at(&1.draw, ix2, tile1) })
-            "aside" -> update_player(state, seat2, &%Player{ &1 | aside: List.replace_at(&1.aside, ix2, tile1) })
             "calls" -> update_player(state, seat2, &%Player{ &1 | calls: List.replace_at(&1.calls, ix2, tile1) })
+            "aside" -> update_player(state, seat2, &%Player{ &1 | aside: List.replace_at(&1.aside, ix2, tile1) })
+            "discard" -> update_player(state, seat2, &%Player{ &1 | pond: List.replace_at(&1.pond, ix2, tile1) })
+            "revealed_tile" -> replace_revealed_tile(state, ix2, tile1)
+            "scry" -> update_in(state.wall, &List.replace_at(&1, state.wall_index + ix2, tile1))
           end
           # replace {source1, seat1} tile with tile2
           state = case source1 do
             "hand" ->
-              hand_length = length(state.players[seat2].hand)
+              hand_length = length(state.players[seat1].hand)
               if ix1 < hand_length do
                 update_player(state, seat1, &%Player{ &1 | hand: List.replace_at(&1.hand, ix1, tile2) })
               else
                 update_player(state, seat1, &%Player{ &1 | draw: List.replace_at(&1.draw, ix1 - hand_length, tile2) })
               end
             "draw" -> update_player(state, seat1, &%Player{ &1 | draw: List.replace_at(&1.draw, ix1, tile2) })
-            "aside" -> update_player(state, seat1, &%Player{ &1 | aside: List.replace_at(&1.aside, ix1, tile2) })
             "calls" -> update_player(state, seat1, &%Player{ &1 | calls: List.replace_at(&1.calls, ix1, tile2) })
+            "aside" -> update_player(state, seat1, &%Player{ &1 | aside: List.replace_at(&1.aside, ix1, tile2) })
+            "discard" -> update_player(state, seat1, &%Player{ &1 | pond: List.replace_at(&1.pond, ix1, tile2) })
+            "revealed_tile" -> replace_revealed_tile(state, ix1, tile2)
+            "scry" -> update_in(state.wall, &List.replace_at(&1, state.wall_index + ix1, tile2))
           end
           state = update_action(state, seat, :swap, %{
             tile1: {tile1, seat1, ix1, Marking.mark_targets()[source1]},
@@ -666,8 +678,9 @@ defmodule RiichiAdvanced.GameState.Actions do
                   update_player(state, seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
                 end
               "draw" -> update_player(state, seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix) })
-              "aside" -> update_player(state, seat, &%Player{ &1 | aside: List.delete_at(&1.aside, ix) })
               "calls" -> update_player(state, seat, &%Player{ &1 | calls: List.delete_at(&1.calls, ix) })
+              "aside" -> update_player(state, seat, &%Player{ &1 | aside: List.delete_at(&1.aside, ix) })
+              "discard" -> update_player(state, seat, &%Player{ &1 | pond: List.delete_at(&1.pond, ix) })
             end
           end)
           # add tiles to dst (in original ordering)
@@ -681,8 +694,9 @@ defmodule RiichiAdvanced.GameState.Actions do
                   update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
                 end
               "draw" -> update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
-              "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })
               "calls" -> update_player(state, seat, &%Player{ &1 | calls: &1.calls ++ [tile] })
+              "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })
+              "discard" -> update_player(state, seat, &%Player{ &1 | pond: &1.pond ++ [tile] })
             end
           end)
         _ ->
@@ -833,87 +847,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       "mark" -> state # no-op
       "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), false)
       "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), true)
-      "swap_marked_hand_and_discard" ->
-        {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
-        {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
-
-        # replace pond tile with hand tile
-        state = update_player(state, discard_seat, &%Player{ &1 | pond: List.replace_at(&1.pond, discard_index, hand_tile) })
-
-        # replace hand tile with pond tile
-        hand_length = length(state.players[hand_seat].hand)
-        state = if hand_index < hand_length do
-          update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, discard_tile) })
-        else
-          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, discard_tile) })
-        end
-
-        state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {discard_tile, discard_seat, discard_index, :discard}})
-        state = Marking.mark_done(state, context.seat)
-        state
-      "swap_marked_hand_and_dora_indicator" ->
-        {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
-        {revealed_tile, _, revealed_tile_index} = Marking.get_marked(marked_objects, :revealed_tile) |> Enum.at(0)
-
-        # replace revealed tile with hand tile
-        state = replace_revealed_tile(state, revealed_tile_index, hand_tile)
-
-        # replace hand tile with revealed tile
-        hand_length = length(state.players[hand_seat].hand)
-        state = if hand_index < hand_length do
-          update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, revealed_tile) })
-        else
-          update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, revealed_tile) })
-        end
-
-        state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {revealed_tile, nil, revealed_tile_index, :discard}})
-        state = Marking.mark_done(state, context.seat)
-        state
-      "swap_marked_hand_and_scry" ->
-        marked_hand = Marking.get_marked(marked_objects, :hand)
-        marked_scry = Marking.get_marked(marked_objects, :scry)
-        {_, hand_seat, _} = Enum.at(marked_hand, 0)
-        {hand_tiles, hand_indices} = marked_hand
-        |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
-        |> Enum.unzip()
-        {scry_tiles, scry_indices} = marked_scry
-        |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
-        |> Enum.unzip()
-
-        zip1 = Enum.zip(hand_tiles, scry_indices)
-        zip2 = Enum.zip(scry_tiles, hand_indices)
-
-        # replace wall tiles with hand tiles
-        state = for {hand_tile, scry_index} <- zip1, reduce: state do
-          state -> update_in(state.wall, &List.replace_at(&1, state.wall_index + scry_index, hand_tile))
-        end
-
-        # replace hand tiles with wall tiles
-        hand_length = length(state.players[hand_seat].hand)
-        state = for {{scry_tile, hand_index}, {hand_tile, scry_index}} <- Enum.zip(zip2, zip1), reduce: state do
-          state ->
-            state = update_action(state, context.seat, :swap, %{tile1: {hand_tile, hand_seat, hand_index, :hand}, tile2: {scry_tile, nil, scry_index, :discard}})
-            if hand_index < hand_length do
-              update_player(state, hand_seat, &%Player{ &1 | hand: List.replace_at(&1.hand, hand_index, scry_tile) })
-            else
-              update_player(state, hand_seat, &%Player{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, scry_tile) })
-            end
-        end
-
-        state = Marking.mark_done(state, context.seat)
-        state
-      "swap_marked_scry_and_dora_indicator" ->
-        {revealed_tile, _, revealed_tile_index} = Marking.get_marked(marked_objects, :revealed_tile) |> Enum.at(0)
-        {scry_tile, _, scry_index} = Marking.get_marked(marked_objects, :scry) |> Enum.at(0)
-
-        # replace wall tile with revealed tile
-        state = update_in(state.wall, &List.replace_at(&1, state.wall_index + scry_index, revealed_tile))
-
-        # replace revealed tile with wall tile
-        state = replace_revealed_tile(state, revealed_tile_index, scry_tile)
-
-        state = Marking.mark_done(state, context.seat)
-        state
       "swap_marked_calls" ->
         marked_call = Marking.get_marked(marked_objects, :call)
         {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
@@ -1556,8 +1489,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           update_all_players(state, fn dir, player ->
             not_us = seat != dir
             choice_superceded = player.choice in superceded_choices
-            all_choices_superceded = player.choice == nil && Enum.all?(player.buttons, fn button -> button in superceded_choices end)
+            all_choices_superceded = player.choice == nil && Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
             if not_us && (choice_superceded || all_choices_superceded) do
+              if Debug.debug_actions() do
+                IO.puts("Superceding choice for #{dir} due to existing #{choice}")
+              end
               %Player{ player | choice: "skip", chosen_actions: [], buttons: [] }
             else player end
           end)
@@ -1588,6 +1524,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         |> Enum.at(0)
         update_all_players(state, fn dir, player ->
           if dir in (seats -- [winning_seat]) do
+            if Debug.debug_actions() do
+              IO.puts("Superceding choice for #{dir} due to existing #{choice} having higher call priority")
+            end
             %Player{ player | choice: "skip", chosen_actions: [], buttons: [] }
           else player end
         end)

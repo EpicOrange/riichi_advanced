@@ -8,7 +8,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   @special_keys [:done, :cancellable, :post_actions]
   @mark_targets %{
     "hand" => :hand,
-    "call" => :call,
+    "call" => :calls,
     "aside" => :aside,
     "discard" => :discard,
     "revealed_tile" => :revealed_tile,
@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   def get_object(state, seat, index, source) do
     case source do
       :hand          -> state.players[seat].hand ++ state.players[seat].draw |> Enum.at(index)
-      :call          -> state.players[seat].calls |> Enum.at(index)
+      :calls         -> state.players[seat].calls |> Enum.at(index)
       :aside         -> state.players[seat].aside |> Enum.at(index)
       :discard       -> state.players[seat].pond |> Enum.at(index)
       :revealed_tile -> Enum.at(get_revealed_tiles(state), index)
@@ -128,7 +128,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "match_hand_to_marked_call" ->
           jokers = Map.keys(state.players[marking_player].tile_mappings)
           state.marking[marking_player]
-          |> Enum.filter(fn {src, _mark_info} -> src == :call end)
+          |> Enum.filter(fn {src, _mark_info} -> src == :calls end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
           |> Enum.all?(fn {call, _, _} ->
