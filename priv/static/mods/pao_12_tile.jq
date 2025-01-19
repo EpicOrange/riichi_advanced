@@ -1,6 +1,6 @@
 .after_call.actions += [
   ["when", [{"name": "match", "opts": [["calls"], [[[["shuntsu", "koutsu", "quad"], 4]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-  ["unset_status_all", "daiminkan_pao_possible"]
+  ["unset_status_all", "pao_12_possible"]
 ]
 |
 .buttons.chii.actions |= [["set_status", "pao_12_possible"]] + .
