@@ -1,4 +1,5 @@
 {
+    //TODO: Replacement tiles should be drawn from the dead wall. Need to figure out whether the dead wall stays at 30 tiles, or whether it depletes.
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
