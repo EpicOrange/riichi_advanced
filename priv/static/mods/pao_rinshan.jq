@@ -2,7 +2,7 @@
   ["when", 
     [
       {"name": "status", "opts": ["rinshan_pao_possible"]},
-      {"name": "match", "opts": [["last_call"], [[[["quad"], 1]]]]}
+      {"name": "match", "opts": [["last_call"], [[[["daiminkan"], 1]]]]}
     ],
     [["as", "callee", [["set_status", "pao_possible"]]]]],
   ["unset_status_all", "rinshan_pao_possible"]
@@ -14,7 +14,7 @@
 ]
 |
 # Otherwise, remove pao_possible and kan stati from everyone.
-.before_turn_change.actions += [
+.functions.turn_cleanup += [
   ["unset_status_all", "kan", "pao_possible"]
 ]
 |
