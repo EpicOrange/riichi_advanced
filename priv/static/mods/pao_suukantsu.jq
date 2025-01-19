@@ -4,14 +4,14 @@
   ["when", 
     [
       {"name": "status", "opts": ["daiminkan_pao_possible"]},
-      {"name": "match", "opts": [["last_call"], [[[["quad"], 1]]]]},
-      {"name": "match", "opts": [["calls"], [[[["quad"], 4]]]]}
+      {"name": "match", "opts": [["last_call"], [[[["daiminkan"], 1]]]]},
+      {"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}
     ],
     [["as", "callee", [["set_status", "pao"]]]]],
   ["unset_status_all", "daiminkan_pao_possible"]
 ]
 |
-# Prepend this "last_is_daiminkan" at the start of the daiminkan action, so that when the call happens, this is already set.
+# Prepend this "daiminkan_pao_possible" at the start of the daiminkan action, so that when the call happens, this is already set.
 .buttons.daiminkan.actions |= [["set_status", "daiminkan_pao_possible"]] + .
 |
 .score_calculation.pao_eligible_yaku += ["Suukantsu"]
