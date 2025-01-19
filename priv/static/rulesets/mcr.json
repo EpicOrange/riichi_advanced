@@ -736,7 +736,7 @@
     "start_no_flower": {
       "display_name": "Pass",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "chii": {
