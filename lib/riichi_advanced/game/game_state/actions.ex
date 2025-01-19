@@ -209,9 +209,6 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       state = Map.put(state, :awaiting_discard, true)
 
-      # ensure playable_indices is populated for the new turn
-      state = broadcast_state_change(state, true)
-      
       state
     else state end
   end
@@ -587,6 +584,114 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
+  defp get_move_tiles_targets(state, seat, source, opts) do
+    {flags, tile_specs} = Enum.split_with(opts, & &1 in ["marked"])
+    marked_objects = state.marking[seat]
+    player = state.players[seat]
+    case {source, "marked" in flags} do
+      {"hand", false} -> player.hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
+      {"draw", false} -> player.draw |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
+      {"aside", false} -> player.aside |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
+      {"calls", false} -> player.calls |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
+      {"hand", true} -> Marking.get_marked(marked_objects, :hand)
+      {"draw", true} -> [] # TODO split marked_objects for this?
+      {"aside", true} -> Marking.get_marked(marked_objects, :aside)
+      {"calls", true} -> Marking.get_marked(marked_objects, :calls)
+      _ -> 
+        IO.puts("Unknown move_tiles target #{inspect(source)}")
+        []
+    end
+    |> Enum.filter(fn {tile, _seat, _ix} -> Riichi.tile_matches_all(tile_specs, %{tile: tile}) end)
+    |> Enum.map(fn {tile, seat, ix} -> {source, tile, seat, ix} end)
+  end
+
+  defp move_tiles(state, seat, src, dst, swap) do
+    src = if is_map(src) do src else %{src => []} end
+    src_targets = Enum.flat_map(src, fn {source, opts} -> get_move_tiles_targets(state, seat, source, opts) end)
+    dst = if is_map(dst) do dst else %{dst => []} end
+    dst_targets = Enum.flat_map(dst, fn {source, opts} -> get_move_tiles_targets(state, seat, source, opts) end)
+
+    if swap do
+      for {{source1, tile1, seat1, ix1}, {source2, tile2, seat2, ix2}} <- Enum.zip(src_targets, dst_targets), reduce: state do
+        state ->
+          # replace {source2, seat2} tile with tile1
+          state = case source2 do
+            "hand" ->
+              hand_length = length(state.players[seat2].hand)
+              if ix2 < hand_length do
+                update_player(state, seat2, &%Player{ &1 | hand: List.replace_at(&1.hand, ix2, tile1) })
+              else
+                update_player(state, seat2, &%Player{ &1 | draw: List.replace_at(&1.draw, ix2 - hand_length, tile1) })
+              end
+            "draw" -> update_player(state, seat2, &%Player{ &1 | draw: List.replace_at(&1.draw, ix2, tile1) })
+            "aside" -> update_player(state, seat2, &%Player{ &1 | aside: List.replace_at(&1.aside, ix2, tile1) })
+            "calls" -> update_player(state, seat2, &%Player{ &1 | calls: List.replace_at(&1.calls, ix2, tile1) })
+          end
+          # replace {source1, seat1} tile with tile2
+          state = case source1 do
+            "hand" ->
+              hand_length = length(state.players[seat2].hand)
+              if ix1 < hand_length do
+                update_player(state, seat1, &%Player{ &1 | hand: List.replace_at(&1.hand, ix1, tile2) })
+              else
+                update_player(state, seat1, &%Player{ &1 | draw: List.replace_at(&1.draw, ix1 - hand_length, tile2) })
+              end
+            "draw" -> update_player(state, seat1, &%Player{ &1 | draw: List.replace_at(&1.draw, ix1, tile2) })
+            "aside" -> update_player(state, seat1, &%Player{ &1 | aside: List.replace_at(&1.aside, ix1, tile2) })
+            "calls" -> update_player(state, seat1, &%Player{ &1 | calls: List.replace_at(&1.calls, ix1, tile2) })
+          end
+          state = update_action(state, seat, :swap, %{
+            tile1: {tile1, seat1, ix1, Marking.mark_targets()[source1]},
+            tile2: {tile2, seat2, ix2, Marking.mark_targets()[source2]},
+          })
+          state
+      end
+    else
+      # assert that there's only one entry in dst
+      case Map.keys(dst) do
+        [destination] ->
+          # TODO perhaps allow for other seats to be targeted
+          # by using flags in dst[destination] to determine the seat
+
+          # remove tiles from source (in reverse ordering)
+          state = src_targets
+          |> Enum.sort_by(fn {_source, _tile, _seat, ix} -> -ix end)
+          |> Enum.reduce(state, fn {source, _tile, seat, ix}, state ->
+            case source do
+              "hand" ->
+                hand_length = length(state.players[seat].hand)
+                if ix < hand_length do
+                  update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, ix) })
+                else
+                  update_player(state, seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
+                end
+              "draw" -> update_player(state, seat, &%Player{ &1 | draw: List.delete_at(&1.draw, ix) })
+              "aside" -> update_player(state, seat, &%Player{ &1 | aside: List.delete_at(&1.aside, ix) })
+              "calls" -> update_player(state, seat, &%Player{ &1 | calls: List.delete_at(&1.calls, ix) })
+            end
+          end)
+          # add tiles to dst (in original ordering)
+          Enum.reduce(src_targets, state, fn {_source, tile, _seat, ix}, state ->
+            case destination do
+              "hand" -> 
+                hand_length = length(state.players[seat].hand)
+                if ix < hand_length do
+                  update_player(state, seat, &%Player{ &1 | hand: &1.hand ++ [tile] })
+                else
+                  update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
+                end
+              "draw" -> update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
+              "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })
+              "calls" -> update_player(state, seat, &%Player{ &1 | calls: &1.calls ++ [tile] })
+            end
+          end)
+        _ ->
+          IO.puts("Moving with more than one destination not implemented: #{inspect(dst)}")
+          state
+      end
+    end
+  end
+
   defp _run_actions(state, [], _context), do: {state, []}
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -726,6 +831,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           run_actions(state, Enum.at(opts, 1, []), context)
         else state end
       "mark" -> state # no-op
+      "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), false)
+      "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), true)
       "swap_marked_hand_and_discard" ->
         {hand_tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
         {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
@@ -1388,6 +1495,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       # clearing choices is done by evaluate_choices now
       # though i guess we could still do it here? no difference
       # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+
+      # ensure playable_indices is populated for the current player
+      state = broadcast_state_change(state, true)
 
       Mutex.release(state.mutex, lock)
       # IO.puts("Done adjudicating actions!\n")
