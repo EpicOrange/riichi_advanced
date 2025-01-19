@@ -2967,9 +2967,11 @@
         ["draw_aside", 10],
         ["add_attr", ["aside"], ["revealed"]],
         ["set_status", "shimizudani-ryuuka_exhausted"],
-        ["push_message", "set ten tiles aside (Shimizudani Ryuuka)"]
+        ["push_message", "set ten tiles aside (Shimizudani Ryuuka)"],
+        ["recalculate_buttons"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "shimizudani_ryuuka_2": {
       "display_name": "Declare yaku",
@@ -2984,7 +2986,8 @@
         ["push_message", "is choosing yaku (Shimizudani Ryuuka)"],
         ["choose_yaku"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "shimizudani_ryuuka_draw": {
       "display_name": "Draw from aside",
@@ -3004,7 +3007,8 @@
         ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "kajiki_yumi_swap": {
       "display_name": "Swap open melds",
