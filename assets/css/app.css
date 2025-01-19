@@ -715,6 +715,9 @@ div.corner-info > div.ai-thinking::before {
   left: calc(50% - 0.4 * var(--tile-size));
   animation: aiThinking 3s linear forwards infinite;
 }
+div.corner-info.self {
+  z-index: 5; /* above pond */
+}
 
 /* tiles */
 div.tile {
