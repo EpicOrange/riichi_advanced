@@ -18,7 +18,7 @@
 |
 
 # make the blank a joker so that it can't be passed, or marked in discards
-.after_start.actions += [ ["set_tile_alias_all", ["5z"], ["any"]] ]
+.after_start.actions += [ ["set_tile_alias_all", ["5z"], ["5z"]] ]
 |
 
 # disallow Pung, Kong, Quint from having blanks
@@ -36,15 +36,22 @@
 |
 
 # WIP SECTION: Add blank swap button
-# TODO: figure out how to put am_blank_swap after am_joker_swap
 .buttons += {"am_blank_swap": {
       "display_name": "Swap blank for discard",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand", "discards_empty"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand"], [[[["5z"], 1]]]]}],
+      "show_when": [
+            # TODO: figure out how to only show the blank swap button if there exists at least one non-blank-non-noker in the discards
+            {"name": "status_missing", "opts": ["match_start", "dead_hand", "discards_empty"]},
+            "our_turn",
+            "not_just_discarded",
+            # TODO: assuming this doesn't work: figure out how to only show the blank swap button if there is a blank in the hand
+            {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]}
+      ],
       "actions": [
         ["big_text", "Swap"],
         ["mark", [["discard", 1, ["not_joker"]], ["hand", 1, ["5z"]] ]],
         ["push_message", "swapped a discard with a blank from hand"],
-        ["swap_marked_hand_and_discard"],
+        ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+        ["clear_marking"],
         ["recalculate_buttons"] #allow Mah-Jongg/joker swap to pop up
       ]
     }}
