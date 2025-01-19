@@ -36,8 +36,9 @@
     "actions": [
       ["unset_status", "building"],
       ["mark", [["hand", 13, ["self"]]]],
-      ["set_aside_marked_hand"],
-      ["swap_hand_and_aside"],
+      ["move_tiles", {"hand": ["marked"]}, "aside"],
+      ["clear_marking"],
+      ["swap_tiles", "hand", "aside"],
       ["put_down_riichi_stick"],
       ["set_status", "match_start", "just_reached", "riichi", "ippatsu"]
     ],
@@ -49,8 +50,9 @@
     "show_when": ["our_turn", {"name": "status", "opts": ["match_start"]}, "not_has_draw", "not_just_discarded"],
     "actions": [
       ["mark", [["aside", 1, ["self"]]]],
-      ["draw_marked_aside"],
-      ["discard_draw"]
+      ["move_tiles", {"aside": ["marked"]}, "discard"],
+      ["clear_marking"],
+      ["advance_turn"]
     ],
     "unskippable": true,
     "cancellable": false

@@ -85,6 +85,26 @@ defmodule RiichiAdvanced.GameState.Conditions do
     end
   end
 
+  @all_seat_specs [
+    "east",
+    "south",
+    "west",
+    "north",
+    "self",
+    "shimocha",
+    "toimen",
+    "kamicha",
+    "last_discarder",
+    "caller",
+    "callee",
+    "all",
+    "everyone",
+    "others",
+    "chii_victims"
+  ]
+
+  def all_seat_specs, do: @all_seat_specs
+
   def from_seat_spec(state, context, seat_spec) do
     case seat_spec do
       "east" -> Riichi.get_player_from_seat_wind(state.kyoku, :east, state.available_seats)

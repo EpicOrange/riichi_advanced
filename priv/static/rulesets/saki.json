@@ -1909,7 +1909,8 @@
         ["unset_status", "pon"],
         ["mark", [["discard", 1, ["match_called_tile"]]]],
         ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
-        ["set_aside_marked_discard"]
+        ["move_tiles", {"discard": ["marked"]}, "aside"],
+        ["clear_marking"]
       ],
       "unskippable": true
     },
@@ -2016,8 +2017,8 @@
         ["unset_status", "about_to_draw"],
         ["mark", [["discard", 1, ["self"]]]],
         ["push_message", "drew one of their discards (Shibuya Takami)"], // TODO: say which one!
-        ["set_aside_marked_discard"],
-        ["draw_from_aside"],
+        ["move_tiles", {"discard": ["marked"]}, "draw"],
+        ["clear_marking"],
         ["add_attr", ["draw"], ["facedown", "no_discard"]]
       ],
       "unskippable": true
@@ -2348,7 +2349,8 @@
         ["mark", [["aside", 1, ["self"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from their aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "self"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2368,7 +2370,8 @@
         ["mark", [["aside", 1, ["shimocha"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from shimocha's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "shimocha"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2388,7 +2391,8 @@
         ["mark", [["aside", 1, ["toimen"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from toimen's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "toimen"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2408,7 +2412,8 @@
         ["mark", [["aside", 1, ["kamicha"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from kamicha's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "kamicha"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2940,7 +2945,7 @@
         ["scry_all", 1],
         ["pause", 1000],
         ["when", [{"name": "match", "opts": [["hand_any", "scry"], [[[[[0, 0]], 1]]]]}], [
-          ["set_aside_scry"],
+          ["move_tiles", "scry", "aside"],
           ["add_attr", ["aside"], ["revealed"]],
           ["big_text", "Ueshige Suzu: set aside!"],
           ["push_message", "has a copy of the revealed tile in hand, and so sets it aside (Ueshige Suzu)"]
@@ -2995,7 +3000,8 @@
       "actions": [
         ["mark", [["aside", 1, ["self"]]]],
         ["unset_status", "kan"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "self"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -3497,7 +3503,8 @@
       ],
       "actions": [
         ["mark", [["scry", 1, []]]],
-        ["draw_marked_scry"],
+        ["move_tiles", {"scry": ["marked"]}, "draw"],
+        ["clear_marking"],
         ["unset_status", "oohoshi_awai_draw"],
         ["set_status", "oohoshi_awai_place"],
         ["push_message", "draws one of the revealed tiles (Oohoshi Awai)"],
