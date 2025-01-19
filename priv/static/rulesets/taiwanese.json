@@ -1,4 +1,5 @@
 {
+    //TODO: Replacement tiles are drawn from the dead wall, and last tile of live wall is used to replenish the dead wall. Implement this.
   "default_mods": ["eight_flower_win", "show_waits"],
   "available_mods": [
     {"id": "eight_flower_win", "name": "Eight Flower Win", "desc": "Allow instant win upon obtaining 8 flowers. If you have 7 flowers, you may steal the declaration of an 8th flower."},
