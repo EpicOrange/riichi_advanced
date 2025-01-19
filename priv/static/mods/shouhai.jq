@@ -14,7 +14,7 @@ else
   .starting_tiles = 12
   |
   .after_start.actions += [
-    ["as", "east", [["set_aside_draw"]]],
+    ["as", "east", [["move_tiles", "draw", "aside"]]],
     ["as", "everyone", [["uninterruptible_draw", 1, ["4x", ["hidden"]]], ["merge_draw"]]],
     ["as", "east", [["draw_from_aside"]]]
   ]
