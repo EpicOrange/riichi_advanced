@@ -1,5 +1,4 @@
 {
-    //TODO: Replacement tiles should be drawn from the dead wall. Need to figure out whether the dead wall stays at 30 tiles, or whether it depletes.
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
@@ -544,7 +543,8 @@
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
           ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
         ]],
-        ["draw"]
+        ["draw", 1, "opposite_end"],
+        ["shift_tile_to_dead_wall", 1]
       ],
       "unskippable": true
     },
@@ -577,7 +577,8 @@
         ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["big_text", "  -1  ", "last_discarder"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"],
+        ["shift_tile_to_dead_wall", 1]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -594,7 +595,8 @@
         ["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"],
+        ["shift_tile_to_dead_wall", 1]
       ]
     },
     "kakan": {
@@ -615,7 +617,8 @@
         ["add_score", 1], ["subtract_score", 1, "kamicha"], ["big_text", "  -1  ", "kamicha"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"],
+        ["shift_tile_to_dead_wall", 1]
       ]
     },
     "ron": {
@@ -712,7 +715,10 @@
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
           ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
         ]],
-        ["when", ["not_no_tiles_remaining"], [["draw"]]]
+        ["when", ["not_no_tiles_remaining"], [
+            ["draw", 1, "opposite_end"],
+            ["shift_tile_to_dead_wall", 1]
+        ]]
       ]
     }
   },
