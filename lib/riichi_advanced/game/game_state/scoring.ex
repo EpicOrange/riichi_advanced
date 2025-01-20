@@ -334,7 +334,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle ryuumonbuchi touka's scoring quirk
     is_dealer = is_dealer || "score_as_dealer" in state.players[winner.seat].status
 
-    pao_triggered = winner.pao_seat != nil
+    pao_triggered = Map.get(winner, :pao_seat, nil) != nil
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
     {pao_yaku, non_pao_yaku} = if Map.get(score_rules, "pao_pays_all", false) do
       {winner.yaku ++ winner.yaku2, []}
@@ -365,7 +365,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {delta_scores, basic_score, payer, direct_hit} =
         # due to the way we handle mixed pao-and-not-pao yaku earlier,
         # we're guaranteed either all of the yaku are pao, or none of them are
-        if winner.pao_seat != nil && length(pao_yaku) > 0 do
+        if pao_triggered && length(pao_yaku) > 0 do
           # if pao, then payer becomes the pao seat,
           # and a ron payment is split in half
           if winner.payer != nil && Map.get(score_rules, "split_pao_ron", true) do # ron
@@ -404,7 +404,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         manzu = "yoshitome_miharu_manzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m"]) == 1
         pinzu = "yoshitome_miharu_pinzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p"]) == 1
         souzu = "yoshitome_miharu_souzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s"]) == 1
-        payment = if winner.pao_seat == nil && (manzu || pinzu || souzu) do
+        payment = if pao_triggered && (manzu || pinzu || souzu) do
           push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays half due to dealing in with their voided suit (Yoshitome Miharu)"}])
           Utils.half_score_rounded_up(payment)
         else payment end
@@ -644,7 +644,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
-    is_pao = Enum.any?(winners, fn {_seat, winner} -> winner.pao_seat != nil && Enum.any?(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end) end)
+    is_pao = Enum.any?(winners, fn {_seat, winner} -> Map.get(winner, :pao_seat, nil) != nil && Enum.any?(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end) end)
 
     # handle ezaki hitomi's scoring quirk
     {state, delta_scores} = if is_tsumo do
@@ -730,7 +730,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
             state ->
               # calculate possible waits
               winner = state.players[seat]
-              waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases) ++ [:"2x"]
+              waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+
+              # display nothing if waits are empty
+              # shouldn't happen under normal conditions, since tenpai implies nonempty waits
+              waits = if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
 
               # calculate new winner object
               state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
@@ -923,7 +927,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = state.rules["score_calculation"]
 
     # add winning hand to the winner player (yaku conditions often check this)
-    winning_tile = if length(possible_winning_tiles) do Enum.at(possible_winning_tiles, 0) else nil end
+    winning_tile = Enum.at(possible_winning_tiles, 0, nil)
     call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
     state = update_player(state, seat, fn player -> %Player{ player | winning_hand: winning_hand } end)
