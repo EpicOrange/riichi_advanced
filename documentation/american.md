@@ -17,6 +17,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
 - Riichi Advanced will not require you to name every discard.
 - Riichi Advanced will pause the game and keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass it up.
+- Blind passes in the Charleston are evaluated starting with East, rather than with the player with the fewest tiles to blind-pass.
 - Death Challenges are currently not implemented. But when they are, they will be adjudicated instantly, and an incorrect challenge results in the challenger's hand being dead.
 - Other differences listed in the "TODOS" section below:
 
