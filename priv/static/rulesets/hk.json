@@ -263,7 +263,7 @@
     "start_flower": {
       "display_name": "Reveal flower",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw", 1, "opposite_end"]],
       "unskippable": true
     },
     "start_no_flower": {
@@ -293,7 +293,7 @@
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -305,7 +305,7 @@
         ["big_text", "Kong"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "kakan": {
@@ -317,7 +317,7 @@
         ["big_text", "Kong"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "ron": {
@@ -364,7 +364,7 @@
     "flower": {
       "display_name": "Flower",
       "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["when", ["not_no_tiles_remaining"], [["draw"]]]],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]],
       "unskippable": true
     }
   },

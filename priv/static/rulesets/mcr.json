@@ -730,7 +730,7 @@
     "start_flower": {
       "display_name": "Hua",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw"]],
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["draw", 1, "opposite_end"]],
       "unskippable": true
     },
     "start_no_flower": {
@@ -744,10 +744,7 @@
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
-      "actions": [["big_text", "Chi"], ["call"], ["change_turn", "self"]],
-      "call_conditions": [
-        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
-      ]
+      "actions": [["big_text", "Chi"], ["call"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pung",
@@ -755,14 +752,7 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["chii"],
-      "call_priority_list": [
-        [{"name": "not_call_choice_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["13j", "14j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["12j"], 1]}]
-      ],
-      "call_conditions": [{"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}]
+      "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kong",
@@ -772,16 +762,9 @@
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ],
-      "precedence_over": ["chii", "pon"],
-      "call_priority_list": [
-        [{"name": "not_call_choice_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["13j", "14j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["12j"], 1]}]
-      ],
-      "call_conditions": [{"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}]
+      "precedence_over": ["chii", "pon"]
     },
     "ankan": {
       "display_name": "Self Kong",
@@ -792,10 +775,7 @@
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["set_status", "kan"],
-        ["draw"]
-      ],
-      "call_conditions": [
-        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+        ["draw", 1, "opposite_end"]
       ]
     },
     "kakan": {
@@ -811,10 +791,7 @@
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["set_status", "kan"],
-        ["draw"]
-      ],
-      "call_conditions": [
-        {"name": "not_called_tile_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+        ["draw", 1, "opposite_end"]
       ]
     },
     "ron": {
@@ -886,7 +863,7 @@
     "flower": {
       "display_name": "Hua",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["when", ["not_no_tiles_remaining"], [["draw"]]]]
+      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]]
     }
   },
   "auto_buttons": {
