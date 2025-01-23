@@ -75,7 +75,7 @@ defmodule Game do
     west: nil,
     north: nil,
     messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
-    calculate_playable_indices_pid: nil,
+    calculate_playable_indices_pids: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     calculate_closest_american_hands_pid: nil,
     get_best_minefield_hand_pid: nil,
     # remember to edit :put_state if you change anything above
@@ -1575,8 +1575,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:calculate_playable_indices, state) do
-    if state.calculate_playable_indices_pid do
-      Process.exit(state.calculate_playable_indices_pid, :kill)
+    if state.calculate_playable_indices_pids[state.turn] do
+      Process.exit(state.calculate_playable_indices_pids[state.turn], :kill)
     end
     self = self()
     {:ok, pid} = Task.start(fn ->
@@ -1585,7 +1585,7 @@ defmodule RiichiAdvanced.GameState do
     end)
     state = state
     |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
-    |> Map.put(:calculate_playable_indices_pid, pid)
+    |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, state.turn, pid))
     # IO.puts("done calculating playable indices for #{state.turn}")
     {:noreply, state}
   end
@@ -1615,7 +1615,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:set_playable_indices, seat, playable_indices}, state) do
     state = state
     |> update_player(seat, &%Player{ &1 | playable_indices: playable_indices})
-    |> Map.put(:calculate_playable_indices_pid, nil)
+    |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, seat, nil))
     state = broadcast_state_change(state, false)
     {:noreply, state}
   end
