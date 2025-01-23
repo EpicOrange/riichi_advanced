@@ -6,6 +6,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "Malaysian",
   "tutorial_link": "https://www.sloperama.com/mahjongg/malaysian.html",
   "wall": ["1p", "1p", "1p", "1p",
            "2p", "2p", "2p", "2p",

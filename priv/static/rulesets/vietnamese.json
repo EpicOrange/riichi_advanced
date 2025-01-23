@@ -4,6 +4,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "Vietnamese",
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-vietnamese-mahjong/",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
