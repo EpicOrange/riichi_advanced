@@ -736,10 +736,9 @@
       "display_name": "F",
       "desc": "Automatically declare all flowers.",
       "actions": [
-          // The various ["pause", 100] items here are to avoid server crashes relating to flowers being called simultaneously.
-        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["pause", 100], ["press_first_call_button", "start_flower"], ["pause", 100]]],
-        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"], ["pause", 100]]],
-        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["pause", 100], ["press_first_call_button", "flower"], ["pause", 100]]]
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
       ],
       "enabled_at_start": true
     },

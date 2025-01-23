@@ -1315,6 +1315,18 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, Buttons.press_call_button(state, seat, call_choice, called_tile)}
   end
   
+  def handle_cast({:press_first_call_button, seat, button_name}, state) do
+    button_choice = Map.get(state.players[seat].button_choices, button_name, nil)
+    case button_choice do
+      {:call, call_choices} ->
+        {called_tile, choices} = Enum.at(call_choices, 0)
+        call_choice = Enum.at(choices, 0)
+        GenServer.cast(self(), {:press_call_button, seat, call_choice, called_tile})
+      _ -> :ok
+    end
+    {:noreply, state}
+  end
+  
   def handle_cast({:press_saki_card, seat, choice}, state) do
     {:noreply, Buttons.press_call_button(state, seat, nil, nil, choice)}
   end
