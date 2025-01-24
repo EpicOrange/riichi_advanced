@@ -1465,6 +1465,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+          state = broadcast_state_change(state, true) # need to newly calculate playable indices
           state
         else state end
       else
