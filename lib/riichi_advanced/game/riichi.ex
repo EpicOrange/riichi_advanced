@@ -523,7 +523,7 @@ defmodule Riichi do
         IO.inspect("Error: empty match definition given: #{inspect(match_definitions)}")
         0
       else
-        matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
+        matched = Enum.any?(hand_calls, fn {hand, calls} -> match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
         {l, r} = if matched do
           if l == -1 do {l, r * 2} else {m, r} end
         else
@@ -567,67 +567,125 @@ defmodule Riichi do
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
+  # used in "call_changes_waits" condition
   def partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
     # take out one copy of each group to process last
     decomposed_match_definitions = for match_definition <- match_definitions do
       {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
-        {result, keywords} -> case match_definition_elem do
-          [groups, num] when num == 1     ->
-            entry = {List.delete_at(match_definition, i), keywords ++ [[groups, 1]]}
-            {[entry | result], keywords}
-          [groups, num] when num > 1      ->
-            entry = if "unique" in keywords || "unique" in Enum.at(Enum.at(match_definition, i), 0) do
+        {result, keywords} ->
+          unique = "unique" in keywords
+          case match_definition_elem do
+            [groups, num] when num == 1 or unique ->
               # can't remove one from a unique group, so take out the whole group
-              {List.delete_at(match_definition, i), keywords ++ [[groups, num]]}
-            else
-              {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
-            end
-            {[entry | result], keywords}
-          [_groups, num] when num < 1     -> {result, keywords}
-          keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}
-        end
+              entry = {List.delete_at(match_definition, i), keywords ++ [[groups, 1]]}
+              {[entry | result], keywords}
+            [groups, num] when num > 1      ->
+              entry = {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
+              {[entry | result], keywords}
+            [_groups, num] when num < 1     -> {result, keywords}
+            keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}
+          end
       end
       Enum.reverse(result)
     end |> Enum.concat()
     for {def1, def2} <- decomposed_match_definitions do
-      {remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases), def2}
+      removed = remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases)
+      IO.inspect({hand, def1, removed, def2})
+      {removed, def2}
+    end
+  end
+
+  def apply_base_tile_to_offset(offset, base_tile, ordering, ordering_r) do
+    cond do
+      is_offset(offset)     -> offset_tile(base_tile, offset, ordering, ordering_r)
+      Utils.is_tile(offset) -> Utils.to_tile(offset)
+      true                  ->
+        IO.puts("Unsupported offset #{inspect(offset)}")
+        nil
+    end
+  end
+
+  def apply_base_tile_to_group(group, base_tile, ordering, ordering_r) do
+    cond do
+      is_offset(group) -> apply_base_tile_to_offset(group, base_tile, ordering, ordering_r)
+      is_list(group) -> Enum.map(group, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+      Utils.is_tile(group) -> Utils.to_tile(group)
+      true -> group
     end
   end
 
   # hand_calls_def is the output of partially_apply_match_definitions
-  def is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.any?(hand_calls_def, fn {hand_calls, def2} ->
-      Enum.any?(hand_calls, fn {hand, calls} ->
-        match_hand(hand ++ [tile], calls, [def2], ordering, ordering_r, tile_aliases)
-      end)
+  def is_waiting_on(tile, hand_calls_skipped, ordering, ordering_r, tile_aliases \\ %{}) do
+    Enum.any?(hand_calls_skipped, fn {hand, calls, skipped_match_defn} ->
+      match_hand(hand ++ [tile], calls, [skipped_match_defn], ordering, ordering_r, tile_aliases)
     end)
   end
 
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
   def get_waits(hand, calls, match_definitions, all_tiles, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
-    # t = System.os_time(:millisecond)
+    t = System.os_time(:millisecond)
 
     # only check for waits if we're tenpai
     ret = if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
       filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
-      hand_calls_def = partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
-      for tile <- all_tiles, reduce: MapSet.new() do
-        waits -> if tile in waits do waits else
-          tile_aliases = if tile_aliases[tile] != nil do
-            Map.put(filtered_tile_aliases, tile, tile_aliases[tile])
-          else tile_aliases end
-          if is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) do
-            MapSet.union(waits, Utils.apply_tile_aliases(tile, tile_aliases))
-          else waits end
-        end
-      end
-    else MapSet.new() end
+      # go through each match definition and see what tiles can be added for it to match
+      # as soon as something doesn't match, get all tiles that help make it match
+      # take the union of helpful tiles across all match definitions
+      for match_definition <- match_definitions do
+        # IO.puts("\n" <> inspect(match_definition))
+        {_hand_calls, _keywords, waits_complement} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[{hand, calls}], [], all_tiles} do
+          {[], keywords, waits_complement}         -> {[], keywords, waits_complement}
+          {hand_calls, keywords, []}               -> {hand_calls, keywords, []}
+          {hand_calls, keywords, waits_complement} -> case match_definition_elem do
+            [_groups, num] when num <= 0 ->
+              # TODO lookahead; ignore for now
+              {hand_calls, keywords, waits_complement}
+            [groups, num] ->
+              # must remove groups num-1 times no matter what
+              num_hand_calls = length(hand_calls)
+              hand_calls = if num > 1 do
+                Enum.flat_map(hand_calls, fn {hand, calls} ->
+                  remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], ordering, ordering_r, tile_aliases)
+                  |> Enum.uniq()
+                end)
+              else hand_calls end
 
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if elapsed_time > 10 do
-    #   IO.puts("get_waits: #{inspect(elapsed_time)} ms")
-    # end
+              # try to remove the last one
+              {hand_calls_success, hand_calls_failure} = Enum.map(hand_calls, fn {hand, calls} ->
+                case remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], ordering, ordering_r, tile_aliases) do
+                  []         -> {[], [{hand, calls}]} # failure
+                  hand_calls -> {hand_calls, []} # success (new hand_calls)
+                end
+              end)
+              |> Enum.unzip()
+              hand_calls_success = Enum.concat(hand_calls_success)
+              hand_calls_failure = Enum.concat(hand_calls_failure)
+              # IO.puts("#{inspect(keywords)} #{inspect(match_definition_elem)}: #{num_hand_calls} tries (#{length(hand_calls)} after filtering), #{length(hand_calls_success)} successes, #{length(hand_calls_failure)} failures")
+
+              # waits_complement = all waits that don't help
+              # remove waits that do help
+              remaining_match_defn = keywords ++ [[groups, 1]] ++ Enum.drop(match_definition, i+1)
+              waits_complement = Enum.reject(waits_complement, fn wait ->
+                Enum.any?(hand_calls_failure, fn {hand, calls} ->
+                  match_hand([wait | hand], calls, [remaining_match_defn], ordering, ordering_r, tile_aliases)
+                end)
+              end)
+
+              {hand_calls_success, keywords, waits_complement}
+            keyword when is_binary(keyword) -> {hand_calls, keywords ++ [keyword], waits_complement}
+            _ -> {hand_calls, keywords, waits_complement}
+          end
+        end
+        # TODO maybe instead of taking union of differences, take the difference of intersection
+        waits = MapSet.difference(MapSet.new(all_tiles), MapSet.new(waits_complement))
+        # IO.inspect(hand, label: "===\nhand")
+        # IO.inspect(match_definition, label: "match_definition")
+        # IO.inspect(waits, label: "waits")
+        waits
+      end
+      |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+    else MapSet.new() end
 
     ret
   end
@@ -1132,24 +1190,24 @@ defmodule Riichi do
 
   def get_centralness(tile) do
     cond do
-      Riichi.is_num?(tile, 1) -> 1
-      Riichi.is_num?(tile, 2) -> 2
-      Riichi.is_num?(tile, 3) -> 3
-      Riichi.is_num?(tile, 4) -> 4
-      Riichi.is_num?(tile, 5) -> 4
-      Riichi.is_num?(tile, 6) -> 4
-      Riichi.is_num?(tile, 7) -> 3
-      Riichi.is_num?(tile, 8) -> 2
-      Riichi.is_num?(tile, 9) -> 1
+      is_num?(tile, 1) -> 1
+      is_num?(tile, 2) -> 2
+      is_num?(tile, 3) -> 3
+      is_num?(tile, 4) -> 4
+      is_num?(tile, 5) -> 4
+      is_num?(tile, 6) -> 4
+      is_num?(tile, 7) -> 3
+      is_num?(tile, 8) -> 2
+      is_num?(tile, 9) -> 1
       true                    -> 0
     end
   end
 
   def genbutsu_to_suji(genbutsu, ordering, ordering_r) do
     Enum.flat_map(genbutsu, &cond do
-      Enum.any?([1,2,3], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, 6, ordering, ordering_r) in genbutsu do [offset_tile(&1, 3, ordering, ordering_r)] else [] end
-      Enum.any?([4,5,6], fn k -> Riichi.is_num?(&1, k) end) -> [offset_tile(&1, -3, ordering, ordering_r), offset_tile(&1, 3, ordering, ordering_r)]
-      Enum.any?([7,8,9], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, -6, ordering, ordering_r) in genbutsu do [offset_tile(&1, -3, ordering, ordering_r)] else [] end
+      Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if offset_tile(&1, 6, ordering, ordering_r) in genbutsu do [offset_tile(&1, 3, ordering, ordering_r)] else [] end
+      Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [offset_tile(&1, -3, ordering, ordering_r), offset_tile(&1, 3, ordering, ordering_r)]
+      Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if offset_tile(&1, -6, ordering, ordering_r) in genbutsu do [offset_tile(&1, -3, ordering, ordering_r)] else [] end
       true -> []
     end)
   end
@@ -1260,28 +1318,28 @@ defmodule Riichi do
     |> Enum.reject(&Enum.empty?/1)
     |> Enum.uniq()
     cond do
-      # group with unique keyword with num <= 1
       abs(num) <= 1 && "unique" in groups ->
+        # group with unique keyword with num <= 1
         match_definition
         |> List.delete_at(i)
-      # group with unique keyword with num > 1
       abs(num) > 1 && "unique" in groups ->
+        # group with unique keyword with num > 1
         match_definition
         |> List.replace_at(i, [groups, num - 1])
-      # lookahead for one item
       abs(num) <= 1 && Enum.empty?(new_groups) ->
+        # lookahead for one item
         match_definition
         |> List.delete_at(i)
-      # lookahead for more than one item
       abs(num) <= 1 ->
+        # lookahead for more than one item
         match_definition
         |> List.replace_at(i, [new_groups, num])
-      # normal group with one item
       Enum.empty?(new_groups) ->
+        # normal group with one item
         match_definition
         |> List.replace_at(i, [groups, if num > 0 do num - 1 else num + 1 end])
-      # normal group with more than one item
       true ->
+        # normal group with more than one item
         match_definition
         |> List.replace_at(i, [groups, if num > 0 do num - 1 else num + 1 end])
         |> List.insert_at(i, [new_groups, if num > 0 do 1 else -1 end])
