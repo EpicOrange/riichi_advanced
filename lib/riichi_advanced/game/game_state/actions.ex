@@ -1351,7 +1351,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # after releasing mutex, check if new choices exist
       # this is possible if actions pressed buttons or played tiles, for example
-      state = if Enum.any?(state.players, fn {seat, player} -> player.choice != nil end) do
+      state = if Enum.any?(state.players, fn {_seat, player} -> player.choice != nil end) do
         adjudicate_actions(state)
       else state end
 

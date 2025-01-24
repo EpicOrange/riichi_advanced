@@ -624,11 +624,8 @@ defmodule Riichi do
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
   def get_waits(hand, calls, match_definitions, all_tiles, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
-    t = System.os_time(:millisecond)
-
     # only check for waits if we're tenpai
-    ret = if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
-      filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
       # go through each match definition and see what tiles can be added for it to match
       # as soon as something doesn't match, get all tiles that help make it match
       # take the union of helpful tiles across all match definitions
@@ -643,7 +640,7 @@ defmodule Riichi do
               {hand_calls, keywords, waits_complement}
             [groups, num] ->
               # must remove groups num-1 times no matter what
-              num_hand_calls = length(hand_calls)
+              # num_hand_calls = length(hand_calls)
               hand_calls = if num > 1 do
                 Enum.flat_map(hand_calls, fn {hand, calls} ->
                   remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], ordering, ordering_r, tile_aliases)
@@ -686,8 +683,6 @@ defmodule Riichi do
       end
       |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else MapSet.new() end
-
-    ret
   end
 
   defp _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, ordering, ordering_r, tile_aliases, skip_tenpai_check) do
