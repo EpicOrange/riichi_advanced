@@ -689,6 +689,7 @@ defmodule Riichi do
     waits = get_waits(hand, calls, match_definitions, MapSet.new(wall), ordering, ordering_r, tile_aliases, skip_tenpai_check)
     # remove irrelevant statuses
     |> Utils.remove_attr(["draw", "discard"])
+    visible_tiles = Utils.remove_attr(visible_tiles, ["draw", "discard"])
     freqs = Enum.frequencies(wall -- visible_tiles)
     Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
   end
