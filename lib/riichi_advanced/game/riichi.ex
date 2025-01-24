@@ -375,8 +375,8 @@ defmodule Riichi do
               tile_aliases = if (no_joker_index != nil && i > no_joker_index) do %{} else filtered_tile_aliases end
               # unique makes it so all groups must be offset by the same tile
               # (no such restriction for non-unique groups)
-              base_tiles = collect_base_tiles(hand, calls, tile_aliases)
-              for base_tile <- (if unique do collect_base_tiles(hand, calls, tile_aliases) else [nil] end) do
+              base_tiles = collect_base_tiles(hand, calls, List.flatten(groups), ordering, ordering_r)
+              for base_tile <- (if unique do base_tiles else [nil] end) do
                 Task.async(fn ->
                   for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
                     [] -> []
@@ -387,7 +387,7 @@ defmodule Riichi do
                           "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
                         end
                         [line1 | lines]
-                      end
+                      else "" end
                       new_hand_calls_groups = if exhaustive do
                         for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
@@ -714,12 +714,19 @@ defmodule Riichi do
     players[seat].discards ++ riichi_safe |> Utils.strip_attrs() |> Enum.uniq()
   end
 
-  def collect_base_tiles(hand, calls, tile_aliases) do
-    # we add one tile of each suit to account for fixed offsets
-    ([:"1m", :"1p", :"1s"] ++ hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+  def collect_base_tiles(hand, calls, offsets, ordering, ordering_r) do
+    # essentially take all the tiles we have
+    # then apply every offset from groups in reverse
+    tiles = Enum.uniq(hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    offsets
+    |> Enum.flat_map(fn offset ->
+      cond do
+        is_integer(offset) -> Enum.map(tiles, &offset_tile(&1, -offset, ordering, ordering_r))
+        Map.has_key?(@fixed_offsets, offset) -> [:"1m", :"1p", :"1s"]
+        true -> []
+      end
+    end)
     |> Enum.uniq()
-    |> Utils.apply_tile_aliases(tile_aliases)
-    |> Enum.reject(& &1 == :any)
   end
 
   def tile_matches(tile_specs, context) do
@@ -750,7 +757,7 @@ defmodule Riichi do
       "dora" -> Utils.count_tiles([context.tile], context.doras) >= 1
       "kuikae" ->
         player = context.players[context.seat]
-        base_tiles = collect_base_tiles(player.hand, player.calls, player.tile_aliases)
+        base_tiles = collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_ordering, player.tile_ordering_r)
         potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["hand"])
         triplet = remove_group(potential_set, [], [0,0,0], false, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, base_tiles)
         sequence = remove_group(potential_set, [], [0,1,2], false, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, base_tiles)
