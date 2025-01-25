@@ -385,36 +385,30 @@ defmodule RiichiAdvanced.GameState do
         end
       else wall end
 
-      # reserve some tiles in the dead wall
-      reserved_tile_names = Map.get(rules, "reserved_tiles", [])
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
-      state = if length(reserved_tile_names) > 0 && length(reserved_tile_names) <= dead_wall_length do
-        {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
-        reserved_tiles = reserved_tile_names
-        revealed_tiles = Map.get(rules, "revealed_tiles", [])
-        max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+      {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
+      revealed_tiles = Map.get(rules, "revealed_tiles", [])
+      max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+      state = state
+      |> Map.put(:all_tiles, all_tiles)
+      |> Map.put(:wall, wall)
+      |> Map.put(:haipai, hands)
+      |> Map.put(:dead_wall, dead_wall)
+      |> Map.put(:revealed_tiles, revealed_tiles)
+      |> Map.put(:saved_revealed_tiles, revealed_tiles)
+      |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+
+      # reserve some tiles in the dead wall
+      reserved_tiles = Map.get(rules, "reserved_tiles", [])
+      state = if length(reserved_tiles) > 0 && length(reserved_tiles) <= dead_wall_length do
         state 
-        |> Map.put(:all_tiles, all_tiles)
-        |> Map.put(:wall, wall)
-        |> Map.put(:haipai, hands)
-        |> Map.put(:dead_wall, dead_wall)
         |> Map.put(:reserved_tiles, reserved_tiles)
-        |> Map.put(:revealed_tiles, revealed_tiles)
-        |> Map.put(:saved_revealed_tiles, revealed_tiles)
-        |> Map.put(:max_revealed_tiles, max_revealed_tiles)
         |> Map.put(:drawn_reserved_tiles, [])
       else
         state = state
-        |> Map.put(:all_tiles, all_tiles)
-        |> Map.put(:wall, wall)
-        |> Map.put(:haipai, hands)
-        |> Map.put(:dead_wall, [])
         |> Map.put(:reserved_tiles, [])
-        |> Map.put(:revealed_tiles, [])
-        |> Map.put(:saved_revealed_tiles, [])
-        |> Map.put(:max_revealed_tiles, 0)
         |> Map.put(:drawn_reserved_tiles, [])
-        if length(reserved_tile_names) > dead_wall_length do
+        if length(reserved_tiles) > dead_wall_length do
           show_error(state, "length of \"reserved_tiles\" should not exceed \"initial_dead_wall_length\"!")
         else state end
       end
