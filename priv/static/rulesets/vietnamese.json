@@ -632,7 +632,7 @@
     "ankan": {
       "display_name": "Self Khàn",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Khàn"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
