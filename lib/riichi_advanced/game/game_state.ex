@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.GameState do
   @timer 10
 
   def start_link(init_data) do
-    IO.puts("Game supervisor PID is #{inspect(self())}")
+    # IO.puts("Game supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
       %{
@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def init(state) do
-    IO.puts("Game state PID is #{inspect(self())}")
+    # IO.puts("Game state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
     [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id))
@@ -267,7 +267,7 @@ defmodule RiichiAdvanced.GameState do
     shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(state, Map.get(state.rules, Atom.to_string(shanten) <> "_definition", []))} end)
     shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
       shanten_definitions ->
-        IO.puts("Generating #{to} definitions")
+        # IO.puts("Generating #{to} definitions")
         if length(shanten_definitions[from]) < 100 do
           Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
         else
@@ -1113,14 +1113,14 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
-      :east in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
-      :south in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
-      :west in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
-      :north in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
-      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "spectator" -> {:east, true}
-      :east in state.available_seats && Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
+      :east in state.available_seats  && Map.get(socket.assigns, :seat_param) == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
+      :south in state.available_seats && Map.get(socket.assigns, :seat_param) == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
+      :west in state.available_seats  && Map.get(socket.assigns, :seat_param) == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
+      :north in state.available_seats && Map.get(socket.assigns, :seat_param) == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
+      Map.get(socket.assigns, :seat_param) == "spectator" -> {:east, true}
+      :east in state.available_seats  && Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
       :south in state.available_seats && Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
-      :west in state.available_seats && Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
+      :west in state.available_seats  && Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
       :north in state.available_seats && Map.get(state, :north) == nil || is_pid(Map.get(state, :north)) -> {:north, false}
       true                                          -> {:east, true}
     end
