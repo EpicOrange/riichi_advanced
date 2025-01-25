@@ -724,6 +724,7 @@ defmodule Riichi do
       cond do
         is_integer(offset) -> Enum.map(tiles, &offset_tile(&1, -offset, ordering, ordering_r))
         Map.has_key?(@fixed_offsets, offset) -> [:"1m", :"1p", :"1s"]
+        Utils.is_tile(offset) -> [:"1m"]
         true -> []
       end
     end)
