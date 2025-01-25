@@ -386,7 +386,9 @@ defmodule RiichiAdvanced.GameState do
       else wall end
 
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
-      {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
+      {wall, dead_wall} = if dead_wall_length > 0 do
+        Enum.split(wall, -dead_wall_length)
+      else {wall, []} end
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
       state = state
