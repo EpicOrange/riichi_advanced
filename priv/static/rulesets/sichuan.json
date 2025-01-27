@@ -8,6 +8,7 @@
     {"id": "chinitsu", "conflicts": ["fifth_tile"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."}
   ],
+  "display_name": "Sichuan Bloody",
   "tutorial_link": "https://www.mahjongpictureguide.com/pdf/SBR-Reference.pdf",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",

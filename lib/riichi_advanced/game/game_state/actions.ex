@@ -829,23 +829,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || seat != context.seat } end)
       "discard_draw"          ->
-        # need to do this or else we might reenter adjudicate_actions
-        :timer.apply_after(100, GenServer, :cast, [self(), {:play_tile, context.seat, length(state.players[context.seat].hand)}])
+        GenServer.cast(self(), {:play_tile, context.seat, length(state.players[context.seat].hand)})
         state
       "press_button"          ->
-        # need to do this or else we might reenter adjudicate_actions
-        :timer.apply_after(100, GenServer, :cast, [self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")}])
+        GenServer.cast(self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")})
         state
       "press_first_call_button" ->
-        button_choice = Map.get(state.players[context.seat].button_choices, Enum.at(opts, 0, "skip"), nil)
-        case button_choice do
-          {:call, call_choices} ->
-            {called_tile, choices} = Enum.at(call_choices, 0)
-            call_choice = Enum.at(choices, 0)
-            # need to do this or else we might reenter adjudicate_actions
-            :timer.apply_after(100, GenServer, :cast, [self(), {:press_call_button, context.seat, call_choice, called_tile}])
-          _ -> :ok
-        end
+        GenServer.cast(self(), {:press_first_call_button, context.seat, Enum.at(opts, 0, "skip")})
         state
       "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
@@ -1346,6 +1336,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           else state end
           state
       end
+
       # done with all choices
       state = if not performing_intermediate_action?(state) do
         # state = if Buttons.no_buttons_remaining?(state) do
@@ -1354,15 +1345,19 @@ defmodule RiichiAdvanced.GameState.Actions do
         notify_ai(state)
         state
       else state end
-      # clearing choices is done by evaluate_choices now
-      # though i guess we could still do it here? no difference
-      # state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+
+      Mutex.release(state.mutex, lock)
+      # IO.puts("Done adjudicating actions!\n")
+
+      # after releasing mutex, check if new choices exist
+      # this is possible if actions pressed buttons or played tiles, for example
+      state = if Enum.any?(state.players, fn {_seat, player} -> player.choice != nil end) do
+        adjudicate_actions(state)
+      else state end
 
       # ensure playable_indices is populated for the current player
       state = broadcast_state_change(state, true)
 
-      Mutex.release(state.mutex, lock)
-      # IO.puts("Done adjudicating actions!\n")
       state
     else state end
   end
@@ -1470,6 +1465,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+          state = broadcast_state_change(state, true) # need to newly calculate playable indices
           state
         else state end
       else

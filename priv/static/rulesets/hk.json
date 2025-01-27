@@ -15,6 +15,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "Hong Kong Old Style",
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
