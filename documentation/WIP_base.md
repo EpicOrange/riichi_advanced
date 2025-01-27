@@ -24,11 +24,14 @@ The game starts with everyone being dealt 13 tiles from the wall. The East playe
 
 ## Calls
 
-One a tile has been discarded, often the next player in turn continues by drawing their tile. However, this process can be interrupted by calling the discarded tile. There are three possible calls on discarded tiles:
+One a tile has been discarded, often the next player in turn continues by drawing their tile. However, this process can be interrupted by calling the discarded tile. There are four possible calls on discarded tiles:
 
 - __Chow/Chii/Sheung__: If you are next in turn order, and the discarded tile completes a __sequence__, instead of drawing a tile you may claim the discard and set aside the completed sequence. Then you must discard a tile as usual. All tiles set aside are considered part of your hand, but are visible to all and cannot be discarded.
 - __Pung/Pon__: Even if you are not next in turn order, if the discarded tile completes a __triplet__, you may claim the discard and set aside the completed triplet. Pung overrides chow, and also changes the turn order (it becomes your turn to discard). Like with chow, all tiles set aside are considered part of your hand, but are visible to all and cannot be discarded.
-- __Kong/Kan/Gong__: If you have a triplet of the discarded tile in hand, you may call kong to claim the discard and set aside the completed __quad__, which is considered to be a triplet for winning purposes. It becomes your turn, and you draw a replacement tile from the back of the wall. We will go into detail about kong and quads in a bit.
+- __Kong/Kan/Gong__: Even if you are not next in turn order, if you have a triplet of the discarded tile in hand, you may call kong to claim the discard and set aside the completed __quad__, which is considered to be a triplet for winning purposes. It becomes your turn, and you draw a replacement tile from the back of the wall. We will go into detail about kong and quads in a bit.
+- __Hu/Ron/Mah Jongg__: Even if you are not next in turn order, if the discarded tile completes a __hand__, you may claim the discard and reveal your entire hand. You win the round.
+
+Multiple calls upon the same discarded tile are resolved by priority; Hu takes priority over Kong and Pung, which takes priority over Chow. Multiple Hu calls are resolved in some variants by the player next in turn order; but in other variants both players win.
 
 As soon as you call a discard, your hand is considered __open__.
 
@@ -41,6 +44,8 @@ There are three ways to kong, and they all involve forming quads:
 - __Open Kong / Daiminkan__: This is calling a discard with a triplet of the same tile in hand, as discussed previously. After calling an open kong, you draw a replacement tile, and then discard to end your turn.
 - __Added Kong / Shouminkan / Kakan__: If you called pung on e.g. ![](tiles/6z.svg)![](tiles/6z.svg)![](tiles/6z.svg) and later draw a ![](tiles/6z.svg), you may call kong during your turn to add your drawn ![](tiles/6z.svg) to the existing pung. Like with an open kong, you draw a replacement tile, and then discard to end your turn.
 - __Closed Kong / Ankan__: If at any point during your turn you have four of the same tile in hand, such as ![](tiles/5p.svg)![](tiles/5p.svg)![](tiles/5p.svg)![](tiles/5p.svg), you may call kong to set those aside (in some variants, they are set aside face-up, and in others, face-down). A closed kong importantly __does not open your hand__. Like with an open kong, you draw a replacement tile, and then discard to end your turn.
+
+If the tile added to make an Added Kong can complete another player's hand, that player may call Hu on that tile, interruping the formation of the Added Kong. This is called "Robbing a Kong".
 
 ## Dealership, round wind, and seat wind
 
@@ -75,23 +80,38 @@ Generally, hands are scored by which "winning criteria" or __yaku__ they satisfy
 The list of yaku, as well as their associated faan, varies by variant. The following yaku are recognised in most variants, in some form:
 
 - Winning by self-draw
+- Winning on the last draw from the wall, or the last discard of the game
 - Winning by a replacement tile after a kong
+- Robbing a kong
 - Having four sequences and a pair (aka "All Sequences")
 - Having four triplets and a pair (aka "All Triplets")
-- Having a triplet of dragons
-- Having a triplet of the round wind or your seat wind
 - Having your seat's flower or season
 - Having all four flowers, or all four seasons
 - Having no flowers and no seasons
-- Hand comprises tiles of only one suit, plus honors (aka "Half Flush" or "Mixed Flush")
-- Hand comprises tiles of only one suit, without honors (aka "Full Flush" or "Pure Flush")
-- Hand comprises only honor tiles (aka "All Honors")
+- Having a triplet of dragons
+- Having a triplet of the round wind or your seat wind
+- Having triplets of all three dragons (aka "Big Three Dragons") (†)
+- Having triplets of all four winds (aka "Big Four Winds") (†)
+- Having tiles of only one suit, plus honors (aka "Half Flush" or "Mixed Flush")
+- Having tiles of only one suit, without honors (aka "Full Flush" or "Pure Flush") (†)
+- Having only honor tiles (aka "All Honors") (†)
+- Having four kongs (†)
 - Winning on one's first draw as dealer (aka "Heavenly Hand")
 - Winning on one's first draw as non-dealer (aka "Earthly Hand")
 - Winning on the dealer's first discard (aka "Hand of Man")
 - Hand comprises exactly the following tiles: 19m19p19s1234567z, and one duplicate among these thirteen. (aka "Thirteen Orphans")
 
 In many variants, a hand MUST attain a minimum score in order to be able to win. (This is in addition to the "four sets and a pair" criterion mentioned earlier.)
+
+Upon a player winning by self-draw, all three opponents pay. Upon a player winning off a discard, the discarder pays (and sometimes the other players pay a reduced share too).
+
+## Pao (Liability)
+
+This is a rule that occurs with certain high-scoring hands (marked with † above), in certain variants. If Player A's discard is called by Player B in a way that confirms that Player B has one of these high-scoring hands, Player A is marked with pao for Player B. If Player B later wins by self-draw, Player A pays for all three payers. In some variants, if Player B later wins off a discard, Player A splits the payment with the discarder.
+
+Let's take Big Three Dragons for example. If a player has called two dragon triplets, and you help them complete their third dragon triplet by discarding the third dragon, then you are marked with pao. This is a penalty for helping another player complete an obvious high-scoring hand. (For Big Four Winds, it occurs when giving the fourth wind to a player with three open wind triplets.)
+
+**Not all variants use Pao, and of those that do, not all of them use it on all the hands marked with † above.**
 
 ## TODOS:
 
