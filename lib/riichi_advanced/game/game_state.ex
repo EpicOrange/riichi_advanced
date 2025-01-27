@@ -75,7 +75,7 @@ defmodule Game do
     west: nil,
     north: nil,
     messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
-    calculate_playable_indices_pid: nil,
+    calculate_playable_indices_pids: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
     calculate_closest_american_hands_pid: nil,
     get_best_minefield_hand_pid: nil,
     # remember to edit :put_state if you change anything above
@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.GameState do
   @timer 10
 
   def start_link(init_data) do
-    IO.puts("Game supervisor PID is #{inspect(self())}")
+    # IO.puts("Game supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
       %{
@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def init(state) do
-    IO.puts("Game state PID is #{inspect(self())}")
+    # IO.puts("Game state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
     [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id))
@@ -267,7 +267,7 @@ defmodule RiichiAdvanced.GameState do
     shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(state, Map.get(state.rules, Atom.to_string(shanten) <> "_definition", []))} end)
     shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
       shanten_definitions ->
-        IO.puts("Generating #{to} definitions")
+        # IO.puts("Generating #{to} definitions")
         if length(shanten_definitions[from]) < 100 do
           Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
         else
@@ -385,36 +385,32 @@ defmodule RiichiAdvanced.GameState do
         end
       else wall end
 
-      # reserve some tiles in the dead wall
-      reserved_tile_names = Map.get(rules, "reserved_tiles", [])
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
-      state = if length(reserved_tile_names) > 0 && length(reserved_tile_names) <= dead_wall_length do
-        {wall, dead_wall} = Enum.split(wall, -dead_wall_length)
-        reserved_tiles = reserved_tile_names
-        revealed_tiles = Map.get(rules, "revealed_tiles", [])
-        max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+      {wall, dead_wall} = if dead_wall_length > 0 do
+        Enum.split(wall, -dead_wall_length)
+      else {wall, []} end
+      revealed_tiles = Map.get(rules, "revealed_tiles", [])
+      max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+      state = state
+      |> Map.put(:all_tiles, all_tiles)
+      |> Map.put(:wall, wall)
+      |> Map.put(:haipai, hands)
+      |> Map.put(:dead_wall, dead_wall)
+      |> Map.put(:revealed_tiles, revealed_tiles)
+      |> Map.put(:saved_revealed_tiles, revealed_tiles)
+      |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+
+      # reserve some tiles in the dead wall
+      reserved_tiles = Map.get(rules, "reserved_tiles", [])
+      state = if length(reserved_tiles) > 0 && length(reserved_tiles) <= dead_wall_length do
         state 
-        |> Map.put(:all_tiles, all_tiles)
-        |> Map.put(:wall, wall)
-        |> Map.put(:haipai, hands)
-        |> Map.put(:dead_wall, dead_wall)
         |> Map.put(:reserved_tiles, reserved_tiles)
-        |> Map.put(:revealed_tiles, revealed_tiles)
-        |> Map.put(:saved_revealed_tiles, revealed_tiles)
-        |> Map.put(:max_revealed_tiles, max_revealed_tiles)
         |> Map.put(:drawn_reserved_tiles, [])
       else
         state = state
-        |> Map.put(:all_tiles, all_tiles)
-        |> Map.put(:wall, wall)
-        |> Map.put(:haipai, hands)
-        |> Map.put(:dead_wall, [])
         |> Map.put(:reserved_tiles, [])
-        |> Map.put(:revealed_tiles, [])
-        |> Map.put(:saved_revealed_tiles, [])
-        |> Map.put(:max_revealed_tiles, 0)
         |> Map.put(:drawn_reserved_tiles, [])
-        if length(reserved_tile_names) > dead_wall_length do
+        if length(reserved_tiles) > dead_wall_length do
           show_error(state, "length of \"reserved_tiles\" should not exceed \"initial_dead_wall_length\"!")
         else state end
       end
@@ -1113,14 +1109,14 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
-      :east in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
-      :south in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
-      :west in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
-      :north in state.available_seats && Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
-      Map.has_key?(socket.assigns, :seat_param) && socket.assigns.seat_param == "spectator" -> {:east, true}
-      :east in state.available_seats && Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
+      :east in state.available_seats  && Map.get(socket.assigns, :seat_param) == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
+      :south in state.available_seats && Map.get(socket.assigns, :seat_param) == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
+      :west in state.available_seats  && Map.get(socket.assigns, :seat_param) == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
+      :north in state.available_seats && Map.get(socket.assigns, :seat_param) == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
+      Map.get(socket.assigns, :seat_param) == "spectator" -> {:east, true}
+      :east in state.available_seats  && Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
       :south in state.available_seats && Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
-      :west in state.available_seats && Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
+      :west in state.available_seats  && Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
       :north in state.available_seats && Map.get(state, :north) == nil || is_pid(Map.get(state, :north)) -> {:north, false}
       true                                          -> {:east, true}
     end
@@ -1313,6 +1309,18 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do
     {:noreply, Buttons.press_call_button(state, seat, call_choice, called_tile)}
+  end
+  
+  def handle_cast({:press_first_call_button, seat, button_name}, state) do
+    button_choice = Map.get(state.players[seat].button_choices, button_name, nil)
+    case button_choice do
+      {:call, call_choices} ->
+        {called_tile, choices} = Enum.at(call_choices, 0)
+        call_choice = Enum.at(choices, 0)
+        GenServer.cast(self(), {:press_call_button, seat, call_choice, called_tile})
+      _ -> :ok
+    end
+    {:noreply, state}
   end
   
   def handle_cast({:press_saki_card, seat, choice}, state) do
@@ -1575,8 +1583,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:calculate_playable_indices, state) do
-    if state.calculate_playable_indices_pid do
-      Process.exit(state.calculate_playable_indices_pid, :kill)
+    if state.calculate_playable_indices_pids[state.turn] do
+      Process.exit(state.calculate_playable_indices_pids[state.turn], :kill)
     end
     self = self()
     {:ok, pid} = Task.start(fn ->
@@ -1585,7 +1593,7 @@ defmodule RiichiAdvanced.GameState do
     end)
     state = state
     |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
-    |> Map.put(:calculate_playable_indices_pid, pid)
+    |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, state.turn, pid))
     # IO.puts("done calculating playable indices for #{state.turn}")
     {:noreply, state}
   end
@@ -1615,7 +1623,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:set_playable_indices, seat, playable_indices}, state) do
     state = state
     |> update_player(seat, &%Player{ &1 | playable_indices: playable_indices})
-    |> Map.put(:calculate_playable_indices_pid, nil)
+    |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, seat, nil))
     state = broadcast_state_change(state, false)
     {:noreply, state}
   end
