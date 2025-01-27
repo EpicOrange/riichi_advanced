@@ -180,12 +180,6 @@ defmodule RiichiAdvanced.GameState.American do
       _   -> letter <> suit
     end
   end
-  defp apply_base_tile_to_offset(offset, base_tile, ordering, ordering_r) do
-    cond do
-      Riichi.is_offset(offset) -> Riichi.offset_tile(base_tile, offset, ordering, ordering_r)
-      Utils.is_tile(offset)    -> Utils.to_tile(offset)
-    end
-  end
   # ["2m", "0z", "2m", "4m"], [:"2m", :"1j", :"4m", :"0z"] => [:"2m", :"0z", :"1j", :"4m"]
   def arrange_american_group(group, tiles, tile_aliases, acc \\ [])
   def arrange_american_group([], tiles, _tile_aliases, acc), do: Enum.reverse(acc) ++ tiles
@@ -245,14 +239,14 @@ defmodule RiichiAdvanced.GameState.American do
                           offset <- (if is_list(group) do group else [group] end),
                           into: MapSet.new() do offset end
         base_tiles = Enum.filter(possible_base_tiles, fn base_tile -> 
-          offset_tiles = MapSet.new(all_offsets, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+          offset_tiles = MapSet.new(all_offsets, &Riichi.apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
           # offset_tiles can contain more than available_tiles because it can have all flowers, while available_tiles doesn't
           MapSet.subset?(available_tiles, offset_tiles)
         end)
         # if Enum.empty?(base_tiles) && [a,b,c] == Enum.at(permutations, -1) do # debug
         #   IO.puts("arrange_american_hand: no base tiles found for hand #{am_match_definition} #{inspect(hand)} / #{inspect(calls)}\n  available_tiles: #{inspect(available_tiles)}\n  all_offsets: #{inspect(all_offsets)}\n  match_definition: #{inspect(match_definition, charlists: :as_lists)}\n  #{inspect([a,b,c])}")
         #   for base_tile <- possible_base_tiles do
-        #     offset_tiles = MapSet.new(all_offsets, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+        #     offset_tiles = MapSet.new(all_offsets, &Riichi.apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
         #     missing = MapSet.difference(available_tiles, offset_tiles)
         #     IO.puts("applying #{base_tile} to offsets gives #{inspect(MapSet.to_list(offset_tiles))}, missing #{inspect(MapSet.to_list(missing))}")
         #   end
@@ -262,12 +256,7 @@ defmodule RiichiAdvanced.GameState.American do
             {hand, calls, nil} -> {hand, calls, nil}
             {hand, calls, ret} ->
               # apply offsets
-              groups = Enum.map(groups, fn group -> cond do
-                Riichi.is_offset(group) -> apply_base_tile_to_offset(group, base_tile, ordering, ordering_r)
-                is_list(group) -> Enum.map(group, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
-                Utils.is_tile(group) -> Utils.to_tile(group)
-                true -> group
-              end end)
+              groups = Enum.map(groups, &Riichi.apply_base_tile_to_group(&1, base_tile, ordering, ordering_r))
               # check if this matches a call exactly
               i = Enum.find_index(calls, fn call ->
                 jokerless = Utils.replace_jokers(call, [:"1j"])
@@ -465,7 +454,6 @@ defmodule RiichiAdvanced.GameState.American do
     tile_aliases = state.players[seat].tile_aliases
     
     hand = hand ++ draw
-    base_tiles = Riichi.collect_base_tiles(hand, calls, tile_aliases)
 
     # t = System.os_time(:millisecond)
 
@@ -474,7 +462,7 @@ defmodule RiichiAdvanced.GameState.American do
         # pairing = index map from am_match_definition to our hand
         # pairing_r = index map from our hand to am_match_definition
         # missing_tiles = all tiles in am_match_definition that aren't in our hand
-        {_edge_cache, {_pairing, pairing_r, missing_tiles}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- base_tiles, reduce: {%{}, {%{}, %{}, []}} do
+        {_edge_cache, {_pairing, pairing_r, missing_tiles}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- Riichi.collect_base_tiles(hand, calls, List.flatten(match_definition), ordering, ordering_r), reduce: {%{}, {%{}, %{}, []}} do
           {edge_cache, acc} -> case instantiate_match_definition(match_definition, hand, calls, base_tile, ordering, ordering_r, tile_aliases) do
             nil -> {edge_cache, acc}
             {matching_hand_joker, matching_hand_nojoker} ->
