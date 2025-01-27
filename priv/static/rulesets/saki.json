@@ -168,6 +168,7 @@
     {"id": "chinitsu", "conflicts": ["galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
     {"id": "calls_are_forced", "name": "Calls Are Forced", "desc": "Forces you to make all available calls, including riichi. You still get to choose if multiple calls are available."}
   ],
+  "display_name": "Sakicards v1.3",
   "tutorial_link": "https://docs.google.com/document/d/1y4Os-PJJQ5vMuc9hFbck_IcXItHmCHTjMlRNbHJu0gw/edit",
   "enable_saki_cards": true,
   "saki_ver": "v13",

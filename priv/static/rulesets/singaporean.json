@@ -19,6 +19,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "Singaporean",
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-singaporean-mahjong",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -768,10 +769,9 @@
       "display_name": "F",
       "desc": "Automatically declare all flowers.",
       "actions": [
-          // The various ["pause", 100] items here are to avoid server crashes relating to flowers being called simultaneously.
-        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["pause", 100], ["press_first_call_button", "start_flower"], ["pause", 100]]],
-        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"], ["pause", 100]]],
-        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["pause", 100], ["press_first_call_button", "flower"], ["pause", 100]]]
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
       ],
       "enabled_at_start": true
     },

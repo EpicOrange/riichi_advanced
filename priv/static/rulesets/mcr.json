@@ -4,6 +4,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "MCR",
   "tutorial_link": "https://ooyamaneko.net/download/mahjong/mcr/MCR_2014_en.pdf",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
