@@ -172,7 +172,7 @@ The following mods are currently available for American:
 
 The following mods are planned to be supported (not necessarily in this order):
 
-- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Players may not declare Mah Jongg if they have a zombie blank in their hand.
+- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, **any other player** [note: wait, really?! // update: apparently this "only on others' turns" is specific to some playgroups and not others; need to decide how you want to implement this] may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
 - PIE: Each player starts with 600¢. If a player runs out of ¢, they need not pay.
 - Stacks: Instead of performing the Charleston with other players, perform the Charleston with 7 stacks of 3 tiles in front of you. After the Charleston is complete, the remaining tiles are all shuffled back into the wall.
 - Futures: Each player gets to peek at their next draw.
