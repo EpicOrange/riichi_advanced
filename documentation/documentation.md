@@ -379,7 +379,7 @@ Other:
 - `["push_message", message]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`
 - `["push_system_message", message]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
 - `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
-- `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall.
+- `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.
 - `["self_call"]`: For self call buttons only, like ankan. Triggers the self call.
 - `["upgrade_call"]`: For upgrade call buttons only, like kakan. Triggers the upgrade call.
