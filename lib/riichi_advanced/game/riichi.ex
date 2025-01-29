@@ -630,6 +630,8 @@ defmodule Riichi do
       # as soon as something doesn't match, get all tiles that help make it match
       # take the union of helpful tiles across all match definitions
       for match_definition <- match_definitions do
+        # make it exhaustive
+        match_definition = ["exhaustive" | match_definition]
         # IO.puts("\n" <> inspect(match_definition))
         {_hand_calls, _keywords, waits_complement} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[{hand, calls}], [], all_tiles} do
           {[], keywords, waits_complement}         -> {[], keywords, waits_complement}
@@ -784,9 +786,11 @@ defmodule Riichi do
     # t = System.os_time(:millisecond)
     tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
 
-    # filter out negative groups from match definition
     match_definitions = for match_definition <- match_definitions do
-      Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
+      # filter out lookaheads from match definition
+      match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
+      # add exhaustive
+      ["exhaustive" | match_definition]
     end
 
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
@@ -1203,7 +1207,7 @@ defmodule Riichi do
       is_num?(tile, 7) -> 3
       is_num?(tile, 8) -> 2
       is_num?(tile, 9) -> 1
-      true                    -> 0
+      true             -> 0
     end
   end
 
