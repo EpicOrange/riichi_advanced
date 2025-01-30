@@ -51,13 +51,18 @@
     "actions": [
       ["mark", [["aside", 1, ["self"]]]],
       ["move_tiles", {"aside": ["marked"]}, "discard"],
+      ["register_last_discard"],
+      ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
+      ["noop"], # interrupt and allow for ron to pop up
       ["advance_turn"]
     ],
     "unskippable": true,
     "cancellable": false
   }
 }
+|
+.interruptible_actions += ["noop"]
 |
 .buttons.ron.show_when |= map(if . == [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}] then
   [{"name": "has_yaku_with_discard", "opts": [3, 60]}, {"name": "has_yaku_with_discard", "opts": [4, 30]}, {"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
@@ -86,3 +91,16 @@ else . end)
 |
 # dora counts towards mangan
 .score_calculation.extra_yaku_lists = []
+|
+# handle tobi: if we're under 1000 we lose as we can't riichi
+# note: doesn't handle washizu mod's 0.1x score multiplier
+.before_start.actions += [
+  ["as", "everyone", [
+    ["subtract_score", 1000],
+    ["set_status", "has_1000"]
+  ]]
+]
+|
+.after_start.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
+|
+.before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
