@@ -51,6 +51,8 @@
     "actions": [
       ["mark", [["aside", 1, ["self"]]]],
       ["move_tiles", {"aside": ["marked"]}, "discard"],
+      ["register_last_discard"],
+      ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
       ["advance_turn"]
     ],
