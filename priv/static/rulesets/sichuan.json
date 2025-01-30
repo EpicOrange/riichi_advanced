@@ -162,13 +162,7 @@
     "draw_nagashi_payments": [16, 16]
   },
   "play_restrictions": [
-    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
-    [["manzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]],
-    [["manzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
-    [["pinzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
-    [["pinzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
-    [["souzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
-    [["souzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]]
+    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]]
   ],
   "after_start": {
     "actions": [
