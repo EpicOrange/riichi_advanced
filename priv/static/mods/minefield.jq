@@ -54,12 +54,15 @@
       ["register_last_discard"],
       ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
+      ["noop"], # interrupt and allow for ron to pop up
       ["advance_turn"]
     ],
     "unskippable": true,
     "cancellable": false
   }
 }
+|
+.interruptible_actions += ["noop"]
 |
 .buttons.ron.show_when |= map(if . == [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}] then
   [{"name": "has_yaku_with_discard", "opts": [3, 60]}, {"name": "has_yaku_with_discard", "opts": [4, 30]}, {"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
