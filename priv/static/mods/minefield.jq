@@ -91,3 +91,16 @@ else . end)
 |
 # dora counts towards mangan
 .score_calculation.extra_yaku_lists = []
+|
+# handle tobi: if we're under 1000 we lose as we can't riichi
+# note: doesn't handle washizu mod's 0.1x score multiplier
+.before_start.actions += [
+  ["as", "everyone", [
+    ["subtract_score", 1000],
+    ["set_status", "has_1000"]
+  ]]
+]
+|
+.after_start.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
+|
+.before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
