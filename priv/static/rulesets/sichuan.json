@@ -202,6 +202,17 @@
   "before_continue": {
     "actions": [["advance_turn"]]
   },
+  "before_exhaustive_draw": {
+    "actions": [
+      ["as", "all", 
+        [
+          ["when", [{"name": "status", "opts": ["void_manzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["manzu"], 1]]}], [["set_status", "void_penalty"]]],
+          ["when", [{"name": "status", "opts": ["void_pinzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["pinzu"], 1]]}], [["set_status", "void_penalty"]]],
+          ["when", [{"name": "status", "opts": ["void_souzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["souzu"], 1]]}], [["set_status", "void_penalty"]]]
+        ]
+      ]
+    ]
+  },
   "buttons": {
     "charleston_left": {
       "display_name": "Select three tiles to pass left",
