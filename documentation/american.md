@@ -17,6 +17,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
 - Riichi Advanced will not require you to name every discard.
 - Riichi Advanced will pause the game and keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass it up.
+- Blind passes in the Charleston are evaluated starting with East, rather than with the player with the fewest tiles to blind-pass.
 - Death Challenges are currently not implemented. But when they are, they will be adjudicated instantly, and an incorrect challenge results in the challenger's hand being dead.
 - Other differences listed in the "TODOS" section below:
 
@@ -156,3 +157,31 @@ To read the Card (using the free ILoveMahj Card as an example):
 ## Another Game
 
 - Dealership always passes to the next player, regardless of whether the current dealer wins.
+
+---
+## Mod list
+
+The following mods are currently available for American:
+
+- Show Waits: When you can discard a tile to become one tile away from winning, hovering over that tile will tell you what your winning tiles are, and will also tell you how many of them are still available. On by default.
+- Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right.
+- Open Hands: The contents of all hands are revealed to everyone. Primarily useful as a debug feature.
+- ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
+- ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
+- AMJFE Card: Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
+
+The following mods are planned to be supported (not necessarily in this order):
+
+- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, **any other player** [note: wait, really?! // update: apparently this "only on others' turns" is specific to some playgroups and not others; need to decide how you want to implement this] may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- PIE: Each player starts with 600¢. If a player runs out of ¢, they need not pay.
+- Stacks: Instead of performing the Charleston with other players, perform the Charleston with 7 stacks of 3 tiles in front of you. After the Charleston is complete, the remaining tiles are all shuffled back into the wall.
+- Futures: Each player gets to peek at their next draw.
+- Hot Wall: If a player deals in with a previously-undiscarded tile during the last portion of the wall, they pay for the table.
+- Cold Wall: During the last portion of the wall, players may only win by self-draw.
+- MAHJ-X: Play with [MAHJ-X rules](https://www.mahjx.com/).
+- Card Free: Play with [John Burton's Card Free American Mah Jongg rules](https://johnburtongames.com/cardfreemahj/).
+- Siamese: Play with [Siamese rules](https://mahjongg.org/siamese-rules/).
+- Royale Siamese: Play with [Royale Siamese rules](https://mahjongg.org/siamese-rules/#royale).
+- NMJL [Year] Card: Play with an NMJL Card from the year of your choice.
+- Siamese [Year] Card: Play with the paid [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
+- Marvelous [Year] Card: Play with the paid [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.

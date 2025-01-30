@@ -452,6 +452,7 @@ defmodule RiichiAdvanced.GameState.American do
     ordering = state.players[seat].tile_ordering
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
+    tile_mappings = state.players[seat].tile_mappings
     
     hand = hand ++ draw
 
@@ -462,7 +463,7 @@ defmodule RiichiAdvanced.GameState.American do
         # pairing = index map from am_match_definition to our hand
         # pairing_r = index map from our hand to am_match_definition
         # missing_tiles = all tiles in am_match_definition that aren't in our hand
-        {_edge_cache, {_pairing, pairing_r, missing_tiles}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- Riichi.collect_base_tiles(hand, calls, List.flatten(match_definition), ordering, ordering_r), reduce: {%{}, {%{}, %{}, []}} do
+        {_edge_cache, {_pairing, pairing_r, missing_tiles}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- Riichi.collect_base_tiles(hand, calls, List.flatten(match_definition), ordering, ordering_r, tile_mappings), reduce: {%{}, {%{}, %{}, []}} do
           {edge_cache, acc} -> case instantiate_match_definition(match_definition, hand, calls, base_tile, ordering, ordering_r, tile_aliases) do
             nil -> {edge_cache, acc}
             {matching_hand_joker, matching_hand_nojoker} ->

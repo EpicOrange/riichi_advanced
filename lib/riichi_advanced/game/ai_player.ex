@@ -176,7 +176,7 @@ defmodule RiichiAdvanced.AIPlayer do
           end
           GenServer.cast(state.game_state, {:ai_thinking, state.seat})
           {{tile, index}, shanten} = cond do
-            Debug.debug() -> {Enum.at(playables, -1), :infinity} # tsumogiri
+            Process.get(:ignore_type_error, Debug.debug()) -> {Enum.at(playables, -1), :infinity} # tsumogiri
             state.ruleset == "american" ->
               case choose_american_discard(state, playables, closest_american_hands) do
                 {nil, _} ->
