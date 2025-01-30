@@ -305,8 +305,8 @@ defmodule Riichi do
       hand ++ any
     else hand end
     filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
-    tile_mappings = for {tile1, attrs_aliases} <- filtered_tile_aliases, {attr, aliases} <- attrs_aliases, tile2 <- aliases do
-      %{tile2 => [tile1]}
+    tile_mappings = for {tile1, attrs_aliases} <- filtered_tile_aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases do
+      %{tile2 => [Utils.add_attr(tile1, attrs)]}
     end
     |> Enum.reduce(%{}, &Map.merge(&1, &2, fn _k, l, r -> l ++ r end))
     if debug do
@@ -725,7 +725,7 @@ defmodule Riichi do
     # essentially take all the tiles we have
     # then apply every offset from groups in reverse
     tiles = Enum.uniq(hand ++ Enum.flat_map(calls, &call_to_tiles/1))
-    offsets
+    base_tiles = offsets
     |> Enum.flat_map(fn offset ->
       cond do
         is_integer(offset) -> Enum.map(tiles, &offset_tile(&1, -offset, ordering, ordering_r))
@@ -738,6 +738,8 @@ defmodule Riichi do
     # also add all tile mappings
     |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
     |> Enum.uniq()
+    # if there are no offsets, always return 1m as a base tile
+    if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
 
   def tile_matches(tile_specs, context) do
