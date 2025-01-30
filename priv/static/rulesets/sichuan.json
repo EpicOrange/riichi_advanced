@@ -157,7 +157,9 @@
     "win_by_discard_name_2": "Double Hu",
     "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
-    "exhaustive_draw_name": "Draw"
+    "exhaustive_draw_name": "Draw",
+      // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+    "draw_nagashi_payments": [16, 16]
   },
   "play_restrictions": [
     [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
@@ -173,7 +175,7 @@
       ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
       ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
       ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
-      ["unset_status_all", "void_penalty_possible"]
+      ["unset_status_all", "void_penalty_possible", "void_penalty", "nagashi"]
       // debug
       // ["set_status_all", "round_start"]
     ]
@@ -204,13 +206,33 @@
   },
   "before_exhaustive_draw": {
     "actions": [
-      ["as", "all", 
-        [
+      ["as", "all", [
           ["when", [{"name": "status", "opts": ["void_manzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["manzu"], 1]]}], [["set_status", "void_penalty"]]],
           ["when", [{"name": "status", "opts": ["void_pinzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["pinzu"], 1]]}], [["set_status", "void_penalty"]]],
-          ["when", [{"name": "status", "opts": ["void_souzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["souzu"], 1]]}], [["set_status", "void_penalty"]]]
+          ["when", [{"name": "status", "opts": ["void_souzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["souzu"], 1]]}], [["set_status", "void_penalty"]]],
+            // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+          ["when", [{"name": "status_missing", "opts": ["void_penalty"]}], [["set_status", "nagashi"]]]
         ]
       ]
+    ]
+  },
+  "after_win": {
+    "actions": [
+      ["as", "east", [
+          ["add_counter", "winners", 1],
+          ["when", {"name": "counter_at_least", "opts": ["winners", 3]}, [
+              ["as", "all", [
+                  ["when", [{"name": "status", "opts": ["void_manzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["manzu"], 1]]}], [["set_status", "void_penalty"]]],
+                  ["when", [{"name": "status", "opts": ["void_pinzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["pinzu"], 1]]}], [["set_status", "void_penalty"]]],
+                  ["when", [{"name": "status", "opts": ["void_souzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["souzu"], 1]]}], [["set_status", "void_penalty"]]],
+                    // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+                  ["when", [{"name": "status_missing", "opts": ["void_penalty"]}], [["set_status", "nagashi"]]]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
     ]
   },
   "buttons": {
@@ -488,7 +510,7 @@
     },
       // have to figure out how to get the autobutton to discard the leftmost tile
       // For now, auto_void automatically discards draws of the void suit. Better than nothing.
-    "5_auto_void": {
+    "5_auto_discard_void": {
       "display_name": "DV",
       "desc": "Automatically discard your drawn tile if it's of your voided suit.",
       "actions": [["when",
