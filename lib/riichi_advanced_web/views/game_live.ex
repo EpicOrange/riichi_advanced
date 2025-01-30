@@ -19,7 +19,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:display_honba, false)
     |> assign(:loading, true)
     |> assign(:marking, false)
-    |> assign(:visible_waits, %{})
+    |> assign(:visible_waits, nil)
     |> assign(:revealed_tiles, nil)
     |> assign(:visible_waits_hand, nil)
     |> assign(:show_waits_index, nil)
@@ -308,7 +308,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           <% end %>
         </div>
       <% end %>
-      <%= if @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
+      <%= if @visible_waits != nil && @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
         <div class="visible-waits-container">
           <div class="visible-waits">
             <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
@@ -359,10 +359,10 @@ defmodule RiichiAdvancedWeb.GameLive do
     hand = socket.assigns.state.players[socket.assigns.seat].hand
     socket = if hand != socket.assigns.visible_waits_hand do
       socket
-      |> assign(:visible_waits, %{})
+      |> assign(:visible_waits, nil)
       |> assign(:visible_waits_hand, nil)
     else socket end
-    socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
+    socket = if socket.assigns.visible_waits != nil && not Map.has_key?(socket.assigns.visible_waits, index) do
       # async call; gets handled below in :set_visible_waits
       GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
       assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, :loading))

@@ -685,6 +685,13 @@ defmodule RiichiAdvanced.GameState do
         # apply delta scores
         state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
 
+        # run before_new_round actions
+        # we need to run it here instead of in initialize_new_round
+        # so that it can impact e.g. tobi calculations
+        state = if Map.has_key?(state.rules, "before_start") do
+          Actions.run_actions(state, state.rules["before_start"]["actions"], %{seat: state.turn})
+        else state end
+
         # check for tobi
         tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
         state = if tobi && Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
@@ -1227,6 +1234,11 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:initialize_game, log}, state) do
+    # run before_new_round actions
+    state = if Map.has_key?(state.rules, "before_start") do
+      Actions.run_actions(state, state.rules["before_start"]["actions"], %{seat: state.turn})
+    else state end
+
     state = initialize_new_round(state, log)
     {:noreply, state}
   end

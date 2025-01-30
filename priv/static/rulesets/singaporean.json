@@ -126,7 +126,6 @@
   ],
   "cat_and_mouse_definition": [[ "unique", [["1a","2a"], 2] ]],
   "chicken_and_centipede_definition": [[ "unique", [["3a","4a"], 2] ]],
-  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
   "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
   "all_animals_definition": [[ "unique", [["1a","2a","3a","4a"], 4] ]],
