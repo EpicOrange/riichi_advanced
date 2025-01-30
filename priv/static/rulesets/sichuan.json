@@ -173,6 +173,7 @@
       ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
       ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
       ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
+      ["unset_status_all", "void_penalty_possible"]
       // debug
       // ["set_status_all", "round_start"]
     ]
@@ -180,8 +181,15 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "first_turn"],
-      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
+      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]],
+      ["as", "last_discarder", 
+        [
+          ["when", [{"name": "last_discard_matches", "opts": ["manzu"]}, {"name": "status", "opts": ["void_manzu"]}], [["set_status", "void_penalty_possible"]]],
+          ["when", [{"name": "last_discard_matches", "opts": ["pinzu"]}, {"name": "status", "opts": ["void_pinzu"]}], [["set_status", "void_penalty_possible"]]],
+          ["when", [{"name": "last_discard_matches", "opts": ["souzu"]}, {"name": "status", "opts": ["void_souzu"]}], [["set_status", "void_penalty_possible"]]]
+        ]
+      ]
     ]
   },
   "after_turn_change": {
@@ -355,7 +363,7 @@
       "show_when": [
         "not_our_turn",
         {"name": "not_status", "opts": ["won"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         [
@@ -381,15 +389,10 @@
       "show_when": [
         "not_our_turn",
         {"name": "not_status", "opts": ["won"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ]
         ],
@@ -417,7 +420,7 @@
         "our_turn",
         {"name": "not_status", "opts": ["won"]}, 
         {"name": "not_status", "opts": ["round_start"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
         [
           [
@@ -476,7 +479,7 @@
       // For now, auto_void automatically discards draws of the void suit. Better than nothing.
     "5_auto_void": {
       "display_name": "DV",
-      "desc": "Automatically discard the leftmost tile of your voided suit.",
+      "desc": "Automatically discard your drawn tile if it's of your voided suit.",
       "actions": [["when",
           [
             {"name": "status", "opts": ["void_manzu"]},
