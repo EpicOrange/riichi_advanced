@@ -226,6 +226,7 @@
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
         ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
         ["reveal_tile", "1m"],
+        ["reveal_tile", "3x"],
         ["merge_draw"],
         ["advance_turn"]
       ],
@@ -241,6 +242,7 @@
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
         ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
         ["reveal_tile", "1p"],
+        ["reveal_tile", "3x"],
         ["merge_draw"],
         ["advance_turn"]
       ],
@@ -256,6 +258,7 @@
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
         ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
         ["reveal_tile", "1s"],
+        ["reveal_tile", "3x"],
         ["merge_draw"],
         ["advance_turn"]
       ],

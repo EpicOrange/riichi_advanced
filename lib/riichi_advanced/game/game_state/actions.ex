@@ -29,6 +29,27 @@ defmodule RiichiAdvanced.GameState.Actions do
     && not Marking.needs_marking?(state, seat)
   end
 
+  def register_discard(state, seat, tile, tsumogiri \\ true) do
+    state = update_action(state, seat, :discard, %{tile: tile})
+    push_message(state, [
+      %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
+      Utils.pt(tile)
+    ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
+    riichi = "just_reached" in state.players[seat].status
+    state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
+
+    click_sounds = [
+      "/audio/tile1.mp3",
+      "/audio/tile2.mp3",
+      "/audio/tile3.mp3",
+      "/audio/tile4.mp3",
+      "/audio/tile5.mp3",
+    ]
+    play_sound(state, Enum.random(click_sounds))
+
+    state
+  end
+
   def play_tile(state, seat, tile, index) do
     if can_discard(state, seat) && is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
@@ -36,7 +57,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
       tile = Utils.add_attr(tile, ["discard"])
 
-      tsumogiri = index >= length(state.players[seat].hand)
       state = update_player(state, seat, &%Player{ &1 |
         hand: List.delete_at(&1.hand ++ Utils.remove_attr(&1.draw, ["draw"]), index),
         pond: &1.pond ++ [tile],
@@ -44,22 +64,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         draw: [],
         last_discard: {tile, index}
       })
-      state = update_action(state, seat, :discard, %{tile: tile})
-      push_message(state, [
-        %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
-        Utils.pt(tile)
-      ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
-      riichi = "just_reached" in state.players[seat].status
-      state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
-
-      click_sounds = [
-        "/audio/tile1.mp3",
-        "/audio/tile2.mp3",
-        "/audio/tile3.mp3",
-        "/audio/tile4.mp3",
-        "/audio/tile5.mp3",
-      ]
-      play_sound(state, Enum.random(click_sounds))
+      tsumogiri = index >= length(state.players[seat].hand)
+      state = register_discard(state, seat, tile, tsumogiri)
 
       # trigger play effects
       state = if Map.has_key?(state.rules, "play_effects") do
@@ -1156,6 +1162,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_player(state, to, &%Player{ &1 | draw: &1.draw ++ to_pass })
         state
       "saki_start"      -> Saki.saki_start(state)
+      "register_last_discard" -> register_discard(state, context.seat, Enum.at(state.players[context.seat].pond, -1))
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

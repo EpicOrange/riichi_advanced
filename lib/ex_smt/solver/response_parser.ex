@@ -132,7 +132,7 @@ defmodule ExSMT.Solver.ResponseParser do
   defp normalize_types({:hex, [digits_str]}), do:
     String.to_integer(digits_str, 16)
   defp normalize_types({:decimal, digits_str}) do
-    {:ok, dec} =
+    {dec, _remainder} =
       IO.iodata_to_binary(digits_str)
       |> Decimal.parse()
     dec
