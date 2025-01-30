@@ -143,7 +143,7 @@
     { "display_name": "Consecutive Run #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a XX1a XXX0b XXX1b XXXX2c"]]}] },
     { "display_name": "Consecutive Run #6", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXX0a XX1b XX1a XX1c XXXX2a"]]}] },
     { "display_name": "Consecutive Run #7", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XX0a XXX1a XX2b XXX3b DDc"]]}] },
-    { "display_name": "Consecutive Run #8", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], "XXX0a XX1a XXX2a DDDb DDDc"]]} ] },
+    { "display_name": "Consecutive Run #8", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXX0a XX1a XXX2a DDDb DDDc"]]} ] },
     { "display_name": "13579 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["11a 333a 5555a 777a 99a"]]}] },
     { "display_name": "13579 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["111a 3333a 333b 5555b", "555a 7777a 777b 9999b"]]}] },
     { "display_name": "13579 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 1111a 33a 5555a", "FFFF 1111a 33b 5555c"]]}] },
