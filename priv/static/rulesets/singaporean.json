@@ -1,19 +1,18 @@
 {
-    // TODO (2025-01-10):
+    // TODO SUMMARY (2025-01-31): 
     // * Implement the various Pao rules.
     // * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
-    // * [2025-01-13: not fixed, can't figure out why it happens] Flower replacement can't be discarded normally for some reason. Dunno why.
-    // TODO (2025-01-11):
-    // * Check whether all bugs below still exist. If yes, fix.
-    // * [FIXED, I think] Apparently Ping Hu requires multiple waits, EXCEPT if it's a win by self-draw, EXCEPT that Ping Hu cannot be awarded for fully-melded hands (even if self-drawn).
     // * Three Lesser Scholars isn't scored for some reason?
-    // * [FIXED, I think] Apparently 111m999m111p11s33z, won on discarded 3m, was scored for Thirteen Orphans and Hidden Treasure.
     // * Apparently chankan isn't working. Unclear whether this is `singapore.json`-specific or whether it's global to all variants.
+    // * Check whether all bugs below still exist. If yes, fix.
+    // POTENTIAL BUGS TO CHECK FOR:
+    // * [Should be fixed; see commits 3ee4b60, 96c5e56, and 1c4f01a] Flower replacement can't be discarded normally for some reason. Dunno why.
+    // * [FIXED, I think] Apparently Ping Hu requires multiple waits, EXCEPT if it's a win by self-draw, EXCEPT that Ping Hu cannot be awarded for fully-melded hands (even if self-drawn).
+    // * [FIXED, I think] Apparently Ping Hu also can't have the pair be yakuhai.
+    // * [FIXED, I think] Apparently 111m999m111p11s33z, won on discarded 3m, was scored for Thirteen Orphans and Hidden Treasure.
     // * [FIXED, I think] East should have the option to ankan on their starting turn, but currently doesn't? [This is because ankans are only allowed when we have a draw, but we merge our draw into our hand after declaring "No Flowers".]
     // * [FIXED, I think] Heavenly Hand is apparently scored wrong (can be scored after call(s), can be scored by someone other than East).
     // * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments. 
-    // TODO (2025-01-12):
-    // * [FIXED, I think] Apparently Ping Hu also can't have the pair be yakuhai.
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
@@ -463,9 +462,6 @@
     "exhaustive_draw_name": "Draw"
   },
   "play_restrictions": [
-      // TODO: This seems to be causing a bug where the flower replacement can't be discarded. Not sure why.
-      // UPDATE: Looks like the bug was elsewhere. Hopefully fixed now.
-      // UPDATE: Nope.
     [["flower"], []]
   ],
   "before_turn_change": {
