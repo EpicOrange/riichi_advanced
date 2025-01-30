@@ -174,7 +174,7 @@
     "actions": [
       ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
       ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
-      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
+      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]],
       ["unset_status_all", "void_penalty_possible", "void_penalty", "nagashi"]
       // debug
       // ["set_status_all", "round_start"]
@@ -232,7 +232,7 @@
             ]
           ]
         ]
-      ],
+      ]
     ]
   },
   "buttons": {
