@@ -21,15 +21,15 @@ defmodule RiichiAdvanced.AIPlayer do
     {:ok, state}
   end
 
-  defp choose_playable_tile(tiles, state, playables, _visible_tiles, _win_definition) do
+  defp choose_playable_tile(_tiles, _state, playables, _visible_tiles, _win_definition) do
     if not Enum.empty?(playables) do
       # rank each playable tile by the ukeire it gives for the next shanten step
       # TODO as well as heuristics provided by the ruleset
-      hand = state.player.hand ++ state.player.draw
-      calls = state.player.calls
-      ordering = state.player.tile_ordering
-      ordering_r = state.player.tile_ordering_r
-      tile_aliases = state.player.tile_aliases
+      # hand = state.player.hand ++ state.player.draw
+      # calls = state.player.calls
+      # ordering = state.player.tile_ordering
+      # ordering_r = state.player.tile_ordering_r
+      # tile_aliases = state.player.tile_aliases
       best_playables = playables
 
       # TODO ukeire counting is really slow
