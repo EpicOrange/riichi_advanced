@@ -1,4 +1,4 @@
-# Base rules of Mahjong (most variants)
+# [WIP] Base rules of Mahjong (most variants)
 
 This document lists the rules common to most mahjong variants. We list them here so that we don't have to keep repeating the same set of rules in every mahjong variant's documentation we write. For other mahjong variants, we will list the additions and differences from this ruleset.
 
