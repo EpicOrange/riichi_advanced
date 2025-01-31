@@ -20,12 +20,12 @@ The wall for Bloody 30 Faan Jokers is composed of the following:
 
 There are four winning hand configurations in B30FJ:
 
-- Four sets and a pair. Sets are triplets or sequences. You may also use a knitted straight in place of three sets, a knitted short straight in place of two sets, a knitted terminal-sequences in place of two sets, or knitted triplets in place of three sets.
-- Seven pairs (no repeats).
-- Thirteen orphans (each terminal and honor tile, one of them forming a pair).
-- Thirteen unconnected. To achieve this, you must have 13 disconnected tiles with one forming a pair. In addition, the suited tiles among them must form a partial knitted triplets or a partial knitted straight.
+- Four sets and a pair. Sets are triplets or sequences.
+- Seven Pairs (no repeats).
+- Thirteen Orphans (each terminal and honor tile, one of them forming a pair).
+- Thirteen Unconnected. To achieve this, you must have 13 disconnected tiles with one forming a pair. In addition, the suited tiles among them must form a partial Knitted Triplets or a partial Knitted Straight; and you must have at least one tile of each suit, at least one wind, and at least one dragon.
 
-For more information about knitted sets, refer to the relevant section below (Knitted Hands).
+For more information about Thirteen Unconnected, refer to the relevant section below (Unconnected Hands).
 
 Bloody end rules are enabled, meaning after the first win, remaining players continue playing until three players have won, or until the wall is exhausted. Multiple players may win off the same discard. Wins do not skip turns.
 
@@ -67,7 +67,7 @@ The faan table for B30FJ is extensive and as such will be broken down into thirt
 - Special Win Methods
 - Concealed
 - Pairs
-- Knitted Hands
+- Unconnected Hands
 - Miscellaneous
 
 ### Flowers and Honors
@@ -213,14 +213,17 @@ The following are related to seven-pair hands.
 - __Three Dragons Seven Pairs__ (5 faan): Three of your pairs are dragon pairs.
 - __Four Winds Seven Pairs__ (10 faan): Four of your pairs are wind pairs.
 
-### Knitted Hands
+### Unconnected Hands
 
-- __Thirteen Unconnected__ (5 faan): All of your tiles are disconnected, i.e. 3 away from each other or more. You also have a pair of one of the tiles. In addition, the suited tiles among them must form a partial knitted triplets or a partial knitted straight, and you must have one tile of each type. Does not stack with All Types.
-- __Knitted Short Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s which counts as two sets. You can get this twice for a total of 10 faan.
-- __Knitted Terminal Sequences__ (5 faan): You have e.g. 1m 2p 3s 7m 8p 9s which counts as two sets. You can get this twice for a total of 10 faan.
-- __Knitted Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s 7m 8p 9s which counts as three sets.
-- __Knitted Triplets__ (5 faan): You have e.g. 1m 1p 1s 4m 4p 4s 7m 7p 7s which counts as three sets. The three triplets have to be exactly 3 away, so they must be 1-4-7 or 2-5-8 or 3-6-9.
-- __Knitted Honors__ (5 faan): You have exactly one of each wind and dragon, plus seven of the nine tiles required to form knitted triplets or a knitted straight. In addition, the hand must contain at least one tile of each suit.
+- __Thirteen Unconnected__ (5 faan): All of your tiles are disconnected, i.e. 3 away from each other or more. You also have a pair of one of the tiles. In addition, the suited tiles among them must form a partial Knitted Triplets (see below) or a partial Knitted Straight (see below); and you must have at least one tile of each suit, at least one wind, and at least one dragon. Does not stack with All Types.
+
+The rest of the hands in this section must all satisfy Thirteen Unconnected, and all stack with Thirteen Unconnected.
+
+- __Knitted Short Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s.
+- __Knitted Terminal Sequences__ (5 faan): You have e.g. 1m 2p 3s 7m 8p 9s.
+- __Knitted Straight__ (5 faan): You have e.g. 1m 2p 3s 4m 5p 6s 7m 8p 9s. The three suits must cycle, but not necessarily in the order presented here.
+- __Knitted Triplets__ (5 faan): You have e.g. 1m 1p 1s 4m 4p 4s 7m 7p 7s. The three triplets have to be exactly 3 away, so they must be 1-4-7 or 2-5-8 or 3-6-9.
+- __Knitted Honors__ (5 faan): You have exactly one of each wind and dragon.
 
 ### Miscellaneous
 
