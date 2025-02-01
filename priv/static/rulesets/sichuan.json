@@ -100,17 +100,18 @@
     { "display_name": "Robbing The Kong", "value": 1, "when": ["won_by_call"] },
     { "display_name": "Shoot After Kong", "value": 1, "when": [{"name": "discarder_status", "opts": ["kan"]}] },
     { "display_name": "Under The Sea", "value": 1, "when": ["no_tiles_remaining"] },
-    { "display_name": "Voided Suit", "value": 0, "when": [{"name": "status", "opts": ["void_penalty"]}] }
+    { "display_name": "Voided Suit", "value": -1, "when": [{"name": "status", "opts": ["void_penalty"]}] },
+    { "display_name": "Voided Suit", "value": -1, "when": ["won_by_draw", {"name": "status", "opts": ["void_penalty"]}] }
   ],
   "yaku_precedence": {
     "Golden Single Wait": ["All Triplets"],
-    "Voided Suit": [1]
+    "Voided Suit": [1, 2]
   },
   "score_calculation": {
     "scoring_method": "score_table",
-    "payments_at_exhaustive_draw": true,
-    "score_table": {"0": 1, "1": 2, "2": 4, "max": 8},
+    "score_table": {"-2": -1, "-1": 0, "0": 1, "1": 2, "2": 4, "max": 8},
     "yaku_lists": ["yaku"],
+    "min_score": -1,
     "self_draw_bonus": 1,
     "score_best_hand_at_draw": true,
     "next_dealer_is_first_winner": true,
@@ -183,9 +184,7 @@
     ]
   },
   "after_win": {
-    "actions": [
-      ["as", "east", [["add_counter", "winners", 1]]]
-    ]
+    "actions": [["as", "east", [["add_counter", "winners", 1]]]]
   },
   "buttons": {
     "charleston_left": {
