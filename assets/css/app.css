@@ -2359,6 +2359,12 @@ div.title > div.title-advanced::before {
   background-repeat: no-repeat;
   z-index: -1;
 }
+div#container > div.index-version {
+  position: absolute;
+  color: white;
+  left: 0;
+  bottom: 0;
+}
 div#container > div.index-bottom-buttons {
   position: absolute;
   right: 0;
