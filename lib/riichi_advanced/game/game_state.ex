@@ -128,6 +128,7 @@ defmodule Game do
     max_revealed_tiles: 0,
     drawn_reserved_tiles: [],
     marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+    processed_bloody_end: false,
   ]
   use Accessible
 end
@@ -454,6 +455,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
+      |> Map.put(:processed_bloody_end, false)
 
       scores = kyoku_log["players"]
       |> Enum.zip(state.available_seats)
@@ -563,7 +565,7 @@ defmodule RiichiAdvanced.GameState do
       ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
     )
 
-    state = if Map.has_key?(state.rules, "bloody_end") && state.rules["bloody_end"] do
+    state = if Map.get(state.rules, "bloody_end", false) do
       # only end the round once there are three winners; otherwise, continue
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
     else state end
@@ -638,10 +640,39 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp timer_finished(state) do
+    bloody_end = Map.get(state.rules, "bloody_end", false)
+    num_tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end) |> Map.values() |> Enum.count(& &1)
+    num_nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end) |> Map.values() |> Enum.count(& &1)
     cond do
       state.visible_screen == :winner && state.winner_index + 1 < map_size(state.winners) -> # need to see next winner screen
         # show the next winner
         state = Map.update!(state, :winner_index, & &1 + 1)
+
+        # reset timer
+        state = start_timer(state)
+
+        state
+      state.visible_screen == :scores && bloody_end && not state.processed_bloody_end && map_size(state.winners) >= 3 && (num_tenpai > 0 || num_nagashi > 0) ->
+        state
+        |> Map.put(:visible_screen, :bloody_end)
+        |> start_timer()
+        |> Map.put(:timer, 0)
+      state.visible_screen == :bloody_end ->
+        # if bloody end is enabled, we also check for tenpai and nagashi after 3 players win
+        # in practice, "nagashi" is used for void suit payments in SBR
+        prev_round_result = state.round_result
+        {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
+
+        state = Map.put(state, :processed_bloody_end, true)
+        state = Map.put(state, :visible_screen, :scores)
+        state = Map.put(state, :round_result, prev_round_result)
+        state = Map.put(state, :delta_scores, delta_scores)
+        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+
+        # run after_bloody_end actions
+        state = if Map.has_key?(state.rules, "after_bloody_end") do
+          Actions.run_actions(state, state.rules["after_bloody_end"]["actions"], %{seat: state.turn})
+        else state end
 
         # reset timer
         state = start_timer(state)

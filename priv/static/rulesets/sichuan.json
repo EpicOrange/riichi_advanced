@@ -186,6 +186,9 @@
   "after_win": {
     "actions": [["as", "east", [["add_counter", "winners", 1]]]]
   },
+  "after_bloody_end": {
+    "actions": [["when_anyone", [{"name": "status", "opts": ["void_penalty"]}], [["reveal_hand"]]]]
+  },
   "buttons": {
     "charleston_left": {
       "display_name": "Select three tiles to pass left",

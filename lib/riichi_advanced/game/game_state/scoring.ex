@@ -637,56 +637,57 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def adjudicate_draw_scoring(state) do
     score_rules = state.rules["score_calculation"]
-
-    score_best_hand_at_draw = Map.get(score_rules, "score_best_hand_at_draw", false)
     draw_tenpai_payments = Map.get(score_rules, "draw_tenpai_payments", nil)
     draw_nagashi_payments = Map.get(score_rules, "draw_nagashi_payments", nil)
     tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
     nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end)
     num_tenpai = tenpai |> Map.values() |> Enum.count(& &1)
     num_nagashi = nagashi |> Map.values() |> Enum.count(& &1)
+    delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
+
     {state, delta_scores} = cond do
-      score_best_hand_at_draw ->
+      # handle sichuan style scoring best hands at draw (if any non-winner is tenpai)
+      Map.get(score_rules, "score_best_hand_at_draw", false) && map_size(state.winners) < 3 && Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? && seat not in state.winner_seats end) ->
         # declare tenpai players as winners, as if they won from non-tenpai people (opponents)
         opponents = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
-        state = if Map.get(score_rules, "payments_at_exhaustive_draw", false) do
-          # for each tenpai player who hasn't won, find the highest point hand they could get
-          win_definitions = translate_match_definitions(state, ["win"])
-          winners_before = Map.keys(state.winners)
-          for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners_before, reduce: state do
-            state ->
-              # calculate possible waits
-              winner = state.players[seat]
-              waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+        # for each tenpai player who hasn't won, find the highest point hand they could get
+        win_definitions = translate_match_definitions(state, ["win"])
+        winners_before = state.winner_seats
+        state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners_before, reduce: state do
+          state ->
+            # calculate possible waits
+            winner = state.players[seat]
+            waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
 
-              # display nothing if waits are empty
-              # shouldn't happen under normal conditions, since tenpai implies nonempty waits
-              waits = if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
+            # display nothing if waits are empty
+            # shouldn't happen under normal conditions, since tenpai implies nonempty waits
+            waits = if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
 
-              # calculate new winner object
-              state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
-              winner = calculate_winner_details(state2, seat, waits, :draw)
-              |> Map.put(:opponents, opponents)
+            # calculate new winner object
+            state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
+            winner = calculate_winner_details(state2, seat, waits, :draw)
+            |> Map.put(:opponents, opponents)
+            |> Map.put(:best_hand_at_draw, true)
 
-              # add winner to state
-              state
-              |> Map.update!(:winners, &Map.put(&1, seat, winner))
-              |> Map.update!(:winner_seats, & &1 ++ [seat])
-          end
-        else state end
+            # add winner to state
+            state
+            |> Map.update!(:winners, &Map.put(&1, seat, winner))
+            |> Map.update!(:winner_seats, & &1 ++ [seat])
+        end
 
         next_screen = if Enum.any?(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end) do :winner else :scores end
         state = state
         |> Map.put(:visible_screen, next_screen)
         |> Map.put(:round_result, :draw)
-        |> update_all_players(fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || tenpai[seat] } end)
+        |> update_all_players(fn _seat, player -> %Player{ player | hand_revealed: true } end)
 
-        delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
         {state, delta_scores}
+      # handle nagashi
       draw_nagashi_payments != nil && num_nagashi > 0 -> 
         # do nagashi payments
         # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
         # TODO refactor to calculate the delta scores first, then apply it to the state
+        IO.inspect(nagashi, label: "asdf1")
         [pay_ko, pay_oya] = draw_nagashi_payments
         scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
         state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do
@@ -759,7 +760,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || tenpai[seat] } end)
 
         {state, delta_scores}
-      true -> {state, Map.new(state.players, fn {seat, _player} -> {seat, 0} end)}
+      true -> {state, delta_scores}
     end
 
     # handle hanada kirame's scoring quirk
