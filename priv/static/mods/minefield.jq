@@ -104,3 +104,5 @@ else . end)
 .after_start.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
 |
 .before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
+|
+.win_timer = 20

@@ -629,5 +629,6 @@
   "starting_tiles": 13,
   "num_players": 3,
   "four_rows_discards": true,
-  "max_rounds": 16
+  "max_rounds": 16,
+  "win_timer": 20
 }
