@@ -185,9 +185,9 @@ defmodule Utils do
       Enum.map(joker, &apply_tile_aliases(&1, tile_aliases))
       |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else
-      {joker, joker_attrs} = to_attr_tile(joker)
+      {joker_tile, joker_attrs} = to_attr_tile(joker)
       any_tiles = Map.get(tile_aliases, :any, %{}) |> Map.values() |> Enum.concat()
-      Map.get(tile_aliases, joker, [])
+      Map.get(tile_aliases, joker_tile, [])
       |> Enum.filter(fn {attrs, _aliases} -> MapSet.subset?(MapSet.new(attrs), MapSet.new(joker_attrs)) end)
       |> Enum.map(fn {_attrs, aliases} -> MapSet.new(aliases) end)
       |> Enum.reduce(MapSet.new([joker | any_tiles]), &MapSet.union/2)
