@@ -739,6 +739,8 @@ defmodule RiichiAdvanced.Riichi do
     # also add all tile mappings
     |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
     |> Enum.uniq()
+    # also strip attrs
+    base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
     # never let :any be a base tile
     base_tiles = base_tiles -- [:any, {:any, []}]
     # if there are no offsets, always return 1m as a base tile
