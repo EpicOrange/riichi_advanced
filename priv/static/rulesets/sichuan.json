@@ -157,22 +157,19 @@
     "win_by_discard_name_2": "Double Hu",
     "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
-    "exhaustive_draw_name": "Draw"
+    "exhaustive_draw_name": "Draw",
+      // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+    "draw_nagashi_payments": [16, 16]
   },
   "play_restrictions": [
-    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
-    [["manzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]],
-    [["manzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
-    [["pinzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
-    [["pinzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
-    [["souzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
-    [["souzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]]
+    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]]
   ],
   "after_start": {
     "actions": [
       ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
       ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
-      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
+      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]],
+      ["unset_status_all", "void_penalty_possible", "void_penalty", "nagashi"]
       // debug
       // ["set_status_all", "round_start"]
     ]
@@ -180,8 +177,15 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "first_turn"],
-      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
+      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]]],
+      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["unset_status", "tenpai"]]],
+      ["as", "last_discarder", 
+        [
+          ["when", [{"name": "last_discard_matches", "opts": ["manzu"]}, {"name": "status", "opts": ["void_manzu"]}], [["set_status", "void_penalty_possible"]]],
+          ["when", [{"name": "last_discard_matches", "opts": ["pinzu"]}, {"name": "status", "opts": ["void_pinzu"]}], [["set_status", "void_penalty_possible"]]],
+          ["when", [{"name": "last_discard_matches", "opts": ["souzu"]}, {"name": "status", "opts": ["void_souzu"]}], [["set_status", "void_penalty_possible"]]]
+        ]
+      ]
     ]
   },
   "after_turn_change": {
@@ -193,6 +197,37 @@
   },
   "before_continue": {
     "actions": [["advance_turn"]]
+  },
+  "before_exhaustive_draw": {
+    "actions": [
+      ["as", "all", [
+          ["when", [{"name": "status", "opts": ["void_manzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["manzu"], 1]]}], [["set_status", "void_penalty"]]],
+          ["when", [{"name": "status", "opts": ["void_pinzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["pinzu"], 1]]}], [["set_status", "void_penalty"]]],
+          ["when", [{"name": "status", "opts": ["void_souzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["souzu"], 1]]}], [["set_status", "void_penalty"]]],
+            // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+          ["when", [{"name": "status_missing", "opts": ["void_penalty"]}], [["set_status", "nagashi"]]]
+        ]
+      ]
+    ]
+  },
+  "after_win": {
+    "actions": [
+      ["as", "east", [
+          ["add_counter", "winners", 1],
+          ["when", {"name": "counter_at_least", "opts": ["winners", 3]}, [
+              ["as", "all", [
+                  ["when", [{"name": "status", "opts": ["void_manzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["manzu"], 1]]}], [["set_status", "void_penalty"]]],
+                  ["when", [{"name": "status", "opts": ["void_pinzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["pinzu"], 1]]}], [["set_status", "void_penalty"]]],
+                  ["when", [{"name": "status", "opts": ["void_souzu", "void_penalty_possible"]}, {"name": "match", "opts": [["hand", "calls", "draw"], [["souzu"], 1]]}], [["set_status", "void_penalty"]]],
+                    // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+                  ["when", [{"name": "status_missing", "opts": ["void_penalty"]}], [["set_status", "nagashi"]]]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
   },
   "buttons": {
     "charleston_left": {
@@ -358,7 +393,7 @@
       "show_when": [
         "not_our_turn",
         {"name": "not_status", "opts": ["won"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         [
@@ -384,15 +419,10 @@
       "show_when": [
         "not_our_turn",
         {"name": "not_status", "opts": ["won"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ]
         ],
@@ -420,7 +450,7 @@
         "our_turn",
         {"name": "not_status", "opts": ["won"]}, 
         {"name": "not_status", "opts": ["round_start"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
         [
           [
@@ -473,6 +503,35 @@
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    },
+      // have to figure out how to get the autobutton to discard the leftmost tile
+      // For now, auto_void automatically discards draws of the void suit. Better than nothing.
+    "5_auto_discard_void": {
+      "display_name": "DV",
+      "desc": "Automatically discard your drawn tile if it's of your voided suit.",
+      "actions": [["when",
+          [
+            {"name": "status", "opts": ["void_manzu"]},
+            {"name": "match", "opts": [["draw"], ["manzu"]]}
+          ],
+          [["discard_draw"]]
+        ],
+        ["when",
+          [
+            {"name": "status", "opts": ["void_pinzu"]},
+            {"name": "match", "opts": [["draw"], ["pinzu"]]}
+          ],
+          [["discard_draw"]]
+        ],
+        ["when",
+          [
+            {"name": "status", "opts": ["void_souzu"]},
+            {"name": "match", "opts": [["draw"], ["souzu"]]}
+          ],
+          [["discard_draw"]]
+        ]
+      ],
       "enabled_at_start": false
     }
   },
