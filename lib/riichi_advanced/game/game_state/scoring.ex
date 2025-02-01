@@ -2,6 +2,8 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   defp _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
@@ -54,19 +56,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # returns a map %{winning_tile => {minipoints, yakus}}
     if winning_tiles == nil || winning_tiles == [nil] || Enum.empty?(winning_tiles) do
       # try every possible winning tile from hand
-      for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil do
+      for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil, into: %{} do
         state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["draw"])] })
         minipoints = get_minipoints(state2, seat, winning_tile, win_source)
         yakus = get_yaku(state2, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
         {winning_tile, {minipoints, yakus}}
       end
     else
-      for winning_tile <- winning_tiles do
+      for winning_tile <- winning_tiles, into: %{} do
         minipoints = get_minipoints(state, seat, winning_tile, win_source)
         yakus = get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
         {winning_tile, {minipoints, yakus}}
       end
-    end |> Map.new()
+    end
   end
 
   def get_best_yaku_and_winning_tile(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
@@ -88,7 +90,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules[yaku_list_name], seat, winning_tiles, win_source, yaku)
           {yaku, minipoints, new_winning_tile}
         else
-          GenServer.cast(self(), {:show_error, "WARNING: Could not find toplevel yaku list named \"#{yaku_list_name}\"!"})
           {yaku, minipoints, new_winning_tile}
         end
     end
@@ -136,80 +137,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end
     end)
   end
-
-  # defp parse_test_spec(rules, test_spec) do
-  #   name = test_spec["name"]
-  #   hand = if Map.has_key?(test_spec, "hand") do Enum.map(test_spec["hand"], &Utils.to_tile/1) else [] end
-  #   calls = if Map.has_key?(test_spec, "calls") do Enum.map(test_spec["calls"], fn [call_name, call_tiles] -> {call_name, Enum.map(call_tiles, fn tile -> {Utils.to_tile(tile), false} end)} end ) else [] end
-  #   status = test_spec["status"]
-  #   conditions = if Map.has_key?(test_spec, "conditions") do test_spec["conditions"] else [] end
-  #   winning_tile = if Map.has_key?(test_spec, "winning_tile") do Utils.to_tile(test_spec["winning_tile"]) else
-  #       GenServer.cast(self(), {:show_error, "Could not find key \"winning_tile\" in test spec:\n#{inspect(test_spec)}"})
-  #     end
-  #   win_source = case test_spec["win_source"] do
-  #       "draw"    -> :draw
-  #       "call"    -> :call
-  #       "discard" -> :discard
-  #       nil       -> GenServer.cast(self(), {:show_error, "Could not find key \"win_source\" in test spec:\n#{inspect(test_spec)}"})
-  #       _         -> GenServer.cast(self(), {:show_error, "\"win_source\" should be one of \"discard\", \"call\", or \"draw\" in test spec:\n#{inspect(test_spec)}"})
-  #     end
-  #   kyoku = if is_integer(test_spec["round"]) do test_spec["round"] else 0 end
-  #   seat = case test_spec["seat"] do 
-  #       "south" -> Utils.next_turn(:south, kyoku)
-  #       "west"  -> Utils.next_turn(:west, kyoku)
-  #       "north" -> Utils.next_turn(:north, kyoku)
-  #       _       -> Utils.next_turn(:east, kyoku)
-  #     end
-  #   yaku_list = case test_spec["yaku_lists"] do
-  #       nil        -> GenServer.cast(self(), {:show_error, "Could not find key \"yaku_lists\" in test spec:\n#{inspect(test_spec)}"})
-  #       yaku_lists ->
-  #         Enum.flat_map(yaku_lists, fn list_name ->
-  #           if Map.has_key?(rules, list_name) do
-  #             rules[list_name]
-  #           else
-  #             GenServer.cast(self(), {:show_error, "Could not find yaku list \"#{list_name}\" in ruleset!"})
-  #             []
-  #           end
-  #         end)
-  #     end
-  #   expected_yaku = case test_spec["expected_yaku"] do
-  #       nil           -> GenServer.cast(self(), {:show_error, "Could not find key \"expected_yaku\" in test spec:\n#{inspect(test_spec)}"})
-  #       expected_yaku -> Enum.map(expected_yaku, fn [name, value] -> {name, value} end)
-  #     end
-
-  #   {name, hand, calls, status, conditions, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku}
-  # end
-
-  # def run_yaku_tests(state) do
-  #   if Map.has_key?(state.rules, "yaku_tests") && Map.has_key?(state.rules, "run_yaku_tests") && state.rules["run_yaku_tests"] do
-  #     for test_spec <- state.rules["yaku_tests"] do
-  #       {name, hand, calls, status, conditions, winning_tile, win_source, kyoku, seat, yaku_list, expected_yaku} = parse_test_spec(state.rules, test_spec)
-
-  #       # setup a state where a given player has the given hand, calls, and tiles
-  #       minipoints = if state.rules["score_calculation"]["method"] == "riichi" do
-  #           Riichi.calculate_fu(hand, calls, winning_tile, win_source, Riichi.get_seat_wind(kyoku, seat), Riichi.get_round_wind(kyoku), state.players.east.tile_ordering, state.players.east.tile_ordering_r)
-  #         else 0 end
-  #       state = state
-  #         |> update_player(seat, &%Player{ &1 | hand: hand, calls: calls, status: if status == nil do &1.status else status end })
-  #         |> Map.put(:kyoku, kyoku)
-  #       state = for condition <- conditions, reduce: state do
-  #         state -> case condition do
-  #           "make_discards_exist" -> update_action(state, seat, :discard, %{tile: :"1x"}) 
-  #           "no_draws_remaining"  -> Map.put(state, :wall_index, length(state.wall))
-  #           _ ->
-  #             GenServer.cast(self(), {:show_error, "Unknown test condition #{inspect(condition)} in yaku test #{name}"})
-  #             state
-  #         end
-  #       end
-  #       yaku = get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints)
-  #       # IO.puts("Got yaku: #{inspect(yaku)}")
-  #       # IO.puts("Expected yaku: #{inspect(expected_yaku)}")
-  #       if yaku != expected_yaku do
-  #         GenServer.cast(self(), {:show_error, "Yaku test #{name} failed!\n  Got yaku: #{inspect(yaku)}\n  Expected yaku: #{inspect(expected_yaku)}"})
-  #       end
-  #     end
-  #   end
-  # end
 
   def score_yaku(state, seat, yaku, yaku2, is_dealer, is_self_draw, minipoints \\ 0) do
     score_rules = state.rules["score_calculation"]
@@ -550,7 +477,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle ezaki hitomi's scoring quirk
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
     delta_scores_map = if not is_tsumo do
-      for {winner_seat, delta_scores} <- delta_scores_map do
+      for {winner_seat, delta_scores} <- delta_scores_map, into: %{} do
         delta_scores = for {seat, player} <- state.players, reduce: delta_scores do
           delta_scores ->
             if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
@@ -597,7 +524,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             else delta_scores end
         end
         {winner_seat, delta_scores}
-      end |> Map.new()
+      end
     else delta_scores_map end
 
     delta_scores_map

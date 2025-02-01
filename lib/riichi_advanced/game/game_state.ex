@@ -143,9 +143,9 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
-
-  @timer 10
 
   def start_link(init_data) do
     # IO.puts("Game supervisor PID is #{inspect(self())}")
@@ -545,9 +545,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :winner)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     state = start_timer(state)
 
     winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
@@ -603,9 +601,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     state = start_timer(state)
 
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
@@ -631,9 +627,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     state = start_timer(state)
 
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
@@ -650,8 +644,6 @@ defmodule RiichiAdvanced.GameState do
         state = Map.update!(state, :winner_index, & &1 + 1)
 
         # reset timer
-        state = Map.put(state, :timer, @timer)
-        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         state = start_timer(state)
 
         state
@@ -670,8 +662,6 @@ defmodule RiichiAdvanced.GameState do
         state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
         
         # reset timer
-        state = Map.put(state, :timer, @timer)
-        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         state = start_timer(state)
         
         state
@@ -1105,7 +1095,10 @@ defmodule RiichiAdvanced.GameState do
     state
   end
   
-  def start_timer(state) do
+  defp start_timer(state) do
+    state = Map.put(state, :timer, Map.get(state.rules, "win_timer", 10))
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
+    
     if state.log_loading_mode do
       GenServer.cast(self(), :tick_timer)
     else

@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.CompassComponent do
+  alias RiichiAdvanced.Riichi, as: Riichi
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do

@@ -42,3 +42,5 @@
 .default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai") | not))
 |
 .available_mods |= map(select(type != "object" or (.id | IN("kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))
+|
+.win_timer = 20

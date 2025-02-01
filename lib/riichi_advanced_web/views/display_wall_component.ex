@@ -1,4 +1,6 @@
 defmodule RiichiAdvancedWeb.DisplayWallComponent do
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do

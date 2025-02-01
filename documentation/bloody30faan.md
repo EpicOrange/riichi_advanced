@@ -20,8 +20,8 @@ The wall for Bloody 30 Faan Jokers is composed of the following:
 
 There are four winning hand configurations in B30FJ:
 
-- Four sets and a pair. Sets are triplets or sequences. You may also use a knitted straight in place of three sets, a knitted short straight in place of two sets, a knitted terminal-sequences in place of two sets, or knitted triplets in place of three sets.
-- Seven pairs (no repeats).
+- Four sets and a pair. Sets are triplets (888) or sequences (234).
+- Seven pairs (no repeated pairs).
 - Thirteen orphans (each terminal and honor tile, one of them forming a pair).
 - Thirteen unconnected. To achieve this, you must have 13 disconnected tiles with one forming a pair. In addition, the suited tiles among them must form a partial knitted triplets or a partial knitted straight.
 
