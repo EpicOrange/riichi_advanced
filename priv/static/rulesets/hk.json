@@ -215,7 +215,7 @@
     "Big Three Dragons": ["Small Three Dragons"],
     "Blessing of Earth": ["Blessing of Man"],
     "Four Concealed Triplets": ["All Triplets"],
-    "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"],
+    "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
   },
   "score_calculation": {
     "scoring_method": "score_table",

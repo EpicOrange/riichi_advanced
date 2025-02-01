@@ -9,3 +9,6 @@
     "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
   }
 ]
+|
+# since all honours can now be seven pairs, all triplets is no longer implied
+.yaku_precedence."All Honours" |= map(select(. != "All Triplets"))
