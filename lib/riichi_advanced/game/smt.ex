@@ -1,5 +1,7 @@
 defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   
   @boilerplate """
                (set-logic QF_FD)

@@ -1,6 +1,8 @@
 defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   @ai_speed 4

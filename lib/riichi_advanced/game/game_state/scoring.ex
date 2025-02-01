@@ -2,6 +2,8 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   defp _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do

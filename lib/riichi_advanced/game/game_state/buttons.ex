@@ -5,6 +5,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   def to_buttons(state, button_choices) do

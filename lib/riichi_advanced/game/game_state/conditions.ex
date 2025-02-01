@@ -6,6 +6,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   def get_hand_calls_spec(state, context, hand_calls_spec) do

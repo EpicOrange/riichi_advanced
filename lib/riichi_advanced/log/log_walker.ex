@@ -15,6 +15,7 @@ end
 
 defmodule RiichiAdvanced.LogWalker do
   alias RiichiAdvanced.LogControlState, as: LogControl
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   def start_link(init_data) do

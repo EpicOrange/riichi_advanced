@@ -6,6 +6,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   def temp_disable_play_tile(state, seat) do

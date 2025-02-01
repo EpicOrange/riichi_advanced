@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.IndexLive do
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   def mount(_params, _session, socket) do

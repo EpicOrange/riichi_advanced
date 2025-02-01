@@ -143,6 +143,8 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   def start_link(init_data) do
