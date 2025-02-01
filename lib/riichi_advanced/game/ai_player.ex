@@ -171,6 +171,14 @@ defmodule RiichiAdvanced.AIPlayer do
         playables = playable_hand ++ playable_draw
         |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
 
+        non_voided_playables = cond do
+          "void_manzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_manzu?(tile) end)
+          "void_pinzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_pinzu?(tile) end)
+          "void_souzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_souzu?(tile) end)
+          true -> []
+        end
+        playables = if Enum.empty?(non_voided_playables) do playables else non_voided_playables end
+
         if not Enum.empty?(playables) do
           # pick a random tile
           # {_tile, index} = Enum.random(playables)
