@@ -496,7 +496,6 @@
     "extra_yaku_lists": ["extra_yaku"],
     "yaku2_overrides_yaku1": true,
     "draw_tenpai_payments": [1000, 1500, 3000],
-    "draw_nagashi_payments": [2000, 4000],
     "split_oya_ko_payment": true,
     "riichi_value": 1000,
     "honba_value": 100,
@@ -511,8 +510,7 @@
     "win_by_discard_name_3": "Triple Ron",
     "win_by_draw_name": "Tsumo",
     "triple_win_draw_name": "Sanchahou",
-    "exhaustive_draw_name": "Ryuukyoku",
-    "nagashi_name": "Nagashi Mangan"
+    "exhaustive_draw_name": "Ryuukyoku"
   },
   "play_restrictions": [
     [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],

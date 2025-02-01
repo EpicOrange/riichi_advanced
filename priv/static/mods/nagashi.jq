@@ -6,3 +6,7 @@
 |
 # unset nagashi when playing tanyaohai
 .play_effects += [["tanyaohai", [["unset_status", "nagashi"]]]]
+|
+.score_calculation.draw_nagashi_payments = [2000, 4000]
+|
+.score_calculation.nagashi_name = "Nagashi Mangan"
