@@ -24,7 +24,11 @@ defmodule RiichiAdvancedWeb.AboutLive do
       "Caballo",
       "GameRaccoon",
       "UltimateNeutrino",
-      "GOAT^3"
+      "GOAT^3",
+      "BluePotion",
+      "Buckwheat",
+      "L_",
+      "JustKidding",
     ])
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
@@ -48,9 +52,8 @@ defmodule RiichiAdvancedWeb.AboutLive do
       </div>
       <form>
         Created by Dani in their spare time.
-        This project is still in beta, so any playtesting is appreciated!
-        For any information, drop a message in our Discord (link below).
-        <br/>
+        For more information, drop a message in our Discord!
+        <hr/>
         Special thanks to our beta testers:
         <ul class="beta-testers">
           <li :for={user <- Enum.shuffle(@beta_testers)}><%= user %></li>
