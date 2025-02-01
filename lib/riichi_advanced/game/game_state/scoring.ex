@@ -56,19 +56,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # returns a map %{winning_tile => {minipoints, yakus}}
     if winning_tiles == nil || winning_tiles == [nil] || Enum.empty?(winning_tiles) do
       # try every possible winning tile from hand
-      for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil do
+      for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil, into: %{} do
         state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["draw"])] })
         minipoints = get_minipoints(state2, seat, winning_tile, win_source)
         yakus = get_yaku(state2, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
         {winning_tile, {minipoints, yakus}}
       end
     else
-      for winning_tile <- winning_tiles do
+      for winning_tile <- winning_tiles, into: %{} do
         minipoints = get_minipoints(state, seat, winning_tile, win_source)
         yakus = get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
         {winning_tile, {minipoints, yakus}}
       end
-    end |> Map.new()
+    end
   end
 
   def get_best_yaku_and_winning_tile(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
@@ -477,7 +477,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle ezaki hitomi's scoring quirk
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
     delta_scores_map = if not is_tsumo do
-      for {winner_seat, delta_scores} <- delta_scores_map do
+      for {winner_seat, delta_scores} <- delta_scores_map, into: %{} do
         delta_scores = for {seat, player} <- state.players, reduce: delta_scores do
           delta_scores ->
             if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
@@ -524,7 +524,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             else delta_scores end
         end
         {winner_seat, delta_scores}
-      end |> Map.new()
+      end
     else delta_scores_map end
 
     delta_scores_map
