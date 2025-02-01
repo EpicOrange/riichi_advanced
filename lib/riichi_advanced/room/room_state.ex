@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.RoomState do
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
-      case Jason.decode(Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
@@ -357,20 +357,19 @@ defmodule RiichiAdvanced.RoomState do
   def handle_cast(:start_game, state) do
     state = Map.put(state, :starting, true)
     state = broadcast_state_change(state)
-    mods = if state.ruleset == "custom" do [] else get_enabled_mods(state) end
-    if state.ruleset == "custom" do
+    {mods, config} = if state.ruleset == "custom" do
       ruleset_json = Enum.at(state.textarea, 0)["insert"]
       if ruleset_json != nil do
         RiichiAdvanced.ETSCache.put(state.session_id, ruleset_json, :cache_rulesets)
       end
-    end
-    config = if state.ruleset != "custom" do
+      {[], nil}
+    else
       config = Enum.at(state.textarea, 0)["insert"]
       if config != nil do
         RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, config, :cache_configs)
       end
-      config
-    else nil end
+      {get_enabled_mods(state), config}
+    end
     game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->

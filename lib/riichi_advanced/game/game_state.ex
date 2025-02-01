@@ -222,7 +222,7 @@ defmodule RiichiAdvanced.GameState do
 
     # apply config
     ruleset_json = if state.config != nil do
-      JQ.merge_jsons!(ruleset_json, Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, state.config, ""))
+      JQ.merge_jsons!(ruleset_json, RiichiAdvanced.ModLoader.strip_comments(state.config))
     else ruleset_json end
 
     # put params, debouncers, and process ids into state
@@ -245,7 +245,7 @@ defmodule RiichiAdvanced.GameState do
 
     # decode the rules json
     {state, rules} = try do
-      case Jason.decode(Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           IO.puts("Erroring json:")

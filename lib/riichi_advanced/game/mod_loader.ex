@@ -100,7 +100,7 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def get_ruleset_json(ruleset, session_id \\ nil, strip_comments \\ false) do
+  def get_ruleset_json(ruleset, session_id \\ nil, strip_comments? \\ false) do
     if ruleset == "custom" do
       case RiichiAdvanced.ETSCache.get(session_id, ["{}"], :cache_rulesets) do
         [ruleset_json] -> ruleset_json
@@ -113,14 +113,14 @@ defmodule RiichiAdvanced.ModLoader do
         display_name = Map.get(modpack, :display_name, ruleset)
         query = ".default_mods += #{mod_names_to_array(Map.get(modpack, :default_mods, []))} | .display_name = \"#{display_name}\""
         query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
-        Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, read_ruleset_json(modpack.ruleset), "")
+        modpack.ruleset
+        |> read_ruleset_json()
+        |> strip_comments()
         |> apply_mods(mod_names, modpack.ruleset)
         |> JQ.query_string_with_string!(query)
       else
         ruleset_json = read_ruleset_json(ruleset)
-        if strip_comments do
-          Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")
-        else ruleset_json end
+        if strip_comments? do strip_comments(ruleset_json) else ruleset_json end
       end
     end
   end
@@ -139,5 +139,9 @@ defmodule RiichiAdvanced.ModLoader do
       [ruleset_json] -> ruleset_json
       _ -> @default_config
     end
+  end
+
+  def strip_comments(json) do
+    Regex.replace(~r{^//.*|\s//.*|/\*[.\n]*?\*/}, json, "")
   end
 end
