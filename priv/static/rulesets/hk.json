@@ -114,7 +114,7 @@
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "yaku": [
     // Flowers
-    { "display_name": "No Flowers", "value": 1, "when": [] }, // removed by yaku_precedence if any of the below flowers match
+    { "display_name": "No Flowers", "value": 1, "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] },
     { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
     { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
     { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
@@ -205,8 +205,6 @@
     { "display_name": "Blessing of Man", "value": 13, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"] }
   ],
   "yaku_precedence": {
-    "Seat Flower": ["No Flowers"],
-    "Seat Season": ["No Flowers"],
     "All Flowers": ["Seat Flower"],
     "All Seasons": ["Seat Season"],
     "Seven Flowers": ["All Flowers", "All Seasons"],
@@ -216,7 +214,8 @@
     "Big Four Winds": ["Small Four Winds"],
     "Big Three Dragons": ["Small Three Dragons"],
     "Blessing of Earth": ["Blessing of Man"],
-    "Four Concealed Triplets": ["All Triplets"]
+    "Four Concealed Triplets": ["All Triplets"],
+    "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"],
   },
   "score_calculation": {
     "scoring_method": "score_table",

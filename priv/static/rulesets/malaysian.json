@@ -308,7 +308,7 @@
     "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
     "Small Three Dragons": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Four Concealed Triplets": ["All Triplets"],
-    "All Honors": ["Half Flush"]
+    "All Honors": ["All Triplets", "Half Flush"]
   },
   "score_calculation": {
     "scoring_method": "multiplier",
