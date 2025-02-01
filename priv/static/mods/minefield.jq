@@ -31,7 +31,7 @@
 |
 .buttons += {
   "build": {
-    "display_name": "Select 13 tiles to form a tenpai hand",
+    "display_name": "Choose 13 tiles to form a mangan+ hand",
     "show_when": [{"name": "status", "opts": ["building"]}],
     "actions": [
       ["unset_status", "building"],
@@ -104,5 +104,7 @@ else . end)
 .after_start.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
 |
 .before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
+|
+.persistent_statuses += ["has_1000"]
 |
 .win_timer = 20
