@@ -145,8 +145,6 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   use GenServer
 
-  @timer 10
-
   def start_link(init_data) do
     # IO.puts("Game supervisor PID is #{inspect(self())}")
     GenServer.start_link(

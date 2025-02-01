@@ -634,8 +634,8 @@ defmodule Riichi do
       # as soon as something doesn't match, get all tiles that help make it match
       # take the union of helpful tiles across all match definitions
       for match_definition <- match_definitions do
-        # make it exhaustive
-        match_definition = ["exhaustive" | match_definition]
+        # make it exhaustive, unless it's unique
+        match_definition = if "unique" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
         {_hand_calls, _keywords, waits_complement} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[{hand, calls}], [], all_tiles} do
           {[], keywords, waits_complement}         -> {[], keywords, waits_complement}
@@ -738,6 +738,8 @@ defmodule Riichi do
     # also add all tile mappings
     |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
     |> Enum.uniq()
+    # never let :any be a base tile
+    base_tiles = base_tiles -- [:any, {:any, []}]
     # if there are no offsets, always return 1m as a base tile
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
@@ -798,8 +800,8 @@ defmodule Riichi do
     match_definitions = for match_definition <- match_definitions do
       # filter out lookaheads from match definition
       match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
-      # add exhaustive
-      ["exhaustive" | match_definition]
+      # add exhaustive unless unique
+      if "unique" not in match_definition do ["exhaustive" | match_definition] else match_definition end
     end
 
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
