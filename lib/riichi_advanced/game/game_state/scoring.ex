@@ -90,7 +90,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules[yaku_list_name], seat, winning_tiles, win_source, yaku)
           {yaku, minipoints, new_winning_tile}
         else
-          GenServer.cast(self(), {:show_error, "WARNING: Could not find toplevel yaku list named \"#{yaku_list_name}\"!"})
           {yaku, minipoints, new_winning_tile}
         end
     end
