@@ -313,18 +313,24 @@ That's about it for match specifications.
 
 Here are all the toplevel keys. Every key is optional.
 
-Events
-
+- `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
+- `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
+- `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
 - `after_start`: Triggers at the start of each round. Context: `seat` is the current seat (so, east).
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
+- `after_win`: Triggers at the end of a win, after yaku is calculated.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
 - `before_call`: Triggers at the start of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
+- `before_conclusion`: Triggers at the end of a game (right before the end scores are shown).
+- `before_continue`: Triggers before the game continues, after someone wins in a bloody end game.
 - `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
+- `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
-- `before_win`: Triggers before a win is called. Context: `seat` is the seat who called the win.
+- `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.
+- `on_no_valid_tiles`: Triggers on someone's turn if they cannot discard any tiles.
 - `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. Context: `seat` is the seat who played a tile, and `tile` is the played tile.
 
 Buttons:
