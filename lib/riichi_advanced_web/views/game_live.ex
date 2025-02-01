@@ -362,12 +362,12 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:visible_waits, nil)
       |> assign(:visible_waits_hand, nil)
     else socket end
-    socket = if socket.assigns.visible_waits != nil && not Map.has_key?(socket.assigns.visible_waits, index) do
+    visible_waits = socket.assigns.visible_waits || %{}
+    if not Map.has_key?(visible_waits, index) do
       # async call; gets handled below in :set_visible_waits
       GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
-      assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, :loading))
+      assign(socket, :visible_waits, Map.put(visible_waits, index, :loading))
     else socket end
-    socket
   end
 
   def handle_event("back", _assigns, socket) do
