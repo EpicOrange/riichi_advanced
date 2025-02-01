@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.RevealedTilesComponent do
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do

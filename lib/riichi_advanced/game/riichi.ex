@@ -1,4 +1,5 @@
-defmodule Riichi do
+defmodule RiichiAdvanced.Riichi do
+  alias RiichiAdvanced.Utils, as: Utils
 
   @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"101p",
                 :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"101s",
@@ -634,8 +635,8 @@ defmodule Riichi do
       # as soon as something doesn't match, get all tiles that help make it match
       # take the union of helpful tiles across all match definitions
       for match_definition <- match_definitions do
-        # make it exhaustive
-        match_definition = ["exhaustive" | match_definition]
+        # make it exhaustive, unless it's unique
+        match_definition = if "unique" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
         {_hand_calls, _keywords, waits_complement} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[{hand, calls}], [], all_tiles} do
           {[], keywords, waits_complement}         -> {[], keywords, waits_complement}
@@ -738,6 +739,8 @@ defmodule Riichi do
     # also add all tile mappings
     |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
     |> Enum.uniq()
+    # never let :any be a base tile
+    base_tiles = base_tiles -- [:any, {:any, []}]
     # if there are no offsets, always return 1m as a base tile
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
@@ -798,8 +801,8 @@ defmodule Riichi do
     match_definitions = for match_definition <- match_definitions do
       # filter out lookaheads from match definition
       match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
-      # add exhaustive
-      ["exhaustive" | match_definition]
+      # add exhaustive unless unique
+      if "unique" not in match_definition do ["exhaustive" | match_definition] else match_definition end
     end
 
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
@@ -948,7 +951,7 @@ defmodule Riichi do
   defp _calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases, enable_kontsu_fu) do
     # t = System.os_time(:millisecond)
 
-    IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
+    # IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
 
     # first put all ton calls back into the hand
     ton_tiles = calls

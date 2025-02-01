@@ -179,7 +179,7 @@
     { "display_name": "Dealer", "value": 1, "when": [{"name": "seat_is", "opts": ["east"]}] },
     { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
     // Flowers
-    { "display_name": "No Flowers", "value": 1, "when": [] }, // removed by yaku_precedence if any of the below flowers match
+    { "display_name": "No Flowers", "value": 1, "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
@@ -444,7 +444,7 @@
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "status_missing", "opts": ["flower"]}, {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
       "unskippable": true
     },
     "chii": {

@@ -39,6 +39,7 @@ end
 
 defmodule RiichiAdvanced.LobbyState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   def start_link(init_data) do

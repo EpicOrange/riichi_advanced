@@ -1,5 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Debug do
+  alias RiichiAdvanced.Utils, as: Utils
+
   @debug false
   @debug_status false
   @debug_fast_ai false
@@ -7,10 +9,10 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_saki_card_opponent nil
   @debug_am_match_definitions []
   @debug_actions false
-  @debug_log false
-  @debug_ai false
   @debug_buttons false
-  @debug_conditions false
+  @debug_conditions true
+  @debug_ai false
+  @debug_log true
   @print_smt false
   @skip_ruleset_caching false
 
@@ -29,38 +31,63 @@ defmodule RiichiAdvanced.GameState.Debug do
   def skip_ruleset_caching, do: @skip_ruleset_caching
 
   def set_wall(wall) do
-    # wall = List.replace_at(wall, 52, :"6p") # first draw
-    # wall = List.replace_at(wall, 53, :"6p")
-    # wall = List.replace_at(wall, 54, :"6p")
-    # wall = List.replace_at(wall, 55, :"6p")
-    # wall = List.replace_at(wall, 56, :"8s") # second draw
-    # wall = List.replace_at(wall, 57, :"8s")
-    # wall = List.replace_at(wall, 58, :"8s")
-    # wall = List.replace_at(wall, 59, :"8s")
-    # wall = List.replace_at(wall, 60, :"8s") # third draw
-    # wall = List.replace_at(wall, 61, :"8s")
-    # wall = List.replace_at(wall, 62, :"8s")
-    # wall = List.replace_at(wall, 63, :"8s")
-    # wall = List.replace_at(wall, 64, :"3m") # fourth draw
-    # wall = List.replace_at(wall, 65, :"1z")
-    # wall = List.replace_at(wall, 66, :"1z")
-    # wall = List.replace_at(wall, 67, :"5z")
-    # wall = List.replace_at(wall, 68, :"5z") # fifth draw
-    # wall = List.replace_at(wall, 80, :"8m") # seventh draw
+    # wall = List.replace_at(wall, 52, :"2s") # first draw
+    # wall = List.replace_at(wall, 53, :"2p")
+    # wall = List.replace_at(wall, 54, :"5m")
+    # wall = List.replace_at(wall, 55, :"7m")
+    # wall = List.replace_at(wall, 56, :"1z") # second draw
+    # wall = List.replace_at(wall, 57, :"1m")
+    # wall = List.replace_at(wall, 58, :"1m")
+    # wall = List.replace_at(wall, 59, :"1m")
+    # wall = List.replace_at(wall, 60, :"9m") # third draw
+    # wall = List.replace_at(wall, 61, :"7p")
+    # wall = List.replace_at(wall, 62, :"7p")
+    # wall = List.replace_at(wall, 63, :"7p")
+    # wall = List.replace_at(wall, 64, :"7p") # fourth draw
+    # wall = List.replace_at(wall, 65, :"7p")
+    # wall = List.replace_at(wall, 66, :"7p")
+    # wall = List.replace_at(wall, 67, :"7p")
+    # wall = List.replace_at(wall, 68, :"7p") # fifth draw
+    # wall = List.replace_at(wall, 80, :"7p") # seventh draw
     # wall = List.replace_at(wall, -15, :"1m") # last draw
-    # wall = List.replace_at(wall, -6, :"6p") # first dora indicator
+    # wall = List.replace_at(wall, 48, :"2m") # first draw (shouhai)
+    # wall = List.replace_at(wall, 49, :"3m")
+    # wall = List.replace_at(wall, 50, :"4m")
+    # wall = List.replace_at(wall, 51, :"5m")
+    # wall = List.replace_at(wall, 52, :"10s") # second draw (shouhai)
+    # wall = List.replace_at(wall, 64, :"1j") # first draw (taiwanese)
+    # wall = List.replace_at(wall, 65, :"1j")
+    # wall = List.replace_at(wall, 66, :"1j")
+    # wall = List.replace_at(wall, 67, :"8m")
+    # wall = List.replace_at(wall, 68, :"8m") # second draw (taiwanese)
+    # wall = List.replace_at(wall, 69, :"5m")
+    # wall = List.replace_at(wall, 70, :"8m")
+    # wall = List.replace_at(wall, 71, :"8m")
+    # wall = List.replace_at(wall, 72, :"8m") # third draw (taiwanese)
+    # wall = List.replace_at(wall, 73, :"8m")
+    # wall = List.replace_at(wall, 74, :"8m")
+    # wall = List.replace_at(wall, 75, :"8m")
+    # wall = List.replace_at(wall, 76, :"8m") # fourth draw (taiwanese)
+    # wall = List.replace_at(wall, 77, :"8m")
+    # wall = List.replace_at(wall, 78, :"8m")
+    # wall = List.replace_at(wall, 79, :"8m")
+    # wall = List.replace_at(wall, 80, :"8m") # fifth draw (taiwanese)
+    # wall = List.replace_at(wall, 81, :"8m")
+    # wall = List.replace_at(wall, 82, :"8m")
+    # wall = List.replace_at(wall, 83, :"8m")
+    # wall = List.replace_at(wall, -6, :"6m") # first dora indicator
     # wall = List.replace_at(wall, -8, :"2p") # second dora indicator
     # wall = List.replace_at(wall, -10, :"8s") # third dora indicator
     # wall = List.replace_at(wall, -12, :"2p") # fourth dora indicator
     # wall = List.replace_at(wall, -14, :"2p") # fifth dora indicator
-    # wall = List.replace_at(wall, -5, :"7p") # first ura indicator
+    # wall = List.replace_at(wall, -5, :"2s") # first ura indicator
     # wall = List.replace_at(wall, -7, :"2p") # second ura indicator
     # wall = List.replace_at(wall, -9, :"2p") # third ura indicator
     # wall = List.replace_at(wall, -11, :"2p") # fourth ura indicator
     # wall = List.replace_at(wall, -13, :"2p") # fifth ura indicator
-    # wall = List.replace_at(wall, -1, :"2m") # first kan draw
-    # wall = List.replace_at(wall, -2, :"2m") # second kan draw
-    # wall = List.replace_at(wall, -3, :"2m") # third kan draw
+    # wall = List.replace_at(wall, -1, :"1s") # first kan draw
+    # wall = List.replace_at(wall, -2, :"6p") # second kan draw
+    # wall = List.replace_at(wall, -3, :"6p") # third kan draw
     # wall = List.replace_at(wall, -4, :"2m") # fourth kan draw
     wall
   end
@@ -70,10 +97,300 @@ defmodule RiichiAdvanced.GameState.Debug do
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}
 
-    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"6m", :"7m", :"8m", :"2p", :"2p", :"2s", :"2s", :"2s", :"6s", :"7s"]),
+    # # random hand
+    # hands = %{:east  => Utils.sort_tiles([:"3m", :"4m", :"5m", :"2p", :"2p", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"3s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # naked tanki setup
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"7m", :"7m", :"9m", :"1z", :"1z", :"1z", :"1z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # FF 2024a 2222b 2222c w/ zombie blanks
+    # hands = %{:east  => Utils.sort_tiles([:"1f", :"2f", :"2p", :"5z", :"2p", :"4p", :"2m", :"2m", :"2m", :"2m", :"2s", :"2s", :"2s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # junsei ryuuiisou
+    # hands = %{:east  => Utils.sort_tiles([:"2s", :"2s", :"2s", :"2s", :"4s", :"3s", :"3s", :"3s", :"4s", :"4s", :"4s", :"4s", :"4s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # random hand 77889999m778899p
+    # hands = %{:east  => Utils.sort_tiles([:"7m", :"7m", :"8m", :"8m", :"9m", :"9m", :"9m", :"9m", :"7p", :"7p", :"8p", :"8p", :"9p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # almost FF XXXX0a NEWS XXXX0b
+    # hands = %{:east  => Utils.sort_tiles([:"9m", :"9m", :"9m", :"8s", :"9s", :"9s", :"1z", :"2z", :"3z", :"4z", :"1f", :"3f", :"1j"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # FF XXXX0a NEWS XXXX0b
+    # hands = %{:east  => Utils.sort_tiles([:"9m", :"9m", :"9m", :"9s", :"9s", :"9s", :"1z", :"2z", :"3z", :"4z", :"1f", :"3f", :"1j"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # pon precedence
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"2m", :"2m", :"3m", :"3m", :"1z", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p"]),
+    #           :south => Utils.sort_tiles([:"1m", :"1m", :"2m", :"2m", :"3m", :"3m", :"1z", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p"]),
+    #           :west  => Utils.sort_tiles([:"1m", :"1m", :"2m", :"2m", :"3m", :"3m", :"1z", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p"]),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # 111a 33a 5555b 77c 999c
+    # hands = %{:east  => Utils.sort_tiles([:"7m", :"9m", :"9m", :"9m", :"5p", :"5p", :"5p", :"1s", :"1s", :"1s", :"3s", :"3s", :"1j"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # XX0a XXXXX1a XX0b XXXXX1b
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"2m", :"2m", :"2m", :"2m", :"2m", :"1p", :"1p", :"2p", :"2p", :"2p", :"2p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # chinitsu ryuuisou
+    # hands = %{:east  => Utils.sort_tiles([:"2s", :"2s", :"2s", :"3s", :"3s", :"3s", :"3s", :"3s", :"3s", :"4s", :"8s", :"8s", :"8s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # not knitted hand
+    # hands = %{:east  => Utils.sort_tiles([:"4m", :"6m", :"1p", :"2p", :"3p", :"4p", :"9p", :"1s", :"4s", :"2z", :"6z", :"12j", :"14j"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # juusan kokushi
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"9m", :"1p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"9p", :"6z", :"7z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # non-juusan kokushi
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"9m", :"1p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"6z", :"7z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # knitted hand
+    # hands = %{:east  => Utils.sort_tiles([:"4m", :"7m", :"1p", :"4p", :"7p", :"1s", :"1s", :"7s", :"1z", :"6z", :"7z", :"14j", :"15j"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # seat wind
+    # hands = %{:east  => Enum.slice(wall, 0..12),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"3z", :"3z", :"9m", :"3z"]),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # joker in pung
+    # hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"3m", :"3m", :"3m", :"7m", :"7m", :"7m", :"9m", :"19j", :"1z", :"4m", :"6m"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # sanankou
+    # hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"3m", :"3m", :"3m", :"7m", :"7m", :"7m", :"9m", :"9m", :"9m", :"4m", :"6m"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # ryanankou
+    # hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"3m", :"3m", :"3m", :"7m", :"7m", :"7m", :"9m", :"9m", :"1z", :"4m", :"6m"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # minefield ippatsu sanankou
+    # hands = %{:east  => Enum.slice(wall, 0..19) ++ [:"1m", :"1m", :"1m", :"3m", :"3m", :"3m", :"7m", :"7m", :"7m", :"9m", :"9m", :"9m", :"5m", :"5m"],
+    #           :south => [],
+    #           :west  => List.duplicate(:"5m", 34),
+    #           :north => []}
+
+    # # honitsu
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"2z", :"2z", :"9m", :"2z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # uushin tsuukan
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"4z", :"6m", :"7m", :"8m", :"9m", :"2z", :"2z", :"4z", :"4z"]),
     #           :south => Enum.slice(wall, 26..38),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
+
+    # # american civil war
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"8m", :"6m", :"1m", :"1p", :"8p", :"6p", :"5p", :"2z", :"2z", :"2z", :"4z", :"4z"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # hyakuman goku
+    # hands = %{:east  => Utils.sort_tiles([:"6m", :"7m", :"8m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"9m", :"9m", :"9m", :"8m"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # shiisanpuutaa
+    # hands = %{:east  => Utils.sort_tiles([:"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # chiishin_uushii
+    # hands = %{:east  => Utils.sort_tiles([:"4m", :"7m", :"2p", :"5p", :"8p", :"3s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # chinpeikou
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"2m", :"2m", :"3m", :"3m", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p", :"1p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # shanron chonchu
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"1s", :"2s", :"3s", :"4m", :"5m", :"6m", :"4s", :"5s", :"6s", :"1p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # ittsu chanta
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1s", :"1s", :"1s", :"1p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # tanyao
+    # hands = %{:east  => Utils.sort_tiles([:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # chinitsu
+    # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"5s", :"5s", :"7s", :"8s", :"9s", :"9s", :"9s", :"10s", :"10s", :"10s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # daisharin
+    # hands = %{:east  => Utils.sort_tiles([:"2p", :"2p", :"3p", :"3p", :"4p", :"4p", :"5p", :"5p", :"6p", :"6p", :"7p", :"7p", :"8p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # mixed winds
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"1z", :"2z", :"3z", :"2z", :"3z", :"1z", :"1z", :"2z", :"3z", :"4z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # mini-sangen
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"5p", :"5p", :"5p", :"5z", :"5z", :"6z", :"6z", :"7z", :"7z", :"2z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # suuankou
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"5p", :"5p", :"5p", :"1z", :"1z", :"1z", :"3z", :"3z", :"2z", :"2z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # multiple ankan
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"1m", :"5p", :"5p", :"5p", :"0p", :"1z", :"1z", :"1z", :"1z", :"6p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # sanma
+    # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"1z", :"1z", :"2z", :"2z"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # taiwanese 7 flowers
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"2m", :"2m", :"2m", :"1s", :"1s", :"9m", :"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g"]),
+    #           :south => Utils.sort_tiles([:"1m", :"1m", :"1m", :"2m", :"2m", :"2m", :"1s", :"1s", :"1s", :"8s", :"8s", :"8s", :"3m", :"4m", :"5m", :"4g"]),
+    #           :west  => Enum.slice(wall, 32..47),
+    #           :north => Enum.slice(wall, 48..63)}
+
+    # # taiwanese
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"2m", :"2m", :"2m", :"1s", :"1s", :"1s", :"8s", :"8s", :"8s", :"3m", :"4m", :"7m", :"9m"]),
+    #           :south => Enum.slice(wall, 16..31),
+    #           :west  => Enum.slice(wall, 32..47),
+    #           :north => Enum.slice(wall, 48..63)}
+
+    # # washizu
+    # hands = %{:east  => Utils.sort_tiles([
+    #   {:"1s", ["revealed", "transparent"]},
+    #   {:"2s", ["revealed", "transparent"]},
+    #   :"3s",
+    #   {:"4s", ["revealed", "transparent"]},
+    #   {:"5s", ["revealed", "transparent"]},
+    #   {:"6s", ["revealed", "transparent"]},
+    #   {:"7s", ["revealed", "transparent"]},
+    #   {:"8s", ["revealed", "transparent"]},
+    #   :"3m",
+    #   {:"3m", ["revealed", "transparent"]},
+    #   {:"3m", ["revealed", "transparent"]},
+    #   {:"2z", ["revealed", "transparent"]},
+    #   {:"2z", ["revealed", "transparent"]}]),
+    #           :south => Enum.slice(wall, 13..25) ++ [{:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}],
+    #           :west  => Enum.slice(wall, 26..38) ++ [{:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}],
+    #           :north => Enum.slice(wall, 39..51) ++ [{:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}, {:"3m", ["revealed", "transparent"]}]}
+
+    # # shouhai
+    # hands = %{:east  => Enum.slice(wall, 0..11),
+    #           :south => Enum.slice(wall, 12..23),
+    #           :west  => Enum.slice(wall, 24..35),
+    #           :north => Enum.slice(wall, 36..47)}
+
+    # # chinitsu shouhai
+    # hands = %{:east  => Utils.sort_tiles([:"1s", :"1s", :"2s", :"2s", :"2s", :"4s", :"4s", :"4s", :"7s", :"7s", :"7s", :"8s"]),
+    #           :south => Enum.slice(wall, 12..23),
+    #           :west  => Enum.slice(wall, 24..35),
+    #           :north => Enum.slice(wall, 36..47)}
+
+    # # ten mod in SBR
+    # hands = %{:east  => Utils.sort_tiles([:"4m", :"4m", :"4m", :"8m", :"9m", :"10m", :"2s", :"3s", :"4s", :"5s", :"6s", :"6s", :"1z"]),
+    #           :south => Utils.sort_tiles([:"4m", :"4m", :"4m", :"8m", :"9m", :"10m", :"2z", :"3z", :"4z", :"5z", :"6z", :"6z", :"1z"]),
+    #           :west  => Utils.sort_tiles([:"4m", :"4m", :"4m", :"8m", :"9m", :"10m", :"2z", :"3z", :"4z", :"5z", :"6z", :"6z", :"1z"]),
+    #           :north => Utils.sort_tiles([:"4m", :"4m", :"4m", :"8m", :"9m", :"10m", :"2z", :"3z", :"4z", :"5z", :"6z", :"6z", :"1z"])}
+
+    # # NFNL
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"1s", :"1s", :"1s", :"8s", :"8s", :"8s", :"3m", :"4m", :"8m", :"9m"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # toriuchi
+    # hands = %{:east  => Utils.sort_tiles([:"1z", :"1z", :"1z", :"1s", :"1s", :"1s", :"8s", :"8s", :"8s", :"6m", :"7m", :"8m", :"9m"]),
+    #           :south => Utils.sort_tiles([:"1z", :"1z", :"1z", :"1s", :"1s", :"1s", :"8p", :"8p", :"8p", :"6m", :"7m", :"8m", :"7p"]),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # kindora
+    # hands = %{:east  => Utils.sort_tiles([:"27z", :"26z", :"7z", :"7z", :"6z", :"6z", :"3p", :"4p", :"7z", :"6m", :"7m", :"8m", :"9m"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # any joker test
+    # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :south => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :west  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :north => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"])}
 
     # # seven consecutive pairs
     # hands = %{:east  => Utils.sort_tiles([:"4m", :"4m", :"5p", :"5p", :"6m", :"6m", :"7m", :"7m", :"8p", :"8p", :"9m", :"9m", :"3m"]),
@@ -81,7 +398,7 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # high value hand
+    # # big high value hand
     # hands = %{:east  => Utils.sort_tiles([:"4m", :"4m", :"5m", :"5m", :"6m", :"6m", :"4p", :"4p", :"5p", :"5p", :"6p", :"6p", :"6p"]),
     #           :south => Enum.slice(wall, 26..38),
     #           :west  => Enum.slice(wall, 26..38),
@@ -93,20 +410,44 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # knitted honors
+    # # double knitted short straight with joker
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"4m", :"2p", :"5p", :"3s", :"6s", :"2p", :"3s", :"4m", :"5p", :"18j", :"7m", :"1z"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # knitted short straight with jokers
+    # hands = %{:east  => Utils.sort_tiles([:"5m", :"8m", :"3p", :"3p", :"4p", :"5p", :"5p", :"6p", :"7s", :"17j", :"18j", :"14j", :"15j"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # knitted honors with all three suits
+    # hands = %{:east  => Utils.sort_tiles([:"7m", :"1p", :"4p", :"2z", :"1s", :"7s", :"1z", :"1z", :"3z", :"0z", :"7z", :"18j", :"15j"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # knitted honors without all three suits
     # hands = %{:east  => Utils.sort_tiles([:"7p", :"1p", :"4p", :"2z", :"1s", :"7s", :"1z", :"1z", :"3z", :"0z", :"7z", :"18j", :"15j"]),
     #           :south => Enum.slice(wall, 26..38),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # 13 disconnected
+    # # 13 unconnected (riichi)
+    # hands = %{:east  => Utils.sort_tiles([:"7m", :"1p", :"4p", :"7p", :"1s", :"7s", :"1z", :"4z", :"3z", :"5z", :"6z", :"7z", :"2z"]),
+    #           :south => Enum.slice(wall, 26..38),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # 13 unconnected (B30FJ)
     # hands = %{:east  => Utils.sort_tiles([:"7m", :"1p", :"4p", :"7p", :"1s", :"7s", :"1z", :"1z", :"3z", :"0z", :"7z", :"18j", :"15j"]),
     #           :south => Enum.slice(wall, 26..38),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
     # # knitted straight tenpai
-    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2p", :"3s", :"4m", :"5p", :"6s", :"7m", :"8p", :"1m", :"2m", :"3m", :"2z", :"2z"]),
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2p", :"3s", :"4m", :"5p", :"6s", :"7m", :"8p", :"7z", :"2z", :"3z", :"4z", :"4z"]),
     #           :south => Enum.slice(wall, 26..38),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
@@ -123,18 +464,37 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # iitsu
+    # # ittsu
     # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"3m", :"3m", :"3m", :"2z", :"2z"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # kokushi
-    # hands = %{:east  => Utils.sort_tiles([:"1m", :"9m", :"1p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"6z", :"7z"]),
+    # # FF 11a 33a 55a 55b 77b 99b
+    # hands = %{:east  => Utils.sort_tiles([:"1f", :"1g", :"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"5p", :"5p", :"7p", :"7p", :"9p"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
-
+    # # XX0a DDDa XX0b DDDb XXXX0c
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"7z", :"7z", :"7z", :"1p", :"1p", :"0z", :"0z", :"0z", :"1s", :"1j", :"1s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+    # # FF 2024a 2222b 2222c
+    # hands = %{:east  => Utils.sort_tiles([:"1f", :"2f", :"2p", :"0z", :"2p", :"4p", :"2m", :"2m", :"2m", :"2m", :"2s", :"2s", :"2s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+    # # NN EEE 2024a WWW SS (valid)
+    # hands = %{:east  => Utils.sort_tiles([:"4z", :"4z", :"1z", :"1z", :"1z", :"2m", :"0z", :"2m", :"4m", :"3z", :"3z", :"2z", :"2z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+    # # NN EEE 2024a WWW SS (invalid)
+    # hands = %{:east  => Utils.sort_tiles([:"2m", :"4m", :"1z", :"1z", :"3z", :"4z", :"4z", :"0z", :"1j", :"1j", :"1j", :"1j", :"1j"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
     # # XXX0a XXX1a XXXX2a XXXX3a
     # hands = %{:east  => Utils.sort_tiles([:"3m", :"3m", :"3m", :"4m", :"4m", :"1j", :"5m", :"5m", :"5m", :"1j", :"6m", :"6m", :"6m"]),
     #           :south => Enum.slice(wall, 13..25),
@@ -186,10 +546,6 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
     # # 222a 000 2222b 4444b
-    # hands = %{:east  => Utils.sort_tiles([:"2m", :"2m", :"2m", :"0z", :"0z", :"0z", :"2p", :"2p", :"2p", :"2p", :"4p", :"4p", :"4p"]),
-    #           :south => Enum.slice(wall, 13..25),
-    #           :west  => Enum.slice(wall, 26..38),
-    #           :north => Enum.slice(wall, 39..51)}
     # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"2p", :"3p", :"3p", :"4p", :"4p", :"5p", :"5p", :"6z", :"6z", :"7z", :"7z"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
@@ -249,10 +605,6 @@ defmodule RiichiAdvanced.GameState.Debug do
     # hands = %{:east  => Utils.sort_tiles([:"5m", :"5s", :"8m", :"8s", :"2z", :"3z", :"6m", :"6m", :"2m", :"2p", :"2s", :"5z", :"5z"]),
     #           :south => Utils.sort_tiles([:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"5z", :"8p", :"4z", :"4z"]),
     #           :west  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"1z", :"1z", :"8p", :"8p"]),
-    #           :north => Enum.slice(wall, 39..51)}
-    # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"1m", :"1m", :"5p", :"5p", :"5p", :"0p", :"8s", :"3z", :"1z", :"2z", :"4z"]),
-    #           :south => Enum.slice(wall, 13..25),
-    #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
     # hands = %{:east  => Utils.sort_tiles([:"4m", :"4m", :"4m", :"4m", :"8m", :"0z", :"0z", :"6z", :"6z", :"7z", :"7z", :"12j", :"13j"]),
     #           :south => Enum.slice(wall, 13..25),

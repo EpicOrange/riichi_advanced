@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.RoomSupervisor do
+  alias RiichiAdvanced.Utils, as: Utils
   use Supervisor
 
   def start_link(opts) do

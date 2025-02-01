@@ -3,6 +3,8 @@ defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   @special_keys [:done, :cancellable, :post_actions]
