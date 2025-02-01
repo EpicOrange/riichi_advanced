@@ -636,28 +636,35 @@ defmodule RiichiAdvanced.Riichi do
       # take the union of helpful tiles across all match definitions
       for match_definition <- match_definitions do
         # make it exhaustive, unless it's unique
-        match_definition = if "unique" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+        match_definition = if "unique" not in match_definition && "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
-        {_hand_calls, _keywords, waits_complement} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[{hand, calls}], [], all_tiles} do
-          {[], keywords, waits_complement}         -> {[], keywords, waits_complement}
-          {hand_calls, keywords, []}               -> {hand_calls, keywords, []}
-          {hand_calls, keywords, waits_complement} -> case match_definition_elem do
-            [_groups, num] when num <= 0 ->
-              # TODO lookahead; ignore for now
-              {hand_calls, keywords, waits_complement}
+        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], all_tiles} do
+          {keywords, []}               -> {keywords, []}
+          {keywords, waits_complement} -> case last_match_definition_elem do
+            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement}
+            [_groups, num] when num <= 0 -> {keywords, waits_complement} # ignore lookaheads
             [groups, num] ->
-              # must remove groups num-1 times no matter what
+              # first remove all other groups
+              hand_calls = [{hand, calls}]
+              remaining_match_definition = List.delete_at(match_definition, i)
+              hand_calls = Enum.flat_map(hand_calls, fn {hand, calls} ->
+                remove_match_definition(hand, calls, remaining_match_definition, ordering, ordering_r, tile_aliases)
+              end)
+              |> Enum.uniq()
+
+              # then remove groups num-1 times no matter what
               # num_hand_calls = length(hand_calls)
               hand_calls = if num > 1 do
                 Enum.flat_map(hand_calls, fn {hand, calls} ->
                   remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], ordering, ordering_r, tile_aliases)
-                  |> Enum.uniq()
                 end)
+                |> Enum.uniq()
               else hand_calls end
 
               # try to remove the last one
+              final_match_definition = keywords ++ [[groups, 1]]
               {hand_calls_success, hand_calls_failure} = Enum.map(hand_calls, fn {hand, calls} ->
-                case remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], ordering, ordering_r, tile_aliases) do
+                case remove_match_definition(hand, calls, final_match_definition, ordering, ordering_r, tile_aliases) do
                   []         -> {[], [{hand, calls}]} # failure
                   hand_calls -> {hand_calls, []} # success (new hand_calls)
                 end
@@ -665,20 +672,22 @@ defmodule RiichiAdvanced.Riichi do
               |> Enum.unzip()
               hand_calls_success = Enum.concat(hand_calls_success)
               hand_calls_failure = Enum.concat(hand_calls_failure)
-              # IO.puts("#{inspect(keywords)} #{inspect(match_definition_elem)}: #{num_hand_calls} tries (#{length(hand_calls)} after filtering), #{length(hand_calls_success)} successes, #{length(hand_calls_failure)} failures")
+              # IO.puts("#{inspect(keywords)} #{inspect(last_match_definition_elem)}: #{num_hand_calls} tries (#{length(hand_calls)} after filtering), #{length(hand_calls_success)} successes, #{length(hand_calls_failure)} failures")
+              # IO.inspect(hand_calls_success, label: "hand_calls_success")
+              # IO.inspect(hand_calls_failure, label: "hand_calls_failure")
 
               # waits_complement = all waits that don't help
               # remove waits that do help
-              remaining_match_defn = keywords ++ [[groups, 1]] ++ Enum.drop(match_definition, i+1)
-              waits_complement = Enum.reject(waits_complement, fn wait ->
-                Enum.any?(hand_calls_failure, fn {hand, calls} ->
-                  match_hand([wait | hand], calls, [remaining_match_defn], ordering, ordering_r, tile_aliases)
+              waits_complement = if Enum.empty?(hand_calls_success) do
+                Enum.reject(waits_complement, fn wait ->
+                  Enum.any?(hand_calls_failure, fn {hand, calls} ->
+                    match_hand([wait | hand], calls, [final_match_definition], ordering, ordering_r, tile_aliases)
+                  end)
                 end)
-              end)
+              else all_tiles end
 
-              {hand_calls_success, keywords, waits_complement}
-            keyword when is_binary(keyword) -> {hand_calls, keywords ++ [keyword], waits_complement}
-            _ -> {hand_calls, keywords, waits_complement}
+              {keywords, waits_complement}
+            _ -> {keywords, waits_complement}
           end
         end
         # TODO maybe instead of taking union of differences, take the difference of intersection
@@ -804,7 +813,7 @@ defmodule RiichiAdvanced.Riichi do
       # filter out lookaheads from match definition
       match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
       # add exhaustive unless unique
-      if "unique" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+      if "unique" not in match_definition && "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
     end
 
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
