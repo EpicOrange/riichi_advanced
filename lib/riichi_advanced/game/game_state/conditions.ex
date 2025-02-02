@@ -410,7 +410,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         hand = cxt_player.hand
         calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
-        length(waits) >= number
+        MapSet.size(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
         win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
@@ -420,7 +420,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         hand = cxt_player.hand
         calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
-        length(waits) <= number
+        MapSet.size(waits) <= number
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
