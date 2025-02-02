@@ -4,7 +4,7 @@ defmodule Player do
     score: 0,
     start_score: 0, # for logging purposes
     nickname: nil,
-    # working
+    # working (reset every round)
     hand: [],
     draw: [],
     pond: [],
@@ -18,6 +18,8 @@ defmodule Player do
     call_name: "",
     tile_mappings: %{},
     tile_aliases: %{},
+    saved_tile_mappings: %{},
+    saved_tile_aliases: %{},
     tile_ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
                      :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
                      :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s"},

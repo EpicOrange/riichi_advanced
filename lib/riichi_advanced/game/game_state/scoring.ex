@@ -222,7 +222,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       # assumes 3-player
       han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
       {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
-      IO.inspect({score, ko_payment, oya_payment})
       if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
     else score end
 
@@ -687,7 +686,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # do nagashi payments
         # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
         # TODO refactor to calculate the delta scores first, then apply it to the state
-        IO.inspect(nagashi, label: "asdf1")
         [pay_ko, pay_oya] = draw_nagashi_payments
         scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
         state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do

@@ -479,6 +479,8 @@ Other:
 - `["set_tile_alias", from, to]`: Assigns all tiles in `from` to tiles in `to` for the current player. Basically if `from` is a single tile, then that tile becomes a joker whose possible values are the tiles in `to`, and this only applies to the current player.
 - `["set_tile_alias_all", from, to]`: Same, but applies this assignment to all players.
 - `["clear_tile_aliases"]`: Clears all joker assignments for the current player.
+- `["save_tile_aliases", label]`: Saves all joker assignments under the name `label` for the current player, which defaults to `"default"` when not supplied.
+- `["load_tile_aliases", label]`: Loads all joker assignments under the name `label` for the current player, which defaults to `"default"` when not supplied.
 - `["set_tile_ordering", [tile1, tile2, ...]]`: Asserts that `tile1` comes after `tile2` and so on. Applies only to the current player.
 - `["set_tile_ordering_all", [tile1, tile2, ...]]`: Same, but applies this assertion to all players.
 - `["add_attr", [target1, ...], [attr1, ...], [tile_spec1...]]`: Add the given attributes to the given targets that match all given tile specs.

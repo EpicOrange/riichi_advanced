@@ -9,7 +9,7 @@
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."}
   ],
   "display_name": "Sichuan Bloody",
-  "tutorial_link": "https://mahjongsoft.com/files/SBR_ENG_part_1.pdf",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sichuan.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",

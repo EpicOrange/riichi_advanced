@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "galaxy" => %{
       display_name: "Galaxy Mahjong",
-      tutorial_link: "https://www.youtube.com/watch?v=IDaKM7eU7zE",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
       ruleset: "riichi",
       mods: [],
       default_mods: ["galaxy"],
@@ -127,6 +127,10 @@ defmodule RiichiAdvanced.ModLoader do
 
   @default_config """
   {
+    // this is for advanced users!
+    // this JSON gets merged into the existing ruleset (after applying mods)
+    // the below is helpful to test out yaku and stuff
+
     // "starting_hand": {
     //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
     // },

@@ -619,7 +619,7 @@
       "call": [[0, 0, 0]],
       "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
       "call_conditions": [[
-        {"name": "not_status", "opts": ["riichi"]},
+        {"name": "status_missing", "opts": ["riichi"]},
         {"name": "not_call_changes_waits", "opts": ["win"]}
       ]],
       "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}, "self_call_available"],
@@ -661,8 +661,8 @@
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-        {"name": "not_status", "opts": ["furiten"]},
-        {"name": "not_status", "opts": ["just_reached"]},
+        {"name": "status_missing", "opts": ["furiten"]},
+        {"name": "status_missing", "opts": ["just_reached"]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
@@ -675,8 +675,8 @@
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-        {"name": "not_status", "opts": ["furiten"]},
-        {"name": "not_status", "opts": ["just_reached"]},
+        {"name": "status_missing", "opts": ["furiten"]},
+        {"name": "status_missing", "opts": ["just_reached"]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
@@ -698,7 +698,7 @@
         "our_turn",
         "has_draw",
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-        {"name": "not_status", "opts": ["just_reached"]},
+        {"name": "status_missing", "opts": ["just_reached"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
         [{"name": "has_yaku_with_hand", "opts": [1]}, {"name": "has_yaku2_with_hand", "opts": [1]}]
       ],
