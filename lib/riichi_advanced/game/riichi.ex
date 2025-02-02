@@ -361,7 +361,7 @@ defmodule RiichiAdvanced.Riichi do
                     if consumes_call || consumes_match do
                       n = length(joker) 
                       to_remove = pairing |> Map.keys() |> Enum.take(to_remove_num)
-                      {from_joker, from_nojoker} = to_remove |> Enum.sort(:desc) |> Enum.split_while(fn i -> i >= n end)
+                      {from_joker, from_nojoker} = to_remove |> Enum.sort(:desc) |> Enum.split_while(fn i -> i < n end)
                       nojoker = for i <- from_nojoker, reduce: nojoker do nojoker -> List.delete_at(nojoker, i - n) end
                       joker   = for i <- from_joker,   reduce: joker   do joker   -> List.delete_at(joker,   i    ) end
                       ret = if is_hand do # is hand, so we keep all unmatched tiles
