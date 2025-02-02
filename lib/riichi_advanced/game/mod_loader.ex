@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "galaxy" => %{
       display_name: "Galaxy Mahjong",
-      tutorial_link: "https://www.youtube.com/watch?v=IDaKM7eU7zE",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
       ruleset: "riichi",
       mods: [],
       default_mods: ["galaxy"],
