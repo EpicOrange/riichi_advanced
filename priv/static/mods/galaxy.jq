@@ -172,4 +172,10 @@ else . end
 # ankans are displayed all-face-up
 .buttons.ankan.call_style = {"self": [0, 1, 2, 3]}
 |
+# before win, add a counter for how many galaxy tiles are used in natural melds. this will be piped to `/shuugi.jq` if the shuugi mod is turned on.
+# actually, how do I check if a galaxy tile is used in a natural meld???
+#.before_win.actions += [
+#      ["add_counter", "galaxy_natural_jokers", "count_matches", ["hand", "calls", "draw", "last_discard"], ["any_joker"]]
+#  ]
+#|
 .win_timer = 20
