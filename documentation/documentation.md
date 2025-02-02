@@ -313,18 +313,24 @@ That's about it for match specifications.
 
 Here are all the toplevel keys. Every key is optional.
 
-Events
-
+- `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
+- `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
+- `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
 - `after_start`: Triggers at the start of each round. Context: `seat` is the current seat (so, east).
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
+- `after_win`: Triggers at the end of a win, after yaku is calculated.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
 - `before_call`: Triggers at the start of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
+- `before_conclusion`: Triggers at the end of a game (right before the end scores are shown).
+- `before_continue`: Triggers before the game continues, after someone wins in a bloody end game.
 - `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
+- `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
-- `before_win`: Triggers before a win is called. Context: `seat` is the seat who called the win.
+- `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.
+- `on_no_valid_tiles`: Triggers on someone's turn if they cannot discard any tiles.
 - `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. Context: `seat` is the seat who played a tile, and `tile` is the played tile.
 
 Buttons:
@@ -377,7 +383,9 @@ Other:
 
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
 - `["push_message", message]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`
-- `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall.
+- `["push_system_message", message]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
+- `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
+- `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.
 - `["self_call"]`: For self call buttons only, like ankan. Triggers the self call.
 - `["upgrade_call"]`: For upgrade call buttons only, like kakan. Triggers the upgrade call.
@@ -395,52 +403,114 @@ Other:
 - `["unset_status", status1, status2, ...]`: Remove from the set of statuses for the current player.
 - `["set_status_all", status1, status2, ...]`: Add to the set of statuses for all players.
 - `["unset_status_all", status1, status2, ...]`: Remove from the set of statuses for all players.
-- `["set_callee_status", status1, status2, ...]`: Only usable in the `after_call` event. Set statuses for the player called from.
-- `["unset_callee_status", status1, status2, ...]`: Only usable in the `after_call` event. Unset statuses for the player called from.
-- `["set_caller_status", status1, status2, ...]`: Only usable in the `after_call` event. Set statuses for the player doing the call.
-- `["unset_caller_status", status1, status2, ...]`: Only usable in the `after_call` event. Unset statuses for the player doing the call.
+- `["set_counter", counter_name, amount or spec, ...opts]`: Set the current player's counter `counter_name` to the given `amount`, which is either a number or one of the following strings followed by some options:
+  + the name of an existing counter
+  + `"count_matches", to_match, [match_spec1, match_spec2, ...]`: Counts the number of times the given `match_spec`s matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
+  + `"count_matching_ways", to_match, [match_spec1, match_spec2, ...]`: When `to_match` describes multiple sets of tiles (e.g. `hand_any` describes multiple single-tile hands, one for each tile in hand) then `"count_matching_ways"` counts how many of these hands match at least one of the given match specs. Used in Sakicards for Ueshige Suzu's ability, in order to count how many hand tiles match aside tiles.
+  + `"tiles_in_wall"`: Gives the number of tiles remaining in the wall.
+  + `"num_discards"`: Gives the number of discards made by the current player (includes called tiles).
+  + `"num_aside"`: Gives the number of aside tiles for the current player.
+  + `"num_facedown_tiles"`: Gives the number of facedown tiles in the current player's pond.
+  + `"num_facedown_tiles_others"`: Gives the number of facedown tiles in other players' ponds.
+  + `"num_matching_revealed_tiles_all", tile_spec1, tile_spec2, ...`: Looks at the every player's hand and counts the number of tiles they have revealed matching the given `tile_spec`s.
+  + `"num_matching_melded_tiles_all", tile_spec1, tile_spec2, ...`: Looks at the every player's visible calls and counts the number of those tiles matching the given `tile_spec`s.
+  + `"half_score"`: Half of the current player's score, rounded up.
+  + `"count_draws", seat`: The number of draws the given `seat` has.
+  + `"count_dora", dora_indicator`: Counts the number of dora in the current player's hand and calls, given the `dora_indicator`. This uses the toplevel `"dora_indicators"` key to determine the mapping of dora indicator to dora.
+  + `"count_reverse_dora", dora_indicator`: Counts the number of reverse dora in the current player's hand and calls, given the `dora_indicator`. This uses the toplevel `"reverse_dora_indicators"` key to determine the mapping of dora indicator to reverse dora.
+  + `"pot"`: The number of points in the pot.
+  + `"honba"`: The number of honba (repeats) for the current round.
+  + `"fu"`: Only usable in `before_win`. Calculates fu for the winning hand.
+- `["set_counter_all", counter_name, amount or spec, ...opts]`: Same as `set_counter`, but calculates the amount once and sets every player's `counter_name`. Right now this is the only way to pass counters between players.
+- `["add_counter", counter_name, amount or spec, ...opts]`: Same as `set_counter`, but adds to the existing counter instead. For nonexistent counters this is the same as `set_counter` since nonexistent counters are considered to be at zero.
+- `["subtract_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but subtracts.
+- `["multiply_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but multiplies.
+- `["divide_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
+- `["set_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
 - `["big_text", text, seat]`: Popup big text for the current player, or the given seat if `seat` is specified. Allowed values of `seat` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`
 - `["pause", ms]`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
 - `["sort_hand"]`: Sort the current player's hand.
 - `["reveal_tile", tile]`: Show a given tile above the game for the remainder of the round.
 - `["add_score", amount, recipients]`: Add to the score for the current player, or for the `recipients` if specified. Allowed values for `recipients` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`, `"all"`, `"others"`
-- `["put_down_riichi_stick", num]`: Makes the current player put down a riichi stick, or `num` riichi sticks if specified. Adds to the pot, but does not change their score.
+- `["subtract_score", amount, recipients]`: Same as `add_score`, but subtracts it.
+- `["put_down_riichi_stick", num]`: Makes the current player put down a riichi stick, or `num` riichi sticks if specified. Adds the value of a riichi stick to the pot, but does not change the player's score (use `"subtract_score"` for that).
 - `["add_honba", num]`: Adds the given number of honba. (default 1)
 - `["reveal_hand"]`: Shows the current player's hand to everyone for the remainder of the round.
+- `["reveal_other_hands"]`: Same as `"reveal_hand"` but for everyone except the current player.
 - `["discard_draw"]`: Discards the current player's draw. Useful as an auto button.
-- `["press_button", button_id]`: Press a given button by id, does nothing if the button doesn't exist. Useful as an auto button.
-- `["random", [action1, action2, ...]]`: Run one of the given actions at random.
+- `["press_button", button_id]`: Press a given button by id, does nothing if the button doesn't exist. Useful for auto buttons.
+- `["press_first_call_button", button_id]`: Press the first call button visible after pressing `button_id`. Does nothing if the options displayed are for another `button_id`. Useful for auto buttons.
 - `["when", cond, actions]`: If `cond` evaluates to true, run the given actions.
 - `["unless", cond, actions]`: If `cond` evaluates to false, run the given actions.
 - `["ite", cond, actions1, actions2]`: If `cond` evaluates to true, run `actions1`, otherwise run `actions2`.
-- `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player.
-- `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player.
+- `["as", seats_spec, actions]`: Sets the `seat` to the given `seats_spec` and runs the actions. If you specify multiple seats, it will run the given actions multiple times (once for each seat). Allowed `seats_spec` values:
+  + `"east"`, `"south"`, `"west"`, `"north"`: Selects that seat.
+  + `"self"`, `"shimocha"`, `"toimen"`, `"kamicha"`: Selects the seat relative to the current seat.
+  + `"last_discarder"`: Selects the last seat that discarded.
+  + `"caller"`: Selects the caller, the player receiving the called tile (usable in call buttons only).
+  + `"callee"`: Selects the callee, the player giving the called tile (usable in call buttons only).
+  + `"all"`, `"everyone"`: Selects every seat.
+  + `"others"`: Selects every seat except the current seat.
+  + `"chii_victims"`: Selects all players for which the current seat has chiis from. (This is implemented and used solely in Sakicards, specifically for Maya Yukiko's second ability)
+- `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player. (This changes `seat` in the context.)
+- `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player. (This does not change `seat` in the context.)
+- `["when_others", cond, actions]`: If `cond` evaluates to true for every player except the current player, run the given actions for the current player. (This does not change `seat` in the context.)
+- `["mark", mark_spec, pre_mark_actions, post_mark_actions]`: First runs the optional `pre_mark_actions` before asking the player to mark a tile. Like `"call"`, this happens before any of the actions in the current action list, so it doesn't matter where you put the mark action. For examples of `mark_spec` look at example usages in the `saki.json` ruleset. The optional `post_mark_actions` are run immediately after mark, though admittedly there is little use for this since you can just write actions that occur after marking.
+- `["move_tiles", src, dst]`: Moves tiles from `src` to `dst`. Both `src` and `dst` can be either a string, like `"hand"`, or an object specifying additional restrictions, like `{"hand": ["marked"]}`. In general it's `{target1: [restrictions], target2: [restrictions], ...}` for both `src` and `dst`. You may supply multiple `src` targets, but only one `dst` target.
+  + Here are all the possible values for `target`:
+    * `"hand"`: Selects your entire hand, including the draw.
+    * `"draw"`: Selects your draw only.
+    * `"aside"`: Selects your aside tiles.
+    * `"calls"`: Selects every call you've called (not flowers).
+    * `"discard"`: Selects all of your discards.
+    * `"revealed_tile"`: Selects all revealed tiles (e.g. dora indicators). (Cannot be used for `dst`.)
+    * `"scry"`: Selects all scryed tiles. (Cannot be used for `dst`.)
+  + Here are the possible values for `restrictions`:
+    * `"marked"`: Filters for only marked tiles.
+    * `"1m"`, `"2p"`, etc: Filters for that specific tile.
+    * In general, any restriction usable in `play_restrictions` is available for use.
+- `["swap_tiles", src, dst]`: Same as `"move_tiles"` except `src` and `dst` get swapped. You may use `"revealed_tile"` and `"scry"` for `dst`, as well as multiple `dst` targets. They will be matched one-to-one in order when swapping: for example, if you select (for `src`) A,B,C from hand, and (for `dst`) D from draw and E,F from aside, then A swaps with D, B swaps with E, and C swaps with F. If the two sides are imbalanced, the excess will go to the first target on the opposite side; for example, if you select (for `src`) A,B,C from hand, and (for `dst`) D from draw, then after A swaps with D, it will move B,C to the draw as well.
+- `["swap_out_fly_joker", joker]`: Before running this action, you need to mark a tile in hand as well as any call containing the given `joker` tile (e.g. `"1j"`). This swaps the tile in hand with the joker inside the call, as is done in the American and Malaysian variants.
+- `["extend_live_wall_with_marked"]`: Add all marked hand tiles to the end of the live wall. Must be preceded by a `"mark"` action that marks a hand tile.
+- `["extend_dead_wall_with_marked"]`: Add all marked hand tiles to the end of the dead wall. Must be preceded by a `"mark"` action that marks a hand tile.
+- `["pon_marked_discard"]`: Calls pon on the marked discard. Must be preceded by a `"mark"` action that marks a discard.
+- `["flip_marked_discard_facedown"]`: Flips the first marked discard upside down. Must be preceded by a `"mark"` action that marks a discard.
+- `["clear_marking"]`: Clears a marking action. All of the above marking actions do this automatically, except for `move_tiles` and `swap_tiles`. If you run `move_tiles` and `swap_tiles` for marked tiles, make sure to run this action to clear the marking.
 - `["set_tile_alias", from, to]`: Assigns all tiles in `from` to tiles in `to` for the current player. Basically if `from` is a single tile, then that tile becomes a joker whose possible values are the tiles in `to`, and this only applies to the current player.
 - `["set_tile_alias_all", from, to]`: Same, but applies this assignment to all players.
 - `["clear_tile_aliases"]`: Clears all joker assignments for the current player.
+- `["save_tile_aliases", label]`: Saves all joker assignments under the name `label` for the current player, which defaults to `"default"` when not supplied.
+- `["load_tile_aliases", label]`: Loads all joker assignments under the name `label` for the current player, which defaults to `"default"` when not supplied.
 - `["set_tile_ordering", [tile1, tile2, ...]]`: Asserts that `tile1` comes after `tile2` and so on. Applies only to the current player.
 - `["set_tile_ordering_all", [tile1, tile2, ...]]`: Same, but applies this assertion to all players.
-- `["tag_drawn_tile", tag_name]`: Globally tag the current player's drawn tile with the given tag name.
-- `["untag", tag_name]`: Untag all tiles tagged with the given tag name.
-- `["convert_last_discard", tile]`: Turn the last discard into the given tile.
-- `["set_aside_draw"]`: Set aside the drawn tile.
-- `["draw_from_aside"]`: Draw a tile from the tiles set aside.
-- `["shift_tile_to_dead_wall", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
-- `["add_counter", counter_name, amount or spec, ...opts]`: Add `amount` to the current player's counter `counter_name`. In place of `amount` you can also put one of the following strings followed by some options:
-  + `"count_matches", to_match, [match_spec1, match_spec2, ...]` Counts the number of times the given match specs matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
 - `["add_attr", [target1, ...], [attr1, ...], [tile_spec1...]]`: Add the given attributes to the given targets that match all given tile specs.
+- `["add_attr_first_tile", tile, [attr1, ...]]`: Add the given attributes to the first instance of the given tile in hand.
 - `["remove_attr_hand", attr1, attr2, ...]`: Remove the given attributes from all tiles in the current player's hand.
 - `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
-- `["mark", mark_spec, pre_mark_actions]`: First runs the `pre_mark_actions` before asking the player to mark a tile. Like `"call"` this happens before any of the actions in the current action list, so it doesn't matter where you put the mark action. For examples of `mark_spec` look at example usages in the `saki.json` ruleset.
-- `["swap_marked_hand_and_discard"]` Swap the first marked hand tile with the first marked discard tile. Must be preceded by a `"mark"` action that marks a hand tile and a discard tile.
-- `["extend_live_wall_with_marked"]` Add all marked hand tiles to the end of the live wall. Must be preceded by a `"mark"` action that marks a hand tile.
-- `["extend_dead_wall_with_marked"]` Add all marked hand tiles to the end of the dead wall. Must be preceded by a `"mark"` action that marks a hand tile.
-- `["set_aside_marked"]` Set aside the marked discard. Must be preceded by a `"mark"` action that marks a discard.
-- `["pon_marked_discard"]` Calls pon on the marked discard. Must be preceded by a `"mark"` action that marks a discard.
-- `["swap_marked_with_aside"]`: Swap the first marked hand tile with the first aside tile. Must be preceded by a `"mark"` action that marks a hand tile.
+- `["tag_drawn_tile", tag_name]`: Globally tag the current player's drawn tile with the given tag name.
+- `["tag_last_discard", tag_name]`: Globally tag the current player's last discard with the given tag name.
+- `["untag", tag_name]`: Untag all tiles tagged with the given tag name.
+- `["convert_last_discard", tile]`: Turn the last discard into the given tile.
+- `["flip_all_calls_faceup"]`: Flip all draws faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.
+- `["draw_from_aside"]`: Draw a tile from the tiles set aside. This action will be removed in the future in favor of `"move_tiles"`.
 - `["charleston_left"]`: Select and pass three tiles left. Must be preceded by a `"mark"` action that marks 3 hand tiles.
 - `["charleston_across"]`: Select and pass three tiles across. Must be preceded by a `"mark"` action that marks 3 hand tiles.
 - `["charleston_right"]`: Select and pass three tiles right. Must be preceded by a `"mark"` action that marks 3 hand tiles.
+- `["shift_tile_to_dead_wall", num]`: Add `num` tiles to the dead wall from the live wall. (The haitei tile becomes a dead wall tile.)
+- `["recalculate_buttons"]`: Buttons are recalculated at the start of a round as well as before every interruptible action defined in the `"interruptible_actions"` toplevel key. This action is an alternative way to recalculate buttons. Note that buttons are simultaneously calculated for everyone.
+- `["draw_last_discard"]`: Draw your last discard. This action will be removed in the future in favor of `"move_tiles"`.
+- `["scry", num]`: Reveal the next `num` tiles in wall to the current player. This will show up as a line of tiles above your hand.
+- `["scry_all", num]`: Reveal the next `num` tiles in wall to all players. This will also print a message to the room describing what is happening.
+- `["clear_scry"]`: Hide the tiles revealed by `"scry"`.
+- `["choose_yaku"]`: Bring up a UI that allows you to select a subset of every yaku in the current ruleset. This is used in conjunction with the conditions `"has_declared_yaku_with_hand"` etc. to ensure that the current player has their selected yaku. This action is used in Sakicards for Shimizudani Ryuuka's third ability.
+- `["disable_saki_card", seat_spec]`: Disable all sakicards for the given seat.
+- `["enable_saki_card", seat_spec]`: Enable all sakicards for the given seat.
+- `["save_revealed_tiles"]`: Save the current state of the revealed tiles (e.g. dora indicators).
+- `["load_revealed_tiles"]`: Load the previously saved state of the revealed tiles (e.g. dora indicators).
+- `["merge_draw"]`: Move the draw into the hand. This action will be removed in the future in favor of `"move_tiles"`.
+- `["delete_tiles", tile1, tile2, ...]`: Delete every instance of the given tiles from the current player's hand/draw.
+- `["pass_draws", seat_spec, num]`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
+- `["saki_start"]`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
 
 Every unrecognized action is a no-op.
 

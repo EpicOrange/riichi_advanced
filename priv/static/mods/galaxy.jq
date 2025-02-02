@@ -138,3 +138,5 @@ if any(.wall[]; . == "10m") then
     }
   else . end
 else . end
+|
+.win_timer = 20

@@ -1,9 +1,24 @@
 {
+    // TODO SUMMARY (2025-01-31): 
+    // * Implement the various Pao rules.
+    // * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
+    // * Three Lesser Scholars isn't scored for some reason?
+    // * Apparently chankan isn't working. Unclear whether this is `singapore.json`-specific or whether it's global to all variants.
+    // * Check whether all bugs below still exist. If yes, fix.
+    // POTENTIAL BUGS TO CHECK FOR:
+    // * [Should be fixed; see commits 3ee4b60, 96c5e56, and 1c4f01a] Flower replacement can't be discarded normally for some reason. Dunno why.
+    // * [FIXED, I think] Apparently Ping Hu requires multiple waits, EXCEPT if it's a win by self-draw, EXCEPT that Ping Hu cannot be awarded for fully-melded hands (even if self-drawn).
+    // * [FIXED, I think] Apparently Ping Hu also can't have the pair be yakuhai.
+    // * [FIXED, I think] Apparently 111m999m111p11s33z, won on discarded 3m, was scored for Thirteen Orphans and Hidden Treasure.
+    // * [FIXED, I think] East should have the option to ankan on their starting turn, but currently doesn't? [This is because ankans are only allowed when we have a draw, but we merge our draw into our hand after declaring "No Flowers".]
+    // * [FIXED, I think] Heavenly Hand is apparently scored wrong (can be scored after call(s), can be scored by someone other than East).
+    // * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments. 
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "Singaporean",
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-singaporean-mahjong",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -71,16 +86,16 @@
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "iishanten_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "ryanshanten_definition": [
@@ -89,8 +104,8 @@
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 10],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "sanshanten_definition": [
@@ -100,21 +115,21 @@
     [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 9],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "suuankou_tsumo_definition": [
@@ -125,7 +140,6 @@
   ],
   "cat_and_mouse_definition": [[ "unique", [["1a","2a"], 2] ]],
   "chicken_and_centipede_definition": [[ "unique", [["3a","4a"], 2] ]],
-  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
   "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
   "all_animals_definition": [[ "unique", [["1a","2a","3a","4a"], 4] ]],
@@ -137,12 +151,27 @@
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "any_flower_definition": [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a"], 1] ]],
   "yaku": [
-    // Flowers
-    // {
-    //   "display_name": "No Flowers",
-    //   "value": 1,
-    //   "when": [] // removed by yaku_precedence if any of the below flowers match
-    // },
+      // 1 tai
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["1a"], 1]]]]}]
+    },
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["2a"], 1]]]]}]
+    },
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["3a"], 1]]]]}]
+    },
+    {
+      "display_name": "Animal Tiles",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["flowers"], [[[["4a"], 1]]]]}]
+    },
     {
       "display_name": "Seat Flower",
       "value": 1,
@@ -184,108 +213,6 @@
       "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
     },
     {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["1a"], 1]]]]}]
-    },
-    {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["2a"], 1]]]]}]
-    },
-    {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["3a"], 1]]]]}]
-    },
-    {
-      "display_name": "Animal Tiles",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["4a"], 1]]]]}]
-    },
-    {
-      "display_name": "All Flowers",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], ["all_flowers"]]}]
-    },
-    {
-      "display_name": "All Seasons",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], ["all_seasons"]]}]
-    },
-    {
-      "display_name": "All Animals",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["calls"], ["all_animals"]]}]
-    },
-    {
-      "display_name": "Seven Flowers",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls"], ["7_flowers"]]}]
-    },
-    {
-      "display_name": "Eight Flowers",
-      "value": 5,
-      "when": [{"name": "match", "opts": [["hand", "calls"], ["8_flowers"]]}]
-    },
-    // Winning methods
-    // {
-    //   "display_name": "Self Draw",
-    //   "value": 1,
-    //   "when": ["won_by_draw"]
-    // },
-      // Note that Fully Concealed Hand also requires a win by self-draw. (Otherwise it's just Concealed Hand.)
-    {
-      "display_name": "Fully Concealed Hand",
-      "value": 1,
-      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, "won_by_draw"]
-    },
-    {
-      "display_name": "Final Tile",
-      "value": 1,
-      "when": ["no_tiles_remaining"]
-    },
-    {
-      "display_name": "After a Flower",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["flower"]}]
-    },
-    {
-      "display_name": "After a Kong",
-      "value": 1,
-      "when": [{"name": "status", "opts": ["kan"]}]
-    },
-    // {
-    //   "display_name": "After Multiple Kongs",
-    //   "value": 8,
-    //   "when": [{"name": "status", "opts": ["double_kan"]}]
-    // },
-    {
-      "display_name": "Robbing a Kong",
-      "value": 1,
-      "when": ["won_by_call"]
-    },
-    // Suit-based hands
-    {
-      "display_name": "Half Color Game",
-      "value": 2,
-      "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
-        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
-      ]]
-    },
-    {
-      "display_name": "Full Color Game",
-      "value": 4,
-      "when": [[
-        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
-        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
-        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
-      ]]
-    },
-    // Honor tiles
-    {
       "display_name": "White Dragon",
       "value": 1,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
@@ -321,88 +248,153 @@
       ]]
     },
     {
+      "display_name": "Little Ping Hu",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand"], [["any"], 2]]},
+        {"name": "wait_count_at_least", "opts": [2, ["win"]]},
+        [
+          [{"name": "seat_is", "opts": ["east"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["ton_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["south"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["nan_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["west"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["north"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}]
+        ]
+      ]
+    },
+    {
+      "display_name": "Fully Concealed Hand",
+      "value": 1,
+      "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, "won_by_draw"]
+    },
+    {
+      "display_name": "Final Tile",
+      "value": 1,
+      "when": ["no_tiles_remaining"]
+    },
+    {
+      "display_name": "After a Flower",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["flower"]}]
+    },
+    {
+      "display_name": "After a Kong",
+      "value": 1,
+      "when": [{"name": "status", "opts": ["kan"]}]
+    },
+    {
+      "display_name": "Robbing a Kong",
+      "value": 1,
+      "when": ["won_by_call"]
+    },
+      // 2 tai
+    {
+      "display_name": "All Flowers",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["calls"], ["all_flowers"]]}]
+    },
+    {
+      "display_name": "All Seasons",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["calls"], ["all_seasons"]]}]
+    },
+    {
+      "display_name": "Half Flush",
+      "value": 2,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
+      ]]
+    },
+    {
+      "display_name": "All Pungs",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
+    },
+      // 3 tai
+    {
       "display_name": "Three Lesser Scholars",
       "value": 3,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}]
     },
+      // 4 tai
     {
-      "display_name": "Three Great Scholars",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
+      "display_name": "Full Flush",
+      "value": 4,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]]
+    },
+    {
+      "display_name": "Big Ping Hu",
+      "value": 4,
+      "when": [
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand"], [["any"], 2]]},
+        {"name": "wait_count_at_least", "opts": [2, ["win"]]},
+        {"name": "counter_at_most", "opts": ["flowers", 0]},
+        [
+          [{"name": "seat_is", "opts": ["east"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["ton_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["south"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["nan_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["west"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}],
+          [{"name": "seat_is", "opts": ["north"]}, {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1]]]]}]
+        ]
+      ]
+    },
+    {
+      "display_name": "All Terminals Or Honors",
+      "value": 4,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
     },
     {
       "display_name": "Four Lesser Blessings",
       "value": 4,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}]
     },
+      // 5 tai (limit)
     {
-      "display_name": "Four Great Blessings",
-      "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
+      "display_name": "Seven Flowers",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls"], ["7_flowers"]]}]
+    },
+    {
+      "display_name": "Eight Flowers",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["hand", "calls"], ["8_flowers"]]}]
+    },
+    {
+      "display_name": "All Animals",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["calls"], ["all_animals"]]}]
     },
     {
       "display_name": "All Honors",
       "value": 5,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}]
     },
-    // Triplet hands
     {
-      "display_name": "Triplets Hand",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
-    },
-    {
-      "display_name": "All Pong Game",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["calls"], [[[["koutsu"], 4]]]]}]
-    },
-    {
-      "display_name": "Hidden Treasure",
-      "value": 5,
-      "when": [[
-        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
-        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
-      ]]
-    },
-    {
-      "display_name": "Half 1s and 9s Game",
-      "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
-    },
-    {
-      "display_name": "All 1s and 9s Game",
+      "display_name": "All Terminals",
       "value": 5,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
     },
+      // Hidden Treasure has to be self-drawn, unlike normal Four Concealed Triplets.
     {
-      "display_name": "Eighteen Arhats",
+      "display_name": "Hidden Treasure",
       "value": 5,
-      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
-    },
-    // Sequence hands
-    {
-      "display_name": "Sequence Hand",
-      "value": 4,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}, "won_by_draw"]
     },
     {
-      "display_name": "All Chow Game",
-      "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]}]
-    },
-    {
-      "display_name": "Ping Hu",
-      "value": 4,
-      "when": [
-        {"name": "match", "opts": [["calls"], [[[["shuntsu"], 4]]]]},
-        {"name": "counter_at_most", "opts": ["flowers", 0]}
-      ]
-    },
-    // Others
-    {
-      "display_name": "Thirteen Wonders",
+      "display_name": "Thirteen Orphans",
       "value": 5,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
+    },
+    {
+      "display_name": "All Green",
+      "value": 4,
+      "when": [{"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","6s","8s","6z"]}]
     },
     {
       "display_name": "Nine Gates",
@@ -410,44 +402,50 @@
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
     },
     {
-      "display_name": "Pure Green Suit",
-      "value": 4,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","6s","8s","6z"]}]
+      "display_name": "Eighteen Arhats",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
+    },
+    {
+      "display_name": "Kong On Kong",
+      "value": 5,
+      "when": [{"name": "status", "opts": ["double_kan"]}]
     },
     {
       "display_name": "Heavenly Hand",
       "value": 5,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"]
+      "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
     },
     {
       "display_name": "Earthly Hand",
       "value": 5,
-      "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"]
+      "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}]
+    },
+      // 10 tai (double limit)
+    {
+      "display_name": "Three Great Scholars",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
     },
     {
-      "display_name": "Humanly Hand",
-      "value": 5,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"]
+      "display_name": "Four Great Blessings",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
     }
   ],
   "yaku_precedence": {
-    // "Seat Flower": ["No Flowers"],
-    // "Seat Season": ["No Flowers"],
-    // "Animal Tiles": ["No Flowers"],
-    "All Flowers": ["Seat Flower"],
-    "All Seasons": ["Seat Season"],
     "All Animals": ["Animal Tiles"],
-    "Seven Flowers": ["All Flowers", "All Seasons"],
-    "Eight Flowers": ["Seven Flowers"],
-    "Full Color Game": ["Half Color Game"],
-    "Ping Hu": ["All Chow Game"],
+    "Big Ping Hu": ["Little Ping Hu"],
     "Three Lesser Scholars": ["White Dragon", "Green Dragon", "Red Dragon"],
-    "Three Great Scholars": ["Three Lesser Scholars"],
-    "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind"],
-    "Four Great Blessings": ["Four Lesser Blessings"],
-    "Earthly Hand": ["Humanly Hand"],
+    "Full Flush": ["Half Flush"],
+    "All Terminals Or Honors": ["White Dragon", "Green Dragon", "Red Dragon", "Prevailing Wind", "Seat Wind"],
+    "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind", "Half Flush"],
+    "Seven Flowers": ["All Flowers", "All Seasons"],
+    "Eight Flowers": ["Seven Flowers", "All Flowers", "All Seasons"],
     "Hidden Treasure": ["Triplets Hand"],
-    "Pure Green Suit": ["Half Color Game", "Full Color Game"]
+    "All Green": ["Half Flush", "Full Flush"],
+    "Three Great Scholars": ["Three Lesser Scholars", "White Dragon", "Green Dragon", "Red Dragon"],
+    "Four Great Blessings": ["Four Lesser Blessings", "Prevailing Wind", "Seat Wind", "Half Flush"]
   },
   "score_calculation": {
     "scoring_method": "score_table",
@@ -460,8 +458,6 @@
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",
-    "win_by_discard_name_2": "Double Hu",
-    "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
@@ -481,19 +477,27 @@
       ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
     ]
   },
+  "before_call": {
+    "actions": [
+        ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status_all", "discards_empty"]]]
+    ]
+  },
   "after_call": {
     "actions": [
       ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
       ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]]
     ]
   },
+  "play_effects": [
+    ["any", [["unset_status", "discards_empty"]]]
+  ],
   "before_win": {
     "actions": [
       ["add_counter", "flowers", "count_matches", ["flowers"], ["any_flower"]]
     ]
   },
   "after_start": {
-    "actions": [["set_status_all", "first_turn", "match_start"]]
+    "actions": [["set_status_all", "first_turn", "match_start", "discards_empty"]]
   },
   "buttons": {
     "start_flower": {
@@ -503,16 +507,20 @@
         ["big_text", "Flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a"],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["cat_and_mouse"]]}], [
+          ["big_text", "Bitten"],
           ["push_message", "is paid 4 from all players for having both the cat and the mouse at game start"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["chicken_and_centipede"]]}], [
+          ["big_text", "Bitten"],
           ["push_message", "is paid 4 from all players for having both the chicken and the centipede at game start"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [[
           [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["call_choice"], [[ [["1f","1g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["1f","1g"], 2] ]]]}],
@@ -520,37 +528,46 @@
           [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["call_choice"], [[ [["3f","3g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["3f","3g"], 2] ]]]}],
           [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["call_choice"], [[ [["4f","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["4f","4g"], 2] ]]]}]
         ]], [
+          ["big_text", "Flower Bitten"],
           ["push_message", "is paid 4 from all players for having both their seat flower and their seat season at game start"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_flowers"]]}], [
+          ["big_text", "All Flowers"],
           ["push_message", "is paid an extra 4 from all players for having all flowers"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_seasons"]]}], [
+          ["big_text", "All Seasons"],
           ["push_message", "is paid an extra 4 from all players for having all seasons"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_animals"]]}], [
+          ["big_text", "All Animals"],
           ["push_message", "is paid an extra 4 from all players for having all animals"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
-        ["draw"]
+        ["draw"],
+        ["recalculate_buttons"]
       ],
       "unskippable": true
     },
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
       "unskippable": true
     },
     "chii": {
@@ -671,16 +688,20 @@
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a"],
         ["set_status", "flower"],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["cat_and_mouse"]]}], [
+          ["big_text", "Bitten"],
           ["push_message", "is paid 2 from all players for having both the cat and the mouse"],
           ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["3a","4a"], 2] ]]]}], [
+          ["big_text", "Bitten"],
           ["push_message", "is paid 2 from all players for having both the chicken and the centipede"],
           ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [[
           [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["call_choice"], [[ [["1f","1g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["1f","1g"], 2] ]]]}],
@@ -688,30 +709,39 @@
           [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["call_choice"], [[ [["3f","3g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["3f","3g"], 2] ]]]}],
           [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["call_choice"], [[ [["4f","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["4f","4g"], 2] ]]]}]
         ]], [
+          ["big_text", "Flower Bitten"],
           ["push_message", "is paid 2 from all players for having both their seat flower and their seat season"],
           ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_flowers"]]}], [
+          ["big_text", "All Flowers"],
           ["push_message", "is paid an extra 4 from all players for having all flowers"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_seasons"]]}], [
+          ["big_text", "All Seasons"],
           ["push_message", "is paid an extra 4 from all players for having all seasons"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_animals"]]}], [
+          ["big_text", "All Animals"],
           ["push_message", "is paid an extra 4 from all players for having all animals"],
           ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
           ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]]
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["pause", 1000]
         ]],
-        ["when", ["not_no_tiles_remaining"], [["draw"]]]
+        ["when", ["not_no_tiles_remaining"], [["draw"]]],
+        ["recalculate_buttons"]
       ]
     }
   },

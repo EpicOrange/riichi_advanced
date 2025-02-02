@@ -1,10 +1,13 @@
 defmodule RiichiAdvancedWeb.LogMenuLive do
+  alias RiichiAdvanced.Constants, as: Constants
   use RiichiAdvancedWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, :messages, [])
-    socket = assign(socket, :log_id, "")
-    socket = assign(socket, :error_message, nil)
+    socket = socket
+    |> assign(:messages, [])
+    |> assign(:log_id, "")
+    |> assign(:error_message, nil)
+    |> assign(:version, Constants.version())
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
@@ -34,6 +37,7 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
         <% end %>
         <button type="submit" class="enter-button">View log</button>
       </form>
+      <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
         <button phx-click="goto_about">About</button>
         <button><a href="https://github.com/EpicOrange/riichi_advanced">Source</a></button>

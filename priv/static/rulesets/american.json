@@ -5,7 +5,12 @@
     {"id": "show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
     {"id": "zombie_blanks", "name": "Zombie Blanks", "desc": "Adds four \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."}
+    {"id": "am_card_ILoveMahj", "conflicts": ["am_card_ATeacherFirst", "BETA_am_card_AMJForEveryone"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
+    {"id": "am_card_ATeacherFirst", "conflicts": ["am_card_ILoveMahj", "BETA_am_card_AMJForEveryone"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
+    {"id": "BETA_am_card_AMJForEveryone", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."}
   ],
+  "display_name": "American",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -475,7 +480,8 @@
       "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_0"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_0"]}],
       "actions": [
         ["unset_status", "final_charleston", "charleston_across_0"],
-        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]]
+        ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]],
+		    ["recalculate_buttons"]
       ],
       "unskippable": true,
       "cancellable": false
@@ -527,7 +533,7 @@
       ],
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["am_pung"]
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
     "2_am_kong": {
       "display_name": "Kong",
@@ -540,7 +546,7 @@
       ],
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["am_pung", "am_kong"]
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
     "3_am_quint": {
       "display_name": "Quint",
@@ -567,7 +573,7 @@
     "mahjong_draw": {
       "display_name": "Mah Jongg",
       "show_when": [
-        {"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", "is_tenpai_american",
+        {"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "our_turn", "has_draw", "is_tenpai_american",
         [
           {"name": "match", "opts": [["hand", "call_tiles", "draw"], ["open_win"]]},
           [
@@ -584,7 +590,7 @@
     "mahjong_discard": {
       "display_name": "Mah Jongg",
       "show_when": [
-        {"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", "is_tenpai_american",
+        {"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_just_discarded", "someone_else_just_discarded", "is_tenpai_american",
         {"name": "not_match", "opts": [["last_discard"], [[[["1j"], 1]]]]},
         [
           {"name": "match", "opts": [["hand", "call_tiles", "last_discard"], ["open_win"]]},
@@ -597,11 +603,11 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+      "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
     },
     "declare_dead_0_shimocha": {
       "display_name": "Declare player on right dead",
-      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}],
+      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
       "actions": [
         ["unset_status", "declare_shimocha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
@@ -620,7 +626,7 @@
     },
     "declare_dead_0_toimen": {
       "display_name": "Declare player across dead",
-      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}],
+      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
       "actions": [
         ["unset_status", "declare_toimen_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
@@ -639,7 +645,7 @@
     },
     "declare_dead_0_kamicha": {
       "display_name": "Declare player on left dead",
-      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}],
+      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
       "actions": [
         ["unset_status", "declare_kamicha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [

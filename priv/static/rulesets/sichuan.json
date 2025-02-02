@@ -8,7 +8,8 @@
     {"id": "chinitsu", "conflicts": ["fifth_tile"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."}
   ],
-  "tutorial_link": "https://www.mahjongpictureguide.com/pdf/SBR-Reference.pdf",
+  "display_name": "Sichuan Bloody",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sichuan.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -62,47 +63,9 @@
   "pinzu_definition": [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1]]],
   "souzu_definition": [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]],
   "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 4] ],
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ [["koutsu"], -1], [["pair"], 6] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ]
-  ],
-  "iishanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 11],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ]
-  ],
-  "ryanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
-    [ [["pair"], 4] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 10],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ]
-  ],
-  "sanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
-    [ [["pair"], 3] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 9],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ]
-  ],
-  "kokushi_tenpai_definition": [
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -121,7 +84,7 @@
     { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 2]]]]}] },
     { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 3]]]]}] },
     { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 4]]]]}] },
-    { "display_name": "All Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu", "pon", "daiminkan", "ankan", "kakan"], 4], [["pair"], 1]]]]}] },
+    { "display_name": "All Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
     {
       "display_name": "Full Flush",
       "value": 2,
@@ -136,16 +99,19 @@
     { "display_name": "Win After Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Robbing The Kong", "value": 1, "when": ["won_by_call"] },
     { "display_name": "Shoot After Kong", "value": 1, "when": [{"name": "discarder_status", "opts": ["kan"]}] },
-    { "display_name": "Under The Sea", "value": 1, "when": ["no_tiles_remaining"] }
+    { "display_name": "Under The Sea", "value": 1, "when": ["no_tiles_remaining"] },
+    { "display_name": "Voided Suit", "value": -1, "when": [{"name": "status", "opts": ["void_penalty"]}] },
+    { "display_name": "Voided Suit", "value": -1, "when": ["won_by_draw", {"name": "status", "opts": ["void_penalty"]}] }
   ],
   "yaku_precedence": {
-    "Golden Single Wait": ["All Triplets"]
+    "Golden Single Wait": ["All Triplets"],
+    "Voided Suit": [1, 2]
   },
   "score_calculation": {
     "scoring_method": "score_table",
-    "payments_at_exhaustive_draw": true,
-    "score_table": {"0": 1, "1": 2, "2": 4, "max": 8},
+    "score_table": {"-2": -1, "-1": 0, "0": 1, "1": 2, "2": 4, "max": 8},
     "yaku_lists": ["yaku"],
+    "min_score": -1,
     "self_draw_bonus": 1,
     "score_best_hand_at_draw": true,
     "next_dealer_is_first_winner": true,
@@ -156,17 +122,34 @@
     "win_by_discard_name_2": "Double Hu",
     "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
-    "exhaustive_draw_name": "Draw"
+    "exhaustive_draw_name": "Draw",
+      // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+    "draw_nagashi_payments": [16, 16],
+    "nagashi_name": "Void Penalty"
   },
   "play_restrictions": [
-    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]],
-    [["manzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]],
-    [["manzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
-    [["pinzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
-    [["pinzu"], [{"name": "status", "opts": ["void_souzu"]}, {"name": "match", "opts": [["hand", "draw"], ["souzu"]]}]],
-    [["souzu"], [{"name": "status", "opts": ["void_manzu"]}, {"name": "match", "opts": [["hand", "draw"], ["manzu"]]}]],
-    [["souzu"], [{"name": "status", "opts": ["void_pinzu"]}, {"name": "match", "opts": [["hand", "draw"], ["pinzu"]]}]]
+    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]]
   ],
+  "functions": {
+    "assign_void_penalty": [
+      ["when_anyone", [[
+        [
+          {"name": "status", "opts": ["void_manzu"]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["manzu"]]}
+        ],
+        [
+          {"name": "status", "opts": ["void_pinzu"]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pinzu"]]}
+        ],
+        [
+          {"name": "status", "opts": ["void_souzu"]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["souzu"]]}
+        ]
+      ]], [["set_status", "void_penalty"]]],
+        // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+      ["when_anyone", [{"name": "status_missing", "opts": ["void_penalty"]}], [["set_status", "nagashi"]]]
+    ]
+  },
   "after_start": {
     "actions": [
       ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
@@ -179,8 +162,7 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "first_turn"],
-      ["when", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["set_status", "tenpai"]]],
-      ["when", [{"name": "not_match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]}], [["unset_status", "tenpai"]]]
+      ["ite", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]], [["unset_status", "tenpai"]]]
     ]
   },
   "after_turn_change": {
@@ -192,6 +174,20 @@
   },
   "before_continue": {
     "actions": [["advance_turn"]]
+  },
+  "before_exhaustive_draw": {
+    "actions": [["run", "assign_void_penalty"]]
+  },
+  "before_win": {
+    "actions": [
+      ["when", {"name": "counter_at_least", "as": "east", "opts": ["winners", 2]}, [["run", "assign_void_penalty"]]]
+    ]
+  },
+  "after_win": {
+    "actions": [["as", "east", [["add_counter", "winners", 1]]]]
+  },
+  "after_bloody_end": {
+    "actions": [["when_anyone", [{"name": "status", "opts": ["void_penalty"]}], [["reveal_hand"]]]]
   },
   "buttons": {
     "charleston_left": {
@@ -225,6 +221,7 @@
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
         ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
         ["reveal_tile", "1m"],
+        ["reveal_tile", "3x"],
         ["merge_draw"],
         ["advance_turn"]
       ],
@@ -240,6 +237,7 @@
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
         ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
         ["reveal_tile", "1p"],
+        ["reveal_tile", "3x"],
         ["merge_draw"],
         ["advance_turn"]
       ],
@@ -255,6 +253,7 @@
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
         ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
         ["reveal_tile", "1s"],
+        ["reveal_tile", "3x"],
         ["merge_draw"],
         ["advance_turn"]
       ],
@@ -354,8 +353,8 @@
       "show_when": [
         "not_our_turn",
         {"name": "not_status", "opts": ["won"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         "someone_else_just_discarded",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         [
           [
@@ -380,18 +379,9 @@
       "show_when": [
         "not_our_turn",
         {"name": "not_status", "opts": ["won"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-        [
-          [
-            {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ]
-        ],
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "last_call_is", "opts": ["kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
         [
           [
             {"name": "status", "opts": ["void_manzu"]},
@@ -416,7 +406,7 @@
         "our_turn",
         {"name": "not_status", "opts": ["won"]}, 
         {"name": "not_status", "opts": ["round_start"]}, 
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
         [
           [
@@ -469,6 +459,31 @@
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    },
+      // have to figure out how to get the autobutton to discard the leftmost tile
+      // For now, auto_void automatically discards draws of the void suit. Better than nothing.
+    "5_auto_discard_void": {
+      "display_name": "DV",
+      "desc": "Automatically discard your drawn tile if it's of your voided suit.",
+      "actions": [["when",
+          [
+            [
+              {"name": "status", "opts": ["void_manzu"]},
+              {"name": "match", "opts": [["draw"], ["manzu"]]}
+            ],
+            [
+              {"name": "status", "opts": ["void_pinzu"]},
+              {"name": "match", "opts": [["draw"], ["pinzu"]]}
+            ],
+            [
+              {"name": "status", "opts": ["void_souzu"]},
+              {"name": "match", "opts": [["draw"], ["souzu"]]}
+            ]
+          ],
+          [["discard_draw"]]
+        ]
+      ],
       "enabled_at_start": false
     }
   },

@@ -101,7 +101,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   def draw_saki_cards(state, num) do
     debug_card = Debug.debug_saki_card_ours()
     state = if debug_card != nil do
-      update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 15, debug_card) end)
+      update_in(state.saki.saki_deck, fn deck -> List.replace_at(deck, 3, debug_card) end)
     else state end
 
     debug_card_2 = Debug.debug_saki_card_opponent()

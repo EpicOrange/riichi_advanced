@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.GameLive do
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, _session, socket) do
@@ -19,7 +20,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:display_honba, false)
     |> assign(:loading, true)
     |> assign(:marking, false)
-    |> assign(:visible_waits, %{})
+    |> assign(:visible_waits, nil)
     |> assign(:revealed_tiles, nil)
     |> assign(:visible_waits_hand, nil)
     |> assign(:show_waits_index, nil)
@@ -274,6 +275,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         die2={@state.die2}
         dice_roll={@state.die1 + @state.die2}
         wall_index={@state.wall_index}
+        dead_wall_index={@state.dead_wall_index}
         revealed_tiles={@state.revealed_tiles}
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
@@ -281,7 +283,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         :if={Map.get(@state.rules, "display_wall", false)} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <div class="display-am-hand-hover" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}></div>
-      <div class="display-am-hand-container" :if={Map.get(@state.rules, "show_nearest_american_hand", false) && not Enum.empty?(@state.players[@seat].closest_american_hands)}>
+      <div class="display-am-hand-container" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}>
         <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand})>
             <%= for tile <- arranged_hand do %>
@@ -291,7 +293,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <% end %>
       </div>
       <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() || Map.get(@state.rules, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
@@ -307,7 +309,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           <% end %>
         </div>
       <% end %>
-      <%= if @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
+      <%= if @visible_waits != nil && @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
         <div class="visible-waits-container">
           <div class="visible-waits">
             <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
@@ -358,15 +360,15 @@ defmodule RiichiAdvancedWeb.GameLive do
     hand = socket.assigns.state.players[socket.assigns.seat].hand
     socket = if hand != socket.assigns.visible_waits_hand do
       socket
-      |> assign(:visible_waits, %{})
+      |> assign(:visible_waits, nil)
       |> assign(:visible_waits_hand, nil)
     else socket end
-    socket = if not Map.has_key?(socket.assigns.visible_waits, index) do
+    visible_waits = socket.assigns.visible_waits || %{}
+    if not Map.has_key?(visible_waits, index) do
       # async call; gets handled below in :set_visible_waits
       GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
-      assign(socket, :visible_waits, Map.put(socket.assigns.visible_waits, index, :loading))
+      assign(socket, :visible_waits, Map.put(visible_waits, index, :loading))
     else socket end
-    socket
   end
 
   def handle_event("back", _assigns, socket) do

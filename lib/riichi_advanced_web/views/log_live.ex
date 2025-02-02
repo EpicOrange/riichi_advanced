@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.LogLive do
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, _session, socket) do
@@ -249,7 +250,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         log={@log}
         log_control_state={@log_control_state} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() do %>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() || Map.get(@state.rules, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>

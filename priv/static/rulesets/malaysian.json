@@ -6,6 +6,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
+  "display_name": "Malaysian",
   "tutorial_link": "https://www.sloperama.com/mahjongg/malaysian.html",
   "wall": ["1p", "1p", "1p", "1p",
            "2p", "2p", "2p", "2p",
@@ -307,7 +308,7 @@
     "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
     "Small Three Dragons": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Four Concealed Triplets": ["All Triplets"],
-    "All Honors": ["Half Flush"]
+    "All Honors": ["All Triplets", "Half Flush"]
   },
   "score_calculation": {
     "scoring_method": "multiplier",
@@ -437,7 +438,7 @@
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"], ["recalculate_buttons"]],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "chii": {
@@ -628,5 +629,6 @@
   "starting_tiles": 13,
   "num_players": 3,
   "four_rows_discards": true,
-  "max_rounds": 16
+  "max_rounds": 16,
+  "win_timer": 20
 }

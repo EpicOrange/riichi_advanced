@@ -9,6 +9,8 @@ end
 
 # for encoding tiles with attrs, which are tuples, which Jason doesn't handle unless we do this
 defimpl Jason.Encoder, for: Tuple do
+  alias RiichiAdvanced.Utils, as: Utils
+  
   def encode(data, opts) when is_tuple(data) do
     # turn {:"3p", ["hand"]} into its json version, "3p"
     case Utils.to_tile(data) do
@@ -22,6 +24,7 @@ end
 
 defmodule RiichiAdvanced.GameState.Log do
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.Utils, as: Utils
   # import RiichiAdvanced.GameState
 
   def init_log(state) do

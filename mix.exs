@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.MixProject do
       # even though we don't use the actual database,
       # we still use Ecto.UUID.generate() some places
       {:phoenix_ecto, "~> 4.5"},
-      {:ecto_sql, "~> 3.10"},
+      # {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -80,14 +80,14 @@ defmodule RiichiAdvanced.MixProject do
       # setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       # "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       # "ecto.reset": ["ecto.drop", "ecto.setup"],
-      setup: ["deps.get", "assets.setup", "assets.build"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["esbuild.install --if-missing"],
-      "assets.build": ["esbuild riichi_advanced"],
-      "assets.deploy": [
-        "esbuild riichi_advanced --minify",
-        "phx.digest"
-      ]
+      # setup: ["deps.get", "assets.setup", "assets.build"],
+      # test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      # "assets.setup": ["esbuild.install --if-missing"],
+      # "assets.build": ["esbuild riichi_advanced"],
+      # "assets.deploy": [
+      #   "esbuild riichi_advanced --minify",
+      #   "phx.digest"
+      # ]
     ]
   end
 end

@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.ModLoader do
         # modded_json = Enum.reduce(mod_names, ruleset_json, &apply_mod/2)
         modded_json = apply_multiple_mods(ruleset_json, mod_names)
 
-        if not Debug.skip_ruleset_caching() do
+        if Process.get(:ignore_type_error, not Debug.skip_ruleset_caching()) do
           RiichiAdvanced.ETSCache.put({ruleset, mod_names}, modded_json, :cache_mods)
         end
 
@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "galaxy" => %{
       display_name: "Galaxy Mahjong",
-      tutorial_link: "https://www.youtube.com/watch?v=IDaKM7eU7zE",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
       ruleset: "riichi",
       mods: [],
       default_mods: ["galaxy"],
@@ -100,7 +100,7 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def get_ruleset_json(ruleset, session_id \\ nil, strip_comments \\ false) do
+  def get_ruleset_json(ruleset, session_id \\ nil, strip_comments? \\ false) do
     if ruleset == "custom" do
       case RiichiAdvanced.ETSCache.get(session_id, ["{}"], :cache_rulesets) do
         [ruleset_json] -> ruleset_json
@@ -113,20 +113,24 @@ defmodule RiichiAdvanced.ModLoader do
         display_name = Map.get(modpack, :display_name, ruleset)
         query = ".default_mods += #{mod_names_to_array(Map.get(modpack, :default_mods, []))} | .display_name = \"#{display_name}\""
         query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
-        Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, read_ruleset_json(modpack.ruleset), "")
+        modpack.ruleset
+        |> read_ruleset_json()
+        |> strip_comments()
         |> apply_mods(mod_names, modpack.ruleset)
         |> JQ.query_string_with_string!(query)
       else
         ruleset_json = read_ruleset_json(ruleset)
-        if strip_comments do
-          Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")
-        else ruleset_json end
+        if strip_comments? do strip_comments(ruleset_json) else ruleset_json end
       end
     end
   end
 
   @default_config """
   {
+    // this is for advanced users!
+    // this JSON gets merged into the existing ruleset (after applying mods)
+    // the below is helpful to test out yaku and stuff
+
     // "starting_hand": {
     //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
     // },
@@ -139,5 +143,9 @@ defmodule RiichiAdvanced.ModLoader do
       [ruleset_json] -> ruleset_json
       _ -> @default_config
     end
+  end
+
+  def strip_comments(json) do
+    Regex.replace(~r{^//.*|\s//.*|/\*[.\n]*?\*/}, json, "")
   end
 end
