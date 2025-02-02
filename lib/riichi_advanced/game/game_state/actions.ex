@@ -1558,7 +1558,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     else state end
   end
 
-  def extract_actions([], _names), do: []
   def extract_actions([action | actions], names) do
     case action do
       ["when", _condition, subactions] -> extract_actions(subactions, names)
@@ -1571,8 +1570,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       [action_name | _opts] -> if action_name in names do [action] else [] end
     end ++ extract_actions(actions, names)
   end
+  def extract_actions(_anything_else, _names), do: []
 
-  def map_action_opts([], _fun), do: []
   def map_action_opts([action | actions], fun) do
     mapped_action = case action do
       ["when", condition, subactions] -> ["when", condition, map_action_opts(subactions, fun)]
@@ -1587,5 +1586,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     [mapped_action | map_action_opts(actions, fun)]
   end
+  def map_action_opts(_anything_else, _fun), do: []
 
 end
