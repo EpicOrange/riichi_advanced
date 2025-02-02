@@ -20,6 +20,13 @@ def fix_yaku:
 |
 .meta_yakuman |= fix_yaku
 |
+if (.buttons | has("riichi")) then
+  .buttons.riichi.show_when |= map(replace(
+    {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]};
+    {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}
+  ))
+else . end
+|
 # the calls:
 .buttons += {
   "ton": {

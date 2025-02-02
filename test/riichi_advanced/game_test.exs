@@ -1,6 +1,6 @@
 defmodule RiichiAdvanced.GameTest do
   use ExUnit.Case, async: true
-  import ExUnit.CaptureIO
+  # import ExUnit.CaptureIO
 
   setup do
     session_id = Ecto.UUID.generate()
@@ -16,24 +16,79 @@ defmodule RiichiAdvanced.GameTest do
     {:ok, io} = StringIO.open("")
     Process.group_leader(game_state, io)
 
-    # add a player
-    socket = %{
-      id: "testplayer",
-      root_pid: nil,
-      assigns: %{
-        nickname: nil
-      }
-    }
-    # {state, seat, spectator} = GenServer.call(game_state, {:new_player, socket})
-    capture_io(fn ->
-      _ = GenServer.call(game_state, {:new_player, socket})
-    end)
+    # # add a player
+    # socket = %{
+    #   id: "testplayer",
+    #   root_pid: nil,
+    #   assigns: %{
+    #     nickname: nil
+    #   }
+    # }
+    # # {state, seat, spectator} = GenServer.call(game_state, {:new_player, socket})
+    # capture_io(fn ->
+    #   _ = GenServer.call(game_state, {:new_player, socket})
+    # end)
+
+    # activate game
+    GenServer.cast(game_state, {:initialize_game, nil})
 
     {:ok, %{session_id: session_id, ruleset: ruleset, game: game, game_state: game_state}}
   end
 
-  test "todo", %{session_id: _session_id, ruleset: _ruleset, game: _game, game_state: _game_state} do
-    :ok
+  # we only add tests for bugs that come up repeatedly
+
+  test "no double discarding", %{session_id: _session_id, ruleset: _ruleset, game: _game, game_state: game_state} do
+    state = GenServer.call(game_state, :get_state)
+    assert state.turn == :east
+    GenServer.cast(game_state, {:play_tile, :east, 1})
+    skip_buttons(game_state)
+    GenServer.cast(game_state, {:play_tile, :east, 0})
+    skip_buttons(game_state)
+
+    state = GenServer.call(game_state, :get_state)
+    assert state.turn == :south
+    GenServer.cast(game_state, {:play_tile, :south, 1})
+    skip_buttons(game_state)
+    GenServer.cast(game_state, {:play_tile, :south, 0})
+    skip_buttons(game_state)
+
+    state = GenServer.call(game_state, :get_state)
+    assert state.turn == :west
+    GenServer.cast(game_state, {:play_tile, :west, 1})
+    skip_buttons(game_state)
+    GenServer.cast(game_state, {:play_tile, :west, 0})
+    skip_buttons(game_state)
+
+    state = GenServer.call(game_state, :get_state)
+    assert state.turn == :north
+    GenServer.cast(game_state, {:play_tile, :north, 1})
+    skip_buttons(game_state)
+    GenServer.cast(game_state, {:play_tile, :north, 0})
+    skip_buttons(game_state)
+
+    # need to wait for east's 100ms debounce
+    Process.sleep(150)
+
+    state = GenServer.call(game_state, :get_state)
+    assert state.turn == :east
+    GenServer.cast(game_state, {:play_tile, :east, 1})
+    skip_buttons(game_state)
+    GenServer.cast(game_state, {:play_tile, :east, 0})
+    skip_buttons(game_state)
+
+    state = GenServer.call(game_state, :get_state)
+    assert state.turn == :south
+    assert length(state.players.east.pond) == 2
+    assert length(state.players.south.pond) == 1
+    assert length(state.players.west.pond) == 1
+    assert length(state.players.north.pond) == 1
+  end
+
+  def skip_buttons(game_state) do
+    GenServer.cast(game_state, {:press_button, :east, "skip"})
+    GenServer.cast(game_state, {:press_button, :south, "skip"})
+    GenServer.cast(game_state, {:press_button, :west, "skip"})
+    GenServer.cast(game_state, {:press_button, :north, "skip"})
   end
 
 end

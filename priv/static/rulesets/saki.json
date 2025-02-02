@@ -4537,5 +4537,6 @@
   "initial_score": 30000,
   "initial_dead_wall_length": 14,
   "starting_tiles": 13,
-  "max_rounds": 8
+  "max_rounds": 8,
+  "win_timer": 20
 }

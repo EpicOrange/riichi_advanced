@@ -1,6 +1,8 @@
 defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   @ai_speed 4
@@ -21,33 +23,39 @@ defmodule RiichiAdvanced.AIPlayer do
     {:ok, state}
   end
 
-  defp choose_playable_tile(tiles, state, playables, visible_tiles, win_definition) do
+  defp choose_playable_tile(_tiles, _state, playables, _visible_tiles, _win_definition) do
     if not Enum.empty?(playables) do
       # rank each playable tile by the ukeire it gives for the next shanten step
       # TODO as well as heuristics provided by the ruleset
-      hand = state.player.hand ++ state.player.draw
-      calls = state.player.calls
-      ordering = state.player.tile_ordering
-      ordering_r = state.player.tile_ordering_r
-      tile_aliases = state.player.tile_aliases
-      use_ukeire = Enum.empty?(tile_aliases)
-      best_playables = if use_ukeire do
-        playable_waits = playables
-        |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
-        |> Enum.map(fn {tile, ix} ->
-          if win_definition != nil do
-            {tile, ix, Riichi.get_waits_and_ukeire(hand -- [tile], calls, win_definition, state.wall, visible_tiles, ordering, ordering_r, tile_aliases, true)}
-          else {tile, ix, %{}} end
-        end)
+      # hand = state.player.hand ++ state.player.draw
+      # calls = state.player.calls
+      # ordering = state.player.tile_ordering
+      # ordering_r = state.player.tile_ordering_r
+      # tile_aliases = state.player.tile_aliases
+      best_playables = playables
 
-        # prefer highest ukeire
-        ukeires = Enum.map(playable_waits, fn {tile, ix, waits} -> {tile, ix, Map.values(waits) |> Enum.sum()} end)
-        max_ukeire = ukeires
-        |> Enum.map(fn {_tile, _ix, outs} -> outs end)
-        |> Enum.max(&>=/2, fn -> 0 end)
-        best_playables_by_ukeire = for {tile, ix, outs} <- ukeires, outs == max_ukeire do {tile, ix} end
-        best_playables_by_ukeire
-      else playables end
+      # TODO ukeire counting is really slow
+      # because we need "exhaustive" to check for waits in Riichi.get_waits_and_ukeire
+      # disable it for now
+
+      # use_ukeire = Enum.empty?(tile_aliases)
+      # best_playables = if use_ukeire do
+      #   playable_waits = playables
+      #   |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
+      #   |> Enum.map(fn {tile, ix} ->
+      #     if win_definition != nil do
+      #       {tile, ix, Riichi.get_waits_and_ukeire(hand -- [tile], calls, win_definition, state.wall, visible_tiles, ordering, ordering_r, tile_aliases, true)}
+      #     else {tile, ix, %{}} end
+      #   end)
+
+      #   # prefer highest ukeire
+      #   ukeires = Enum.map(playable_waits, fn {tile, ix, waits} -> {tile, ix, Map.values(waits) |> Enum.sum()} end)
+      #   max_ukeire = ukeires
+      #   |> Enum.map(fn {_tile, _ix, outs} -> outs end)
+      #   |> Enum.max(&>=/2, fn -> 0 end)
+      #   best_playables_by_ukeire = for {tile, ix, outs} <- ukeires, outs == max_ukeire do {tile, ix} end
+      #   best_playables_by_ukeire
+      # else playables end
 
       # prefer outer discards
       {yaochuuhai, rest} = Enum.split_with(best_playables, fn {tile, _ix} -> Riichi.is_yaochuuhai?(tile) end)
@@ -162,6 +170,14 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
         playables = playable_hand ++ playable_draw
         |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
+
+        non_voided_playables = cond do
+          "void_manzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_manzu?(tile) end)
+          "void_pinzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_pinzu?(tile) end)
+          "void_souzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_souzu?(tile) end)
+          true -> []
+        end
+        playables = if Enum.empty?(non_voided_playables) do playables else non_voided_playables end
 
         if not Enum.empty?(playables) do
           # pick a random tile
@@ -363,7 +379,6 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info({:set_best_minefield_hand, minefield_tiles, minefield_hand}, state) do
     minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win, state.wall, state.player.tile_ordering, state.player.tile_ordering_r, state.player.tile_aliases, true)
-    IO.inspect(minefield_hand)
     state = state
     |> Map.put(:minefield_tiles, minefield_tiles)
     |> Map.put(:minefield_hand, minefield_hand)

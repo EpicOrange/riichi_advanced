@@ -137,10 +137,12 @@ To read the Card (using the free ILoveMahj Card as an example):
 
 ## Scoring
 
+- A hand scores for only the highest-scoring hand on the Card that it satisfies.
+    - For instance, the hand 11 2222 333J 44JJ scores 40 for Quints #1 instead of 25 for Consecutive Run #3 (assuming the 3s and 4s are not exposed).
 - A hand that is NOT from the Singles and Pairs category, and does not contain any jokers, has its score doubled.
 - If the hand was won by a discard, the discarder pays twice this score, while everyone else pays this score.
 - If this hand was won by self-draw, everyone pays twice this score.
-- If the last move by the winner before declaring Mah Jongg was to perform a joker exchange, this counts as a win by self-draw no matter whose exposure the joker was swapped from, or whether that player's turn started by calling someone's discard. [TODO: The NMJL's rules aren't actually too clear on this point. I've asked someone to send in a letter for clarification.]
+- If the last move by the winner before declaring Mah Jongg was to perform a joker exchange, this counts as a win by self-draw no matter whose exposure the joker was swapped from, or whether the winner's turn started by calling someone's discard. [TODO: The NMJL's rules aren't actually too clear on this point.]
 - The dealer does not get any bonus multipliers for being dealer, unlike in many Asian mahjong variants.
 
 ## Death Challenge

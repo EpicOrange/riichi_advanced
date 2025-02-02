@@ -4,7 +4,7 @@ defmodule Player do
     score: 0,
     start_score: 0, # for logging purposes
     nickname: nil,
-    # working
+    # working (reset every round)
     hand: [],
     draw: [],
     pond: [],
@@ -18,6 +18,8 @@ defmodule Player do
     call_name: "",
     tile_mappings: %{},
     tile_aliases: %{},
+    saved_tile_mappings: %{},
+    saved_tile_aliases: %{},
     tile_ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
                      :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
                      :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s"},
@@ -128,6 +130,7 @@ defmodule Game do
     max_revealed_tiles: 0,
     drawn_reserved_tiles: [],
     marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+    processed_bloody_end: false,
   ]
   use Accessible
 end
@@ -143,9 +146,9 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
-
-  @timer 10
 
   def start_link(init_data) do
     # IO.puts("Game supervisor PID is #{inspect(self())}")
@@ -222,7 +225,7 @@ defmodule RiichiAdvanced.GameState do
 
     # apply config
     ruleset_json = if state.config != nil do
-      JQ.merge_jsons!(ruleset_json, Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, state.config, ""))
+      JQ.merge_jsons!(ruleset_json, RiichiAdvanced.ModLoader.strip_comments(state.config))
     else ruleset_json end
 
     # put params, debouncers, and process ids into state
@@ -245,7 +248,7 @@ defmodule RiichiAdvanced.GameState do
 
     # decode the rules json
     {state, rules} = try do
-      case Jason.decode(Regex.replace(~r{ //.*|/\*[.\n]*?\*/}, ruleset_json, "")) do
+      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           IO.puts("Erroring json:")
@@ -454,6 +457,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
+      |> Map.put(:processed_bloody_end, false)
 
       scores = kyoku_log["players"]
       |> Enum.zip(state.available_seats)
@@ -545,9 +549,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :winner)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     state = start_timer(state)
 
     winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
@@ -565,7 +567,7 @@ defmodule RiichiAdvanced.GameState do
       ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
     )
 
-    state = if Map.has_key?(state.rules, "bloody_end") && state.rules["bloody_end"] do
+    state = if Map.get(state.rules, "bloody_end", false) do
       # only end the round once there are three winners; otherwise, continue
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
     else state end
@@ -603,9 +605,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     state = start_timer(state)
 
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
@@ -631,9 +631,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :timer, @timer)
     state = Map.put(state, :visible_screen, :scores)
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
     state = start_timer(state)
 
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
@@ -644,14 +642,41 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp timer_finished(state) do
+    bloody_end = Map.get(state.rules, "bloody_end", false)
+    num_tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end) |> Map.values() |> Enum.count(& &1)
+    num_nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end) |> Map.values() |> Enum.count(& &1)
     cond do
       state.visible_screen == :winner && state.winner_index + 1 < map_size(state.winners) -> # need to see next winner screen
         # show the next winner
         state = Map.update!(state, :winner_index, & &1 + 1)
 
         # reset timer
-        state = Map.put(state, :timer, @timer)
-        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
+        state = start_timer(state)
+
+        state
+      state.visible_screen == :scores && bloody_end && not state.processed_bloody_end && map_size(state.winners) >= 3 && (num_tenpai > 0 || num_nagashi > 0) ->
+        state
+        |> Map.put(:visible_screen, :bloody_end)
+        |> start_timer()
+        |> Map.put(:timer, 0)
+      state.visible_screen == :bloody_end ->
+        # if bloody end is enabled, we also check for tenpai and nagashi after 3 players win
+        # in practice, "nagashi" is used for void suit payments in SBR
+        prev_round_result = state.round_result
+        {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
+
+        state = Map.put(state, :processed_bloody_end, true)
+        state = Map.put(state, :visible_screen, :scores)
+        state = Map.put(state, :round_result, prev_round_result)
+        state = Map.put(state, :delta_scores, delta_scores)
+        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+
+        # run after_bloody_end actions
+        state = if Map.has_key?(state.rules, "after_bloody_end") do
+          Actions.run_actions(state, state.rules["after_bloody_end"]["actions"], %{seat: state.turn})
+        else state end
+
+        # reset timer
         state = start_timer(state)
 
         state
@@ -670,8 +695,6 @@ defmodule RiichiAdvanced.GameState do
         state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
         
         # reset timer
-        state = Map.put(state, :timer, @timer)
-        state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
         state = start_timer(state)
         
         state
@@ -1105,7 +1128,10 @@ defmodule RiichiAdvanced.GameState do
     state
   end
   
-  def start_timer(state) do
+  defp start_timer(state) do
+    state = Map.put(state, :timer, Map.get(state.rules, "win_timer", 10))
+    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
+    
     if state.log_loading_mode do
       GenServer.cast(self(), :tick_timer)
     else

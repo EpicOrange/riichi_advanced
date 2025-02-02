@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.LogLive do
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, _session, socket) do

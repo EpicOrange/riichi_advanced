@@ -18,6 +18,7 @@ end
 defmodule RiichiAdvanced.LogControlState do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   def start_link(init_data) do

@@ -1,5 +1,7 @@
 defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   
   @boilerplate """
                (set-logic QF_FD)
@@ -620,7 +622,6 @@ defmodule RiichiAdvanced.SMT do
     optimzation_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
       call = {"", Enum.map(call, &{&1, false})} # TODO replace this dumb call format
       tile = Utils.get_joker_meld_tile(call, jokers)
-      IO.inspect(tile)
       "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
     end |> Enum.join()
 
