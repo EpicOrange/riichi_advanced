@@ -20,8 +20,6 @@ All other rules are identical to Riichi.
 ---
 RULES NOT YET IMPLEMENTED IN RIICHI ADVANCED:
 
-Each galaxy tile used in a natural meld/pair yields 1 shuugi upon win. (A natural meld/pair is one where all galaxy tiles are used as their non-blue equivalents.) e.g. a 7m blue-8m blue-9m receives 2 shuugi.
-
-Each akadora, uradora, and ippatsu yields 1 shuugi upon win. (Possibly rinshan as well. We're not sure.)
+When playing with shuugi, each galaxy tile used in a natural meld/pair yields 1 shuugi upon win. (A natural meld/pair is one where all galaxy tiles are used as their non-blue equivalents.) e.g. a 7m blue-8m blue-9m receives 2 shuugi.
 
 Having a hand comprising 14 galaxy jokers is a yakuman, called "Milky Way". This is valid even if the hand is open, even if it's won off a discarded galaxy joker, and even if the hand doesn't conform to the standard winning hand shapes.
