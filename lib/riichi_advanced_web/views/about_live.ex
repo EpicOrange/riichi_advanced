@@ -1,35 +1,40 @@
 defmodule RiichiAdvancedWeb.AboutLive do
+  alias RiichiAdvanced.Constants, as: Constants
   use RiichiAdvancedWeb, :live_view
 
+  @beta_testers [
+    "Hyperistic",
+    "Nehalem",
+    "モカ妹紅（MochaMoko）",
+    "Sophie",
+    "Anton00",
+    "Glassy",
+    "KlorofinMaster",
+    "5𝔷ł𝔬𝔱𝔶𝔠𝔥-𝔨𝔲𝔫",
+    "lorena.davletiar",
+    "nilay",
+    "tomato",
+    "averyoriginalname",
+    "schi",
+    "stuf",
+    "Miisuya",
+    "#yuriaddict",
+    "DragonRider JC",
+    "Caballo",
+    "GameRaccoon",
+    "UltimateNeutrino",
+    "GOAT^3",
+    "BluePotion",
+    "Buckwheat",
+    "L_",
+    "JustKidding",
+  ]
+
   def mount(_params, _session, socket) do
-    socket = assign(socket, :messages, [])
-    socket = assign(socket, :beta_testers, [
-      "Hyperistic",
-      "Nehalem",
-      "モカ妹紅（MochaMoko）",
-      "Sophie",
-      "Anton00",
-      "Glassy",
-      "KlorofinMaster",
-      "5𝔷ł𝔬𝔱𝔶𝔠𝔥-𝔨𝔲𝔫",
-      "lorena.davletiar",
-      "nilay",
-      "tomato",
-      "averyoriginalname",
-      "schi",
-      "stuf",
-      "Miisuya",
-      "#yuriaddict",
-      "DragonRider JC",
-      "Caballo",
-      "GameRaccoon",
-      "UltimateNeutrino",
-      "GOAT^3",
-      "BluePotion",
-      "Buckwheat",
-      "L_",
-      "JustKidding",
-    ])
+    socket = socket
+    |> assign(:messages, [])
+    |> assign(:beta_testers, @beta_testers)
+    |> assign(:version, Constants.version())
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
@@ -59,6 +64,7 @@ defmodule RiichiAdvancedWeb.AboutLive do
           <li :for={user <- Enum.shuffle(@beta_testers)}><%= user %></li>
         </ul>
       </form>
+      <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
         <button phx-click="goto_index">Back</button>
         <button><a href="https://github.com/EpicOrange/riichi_advanced">Source</a></button>

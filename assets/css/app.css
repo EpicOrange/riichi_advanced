@@ -2361,6 +2361,7 @@ div.title > div.title-advanced::before {
 }
 div#container > div.index-version {
   position: absolute;
+  font-size: calc(0.5 * var(--tile-size));
   color: white;
   left: 0;
   bottom: 0;

@@ -1,15 +1,14 @@
 defmodule RiichiAdvancedWeb.IndexLive do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
-
-  @version "v1.0.0." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
 
   def mount(_params, _session, socket) do
     socket = socket
     |> assign(:messages, [])
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
-    |> assign(:version, @version)
+    |> assign(:version, Constants.version())
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
