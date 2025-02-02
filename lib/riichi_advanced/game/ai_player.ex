@@ -379,7 +379,6 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info({:set_best_minefield_hand, minefield_tiles, minefield_hand}, state) do
     minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win, state.wall, state.player.tile_ordering, state.player.tile_ordering_r, state.player.tile_aliases, true)
-    IO.inspect(minefield_hand)
     state = state
     |> Map.put(:minefield_tiles, minefield_tiles)
     |> Map.put(:minefield_hand, minefield_hand)

@@ -595,7 +595,6 @@ defmodule RiichiAdvanced.Riichi do
     end |> Enum.concat()
     for {def1, def2} <- decomposed_match_definitions do
       removed = remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases)
-      IO.inspect({hand, def1, removed, def2})
       {removed, def2}
     end
   end
