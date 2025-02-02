@@ -1006,6 +1006,22 @@ defmodule RiichiAdvanced.GameState.Actions do
         for seat <- state.available_seats, reduce: state do
           state -> set_tile_alias(state, seat, from_tiles, to_tiles)
         end
+      "save_tile_aliases"     ->
+        label = Enum.at(opts, 0, "default")
+        for seat <- state.available_seats, reduce: state do
+          state ->
+            state = put_in(state.players[seat].saved_tile_aliases[label], state.players[seat].tile_aliases)
+            state = put_in(state.players[seat].saved_tile_mappings[label], state.players[seat].tile_mappings)
+            state
+        end
+      "load_tile_aliases"     ->
+        label = Enum.at(opts, 0, "default")
+        for seat <- state.available_seats, reduce: state do
+          state ->
+            state = put_in(state.players[seat].tile_aliases, Map.get(state.players[seat].saved_tile_aliases, label, state.players[seat].tile_aliases))
+            state = put_in(state.players[seat].tile_mappings, Map.get(state.players[seat].saved_tile_mappings, label, state.players[seat].tile_mappings))
+            state
+        end
       "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_aliases: %{}, tile_mappings: %{} })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
