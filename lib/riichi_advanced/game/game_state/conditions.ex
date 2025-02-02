@@ -6,6 +6,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   def get_hand_calls_spec(state, context, hand_calls_spec) do
@@ -84,6 +86,26 @@ defmodule RiichiAdvanced.GameState.Conditions do
       end |> Enum.concat()
     end
   end
+
+  @all_seat_specs [
+    "east",
+    "south",
+    "west",
+    "north",
+    "self",
+    "shimocha",
+    "toimen",
+    "kamicha",
+    "last_discarder",
+    "caller",
+    "callee",
+    "all",
+    "everyone",
+    "others",
+    "chii_victims"
+  ]
+
+  def all_seat_specs, do: @all_seat_specs
 
   def from_seat_spec(state, context, seat_spec) do
     case seat_spec do
@@ -205,8 +227,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_declared_yaku_with_discard" -> last_action != nil && last_action.action == :discard && Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_action.tile, :discard)
       "has_declared_yaku_with_call"    -> last_action != nil && last_action.action == :call && Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_action.tile, :call)
-      "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: context.tile, players: state.players, seat: context.seat})
-      "last_called_tile_matches" -> last_action != nil && last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: context.tile, call: last_call_action, players: state.players, seat: context.seat})
+      "last_discard_matches"     -> last_discard_action != nil && Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: Map.get(context, :tile, nil), players: state.players, seat: context.seat})
+      "last_called_tile_matches" -> last_action != nil && last_action.action == :call && Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: Map.get(context, :tile, nil), call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.tile_aliases)
       "is_drawn_tile"            -> Utils.has_attr?(context.tile, ["draw"])
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
@@ -375,14 +397,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
         calls = cxt_player.calls
         call_tiles = [context.called_tile | context.call_choice]
         call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
-        hand_calls_def_before = Riichi.partially_apply_match_definitions(hand, calls, win_definitions, ordering, ordering_r, tile_aliases)
+        waits_before = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
         [call_removed | _] = Riichi.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
-        hand_calls_def_after = Riichi.partially_apply_match_definitions(call_removed, calls ++ [call], win_definitions, ordering, ordering_r, tile_aliases)
-        Enum.any?(state.all_tiles, fn tile ->
-          waits_before = Riichi.is_waiting_on(tile, hand_calls_def_before, ordering, ordering_r, tile_aliases)
-          waits_after = Riichi.is_waiting_on(tile, hand_calls_def_after, ordering, ordering_r, tile_aliases)
-          waits_before != waits_after
-        end)
+        waits_after = Riichi.get_waits(call_removed, calls ++ [call], win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
+        waits_before != waits_after
       "wait_count_at_least" ->
         number = Enum.at(opts, 0, 1)
         win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
@@ -392,7 +410,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         hand = cxt_player.hand
         calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
-        length(waits) >= number
+        MapSet.size(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
         win_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
@@ -402,7 +420,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         hand = cxt_player.hand
         calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
-        length(waits) <= number
+        MapSet.size(waits) <= number
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)

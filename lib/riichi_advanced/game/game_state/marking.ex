@@ -3,11 +3,22 @@ defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
   @special_keys [:done, :cancellable, :post_actions]
+  @mark_targets %{
+    "hand" => :hand,
+    "call" => :calls,
+    "aside" => :aside,
+    "discard" => :discard,
+    "revealed_tile" => :revealed_tile,
+    "scry" => :scry,
+  }
 
   def special_keys(), do: @special_keys
+  def mark_targets(), do: @mark_targets
 
   def initialize_marking(state) do
     # give each seat a marking array. for example:
@@ -34,16 +45,12 @@ defmodule RiichiAdvanced.GameState.Marking do
     state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: init do
       marked_objects ->
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
-        case target do
-          "hand"          -> marked_objects ++ [{:hand, mark_spec}]
-          "call"          -> marked_objects ++ [{:call, mark_spec}]
-          "aside"         -> marked_objects ++ [{:aside, mark_spec}]
-          "discard"       -> marked_objects ++ [{:discard, mark_spec}]
-          "revealed_tile" -> marked_objects ++ [{:revealed_tile, mark_spec}]
-          "scry"          -> marked_objects ++ [{:scry, mark_spec}]
-          _               ->
-            GenServer.cast(self(), {:show_error, "Unknown mark target: #{inspect(target)}"})
-            marked_objects
+        target = Map.get(@mark_targets, target, nil)
+        if target == nil do
+          GenServer.cast(self(), {:show_error, "Unknown mark target: #{inspect(target)}"})
+          marked_objects
+        else
+          marked_objects ++ [{target, mark_spec}]
         end
     end)
     state
@@ -53,10 +60,10 @@ defmodule RiichiAdvanced.GameState.Marking do
     Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) && length(mark_info.marked) < mark_info.needed end)
   end
 
-  defp get_object(state, seat, index, source) do
+  def get_object(state, seat, index, source) do
     case source do
       :hand          -> state.players[seat].hand ++ state.players[seat].draw |> Enum.at(index)
-      :call          -> state.players[seat].calls |> Enum.at(index)
+      :calls         -> state.players[seat].calls |> Enum.at(index)
       :aside         -> state.players[seat].aside |> Enum.at(index)
       :discard       -> state.players[seat].pond |> Enum.at(index)
       :revealed_tile -> Enum.at(get_revealed_tiles(state), index)
@@ -123,7 +130,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "match_hand_to_marked_call" ->
           jokers = Map.keys(state.players[marking_player].tile_mappings)
           state.marking[marking_player]
-          |> Enum.filter(fn {src, _mark_info} -> src == :call end)
+          |> Enum.filter(fn {src, _mark_info} -> src == :calls end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
           |> Enum.all?(fn {call, _, _} ->
@@ -194,17 +201,9 @@ defmodule RiichiAdvanced.GameState.Marking do
 
   def is_marked?(state, marking_player, seat, index, source) do
     get_mark_infos(state.marking[marking_player], source)
-    |> Enum.any?(fn {_src, mark_info} -> case source do
-      :hand          -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :call          -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :aside         -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :discard       -> Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat == seat2 && index == index2 end)
-      :revealed_tile -> Enum.any?(mark_info.marked, fn {_tile, _, index2} -> index == index2 end)
-      :scry          -> Enum.any?(mark_info.marked, fn {_tile, _, index2} -> index == index2 end)
-      _        ->
-        GenServer.cast(self(), {:show_error, "Unknown mark source: #{inspect(source)}"})
-        false
-    end end)
+    |> Enum.any?(fn {_src, mark_info} -> 
+      Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat2 in [seat, nil] && index == index2 end)
+    end)
   end
 
   def mark_tile(state, marking_player, seat, index, source) do

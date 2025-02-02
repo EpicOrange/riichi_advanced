@@ -1,4 +1,5 @@
-defmodule Riichi do
+defmodule RiichiAdvanced.Riichi do
+  alias RiichiAdvanced.Utils, as: Utils
 
   @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"101p",
                 :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"101s",
@@ -305,6 +306,10 @@ defmodule Riichi do
       hand ++ any
     else hand end
     filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    tile_mappings = for {tile1, attrs_aliases} <- filtered_tile_aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases do
+      %{tile2 => [Utils.add_attr(tile1, attrs)]}
+    end
+    |> Enum.reduce(%{}, &Map.merge(&1, &2, fn _k, l, r -> l ++ r end))
     if debug do
       IO.puts("======================================================")
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
@@ -375,8 +380,8 @@ defmodule Riichi do
               tile_aliases = if (no_joker_index != nil && i > no_joker_index) do %{} else filtered_tile_aliases end
               # unique makes it so all groups must be offset by the same tile
               # (no such restriction for non-unique groups)
-              base_tiles = collect_base_tiles(hand, calls, tile_aliases)
-              for base_tile <- (if unique do collect_base_tiles(hand, calls, tile_aliases) else [nil] end) do
+              base_tiles = collect_base_tiles(hand, calls, List.flatten(groups), ordering, ordering_r, tile_mappings)
+              for base_tile <- (if unique do base_tiles else [nil] end) do
                 Task.async(fn ->
                   for _ <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(hand_calls, fn {hand, calls} -> {hand, calls, groups} end) do
                     [] -> []
@@ -387,7 +392,7 @@ defmodule Riichi do
                           "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
                         end
                         [line1 | lines]
-                      end
+                      else "" end
                       new_hand_calls_groups = if exhaustive do
                         for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
@@ -523,7 +528,7 @@ defmodule Riichi do
         IO.inspect("Error: empty match definition given: #{inspect(match_definitions)}")
         0
       else
-        matched = Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
+        matched = Enum.any?(hand_calls, fn {hand, calls} -> match_hand(hand, calls, multiplied_match_def, ordering, ordering_r, tile_aliases) end)
         {l, r} = if matched do
           if l == -1 do {l, r * 2} else {m, r} end
         else
@@ -567,75 +572,105 @@ defmodule Riichi do
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
-  def partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    # take out one copy of each group to process last
-    decomposed_match_definitions = for match_definition <- match_definitions do
-      {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
-        {result, keywords} -> case match_definition_elem do
-          [groups, num] when num == 1     ->
-            entry = {List.delete_at(match_definition, i), keywords ++ [[groups, 1]]}
-            {[entry | result], keywords}
-          [groups, num] when num > 1      ->
-            entry = if "unique" in keywords || "unique" in Enum.at(Enum.at(match_definition, i), 0) do
-              # can't remove one from a unique group, so take out the whole group
-              {List.delete_at(match_definition, i), keywords ++ [[groups, num]]}
-            else
-              {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
-            end
-            {[entry | result], keywords}
-          [_groups, num] when num < 1     -> {result, keywords}
-          keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}
-        end
-      end
-      Enum.reverse(result)
-    end |> Enum.concat()
-    for {def1, def2} <- decomposed_match_definitions do
-      {remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases), def2}
+  def apply_base_tile_to_offset(offset, base_tile, ordering, ordering_r) do
+    cond do
+      is_offset(offset)     -> offset_tile(base_tile, offset, ordering, ordering_r)
+      Utils.is_tile(offset) -> Utils.to_tile(offset)
+      true                  ->
+        IO.puts("Unsupported offset #{inspect(offset)}")
+        nil
     end
   end
 
-  # hand_calls_def is the output of partially_apply_match_definitions
-  def is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.any?(hand_calls_def, fn {hand_calls, def2} ->
-      Enum.any?(hand_calls, fn {hand, calls} ->
-        match_hand(hand ++ [tile], calls, [def2], ordering, ordering_r, tile_aliases)
-      end)
-    end)
+  def apply_base_tile_to_group(group, base_tile, ordering, ordering_r) do
+    cond do
+      is_offset(group) -> apply_base_tile_to_offset(group, base_tile, ordering, ordering_r)
+      is_list(group) -> Enum.map(group, &apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
+      Utils.is_tile(group) -> Utils.to_tile(group)
+      true -> group
+    end
   end
 
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
   def get_waits(hand, calls, match_definitions, all_tiles, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
-    # t = System.os_time(:millisecond)
-
     # only check for waits if we're tenpai
-    ret = if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
-      filtered_tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
-      hand_calls_def = partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases)
-      for tile <- all_tiles, reduce: MapSet.new() do
-        waits -> if tile in waits do waits else
-          tile_aliases = if tile_aliases[tile] != nil do
-            Map.put(filtered_tile_aliases, tile, tile_aliases[tile])
-          else tile_aliases end
-          if is_waiting_on(tile, hand_calls_def, ordering, ordering_r, tile_aliases) do
-            MapSet.union(waits, Utils.apply_tile_aliases(tile, tile_aliases))
-          else waits end
+    if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
+      # go through each match definition and see what tiles can be added for it to match
+      # as soon as something doesn't match, get all tiles that help make it match
+      # take the union of helpful tiles across all match definitions
+      for match_definition <- match_definitions do
+        # make it exhaustive, unless it's unique
+        match_definition = if "unique" not in match_definition && "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+        # IO.puts("\n" <> inspect(match_definition))
+        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], all_tiles} do
+          {keywords, []}               -> {keywords, []}
+          {keywords, waits_complement} -> case last_match_definition_elem do
+            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement}
+            [_groups, num] when num <= 0 -> {keywords, waits_complement} # ignore lookaheads
+            [groups, num] ->
+              # first remove all other groups
+              hand_calls = [{hand, calls}]
+              remaining_match_definition = List.delete_at(match_definition, i)
+              hand_calls = Enum.flat_map(hand_calls, fn {hand, calls} ->
+                remove_match_definition(hand, calls, remaining_match_definition, ordering, ordering_r, tile_aliases)
+              end)
+              |> Enum.uniq()
+
+              # then remove groups num-1 times no matter what
+              # num_hand_calls = length(hand_calls)
+              hand_calls = if num > 1 do
+                Enum.flat_map(hand_calls, fn {hand, calls} ->
+                  remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], ordering, ordering_r, tile_aliases)
+                end)
+                |> Enum.uniq()
+              else hand_calls end
+
+              # try to remove the last one
+              final_match_definition = keywords ++ [[groups, 1]]
+              {hand_calls_success, hand_calls_failure} = Enum.map(hand_calls, fn {hand, calls} ->
+                case remove_match_definition(hand, calls, final_match_definition, ordering, ordering_r, tile_aliases) do
+                  []         -> {[], [{hand, calls}]} # failure
+                  hand_calls -> {hand_calls, []} # success (new hand_calls)
+                end
+              end)
+              |> Enum.unzip()
+              hand_calls_success = Enum.concat(hand_calls_success)
+              hand_calls_failure = Enum.concat(hand_calls_failure)
+              # IO.puts("#{inspect(keywords)} #{inspect(last_match_definition_elem)}: #{num_hand_calls} tries (#{length(hand_calls)} after filtering), #{length(hand_calls_success)} successes, #{length(hand_calls_failure)} failures")
+              # IO.inspect(hand_calls_success, label: "hand_calls_success")
+              # IO.inspect(hand_calls_failure, label: "hand_calls_failure")
+
+              # waits_complement = all waits that don't help
+              # remove waits that do help
+              waits_complement = if Enum.empty?(hand_calls_success) do
+                Enum.reject(waits_complement, fn wait ->
+                  Enum.any?(hand_calls_failure, fn {hand, calls} ->
+                    match_hand([wait | hand], calls, [final_match_definition], ordering, ordering_r, tile_aliases)
+                  end)
+                end)
+              else all_tiles end
+
+              {keywords, waits_complement}
+            _ -> {keywords, waits_complement}
+          end
         end
+        # TODO maybe instead of taking union of differences, take the difference of intersection
+        waits = MapSet.difference(MapSet.new(all_tiles), MapSet.new(waits_complement))
+        # IO.inspect(hand, label: "===\nhand")
+        # IO.inspect(match_definition, label: "match_definition")
+        # IO.inspect(waits, label: "waits")
+        waits
       end
+      |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else MapSet.new() end
-
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if elapsed_time > 10 do
-    #   IO.puts("get_waits: #{inspect(elapsed_time)} ms")
-    # end
-
-    ret
   end
 
   defp _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, ordering, ordering_r, tile_aliases, skip_tenpai_check) do
     waits = get_waits(hand, calls, match_definitions, MapSet.new(wall), ordering, ordering_r, tile_aliases, skip_tenpai_check)
     # remove irrelevant statuses
     |> Utils.remove_attr(["draw", "discard"])
+    visible_tiles = Utils.remove_attr(visible_tiles, ["draw", "discard"])
     freqs = Enum.frequencies(wall -- visible_tiles)
     Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
   end
@@ -661,12 +696,29 @@ defmodule Riichi do
     players[seat].discards ++ riichi_safe |> Utils.strip_attrs() |> Enum.uniq()
   end
 
-  def collect_base_tiles(hand, calls, tile_aliases) do
-    # we add one tile of each suit to account for fixed offsets
-    ([:"1m", :"1p", :"1s"] ++ hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+  def collect_base_tiles(hand, calls, offsets, ordering, ordering_r, tile_mappings) do
+    # essentially take all the tiles we have
+    # then apply every offset from groups in reverse
+    tiles = Enum.uniq(hand ++ Enum.flat_map(calls, &call_to_tiles/1))
+    base_tiles = offsets
+    |> Enum.flat_map(fn offset ->
+      cond do
+        is_integer(offset) -> Enum.map(tiles, &offset_tile(&1, -offset, ordering, ordering_r))
+        Map.has_key?(@fixed_offsets, offset) -> [:"1m", :"1p", :"1s"]
+        Utils.is_tile(offset) -> [:"1m"]
+        true -> []
+      end
+    end)
     |> Enum.uniq()
-    |> Utils.apply_tile_aliases(tile_aliases)
-    |> Enum.reject(& &1 == :any)
+    # also add all tile mappings
+    |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
+    |> Enum.uniq()
+    # also strip attrs
+    base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
+    # never let :any be a base tile
+    base_tiles = base_tiles -- [:any, {:any, []}]
+    # if there are no offsets, always return 1m as a base tile
+    if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
 
   def tile_matches(tile_specs, context) do
@@ -697,7 +749,7 @@ defmodule Riichi do
       "dora" -> Utils.count_tiles([context.tile], context.doras) >= 1
       "kuikae" ->
         player = context.players[context.seat]
-        base_tiles = collect_base_tiles(player.hand, player.calls, player.tile_aliases)
+        base_tiles = collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_ordering, player.tile_ordering_r, player.tile_mappings)
         potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["hand"])
         triplet = remove_group(potential_set, [], [0,0,0], false, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, base_tiles)
         sequence = remove_group(potential_set, [], [0,1,2], false, player.tile_ordering, player.tile_ordering_r, player.tile_aliases, base_tiles)
@@ -722,9 +774,11 @@ defmodule Riichi do
     # t = System.os_time(:millisecond)
     tile_aliases = filter_irrelevant_tile_aliases(tile_aliases, hand ++ Enum.flat_map(calls, &call_to_tiles/1))
 
-    # filter out negative groups from match definition
     match_definitions = for match_definition <- match_definitions do
-      Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
+      # filter out lookaheads from match definition
+      match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
+      # add exhaustive unless unique
+      if "unique" not in match_definition && "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
     end
 
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
@@ -854,13 +908,15 @@ defmodule Riichi do
 
   defp calculate_pair_fu(tile, seat_wind, round_wind) do
     fu = case Utils.strip_attrs(tile) do
-      :"1z" -> if :east in [seat_wind, round_wind] do 2 else 0 end
+      :"1z" -> if :east  in [seat_wind, round_wind] do 2 else 0 end
       :"2z" -> if :south in [seat_wind, round_wind] do 2 else 0 end
-      :"3z" -> if :west in [seat_wind, round_wind] do 2 else 0 end
+      :"3z" -> if :west  in [seat_wind, round_wind] do 2 else 0 end
       :"4z" -> if :north in [seat_wind, round_wind] do 2 else 0 end
       :"5z" -> 2
       :"6z" -> 2
       :"7z" -> 2
+      :"8z" -> 2
+      :"0z" -> 2
       _     -> 0
     end
     # double wind 4 fu
@@ -871,7 +927,7 @@ defmodule Riichi do
   defp _calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases, enable_kontsu_fu) do
     # t = System.os_time(:millisecond)
 
-    IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
+    # IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
 
     # first put all ton calls back into the hand
     ton_tiles = calls
@@ -880,47 +936,36 @@ defmodule Riichi do
     
     starting_hand = starting_hand ++ ton_tiles |> Utils.strip_attrs()
     winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_aliases) |> Utils.strip_attrs()
-    # initial fu
-    fu = case win_source do
-      :draw -> 22
-      _     -> if Enum.all?(calls, fn {name, _call} -> name == "ankan" end) do 30 else 20 end
+
+    # initial fu: 20 (open ron), 22 (tsumo), or 30 (closed ron)
+    is_closed_hand = Enum.all?(calls, fn {name, _call} -> name == "ankan" end)
+    fu = cond do
+      win_source == :draw -> 22
+      is_closed_hand      -> 30
+      true                -> 20
     end
 
-    # add called triplets
+    # add fu of called triplets
     fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
 
-    # TODO actually generalize wrapping based on ordering
-    # rather than hardcoding
-    wraps = "1m" in Map.get(ordering, "9m", [])
-    possible_penchan_removed = if wraps do [] else
-      penchans = %{
-        :"3m" => [[:"1m", :"2m"]],
-        :"7m" => [[:"8m", :"9m"]],
-        :"3p" => [[:"1p", :"2p"]],
-        :"7p" => [[:"8p", :"9p"]],
-        :"3s" => [[:"1s", :"2s"]],
-        :"7s" => [[:"8s", :"9s"]],
-        :"2z" => [[:"3z", :"4z"]],
-        :"3z" => [[:"1z", :"2z"]],
-        :"5z" => [[:"6z", :"7z"]],
-        :"7z" => [[:"5z", :"6z"]]
-      }
-      penchans = Map.put(penchans, :any, Enum.concat(Map.values(penchans)))
-      Enum.flat_map(winning_tiles, fn winning_tile ->
-        Map.get(penchans, Utils.strip_attrs(winning_tile), [])
-        |> Enum.flat_map(&try_remove_all_tiles(starting_hand, &1, tile_aliases))
-        |> Enum.map(fn hand -> {hand, fu+2} end)
-      end)
-    end
-    middle_tiles = [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"2z", :"3z", :"6z"]
-    all_tiles = middle_tiles ++ [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"4z", :"5z", :"7z"]
-    kanchan_tiles = if wraps do all_tiles else middle_tiles end
-    possible_kanchan_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
-      if Utils.count_tiles(kanchan_tiles, [winning_tile], tile_aliases) >= 1 do
-        try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -1, ordering, ordering_r), offset_tile(winning_tile, 1, ordering, ordering_r)], tile_aliases)
-        |> Enum.map(fn hand -> {hand, fu+2} end)
-      else [] end
+    # add all hands with winning kanchan/penchan removed, associated with fu = fu+2
+    possible_penchan_kanchan_removed = winning_tiles
+    |> Enum.flat_map(fn tile ->
+      prev = Map.get(ordering_r, tile, nil)
+      prev2 = Map.get(ordering_r, prev, nil)
+      penchan_l_possible = prev2 != nil && not Map.has_key?(ordering_r, prev2)
+      next = Map.get(ordering, tile, nil)
+      next2 = Map.get(ordering, next, nil)
+      penchan_r_possible = next2 != nil && not Map.has_key?(ordering, next2)
+      kanchan_possible = prev != nil && next != nil
+      if penchan_l_possible do [[prev, prev2]] else [] end
+      ++ if penchan_r_possible do [[next, next2]] else [] end
+      ++ if kanchan_possible do [[prev, next]] else [] end
     end)
+    |> Enum.flat_map(&try_remove_all_tiles(starting_hand, &1, tile_aliases))
+    |> Enum.map(&{&1, fu+2})
+
+    # add all hands with winning ryanmen removed, associated with fu = fu
     possible_left_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
       if offset_tile(winning_tile, -3, ordering, ordering_r) != nil do
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, ordering, ordering_r), offset_tile(winning_tile, -1, ordering, ordering_r)], tile_aliases)
@@ -933,15 +978,19 @@ defmodule Riichi do
         |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu && offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
       else [] end
     end)
+
+    # add all hands with winning kontsu removed, associated with fu = fu+1,2,4 (depending on kontsu)
     possible_kontsu_removed = if enable_kontsu_fu do
       Enum.flat_map(winning_tiles, fn winning_tile ->
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 10, ordering, ordering_r), offset_tile(winning_tile, 20, ordering, ordering_r)], tile_aliases)
         |> Enum.map(fn hand -> {hand, fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
       end)
     else [] end
-    hands_fu = possible_penchan_removed ++ possible_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ possible_kontsu_removed ++ [{starting_hand, fu}]
 
-    # from these hands, remove all triplets and add the according amount of closed triplet fu
+    # all the {hand, fu}s together
+    hands_fu = possible_penchan_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ possible_kontsu_removed ++ [{starting_hand, fu}]
+
+    # from these, remove all triplets and add the according amount of closed triplet fu
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
@@ -1031,13 +1080,13 @@ defmodule Riichi do
     # IO.inspect(winning_tiles)
     # IO.inspect(fus, charlists: :as_lists)
 
-    fu = Enum.max([0 | fus])
-
     # if we can get (closed) pinfu, we should
+    # otherwise, get the max fu possible (= 0 if not a standard hand)
     closed_pinfu_fu = if win_source == :draw do 22 else 30 end
-    fu = if closed_pinfu_fu in fus do closed_pinfu_fu else fu end
+    fu = if closed_pinfu_fu in fus do closed_pinfu_fu else Enum.max(fus, &>=/2, fn -> 0 end) end
 
     # if it's kokushi, 30 fu (tsumo) or 40 fu (ron)
+    # this is balanced for open kokushi being 3 han in space mahjong
     kokushi_tiles = [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
     fu = Enum.flat_map(winning_tiles, fn winning_tile ->
       case try_remove_all_tiles(starting_hand ++ [winning_tile], kokushi_tiles, tile_aliases) do
@@ -1048,15 +1097,14 @@ defmodule Riichi do
 
     # IO.inspect(fu)
 
-    # closed pinfu is 20 tsumo/30 ron, open pinfu is 30, chiitoitsu is 25
     num_pairs = binary_search_count_matches([{starting_hand, []}], [[[[[0, 0]], 1]]], ordering, ordering_r, tile_aliases)
     ret = cond do
-      fu == 22 && win_source == :draw && Enum.empty?(calls) -> 20
-      fu == 30 && win_source != :draw && Enum.empty?(calls) -> 30
-      fu == 20 && not Enum.empty?(calls)                    -> 30
-      Enum.empty?(fus) && num_pairs == 6                    -> 25
-      Enum.empty?(fus) && num_pairs == 5                    -> 30 # kakura kurumi
-      true                                                  ->
+      fu == 22 && win_source == :draw && is_closed_hand -> 20 # closed pinfu tsumo
+      fu == 30 && win_source != :draw && is_closed_hand -> 30 # closed pinfu ron
+      fu == 20 && not is_closed_hand                    -> 30 # open pinfu
+      Enum.empty?(fus) && num_pairs == 6                -> 25 # chiitoitsu
+      Enum.empty?(fus) && num_pairs == 5                -> 30 # kakura kurumi (saki card)
+      true                                              ->
         # round up to nearest 10
         remainder = rem(fu, 10)
         if remainder == 0 do fu else fu - remainder + 10 end
@@ -1138,24 +1186,24 @@ defmodule Riichi do
 
   def get_centralness(tile) do
     cond do
-      Riichi.is_num?(tile, 1) -> 1
-      Riichi.is_num?(tile, 2) -> 2
-      Riichi.is_num?(tile, 3) -> 3
-      Riichi.is_num?(tile, 4) -> 4
-      Riichi.is_num?(tile, 5) -> 4
-      Riichi.is_num?(tile, 6) -> 4
-      Riichi.is_num?(tile, 7) -> 3
-      Riichi.is_num?(tile, 8) -> 2
-      Riichi.is_num?(tile, 9) -> 1
-      true                    -> 0
+      is_num?(tile, 1) -> 1
+      is_num?(tile, 2) -> 2
+      is_num?(tile, 3) -> 3
+      is_num?(tile, 4) -> 4
+      is_num?(tile, 5) -> 4
+      is_num?(tile, 6) -> 4
+      is_num?(tile, 7) -> 3
+      is_num?(tile, 8) -> 2
+      is_num?(tile, 9) -> 1
+      true             -> 0
     end
   end
 
   def genbutsu_to_suji(genbutsu, ordering, ordering_r) do
     Enum.flat_map(genbutsu, &cond do
-      Enum.any?([1,2,3], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, 6, ordering, ordering_r) in genbutsu do [offset_tile(&1, 3, ordering, ordering_r)] else [] end
-      Enum.any?([4,5,6], fn k -> Riichi.is_num?(&1, k) end) -> [offset_tile(&1, -3, ordering, ordering_r), offset_tile(&1, 3, ordering, ordering_r)]
-      Enum.any?([7,8,9], fn k -> Riichi.is_num?(&1, k) end) -> if offset_tile(&1, -6, ordering, ordering_r) in genbutsu do [offset_tile(&1, -3, ordering, ordering_r)] else [] end
+      Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if offset_tile(&1, 6, ordering, ordering_r) in genbutsu do [offset_tile(&1, 3, ordering, ordering_r)] else [] end
+      Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [offset_tile(&1, -3, ordering, ordering_r), offset_tile(&1, 3, ordering, ordering_r)]
+      Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if offset_tile(&1, -6, ordering, ordering_r) in genbutsu do [offset_tile(&1, -3, ordering, ordering_r)] else [] end
       true -> []
     end)
   end
@@ -1266,28 +1314,28 @@ defmodule Riichi do
     |> Enum.reject(&Enum.empty?/1)
     |> Enum.uniq()
     cond do
-      # group with unique keyword with num <= 1
       abs(num) <= 1 && "unique" in groups ->
+        # group with unique keyword with num <= 1
         match_definition
         |> List.delete_at(i)
-      # group with unique keyword with num > 1
       abs(num) > 1 && "unique" in groups ->
+        # group with unique keyword with num > 1
         match_definition
         |> List.replace_at(i, [groups, num - 1])
-      # lookahead for one item
       abs(num) <= 1 && Enum.empty?(new_groups) ->
+        # lookahead for one item
         match_definition
         |> List.delete_at(i)
-      # lookahead for more than one item
       abs(num) <= 1 ->
+        # lookahead for more than one item
         match_definition
         |> List.replace_at(i, [new_groups, num])
-      # normal group with one item
       Enum.empty?(new_groups) ->
+        # normal group with one item
         match_definition
         |> List.replace_at(i, [groups, if num > 0 do num - 1 else num + 1 end])
-      # normal group with more than one item
       true ->
+        # normal group with more than one item
         match_definition
         |> List.replace_at(i, [groups, if num > 0 do num - 1 else num + 1 end])
         |> List.insert_at(i, [new_groups, if num > 0 do 1 else -1 end])

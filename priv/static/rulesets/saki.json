@@ -168,6 +168,7 @@
     {"id": "chinitsu", "conflicts": ["galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
     {"id": "calls_are_forced", "name": "Calls Are Forced", "desc": "Forces you to make all available calls, including riichi. You still get to choose if multiple calls are available."}
   ],
+  "display_name": "Sakicards v1.3",
   "tutorial_link": "https://docs.google.com/document/d/1y4Os-PJJQ5vMuc9hFbck_IcXItHmCHTjMlRNbHJu0gw/edit",
   "enable_saki_cards": true,
   "saki_ver": "v13",
@@ -1761,7 +1762,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -1779,7 +1781,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_dora_indicator"],
+          ["swap_tiles", {"hand": ["marked"]}, {"revealed_tile": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -1838,7 +1841,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["advance_turn"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]]
         ]]
@@ -1906,7 +1910,8 @@
         ["unset_status", "pon"],
         ["mark", [["discard", 1, ["match_called_tile"]]]],
         ["push_message", "set aside the discarded fourth copy of the pon tile (Matano Seiko)"],
-        ["set_aside_marked_discard"]
+        ["move_tiles", {"discard": ["marked"]}, "aside"],
+        ["clear_marking"]
       ],
       "unskippable": true
     },
@@ -1990,7 +1995,8 @@
       "actions": [
         ["big_text", "Onjouji Toki: swap!"],
         ["mark", [["hand", 1, ["not_riichi"]]]],
-        ["swap_marked_with_aside"],
+        ["swap_tiles", {"hand": ["marked"]}, "aside"],
+        ["clear_marking"],
         ["push_message", "swapped a tile from hand with the tile they set aside (Onjouji Toki)"],
         ["recalculate_buttons"] // allow tsumo to pop up
       ]
@@ -2012,8 +2018,8 @@
         ["unset_status", "about_to_draw"],
         ["mark", [["discard", 1, ["self"]]]],
         ["push_message", "drew one of their discards (Shibuya Takami)"], // TODO: say which one!
-        ["set_aside_marked_discard"],
-        ["draw_from_aside"],
+        ["move_tiles", {"discard": ["marked"]}, "draw"],
+        ["clear_marking"],
         ["add_attr", ["draw"], ["facedown", "no_discard"]]
       ],
       "unskippable": true
@@ -2105,7 +2111,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -2131,7 +2138,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -2342,7 +2350,8 @@
         ["mark", [["aside", 1, ["self"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from their aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "self"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2362,7 +2371,8 @@
         ["mark", [["aside", 1, ["shimocha"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from shimocha's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "shimocha"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2382,7 +2392,8 @@
         ["mark", [["aside", 1, ["toimen"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from toimen's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "toimen"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2402,7 +2413,8 @@
         ["mark", [["aside", 1, ["kamicha"]]]],
         ["unset_status", "kan"],
         ["push_message", "drew from kamicha's aside tiles (Suehara Kyouko)"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "kamicha"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
       "unskippable": true
@@ -2558,7 +2570,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_discard"],
+          ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]]
@@ -2846,7 +2859,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_scry"],
+          ["swap_tiles", {"hand": ["marked"]}, {"scry": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
@@ -2870,7 +2884,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_scry"],
+          ["swap_tiles", {"hand": ["marked"]}, {"scry": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
@@ -2896,7 +2911,8 @@
         ["recalculate_buttons"], // allow interrupting swap
         ["unset_status", "about_to_swap"],
         ["ite", [{"name": "status", "opts": ["swap_interrupted"]}], [["clear_marking"], ["unset_status", "about_to_swap"]], [
-          ["swap_marked_hand_and_dora_indicator"],
+          ["swap_tiles", {"hand": ["marked"]}, {"revealed_tile": ["marked"]}],
+          ["clear_marking"],
           ["when", [{"name": "others_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
           ["recalculate_buttons"] // allow tsumo to pop up
         ]],
@@ -2930,7 +2946,7 @@
         ["scry_all", 1],
         ["pause", 1000],
         ["when", [{"name": "match", "opts": [["hand_any", "scry"], [[[[[0, 0]], 1]]]]}], [
-          ["set_aside_scry"],
+          ["move_tiles", "scry", "aside"],
           ["add_attr", ["aside"], ["revealed"]],
           ["big_text", "Ueshige Suzu: set aside!"],
           ["push_message", "has a copy of the revealed tile in hand, and so sets it aside (Ueshige Suzu)"]
@@ -2952,9 +2968,11 @@
         ["draw_aside", 10],
         ["add_attr", ["aside"], ["revealed"]],
         ["set_status", "shimizudani-ryuuka_exhausted"],
-        ["push_message", "set ten tiles aside (Shimizudani Ryuuka)"]
+        ["push_message", "set ten tiles aside (Shimizudani Ryuuka)"],
+        ["recalculate_buttons"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "shimizudani_ryuuka_2": {
       "display_name": "Declare yaku",
@@ -2969,7 +2987,8 @@
         ["push_message", "is choosing yaku (Shimizudani Ryuuka)"],
         ["choose_yaku"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "shimizudani_ryuuka_draw": {
       "display_name": "Draw from aside",
@@ -2985,10 +3004,12 @@
       "actions": [
         ["mark", [["aside", 1, ["self"]]]],
         ["unset_status", "kan"],
-        ["draw_marked_aside"],
+        ["move_tiles", {"aside": ["marked", "self"]}, "draw"],
+        ["clear_marking"],
         ["recalculate_buttons"] // riichi, tsumo, etc
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "kajiki_yumi_swap": {
       "display_name": "Swap open melds",
@@ -3487,7 +3508,8 @@
       ],
       "actions": [
         ["mark", [["scry", 1, []]]],
-        ["draw_marked_scry"],
+        ["move_tiles", {"scry": ["marked"]}, "draw"],
+        ["clear_marking"],
         ["unset_status", "oohoshi_awai_draw"],
         ["set_status", "oohoshi_awai_place"],
         ["push_message", "draws one of the revealed tiles (Oohoshi Awai)"],
@@ -4506,7 +4528,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["recalculate_buttons", "play_tile", "check_discard_passed", "advance_turn", "draw", "draw_from_aside", "swap_marked_hand_and_discard", "swap_marked_hand_and_dora_indicator"],
+  "interruptible_actions": ["recalculate_buttons", "play_tile", "check_discard_passed", "advance_turn", "draw", "draw_from_aside", "swap_tiles", "clear_marking"],
   "shown_statuses": ["furiten"],
   "persistent_statuses": ["hanada-kirame_exhausted", "matsumi_kuro_dora_disabled"],
   "display_riichi_sticks": true,
@@ -4515,5 +4537,6 @@
   "initial_score": 30000,
   "initial_dead_wall_length": 14,
   "starting_tiles": 13,
-  "max_rounds": 8
+  "max_rounds": 8,
+  "win_timer": 20
 }
