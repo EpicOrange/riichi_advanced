@@ -572,33 +572,6 @@ defmodule RiichiAdvanced.Riichi do
   end
   def can_call?(calls_spec, hand, ordering, ordering_r, called_tiles \\ [], tile_aliases \\ %{}, tile_mappings \\ %{}), do: Enum.any?(make_calls(calls_spec, hand, ordering, ordering_r, called_tiles, tile_aliases, tile_mappings), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
-  # used in "call_changes_waits" condition
-  def partially_apply_match_definitions(hand, calls, match_definitions, ordering, ordering_r, tile_aliases \\ %{}) do
-    # take out one copy of each group to process last
-    decomposed_match_definitions = for match_definition <- match_definitions do
-      {result, _keywords} = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], []} do
-        {result, keywords} ->
-          unique = "unique" in keywords
-          case match_definition_elem do
-            [groups, num] when num == 1 or unique ->
-              # can't remove one from a unique group, so take out the whole group
-              entry = {List.delete_at(match_definition, i), keywords ++ [[groups, 1]]}
-              {[entry | result], keywords}
-            [groups, num] when num > 1      ->
-              entry = {List.replace_at(match_definition, i, [groups, num-1]), keywords ++ [[groups, 1]]}
-              {[entry | result], keywords}
-            [_groups, num] when num < 1     -> {result, keywords}
-            keyword when is_binary(keyword) -> {result, keywords ++ [keyword]}
-          end
-      end
-      Enum.reverse(result)
-    end |> Enum.concat()
-    for {def1, def2} <- decomposed_match_definitions do
-      removed = remove_match_definition(hand, calls, def1, ordering, ordering_r, tile_aliases)
-      {removed, def2}
-    end
-  end
-
   def apply_base_tile_to_offset(offset, base_tile, ordering, ordering_r) do
     cond do
       is_offset(offset)     -> offset_tile(base_tile, offset, ordering, ordering_r)
@@ -616,13 +589,6 @@ defmodule RiichiAdvanced.Riichi do
       Utils.is_tile(group) -> Utils.to_tile(group)
       true -> group
     end
-  end
-
-  # hand_calls_def is the output of partially_apply_match_definitions
-  def is_waiting_on(tile, hand_calls_skipped, ordering, ordering_r, tile_aliases \\ %{}) do
-    Enum.any?(hand_calls_skipped, fn {hand, calls, skipped_match_defn} ->
-      match_hand(hand ++ [tile], calls, [skipped_match_defn], ordering, ordering_r, tile_aliases)
-    end)
   end
 
   # get all unique waits for a given 14-tile match definition, like win
