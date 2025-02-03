@@ -2,6 +2,8 @@ defmodule RoomPlayer do
   defstruct [
     nickname: nil,
     id: "",
+    session_id: nil,
+    seat: nil,
     ready: false
   ]
   use Accessible
@@ -218,7 +220,7 @@ defmodule RiichiAdvanced.RoomState do
   def handle_call({:new_player, socket}, _from, state) do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
-    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id})
+    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id, session_id: socket.assigns.session_id})
     IO.puts("Player #{socket.id} joined room #{state.room_code} for ruleset #{state.ruleset}")
     state = broadcast_state_change(state)
     {:reply, [state], state}
@@ -311,6 +313,7 @@ defmodule RiichiAdvanced.RoomState do
       state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
       # state = put_in(state.seats[seat], state.players[socket_id])
       state = put_seat(state, seat, state.players[socket_id])
+      state = put_in(state.players[socket_id].seat, seat)
       IO.puts("Player #{socket_id} sat in seat #{seat}")
       state
     else state end
@@ -350,6 +353,7 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_cast({:get_up, socket_id}, state) do
     state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = put_in(state.players[socket_id].seat, nil)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -370,7 +374,8 @@ defmodule RiichiAdvanced.RoomState do
       end
       {get_enabled_mods(state), config}
     end
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code)}}}
+    reserved_seats = Map.new(state.players, fn {_id, player} -> {player.seat, player.session_id} end)
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, reserved_seats: reserved_seats, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
         IO.puts("Starting game session #{state.room_code}")

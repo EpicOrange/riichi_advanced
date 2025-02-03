@@ -62,6 +62,7 @@ defmodule Game do
     ruleset_json: nil,
     mods: nil,
     config: nil,
+    reserved_seats: nil,
     # pids
     supervisor: nil,
     mutex: nil,
@@ -159,6 +160,7 @@ defmodule RiichiAdvanced.GameState do
         ruleset: Keyword.get(init_data, :ruleset),
         mods: Keyword.get(init_data, :mods, []),
         config: Keyword.get(init_data, :config, nil),
+        reserved_seats: Keyword.get(init_data, :reserved_seats, %{}),
       },
       name: Keyword.get(init_data, :name))
   end
@@ -234,6 +236,7 @@ defmodule RiichiAdvanced.GameState do
       room_code: state.room_code,
       mods: state.mods,
       config: state.config,
+      reserved_seats: state.reserved_seats,
       ruleset_json: ruleset_json,
       supervisor: supervisor,
       mutex: mutex,
@@ -1142,18 +1145,21 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call({:new_player, socket}, _from, state) do
     {seat, spectator} = cond do
-      :east in state.available_seats  && Map.get(socket.assigns, :seat_param) == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  -> {:east, false}
-      :south in state.available_seats && Map.get(socket.assigns, :seat_param) == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) -> {:south, false}
-      :west in state.available_seats  && Map.get(socket.assigns, :seat_param) == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  -> {:west, false}
-      :north in state.available_seats && Map.get(socket.assigns, :seat_param) == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) -> {:north, false}
+      :east in state.available_seats  && Map.get(socket.assigns, :seat_param) == "east"  && (Map.get(state, :east)  == nil || is_pid(Map.get(state, :east)))  && Map.get(state.reserved_seats, :east,  nil) in [nil, socket.assigns.session_id] -> {:east, false}
+      :south in state.available_seats && Map.get(socket.assigns, :seat_param) == "south" && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) && Map.get(state.reserved_seats, :south, nil) in [nil, socket.assigns.session_id] -> {:south, false}
+      :west in state.available_seats  && Map.get(socket.assigns, :seat_param) == "west"  && (Map.get(state, :west)  == nil || is_pid(Map.get(state, :west)))  && Map.get(state.reserved_seats, :west,  nil) in [nil, socket.assigns.session_id] -> {:west, false}
+      :north in state.available_seats && Map.get(socket.assigns, :seat_param) == "north" && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) && Map.get(state.reserved_seats, :north, nil) in [nil, socket.assigns.session_id] -> {:north, false}
       Map.get(socket.assigns, :seat_param) == "spectator" -> {:east, true}
-      :east in state.available_seats  && Map.get(state, :east) == nil  || is_pid(Map.get(state, :east))  -> {:east, false}
-      :south in state.available_seats && Map.get(state, :south) == nil || is_pid(Map.get(state, :south)) -> {:south, false}
-      :west in state.available_seats  && Map.get(state, :west) == nil  || is_pid(Map.get(state, :west))  -> {:west, false}
-      :north in state.available_seats && Map.get(state, :north) == nil || is_pid(Map.get(state, :north)) -> {:north, false}
+      :east in state.available_seats  && (Map.get(state, :east) == nil  || is_pid(Map.get(state, :east)))  && Map.get(state.reserved_seats, :east,  nil) in [nil, socket.assigns.session_id] -> {:east, false}
+      :south in state.available_seats && (Map.get(state, :south) == nil || is_pid(Map.get(state, :south))) && Map.get(state.reserved_seats, :south, nil) in [nil, socket.assigns.session_id] -> {:south, false}
+      :west in state.available_seats  && (Map.get(state, :west) == nil  || is_pid(Map.get(state, :west)))  && Map.get(state.reserved_seats, :west,  nil) in [nil, socket.assigns.session_id] -> {:west, false}
+      :north in state.available_seats && (Map.get(state, :north) == nil || is_pid(Map.get(state, :north))) && Map.get(state.reserved_seats, :north, nil) in [nil, socket.assigns.session_id] -> {:north, false}
       true                                          -> {:east, true}
     end
     state = add_player(state, socket, seat, spectator)
+    state = if not spectator && Map.get(state.reserved_seats, seat, nil) == nil do
+      put_in(state.reserved_seats[seat], socket.assigns.session_id)
+    else state end
     {:reply, {state, seat, spectator}, state}
   end
   
@@ -1178,9 +1184,14 @@ defmodule RiichiAdvanced.GameState do
     else state end
 
     state = if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
-      # all players and spectators have left, shutdown
-      IO.puts("Stopping game #{state.room_code}")
-      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      # all players and spectators have left, schedule a shutdown
+      if map_size(state.reserved_seats) <= 1 do
+        # immediately stop solo games
+        GenServer.cast(self(), :terminate_game_if_empty)
+      else
+        IO.puts("Stopping game #{state.room_code} in 60 seconds")
+        :timer.apply_after(4000, GenServer, :cast, [self(), :terminate_game_if_empty])
+      end
       state
     else
       state = fill_empty_seats_with_ai(state)
@@ -1266,6 +1277,17 @@ defmodule RiichiAdvanced.GameState do
     else state end
 
     state = initialize_new_round(state, log)
+    {:noreply, state}
+  end
+
+  def handle_cast(:terminate_game_if_empty, state) do
+    if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
+      # all players and spectators have left, shutdown
+      IO.puts("Stopping game #{state.room_code}")
+      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+    else
+      IO.puts("Not stopping game #{state.room_code}")
+    end
     {:noreply, state}
   end
 
