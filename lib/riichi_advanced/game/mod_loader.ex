@@ -100,9 +100,9 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def get_ruleset_json(ruleset, session_id \\ nil, strip_comments? \\ false) do
+  def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false) do
     if ruleset == "custom" do
-      case RiichiAdvanced.ETSCache.get(session_id, ["{}"], :cache_rulesets) do
+      case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
         [ruleset_json] -> ruleset_json
         _ -> "{}"
       end
@@ -138,8 +138,8 @@ defmodule RiichiAdvanced.ModLoader do
   }
   """
 
-  def get_config_json(ruleset, session_id) do
-    case RiichiAdvanced.ETSCache.get({ruleset, session_id}, [@default_config], :cache_configs) do
+  def get_config_json(ruleset, room_code) do
+    case RiichiAdvanced.ETSCache.get({ruleset, room_code}, [@default_config], :cache_configs) do
       [ruleset_json] -> ruleset_json
       _ -> @default_config
     end

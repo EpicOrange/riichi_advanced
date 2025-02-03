@@ -2,8 +2,9 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
   alias RiichiAdvanced.Constants, as: Constants
   use RiichiAdvancedWeb, :live_view
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:log_id, "")
     |> assign(:error_message, nil)

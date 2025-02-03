@@ -2,9 +2,10 @@ defmodule RiichiAdvancedWeb.RoomLive do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
-    |> assign(:session_id, params["id"])
+    |> assign(:session_id, session["session_id"])
+    |> assign(:room_code, params["room_code"])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
@@ -16,23 +17,23 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:state, %Room{})
     if socket.root_pid != nil do
       # start a new room process, if it doesn't exist already
-      room_spec = {RiichiAdvanced.RoomSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("room", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("room", socket.assigns.ruleset, socket.assigns.room_code)}}}
       room_state = case DynamicSupervisor.start_child(RiichiAdvanced.RoomSessionSupervisor, room_spec) do
         {:ok, _pid} ->
-          IO.puts("Starting room session #{socket.assigns.session_id}")
-          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.session_id))
+          IO.puts("Starting room session #{socket.assigns.room_code}")
+          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.room_code))
           room_state
         {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting room session #{socket.assigns.session_id}")
+          IO.puts("Error when starting room session #{socket.assigns.room_code}")
           IO.inspect(error)
           nil
         {:error, {:already_started, _pid}} ->
-          IO.puts("Already started room session #{socket.assigns.session_id}")
-          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.session_id))
+          IO.puts("Already started room session #{socket.assigns.room_code}")
+          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.room_code))
           room_state
       end
       # subscribe to state updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> socket.assigns.session_id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code)
       # init a new player and get the current state
       [state] = GenServer.call(room_state, {:new_player, socket})
       socket = socket
@@ -48,7 +49,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
           %{text: "Entered room"},
-          %{bold: true, text: socket.assigns.session_id},
+          %{bold: true, text: socket.assigns.room_code},
           %{text: "for variant"},
           %{bold: true, text: socket.assigns.ruleset}
         ]})
@@ -72,7 +73,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       <header>
         <h3><%= @display_name %></h3>
         <div class="session">
-          <%= for tile <- String.split(@session_id, ",") do %>
+          <%= for tile <- String.split(@room_code, ",") do %>
             <div class={["tile", tile]}></div>
           <% end %>
         </div>
@@ -122,7 +123,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <%= if @ruleset == "custom" do %>
           <div class="mods-title">Ruleset</div>
           <div class="custom-json">
-            <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
+            <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} room_code={@room_code} room_state={@room_state} />
           </div>
         <% else %>
           <input type="radio" id="mods-tab" name="room-settings-tab" checked phx-update="ignore">
@@ -148,7 +149,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
             </div>
           </div>
           <div class="config">
-            <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="config-textarea" ruleset={@ruleset} session_id={@session_id} room_state={@room_state} />
+            <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="config-textarea" ruleset={@ruleset} room_code={@room_code} room_state={@room_state} />
           </div>
         <% end %>
       </div>
@@ -259,7 +260,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
-    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.session_id) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
       socket = assign(socket, :state, state)
       socket = if state.started do
         seat = cond do
@@ -270,7 +271,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           true                                      -> :spectator
         end
         socket = push_event(socket, "left-page", %{})
-        push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
+        push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
       else socket end
       {:noreply, socket}
     else
@@ -279,7 +280,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def handle_info(%{topic: topic, event: "textarea_updated", payload: %{"from_version" => from_version, "version" => version, "uuids" => uuids, "deltas" => deltas}}, socket) do
-    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.session_id) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
       socket = push_event(socket, "apply-delta", %{from_version: from_version, version: version, uuids: uuids, deltas: deltas})
       {:noreply, socket}
     else

@@ -2,8 +2,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
@@ -134,8 +135,8 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     {:noreply, socket}
   end
 
-  def handle_event("join_room", %{"name" => session_id}, socket) do
-    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{session_id}?nickname=#{socket.assigns.nickname}")
+  def handle_event("join_room", %{"name" => room_code}, socket) do
+    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 
@@ -143,15 +144,15 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     if socket.assigns.show_room_code_buttons do
       socket = if length(socket.assigns.room_code) == 3 do
         # enter private room, or create a new room
-        session_id = Enum.join(socket.assigns.room_code, ",")
-        push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{session_id}?nickname=#{socket.assigns.nickname}")
+        room_code = Enum.join(socket.assigns.room_code, ",")
+        push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
       else socket end
       {:noreply, socket}
     else
       case GenServer.call(socket.assigns.lobby_state, :create_room) do
         :no_names_remaining -> {:noreply, socket}
-        {:ok, session_id}    ->
-          socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{session_id}?nickname=#{socket.assigns.nickname}")
+        {:ok, room_code}    ->
+          socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
           {:noreply, socket}
       end
     end
@@ -163,8 +164,8 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       {:noreply, socket}
     else
       if String.starts_with?(topic, state.ruleset <> "-room:") do
-        session_id = String.replace_prefix(topic, state.ruleset <> "-room:", "")
-        GenServer.cast(socket.assigns.lobby_state, {:update_room_state, session_id, state})
+        room_code = String.replace_prefix(topic, state.ruleset <> "-room:", "")
+        GenServer.cast(socket.assigns.lobby_state, {:update_room_state, room_code, state})
         {:noreply, socket}
       else
         {:noreply, socket}
@@ -172,9 +173,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     end
   end
 
-  def handle_info(%{topic: topic, event: "new_room", payload: %{"name" => session_id}}, socket) do
+  def handle_info(%{topic: topic, event: "new_room", payload: %{"name" => room_code}}, socket) do
     if topic == ("lobby:" <> socket.assigns.ruleset) do
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> session_id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> room_code)
       {:noreply, socket}
     else
       {:noreply, socket}

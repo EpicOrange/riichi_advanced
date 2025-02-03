@@ -297,8 +297,8 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  def to_registry_name(name, ruleset, session_id) do
-    name <> "-" <> ruleset <> "-" <> session_id
+  def to_registry_name(name, ruleset, room_code) do
+    name <> "-" <> ruleset <> "-" <> room_code
   end
 
   def try_integer(value) do

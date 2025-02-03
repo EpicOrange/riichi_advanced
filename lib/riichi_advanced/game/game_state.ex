@@ -58,7 +58,7 @@ defmodule Game do
   defstruct [
     # params
     ruleset: nil,
-    session_id: nil,
+    room_code: nil,
     ruleset_json: nil,
     mods: nil,
     config: nil,
@@ -155,7 +155,7 @@ defmodule RiichiAdvanced.GameState do
     GenServer.start_link(
       __MODULE__,
       %{
-        session_id: Keyword.get(init_data, :session_id),
+        room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset),
         mods: Keyword.get(init_data, :mods, []),
         config: Keyword.get(init_data, :config, nil),
@@ -177,15 +177,15 @@ defmodule RiichiAdvanced.GameState do
     # IO.puts("Game state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.session_id))
-    [{supervisor, _}] = case Registry.lookup(:game_registry, Utils.to_registry_name("log", state.ruleset, state.session_id)) do
+    [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.room_code))
+    [{supervisor, _}] = case Registry.lookup(:game_registry, Utils.to_registry_name("log", state.ruleset, state.room_code)) do
       [{supervisor, _}] -> [{supervisor, nil}]
-      _ -> Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
+      _ -> Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code))
     end
-    [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.session_id))
-    [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.session_id))
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.session_id))
-    [{smt_solver, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("smt_solver", state.ruleset, state.session_id))
+    [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.room_code))
+    [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.room_code))
+    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.room_code))
+    [{smt_solver, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("smt_solver", state.ruleset, state.room_code))
 
     # initialize all debouncers
     {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :play_tile_debouncer_east, :reset_play_tile_debounce, :east)
@@ -212,7 +212,7 @@ defmodule RiichiAdvanced.GameState do
 
     # read in the ruleset
     mods = Map.get(state, :mods, [])
-    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.session_id, not Enum.empty?(mods))
+    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.room_code, not Enum.empty?(mods))
 
     # apply mods
     ruleset_json = if state.ruleset != "custom" && not Enum.empty?(mods) do
@@ -220,7 +220,7 @@ defmodule RiichiAdvanced.GameState do
     else ruleset_json end
     if not Enum.empty?(mods) do
       # cache mods
-      RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, mods, :cache_mods)
+      RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
     end
 
     # apply config
@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.GameState do
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
       ruleset: state.ruleset,
-      session_id: state.session_id,
+      room_code: state.room_code,
       mods: state.mods,
       config: state.config,
       ruleset_json: ruleset_json,
@@ -761,7 +761,7 @@ defmodule RiichiAdvanced.GameState do
             else
               if not state.log_loading_mode do
                 # seek to the next round
-                [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", state.ruleset, state.session_id))
+                [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", state.ruleset, state.room_code))
                 GenServer.cast(log_control_state, {:seek, state.kyoku + 1, -1})
                 state
               else state end
@@ -1080,7 +1080,7 @@ defmodule RiichiAdvanced.GameState do
       end
     end
     # IO.puts("broadcast_state_change called")
-    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "state_updated", %{"state" => state})
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "state_updated", %{"state" => state})
     # reset anim
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
     state
@@ -1088,7 +1088,7 @@ defmodule RiichiAdvanced.GameState do
 
   def play_sound(state, path, seat \\ nil) do
     if not state.log_loading_mode do
-      RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.session_id, "play_sound", %{"seat" => seat, "path" => path})
+      RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "play_sound", %{"seat" => seat, "path" => path})
     end
   end
 
@@ -1179,7 +1179,7 @@ defmodule RiichiAdvanced.GameState do
 
     state = if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
       # all players and spectators have left, shutdown
-      IO.puts("Stopping game #{state.session_id}")
+      IO.puts("Stopping game #{state.room_code}")
       DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
       state
     else
@@ -1228,7 +1228,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_call({:put_state, new_state}, _from, state) do
     new_state = Map.drop(new_state, [
       :ruleset,
-      :session_id,
+      :room_code,
       :ruleset_json,
       :mods,
       :supervisor,

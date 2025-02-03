@@ -5,14 +5,14 @@ defmodule RiichiAdvanced.GameTest do
   # import ExUnit.CaptureIO
 
   setup do
-    session_id = Ecto.UUID.generate()
+    room_code = Ecto.UUID.generate()
     ruleset = "riichi"
     mods = []
     config = nil
-    game_spec = {RiichiAdvanced.GameSupervisor, session_id: session_id, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, session_id)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
     {:ok, _pid} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
-    [{game, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", ruleset, session_id))
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, session_id))
+    [{game, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", ruleset, room_code))
+    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, room_code))
 
     # suppress all IO from game_state
     {:ok, io} = StringIO.open("")
@@ -34,12 +34,12 @@ defmodule RiichiAdvanced.GameTest do
     # activate game
     GenServer.cast(game_state, {:initialize_game, nil})
 
-    {:ok, %{session_id: session_id, ruleset: ruleset, game: game, game_state: game_state}}
+    {:ok, %{room_code: room_code, ruleset: ruleset, game: game, game_state: game_state}}
   end
 
   # we only add tests for bugs that come up repeatedly
 
-  test "no double discarding", %{session_id: _session_id, ruleset: _ruleset, game: _game, game_state: game_state} do
+  test "no double discarding", %{room_code: _room_code, ruleset: _ruleset, game: _game, game_state: game_state} do
     state = GenServer.call(game_state, :get_state)
     assert state.turn == :east
     GenServer.cast(game_state, {:play_tile, :east, 1})
