@@ -3,11 +3,21 @@ def fix_kan:
   |
   .actions |= map(if type == "array" and .[0] == "run" and .[1] == "do_kan_draw" then .[2] = {"status": "kan"} else . end);
 
+def replace($from; $to):
+  if . == $from then $to else . end;
+
 .num_players = 3
 |
 .initial_score = 35000
 |
 .default_mods -= ["suufon_renda", "suucha_riichi"]
+|
+# add kansai mod to the list
+(.available_mods | map(type == "object" and .id == "kansai_chiitoitsu") | index(true)) as $ix
+|
+.available_mods |= .[:$ix+1] + [
+  {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Mangan tsumo gives you 8000 total instead of 4000+2000.)"}
+] + .[$ix+1:]
 |
 # remove manzu from wall
 .wall -= [
@@ -50,6 +60,8 @@ walk(if . == "pei" then "pei_triplet" else . end)
 .buttons |= del(.chii)
 |
 # fix kans
+.functions.do_kan_draw |= map(replace(["set_status", "kan"]; ["set_status", "$status"]))
+|
 .buttons.daiminkan |= fix_kan
 |
 .buttons.kakan |= fix_kan
