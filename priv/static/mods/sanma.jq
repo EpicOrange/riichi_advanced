@@ -16,6 +16,7 @@ def replace($from; $to):
 (.available_mods | map(type == "object" and .id == "kansai_chiitoitsu") | index(true)) as $ix
 |
 .available_mods |= .[:$ix+1] + [
+  {"id": "kansai", "deps": ["kansai_chiitoitsu"], "name": "Kansai", "desc": "TODO"},
   {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Mangan tsumo gives you 8000 total instead of 4000+2000.)"}
 ] + .[$ix+1:]
 |
@@ -71,6 +72,6 @@ walk(if . == "pei" then "pei_triplet" else . end)
 # add pei
 .buttons.pei = {
   "display_name": "Pei",
-  "show_when": ["our_turn", "has_draw", "not_just_discarded", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}, {"name": "tile_not_drawn", "opts": [-8]}],
+  "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}, {"name": "tile_not_drawn", "opts": [-8]}],
   "actions": [["big_text", "Pei"], ["flower", "4z"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]]
 }
