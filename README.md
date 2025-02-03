@@ -27,7 +27,23 @@ Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bu
 
 ## Changelog
 
-- __1 Feb 2025__: Initial release for v1.0.0! 18 rulesets, hundreds of mods, multiplayer, it's all there.
+- __3 Feb 2025__: v1.0.1:
+  + Added documentation for SBR and Galaxy Mahjong (thanks Sophie)
+  + Added `"save_tile_aliases"` and `"load_tile_aliases"` actions
+  + Added kansai chiitoitsu mod
+  + Added no tsumo loss mod
+  + Added ability to join running games (though you still cannot view running games)
+  + Added session tracking to mitigate disconnection issues (needs testing)
+  + Fixed crash when checking if ankan changes your waits while in riichi.
+  + Fixed crash in Singaporean when checking for multisided wait
+  + Fixed crash when call buttons contain malformed actions
+  + Fixed crash when navigating between pages
+  + Fixed "unique" specifier for match definition
+  + Fixed flowers being treated as calls
+  + Fixed nagashi being achievable by a dead hand (Chombo mod)
+  + Fix chanta not accepting honor sequences in space mahjong
+  + Fix replacement tiles not being drawn from dead wall visually
+- __1 Feb 2025__: v1.0.0: 17 rulesets, hundreds of mods, multiplayer, it's all there.
 
 ## Supported rulesets
 
