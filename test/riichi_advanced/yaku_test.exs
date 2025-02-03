@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.YakuTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.Utils, as: Utils
 
   # TODO dozens of yaku tests, including local yaku...
 

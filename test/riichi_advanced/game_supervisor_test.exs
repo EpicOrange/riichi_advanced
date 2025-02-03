@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.GameSupervisorTest do
   use ExUnit.Case, async: true
+  alias RiichiAdvanced.Utils, as: Utils
 
   setup do
     session_id = Ecto.UUID.generate()

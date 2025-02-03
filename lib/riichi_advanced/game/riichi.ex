@@ -1135,7 +1135,7 @@ defmodule RiichiAdvanced.Riichi do
       if is_dealer do 2 else 3 end
     end
     ko_payment = trunc(Float.ceil(score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
-    oya_payment = trunc(Float.ceil(2 * score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
+    oya_payment = trunc(Float.round(2 * score / divisor / han_fu_rounding_factor) * han_fu_rounding_factor)
     # oya_payment is only relevant if is_dealer is false
     # (it is just double ko payment if is_dealer is true, which is useless)
     {ko_payment, oya_payment}

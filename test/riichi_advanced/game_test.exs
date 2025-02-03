@@ -1,5 +1,7 @@
 defmodule RiichiAdvanced.GameTest do
   use ExUnit.Case, async: true
+  alias RiichiAdvanced.Utils, as: Utils
+
   # import ExUnit.CaptureIO
 
   setup do
