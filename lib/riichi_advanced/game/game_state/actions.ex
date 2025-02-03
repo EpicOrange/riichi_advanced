@@ -108,14 +108,15 @@ defmodule RiichiAdvanced.GameState.Actions do
               |> draw_tile(seat, 1, tile, to_aside)
               |> draw_tile(seat, num - 1, tile_spec, to_aside)
             not Enum.empty?(state.wall) ->
-              # move the last tile of the wall to the dead wall, and then draw it
+              # move the last tile of the wall to the dead wall
+              # then draw the last tile of the dead wall
               {wall, [tile]} = Enum.split(state.wall, -1)
               dead_wall = [tile | state.dead_wall]
               state
               |> Map.put(:wall, wall)
               |> Map.put(:dead_wall, dead_wall)
+              |> draw_tile(seat, 1, Enum.at(dead_wall, -1-state.dead_wall_index), to_aside)
               |> Map.put(:dead_wall_index, state.dead_wall_index + 1)
-              |> draw_tile(seat, 1, tile, to_aside)
               |> draw_tile(seat, num - 1, tile_spec, to_aside)
             true ->
               # both walls are exhausted, draw nothing
