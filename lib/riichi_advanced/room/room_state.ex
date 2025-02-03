@@ -3,8 +3,7 @@ defmodule RoomPlayer do
     nickname: nil,
     id: "",
     session_id: nil,
-    seat: nil,
-    ready: false
+    seat: nil
   ]
   use Accessible
 end
@@ -142,6 +141,13 @@ defmodule RiichiAdvanced.RoomState do
         [Delta.Op.insert(config)]
       end,
     })
+
+    # if a game is running, remove the occupied seats from the menu
+    existing_room_players = case Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code)) do
+      [{game_state, _}] -> GenServer.call(game_state, :get_room_players)
+      _ -> %{}
+    end
+    state = Map.update!(state, :seats, &Map.merge(&1, existing_room_players))
 
     # check if a lobby exists. if so, notify the lobby that this room now exists
     case Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", state.ruleset, "")) do
@@ -308,12 +314,13 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:sit, socket_id, seat}, state) do
-    state = if state.seats[seat] == nil do
+  def handle_cast({:sit, socket_id, session_id, seat}, state) do
+    state = if state.seats[seat] == nil || state.seats[seat].session_id == session_id do
+      # first, get up
       state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
-      # state = put_in(state.seats[seat], state.players[socket_id])
-      state = put_seat(state, seat, state.players[socket_id])
+      # then sit
       state = put_in(state.players[socket_id].seat, seat)
+      state = put_seat(state, seat, state.players[socket_id])
       IO.puts("Player #{socket_id} sat in seat #{seat}")
       state
     else state end
@@ -394,8 +401,7 @@ defmodule RiichiAdvanced.RoomState do
         state
       {:error, {:already_started, _pid}} ->
         IO.puts("Already started game session #{state.room_code}")
-        state = show_error(state, "A game session for this variant with this same room ID is already in play -- please leave the room and try entering it directly!")
-        state = Map.put(state, :starting, false)
+        state = Map.put(state, :started, true)
         state
     end
     state = broadcast_state_change(state)

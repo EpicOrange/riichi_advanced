@@ -58,7 +58,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
       case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
         nil  -> :ok
-        seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
+        seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, socket.assigns.session_id, seat})
       end
 
       {:ok, socket}
@@ -158,9 +158,19 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
           <div class="player-slot-label"><%= @symbols[seat] %></div>
           <%= if @state.seats[seat] != nil do %>
-            <div class="player-slot-name" phx-cancellable-click="get_up"><%= @state.seats[seat].nickname %></div>
             <%= if @state.seats[seat].id == @id do %>
+              <div class="player-slot-name" phx-cancellable-click="get_up"><%= @state.seats[seat].nickname %></div>
               <button class="player-slot-button" phx-cancellable-click="get_up">–</button>
+            <% else %>
+              <%= if @state.seats[seat].nickname == nil do %>
+                <%= if @state.seats[seat].session_id == @session_id do %>
+                  <div class="player-slot-name empty" phx-cancellable-click="sit" phx-value-seat={seat}>(reconnect?)</div>
+                <% else %>
+                  <div class="player-slot-name">&lt;disconnected&gt;</div>
+                <% end %>
+              <% else %>
+                <div class="player-slot-name"><%= @state.seats[seat].nickname %></div>
+              <% end %>
             <% end %>
           <% else %>
             <div class="player-slot-name empty" phx-cancellable-click="sit" phx-value-seat={seat}>Empty</div>
@@ -217,7 +227,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       "north" -> :north
       _       -> :east
     end
-    GenServer.cast(socket.assigns.room_state, {:sit, socket.id, seat})
+    GenServer.cast(socket.assigns.room_state, {:sit, socket.id, socket.assigns.session_id, seat})
     {:noreply, socket}
   end
 

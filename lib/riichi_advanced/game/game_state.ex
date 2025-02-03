@@ -816,28 +816,6 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  defp fill_empty_seats_with_ai(state) do
-    if not state.log_seeking_mode do
-      state = for dir <- state.available_seats, Map.get(state, dir) == nil, reduce: state do
-        state ->
-          {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
-            id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions}]},
-            restart: :permanent
-          })
-          IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
-          state = Map.put(state, dir, ai_pid)
-
-          # mark the ai as having clicked the timer, if one exists
-          state = update_player(state, dir, fn player -> %Player{ player | ready: true } end)
-          
-          state
-      end
-      notify_ai(state)
-      state
-    else state end
-  end
-
   def has_unskippable_button?(state, seat) do
     not Enum.empty?(state.players[seat].call_buttons)
     ||
@@ -1126,7 +1104,7 @@ defmodule RiichiAdvanced.GameState do
     end
 
     # for players with no seats, initialize an ai
-    state = fill_empty_seats_with_ai(state)
+    GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
     state = broadcast_state_change(state)
     state
   end
@@ -1190,15 +1168,30 @@ defmodule RiichiAdvanced.GameState do
         GenServer.cast(self(), :terminate_game_if_empty)
       else
         IO.puts("Stopping game #{state.room_code} in 60 seconds")
-        :timer.apply_after(4000, GenServer, :cast, [self(), :terminate_game_if_empty])
+        :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
       end
       state
     else
-      state = fill_empty_seats_with_ai(state)
+      # schedule replacing empty seats with AI after 5 seconds
+      :timer.apply_after(5000, GenServer, :cast, [self(), {:fill_empty_seats_with_ai, true}])
       state = broadcast_state_change(state)
       state
     end
     {:reply, :ok, state}
+  end
+
+  def handle_call(:get_room_players, _from, state) do
+    reserved_seats = state.reserved_seats
+    |> Enum.filter(fn {seat, _session_id} -> seat != nil end)
+    |> Map.new(fn {seat, session_id} -> {seat, %RoomPlayer{
+      nickname: if state.players[seat].nickname == "" do
+          "player" <> String.slice(state[seat], 10, 4)
+        else state.players[seat].nickname end,
+      id: state[seat],
+      session_id: session_id,
+      seat: seat
+    }} end)
+    {:reply, reserved_seats, state}
   end
 
   def handle_call({:is_playable, seat, tile}, _from, state), do: {:reply, is_playable?(state, seat, tile), state}
@@ -1288,6 +1281,30 @@ defmodule RiichiAdvanced.GameState do
     else
       IO.puts("Not stopping game #{state.room_code}")
     end
+    {:noreply, state}
+  end
+
+  def handle_cast({:fill_empty_seats_with_ai, disconnected?}, state) do
+    state = if not state.log_seeking_mode do
+      state = for dir <- state.available_seats, Map.get(state, dir) == nil, disconnected? || not Map.has_key?(state.reserved_seats, dir), reduce: state do
+        state ->
+          {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
+            id: RiichiAdvanced.AIPlayer,
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions}]},
+            restart: :permanent
+          })
+          IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
+          state = Map.put(state, dir, ai_pid)
+
+          # mark the ai as having clicked the timer, if one exists
+          state = update_player(state, dir, &%Player{ &1 | nickname: nil, ready: true })
+          
+          state
+      end
+      notify_ai(state)
+      state = broadcast_state_change(state)
+      state
+    else state end
     {:noreply, state}
   end
 
