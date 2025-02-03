@@ -8,6 +8,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
+  require Logger
   import RiichiAdvanced.GameState
 
   def temp_disable_play_tile(state, seat) do
@@ -301,6 +302,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     hand = Utils.add_attr(state.players[seat].hand, ["hand"])
     draw = Utils.add_attr(state.players[seat].draw, ["hand"])
     new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
+    new_hand = if new_hand == nil do
+      Logger.error("Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
+      hand
+    else new_hand end
     # actually add the call to the player
     state = update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
     state = if called_tile != nil do
