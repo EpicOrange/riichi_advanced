@@ -27,10 +27,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(state.rules["yaku_precedence"], name, []) end)
       Enum.reject(eligible_yaku, fn {name, value} -> name in excluded_yaku || value in excluded_yaku end)
     else eligible_yaku end
-    eligible_yaku = if Map.get(state.rules["score_calculation"], "remove_undeclared_yaku", false) do
-      declared_yaku = state.players[seat].declared_yaku
-      Enum.filter(eligible_yaku, fn {name, _value} -> name in declared_yaku end)
-    else eligible_yaku end
     eligible_yaku
   end
 
@@ -111,10 +107,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def get_best_yaku_from_lists(state, yaku_list_names, seat, winning_tiles, win_source) do
     # returns {yaku, minipoints, new_winning_tile}
+    declare_only_yaku_list_names = Map.get(state.rules["score_calculation"], "declare_only_yaku_lists", [])
     for yaku_list_name <- yaku_list_names, reduce: {[], 0, nil} do
       {yaku, minipoints, new_winning_tile} ->
         if Map.has_key?(state.rules, yaku_list_name) do
-          {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, state.rules[yaku_list_name], seat, winning_tiles, win_source, yaku)
+          yaku_list = if yaku_list_name in declare_only_yaku_list_names do
+            declared_yaku = state.players[seat].declared_yaku
+            Enum.filter(state.rules[yaku_list_name], fn yaku_obj -> yaku_obj["display_name"] in declared_yaku end)
+          else state.rules[yaku_list_name] end
+          {new_winning_tile, {minipoints, yaku}} = get_best_yaku_and_winning_tile(state, yaku_list, seat, winning_tiles, win_source, yaku)
           {yaku, minipoints, new_winning_tile}
         else
           {yaku, minipoints, new_winning_tile}

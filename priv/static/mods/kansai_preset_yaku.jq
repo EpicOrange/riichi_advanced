@@ -79,4 +79,4 @@ if (.buttons | has("tsumo")) then
   .buttons.tsumo.show_when += [{"name": "has_declared_yaku_with_hand", "opts": ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]}]
 else . end
 |
-.score_calculation.remove_undeclared_yaku = true
+.score_calculation.declare_only_yaku_lists = ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]
