@@ -38,7 +38,7 @@ def disable_when_dead:
 ]
 |
 # disable all buttons when dead
-.buttons |= (to_entries | map(.value |= disable_when_dead) | from_entries)
+.buttons |= with_entries(.value |= disable_when_dead)
 |
 # make riichi always available
 .buttons.riichi.show_when |= map(if . == {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]} then ["not_is_ai", .] else . end)

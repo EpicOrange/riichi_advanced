@@ -1663,11 +1663,9 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:declare_yaku, seat, yakus}, state) do
     state = update_player(state, seat, &%Player{ &1 | declared_yaku: yakus })
-    prefix = %{text: "Player #{seat} #{state.players[seat].nickname} declared that they will win with at least the following yaku:"}
-    yaku_string = Enum.map(yakus, fn yaku -> %{bold: true, text: yaku} end)
-    suffix = %{text: "(Shimizudani Ryuuka)"}
-    push_message(state, [prefix] ++ yaku_string ++ [suffix])
-    state = Buttons.recalculate_buttons(state)
+    button_name = state.players[seat].call_name
+    actions = state.rules["buttons"][button_name]["actions"]
+    state = Actions.submit_actions(state, seat, button_name, actions, nil, nil, nil, yakus)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

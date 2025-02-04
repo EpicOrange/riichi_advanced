@@ -742,6 +742,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
+  def declare_yaku(state, seat) do
+    prefix = %{text: "Player #{seat} #{state.players[seat].nickname} declared the following yaku:"}
+    yaku_string = Enum.map(state.players[seat].declared_yaku, fn yaku -> %{bold: true, text: yaku} end)
+    push_message(state, [prefix] ++ yaku_string)
+    state
+  end
+
   defp _run_actions(state, [], _context), do: {state, []}
   defp _run_actions(state, [[action | opts] | actions], context) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -1159,10 +1166,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         ] ++ Utils.ph(state.wall |> Enum.drop(state.wall_index) |> Enum.take(num)))
         update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
-      "choose_yaku"     ->
-        state = update_player(state, context.seat, &%Player{ &1 | declared_yaku: [] })
-        notify_ai_declare_yaku(state, context.seat)
-        state
+      "choose_yaku"     -> declare_yaku(state, context.seat)
       "disable_saki_card" ->
         targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
         state = Saki.disable_saki_card(state, targets)
@@ -1261,6 +1265,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     update_player(state, seat, &%Player{ &1 | deferred_actions: &1.deferred_actions ++ actions, deferred_context: Map.merge(&1.deferred_context, context) })
   end
 
+  # TODO make context optional and use player.deferred_context instead
   def run_deferred_actions(state, context) do
     actions = state.players[context.seat].deferred_actions
     if state.game_active && not Enum.empty?(actions) do
@@ -1356,7 +1361,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 state = schedule_actions(state, seat, actions, %{seat: seat})
                 notify_ai_marking(state, seat)
                 state
-              nil ->
+              _ ->
                 # just run all button actions as normal
                 if Debug.debug_actions() do
                   IO.puts("Running actions for #{seat}: #{inspect(actions)}")
@@ -1397,11 +1402,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     Enum.any?(state.available_seats, fn seat -> performing_intermediate_action?(state, seat) end)
   end
 
+  # TODO after refactoring choices, this function should become very simple
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
     made_choice = state.players[seat].choice != nil && state.players[seat].choice != "skip"
     marking = Marking.needs_marking?(state, seat)
-    not no_call_buttons || made_choice || marking
+    declaring_yaku = state.players[seat].declared_yaku == []
+    not no_call_buttons || made_choice || marking || declaring_yaku
   end
 
   def evaluate_choices(state, from_deferred_actions \\ false) do
@@ -1510,15 +1517,16 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  def submit_actions(state, seat, choice, actions, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil) do
+  # TODO this argument list is stupid, need to refactor it to a map
+  # might as well move and rename call_name too, since that's used to save button name in general
+  def submit_actions(state, seat, choice, actions, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil, declared_yakus \\ nil) do
     player = state.players[seat]
     if state.game_active && player.choice == nil do
       if Debug.debug_actions() do
         IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
-        # IO.puts("Deferred actions for #{seat}: #{inspect(state.players[seat].deferred_actions)}")
       end
 
-      {called_tile, call_choice, call_choices} = if called_tile == nil && call_choice == nil && player.button_choices != nil do
+      {called_tile, call_choice, call_choices} = if called_tile == nil && call_choice == nil && declared_yakus == nil && player.button_choices != nil do
         button_choice = Map.get(player.button_choices, choice, nil)
         case button_choice do
           {:call, call_choices} ->
@@ -1531,19 +1539,28 @@ defmodule RiichiAdvanced.GameState.Actions do
               end
               {called_tile, call_choice, call_choices}
             else {nil, nil, call_choices} end
+          :declare_yaku -> {nil, nil, :declare_yaku}
           _ -> {nil, nil, nil}
         end
       else {called_tile, call_choice, nil} end
 
-      if called_tile == nil && call_choice == nil && saki_card == nil && call_choices != nil do
-        # show call choice buttons
-        # clicking them will call submit_actions again, but with the optional parameters included
-        if Debug.debug_actions() do
-          IO.puts("Showing call buttons for #{seat}: #{inspect(actions)}")
+      if called_tile == nil && call_choice == nil && saki_card == nil && declared_yakus == nil && call_choices != nil do
+        case call_choices do
+          :declare_yaku ->
+            # show declare yaku 
+            state = update_player(state, seat, &%Player{ &1 | declared_yaku: [], call_name: choice })
+            notify_ai_declare_yaku(state, seat)
+            state
+          _ ->
+            # show call choice buttons
+            # clicking them will call submit_actions again, but with the optional parameters included
+            if Debug.debug_actions() do
+              IO.puts("Showing call buttons for #{seat}: #{inspect(actions)}")
+            end
+            state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: choice } end)
+            notify_ai_call_buttons(state, seat)
+            state
         end
-        state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: choice } end)
-        notify_ai_call_buttons(state, seat)
-        state
       else
         # log the button press
         state = case choice do
@@ -1557,6 +1574,8 @@ defmodule RiichiAdvanced.GameState.Actions do
             end
             Log.add_button_press(state, seat, choice, data)
         end
+        # set choice now that a choice has been made
+        # TODO refactor choice to be a map or tuple maybe
         state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card })
         state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
         evaluate_choices(state)

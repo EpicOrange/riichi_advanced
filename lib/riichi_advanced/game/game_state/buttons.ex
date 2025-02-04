@@ -19,7 +19,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
     actions = button["actions"]
     # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
     # check if a call action exists, if it's a call and multiple call choices are available
-    choice_actions = Actions.extract_actions(actions, ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark"])
+    choice_actions = Actions.extract_actions(actions, ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark", "choose_yaku"])
     cond do
       Enum.any?(choice_actions, fn [action | _opts] -> action in ["call", "self_call", "upgrade_call", "flower", "draft_saki_card"] end) ->
         # call button choices logic
@@ -78,6 +78,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
         [_ | opts] = Enum.filter(choice_actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
         mark_spec = Enum.at(opts, 0, []) |> Enum.map(fn [target, needed, restrictions] -> {target, needed, restrictions} end)
         {state, {:mark, mark_spec, Enum.at(opts, 1, []), Enum.at(opts, 2, [])}}
+      Enum.any?(choice_actions, fn [action | _opts] -> action == "choose_yaku" end) ->
+        {state, :declare_yaku}
       true -> {state, nil}
     end
   end

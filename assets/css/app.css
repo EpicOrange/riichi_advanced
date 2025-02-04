@@ -1448,8 +1448,8 @@ div.declare-yaku button.declare-yaku-button {
   cursor: pointer;
 }
 div.declare-yaku button.declare-yaku-button:active {
-  bottom: 0;
-  filter: none;
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 /* display wall */
@@ -2043,8 +2043,8 @@ div.game-modal-container > button.end-back-button {
   cursor: pointer;
 }
 div.game-modal-container > button.end-back-button:active {
-  bottom: 0;
-  filter: none;
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 
