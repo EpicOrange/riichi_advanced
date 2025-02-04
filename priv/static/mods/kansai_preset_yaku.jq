@@ -52,6 +52,7 @@
   "Junchan",
   "Honitsu",
   "Chinitsu",
+  "Honitsu Chiitoitsu",
   "Tenhou",
   "Chiihou",
   "Renhou",
@@ -64,7 +65,9 @@
   "Kokushi Musou",
   "Daisuushii",
   "Shousuushii",
-  "Suukantsu"
+  "Suukantsu",
+  "Manzu Chinitsu",
+  "Chinitsu Chiitoitsu"
 ]
 |
 if (.buttons | has("ron")) then
