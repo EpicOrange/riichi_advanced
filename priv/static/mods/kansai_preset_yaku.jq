@@ -65,3 +65,15 @@
   "Shousuushii",
   "Suukantsu"
 ]
+|
+if (.buttons | has("ron")) then
+  .buttons.ron.show_when += [{"name": "has_declared_yaku_with_hand", "opts": ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]}]
+else . end
+|
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when += [{"name": "has_declared_yaku_with_hand", "opts": ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]}]
+else . end
+|
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo.show_when += [{"name": "has_declared_yaku_with_hand", "opts": ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]}]
+else . end
