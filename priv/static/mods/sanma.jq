@@ -35,7 +35,7 @@ def replace($from; $to):
 |
 walk(if . == "pei" then "pei_triplet" else . end)
 |
-# change tenpai payments and add tsumo loss (TODO: no tsumo loss mod)
+# change tenpai payments and add tsumo loss
 .score_calculation += {
   "draw_tenpai_payments": [1000, 2000, 0],
   "tsumo_loss": true

@@ -46,6 +46,7 @@ defmodule RiichiAdvanced.ModLoader do
   @modpacks %{
     "sanma" => %{
       display_name: "Sanma",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
       ruleset: "riichi",
       mods: ["sanma"],
       default_mods: [],
@@ -92,7 +93,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "kansai" => %{
       display_name: "Kansai (beta)",
-      # tutorial_link: "",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
       mods: ["sanma", "dora", "aka", "nagashi", "kansai"],
       default_mods: ["tobi"],
