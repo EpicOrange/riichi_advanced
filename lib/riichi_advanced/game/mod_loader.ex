@@ -92,7 +92,7 @@ defmodule RiichiAdvanced.ModLoader do
       default_mods: ["kiriage_mangan"],
     },
     "kansai" => %{
-      display_name: "Kansai (beta)",
+      display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
       mods: ["sanma", "dora", "aka", "nagashi", "kansai"],
