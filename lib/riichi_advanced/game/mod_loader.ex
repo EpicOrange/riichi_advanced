@@ -89,6 +89,13 @@ defmodule RiichiAdvanced.ModLoader do
       ruleset: "riichi",
       mods: ["minefield"],
       default_mods: ["kiriage_mangan"],
+    },
+    "kansai" => %{
+      display_name: "Kansai (beta)",
+      # tutorial_link: "",
+      ruleset: "riichi",
+      mods: ["sanma", "dora", "aka", "nagashi", "kansai"],
+      default_mods: ["tobi"],
     }
   }
 

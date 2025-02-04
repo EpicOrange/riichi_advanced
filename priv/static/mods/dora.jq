@@ -9,7 +9,7 @@ else
 end
 |
 # dora indicator map
-.dora_indicators = {
+.dora_indicators += {
   "1m": ["2m"],
   "2m": ["3m"],
   "3m": ["4m"],

@@ -12,12 +12,10 @@ def replace($from; $to):
 |
 .default_mods -= ["suufon_renda", "suucha_riichi"]
 |
-# add kansai mod to the list
-(.available_mods | map(type == "object" and .id == "kansai_chiitoitsu") | index(true)) as $ix
-|
-.available_mods |= .[:$ix+1] + [
+# add no tsumo loss mod to the list
+(.available_mods | index("Abortive Draws")) as $ix | .available_mods |= .[:$ix] + [
   {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Mangan tsumo gives you 8000 total instead of 4000+2000.)"}
-] + .[$ix+1:]
+] + .[$ix:]
 |
 # remove manzu from wall
 .wall -= [
