@@ -709,11 +709,13 @@
   "auto_buttons": {
     "1_auto_sort": {
       "display_name": "A",
+      "desc": "Automatically sort your hand.",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
     },
     "2_auto_ron": {
       "display_name": "R",
+      "desc": "Automatically declare wins.",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
         ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
@@ -722,6 +724,7 @@
     },
     "3_auto_no_call": {
       "display_name": "C",
+      "desc": "Skip all calls except wins.",
       "actions": [
         ["when", [
           "not_our_turn",
@@ -733,7 +736,8 @@
     },
     "4_auto_discard": {
       "display_name": "D",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

@@ -74,3 +74,16 @@ walk(if . == "pei" then "pei_triplet" else . end)
   "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}, {"name": "tile_not_drawn", "opts": [-8]}],
   "actions": [["big_text", "Pei"], ["flower", "4z"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]]
 }
+|
+# add auto pei
+.auto_buttons["5_auto_pei"] = {
+  "display_name": "K",
+  "desc": "Automatically declare pei.",
+  "actions": [
+    ["when", [{"name": "buttons_include", "opts": ["pei"]}], [["press_button", "pei"], ["press_first_call_button", "pei"]]]
+  ],
+  "enabled_at_start": true
+}
+|
+# don't let auto discard button skip pei
+.auto_buttons["4_auto_discard"].actions[0][1] |= map(if type == "object" and .name == "buttons_exclude" then .opts += ["pei"] else . end)
