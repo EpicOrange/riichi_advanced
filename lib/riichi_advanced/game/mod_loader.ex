@@ -17,8 +17,7 @@ defmodule RiichiAdvanced.ModLoader do
     mod_contents = mod_names
     |> Enum.map(&File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{&1 <> ".jq"}")))
     |> Enum.map(&String.trim/1)
-    |> Enum.map(&" | (#{&1}\n) as $_result\n|\n$_result")
-    |> Enum.join()
+    |> Enum.map_join(&" | (#{&1}\n) as $_result\n|\n$_result")
     |> then(&".enabled_mods += #{mod_names_to_array(mod_names)}"<>&1)
     # IO.puts(mod_contents)
 
