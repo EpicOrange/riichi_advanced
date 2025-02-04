@@ -1,17 +1,18 @@
 defmodule LobbyPlayer do
   defstruct [
     nickname: nil,
-    id: "",
-    ready: false
+    id: ""
   ]
   use Accessible
 end
 
 defmodule LobbyRoom do
   defstruct [
-    players: %{east: nil, south: nil, west: nil, north: nil},
+    # seat => %RoomPlayer{}
+    players: %{},
     mods: [],
-    private: true
+    private: true,
+    started: false
   ]
   use Accessible
 end
@@ -89,10 +90,11 @@ defmodule RiichiAdvanced.LobbyState do
     })
 
     # load all existing rooms
+    room_prefix = Utils.to_registry_name("room", state.ruleset, "")
     room_codes = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
     |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
-    |> Enum.filter(fn name -> String.starts_with?(name, "room-#{state.ruleset}-") end)
-    |> Enum.map(fn name -> String.replace_prefix(name, "room-#{state.ruleset}-", "") end)
+    |> Enum.filter(fn name -> String.starts_with?(name, room_prefix) end)
+    |> Enum.map(fn name -> String.replace_prefix(name, room_prefix, "") end)
     state = for room_code <- room_codes, reduce: state do
       state ->
         state = broadcast_new_room(state, room_code)
@@ -105,6 +107,21 @@ defmodule RiichiAdvanced.LobbyState do
         })
     end
 
+    # load all existing games
+    game_prefix = Utils.to_registry_name("game", state.ruleset, "")
+    game_codes = DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
+    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+    |> Enum.filter(fn name -> String.starts_with?(name, game_prefix) end)
+    |> Enum.map(fn name -> String.replace_prefix(name, game_prefix, "") end)
+    state = for game_code <- game_codes, reduce: state do
+      state ->
+        state = broadcast_new_room(state, game_code)
+        case Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, game_code)) do
+          [{game_state_pid, _}] ->
+            put_in(state.rooms[game_code], GenServer.call(game_state_pid, :get_lobby_room))
+          _ -> state
+        end
+    end
     {:ok, state}
   end
 
@@ -187,7 +204,8 @@ defmodule RiichiAdvanced.LobbyState do
     state = put_in(state.rooms[room_code], %LobbyRoom{
       players: room_state.seats,
       mods: RiichiAdvanced.RoomState.get_enabled_mods(room_state),
-      private: room_state.private
+      private: room_state.private,
+      started: room_state.started
     })
     state = broadcast_state_change(state)
     {:noreply, state}

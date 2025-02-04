@@ -25,7 +25,7 @@ defmodule Room do
 
     # state
     rules: nil,
-    seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+    seats: %{},
     available_seats: [],
     players: %{},
     shuffle: false,
@@ -102,14 +102,17 @@ defmodule RiichiAdvanced.RoomState do
     |> Enum.filter(& &1 in available_mods)
     |> Enum.uniq()
 
+    # calculate available_seats
+    available_seats = case Map.get(rules, "num_players", 4) do
+      1 -> [:east]
+      2 -> [:east, :west]
+      3 -> [:east, :south, :west]
+      4 -> [:east, :south, :west, :north]
+    end
     # put params and process ids into state
     state = Map.merge(state, %Room{
-      available_seats: case Map.get(rules, "num_players", 4) do
-        1 -> [:east]
-        2 -> [:east, :west]
-        3 -> [:east, :south, :west]
-        4 -> [:east, :south, :west, :north]
-      end,
+      available_seats: available_seats,
+      seats: Map.new(available_seats, &{&1, nil}),
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       room_code: state.room_code,
@@ -382,10 +385,10 @@ defmodule RiichiAdvanced.RoomState do
       {get_enabled_mods(state), config}
     end
     reserved_seats = Map.new(state.players, fn {_id, player} -> {player.seat, player.session_id} end)
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, reserved_seats: reserved_seats, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
-        IO.puts("Starting game session #{state.room_code}")
+        IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
         # shuffle seats
         state = if state.shuffle do
           Map.update!(state, :seats, fn seats -> Map.keys(seats) |> Enum.zip(Map.values(seats) |> Enum.shuffle()) |> Map.new() end)

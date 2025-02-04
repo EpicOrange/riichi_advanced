@@ -68,23 +68,22 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         <div class="variant">Variant:&nbsp;<b><%= @display_name %></b></div>
       </header>
       <div class="rooms">
-        <%= for {room_name, room} <- @state.rooms do %>
-          <%= if not room.private do %>
-            <div class="room">
-              <button class="join-room" phx-cancellable-click="join_room" phx-value-name={room_name}>
-                <%= for tile <- String.split(room_name, ",") do %>
-                  <div class={["tile", tile]}></div>
-                <% end %>
-              </button>
-              <div class="room-mods">
-                <%= for mod <- room.mods do %>
-                  <div class="room-mod"><%= mod %></div>
-                <% end %>
-              </div>
-              <div class="room-players"><%= 4 - (Map.values(room.players) |> Enum.count(& &1 == nil)) %>/4</div>
-            </div>
-          <% end %>
-        <% end %>
+        <div class="lobby-room" :for={{room_name, room} <- @state.rooms} :if={not room.private}>
+          <button class="join-room" phx-cancellable-click="join_room" phx-value-name={room_name}>
+            <%= for tile <- String.split(room_name, ",") do %>
+              <div class={["tile", tile]}></div>
+            <% end %>
+          </button>
+          <div class="room-mods">
+            <%= for mod <- room.mods do %>
+              <div class="room-mod"><%= mod %></div>
+            <% end %>
+          </div>
+          <div class="room-players">
+            <div class="room-player-count"><%= Map.values(room.players) |> Enum.count(& &1 != nil) %>/<%= map_size(room.players) %></div>
+            <div class="room-started" :if={room.started}>(ongoing)</div>
+          </div>
+        </div>
       </div>
       <%= if @show_room_code_buttons do %>
         <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" set_room_code={&send(self(), {:set_room_code, &1})} />

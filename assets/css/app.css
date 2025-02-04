@@ -2542,14 +2542,15 @@ div.lobby > div.rooms::-webkit-scrollbar {
   display: none; /* Safari/Chrome */
 }
 
-div.lobby > div.rooms > div.room {
+div.lobby > div.rooms > div.lobby-room {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  font-size: calc(0.5 * var(--tile-size))
 }
-div.lobby > div.rooms > div.room > button.join-room {
+div.lobby > div.rooms > div.lobby-room > button.join-room {
   background: var(--tile-front-side);
   border-width: 0;
   border-radius: calc(0.25 * var(--tile-size));
@@ -2561,16 +2562,16 @@ div.lobby > div.rooms > div.room > button.join-room {
   justify-content: center;
   align-items: center;
 }
-div.lobby > div.rooms > div.room > button.join-room {
+div.lobby > div.rooms > div.lobby-room > button.join-room {
   padding-top: calc(0.25 * var(--tile-size));
 }
-div.lobby > div.rooms > div.room > button.join-room:active,
+div.lobby > div.rooms > div.lobby-room > button.join-room:active,
 div.lobby > button.create-room:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
   z-index: 1;
 }
-div.lobby > div.rooms > div.room > div.room-mods {
+div.lobby > div.rooms > div.lobby-room > div.room-mods {
   display: flex;
   flex-flow: row wrap;
   flex-grow: 1;
@@ -2578,10 +2579,12 @@ div.lobby > div.rooms > div.room > div.room-mods {
   align-items: center;
   column-gap: calc(0.25 * var(--tile-size));
 }
-div.lobby > div.rooms > div.room > div.room-players {
+div.lobby > div.rooms > div.lobby-room > div.room-players {
   font-size: calc(0.75 * var(--tile-size));
 }
 div.lobby > button.create-room {
+  display: flex;
+  align-items: space-around;
   position: absolute;
   width: 100%;
   font-size: calc(0.8 * var(--tile-size));
@@ -2589,7 +2592,12 @@ div.lobby > button.create-room {
   bottom: calc(0 * var(--tile-size));
   left: calc(0 * var(--tile-size));
 }
-
+div.lobby > div.rooms > div.lobby-room > div.room-players > div.room-player-count {
+  font-size: calc(1 * var(--tile-size));
+}
+div.lobby > div.rooms > div.lobby-room > div.room-players > div.room-started {
+  font-size: calc(0.4 * var(--tile-size));
+}
 
 
 /* room screen */

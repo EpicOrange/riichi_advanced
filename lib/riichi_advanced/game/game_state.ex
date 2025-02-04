@@ -62,6 +62,7 @@ defmodule Game do
     ruleset_json: nil,
     mods: nil,
     config: nil,
+    private: true,
     reserved_seats: nil,
     # pids
     supervisor: nil,
@@ -160,6 +161,7 @@ defmodule RiichiAdvanced.GameState do
         ruleset: Keyword.get(init_data, :ruleset),
         mods: Keyword.get(init_data, :mods, []),
         config: Keyword.get(init_data, :config, nil),
+        private: Keyword.get(init_data, :private, true),
         reserved_seats: Keyword.get(init_data, :reserved_seats, %{}),
       },
       name: Keyword.get(init_data, :name))
@@ -236,6 +238,7 @@ defmodule RiichiAdvanced.GameState do
       room_code: state.room_code,
       mods: state.mods,
       config: state.config,
+      private: state.private,
       reserved_seats: state.reserved_seats,
       ruleset_json: ruleset_json,
       supervisor: supervisor,
@@ -1261,6 +1264,21 @@ defmodule RiichiAdvanced.GameState do
     new_state = Map.merge(state, new_state)
     new_state = broadcast_state_change(new_state, true)
     {:reply, new_state, new_state}
+  end
+
+  # used by lobby to get a room state from this game
+  def handle_call(:get_lobby_room, _from, state) do
+    lobby_room = %LobbyRoom{
+      players: Map.new(state.players, fn {seat, player} -> {seat,
+          if is_pid(state[seat]) do
+            %RoomPlayer{ nickname: player.nickname, seat: seat }
+          else nil end
+        } end),
+      mods: state.mods,
+      private: state.private,
+      started: true
+    }
+    {:reply, lobby_room, state}
   end
 
   def handle_cast({:initialize_game, log}, state) do

@@ -11,6 +11,7 @@ defmodule RiichiAdvanced.GameSupervisor do
     ruleset = Keyword.get(opts, :ruleset)
     mods = Keyword.get(opts, :mods, [])
     config = Keyword.get(opts, :config, nil)
+    private = Keyword.get(opts, :private, true)
     reserved_seats = Keyword.get(opts, :reserved_seats, %{})
     children = [
       {Mutex, name: {:via, Registry, {:game_registry, Utils.to_registry_name("mutex", ruleset, room_code)}}},
@@ -18,7 +19,7 @@ defmodule RiichiAdvanced.GameSupervisor do
       {RiichiAdvanced.Debouncers, name: {:via, Registry, {:game_registry, Utils.to_registry_name("debouncers", ruleset, room_code)}}},
       {RiichiAdvanced.ExitMonitor, name: {:via, Registry, {:game_registry, Utils.to_registry_name("exit_monitor", ruleset, room_code)}}},
       {ExSMT.Solver, name: {:via, Registry, {:game_registry, Utils.to_registry_name("smt_solver", ruleset, room_code)}}, room_code: room_code, ruleset: ruleset},
-      {RiichiAdvanced.GameState, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game_state", ruleset, room_code)}}, room_code: room_code, ruleset: ruleset, mods: mods, config: config, reserved_seats: reserved_seats}
+      {RiichiAdvanced.GameState, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game_state", ruleset, room_code)}}, room_code: room_code, ruleset: ruleset, mods: mods, config: config, private: private, reserved_seats: reserved_seats}
     ]
     Supervisor.init(children, strategy: :one_for_all)
   end
