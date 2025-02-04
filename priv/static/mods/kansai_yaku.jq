@@ -16,7 +16,8 @@
 ]
 |
 .yakuman += [
-  { "display_name": "Four Consecutive Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}] }
+  { "display_name": "Four Consecutive Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}] },
+  { "display_name": "Manzu Chinitsu", "value": 1, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]}] }
 ]
 |
 .meta_yaku += [
@@ -29,6 +30,7 @@
 |
 .yaku_precedence += {
   "Tsumo": ["Pinfu"], # tsumo fu invalidates pinfu
+  "Manzu Chinitsu": ["Chinitsu"],
   "Honitsu Chiitoitsu": ["Honitsu", "Chiitoitsu"],
   "Chinitsu Chiitoitsu": ["Chinitsu", "Chiitoitsu"]
 }
