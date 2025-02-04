@@ -4,6 +4,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Saki, as: Saki
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Riichi, as: Riichi
@@ -471,7 +472,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         score_rules = state.rules["score_calculation"]
         enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Riichi.get_seat_wind(state.kyoku, context.seat, state.available_seats), Riichi.get_round_wind(state.kyoku, length(state.available_seats)), player.tile_ordering, player.tile_ordering_r, player.tile_aliases, enable_kontsu_fu)
+        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Scoring.get_yakuhai(state, context.seat), player.tile_ordering, player.tile_ordering_r, player.tile_aliases, enable_kontsu_fu)
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->

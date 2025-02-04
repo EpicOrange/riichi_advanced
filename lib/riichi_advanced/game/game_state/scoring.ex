@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else eligible_yaku end
     eligible_yaku = if Map.get(state.rules["score_calculation"], "remove_undeclared_yaku", false) do
       declared_yaku = state.players[seat].declared_yaku
-      Enum.filter(eligible_yaku, fn {name, value} -> name in declared_yaku end)
+      Enum.filter(eligible_yaku, fn {name, _value} -> name in declared_yaku end)
     else eligible_yaku end
     eligible_yaku
   end
@@ -46,6 +46,28 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
+  def get_yakuhai(state, seat) do
+    dragons = [:"5z", :"6z", :"7z"]
+    seat_wind = case Riichi.get_seat_wind(state.kyoku, seat, state.available_seats) do
+      :east -> :"1z"
+      :south -> :"2z"
+      :west -> :"3z"
+      :north -> :"4z"
+    end
+    round_wind = case Riichi.get_round_wind(state.kyoku, length(state.available_seats)) do
+      :east -> :"1z"
+      :south -> :"2z"
+      :west -> :"3z"
+      :north -> :"4z"
+    end
+    north_wind = if Map.get(state.rules["score_calculation"], "north_wind_yakuhai", false) do [:"4z"] else [] end
+    if Map.get(state.rules["score_calculation"], "double_wind_4_fu", false) do
+      dragons ++ [seat_wind, round_wind] ++ north_wind
+    else
+      dragons ++ Enum.dedup([seat_wind, round_wind]) ++ north_wind
+    end
+  end
+
   def get_minipoints(state, seat, winning_tile, win_source) do
     counter_fu = Map.get(state.players[seat].counters, "fu", 0)
     if counter_fu > 0 do
@@ -53,7 +75,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else
       score_rules = state.rules["score_calculation"]
       enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
-      Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, Riichi.get_seat_wind(state.kyoku, seat, state.available_seats), Riichi.get_round_wind(state.kyoku, length(state.available_seats)), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
+      Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, get_yakuhai(state, seat), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
     end
   end
 

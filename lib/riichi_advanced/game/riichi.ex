@@ -906,25 +906,11 @@ defmodule RiichiAdvanced.Riichi do
     end
   end
 
-  defp calculate_pair_fu(tile, seat_wind, round_wind) do
-    fu = case Utils.strip_attrs(tile) do
-      :"1z" -> if :east  in [seat_wind, round_wind] do 2 else 0 end
-      :"2z" -> if :south in [seat_wind, round_wind] do 2 else 0 end
-      :"3z" -> if :west  in [seat_wind, round_wind] do 2 else 0 end
-      :"4z" -> if :north in [seat_wind, round_wind] do 2 else 0 end
-      :"5z" -> 2
-      :"6z" -> 2
-      :"7z" -> 2
-      :"8z" -> 2
-      :"0z" -> 2
-      _     -> 0
-    end
-    # double wind 4 fu
-    fu = if fu == 2 && tile in [:"1z", :"2z", :"3z", :"4z"] && seat_wind == round_wind do 4 else fu end
-    fu
+  defp calculate_pair_fu(tile, yakuhai, tile_aliases) do
+    2 * Utils.count_tiles(yakuhai, [Utils.strip_attrs(tile)], tile_aliases)
   end
 
-  defp _calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases, enable_kontsu_fu) do
+  defp _calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, ordering, ordering_r, tile_aliases, enable_kontsu_fu) do
     # t = System.os_time(:millisecond)
 
     # IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
@@ -1058,19 +1044,19 @@ defmodule RiichiAdvanced.Riichi do
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
       cond do
-        length(hand) == 1 && Utils.count_tiles(hand, winning_tiles, tile_aliases) >= 1 -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
-        length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), seat_wind, round_wind)]
+        length(hand) == 1 && Utils.count_tiles(hand, winning_tiles, tile_aliases) >= 1 -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
+        length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
         length(hand) == 4 && num_pairs == 2 ->
           [tile1, tile2] = Enum.uniq(hand)
-          tile1_fu = fu + calculate_pair_fu(tile2, seat_wind, round_wind) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          tile2_fu = fu + calculate_pair_fu(tile1, seat_wind, round_wind) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+          tile1_fu = fu + calculate_pair_fu(tile2, yakuhai, tile_aliases) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+          tile2_fu = fu + calculate_pair_fu(tile1, yakuhai, tile_aliases) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           if Utils.count_tiles([tile1], winning_tiles, tile_aliases) == 1 do [tile1_fu] else [] end
           ++ if Utils.count_tiles([tile2], winning_tiles, tile_aliases) == 1 do [tile2_fu] else [] end
         # cosmic hand
         enable_kontsu_fu && length(hand) == 4 && num_pairs == 1 ->
           {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
           [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
-          pair_fu = calculate_pair_fu(pair_tile, seat_wind, round_wind)
+          pair_fu = calculate_pair_fu(pair_tile, yakuhai, tile_aliases)
           kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
           [fu + pair_fu + kontsu_fu]
         true                                                    -> []
@@ -1118,11 +1104,11 @@ defmodule RiichiAdvanced.Riichi do
     ret
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases \\ %{}, enable_kontsu_fu \\ false) do
-    case RiichiAdvanced.ETSCache.get({:calculate_fu, starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, tile_aliases, enable_kontsu_fu}) do
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, ordering, ordering_r, tile_aliases \\ %{}, enable_kontsu_fu \\ false) do
+    case RiichiAdvanced.ETSCache.get({:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, ordering, tile_aliases, enable_kontsu_fu}) do
       [] -> 
-        result = _calculate_fu(starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, ordering_r, tile_aliases, enable_kontsu_fu)
-        RiichiAdvanced.ETSCache.put({:calculate_fu, starting_hand, calls, winning_tile, win_source, seat_wind, round_wind, ordering, tile_aliases, enable_kontsu_fu}, result)
+        result = _calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, ordering, ordering_r, tile_aliases, enable_kontsu_fu)
+        RiichiAdvanced.ETSCache.put({:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, ordering, tile_aliases, enable_kontsu_fu}, result)
         result
       [result] -> result
     end

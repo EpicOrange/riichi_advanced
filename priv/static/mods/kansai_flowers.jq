@@ -5,7 +5,6 @@
 .auto_buttons |= del(.["5_auto_pei"])
 |
 # add pei yakuhai
-# TODO pei pair should be worth fu
 .yaku += [
   {
     "display_name": "North Wind",
@@ -13,6 +12,9 @@
     "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_triplet"], 1]]]]}]
   }
 ]
+|
+# pei pair gives yakuhai 2 fu
+.score_calculation.north_wind_yakuhai = true
 |
 # add flowers
 .wall += ["1f", "2f", "3f", "4f"]

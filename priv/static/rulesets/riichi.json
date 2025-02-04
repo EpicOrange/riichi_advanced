@@ -18,6 +18,7 @@
     "suukaikan",
     "agarirenchan", "tenpairenchan",
     "kyuushu_kyuuhai",
+    "double_wind_4_fu",
     "yaku/renhou_yakuman", "pao",
     "show_waits"
   ],
@@ -39,6 +40,7 @@
     {"id": "drawless_riichi", "name": "Drawless Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
     {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
+    {"id": "double_wind_4_fu", "name": "Double Wind 4 Fu", "desc": "A pair of round+seat winds is worth 4 fu instead of 2 fu."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
     {"id": "no_kazoe_yakuman", "name": "No Kazoe Yakuman", "desc": "Disable kazoe yakuman. 13+ han is worth sanbaiman."},
@@ -153,7 +155,6 @@
     // {"id": "suukantsu_pao", "deps": ["pao"], "name": "Suukantsu Pao", "desc": "You are also responsible for payments if you deal the last kan tile called for a suukantsu hand."},
     // {"id": "rinshan_pao", "name": "Rinshan Pao", "desc": "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."},
     // {"id": "set", "name": "Set", "desc": "You are now playing the card game SET. Sets are no longer sequences or triplets -- instead the three tiles must all match on X property or all be different on X property for all X properties in {suit, suji, low/middle/high}."},
-    // {"id": "double_wind_2_fu", "name": "Double Wind 2 Fu", "desc": "A pair of round+seat winds is worth 2 fu instead of 4 fu."},
     // {"id": "fives_are_honors", "name": "Fives Are Honors", "desc": "Fives are now honor tiles, and having a triplet of fives gives 1 han. Fives cannot be used in sequences."},
   ],
   "display_name": "Riichi",
