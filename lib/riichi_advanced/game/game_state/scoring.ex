@@ -620,9 +620,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # get next dealer
     agarirenchan = Map.get(score_rules, "agarirenchan", false)
     next_dealer_is_first_winner = Map.get(score_rules, "next_dealer_is_first_winner", false)
-    next_dealer = if next_dealer_is_first_winner do
-      processing_first_win = map_size(winners) == map_size(state.winners)
-      if processing_first_win do
+    next_dealer = cond do
+      next_dealer_is_first_winner && map_size(winners) == map_size(state.winners) ->
         {_seat, winner} = Enum.at(winners, 0)
         dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
         new_dealer_seat = cond do
@@ -631,9 +630,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           true                        -> winner.payer # if there are multiple first winners, the payer becomes the next dealer instead
         end
         Utils.get_relative_seat(dealer_seat, new_dealer_seat)
-      else nil end
-    else
-      if agarirenchan && Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku, state.available_seats)) do :self else :shimocha end
+      agarirenchan && Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku, state.available_seats)) -> :self
+      true -> :shimocha
     end
 
     {state, delta_scores, delta_scores_reason, next_dealer}
@@ -776,7 +774,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
 
     tenpairenchan = Map.get(score_rules, "tenpairenchan", false)
-    next_dealer = if tenpairenchan && tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] do :self else :shimocha end
+    notenrenchan_south = Map.get(score_rules, "notenrenchan_south", false)
+    next_dealer = cond do
+      tenpairenchan && tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] -> :self
+      notenrenchan_south && Riichi.get_round_wind(state.kyoku, length(state.available_seats)) == :south -> :self
+      true -> :shimocha
+    end
 
     {state, delta_scores, delta_scores_reason, next_dealer}
   end
