@@ -54,7 +54,7 @@ walk(if . == "pei" then "pei_triplet" else . end)
   }
 ]
 |
-.before_win.actions += [["add_counter", "nukidora", "count_matches", ["calls"], [[[["pei"], 1]]]]]
+.before_win.actions += [["add_counter", "nukidora", "count_matches", ["flowers"], [[[["pei"], 1]]]]]
 |
 # no chii
 .buttons |= del(.chii)
