@@ -16,7 +16,6 @@ def replace($from; $to):
 (.available_mods | map(type == "object" and .id == "kansai_chiitoitsu") | index(true)) as $ix
 |
 .available_mods |= .[:$ix+1] + [
-  {"id": "kansai", "deps": ["kansai_chiitoitsu"], "name": "Kansai", "desc": "TODO"},
   {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Mangan tsumo gives you 8000 total instead of 4000+2000.)"}
 ] + .[$ix+1:]
 |
