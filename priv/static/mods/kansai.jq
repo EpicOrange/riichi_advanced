@@ -17,3 +17,17 @@
 ] + .available_mods
 |
 .default_mods += ["kansai_draw", "kansai_flowers", "kansai_aka", "kansai_yaku", "nagashi_yakuman", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_preset_yaku", "kansai_30_fu", "sanma_no_tsumo_loss"]
+|
+# also stop if someone is exactly 0 (tobi)
+.before_start.actions += [
+  ["as", "everyone", [
+    ["subtract_score", 1],
+    ["set_status", "minus_1"]
+  ]]
+]
+|
+.after_start.actions += [["when_anyone", [{"name": "status", "opts": ["minus_1"]}], [["add_score", 1], ["unset_status", "minus_1"]]]]
+|
+.before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["minus_1"]}], [["add_score", 1], ["unset_status", "minus_1"]]]]
+|
+.persistent_statuses += ["minus_1"]
