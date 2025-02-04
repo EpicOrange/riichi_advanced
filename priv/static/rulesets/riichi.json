@@ -49,6 +49,7 @@
     {"id": "yakitori", "name": "Yakitori", "desc": "If you do not win any hands by the end of the game, you pay 4000 points to each player as a penalty."},
     {"id": "shuugi", "order": 1, "name": "Shuugi", "desc": "Play with shuugi (poker chips). Players start with zero shuugi, each is worth 2000 points each at the end. Win payments include shuugi along with points. On ron you get shuugi from the discarder; on tsumo you get shuugi from everyone. Each aka, ura, and ippatsu is worth one shuugi. Yakuman is worth 5 shuugi."},
     {"id": "toriuchi", "deps": ["shuugi"], "name": "Toriuchi", "desc": "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless your hand contains 8s (birdcage) which would protect the birds from gunfire."},
+    {"id": "kansai_chiitoitsu", "name": "Kansai Chiitoitsu", "desc": "Chiitoitsu now allows repeated pairs."},
     "Abortive Draws",
     {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
     {"id": "suucha_riichi", "name": "Suucha Riichi", "desc": "Enable 4 riichi abortive draw."},
@@ -708,11 +709,13 @@
   "auto_buttons": {
     "1_auto_sort": {
       "display_name": "A",
+      "desc": "Automatically sort your hand.",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
     },
     "2_auto_ron": {
       "display_name": "R",
+      "desc": "Automatically declare wins.",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
         ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
@@ -721,6 +724,7 @@
     },
     "3_auto_no_call": {
       "display_name": "C",
+      "desc": "Skip all calls except wins.",
       "actions": [
         ["when", [
           "not_our_turn",
@@ -732,7 +736,8 @@
     },
     "4_auto_discard": {
       "display_name": "D",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

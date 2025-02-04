@@ -17,8 +17,7 @@ defmodule RiichiAdvanced.ModLoader do
     mod_contents = mod_names
     |> Enum.map(&File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{&1 <> ".jq"}")))
     |> Enum.map(&String.trim/1)
-    |> Enum.map(&" | (#{&1}\n) as $_result\n|\n$_result")
-    |> Enum.join()
+    |> Enum.map_join(&" | (#{&1}\n) as $_result\n|\n$_result")
     |> then(&".enabled_mods += #{mod_names_to_array(mod_names)}"<>&1)
     # IO.puts(mod_contents)
 
@@ -47,6 +46,7 @@ defmodule RiichiAdvanced.ModLoader do
   @modpacks %{
     "sanma" => %{
       display_name: "Sanma",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
       ruleset: "riichi",
       mods: ["sanma"],
       default_mods: [],
@@ -90,6 +90,13 @@ defmodule RiichiAdvanced.ModLoader do
       ruleset: "riichi",
       mods: ["minefield"],
       default_mods: ["kiriage_mangan"],
+    },
+    "kansai" => %{
+      display_name: "Kansai (beta)",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
+      ruleset: "riichi",
+      mods: ["sanma", "dora", "aka", "nagashi", "kansai"],
+      default_mods: ["tobi"],
     }
   }
 
@@ -100,9 +107,9 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def get_ruleset_json(ruleset, session_id \\ nil, strip_comments? \\ false) do
+  def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false) do
     if ruleset == "custom" do
-      case RiichiAdvanced.ETSCache.get(session_id, ["{}"], :cache_rulesets) do
+      case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
         [ruleset_json] -> ruleset_json
         _ -> "{}"
       end
@@ -138,8 +145,8 @@ defmodule RiichiAdvanced.ModLoader do
   }
   """
 
-  def get_config_json(ruleset, session_id) do
-    case RiichiAdvanced.ETSCache.get({ruleset, session_id}, [@default_config], :cache_configs) do
+  def get_config_json(ruleset, room_code) do
+    case RiichiAdvanced.ETSCache.get({ruleset, room_code}, [@default_config], :cache_configs) do
       [ruleset_json] -> ruleset_json
       _ -> @default_config
     end

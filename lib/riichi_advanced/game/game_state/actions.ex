@@ -8,6 +8,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
+  require Logger
   import RiichiAdvanced.GameState
 
   def temp_disable_play_tile(state, seat) do
@@ -107,14 +108,15 @@ defmodule RiichiAdvanced.GameState.Actions do
               |> draw_tile(seat, 1, tile, to_aside)
               |> draw_tile(seat, num - 1, tile_spec, to_aside)
             not Enum.empty?(state.wall) ->
-              # move the last tile of the wall to the dead wall, and then draw it
+              # move the last tile of the wall to the dead wall
+              # then draw the last tile of the dead wall
               {wall, [tile]} = Enum.split(state.wall, -1)
               dead_wall = [tile | state.dead_wall]
               state
               |> Map.put(:wall, wall)
               |> Map.put(:dead_wall, dead_wall)
+              |> draw_tile(seat, 1, Enum.at(dead_wall, -1-state.dead_wall_index), to_aside)
               |> Map.put(:dead_wall_index, state.dead_wall_index + 1)
-              |> draw_tile(seat, 1, tile, to_aside)
               |> draw_tile(seat, num - 1, tile_spec, to_aside)
             true ->
               # both walls are exhausted, draw nothing
@@ -301,6 +303,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     hand = Utils.add_attr(state.players[seat].hand, ["hand"])
     draw = Utils.add_attr(state.players[seat].draw, ["hand"])
     new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
+    new_hand = if new_hand == nil do
+      Logger.error("Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
+      hand
+    else new_hand end
     # actually add the call to the player
     state = update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
     state = if called_tile != nil do
@@ -1558,7 +1564,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     else state end
   end
 
-  def extract_actions([], _names), do: []
   def extract_actions([action | actions], names) do
     case action do
       ["when", _condition, subactions] -> extract_actions(subactions, names)
@@ -1571,8 +1576,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       [action_name | _opts] -> if action_name in names do [action] else [] end
     end ++ extract_actions(actions, names)
   end
+  def extract_actions(_anything_else, _names), do: []
 
-  def map_action_opts([], _fun), do: []
   def map_action_opts([action | actions], fun) do
     mapped_action = case action do
       ["when", condition, subactions] -> ["when", condition, map_action_opts(subactions, fun)]
@@ -1587,5 +1592,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     [mapped_action | map_action_opts(actions, fun)]
   end
+  def map_action_opts(_anything_else, _fun), do: []
 
 end

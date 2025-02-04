@@ -11,8 +11,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       |> Enum.map(fn {seat, player} -> {seat, player.score + Map.get(assigns.delta_scores, seat, 0)} end)
       |> Enum.sort_by(fn {_seat, score} -> -score end)
       |> Enum.zip(["1st", "2nd", "3rd", "4th"])
-      |> Enum.map(fn {{seat, _score}, place} -> {seat, place} end)
-      |> Map.new()
+      |> Map.new(fn {{seat, _score}, place} -> {seat, place} end)
     assigns = Map.put(assigns, :placements, placements)
     ~H"""
     <div class={["game-modal-container", @visible_screen != :scores && "inactive"]}>

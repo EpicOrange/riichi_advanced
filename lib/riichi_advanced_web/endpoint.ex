@@ -7,8 +7,11 @@ defmodule RiichiAdvancedWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_riichi_advanced_key",
+    # TODO store signing_salt as a secret
+    # not a big deal though, it's not like we care about impersonation rn
     signing_salt: "sHBZn5OF",
-    same_site: "Lax"
+    same_site: "Lax",
+    max_age: 2592000 # 30 days
   ]
 
   socket "/live", Phoenix.LiveView.Socket,

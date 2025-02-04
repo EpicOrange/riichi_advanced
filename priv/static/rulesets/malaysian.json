@@ -425,7 +425,7 @@
           ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
           ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]]
         ]],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ],
       "unskippable": true
     },
@@ -473,7 +473,7 @@
         ["add_score", 100], ["subtract_score", 100, "last_discarder"], ["big_text", "  -100  ", "last_discarder"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -490,7 +490,7 @@
         ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "kakan": {
@@ -507,7 +507,7 @@
         ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw"]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "ron": {
@@ -570,7 +570,7 @@
           ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]]
         ]],
         ["set_status", "flower"],
-        ["when", ["not_no_tiles_remaining"], [["draw"]]]
+        ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]
       ]
     },
     "joker": {

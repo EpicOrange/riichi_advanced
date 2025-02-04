@@ -18,6 +18,7 @@ def disable_when_dead:
 |
 .functions.chombo = [
   ["set_status", "dead_hand"],
+  ["unset_status", "nagashi"],
   ["big_text", "$text"], ["pause", 1000], ["reveal_hand"],
   ["pause", 500],
   ["big_text", "Chombo"],

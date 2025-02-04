@@ -2,9 +2,10 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
-    |> assign(:session_id, params["id"])
+    |> assign(:session_id, session["session_id"])
+    |> assign(:room_code, params["room_code"])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, params["nickname"])
     |> assign(:seat_param, params["seat"])
@@ -30,11 +31,11 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:preplayed_index, nil)
     |> assign(:hide_buttons, false) # used to hide buttons on the client side after clicking one
 
-    last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, [], :cache_mods) do
+    last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.room_code}, [], :cache_mods) do
       [mods] -> mods
       []     -> []
     end
-    last_config = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.session_id}, nil, :cache_configs) do
+    last_config = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.room_code}, nil, :cache_configs) do
       [config] -> config
       _        -> nil
     end
@@ -42,24 +43,24 @@ defmodule RiichiAdvancedWeb.GameLive do
     # liveviews mount twice; we only want to init a new player on the second mount
     if socket.root_pid != nil do
       # start a new game process, if it doesn't exist already
-      game_spec = {RiichiAdvanced.GameSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: last_mods, config: last_config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: last_mods, config: last_config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.room_code)}}}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
-          IO.puts("Starting game session #{socket.assigns.session_id}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
+          IO.puts("Starting game session #{socket.assigns.room_code}")
+          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
           GenServer.cast(game_state, {:initialize_game, nil})
           game_state
         {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting game session #{socket.assigns.session_id}")
+          IO.puts("Error when starting game session #{socket.assigns.room_code}")
           IO.inspect(error)
           nil
         {:error, {:already_started, _pid}} ->
-          IO.puts("Already started game session #{socket.assigns.session_id}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
+          IO.puts("Already started game session #{socket.assigns.room_code}")
+          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
           game_state
       end
       # subscribe to state updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
       # init a new player and get the current state
       {state, seat, spectator} = GenServer.call(game_state, {:new_player, socket})
       socket = socket
@@ -82,7 +83,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           %{text: "Entered a "},
           %{bold: true, text: socket.assigns.ruleset},
           %{text: "game, room code"},
-          %{bold: true, text: socket.assigns.session_id}
+          %{bold: true, text: socket.assigns.room_code}
         ] ++ if state.mods != nil && not Enum.empty?(state.mods) do
           [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
         else [] end})
@@ -372,7 +373,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.session_id}?nickname=#{socket.assigns.nickname || ""}")
+    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname || ""}")
     {:noreply, socket}
   end
 
@@ -514,7 +515,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) do
       # animate new calls
       num_calls_before = Map.new(socket.assigns.state.players, fn {seat, player} -> {seat, length(player.calls)} end)
       num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
@@ -548,7 +549,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "play_sound", payload: %{"seat" => seat, "path" => path}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) && (seat == nil || seat == socket.assigns.viewer) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) && (seat == nil || seat == socket.assigns.viewer) do
       socket = push_event(socket, "play-sound", %{path: path})
       {:noreply, socket}
     else

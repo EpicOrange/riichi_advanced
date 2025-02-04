@@ -307,7 +307,74 @@ This is the seven pairs check. Although you can check for six pairs via the simp
 
 This is the kokushi check and introduces the `unique` flag. `unique` is useful when you want to ensure that each group specified in the group list `["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"]` is taken _at most once_ over the course of taking out twelve of them. (I say "group", but each group consists of one tile, which is a valid definition of a group.) This check removes 12 unique terminal/honors plus one more, and if it can do that, the match succeeds and you are tenpai for kokushi.
 
-That's about it for match specifications.
+Here is the full list of allowed items in a group:
+
+- keywords
+  + `"nojoker"` specifies that every item after it cannot use jokers
+  + `"unique"` specifies that every item in this group is taken at most once (if the group is to be taken >1 times)
+- Tiles like `"1m"` and `"9p"`
+- `"any"`, to represent any tile
+- Sets of tiles/offsets like `["1m", "2m", "3m"]` or `[0, 1, 2]`
+
+Offsets are one of the following:
+
+- Integers like `[0, 1, 2]`, representing "some tile" together with the two in sequence after that tile. Although negative integers technically work, it's not really useful (since you can always shift each integer so that the least offset is `0`).
+- Exact tiles like `"1m"` and `"9p"` and `"any"`
+- Fixed offsets like `1A` and `2B`. The set `["1A", "2B", "3C"]` represents any 1 tile of some suit, a 2 tile of another suit, and a 3 tile of a third suit. You may also specify `DA`, `DB`, `DC` as well (where red dragon is manzu suit, green dragon is souzu suit, and white dragon is pinzu suit) -- this is mostly used internally to represent American mahjong hands (see below section).
+
+## American hand match specifications
+
+American hands are a special case since they're so specific. They can be implemented using the above syntax, but there is a shorthand specifically for these kinds of hands (which are then translated to the above syntax behind-the-scenes).
+
+An American match specification is a string instead of an array. An example is `"FF 2024a 2222b 2222c"`. The idea is that we have space-separated groups where the individual characters represent the following:
+
+- `F`: any flower
+- `D`: any dragon
+- `W`: any wind
+- `N`,`E`,`W`,`S`: north/east/west/south wind
+- `R`,`G`,`0`: red/green/white dragon
+- `1` to `9`: a number tile
+- `X`: a variable number tile
+
+`X` groups must be suffixed with a number. For instance, `"XXXXX0a XX1a XXXXX2a"` matches a quint of some number, a pair of that number + 1, and a quint of that number + 2.
+
+The `a` at the end is a suit specifier, required for groups consisting of `1` to `9`, `D`, and/or `X`. The three suit specifiers are `a`, `b`, `c`. For example, `"2024a 2222b 2222c"` matches 2024 of one suit (0 is white dragon), 2222 or another suit, and 2222 of a third suit.
+
+See `rulesets/american.json` for more examples.
+
+## Marking
+
+Riichi Advanced has a mechanism that allows for marking arbitrary tiles for use in another action. The most notable use of this is to implement charleston passes, where a player marks three tiles to pass. The Sakicards variant makes heavy use of marking in order to implement tile swaps and discard pile interactions and other shennanigans.
+
+To trigger a mark action, simply run the action `["mark", mark_spec]` where `mark_spec` is an array of items in the following format:
+
+    [target, number, restrictions]
+
+Examples:
+
+- `["mark", [["hand", 3, ["self", "not_joker"]]]]`: Mark 3 tiles in your own hand (that are not jokers).
+- `["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]]`: Mark a terminal/honor in hand and the last discard.
+- `["mark", [["hand", 1, ["match_suit", "not_riichi"]], ["discard", 1, ["match_suit"]]]]`: Mark one tile in your own hand, then mark one tile in your discards. Once you mark one tile, the other tile must match the suit of the marked tile. In addition, the tile in hand can only be your drawn tile, if you are in riichi.
+
+The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These three are the most important:
+
+- `["move_tiles", src, dst]`: Move tiles from `src` to `dst`.
+- `["swap_tiles", src, dst]`: Swap tiles between `src` and `dst`.
+- `["clear_marking"]`: Exit marking mode. This is required after you're done with `move_tiles` or `swap_tiles`, since marking mode essentially pauses the game.
+
+There are a number of ad-hoc actions that also interact with the marked tiles, but they are not meant to be used beyond Sakicards (since they are very specific actions, and the plan is to replace them in the future). For example:
+
+- `["flip_marked_discard_facedown"]`. Flips marked discard tiles facedown. This exits marking mode.
+
+You can reference these actions in the full actions list below.
+
+One final note: the `mark` action also takes two optional action lists to be run before and after marking:
+
+    ["mark", mark_spec, pre_actions, post_actions]
+
+These are just extra hooks to run actions (for example, maybe you want to draw tiles immediately before marking) but are basically not necessary unless you are marking after a delay or something.
+
+---
 
 # `ruleset.json` full documentation
 

@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug :generate_room_code
     plug :fetch_live_flash
     plug :put_root_layout, html: {RiichiAdvancedWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -37,8 +38,8 @@ defmodule RiichiAdvancedWeb.Router do
     live_session :default do
       live "/", IndexLive
       live "/lobby/:ruleset", LobbyLive
-      live "/room/:ruleset/:id", RoomLive
-      live "/game/:ruleset/:id", GameLive
+      live "/room/:ruleset/:room_code", RoomLive
+      live "/game/:ruleset/:room_code", GameLive
       live "/log", LogMenuLive
       live "/log/:id", LogLive
       live "/about", AboutLive
@@ -65,5 +66,9 @@ defmodule RiichiAdvancedWeb.Router do
       live_dashboard "/dashboard", metrics: RiichiAdvancedWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+  
+  def generate_room_code(conn, _opts) do
+    put_session(conn, :room_code, get_session(conn, :room_code) || Ecto.UUID.generate())
   end
 end

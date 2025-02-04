@@ -839,8 +839,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Map.new()
     if not Enum.empty?(joker_assignment) do
       joker_assignment_message = joker_assignment
-      |> Enum.map(fn {joker_tile, tile} -> [Utils.pt(joker_tile), %{text: "→"}, Utils.pt(tile)] end)
-      |> Enum.intersperse([%{text: ","}])
+      |> Enum.map_intersperse([%{text: ","}], fn {joker_tile, tile} -> [Utils.pt(joker_tile), %{text: "→"}, Utils.pt(tile)] end)
       |> Enum.concat()
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
     end
