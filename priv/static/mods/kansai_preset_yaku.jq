@@ -1,5 +1,5 @@
 .after_start.actions += [
-  ["push_system_message", "Declare your starting yaku"],
+  ["push_system_message", "Declare your winning yaku."],
   ["set_status_all", "declaring_yaku"]
 ]
 |
@@ -14,7 +14,8 @@
   "show_when": [{"name": "status", "opts": ["declaring_yaku"]}],
   "actions": [
     ["choose_yaku"],
-    ["unset_status", "declaring_yaku"]
+    ["unset_status", "declaring_yaku"],
+    ["recalculate_buttons"]
   ],
   "unskippable": true,
   "cancellable": false
@@ -77,3 +78,5 @@ else . end
 if (.buttons | has("tsumo")) then
   .buttons.tsumo.show_when += [{"name": "has_declared_yaku_with_hand", "opts": ["yaku", "meta_yaku", "yakuman", "meta_yakuman"]}]
 else . end
+|
+.score_calculation.remove_undeclared_yaku = true
