@@ -162,11 +162,11 @@ defmodule RiichiAdvanced.GameState.Marking do
         "wind"              -> Riichi.is_wind?(tile)
         "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
-        "visible"           -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0
+        "visible"           -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"])
         "not_joker"         -> not Map.has_key?(state.players[marking_player].tile_mappings, tile)
         "call_has_joker"    ->
           jokers = Map.keys(state.players[marking_player].tile_mappings)
-          Utils.count_tiles(Riichi.call_to_tiles(tile), jokers) > 0
+          Utils.has_matching_tile?(Riichi.call_to_tiles(tile), jokers)
         "not_riichi"        -> "riichi" not in state.players[marking_player].status || index >= length(state.players[marking_player].hand)
         "last_discard"      ->
           case source do

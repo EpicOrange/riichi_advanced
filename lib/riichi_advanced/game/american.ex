@@ -402,7 +402,7 @@ defmodule RiichiAdvanced.GameState.American do
                 |> Enum.with_index()
                 |> Enum.sort_by(fn {group, _i} -> cond do
                   group in Riichi.group_keywords() -> 2
-                  Utils.count_tiles(tiles, [Utils.to_tile(group)]) == 0 -> 0
+                  not Utils.has_matching_tile?(tiles, [Utils.to_tile(group)]) -> 0
                   true -> 1
                 end end)
                 |> Enum.map(fn {_group, i} -> i end)

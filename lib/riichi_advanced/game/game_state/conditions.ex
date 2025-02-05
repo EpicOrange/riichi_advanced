@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             if last_discard_action != nil do 
               visible_pond = state.players[last_discard_action.seat].pond
               |> Enum.drop(-1)
-              |> Enum.filter(fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
+              |> Enum.reject(&Utils.has_matching_tile?([&1], [:"1x", :"2x"]))
               if not Enum.empty?(visible_pond) do
                 [{hand ++ Enum.take(visible_pond, -1), calls}]
               else [{hand, calls}] end
@@ -64,7 +64,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "visible_tiles" -> [{hand ++ get_visible_tiles(state), calls}]
           "any_visible_tile" -> Enum.map(get_visible_tiles(state), fn tile -> {hand ++ [tile], calls} end)
           "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
-          "hand_draw_nonjoker_any" -> Enum.flat_map(state.players[context.seat].hand ++ state.players[context.seat].draw, fn tile -> [{hand ++ if Utils.count_tiles([tile], Map.keys(state.players[context.seat].tile_mappings)) > 0 do [] else [tile] end, calls}] end)
+          "hand_draw_nonjoker_any" -> Enum.flat_map(state.players[context.seat].hand ++ state.players[context.seat].draw, fn tile -> [{hand ++ if Utils.has_matching_tile?([tile], Map.keys(state.players[context.seat].tile_mappings)) do [] else [tile] end, calls}] end)
           "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
           "self_joker_meld_tiles" ->
             # used in malaysian, this selects one nonjoker tile from own exposed calls containing a joker
@@ -138,7 +138,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "others" -> state.available_seats -- [context.seat]
       "chii_victims" -> for {"chii", tiles} <- state.players[context.seat].calls do
         # check sideways tiles
-        case Enum.map(tiles, &Utils.has_attr?(["sideways"])) do
+        case Enum.map(tiles, &Utils.has_attr?(&1, ["sideways"])) do
           [false, false, true] -> [:shimocha]
           [false, true, false] -> [:toimen]
           [true, false, false] -> [:kamicha]
@@ -326,13 +326,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(winning_hand ++ [winning_tile], fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
+        Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
-        Enum.all?(winning_hand, fn tile -> Utils.count_tiles([tile] ++ Map.get(tile_mappings, tile, []), tiles) > 0 end)
+        Enum.all?(winning_hand, &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) && Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 && value == value2 end)
@@ -360,9 +360,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "last_discard_exists" ->
         last_discard_action != nil && last_discard_action.tile == Enum.at(state.players[last_discard_action.seat].pond, -1)
       "visible_discard_exists" ->
-        last_discard_action != nil && Enum.any?(state.players, fn {_seat, player} -> Enum.any?(player.pond, fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end) end)
+        last_discard_action != nil && Enum.any?(state.players, fn {_seat, player} -> Enum.any?(player.pond, &not Utils.has_matching_tile?([&1], [:"1x", :"2x"])) end)
       "second_last_visible_discard_exists" ->
-        last_discard_action != nil && Enum.any?(Enum.drop(state.players[last_discard_action.seat].pond, -1), fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
+        last_discard_action != nil && Enum.any?(Enum.drop(state.players[last_discard_action.seat].pond, -1), &not Utils.has_matching_tile?([&1], [:"1x", :"2x"]))
       "call_would_change_waits" ->
         win_definitions = translate_match_definitions(state, opts)
         hand = Utils.add_attr(cxt_player.hand, ["hand"])
@@ -470,13 +470,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Enum.at(opts, 1, 0)
       "genbutsu_shimocha"   ->
         tiles = (Utils.get_seat(context.seat, :shimocha) |> Riichi.get_safe_tiles_against(state.players, state.turn))
-        last_discard_action != nil && Utils.count_tiles(tiles, [Utils.strip_attrs(last_discard_action.tile)]) >= 1
+        last_discard_action != nil && Utils.has_matching_tile?(tiles, [Utils.strip_attrs(last_discard_action.tile)])
       "genbutsu_toimen"     ->
         tiles = (Utils.get_seat(context.seat, :toimen) |> Riichi.get_safe_tiles_against(state.players, state.turn))
-        last_discard_action != nil && Utils.count_tiles(tiles, [Utils.strip_attrs(last_discard_action.tile)]) >= 1
+        last_discard_action != nil && Utils.has_matching_tile?(tiles, [Utils.strip_attrs(last_discard_action.tile)])
       "genbutsu_kamicha"    ->
         tiles = (Utils.get_seat(context.seat, :kamicha) |> Riichi.get_safe_tiles_against(state.players, state.turn))
-        last_discard_action != nil && Utils.count_tiles(tiles, [Utils.strip_attrs(last_discard_action.tile)]) >= 1
+        last_discard_action != nil && Utils.has_matching_tile?(tiles, [Utils.strip_attrs(last_discard_action.tile)])
       "dealt_in_last_round" ->
         case state.log_state.kyokus do
           [] -> false

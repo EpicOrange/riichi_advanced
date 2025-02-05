@@ -225,6 +225,12 @@ defmodule RiichiAdvanced.Utils do
     same_tile({to_manzu(t1), attrs1}, {to_manzu(t2), attrs2}, tile_aliases)
   end
 
+  def has_matching_tile?(hand, tiles, tile_aliases \\ %{}) do
+    Enum.any?(hand, fn hand_tile ->
+      Enum.any?(tiles, &same_tile(hand_tile, &1, tile_aliases))
+    end)
+  end
+
   def count_tiles(hand, tiles, tile_aliases \\ %{}) do
     for hand_tile <- hand do
       if Enum.any?(tiles, &same_tile(hand_tile, &1, tile_aliases)) do 1 else 0 end
@@ -342,7 +348,7 @@ defmodule RiichiAdvanced.Utils do
 
   # get the principal tile from a meld consisting of all one tile and jokers
   def _get_joker_meld_tile(tiles, joker_tiles) do
-    non_joker_tiles = Enum.reject(tiles, &count_tiles([&1], joker_tiles) > 0)
+    non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
     has_joker = length(non_joker_tiles) < length(tiles)
     has_nonjoker = length(non_joker_tiles) > 0
     if has_joker && has_nonjoker do
@@ -361,7 +367,7 @@ defmodule RiichiAdvanced.Utils do
   end
 
   def replace_jokers(tiles, joker_tiles) do
-    if Enum.any?(tiles, &count_tiles([&1], joker_tiles) > 0) do
+    if Enum.any?(tiles, &has_matching_tile?([&1], joker_tiles)) do
       List.duplicate(_get_joker_meld_tile(tiles, joker_tiles), length(tiles))
     else tiles end
   end
@@ -369,7 +375,7 @@ defmodule RiichiAdvanced.Utils do
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
   def replace_jokers_in_calls(calls, joker_tiles) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls && Enum.any?(call, &count_tiles([&1], joker_tiles) > 0) do
+      if name in @pon_like_calls && Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
         meld_tile = get_joker_meld_tile({name, call}, joker_tiles)
         {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end

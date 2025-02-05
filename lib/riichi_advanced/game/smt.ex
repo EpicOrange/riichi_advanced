@@ -378,7 +378,7 @@ defmodule RiichiAdvanced.SMT do
     call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
     {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
-    |> Enum.filter(fn {tile, _ix} -> Utils.count_tiles([tile], jokers) == 1 end)
+    |> Enum.filter(fn {tile, _ix} -> Utils.has_matching_tile?([tile], jokers) end)
     |> Enum.map(fn {tile, ix} ->
       {_joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
       joker_choices = joker_choices

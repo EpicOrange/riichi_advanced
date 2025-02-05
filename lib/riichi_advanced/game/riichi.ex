@@ -745,7 +745,7 @@ defmodule RiichiAdvanced.Riichi do
       "9" -> is_num?(context.tile, 9)
       "tedashi" -> not Utils.has_attr?(context.tile, ["draw"])
       "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
-      "dora" -> Utils.count_tiles([context.tile], context.doras) >= 1
+      "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
       "kuikae" ->
         player = context.players[context.seat]
         base_tiles = collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_ordering, player.tile_ordering_r, player.tile_mappings)
@@ -818,7 +818,7 @@ defmodule RiichiAdvanced.Riichi do
 
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
     tiles = Enum.map(call, &flip_faceup/1)
-    if replace_am_jokers && Utils.count_tiles(tiles, [:"1j"]) > 0 do
+    if replace_am_jokers && Utils.has_matching_tile?(tiles, [:"1j"]) do
       # replace all american jokers with the nonjoker tile
       nonjoker = Enum.find(tiles, &not Utils.same_tile(&1, :"1j")) |> Utils.strip_attrs()
       Enum.map(tiles, fn t -> if Utils.same_tile(t, :"1j") do nonjoker else t end end)
@@ -1041,7 +1041,7 @@ defmodule RiichiAdvanced.Riichi do
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
       cond do
-        length(hand) == 1 && Utils.count_tiles(hand, winning_tiles, tile_aliases) >= 1 -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
+        length(hand) == 1 && Utils.has_matching_tile?(hand, winning_tiles, tile_aliases) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
         length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
         length(hand) == 4 && num_pairs == 2 ->
           [tile1, tile2] = Enum.uniq(hand)

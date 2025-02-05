@@ -798,7 +798,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         tile = state.players[seat].pond
         |> Enum.reverse()
         |> Enum.drop(1)
-        |> Enum.find(fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
+        |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
         win(state, context.seat, tile, :discard)
       "ryuukyoku"             -> exhaustive_draw(state)
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
@@ -1190,7 +1190,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "delete_tiles"    ->
         # TODO allow specifying target
         tiles = Enum.map(opts, &Utils.to_tile/1)
-        state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.count_tiles([t], tiles) > 0 end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
+        state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.has_matching_tile?([t], tiles) end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
         state
       "pass_draws"      ->
         to = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))

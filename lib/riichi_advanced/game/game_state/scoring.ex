@@ -355,9 +355,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
           push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
           payment * 2
         else payment end
-        manzu = "yoshitome_miharu_manzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m"]) == 1
-        pinzu = "yoshitome_miharu_pinzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p"]) == 1
-        souzu = "yoshitome_miharu_souzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s"]) == 1
+        manzu = "yoshitome_miharu_manzu" in state.players[payer].status && Utils.has_matching_tile?([winner.winning_tile], [:"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m"])
+        pinzu = "yoshitome_miharu_pinzu" in state.players[payer].status && Utils.has_matching_tile?([winner.winning_tile], [:"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p"])
+        souzu = "yoshitome_miharu_souzu" in state.players[payer].status && Utils.has_matching_tile?([winner.winning_tile], [:"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s"])
         payment = if pao_triggered && (manzu || pinzu || souzu) do
           push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays half due to dealing in with their voided suit (Yoshitome Miharu)"}])
           Utils.half_score_rounded_up(payment)
@@ -893,7 +893,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       jokers = Map.keys(state.players[seat].tile_mappings)
-      if Utils.count_tiles(smt_hand ++ call_tiles, jokers) > 0 do
+      if Utils.has_matching_tile?(smt_hand ++ call_tiles, jokers) do
         # run smt, but push a message if it takes more than 0.5 seconds
         smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings) end)
         notify_task = Task.async(fn ->
@@ -930,7 +930,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
       Task.async(fn ->
         # replace 5z in joker assignment with 0z if 0z is present in the wall
-        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 0 do
+        joker_assignment = if Utils.has_matching_tile?(state.all_tiles, [:"0z"]) do
           Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
         else joker_assignment end
 
