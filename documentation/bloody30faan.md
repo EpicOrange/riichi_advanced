@@ -119,7 +119,7 @@ Terminal tiles are the numbers 1 and 9.
 For the following, triplets can include kongs.
 
 - __All Triplets__ (5 faan): All of your sets are triplets.
-- __Two Concealed Triplets__ (2 faan): You have two concealed triplets. Triplets obtained via win by self-draw count.
+- __Two Concealed Triplets__ (2 faan): You have two concealed triplets. Triplets obtained via win by self-draw count as concealed, but triplets obtained via win by discard/robbing a kong are not concealed.
 - __Three Concealed Triplets__ (8 faan): Instead, you have three concealed triplets.
 - __Four Concealed Triplets__ (15 faan): Instead, you have four concealed triplets.
 - __Two Shifted Triplets__ (2 faan): You have consecutive triplets in the pattern 111222. They do not have to be the same suit.
@@ -190,8 +190,8 @@ Note that you are only awarded the highest scoring of the three Tile Hogs.
 - __Within Seven Tiles__ (5 faan): Win before the eighth tile is drawn.
 - __Within Ten Tiles__ (8 faan): Win before the eleventh tile is drawn.
 - __Hand of Man__ (15 faan): Win before your first discard and before any calls.
-- __Hand of Heaven__ (30 faan): Win with your first draw (as East seat)
-- __Hand of Earth__ (30 faan): Win with your first draw (not East seat)
+- __Hand of Heaven__ (30 faan): Win with your first draw (as dealer).
+- __Hand of Earth__ (30 faan): Win with your first draw (as non-dealer).
 
 ### Concealed
 
