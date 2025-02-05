@@ -7,17 +7,47 @@ def make_galaxy:
 
 .wall |= (to_entries | map(if (.key % 4 == 3) then .value |= make_galaxy else . end) | map(.value))
 |
-.set_definitions += {
-  "dragons": ["5z", "6z", "7z"],
-  "dragons_1": ["0z", "6z", "7z"],
-  "dragons_2": ["5z", "0z", "7z"],
-  "dragons_3": ["5z", "6z", "0z"]
-}
+# add tenpai defs + win def + yakuman def for Milky Way yakuman
+.tenpai_definition += [
+  [ [[
+    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
+    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
+    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
+    "11t", "12t", "13t", "14t", "15t", "16t", "17t", "18t", "19t", "110t",
+    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
+  ], 13] ]
+]
 |
-.yaku += [{
-  "display_name": "Dragon Sequence",
+.tenpai_14_definition += [
+  [ [[
+    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
+    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
+    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
+    "11t", "12t", "13t", "14t", "15t", "16t", "17t", "18t", "19t", "110t",
+    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
+  ], 13] ]
+]
+|
+.win_definition += [
+  [ [[
+    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
+    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
+    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
+    "11t", "12t", "13t", "14t", "15t", "16t", "17t", "18t", "19t", "110t",
+    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
+  ], 14] ]
+]
+|
+.yakuman += [{
+  "display_name": "Milky Way",
   "value": 1,
-  "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["dragons", "dragons_1", "dragons_2", "dragons_3"], 1]]]]}]
+  "when": [{"name": "winning_hand_consists_of", "opts": [
+    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
+    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
+    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
+    "11t", "12t", "13t", "14t", "15t", "16t", "17t", "18t", "19t", "110t",
+    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
+  ]}]
 }]
 |
 # add joker rules
@@ -139,4 +169,13 @@ if any(.wall[]; . == "10m") then
   else . end
 else . end
 |
+# ankans are displayed all-face-up
+.buttons.ankan.call_style = {"self": [0, 1, 2, 3]}
+|
+# before win, add a counter for how many galaxy tiles are used in natural melds. this will be piped to `/shuugi.jq` if the shuugi mod is turned on.
+# actually, how do I check if a galaxy tile is used in a natural meld???
+#.before_win.actions += [
+#      ["add_counter", "galaxy_natural_jokers", "count_matches", ["hand", "calls", "draw", "last_discard"], ["any_joker"]]
+#  ]
+#|
 .win_timer = 20
