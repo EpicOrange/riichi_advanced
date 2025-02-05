@@ -23,6 +23,12 @@ defmodule RiichiAdvancedWeb.CollaborativeTextareaComponent do
     {:noreply, socket}
   end
 
+  # sometimes other events get sent to this component when navigating between pages
+  # just ignore them
+  def handle_event(_, _, socket) do
+    {:noreply, socket}
+  end
+
   def update(assigns, socket) do
     socket = assigns
     |> Map.drop([:flash])

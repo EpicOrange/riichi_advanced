@@ -6,6 +6,7 @@
   ["when", [{"name": "status", "opts": ["kindora"]}], [["add_counter", "shuugi_payment", 2]]],
   ["when", [{"name": "has_yaku2", "opts": [1]}], [["set_status", "yakuman"], ["add_counter", "shuugi_payment", 5]]],
   ["add_counter", "shuugi_payment", "toriuchi"],
+  ["add_counter", "shuugi_payment", "galaxy_natural_jokers"],
   ["set_counter_all", "shuugi_payment", "shuugi_payment"],
   ["when", ["won_by_discard"], [
     ["when", [{"name": "counter_at_least", "opts": ["aka", 1]}], [["push_system_message", "Discarder pays 1 chip per aka dora (shuugi)"]]],

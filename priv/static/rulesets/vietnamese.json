@@ -46,10 +46,6 @@
            "6j", "7j", "8j", "9j",
            "1k", "2k", "3k", "4k",
            "1q", "2q", "3q", "4q"],
-  "reserved_tiles": [
-    "kandraw_1", "kandraw_2",
-    "kandraw_3", "kandraw_4"
-  ],
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
@@ -583,16 +579,17 @@
     ["joker", [["set_status", "discarded_joker"], ["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "2j"]]]
   ],
   "buttons": {
+      // Flower replacements are drawn from the back end of the wall. This implementation assumes that kong and joker replacements are also drawn from the back of the wall.
     "start_flower": {
       "display_name": "Reveal flower",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["draw"]],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["draw", 1, "opposite_end"]],
       "unskippable": true
     },
     "start_joker": {
       "display_name": "Reveal joker",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1] ]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw"]],
+      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw", 1, "opposite_end"]],
       "unskippable": true
     },
     "start_no_flower": {
@@ -622,10 +619,7 @@
         ["big_text", "Khàn"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["draw", 1, "opposite_end"]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -637,10 +631,7 @@
         ["big_text", "Khàn"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "kakan": {
@@ -652,10 +643,7 @@
         ["big_text", "Khàn"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_3"]}, {"name": "tile_not_drawn", "opts": ["kandraw_4"]}], [["draw", 1, "kandraw_4"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_2"]}, {"name": "tile_not_drawn", "opts": ["kandraw_3"]}], [["draw", 1, "kandraw_3"]]],
-        ["when", [{"name": "tile_drawn", "opts": ["kandraw_1"]}, {"name": "tile_not_drawn", "opts": ["kandraw_2"]}], [["draw", 1, "kandraw_2"]]],
-        ["when", [{"name": "tile_not_drawn", "opts": ["kandraw_1"]}], [["draw", 1, "kandraw_1"]]]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "ron": {
@@ -712,12 +700,12 @@
     "flower": {
       "display_name": "Flower",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["when", ["not_no_tiles_remaining"], [["draw"]]]]
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]]
     },
     "joker": {
       "display_name": "Joker",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1] ]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw"]]
+      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw", 1, "opposite_end"]]
     }
   },
   "auto_buttons": {
@@ -768,7 +756,7 @@
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "upgrade_call", "convert_last_discard"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "initial_dead_wall_length": 14,
+  "initial_dead_wall_length": 0,
   "four_rows_discards": true,
   "max_rounds": 16,
   "win_timer": 20

@@ -2,9 +2,10 @@ defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
-    |> assign(:log_id, params["id"])
+    |> assign(:session_id, session["session_id"])
+    |> assign(:log_id, params["room_code"])
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -50,41 +51,41 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       socket = socket
       |> assign(:ruleset, ruleset)
-      |> assign(:session_id, "log") # debug
-      # |> assign(:session_id, socket.id)
+      |> assign(:room_code, "log") # debug
+      # |> assign(:room_code, socket.id)
       |> assign(:log, log)
       |> assign(:log_json, log_json)
 
       if ruleset == "custom" && Map.has_key?(log["rules"], "ruleset_json") do
         # for custom logs, fetch the ruleset from the log and load it into ets before starting log supervisor
-        RiichiAdvanced.ETSCache.put(socket.assigns.session_id, log["rules"]["ruleset_json"], :cache_rulesets)
-        RiichiAdvanced.ETSCache.put(socket.assigns.session_id <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
+        RiichiAdvanced.ETSCache.put(socket.assigns.room_code, log["rules"]["ruleset_json"], :cache_rulesets)
+        RiichiAdvanced.ETSCache.put(socket.assigns.room_code <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
       end
 
       # start a new game process
-      log_spec = {RiichiAdvanced.LogSupervisor, session_id: socket.assigns.session_id, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.session_id)}}}
+      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.room_code)}}}
       {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
         {:ok, _pid} ->
-          IO.puts("Starting log session #{socket.assigns.session_id}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
+          IO.puts("Starting log session #{socket.assigns.room_code}")
+          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
           GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
           GenServer.call(game_state, {:put_log_seeking_mode, true})
-          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.session_id))
+          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.room_code))
           GenServer.cast(log_control_state, {:put_log, log})
           GenServer.cast(log_control_state, {:start_walk, 0, 100})
           {game_state, log_control_state}
         {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting log session #{socket.assigns.session_id}")
+          IO.puts("Error when starting log session #{socket.assigns.room_code}")
           IO.inspect(error)
           {nil, nil}
         {:error, {:already_started, _pid}} ->
-          IO.puts("Already started log session #{socket.assigns.session_id}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.session_id))
-          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.session_id))
+          IO.puts("Already started log session #{socket.assigns.room_code}")
+          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.room_code))
           {game_state, log_control_state}
       end
       # subscribe to state updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.session_id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
 
 
       # init a new player and get the current state
@@ -356,7 +357,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) do
       # animate new calls
       num_calls_before = Map.new(socket.assigns.state.players, fn {seat, player} -> {seat, length(player.calls)} end)
       num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
@@ -387,7 +388,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_info(%{topic: topic, event: "play_sound", payload: %{"seat" => seat, "path" => path}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.session_id) && (seat == nil || seat == socket.assigns.viewer) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) && (seat == nil || seat == socket.assigns.viewer) do
       socket = push_event(socket, "play-sound", %{path: path})
       {:noreply, socket}
     else

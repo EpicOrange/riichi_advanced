@@ -27,7 +27,33 @@ Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bu
 
 ## Changelog
 
-- __1 Feb 2025__: Initial release for v1.0.0! 18 rulesets, hundreds of mods, multiplayer, it's all there.
+- __4 Feb 2025__: v1.0.2:
+  + Added ability to view running public games in lobby screen
+  + Added auto-pei autobutton to Sanma
+  + Added Kansai Sanma ruleset
+  + Added Milky Way yakuman to Galaxy Mahjong (thanks Sophie)
+  + Added more details about `match` and `mark` in documentation
+  + Changed SBR to penalize having a voided suit rather than disallow having a voided suit (thanks Sophie)
+  + Fixed revealing seven dora/ura instead of five in sanma
+  + Fixed ten tiles not being able to form kontsu (thanks jake but lowercase)
+  + Fixed seats not being reserved for disconnected players
+- __3 Feb 2025__: v1.0.1:
+  + Added ability to join running games (though you still cannot view running games)
+  + Added documentation for SBR and Galaxy Mahjong (thanks Sophie)
+  + Added kansai chiitoitsu mod
+  + Added no tsumo loss mod
+  + Added `"save_tile_aliases"` and `"load_tile_aliases"` actions
+  + Added session tracking to mitigate disconnection issues (needs testing)
+  + Fixed "unique" specifier for match definition
+  + Fixed chanta not accepting honor sequences in space mahjong
+  + Fixed crash in Singaporean when checking for multisided wait
+  + Fixed crash when call buttons contain malformed actions
+  + Fixed crash when checking if ankan changes your waits while in riichi.
+  + Fixed crash when navigating between pages
+  + Fixed flowers being treated as calls
+  + Fixed nagashi being achievable by a dead hand (Chombo mod)
+  + Fixed replacement tiles not being drawn from dead wall visually
+- __1 Feb 2025__: v1.0.0: 17 rulesets, hundreds of mods, multiplayer, it's all there.
 
 ## Supported rulesets
 
@@ -36,6 +62,7 @@ Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bu
 - __Space Mahjong__: Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han).
 - __Cosmic Riichi__: A Space Mahjong variant with mixed triplets, more yaku, and more calls.
 - __Galaxy Mahjong__: Riichi, but one of each tile is replaced with a blue galaxy tile that acts as a wildcard of its number. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.
+- __Kansai Sanma__: Sanma, but you draw until the last visible dora indicator. In addition, all fives are akadora, fu is fixed at 30, there is no tsumo loss, and scores are rounded to the nearest 1000. Flowers act as nukidora in place of north winds, which are now yakuhai. Exhaustive draws in south round always result in a repeat regardless of who's tenpai.
 - __Chinitsu__: Two-player variant where the only tiles are bamboo tiles. Try not to chombo!
 - __Minefield__: Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards.
 - __Sakicards v1.3__: Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator.

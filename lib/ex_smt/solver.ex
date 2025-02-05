@@ -2,9 +2,9 @@ defmodule ExSMT.Solver do
   require Logger
 
   def start_link(init_data) do
-    # IO.puts("Starting z3 solver for #{inspect(Keyword.get(init_data, :session_id))} #{inspect(Keyword.get(init_data, :ruleset))}")
+    # IO.puts("Starting z3 solver for #{inspect(Keyword.get(init_data, :room_code))} #{inspect(Keyword.get(init_data, :ruleset))}")
     state = %{
-      session_id: Keyword.get(init_data, :session_id),
+      room_code: Keyword.get(init_data, :room_code),
       ruleset: Keyword.get(init_data, :ruleset)
     }
     GenServer.start_link(__MODULE__, state, name: Keyword.get(init_data, :name))
