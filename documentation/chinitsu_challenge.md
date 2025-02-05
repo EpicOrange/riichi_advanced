@@ -1,6 +1,6 @@
 # Chinitsu Challenge
 
-Chinitsu Challenge is a variation of Riichi mahjong. Besides having two players instead of four, the core differences are as follows:
+Chinitsu Challenge is a variation of [Riichi mahjong](riichi.md). Besides having two players instead of four, the core differences are as follows:
 
 - Only the 36 souzu tiles are used.
 - Your starting score is 150000 instead of 25000.
