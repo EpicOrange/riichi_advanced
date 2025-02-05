@@ -66,20 +66,20 @@ defmodule RiichiAdvanced.Riichi do
     if tile != nil do
       cond do
         Map.has_key?(@fixed_offsets, n) -> _offset_tile(@fixed_offsets[n], suit_to_offset(tile), order, order_r, true)
-        (n < 1 && n > -1) || n < -30 || n >= 30 ->
+        (n < 1 and n > -1) or n < -30 or n >= 30 ->
           tile
         n >= 10 ->
           cond do
-            shift_dragons && tile == :"7z" -> _offset_tile(:"0z", n-10, order, order_r, true)
-            shift_dragons && tile == :"0z" -> _offset_tile(:"6z", n-10, order, order_r, true)
-            shift_dragons && tile == :"6z" -> _offset_tile(:"7z", n-10, order, order_r, true)
+            shift_dragons and tile == :"7z" -> _offset_tile(:"0z", n-10, order, order_r, true)
+            shift_dragons and tile == :"0z" -> _offset_tile(:"6z", n-10, order, order_r, true)
+            shift_dragons and tile == :"6z" -> _offset_tile(:"7z", n-10, order, order_r, true)
             true -> _offset_tile(shift_suit(tile), n-10, order, order_r)
           end
         n <= -10 ->
           cond do
-            shift_dragons && tile == :"7z" -> _offset_tile(:"6z", n+10, order, order_r, true)
-            shift_dragons && tile == :"0z" -> _offset_tile(:"7z", n+10, order, order_r, true)
-            shift_dragons && tile == :"6z" -> _offset_tile(:"0z", n+10, order, order_r, true)
+            shift_dragons and tile == :"7z" -> _offset_tile(:"6z", n+10, order, order_r, true)
+            shift_dragons and tile == :"0z" -> _offset_tile(:"7z", n+10, order, order_r, true)
+            shift_dragons and tile == :"6z" -> _offset_tile(:"0z", n+10, order, order_r, true)
             true -> _offset_tile(shift_suit(shift_suit(tile)), n+10, order, order_r)
           end
         n <= -1 ->
@@ -122,7 +122,7 @@ defmodule RiichiAdvanced.Riichi do
   def is_pinzu?(tile), do: Enum.any?(@pinzu, &Utils.same_tile(tile, &1))
   def is_souzu?(tile), do: Enum.any?(@souzu, &Utils.same_tile(tile, &1))
   def is_jihai?(tile), do: Enum.any?(@jihai, &Utils.same_tile(tile, &1))
-  def is_suited?(tile), do: is_manzu?(tile) || is_pinzu?(tile) || is_souzu?(tile)
+  def is_suited?(tile), do: is_manzu?(tile) or is_pinzu?(tile) or is_souzu?(tile)
   def is_wind?(tile), do: Enum.any?(@wind, &Utils.same_tile(tile, &1))
   def is_dragon?(tile), do: Enum.any?(@dragon, &Utils.same_tile(tile, &1))
   def is_terminal?(tile), do: Enum.any?(@terminal, &Utils.same_tile(tile, &1))
@@ -297,10 +297,10 @@ defmodule RiichiAdvanced.Riichi do
     ignore_suit_ix = Enum.find_index(match_definition, & &1 == "ignore_suit")
     unique_ix = Enum.find_index(match_definition, & &1 == "unique")
     debug = "debug" in match_definition
-    if almost && :any in hand do
+    if almost and :any in hand do
       IO.puts("Warning: \"almost\" keyword does not support hands that have :any yet")
     end
-    hand = if almost || :any in hand do
+    hand = if almost or :any in hand do
       {any, hand} = Enum.split_with(hand, & &1 == :any)
       any = if almost do [:any | any] else any end
       hand ++ any
@@ -320,15 +320,15 @@ defmodule RiichiAdvanced.Riichi do
     ret = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: [{hand, calls}] do
       [] -> []
       hand_calls ->
-        unique = unique_ix != nil && i > unique_ix
-        ignore_suit = ignore_suit_ix != nil && i > ignore_suit_ix
+        unique = unique_ix != nil and i > unique_ix
+        ignore_suit = ignore_suit_ix != nil and i > ignore_suit_ix
         case match_definition_elem do
           "restart" -> [{hand, calls}]
           [groups, num] ->
-            unique = unique || "unique" in groups
-            nojoker = no_joker_index != nil && i > no_joker_index
+            unique = unique or "unique" in groups
+            nojoker = no_joker_index != nil and i > no_joker_index
             tile_aliases = if nojoker do %{} else filtered_tile_aliases end
-            new_hand_calls = if unique && num >= 1 && not exhaustive && Enum.all?(groups, &not is_list(&1) && (Utils.is_tile(&1) || &1 in @group_keywords)) do
+            new_hand_calls = if unique and num >= 1 and not exhaustive and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
               # optimized routine for unique non-exhaustive tile-only groups
               # since we know the exact tiles required and each can only be used once,
               # this is just a matching problem between our hand/calls and the group
@@ -358,7 +358,7 @@ defmodule RiichiAdvanced.Riichi do
                     {pairing, pairing_r} = Utils.maximum_bipartite_matching(adj)
                     consumes_call = map_size(pairing) == num_tiles
                     consumes_match = map_size(pairing) == to_remove_num
-                    if consumes_call || consumes_match do
+                    if consumes_call or consumes_match do
                       n = length(joker) 
                       to_remove = pairing |> Map.keys() |> Enum.take(to_remove_num)
                       {from_joker, from_nojoker} = to_remove |> Enum.sort(:desc) |> Enum.split_while(fn i -> i < n end)
@@ -377,7 +377,7 @@ defmodule RiichiAdvanced.Riichi do
               end)
               |> Enum.uniq()
             else
-              tile_aliases = if (no_joker_index != nil && i > no_joker_index) do %{} else filtered_tile_aliases end
+              tile_aliases = if (no_joker_index != nil and i > no_joker_index) do %{} else filtered_tile_aliases end
               # unique makes it so all groups must be offset by the same tile
               # (no such restriction for non-unique groups)
               base_tiles = collect_base_tiles(hand, calls, List.flatten(groups), ordering, ordering_r, tile_mappings)
@@ -396,7 +396,7 @@ defmodule RiichiAdvanced.Riichi do
                       new_hand_calls_groups = if exhaustive do
                         for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
-                          nojoker = no_joker_index != nil && i > no_joker_index
+                          nojoker = no_joker_index != nil and i > no_joker_index
                           tile_aliases = if nojoker do %{} else tile_aliases end
                           Task.async(fn ->
                             if unique do
@@ -414,7 +414,7 @@ defmodule RiichiAdvanced.Riichi do
                         for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords, reduce: [] do
                           [] ->
                             no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
-                            nojoker = no_joker_index != nil && i > no_joker_index
+                            nojoker = no_joker_index != nil and i > no_joker_index
                             tile_aliases = if nojoker do %{} else tile_aliases end
                             if unique do
                               _remove_group(hand, calls, group, ignore_suit, ordering, ordering_r, tile_aliases, base_tile)
@@ -594,13 +594,13 @@ defmodule RiichiAdvanced.Riichi do
   # will not remove a wait if you have four of the tile in hand or calls
   def get_waits(hand, calls, match_definitions, all_tiles, ordering, ordering_r, tile_aliases \\ %{}, skip_tenpai_check \\ false) do
     # only check for waits if we're tenpai
-    if skip_tenpai_check || match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
+    if skip_tenpai_check or match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), ordering, ordering_r, tile_aliases) do
       # go through each match definition and see what tiles can be added for it to match
       # as soon as something doesn't match, get all tiles that help make it match
       # take the union of helpful tiles across all match definitions
       for match_definition <- match_definitions do
         # make it exhaustive, unless it's unique
-        match_definition = if "unique" not in match_definition && "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+        match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
         {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], all_tiles} do
           {keywords, []}               -> {keywords, []}
@@ -775,9 +775,9 @@ defmodule RiichiAdvanced.Riichi do
 
     match_definitions = for match_definition <- match_definitions do
       # filter out lookaheads from match definition
-      match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) || with [_groups, num] <- match_definition_elem do num > 0 end end)
+      match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) or with [_groups, num] <- match_definition_elem do num > 0 end end)
       # add exhaustive unless unique
-      if "unique" not in match_definition && "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+      if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
     end
 
     {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
@@ -818,7 +818,7 @@ defmodule RiichiAdvanced.Riichi do
 
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
     tiles = Enum.map(call, &flip_faceup/1)
-    if replace_am_jokers && Utils.has_matching_tile?(tiles, [:"1j"]) do
+    if replace_am_jokers and Utils.has_matching_tile?(tiles, [:"1j"]) do
       # replace all american jokers with the nonjoker tile
       nonjoker = Enum.find(tiles, &not Utils.same_tile(&1, :"1j")) |> Utils.strip_attrs()
       Enum.map(tiles, fn t -> if Utils.same_tile(t, :"1j") do nonjoker else t end end)
@@ -834,21 +834,21 @@ defmodule RiichiAdvanced.Riichi do
         kyoku >= 3 -> :north
       end
       2 -> cond do
-        kyoku >= 0 && kyoku < 2 -> :east
-        kyoku >= 2 && kyoku < 4 -> :south
-        kyoku >= 4 && kyoku < 6 -> :west
+        kyoku >= 0 and kyoku < 2 -> :east
+        kyoku >= 2 and kyoku < 4 -> :south
+        kyoku >= 4 and kyoku < 6 -> :west
         kyoku >= 6 -> :north
       end
       3 -> cond do
-        kyoku >= 0 && kyoku < 3 -> :east
-        kyoku >= 3 && kyoku < 6 -> :south
-        kyoku >= 6 && kyoku < 9 -> :west
+        kyoku >= 0 and kyoku < 3 -> :east
+        kyoku >= 3 and kyoku < 6 -> :south
+        kyoku >= 6 and kyoku < 9 -> :west
         kyoku >= 9 -> :north
       end
       4 -> cond do
-        kyoku >= 0 && kyoku < 4 -> :east
-        kyoku >= 4 && kyoku < 8 -> :south
-        kyoku >= 8 && kyoku < 12 -> :west
+        kyoku >= 0 and kyoku < 4 -> :east
+        kyoku >= 4 and kyoku < 8 -> :south
+        kyoku >= 8 and kyoku < 12 -> :west
         kyoku >= 12 -> :north
       end
     end
@@ -936,11 +936,11 @@ defmodule RiichiAdvanced.Riichi do
     |> Enum.flat_map(fn tile ->
       prev = Map.get(ordering_r, tile, nil)
       prev2 = Map.get(ordering_r, prev, nil)
-      penchan_l_possible = prev2 != nil && not Map.has_key?(ordering_r, prev2)
+      penchan_l_possible = prev2 != nil and not Map.has_key?(ordering_r, prev2)
       next = Map.get(ordering, tile, nil)
       next2 = Map.get(ordering, next, nil)
-      penchan_r_possible = next2 != nil && not Map.has_key?(ordering, next2)
-      kanchan_possible = prev != nil && next != nil
+      penchan_r_possible = next2 != nil and not Map.has_key?(ordering, next2)
+      kanchan_possible = prev != nil and next != nil
       if penchan_l_possible do [[prev, prev2]] else [] end
       ++ if penchan_r_possible do [[next, next2]] else [] end
       ++ if kanchan_possible do [[prev, next]] else [] end
@@ -952,13 +952,13 @@ defmodule RiichiAdvanced.Riichi do
     possible_left_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
       if offset_tile(winning_tile, -3, ordering, ordering_r) != nil do
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, -2, ordering, ordering_r), offset_tile(winning_tile, -1, ordering, ordering_r)], tile_aliases)
-        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu && offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
+        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu and offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
       else [] end
     end)
     possible_right_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
       if offset_tile(winning_tile, 3, ordering, ordering_r) != nil do
         try_remove_all_tiles(starting_hand, [offset_tile(winning_tile, 1, ordering, ordering_r), offset_tile(winning_tile, 2, ordering, ordering_r)], tile_aliases)
-        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu && offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
+        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu and offset_tile(winning_tile, 10, ordering, ordering_r) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
       else [] end
     end)
 
@@ -1041,16 +1041,16 @@ defmodule RiichiAdvanced.Riichi do
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
       num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
       cond do
-        length(hand) == 1 && Utils.has_matching_tile?(hand, winning_tiles, tile_aliases) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
-        length(hand) == 2 && num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
-        length(hand) == 4 && num_pairs == 2 ->
+        length(hand) == 1 and Utils.has_matching_tile?(hand, winning_tiles, tile_aliases) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
+        length(hand) == 2 and num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_aliases)]
+        length(hand) == 4 and num_pairs == 2 ->
           [tile1, tile2] = Enum.uniq(hand)
           tile1_fu = fu + calculate_pair_fu(tile2, yakuhai, tile_aliases) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           tile2_fu = fu + calculate_pair_fu(tile1, yakuhai, tile_aliases) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
           if Utils.count_tiles([tile1], winning_tiles, tile_aliases) == 1 do [tile1_fu] else [] end
           ++ if Utils.count_tiles([tile2], winning_tiles, tile_aliases) == 1 do [tile2_fu] else [] end
         # cosmic hand
-        enable_kontsu_fu && length(hand) == 4 && num_pairs == 1 ->
+        enable_kontsu_fu and length(hand) == 4 and num_pairs == 1 ->
           {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
           [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
           pair_fu = calculate_pair_fu(pair_tile, yakuhai, tile_aliases)
@@ -1082,12 +1082,12 @@ defmodule RiichiAdvanced.Riichi do
 
     num_pairs = binary_search_count_matches([{starting_hand, []}], [[[[[0, 0]], 1]]], ordering, ordering_r, tile_aliases)
     ret = cond do
-      fu == 22 && win_source == :draw && is_closed_hand -> 20 # closed pinfu tsumo
-      fu == 30 && win_source != :draw && is_closed_hand -> 30 # closed pinfu ron
-      fu == 20 && not is_closed_hand                    -> 30 # open pinfu
-      Enum.empty?(fus) && num_pairs == 6                -> 25 # chiitoitsu
-      Enum.empty?(fus) && num_pairs == 5                -> 30 # kakura kurumi (saki card)
-      true                                              ->
+      fu == 22 and win_source == :draw and is_closed_hand -> 20 # closed pinfu tsumo
+      fu == 30 and win_source != :draw and is_closed_hand -> 30 # closed pinfu ron
+      fu == 20 and not is_closed_hand                     -> 30 # open pinfu
+      Enum.empty?(fus) and num_pairs == 6                 -> 25 # chiitoitsu
+      Enum.empty?(fus) and num_pairs == 5                 -> 30 # kakura kurumi (saki card)
+      true                                                ->
         # round up to nearest 10
         remainder = rem(fu, 10)
         if remainder == 0 do fu else fu - remainder + 10 end
@@ -1194,7 +1194,7 @@ defmodule RiichiAdvanced.Riichi do
   def compute_almost_group(group) do
     cond do
       # group of tiles
-      is_list(group) && not Enum.empty?(group) ->
+      is_list(group) and not Enum.empty?(group) ->
         cond do
           # list of integers specifying a group of tiles
           Enum.any?(group, &is_offset/1) ->
@@ -1204,7 +1204,7 @@ defmodule RiichiAdvanced.Riichi do
               Enum.map(almost_group, &if is_integer(&1) do &1 - lowest else &1 end)
             end
           # list of lists of integers specifying multiple related subgroups of tiles
-          Enum.all?(group, &is_list(&1) || &1 in @group_keywords) && Enum.all?(group, & &1 in @group_keywords || Enum.all?(&1, fn item -> is_offset(item) end)) ->
+          Enum.all?(group, &is_list(&1) or &1 in @group_keywords) and Enum.all?(group, & &1 in @group_keywords or Enum.all?(&1, fn item -> is_offset(item) end)) ->
             for {subgroup, i} <- Enum.with_index(group), is_list(subgroup), {_tile, j} <- Enum.with_index(subgroup) do
               almost_group = if length(subgroup) == 1 do List.delete_at(group, i) else List.update_at(group, i, &List.delete_at(&1, j)) end
               lowest = almost_group |> Enum.filter(&is_list/1) |> Enum.concat() |> Enum.filter(&is_integer/1) |> Enum.min()
@@ -1247,7 +1247,7 @@ defmodule RiichiAdvanced.Riichi do
       nojoker_ix_2 = Enum.find_index(groups2, & &1 == "nojoker")
       {joker1, ["nojoker" | nojoker1]} = if nojoker_ix_1 != nil do Enum.split(groups1, nojoker_ix_1) else {groups1, ["nojoker"]} end
       {joker2, ["nojoker" | nojoker2]} = if nojoker_ix_2 != nil do Enum.split(groups2, nojoker_ix_2) else {groups2, ["nojoker"]} end
-      Enum.empty?(joker2 -- joker1) && Enum.empty?(nojoker2 -- ((joker1 -- joker2) ++ nojoker1))
+      Enum.empty?(joker2 -- joker1) and Enum.empty?(nojoker2 -- ((joker1 -- joker2) ++ nojoker1))
     end
   end
 
@@ -1256,8 +1256,8 @@ defmodule RiichiAdvanced.Riichi do
   def match_definition_subsumes?(_match_definition1, [], keywords1, keywords2) do
     # IO.inspect({keywords1, keywords2}, label: "iteration")
     cond do
-      "exhaustive" not in keywords1 && "exhaustive" in keywords2 -> false
-      "debug" not in keywords1 && "debug" in keywords2 -> false
+      "exhaustive" not in keywords1 and "exhaustive" in keywords2 -> false
+      "debug" not in keywords1 and "debug" in keywords2 -> false
       true -> true
     end
   end
@@ -1270,7 +1270,7 @@ defmodule RiichiAdvanced.Riichi do
       {[groups1, num1], [groups2, num2]} ->
         if groups_subsumes?(groups1, groups2) do
           cond do
-            num1 == num2 || (num1 >= num2 && "unique" in keywords2) -> match_definition_subsumes?(match_definition1, match_definition2, keywords1, keywords2)
+            num1 == num2 or (num1 >= num2 and "unique" in keywords2) -> match_definition_subsumes?(match_definition1, match_definition2, keywords1, keywords2)
             num1 >  num2 -> match_definition_subsumes?([[groups1, num1 - num2] | match_definition1], match_definition2, keywords1, keywords2)
             num1 <  num2 -> match_definition_subsumes?(match_definition1, [[groups2, num2 - num1] | match_definition2], keywords1, keywords2)
           end
@@ -1297,15 +1297,15 @@ defmodule RiichiAdvanced.Riichi do
     |> Enum.reject(&Enum.empty?/1)
     |> Enum.uniq()
     cond do
-      abs(num) <= 1 && "unique" in groups ->
+      abs(num) <= 1 and "unique" in groups ->
         # group with unique keyword with num <= 1
         match_definition
         |> List.delete_at(i)
-      abs(num) > 1 && "unique" in groups ->
+      abs(num) > 1 and "unique" in groups ->
         # group with unique keyword with num > 1
         match_definition
         |> List.replace_at(i, [groups, num - 1])
-      abs(num) <= 1 && Enum.empty?(new_groups) ->
+      abs(num) <= 1 and Enum.empty?(new_groups) ->
         # lookahead for one item
         match_definition
         |> List.delete_at(i)

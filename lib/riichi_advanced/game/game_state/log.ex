@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   defp modify_last_draw_discard(state, fun) do
-    ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw || event.event_type == :discard end)
+    ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw or event.event_type == :discard end)
     if ix != nil do
       update_in(state.log_state.log, &List.update_at(&1, ix, fun))
     else
@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.GameState.Log do
   defp modify_last_button_press(state, fun, create_at_seat) do
     state = case Enum.at(state.log_state.log, 0) do
       event when (event != nil and event.event_type == :buttons_pressed) ->
-        if create_at_seat != nil && Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
+        if create_at_seat != nil and Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
           log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
         else state end
       _ -> log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})

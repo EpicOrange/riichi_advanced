@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.Utils do
     case tile_spec do
       [tile_spec | _attrs] -> Map.has_key?(@to_tile, tile_spec)
       %{"tile" => tile_spec, "attrs" => _attrs} -> Map.has_key?(@to_tile, tile_spec)
-      {tile_spec, attrs} -> Map.has_key?(@to_tile, tile_spec) && is_list(attrs)
+      {tile_spec, attrs} -> Map.has_key?(@to_tile, tile_spec) and is_list(attrs)
       _ -> Map.has_key?(@to_tile, tile_spec)
     end
   end
@@ -202,12 +202,12 @@ defmodule RiichiAdvanced.Utils do
   def same_tile(tile1, tile2, tile_aliases \\ %{}) do
     l1 = strip_attrs(MapSet.new([tile1]))
     l2 = strip_attrs(apply_tile_aliases(tile2, tile_aliases))
-    same_id = :any in l1 || :any in l2
-    || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
-    || Enum.any?(l1, fn tile -> tile in l2 end)
+    same_id = :any in l1 or :any in l2
+    or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
+    or Enum.any?(l1, fn tile -> tile in l2 end)
     {_, attrs2} = to_attr_tile(tile2)
     attrs_match = has_attr?(tile1, attrs2)
-    same_id && attrs_match
+    same_id and attrs_match
   end
 
   def to_manzu(tile) do
@@ -325,13 +325,13 @@ defmodule RiichiAdvanced.Utils do
     transparent = has_attr?(tile, ["transparent"])
     inactive = has_attr?(tile, ["inactive"])
     hidden = has_attr?(tile, ["hidden"])
-    reversed = transparent && id == :"1x"
+    reversed = transparent and id == :"1x"
     id = if reversed do Riichi.flip_faceup(tile) |> strip_attrs() else id end
-    facedown = has_attr?(tile, ["facedown"]) && Map.get(assigns, :hover_index, nil) != i
-    played = animate_played && Map.get(assigns, :your_hand?, true) && Map.get(assigns, :preplayed_index, nil) == i
-    sideways = i == Map.get(assigns, :riichi_index, nil) || has_attr?(tile, ["sideways"])
-    just_played = Map.get(assigns, :just_discarded?, false) && Map.has_key?(assigns, :pond) && i == length(assigns.pond) - 1
-    riichi = Map.has_key?(assigns, :riichi_index) && i == assigns.riichi_index
+    facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
+    played = animate_played and Map.get(assigns, :your_hand?, true) and Map.get(assigns, :preplayed_index, nil) == i
+    sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
+    just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
+    riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
     [
       "tile", id,
       facedown && "facedown",
@@ -351,7 +351,7 @@ defmodule RiichiAdvanced.Utils do
     non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
     has_joker = length(non_joker_tiles) < length(tiles)
     has_nonjoker = length(non_joker_tiles) > 0
-    if has_joker && has_nonjoker do
+    if has_joker and has_nonjoker do
       [tile | rest] = non_joker_tiles
       tile = strip_attrs(tile)
       if Enum.all?(rest, &same_tile(&1, tile)) do tile else nil end
@@ -375,7 +375,7 @@ defmodule RiichiAdvanced.Utils do
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
   def replace_jokers_in_calls(calls, joker_tiles) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls && Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
+      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
         meld_tile = get_joker_meld_tile({name, call}, joker_tiles)
         {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.Utils do
       visited = MapSet.union(visited, MapSet.new(new_layer))
       visited_r = MapSet.union(visited_r, MapSet.new(opp_layer))
       acc = {[MapSet.new(new_layer) | layers], new_layer, visited, visited_r}
-      if nil in new_layer || MapSet.size(visited) == map_size(adj) do
+      if nil in new_layer or MapSet.size(visited) == map_size(adj) do
         {:halt, acc}
       else
         {:cont, acc}

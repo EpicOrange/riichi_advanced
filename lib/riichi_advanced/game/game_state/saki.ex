@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def is_saki_card?(status) do
-    Map.has_key?(@card_names, status) || is_disabled_saki_card?(status)
+    Map.has_key?(@card_names, status) or is_disabled_saki_card?(status)
   end
 
   def is_disabled_saki_card?(status) do

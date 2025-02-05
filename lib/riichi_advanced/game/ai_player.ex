@@ -59,8 +59,8 @@ defmodule RiichiAdvanced.AIPlayer do
 
       # prefer outer discards
       {yaochuuhai, rest} = Enum.split_with(best_playables, fn {tile, _ix} -> Riichi.is_yaochuuhai?(tile) end)
-      {tiles28, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 2) || Riichi.is_num?(tile, 8) end) 
-      {tiles37, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 3) || Riichi.is_num?(tile, 7) end) 
+      {tiles28, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 2) or Riichi.is_num?(tile, 8) end) 
+      {tiles37, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 3) or Riichi.is_num?(tile, 7) end) 
       for playable_tiles <- [yaochuuhai, tiles28, tiles37, rest], reduce: nil do
         nil -> if not Enum.empty?(playable_tiles) do Enum.random(playable_tiles) else nil end
         ret -> ret
@@ -89,7 +89,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {nil, _} ->
         ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, ordering, ordering_r, tile_aliases)
         |> choose_playable_tile(state, playables, visible_tiles, win_definition)
-        if Debug.debug_ai() && ret != nil do
+        if Debug.debug_ai() and ret != nil do
           IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
         end
         {ret, i}
@@ -116,7 +116,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
     ret = playables
     |> Enum.min_by(fn {_tile, i} -> usages[i] end, &<=/2, fn -> nil end)
-    if Debug.debug_ai() && ret != nil do
+    if Debug.debug_ai() and ret != nil do
       IO.puts(" >> #{state.seat}: I'm currently #{shanten}-shanten!")
     end
     {ret, shanten}
@@ -192,7 +192,7 @@ defmodule RiichiAdvanced.AIPlayer do
           end
           GenServer.cast(state.game_state, {:ai_thinking, state.seat})
           {{tile, index}, shanten} = cond do
-            Process.get(:ignore_type_error, Debug.debug()) -> {Enum.at(playables, -1), :infinity} # tsumogiri
+            Debug.debug() -> {Enum.at(playables, -1), :infinity} # tsumogiri
             state.ruleset == "american" ->
               case choose_american_discard(state, playables, closest_american_hands) do
                 {nil, _} ->
@@ -330,7 +330,7 @@ defmodule RiichiAdvanced.AIPlayer do
           end
         end
       end
-      if button_name == "skip" && state.seat == turn && Enum.empty?(player.deferred_actions) do
+      if button_name == "skip" and state.seat == turn and Enum.empty?(player.deferred_actions) do
         GenServer.cast(state.game_state, {:ai_ignore_buttons, state.seat})
       else
         GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
@@ -395,7 +395,7 @@ defmodule RiichiAdvanced.AIPlayer do
       # for each source, generate all possible choices and pick one of them
       Process.sleep(trunc(500 / @ai_speed)) 
       choices = marked_objects
-      |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() || (mark_info != nil && length(mark_info.marked) >= mark_info.needed) end)
+      |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() or (mark_info != nil and length(mark_info.marked) >= mark_info.needed) end)
       |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(state, source, players, revealed_tiles, player.num_scryed_tiles) end)
       |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
       |> Enum.shuffle()
@@ -406,7 +406,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {state, choices} = case state.ruleset do
         "minefield" ->
           cond do
-            Marking.is_marking?(marked_objects, :hand) && length(player.hand) == 34 ->
+            Marking.is_marking?(marked_objects, :hand) and length(player.hand) == 34 ->
               # marking stage
               if has_minefield_hand do
                 remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
@@ -416,7 +416,7 @@ defmodule RiichiAdvanced.AIPlayer do
                 GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
                 {state, []}
               end
-            Marking.is_marking?(marked_objects, :aside) && length(player.hand) == 13 ->
+            Marking.is_marking?(marked_objects, :aside) and length(player.hand) == 13 ->
               # discard stage
               choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_ordering, player.tile_ordering_r) end, &<=/2, fn -> nil end)
               {state, if choice == nil do [] else [choice] end}
@@ -444,7 +444,7 @@ defmodule RiichiAdvanced.AIPlayer do
         _ -> {state, choices}
       end
 
-      if state.ruleset != "minefield" || has_minefield_hand do
+      if state.ruleset != "minefield" or has_minefield_hand do
         case choices do
           [{{seat, source, _obj}, i} | _] -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
           _ ->

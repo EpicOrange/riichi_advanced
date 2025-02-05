@@ -11,8 +11,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def to_buttons(state, button_choices) do
     buttons = Map.keys(button_choices) |> Enum.sort()
-    unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") && state.rules["buttons"][button_name]["unskippable"] end)
-    if not Enum.empty?(buttons) && not unskippable_button_exists do buttons ++ ["skip"] else buttons end
+    unskippable_button_exists = Enum.any?(buttons, fn button_name -> Map.has_key?(state.rules["buttons"][button_name], "unskippable") and state.rules["buttons"][button_name]["unskippable"] end)
+    if not Enum.empty?(buttons) and not unskippable_button_exists do buttons ++ ["skip"] else buttons end
   end
 
   def make_button_choices(state, seat, button_name, button) do
@@ -85,7 +85,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
   end
 
   def recalculate_buttons(state, interrupt_level \\ 100) do
-    if state.game_active && Map.has_key?(state.rules, "buttons") do
+    if state.game_active and Map.has_key?(state.rules, "buttons") do
       t = System.os_time(:millisecond)
       # IO.puts("Regenerating buttons...")
       # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -106,7 +106,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
               if Debug.debug_buttons() do
                 IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
               end
-              Map.get(button, "interrupt_level", 100) >= interrupt_level && Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+              Map.get(button, "interrupt_level", 100) >= interrupt_level and Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
             end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
@@ -146,7 +146,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       end)
 
       # play button notify sound if buttons changed
-      if not Enum.empty?(buttons) && buttons != buttons_before do
+      if not Enum.empty?(buttons) and buttons != buttons_before do
         for {seat, button_choices} <- new_button_choices do
           if not Enum.empty?(button_choices) do
             play_sound(state, "/audio/pop.mp3", seat)

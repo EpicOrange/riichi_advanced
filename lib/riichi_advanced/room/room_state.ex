@@ -236,7 +236,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_call({:delete_player, socket_id}, _from, state) do
-    state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
     {_, state} = pop_in(state.players[socket_id])
     IO.puts("Player #{socket_id} exited #{state.room_code} for ruleset #{state.ruleset}")
     state = if Enum.empty?(state.players) do
@@ -318,9 +318,9 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:sit, socket_id, session_id, seat}, state) do
-    state = if state.seats[seat] == nil || state.seats[seat].session_id == session_id do
+    state = if state.seats[seat] == nil or state.seats[seat].session_id == session_id do
       # first, get up
-      state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+      state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
       # then sit
       state = put_in(state.players[socket_id].seat, seat)
       state = put_seat(state, seat, state.players[socket_id])
@@ -362,7 +362,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:get_up, socket_id}, state) do
-    state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
     state = put_in(state.players[socket_id].seat, nil)
     state = broadcast_state_change(state)
     {:noreply, state}

@@ -68,8 +68,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:state, state)
       |> assign(:seat, seat)
       |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
-      |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
+      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks", false))
+      |> assign(:display_honba, Map.get(state.rules, "display_honba", false))
       |> assign(:loading, false)
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, seat))
 
@@ -84,7 +84,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           %{bold: true, text: socket.assigns.ruleset},
           %{text: "game, room code"},
           %{bold: true, text: socket.assigns.room_code}
-        ] ++ if state.mods != nil && not Enum.empty?(state.mods) do
+        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
           [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
         else [] end})
         socket
@@ -106,7 +106,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
-        revealed?={@viewer == seat || player.hand_revealed}
+        revealed?={@viewer == seat or player.hand_revealed}
         your_hand?={@viewer == seat}
         your_turn?={@seat == @state.turn}
         seat={seat}
@@ -188,8 +188,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
-        <div class="buttons" :if={not @hide_buttons && @state.players[@seat].declared_yaku != []}>
-          <%= if @marking && not Enum.empty?(@state.marking[@seat]) do %>
+        <div class="buttons" :if={not @hide_buttons and @state.players[@seat].declared_yaku != []}>
+          <%= if @marking and not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}>Clear</button>
             <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}>Cancel</button>
           <% else %>
@@ -294,7 +294,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <% end %>
       </div>
       <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() || Map.get(@state.rules, "debug_status", false) do %>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Map.get(@state.rules, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
@@ -302,15 +302,15 @@ defmodule RiichiAdvancedWeb.GameLive do
         </div>
       <% else %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
-          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) || (seat == @viewer && status in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and status in Map.get(@state.rules, "shown_statuses", [])) do %>
             <div class="status-text"><%= status %></div>
           <% end %>
-          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) || (seat == @viewer && name in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and name in Map.get(@state.rules, "shown_statuses", [])) do %>
             <div class="status-text"><%= "#{name}: #{value}" %></div>
           <% end %>
         </div>
       <% end %>
-      <%= if @visible_waits != nil && @show_waits_index != nil && Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
+      <%= if @visible_waits != nil and @show_waits_index != nil and Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
         <div class="visible-waits-container">
           <div class="visible-waits">
             <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
@@ -347,7 +347,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       # if draw, discard it
       # otherwise, if buttons, skip
       player = socket.assigns.state.players[socket.assigns.seat]
-      if socket.assigns.seat == socket.assigns.state.turn && not Enum.empty?(player.draw) do
+      if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
         send(self(), {:play_tile, length(player.hand)})
       else
         if "skip" in player.buttons do
@@ -549,7 +549,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "play_sound", payload: %{"seat" => seat, "path" => path}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) && (seat == nil || seat == socket.assigns.viewer) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and (seat == nil or seat == socket.assigns.viewer) do
       socket = push_event(socket, "play-sound", %{path: path})
       {:noreply, socket}
     else

@@ -15,15 +15,15 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
     ~H"""
     <div class={@id}>
       <%= @player.nickname %>
-      <div class="round-marker" :if={@display_round_marker && @seat == :east}>
+      <div class="round-marker" :if={@display_round_marker and @seat == :east}>
         <%= Utils.get_wind_name(Riichi.get_round_wind(@kyoku, @num_players)) %>
       </div>
-      <%= if @saki != nil && @all_drafted do %>
+      <%= if @saki != nil and @all_drafted do %>
         <div class="saki-cards">
           <div class={["saki-card", @saki.version, to_card_class(card), Saki.is_disabled_saki_card?(card) && "disabled"]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>
       <% end %>
-      <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons && @seat != @viewer && @viewer != :spectator}>!</div>
+      <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and @seat != @viewer and @viewer != :spectator}>!</div>
       <div class="ai-thinking" :if={@ai_thinking}></div>
     </div>
     """

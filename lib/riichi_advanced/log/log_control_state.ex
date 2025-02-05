@@ -64,7 +64,7 @@ defmodule RiichiAdvanced.LogControlState do
     tile = discard_event["tile"] |> Utils.to_tile()
     # figure out what index was discarded
     ix = if not discard_event["tsumogiri"] do
-      if Debug.debug_log() && Enum.find_index(hand, &Utils.same_tile(&1, tile)) == nil do
+      if Debug.debug_log() and Enum.find_index(hand, &Utils.same_tile(&1, tile)) == nil do
         # debug
         IO.inspect({hand, draw, tile, discard_event})
         IO.inspect({:east, state.game_state.players.east.hand})
@@ -78,7 +78,7 @@ defmodule RiichiAdvanced.LogControlState do
       end
       Enum.find_index(hand, &Utils.same_tile(&1, tile))
     else
-      if Debug.debug_log() && Enum.find_index(draw, &Utils.same_tile(&1, tile)) == nil do
+      if Debug.debug_log() and Enum.find_index(draw, &Utils.same_tile(&1, tile)) == nil do
         # debug
         IO.inspect({hand, draw, tile, discard_event})
         IO.inspect({:east, state.game_state.players.east.hand})

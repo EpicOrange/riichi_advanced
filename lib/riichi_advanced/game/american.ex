@@ -75,9 +75,9 @@ defmodule RiichiAdvanced.GameState.American do
       for group <- groups do
         Enum.map(group, fn tile ->
           cond do
-            is_integer(tile) && suit == "A" -> tile + 0
-            is_integer(tile) && suit == "B" -> tile + 10
-            is_integer(tile) && suit == "C" -> tile + 20
+            is_integer(tile) and suit == "A" -> tile + 0
+            is_integer(tile) and suit == "B" -> tile + 10
+            is_integer(tile) and suit == "C" -> tile + 20
             tile == "D" -> "D" <> suit
             tile == "R" -> "7z"
             tile == "G" -> "6z"
@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.GameState.American do
     # move all single-tile, mixed-tile, and pair groups to the end, separated by a "nojoker" tag
     {use_jokers, nojokers} = Enum.split_with(match_definition, fn [groups, num] ->
       num_tiles = cond do
-        is_list(groups) && Enum.all?(groups, &is_list(&1) || &1 in Riichi.group_keywords()) ->
+        is_list(groups) and Enum.all?(groups, &is_list(&1) or &1 in Riichi.group_keywords()) ->
           groups
           |> Enum.reject(& &1 in Riichi.group_keywords())
           |> Enum.map(&cond do
@@ -112,7 +112,7 @@ defmodule RiichiAdvanced.GameState.American do
     # add "nojokers" for unique groups as well
     use_jokers = Enum.map(use_jokers, fn [groups, num] ->
       cond do
-        is_list(groups) && "unique" in groups ->
+        is_list(groups) and "unique" in groups ->
           {keywords, groups} = Enum.split_with(groups, & &1 in Riichi.group_keywords())
           {jokers, nojokers} = if groups == ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"] do
             # flowers are treated specially
@@ -228,7 +228,7 @@ defmodule RiichiAdvanced.GameState.American do
         end
         # convert [[["9m", "9m", "9m", "9m", "9m"]], 1] -> [["9m"], 5]
         |> Enum.map(fn [groups, num] ->
-          all_same = Enum.all?(groups, &is_list(&1) && Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
+          all_same = Enum.all?(groups, &is_list(&1) and Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
           if all_same do
             len = length(Enum.at(groups, 0))
             groups = Enum.map(groups, &case &1 do [t | _] -> t; _ -> &1 end)
@@ -245,7 +245,7 @@ defmodule RiichiAdvanced.GameState.American do
           # offset_tiles can contain more than available_tiles because it can have all flowers, while available_tiles doesn't
           MapSet.subset?(available_tiles, offset_tiles)
         end)
-        # if Enum.empty?(base_tiles) && [a,b,c] == Enum.at(permutations, -1) do # debug
+        # if Enum.empty?(base_tiles) and [a,b,c] == Enum.at(permutations, -1) do # debug
         #   IO.puts("arrange_american_hand: no base tiles found for hand #{am_match_definition} #{inspect(hand)} / #{inspect(calls)}\n  available_tiles: #{inspect(available_tiles)}\n  all_offsets: #{inspect(all_offsets)}\n  match_definition: #{inspect(match_definition, charlists: :as_lists)}\n  #{inspect([a,b,c])}")
         #   for base_tile <- possible_base_tiles do
         #     offset_tiles = MapSet.new(all_offsets, &Riichi.apply_base_tile_to_offset(&1, base_tile, ordering, ordering_r))
@@ -307,7 +307,7 @@ defmodule RiichiAdvanced.GameState.American do
               end
           end
         end
-        case Enum.find(arrangements, fn {hand, calls, ret} -> Enum.empty?(hand) && Enum.empty?(calls) && ret != nil end) do
+        case Enum.find(arrangements, fn {hand, calls, ret} -> Enum.empty?(hand) and Enum.empty?(calls) and ret != nil end) do
           nil                  -> nil
           {_hand, _calls, ret} -> Enum.reverse(ret)
         end
@@ -321,7 +321,7 @@ defmodule RiichiAdvanced.GameState.American do
     they_are_not_dead = "dead_hand" not in state.players[dead_seat].status
     no_one_is_declaring = Enum.all?(state.players, fn {_seat, player} -> not Enum.any?(["declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"], fn status -> status in player.status end) end)
     dead_seat_has_calls = not Enum.empty?(state.players[dead_seat].calls)
-    if past_charleston && we_are_not_dead && they_are_not_dead && no_one_is_declaring && dead_seat_has_calls do
+    if past_charleston and we_are_not_dead and they_are_not_dead and no_one_is_declaring and dead_seat_has_calls do
       push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} is considering declaring a player's hand dead"}])
       declare_dead_status = case Utils.get_relative_seat(seat, dead_seat) do
         :shimocha -> "declare_shimocha_dead"
@@ -386,11 +386,11 @@ defmodule RiichiAdvanced.GameState.American do
     tiles = Utils.strip_attrs(tiles)
     calls = Enum.map(calls, &Riichi.call_to_tiles(&1))
     {joker, nojoker} = for {match_definition_elem, i} <- Enum.with_index(match_definition) do
-      unique = unique_ix != nil && i > unique_ix
+      unique = unique_ix != nil and i > unique_ix
       case match_definition_elem do
         [groups, num] when num >= 1 ->
-          unique = unique || "unique" in groups
-          nojoker_ix = if nojoker_ix != nil && i > nojoker_ix do 0 else Enum.find_index(groups, & &1 == "nojoker") end
+          unique = unique or "unique" in groups
+          nojoker_ix = if nojoker_ix != nil and i > nojoker_ix do 0 else Enum.find_index(groups, & &1 == "nojoker") end
           instance = case Enum.find(calls, &Enum.any?(groups, fn group -> Riichi._remove_group(&1, [], group, false, ordering, ordering_r, tile_aliases, base_tile) == [[]] end)) do
             # if this group doesn't match a call, instantiate using base tile
             nil  ->
@@ -443,7 +443,7 @@ defmodule RiichiAdvanced.GameState.American do
     if joker != nil do
       joker = joker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
       nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-      if nil in joker || nil in nojoker do nil else {joker, nojoker} end
+      if nil in joker or nil in nojoker do nil else {joker, nojoker} end
     else nil end
   end
 
