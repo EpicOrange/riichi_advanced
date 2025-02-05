@@ -87,7 +87,7 @@ If you're looking to make a custom ruleset using the game's JSON-based ruleset f
 
 ## How can I contribute?
 
-Mostly we need people to play and [report bugs](./issues), of which there are likely many. We also accept pull requests so if you see an [issue](./issues) you'd like to tackle, feel free to do so!
+Mostly we need people to play and [report bugs](https://github.com/EpicOrange/riichi_advanced/issues), of which there are likely many. We also accept pull requests so if you see an [issue](https://github.com/EpicOrange/riichi_advanced/issues) you'd like to tackle, feel free to do so!
 
 Also if you know of any English-based mahjong rulesets available online, do tell us in Discord and we'll add it to the list!
 
