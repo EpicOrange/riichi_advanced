@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.RiichiTest do
   use ExUnit.Case, async: true
+  alias RiichiAdvanced.Riichi, as: Riichi
 
   @riichi_win_definition [
     ["exhaustive", [[[0, 1, 2], [0, 0, 0]], 4], [[[0, 0]], 1]],
@@ -96,5 +97,8 @@ defmodule RiichiAdvanced.RiichiTest do
     hand = [:"1m", :"9m", :"1p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"9p", :"6z", :"7z", :"7z"]
     assert Riichi.match_hand(hand, [], @riichi_win_definition, @ordering, @ordering_r, %{})
   end
+
+  # need to test:
+  # - can't ankan in riichi if it changes waits
 
 end

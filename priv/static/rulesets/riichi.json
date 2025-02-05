@@ -18,6 +18,7 @@
     "suukaikan",
     "agarirenchan", "tenpairenchan",
     "kyuushu_kyuuhai",
+    "double_wind_4_fu",
     "yaku/renhou_yakuman", "pao",
     "show_waits"
   ],
@@ -39,6 +40,7 @@
     {"id": "drawless_riichi", "name": "Drawless Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
     {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
+    {"id": "double_wind_4_fu", "name": "Double Wind 4 Fu", "desc": "A pair of round+seat winds is worth 4 fu instead of 2 fu."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
     {"id": "double_round_wind", "name": "Double Round Wind", "desc": "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
@@ -52,6 +54,7 @@
     {"id": "yakitori", "name": "Yakitori", "desc": "If you do not win any hands by the end of the game, you pay 4000 points to each player as a penalty."},
     {"id": "shuugi", "order": 1, "name": "Shuugi", "desc": "Play with shuugi (poker chips). Players start with zero shuugi, each is worth 2000 points each at the end. Win payments include shuugi along with points. On ron you get shuugi from the discarder; on tsumo you get shuugi from everyone. Each aka, ura, and ippatsu is worth one shuugi. Yakuman is worth 5 shuugi."},
     {"id": "toriuchi", "deps": ["shuugi"], "name": "Toriuchi", "desc": "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless your hand contains 8s (birdcage) which would protect the birds from gunfire."},
+    {"id": "kansai_chiitoitsu", "name": "Kansai Chiitoitsu", "desc": "Chiitoitsu now allows repeated pairs."},
     "Abortive Draws",
     {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
     {"id": "suucha_riichi", "name": "Suucha Riichi", "desc": "Enable 4 riichi abortive draw."},
@@ -153,7 +156,6 @@
     // pending mod ideas:
     // {"id": "sakizuke_nashi", "name": "Sakizuke", "desc": "Your hand cannot win unless it is guaranteed a yaku. For example, if you are waiting on red dragon and 3s, but 3s would grant no yaku, you are not allowed to win on the red dragon either."},
     // {"id": "set", "name": "Set", "desc": "You are now playing the card game SET. Sets are no longer sequences or triplets -- instead the three tiles must all match on X property or all be different on X property for all X properties in {suit, suji, low/middle/high}."},
-    // {"id": "double_wind_2_fu", "name": "Double Wind 2 Fu", "desc": "A pair of round+seat winds is worth 2 fu instead of 4 fu."},
     // {"id": "fives_are_honors", "name": "Fives Are Honors", "desc": "Fives are now honor tiles, and having a triplet of fives gives 1 han. Fives cannot be used in sequences."},
   ],
   "display_name": "Riichi",
@@ -709,11 +711,13 @@
   "auto_buttons": {
     "1_auto_sort": {
       "display_name": "A",
+      "desc": "Automatically sort your hand.",
       "actions": [["sort_hand"]],
       "enabled_at_start": true
     },
     "2_auto_ron": {
       "display_name": "R",
+      "desc": "Automatically declare wins.",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
         ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
@@ -722,6 +726,7 @@
     },
     "3_auto_no_call": {
       "display_name": "C",
+      "desc": "Skip all calls except wins.",
       "actions": [
         ["when", [
           "not_our_turn",
@@ -733,7 +738,8 @@
     },
     "4_auto_discard": {
       "display_name": "D",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

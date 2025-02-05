@@ -3,8 +3,9 @@ defmodule RiichiAdvancedWeb.IndexLive do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
@@ -23,6 +24,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       {"space",        "Space Mahjong", "Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han)."},
       {"cosmic",       "Cosmic Riichi", "A Space Mahjong variant with mixed triplets, more yaku, and more calls."},
       {"galaxy",       "Galaxy Mahjong", "Riichi, but one of each tile is replaced with a blue galaxy tile that acts as a wildcard of its number. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
+      {"kansai",       "Kansai Sanma", "Sanma, but you draw until the last visible dora indicator. In addition, all fives are akadora, fu is fixed at 30, there is no tsumo loss, and scores are rounded to the nearest 1000. Flowers act as nukidora in place of north winds, which are now yakuhai. Exhaustive draws in south round always result in a repeat regardless of who's tenpai."},
       {"chinitsu",     "Chinitsu", "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"},
       {"minefield",    "Minefield", "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."},
       {"saki",         "Sakicards v1.3", "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."},
@@ -127,28 +129,28 @@ defmodule RiichiAdvancedWeb.IndexLive do
     if socket.assigns.show_room_code_buttons do
       socket = if length(socket.assigns.room_code) == 3 do
         # enter private room, or create a new room
-        session_id = Enum.join(socket.assigns.room_code, ",")
-        push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
+        room_code = Enum.join(socket.assigns.room_code, ",")
+        push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
       else socket end
       {:noreply, socket}
     else
       # get all running session ids for this ruleset
-      session_ids = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
+      room_codes = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
       |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
       |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
       |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
       # check if there are any public rooms of this ruleset
       # if not, skip the lobby and go directly to making a new table
-      has_public_room = Enum.any?(session_ids, fn session_id -> 
-        [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, session_id))
+      has_public_room = Enum.any?(room_codes, fn room_code -> 
+        [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, room_code))
         room_state = GenServer.call(room_state_pid, :get_state)
         not room_state.private
       end)
       socket = if has_public_room do
         push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
       else
-        {:ok, _, session_id} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
-        push_navigate(socket, to: ~p"/room/#{ruleset}/#{session_id}?nickname=#{nickname}")
+        {:ok, _, room_code} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
+        push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
       end
       {:noreply, socket}
     end

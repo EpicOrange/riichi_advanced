@@ -2,7 +2,8 @@ defmodule RoomPlayer do
   defstruct [
     nickname: nil,
     id: "",
-    ready: false
+    session_id: nil,
+    seat: nil
   ]
   use Accessible
 end
@@ -14,7 +15,7 @@ defmodule Room do
     # params
     ruleset: nil,
     ruleset_json: nil,
-    session_id: nil,
+    room_code: nil,
     # pids
     supervisor: nil,
     exit_monitor: nil,
@@ -24,7 +25,7 @@ defmodule Room do
 
     # state
     rules: nil,
-    seats: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+    seats: %{},
     available_seats: [],
     players: %{},
     shuffle: false,
@@ -54,7 +55,7 @@ defmodule RiichiAdvanced.RoomState do
     GenServer.start_link(
       __MODULE__,
       %Room{
-        session_id: Keyword.get(init_data, :session_id),
+        room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset)
       },
       name: Keyword.get(init_data, :name))
@@ -64,12 +65,12 @@ defmodule RiichiAdvanced.RoomState do
     IO.puts("Room state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room", state.ruleset, state.session_id))
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_room", state.ruleset, state.session_id))
+    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room", state.ruleset, state.room_code))
+    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_room", state.ruleset, state.room_code))
 
     # read in the ruleset
-    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.session_id)
-    config = ModLoader.get_config_json(state.ruleset, state.session_id)
+    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.room_code)
+    config = ModLoader.get_config_json(state.ruleset, state.room_code)
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = try do
@@ -94,24 +95,27 @@ defmodule RiichiAdvanced.RoomState do
     categories = Enum.reverse(categories)
 
     available_mods = Enum.map(mods, & &1["id"])
-    starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.session_id}, [], :cache_mods) do
+    starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.room_code}, [], :cache_mods) do
       [mods] -> mods
       []     -> Map.get(rules, "default_mods", [])
     end
     |> Enum.filter(& &1 in available_mods)
     |> Enum.uniq()
 
+    # calculate available_seats
+    available_seats = case Map.get(rules, "num_players", 4) do
+      1 -> [:east]
+      2 -> [:east, :west]
+      3 -> [:east, :south, :west]
+      4 -> [:east, :south, :west, :north]
+    end
     # put params and process ids into state
     state = Map.merge(state, %Room{
-      available_seats: case Map.get(rules, "num_players", 4) do
-        1 -> [:east]
-        2 -> [:east, :west]
-        3 -> [:east, :south, :west]
-        4 -> [:east, :south, :west, :north]
-      end,
+      available_seats: available_seats,
+      seats: Map.new(available_seats, &{&1, nil}),
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
-      session_id: state.session_id,
+      room_code: state.room_code,
       rules: rules,
       error: state.error,
       supervisor: supervisor,
@@ -141,9 +145,16 @@ defmodule RiichiAdvanced.RoomState do
       end,
     })
 
+    # if a game is running, remove the occupied seats from the menu
+    existing_room_players = case Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code)) do
+      [{game_state, _}] -> GenServer.call(game_state, :get_room_players)
+      _ -> %{}
+    end
+    state = Map.update!(state, :seats, &Map.merge(&1, existing_room_players))
+
     # check if a lobby exists. if so, notify the lobby that this room now exists
     case Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", state.ruleset, "")) do
-      [{lobby_state, _}] -> GenServer.cast(lobby_state, {:update_room_state, state.session_id, state})
+      [{lobby_state, _}] -> GenServer.cast(lobby_state, {:update_room_state, state.room_code, state})
       _                  -> nil
     end
 
@@ -203,14 +214,14 @@ defmodule RiichiAdvanced.RoomState do
 
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
-    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.session_id, "state_updated", %{"state" => state})
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "state_updated", %{"state" => state})
     state
   end
 
   def broadcast_textarea_change(state, {from_version, version, uuids, deltas}) do
     # IO.puts("broadcast_textarea_change called")
     if version > from_version do
-      RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.session_id, "textarea_updated", %{"from_version" => from_version, "version" => version, "uuids" => uuids, "deltas" => deltas})
+      RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "textarea_updated", %{"from_version" => from_version, "version" => version, "uuids" => uuids, "deltas" => deltas})
     end
     state
   end
@@ -218,8 +229,8 @@ defmodule RiichiAdvanced.RoomState do
   def handle_call({:new_player, socket}, _from, state) do
     GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
     nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
-    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id})
-    IO.puts("Player #{socket.id} joined room #{state.session_id} for ruleset #{state.ruleset}")
+    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id, session_id: socket.assigns.session_id})
+    IO.puts("Player #{socket.id} joined room #{state.room_code} for ruleset #{state.ruleset}")
     state = broadcast_state_change(state)
     {:reply, [state], state}
   end
@@ -227,15 +238,15 @@ defmodule RiichiAdvanced.RoomState do
   def handle_call({:delete_player, socket_id}, _from, state) do
     state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
     {_, state} = pop_in(state.players[socket_id])
-    IO.puts("Player #{socket_id} exited #{state.session_id} for ruleset #{state.ruleset}")
+    IO.puts("Player #{socket_id} exited #{state.room_code} for ruleset #{state.ruleset}")
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
       # check if a lobby exists. if so, notify the lobby that this room no longer exists
       case Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", state.ruleset, "")) do
-        [{lobby_state, _}] -> GenServer.cast(lobby_state, {:delete_room, state.session_id})
+        [{lobby_state, _}] -> GenServer.cast(lobby_state, {:delete_room, state.room_code})
         _                  -> nil
       end
-      IO.puts("Stopping room #{state.session_id} for ruleset #{state.ruleset}")
+      IO.puts("Stopping room #{state.room_code} for ruleset #{state.ruleset}")
       DynamicSupervisor.terminate_child(RiichiAdvanced.RoomSessionSupervisor, state.supervisor)
       state
     else
@@ -306,10 +317,12 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:sit, socket_id, seat}, state) do
-    state = if state.seats[seat] == nil do
+  def handle_cast({:sit, socket_id, session_id, seat}, state) do
+    state = if state.seats[seat] == nil || state.seats[seat].session_id == session_id do
+      # first, get up
       state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
-      # state = put_in(state.seats[seat], state.players[socket_id])
+      # then sit
+      state = put_in(state.players[socket_id].seat, seat)
       state = put_seat(state, seat, state.players[socket_id])
       IO.puts("Player #{socket_id} sat in seat #{seat}")
       state
@@ -350,6 +363,7 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_cast({:get_up, socket_id}, state) do
     state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = put_in(state.players[socket_id].seat, nil)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -360,37 +374,37 @@ defmodule RiichiAdvanced.RoomState do
     {mods, config} = if state.ruleset == "custom" do
       ruleset_json = Enum.at(state.textarea, 0)["insert"]
       if ruleset_json != nil do
-        RiichiAdvanced.ETSCache.put(state.session_id, ruleset_json, :cache_rulesets)
+        RiichiAdvanced.ETSCache.put(state.room_code, ruleset_json, :cache_rulesets)
       end
       {[], nil}
     else
       config = Enum.at(state.textarea, 0)["insert"]
       if config != nil do
-        RiichiAdvanced.ETSCache.put({state.ruleset, state.session_id}, config, :cache_configs)
+        RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, config, :cache_configs)
       end
       {get_enabled_mods(state), config}
     end
-    game_spec = {RiichiAdvanced.GameSupervisor, session_id: state.session_id, ruleset: state.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id)}}}
+    reserved_seats = Map.new(state.players, fn {_id, player} -> {player.seat, player.session_id} end)
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
-        IO.puts("Starting game session #{state.session_id}")
+        IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
         # shuffle seats
         state = if state.shuffle do
           Map.update!(state, :seats, fn seats -> Map.keys(seats) |> Enum.zip(Map.values(seats) |> Enum.shuffle()) |> Map.new() end)
         else state end
         state = Map.put(state, :started, true)
-        [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.session_id))
+        [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code))
         GenServer.cast(game_state, {:initialize_game, nil})
         state
       {:error, {:shutdown, error}} ->
-        IO.puts("Error when starting game session #{state.session_id}")
+        IO.puts("Error when starting game session #{state.room_code}")
         IO.inspect(error)
         state = Map.put(state, :starting, false)
         state
       {:error, {:already_started, _pid}} ->
-        IO.puts("Already started game session #{state.session_id}")
-        state = show_error(state, "A game session for this variant with this same room ID is already in play -- please leave the room and try entering it directly!")
-        state = Map.put(state, :starting, false)
+        IO.puts("Already started game session #{state.room_code}")
+        state = Map.put(state, :started, true)
         state
     end
     state = broadcast_state_change(state)

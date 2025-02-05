@@ -154,8 +154,26 @@ else
   }
 end
 |
-.yaku |= map(.when |= walk(
-  if type == "object" and (.name == "match" or .name == "not_match") then
-    .opts[1] |= fix_chanta_match_definition(["junchan_space_1", "junchan_space_2", "junchan_space_3", "junchan_space_4", "junchan_space_5", "junchan_space_6"])
+.set_definitions += {
+  "chanta_space_1": ["1z","2z","3z"],
+  "chanta_space_2": ["2z","3z","4z"],
+  "chanta_space_3": ["3z","4z","1z"],
+  "chanta_space_4": ["4z","1z","2z"],
+  "chanta_space_5": ["5z","6z","7z"]
+}
+|
+.yaku |= map(
+  if .display_name == "Chanta" then
+    .when |= walk(
+      if type == "object" and (.name == "match" or .name == "not_match") then
+        .opts[1] |= fix_chanta_match_definition(["junchan_space_1", "junchan_space_2", "junchan_space_3", "junchan_space_4", "junchan_space_5", "junchan_space_6", "chanta_space_1", "chanta_space_2", "chanta_space_3", "chanta_space_4", "chanta_space_5"])
+      else . end
+    )
+  elif .display_name == "Junchan" then
+    .when |= walk(
+      if type == "object" and (.name == "match" or .name == "not_match") then
+        .opts[1] |= fix_chanta_match_definition(["junchan_space_1", "junchan_space_2", "junchan_space_3", "junchan_space_4", "junchan_space_5", "junchan_space_6"])
+      else . end
+    )
   else . end
-))
+)

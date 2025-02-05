@@ -18,6 +18,7 @@ def disable_when_dead:
 |
 .functions.chombo = [
   ["set_status", "dead_hand"],
+  ["unset_status", "nagashi"],
   ["big_text", "$text"], ["pause", 1000], ["reveal_hand"],
   ["pause", 500],
   ["big_text", "Chombo"],
@@ -37,7 +38,7 @@ def disable_when_dead:
 ]
 |
 # disable all buttons when dead
-.buttons |= (to_entries | map(.value |= disable_when_dead) | from_entries)
+.buttons |= with_entries(.value |= disable_when_dead)
 |
 # make riichi always available
 .buttons.riichi.show_when |= map(if . == {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]} then ["not_is_ai", .] else . end)
