@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.GameLive do
+  alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 

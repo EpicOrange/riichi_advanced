@@ -1,54 +1,53 @@
-defmodule RoomPlayer do
-  defstruct [
-    nickname: nil,
-    id: "",
-    session_id: nil,
-    seat: nil
-  ]
-  use Accessible
-end
-
-defmodule Room do
-  @initial_textarea Delta.Op.insert("{}")
-  def initial_textarea, do: @initial_textarea
-  defstruct [
-    # params
-    ruleset: nil,
-    ruleset_json: nil,
-    room_code: nil,
-    # pids
-    supervisor: nil,
-    exit_monitor: nil,
-
-    # control variables
-    error: nil,
-
-    # state
-    rules: nil,
-    seats: %{},
-    available_seats: [],
-    players: %{},
-    shuffle: false,
-    private: true,
-    starting: false,
-    started: false,
-    display_name: "",
-    mods: %{},
-    categories: [],
-    tutorial_link: nil,
-    textarea: [@initial_textarea],
-    textarea_deltas: [[@initial_textarea]],
-    textarea_delta_uuids: [[]],
-    textarea_version: 0,
-  ]
-  use Accessible
-end
-
-
 defmodule RiichiAdvanced.RoomState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+
+  defmodule RoomPlayer do
+    defstruct [
+      nickname: nil,
+      id: "",
+      session_id: nil,
+      seat: nil
+    ]
+    use Accessible
+  end
+
+  defmodule Room do
+    @initial_textarea Delta.Op.insert("{}")
+    def initial_textarea, do: @initial_textarea
+    defstruct [
+      # params
+      ruleset: nil,
+      ruleset_json: nil,
+      room_code: nil,
+      # pids
+      supervisor: nil,
+      exit_monitor: nil,
+
+      # control variables
+      error: nil,
+
+      # state
+      rules: nil,
+      seats: %{},
+      available_seats: [],
+      players: %{},
+      shuffle: false,
+      private: true,
+      starting: false,
+      started: false,
+      display_name: "",
+      mods: %{},
+      categories: [],
+      tutorial_link: nil,
+      textarea: [@initial_textarea],
+      textarea_deltas: [[@initial_textarea]],
+      textarea_delta_uuids: [[]],
+      textarea_version: 0,
+    ]
+    use Accessible
+  end
 
   def start_link(init_data) do
     IO.puts("Room supervisor PID is #{inspect(self())}")

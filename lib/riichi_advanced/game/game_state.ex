@@ -1,141 +1,3 @@
-defmodule Player do
-  defstruct [
-    # persistent
-    score: 0,
-    start_score: 0, # for logging purposes
-    nickname: nil,
-    # working (reset every round)
-    hand: [],
-    draw: [],
-    pond: [],
-    discards: [],
-    calls: [],
-    aside: [],
-    buttons: [],
-    button_choices: %{},
-    auto_buttons: [],
-    call_buttons: %{},
-    call_name: "",
-    tile_mappings: %{},
-    tile_aliases: %{},
-    saved_tile_mappings: %{},
-    saved_tile_aliases: %{},
-    tile_ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
-                     :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
-                     :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s"},
-    tile_ordering_r: %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m",
-                       :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
-                       :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
-    # TODO make choice a data structure of its own, if it gets any more complex
-    choice: nil,
-    chosen_actions: nil,
-    chosen_called_tile: nil,
-    chosen_call_choice: nil,
-    chosen_saki_card: nil,
-    deferred_actions: [],
-    deferred_context: %{},
-    big_text: "",
-    status: MapSet.new(),
-    counters: %{},
-    riichi_stick: false,
-    riichi_discard_indices: nil,
-    hand_revealed: false,
-    num_scryed_tiles: 0,
-    declared_yaku: nil,
-    last_discard: nil, # for animation purposes and to avoid double discarding
-    winning_hand: nil,
-    ready: false,
-    arranged_hand: [],
-    arranged_calls: [],
-    playable_indices: [],
-    closest_american_hands: [],
-    ai_thinking: false,
-  ]
-  use Accessible
-end
-
-defmodule Game do
-  defstruct [
-    # params
-    ruleset: nil,
-    room_code: nil,
-    ruleset_json: nil,
-    mods: nil,
-    config: nil,
-    private: true,
-    reserved_seats: nil,
-    # pids
-    supervisor: nil,
-    mutex: nil,
-    smt_solver: nil,
-    ai_supervisor: nil,
-    exit_monitor: nil,
-    play_tile_debounce: nil,
-    play_tile_debouncers: nil,
-    big_text_debouncers: nil,
-    timer_debouncer: nil,
-    east: nil,
-    south: nil,
-    west: nil,
-    north: nil,
-    messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
-    calculate_playable_indices_pids: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
-    calculate_closest_american_hands_pid: nil,
-    get_best_minefield_hand_pid: nil,
-    # remember to edit :put_state if you change anything above
-
-    # control variables
-    available_seats: [:east, :south, :west, :north],
-    game_active: false,
-    visible_screen: nil,
-    error: nil,
-    round_result: nil,
-    winners: %{},
-    winner_seats: [],
-    winner_index: 0,
-    delta_scores: %{},
-    delta_scores_reason: nil,
-    next_dealer: nil,
-    timer: 0,
-    log_loading_mode: false, # disables pause and doesn't notify players on state change
-    log_seeking_mode: false, # disables round change on round end
-
-    # persistent game state (not reset on new round)
-    ref: "",
-    players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
-    rules: %{},
-    interruptible_actions: %{},
-    all_tiles: MapSet.new(),
-    wall: [],
-    kyoku: 0,
-    honba: 0,
-    pot: 0,
-    tags: %{},
-    log_state: %{},
-    call_stack: [], # call stack limit is 10 for now
-
-    # working game state (reset on new round)
-    # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
-    turn: :east,
-    awaiting_discard: true, # prevent double discards
-    die1: 3,
-    die2: 4,
-    wall_index: 0,
-    dead_wall_index: 0,
-    haipai: [],
-    actions: [],
-    dead_wall: [],
-    reversed_turn_order: false,
-    reserved_tiles: [],
-    revealed_tiles: [],
-    saved_revealed_tiles: [],
-    max_revealed_tiles: 0,
-    drawn_reserved_tiles: [],
-    marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
-    processed_bloody_end: false,
-  ]
-  use Accessible
-end
 
 defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Actions, as: Actions
@@ -147,11 +9,153 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.LobbyState.LobbyRoom, as: LobbyRoom
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.RoomState.RoomPlayer, as: RoomPlayer
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+  
+  defmodule Player do
+    # TODO shorten this to max 32 keys
+    defstruct [
+      # persistent
+      score: 0,
+      start_score: 0, # for logging purposes
+      nickname: nil,
+      # working (reset every round)
+      hand: [],
+      draw: [],
+      pond: [],
+      discards: [],
+      calls: [],
+      aside: [],
+      buttons: [],
+      button_choices: %{},
+      auto_buttons: [],
+      call_buttons: %{},
+      call_name: "",
+      tile_mappings: %{},
+      tile_aliases: %{},
+      saved_tile_mappings: %{},
+      saved_tile_aliases: %{},
+      tile_ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
+                       :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
+                       :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s"},
+      tile_ordering_r: %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m",
+                         :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
+                         :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
+      # TODO make choice a data structure of its own, if it gets any more complex
+      choice: nil,
+      chosen_actions: nil,
+      chosen_called_tile: nil,
+      chosen_call_choice: nil,
+      chosen_saki_card: nil,
+      deferred_actions: [],
+      deferred_context: %{},
+      big_text: "",
+      status: MapSet.new(),
+      counters: %{},
+      riichi_stick: false,
+      riichi_discard_indices: nil,
+      hand_revealed: false,
+      num_scryed_tiles: 0,
+      declared_yaku: nil,
+      last_discard: nil, # for animation purposes and to avoid double discarding
+      winning_hand: nil,
+      ready: false,
+      arranged_hand: [],
+      arranged_calls: [],
+      playable_indices: [],
+      closest_american_hands: [],
+      ai_thinking: false,
+    ]
+    use Accessible
+  end
+
+  defmodule Game do
+    defstruct [
+      # params
+      ruleset: nil,
+      room_code: nil,
+      ruleset_json: nil,
+      mods: nil,
+      config: nil,
+      private: true,
+      reserved_seats: nil,
+      # pids
+      supervisor: nil,
+      mutex: nil,
+      smt_solver: nil,
+      ai_supervisor: nil,
+      exit_monitor: nil,
+      play_tile_debounce: nil,
+      play_tile_debouncers: nil,
+      big_text_debouncers: nil,
+      timer_debouncer: nil,
+      east: nil,
+      south: nil,
+      west: nil,
+      north: nil,
+      messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+      calculate_playable_indices_pids: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+      calculate_closest_american_hands_pid: nil,
+      get_best_minefield_hand_pid: nil,
+      # remember to edit :put_state if you change anything above
+
+      # control variables
+      available_seats: [:east, :south, :west, :north],
+      game_active: false,
+      visible_screen: nil,
+      error: nil,
+      round_result: nil,
+      winners: %{},
+      winner_seats: [],
+      winner_index: 0,
+      delta_scores: %{},
+      delta_scores_reason: nil,
+      next_dealer: nil,
+      timer: 0,
+      log_loading_mode: false, # disables pause and doesn't notify players on state change
+      log_seeking_mode: false, # disables round change on round end
+
+      # persistent game state (not reset on new round)
+      ref: "",
+      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
+      rules: %{},
+      interruptible_actions: %{},
+      all_tiles: MapSet.new(),
+      wall: [],
+      kyoku: 0,
+      honba: 0,
+      pot: 0,
+      tags: %{},
+      log_state: %{},
+      call_stack: [], # call stack limit is 10 for now
+
+      # working game state (reset on new round)
+      # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
+      turn: :east,
+      awaiting_discard: true, # prevent double discards
+      die1: 3,
+      die2: 4,
+      wall_index: 0,
+      dead_wall_index: 0,
+      haipai: [],
+      actions: [],
+      dead_wall: [],
+      reversed_turn_order: false,
+      reserved_tiles: [],
+      revealed_tiles: [],
+      saved_revealed_tiles: [],
+      max_revealed_tiles: 0,
+      drawn_reserved_tiles: [],
+      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+      processed_bloody_end: false,
+    ]
+    use Accessible
+  end
 
   def start_link(init_data) do
     # IO.puts("Game supervisor PID is #{inspect(self())}")

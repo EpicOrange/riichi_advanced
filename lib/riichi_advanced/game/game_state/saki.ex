@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Player, as: Player
   import RiichiAdvanced.GameState
 
   @card_names %{

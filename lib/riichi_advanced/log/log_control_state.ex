@@ -1,25 +1,26 @@
-defmodule LogControl do
-  defstruct [
-    # params
-    ruleset: nil,
-    session_id: nil,
-    # pids
-    supervisor: nil,
-    game_state_pid: nil,
-    log_walker_pid: nil,
-    # state variables
-    game_states: %{},
-    game_state: nil,
-    log: nil,
-  ]
-  use Accessible
-end
-
 defmodule RiichiAdvanced.LogControlState do
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+
+  defmodule LogControl do
+    defstruct [
+      # params
+      ruleset: nil,
+      session_id: nil,
+      # pids
+      supervisor: nil,
+      game_state_pid: nil,
+      log_walker_pid: nil,
+      # state variables
+      game_states: %{},
+      game_state: nil,
+      log: nil,
+    ]
+    use Accessible
+  end
 
   def start_link(init_data) do
     IO.puts("Log supervisor PID is #{inspect(self())}")

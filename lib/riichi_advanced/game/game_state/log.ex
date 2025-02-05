@@ -1,11 +1,3 @@
-defmodule GameEvent do
-  defstruct [
-    seat: nil,
-    event_type: nil,
-    params: %{}
-  ]
-  use Accessible
-end
 
 # for encoding tiles with attrs, which are tuples, which Jason doesn't handle unless we do this
 defimpl Jason.Encoder, for: Tuple do
@@ -25,7 +17,14 @@ end
 defmodule RiichiAdvanced.GameState.Log do
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.Utils, as: Utils
-  # import RiichiAdvanced.GameState
+
+  defmodule GameEvent do
+    defstruct [
+      seat: nil,
+      event_type: nil,
+      params: %{}
+    ]
+  end
 
   def init_log(state) do
     state = Map.put(state, :log_state, %{

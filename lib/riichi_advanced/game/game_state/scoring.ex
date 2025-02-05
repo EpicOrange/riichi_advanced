@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState

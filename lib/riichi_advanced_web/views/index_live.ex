@@ -1,5 +1,7 @@
 defmodule RiichiAdvancedWeb.IndexLive do
   alias RiichiAdvanced.Constants, as: Constants
+  alias RiichiAdvanced.LobbyState, as: LobbyState
+  alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
@@ -149,7 +151,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       socket = if has_public_room do
         push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
       else
-        {:ok, _, room_code} = RiichiAdvanced.LobbyState.create_room(%Lobby{ruleset: ruleset})
+        {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
         push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
       end
       {:noreply, socket}

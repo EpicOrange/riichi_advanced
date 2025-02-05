@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.GameState.American do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
