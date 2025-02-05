@@ -289,6 +289,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       Enum.map(call_choice, fn tile -> {tile, false} end)
     end
 
+    # add "concealed" to every tile if it's a hidden call
+    hidden = Map.get(state.rules["buttons"][button_name], "call_hidden", false)
+    call = if hidden do
+      Enum.map(call, fn {tile, sideways} -> {Utils.add_attr(tile, ["concealed"]), sideways} end)
+    else call end
+
     # run before_call actions
     call = {call_name, call}
     state = if Map.has_key?(state.rules, "before_call") do
@@ -319,7 +325,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # messages and log
     cond do
-      Map.get(state.rules["buttons"][button_name], "call_hidden", false) ->
+      hidden ->
         push_message(state, [
           %{text: "Player #{seat} #{state.players[seat].nickname} called "},
           %{bold: true, text: "#{call_name}"}

@@ -981,7 +981,7 @@ defmodule RiichiAdvanced.GameState do
   def get_visible_tiles(state, seat \\ nil) do
     # construct all visible tiles
     visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
-    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end) |> Enum.flat_map(&Riichi.call_to_tiles/1)
+    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end) |> Enum.flat_map(&Riichi.call_to_tiles/1) |> Enum.reject(&Utils.has_attr?(&1, ["concealed"]))
     visible_hands = Enum.flat_map(state.players, fn {dir, player} -> if player.hand_revealed || seat == dir do player.hand ++ player.draw else Enum.filter(player.hand ++ player.draw, fn tile -> Utils.has_attr?(tile, ["revealed"]) end) end end)
     visible_ponds ++ visible_calls ++ visible_hands
   end
