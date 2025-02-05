@@ -1,5 +1,4 @@
 defmodule RiichiAdvanced.Utils do
-  alias RiichiAdvanced.Riichi, as: Riichi
 
   @to_tile %{"1m"=>:"1m", "2m"=>:"2m", "3m"=>:"3m", "4m"=>:"4m", "5m"=>:"5m", "6m"=>:"6m", "7m"=>:"7m", "8m"=>:"8m", "9m"=>:"9m", "0m"=>:"0m",
              "1p"=>:"1p", "2p"=>:"2p", "3p"=>:"3p", "4p"=>:"4p", "5p"=>:"5p", "6p"=>:"6p", "7p"=>:"7p", "8p"=>:"8p", "9p"=>:"9p", "0p"=>:"0p",
@@ -327,7 +326,7 @@ defmodule RiichiAdvanced.Utils do
     inactive = has_attr?(tile, ["inactive"])
     hidden = has_attr?(tile, ["hidden"])
     reversed = transparent and id == :"1x"
-    id = if reversed do Riichi.flip_faceup(tile) |> strip_attrs() else id end
+    id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
     played = animate_played and Map.get(assigns, :your_hand?, true) and Map.get(assigns, :preplayed_index, nil) == i
     sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
@@ -347,6 +346,34 @@ defmodule RiichiAdvanced.Utils do
     ] ++ extra_classes
   end
 
+  def flip_faceup(tile) do
+    case tile do
+      {:"1x", attrs} ->
+        tile_attr = Enum.find(attrs, &is_tile/1)
+        if tile_attr != nil do
+          to_tile([tile_attr | attrs]) |> remove_attr([tile_attr])
+        else tile end
+      tile -> tile
+    end
+  end
+
+  def flip_facedown(tile) do
+    case tile do
+      :"1x" -> :"1x"
+      {:"1x", attrs} -> {:"1x", attrs}
+      tile -> {:"1x", tile_to_attrs(tile)}
+    end
+  end
+
+  def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
+    tiles = Enum.map(call, &flip_faceup/1)
+    if replace_am_jokers and has_matching_tile?(tiles, [:"1j"]) do
+      # replace all american jokers with the nonjoker tile
+      nonjoker = Enum.find(tiles, &not same_tile(&1, :"1j")) |> strip_attrs()
+      Enum.map(tiles, fn t -> if same_tile(t, :"1j") do nonjoker else t end end)
+    else tiles end
+  end
+
   # get the principal tile from a meld consisting of all one tile and jokers
   def _get_joker_meld_tile(tiles, joker_tiles) do
     non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
@@ -359,7 +386,7 @@ defmodule RiichiAdvanced.Utils do
     else nil end
   end
   def get_joker_meld_tile(call, joker_tiles) do
-    _get_joker_meld_tile(Riichi.call_to_tiles(call), joker_tiles)
+    _get_joker_meld_tile(call_to_tiles(call), joker_tiles)
   end
 
   def replace_base_tile(tile, new_base_tile) do

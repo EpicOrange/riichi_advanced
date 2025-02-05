@@ -134,13 +134,13 @@ defmodule RiichiAdvanced.GameState.Marking do
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
           |> Enum.all?(fn {call, _, _} ->
-            call_tile = Riichi.call_to_tiles(call)
+            call_tile = Utils.call_to_tiles(call)
             |> Enum.reject(& &1 in jokers)
             |> Enum.at(0)
             Utils.same_tile(tile, Utils.strip_attrs(call_tile)) end)
         "match_call_to_marked_hand" ->
           jokers = Map.keys(state.players[marking_player].tile_mappings)
-          call_tile = Riichi.call_to_tiles(tile)
+          call_tile = Utils.call_to_tiles(tile)
           |> Enum.reject(& &1 in jokers)
           |> Enum.at(0)
           state.marking[marking_player]
@@ -166,7 +166,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "not_joker"         -> not Map.has_key?(state.players[marking_player].tile_mappings, tile)
         "call_has_joker"    ->
           jokers = Map.keys(state.players[marking_player].tile_mappings)
-          Utils.has_matching_tile?(Riichi.call_to_tiles(tile), jokers)
+          Utils.has_matching_tile?(Utils.call_to_tiles(tile), jokers)
         "not_riichi"        -> "riichi" not in state.players[marking_player].status or index >= length(state.players[marking_player].hand)
         "last_discard"      ->
           case source do

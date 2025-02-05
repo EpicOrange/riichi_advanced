@@ -7,6 +7,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   require Logger
@@ -253,12 +254,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           "call_sideways"                         -> called_tile |> Utils.add_attr(["sideways"])
           ix when is_integer(ix)                  -> Enum.at(tiles, ix)
           ["sideways", ix] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["sideways"])
-          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Riichi.flip_facedown()
-          ["1x", "call"]                          -> called_tile |> Riichi.flip_facedown()
-          ["1x", tile]                            -> Utils.to_tile(tile) |> Riichi.flip_facedown()
-          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Riichi.flip_facedown() |> Utils.add_attr(["sideways"])
-          ["1x_sideways", "call"]                 -> called_tile |> Riichi.flip_facedown() |> Utils.add_attr(["sideways"])
-          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Riichi.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.flip_facedown()
+          ["1x", "call"]                          -> called_tile |> Utils.flip_facedown()
+          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.flip_facedown()
+          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x_sideways", "call"]                 -> called_tile |> Utils.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.flip_facedown() |> Utils.add_attr(["sideways"])
           tile                                    -> Utils.to_tile(tile)
         end
       end
@@ -301,7 +302,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     hand = Utils.add_attr(state.players[seat].hand, ["hand"])
     draw = Utils.add_attr(state.players[seat].draw, ["hand"])
-    new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
+    new_hand = Match.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
     new_hand = if new_hand == nil do
       Logger.error("Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       hand
@@ -359,12 +360,12 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp upgrade_call(state, seat, call_name, call_choice, called_tile) do
     # find the index of the call whose tiles match call_choice
     index = state.players[seat].calls
-      |> Enum.map(&Riichi.call_to_tiles/1)
-      |> Enum.find_index(fn call_tiles -> Riichi.try_remove_all_tiles(call_choice, call_tiles) == [[]] end)
+      |> Enum.map(&Utils.call_to_tiles/1)
+      |> Enum.find_index(fn call_tiles -> Match.try_remove_all_tiles(call_choice, call_tiles) == [[]] end)
 
     # upgrade that call
     {name, call} = Enum.at(state.players[seat].calls, index)
-    call_choice = Riichi.call_to_tiles({name, call})
+    call_choice = Utils.call_to_tiles({name, call})
 
     # find the index of the sideways tile to determine the direction
     sideways_index = Enum.find_index(call, &Utils.has_attr?(&1, ["sideways"]))
@@ -384,7 +385,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     call = style_call(style, call_choice, called_tile)
 
     upgraded_call = {call_name, call}
-    state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand"]), [called_tile]) |> Enum.at(0) |> Utils.remove_attr(["hand"]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
+    state = update_player(state, seat, &%Player{ &1 | hand: Match.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand"]), [called_tile]) |> Enum.at(0) |> Utils.remove_attr(["hand"]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
     state
@@ -399,7 +400,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering = state.players[context.seat].tile_ordering
         ordering_r = state.players[context.seat].tile_ordering_r
         tile_aliases = state.players[context.seat].tile_aliases
-        Riichi.binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+        Match.binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
       ["count_matching_ways" | opts] ->
         # count how many given hand-calls combinations matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -407,7 +408,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering = state.players[context.seat].tile_ordering
         ordering_r = state.players[context.seat].tile_ordering_r
         tile_aliases = state.players[context.seat].tile_aliases
-        Enum.count(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+        Enum.count(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
       ["tiles_in_wall" | _opts] -> length(state.wall) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
@@ -425,7 +426,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["num_matching_melded_tiles_all" | opts] ->
         for {_seat, player} <- state.players do
           player.calls
-          |> Enum.flat_map(&Riichi.call_to_tiles/1)
+          |> Enum.flat_map(&Utils.call_to_tiles/1)
           |> Enum.count(&Riichi.tile_matches(opts, %{tile: &1}))
         end |> Enum.sum()
       ["half_score" | _opts] -> Utils.half_score_rounded_up(state.players[context.seat].score)
@@ -449,7 +450,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         num_tiles = length(state.players[seat].hand)
         num_tiles = num_tiles + length(state.players[seat].draw)
         num_tiles = num_tiles + length(state.players[seat].aside)
-        num_tiles = num_tiles + length(Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1))
+        num_tiles = num_tiles + length(Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1))
         num_tiles = num_tiles + if won_by_draw do 0 else 1 end
         num_tiles
       ["count_draws" | opts] ->
@@ -458,7 +459,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["count_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(hand, doras)
@@ -466,7 +467,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["count_reverse_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(hand, doras)
@@ -903,7 +904,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
         {call, call_seat, call_index} = Marking.get_marked(marked_objects, :call) |> Enum.at(0)
         fly_joker = Enum.at(opts, 0, "1j") |> Utils.to_tile()
-        call_tiles = Riichi.call_to_tiles(call)
+        call_tiles = Utils.call_to_tiles(call)
 
         call_joker_index = Enum.find_index(call_tiles, &Utils.same_tile(&1, fly_joker))
         new_call = with {call_type, call_content} <- call do
@@ -1118,17 +1119,17 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state) # TODO remove
         state
-      # "flip_draw_faceup" -> update_player(state, context.seat, fn player -> %Player{ player | draw: Enum.map(player.draw, &Riichi.flip_faceup/1) } end)
+      # "flip_draw_faceup" -> update_player(state, context.seat, fn player -> %Player{ player | draw: Enum.map(player.draw, &Utils.flip_faceup/1) } end)
       # "flip_last_discard_faceup"  ->
       #   last_discarder = get_last_discard_action(state).seat
-      #   tile = Riichi.flip_faceup(get_last_discard_action(state).tile)
+      #   tile = Utils.flip_faceup(get_last_discard_action(state).tile)
       #   state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
       #   state = update_action(state, last_discarder, :discard, %{tile: tile})
       #   state = Buttons.recalculate_buttons(state) # TODO remove
       #   state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, &Riichi.flip_faceup/1)} end)
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, &Utils.flip_faceup/1)} end)
           %Player{ player | calls: faceup_calls }
         end)
       "flip_first_visible_discard_facedown" -> 

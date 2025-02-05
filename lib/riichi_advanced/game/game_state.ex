@@ -147,6 +147,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
@@ -278,7 +279,7 @@ defmodule RiichiAdvanced.GameState do
       shanten_definitions ->
         # IO.puts("Generating #{to} definitions")
         if length(shanten_definitions[from]) < 100 do
-          Map.put(shanten_definitions, to, Riichi.compute_almost_match_definitions(shanten_definitions[from]))
+          Map.put(shanten_definitions, to, Match.compute_almost_match_definitions(shanten_definitions[from]))
         else
           Map.put(shanten_definitions, to, [])
         end
@@ -570,7 +571,7 @@ defmodule RiichiAdvanced.GameState do
       Utils.pt(winner.winning_tile),
       %{text: " with hand "}
     ] ++ Utils.ph(state.players[seat].hand |> Utils.sort_tiles())
-      ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
+      ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Utils.call_to_tiles/1))
     )
 
     state = if Map.get(state.rules, "bloody_end", false) do
@@ -981,7 +982,7 @@ defmodule RiichiAdvanced.GameState do
   def get_visible_tiles(state, seat \\ nil) do
     # construct all visible tiles
     visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
-    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end) |> Enum.flat_map(&Riichi.call_to_tiles/1) |> Enum.reject(&Utils.has_attr?(&1, ["concealed"]))
+    visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end) |> Enum.flat_map(&Utils.call_to_tiles/1) |> Enum.reject(&Utils.has_attr?(&1, ["concealed"]))
     visible_hands = Enum.flat_map(state.players, fn {dir, player} -> if player.hand_revealed or seat == dir do player.hand ++ player.draw else Enum.filter(player.hand ++ player.draw, fn tile -> Utils.has_attr?(tile, ["revealed"]) end) end end)
     visible_ponds ++ visible_calls ++ visible_hands
   end
@@ -1014,7 +1015,7 @@ defmodule RiichiAdvanced.GameState do
     ordering_r = state.players[seat].tile_ordering_r
     tile_aliases = state.players[seat].tile_aliases
     score_rules = state.rules["score_calculation"]
-    Enum.flat_map(win_definitions, &Riichi.remove_match_definition(tiles, [], ["almost" | &1], ordering, ordering_r, tile_aliases))
+    Enum.flat_map(win_definitions, &Match.remove_match_definition(tiles, [], ["almost" | &1], ordering, ordering_r, tile_aliases))
     |> Enum.take(max_results)
     |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
     |> Enum.uniq()

@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   
@@ -248,7 +249,7 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def remove_group_keywords(group) do
-    if is_list(group) do Enum.reject(group, & &1 in Riichi.group_keywords()) |> Enum.sort() else group end
+    if is_list(group) do Enum.reject(group, & &1 in Match.group_keywords()) |> Enum.sort() else group end
   end
 
   def strip_restart(match_definition) do
@@ -280,7 +281,7 @@ defmodule RiichiAdvanced.SMT do
     calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.with_index()
-    |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
+    |> Enum.map(fn {call, i} -> {Enum.take(Utils.call_to_tiles(call), 3), i} end) # ignore kans
 
     # IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
     # IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")

@@ -6,6 +6,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -26,7 +27,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
-          "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Riichi.call_to_tiles(&1, true)), calls}]
+          "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
           "arranged_hand" -> [{hand ++ state.players[context.seat].arranged_hand, calls}]
           "arranged_calls" -> [{hand, calls ++ state.players[context.seat].arranged_calls}]
           "last_call" -> [{hand, calls ++ [context.call]}]
@@ -59,7 +60,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
           "all_calls" -> [{hand, calls ++ Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)}]
-          "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Riichi.call_to_tiles/1) end), calls}]
+          "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Utils.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
           "visible_tiles" -> [{hand ++ get_visible_tiles(state), calls}]
           "any_visible_tile" -> Enum.map(get_visible_tiles(state), fn tile -> {hand ++ [tile], calls} end)
@@ -203,7 +204,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]) ++ Utils.add_attr(cxt_player.draw, ["hand"]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [], cxt_player.tile_aliases, cxt_player.tile_mappings)
       "can_upgrade_call"            -> cxt_player.calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
-        |> Enum.map(&Riichi.call_to_tiles/1)
+        |> Enum.map(&Utils.call_to_tiles/1)
         |> Enum.any?(&Riichi.can_call?(context.calls_spec, &1, cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings))
       "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].draw)
       "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].aside)
@@ -319,19 +320,19 @@ defmodule RiichiAdvanced.GameState.Conditions do
         ordering = cxt_player.tile_ordering
         ordering_r = cxt_player.tile_ordering_r
         tile_aliases = cxt_player.tile_aliases
-        Enum.any?(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+        Enum.any?(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
       "winning_hand_consists_of" ->
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-        winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
+        winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
         Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = cxt_player.tile_mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-        winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Riichi.call_to_tiles/1)
+        winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
         Enum.all?(winning_hand, &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) and Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
@@ -396,7 +397,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         call_tiles = [context.called_tile | context.call_choice]
         call = {context.call_name, call_tiles}
         waits_before = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
-        [call_removed | _] = Riichi.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
+        [call_removed | _] = Match.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
         waits_after = Riichi.get_waits(call_removed, calls ++ [call], win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
         waits_before != waits_after
       "wait_count_at_least" ->
@@ -454,7 +455,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         ordering = cxt_player.tile_ordering
         ordering_r = cxt_player.tile_ordering_r
         tile_aliases = cxt_player.tile_aliases
-        waits = Enum.flat_map(wait_definitions, fn definition -> Riichi.remove_match_definition(hand, calls, definition, ordering, ordering_r, tile_aliases) end)
+        waits = Enum.flat_map(wait_definitions, fn definition -> Match.remove_match_definition(hand, calls, definition, ordering, ordering_r, tile_aliases) end)
         |> Enum.flat_map(fn {hand, _calls} -> hand end)
         visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
         visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)

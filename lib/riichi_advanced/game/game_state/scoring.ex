@@ -134,7 +134,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment
     assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
-    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Riichi.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
+    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls, winning_hand: assigned_winning_hand } end)
     {state, assigned_winning_tile}
   end
@@ -523,7 +523,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
                   push_message(state, [
                     %{text: "Player #{seat} #{player.nickname} dealt in while tenpai with hand"},
                   ] ++ Utils.ph(player.hand |> Utils.sort_tiles())
-                    ++ Utils.ph(player.calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
+                    ++ Utils.ph(player.calls |> Enum.flat_map(&Utils.call_to_tiles/1))
                     ++ [
                     %{text: " which, if won on "},
                     Utils.pt(winner.winning_tile),
@@ -862,7 +862,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # push message
     orig_call_tiles = orig_calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.flat_map(fn call -> Enum.take(Riichi.call_to_tiles(call), 3) end) # ignore kans
+    |> Enum.flat_map(fn call -> Enum.take(Utils.call_to_tiles(call), 3) end) # ignore kans
     smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
     joker_assignment = joker_assignment
     |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
@@ -884,7 +884,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # add winning hand to the winner player (yaku conditions often check this)
     winning_tile = Enum.at(possible_winning_tiles, 0, nil)
-    call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
+    call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
     state = update_player(state, seat, fn player -> %Player{ player | winning_hand: winning_hand } end)
 
