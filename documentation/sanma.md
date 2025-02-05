@@ -1,6 +1,6 @@
 # Sanma
 
-Sanma, or three-player mahjong, is a variation of Riichi mahjong. Besides having three players instead of four, the core differences are as follows:
+Sanma, or three-player mahjong, is a variation of [Riichi mahjong](riichi.md). Besides having three players instead of four, the core differences are as follows:
 
 - Your starting score is 35000 instead of 25000.
 - Calling chii is disallowed.
