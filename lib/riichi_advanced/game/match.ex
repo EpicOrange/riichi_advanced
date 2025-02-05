@@ -235,7 +235,7 @@ defmodule RiichiAdvanced.Match do
     # also strip attrs
     base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
     # never let :any be a base tile
-    base_tiles = base_tiles -- [:any, {:any, []}]
+    base_tiles = Enum.reject(base_tiles, & &1 == nil || Utils.strip_attrs(&1) == :any)
     # if there are no offsets, always return 1m as a base tile
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
