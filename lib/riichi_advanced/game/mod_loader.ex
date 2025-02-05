@@ -60,6 +60,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",
+      tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
       ruleset: "riichi",
       mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
       default_mods: ["show_waits"],
@@ -80,6 +81,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "chinitsu" => %{
       display_name: "Chinitsu Challenge",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: ["chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
