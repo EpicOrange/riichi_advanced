@@ -444,8 +444,18 @@ defmodule RiichiAdvanced.GameState.Actions do
           Riichi.is_num?(context.tile, 9) -> 900
           true                            -> 0
         end
+      ["count_tiles" | opts] ->
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        # for some reason, not using a variable makes it return the last summand only :/
+        won_by_draw = Map.get(context, :win_source, :draw) == :draw
+        num_tiles = length(state.players[seat].hand)
+        num_tiles = num_tiles + length(state.players[seat].draw)
+        num_tiles = num_tiles + length(state.players[seat].aside)
+        num_tiles = num_tiles + length(Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1))
+        num_tiles = num_tiles + if won_by_draw do 0 else 1 end
+        num_tiles
       ["count_draws" | opts] ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0))
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         length(state.players[seat].draw)
       ["count_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
