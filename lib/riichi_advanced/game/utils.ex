@@ -86,6 +86,7 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def add_attr(tile, []), do: tile
   def add_attr(tile, attrs) do
     case tile do
       {tile, existing_attrs} -> {tile, Enum.uniq(existing_attrs ++ attrs)}
@@ -95,6 +96,7 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def remove_attr(tile, []), do: tile
   def remove_attr(tile, attrs) do
     case tile do
       {tile, existing_attrs} ->
@@ -321,7 +323,7 @@ defmodule RiichiAdvanced.Utils do
     id = if reversed do Riichi.flip_faceup(tile) |> strip_attrs() else id end
     facedown = has_attr?(tile, ["facedown"]) && Map.get(assigns, :hover_index, nil) != i
     played = animate_played && Map.get(assigns, :your_hand?, true) && Map.get(assigns, :preplayed_index, nil) == i
-    sideways = i == Map.get(assigns, :riichi_index, nil) && "sideways"
+    sideways = i == Map.get(assigns, :riichi_index, nil) || has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) && Map.has_key?(assigns, :pond) && i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) && i == assigns.riichi_index
     [
@@ -353,6 +355,11 @@ defmodule RiichiAdvanced.Utils do
     _get_joker_meld_tile(Riichi.call_to_tiles(call), joker_tiles)
   end
 
+  def replace_base_tile(tile, new_base_tile) do
+    {_tile, attrs} = to_attr_tile(tile)
+    add_attr(new_base_tile, attrs)
+  end
+
   def replace_jokers(tiles, joker_tiles) do
     if Enum.any?(tiles, &count_tiles([&1], joker_tiles) > 0) do
       List.duplicate(_get_joker_meld_tile(tiles, joker_tiles), length(tiles))
@@ -362,9 +369,9 @@ defmodule RiichiAdvanced.Utils do
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
   def replace_jokers_in_calls(calls, joker_tiles) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls && Enum.any?(call, fn {tile, _sideways} -> count_tiles([tile], joker_tiles) > 0 end) do
+      if name in @pon_like_calls && Enum.any?(call, &count_tiles([&1], joker_tiles) > 0) do
         meld_tile = get_joker_meld_tile({name, call}, joker_tiles)
-        {name, Enum.map(call, fn {_tile, sideways} -> {meld_tile, sideways} end)}
+        {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
     end)
   end

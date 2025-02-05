@@ -138,10 +138,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "others" -> state.available_seats -- [context.seat]
       "chii_victims" -> for {"chii", tiles} <- state.players[context.seat].calls do
         # check sideways tiles
-        case tiles do
-          [{_, false}, {_, false}, {_, true}] -> [:shimocha]
-          [{_, false}, {_, true}, {_, false}] -> [:toimen]
-          [{_, true}, {_, false}, {_, false}] -> [:kamicha]
+        case Enum.map(tiles, &Utils.has_attr?(["sideways"])) do
+          [false, false, true] -> [:shimocha]
+          [false, true, false] -> [:toimen]
+          [true, false, false] -> [:kamicha]
           _ -> []
         end
       end |> Enum.concat()
@@ -203,10 +203,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]) ++ Utils.add_attr(cxt_player.draw, ["hand"]), cxt_player.tile_ordering, cxt_player.tile_ordering_r, [], cxt_player.tile_aliases, cxt_player.tile_mappings)
       "can_upgrade_call"            -> cxt_player.calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
-        |> Enum.any?(fn {_name, call} ->
-          call_tiles = Enum.map(call, fn {tile, _sideways} -> tile end)
-          Riichi.can_call?(context.calls_spec, call_tiles, cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings)
-        end)
+        |> Enum.map(&Riichi.call_to_tiles/1)
+        |> Enum.any?(&Riichi.can_call?(context.calls_spec, &1, cxt_player.tile_ordering, cxt_player.tile_ordering_r, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_aliases, cxt_player.tile_mappings))
       "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].draw)
       "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].aside)
       "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].calls)
@@ -378,7 +376,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, ordering, ordering_r, [], tile_aliases, tile_mappings), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
-            call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
+            call = {context.call_name, call_tiles}
             waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
@@ -396,7 +394,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         draw = cxt_player.draw
         calls = cxt_player.calls
         call_tiles = [context.called_tile | context.call_choice]
-        call = {context.call_name, Enum.map(call_tiles, fn tile -> {tile, false} end)}
+        call = {context.call_name, call_tiles}
         waits_before = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
         [call_removed | _] = Riichi.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
         waits_after = Riichi.get_waits(call_removed, calls ++ [call], win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
@@ -532,7 +530,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           false -> false
           true  ->
             call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
-            call = {call_name, Enum.map(Utils.strip_attrs([called_tile | call_choice]), fn tile -> {tile, false} end)}
+            call = {call_name, Utils.strip_attrs([called_tile | call_choice])}
             update_player(state, context.seat, &%Player{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
             |> American.get_viable_am_match_definitions(context.seat, am_match_definitions)
             |> Enum.empty?()

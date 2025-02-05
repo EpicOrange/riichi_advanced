@@ -102,16 +102,16 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :call}) do %>
               <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["markable", sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} :for={tile <- call}></div>
               </div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :call}) do %>
                 <div class="call">
-                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked", sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} :for={tile <- call}></div>
                 </div>
               <% else %>
                 <div class="call">
-                  <div class={Utils.get_tile_class(tile, i, assigns, [sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
                 </div>
               <% end %>
             <% end %>
@@ -119,7 +119,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <% else %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class="call">
-              <div class={Utils.get_tile_class(tile, i, assigns, [sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
             </div>
           <% end %>
         <% end %>
@@ -143,7 +143,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       </div>
       <div class="calls flowers">
         <%= for {{_name, call}, i} <- prepare_flowers(assigns) do %>
-          <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, _sideways} <- call}></div>
+          <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
         <% end %>
       </div>
     </div>

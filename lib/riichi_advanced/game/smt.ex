@@ -375,7 +375,7 @@ defmodule RiichiAdvanced.SMT do
     to_set_fun = if Enum.empty?(all_sets) do "" else "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n" end
 
     # first figure out which tiles are jokers based on tile_mappings
-    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end) # calls have already been preprocessed to remove sideways flag
+    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
     {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
     |> Enum.filter(fn {tile, _ix} -> Utils.count_tiles([tile], jokers) == 1 end)

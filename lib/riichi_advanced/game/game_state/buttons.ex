@@ -38,7 +38,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
           is_upgrade ->
             call_choices = state.players[seat].calls
             |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
-            |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> Utils.add_attr(tile, ["hand", "called"]) end) end)
+            |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["hand", "called"])) end)
             |> Enum.map(fn call_tiles ->
                  Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, hand ++ draw, tile_aliases, tile_mappings)
                end)

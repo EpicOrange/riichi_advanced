@@ -17,7 +17,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.player.hand)}></div>
             <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
               <div class="call">
-                <div class={Utils.get_tile_class(tile, i, assigns, [sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
               </div>
             <% end %>
             <div class="winning-tile-container">

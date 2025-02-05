@@ -129,7 +129,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
-    |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile), sideways} end)} end)
+    |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile) end)} end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment

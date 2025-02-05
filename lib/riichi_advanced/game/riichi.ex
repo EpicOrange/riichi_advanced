@@ -478,7 +478,6 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases \\ %{}) do
-    # calls = Enum.map(calls, fn {name, call} -> {name, Enum.map(call, fn {tile, _sideways} -> tile end)} end)
     case RiichiAdvanced.ETSCache.get({:remove_match_definition, hand, calls, match_definition, ordering, tile_aliases}) do
       [] -> 
         result = _remove_match_definition(hand, calls, match_definition, ordering, ordering_r, tile_aliases)
@@ -818,9 +817,7 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
-    tiles = for {tile, _sideways} <- call do
-      flip_faceup(tile)
-    end
+    tiles = Enum.map(call, &flip_faceup/1)
     if replace_am_jokers && Utils.count_tiles(tiles, [:"1j"]) > 0 do
       # replace all american jokers with the nonjoker tile
       nonjoker = Enum.find(tiles, &not Utils.same_tile(&1, :"1j")) |> Utils.strip_attrs()
@@ -890,7 +887,7 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   defp calculate_call_fu({name, call}) do
-    {relevant_tile, _sideways} = Enum.at(call, 1, {nil, nil}) # avoids the initial 1x from ankan
+    relevant_tile = Enum.at(call, 1, {nil, nil}) # avoids the initial 1x from ankan
     case name do
       "chii"        -> 0
       "pon"         -> if relevant_tile in @terminal_honors do 4 else 2 end

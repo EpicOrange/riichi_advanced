@@ -247,26 +247,22 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp style_call(style, call_choice, called_tile) do
     if called_tile != nil do
       tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
-      for style_spec <- style, reduce: [] do
-        acc ->
-          tile = case style_spec do
-            "call"                                  -> {called_tile, false}
-            "call_sideways"                         -> {called_tile, true}
-            ix when is_integer(ix)                  -> {Enum.at(tiles, ix), false}
-            ["sideways", ix] when is_integer(ix)    -> {Enum.at(tiles, ix), true}
-            ["1x", ix] when is_integer(ix)          -> {Enum.at(tiles, ix) |> Riichi.flip_facedown(), false}
-            ["1x", "call"]                          -> {called_tile |> Riichi.flip_facedown(), false}
-            ["1x", tile]                            -> {Utils.to_tile(tile) |> Riichi.flip_facedown(), false}
-            ["1x_sideways", ix] when is_integer(ix) -> {Enum.at(tiles, ix) |> Riichi.flip_facedown(), true}
-            ["1x_sideways", "call"]                 -> {called_tile |> Riichi.flip_facedown(), true}
-            ["1x_sideways", tile]                   -> {Utils.to_tile(tile) |> Riichi.flip_facedown(), true}
-            tile                                    -> {Utils.to_tile(tile), false}
-          end
-          [tile | acc]
-      end |> Enum.reverse()
-    else
-      Enum.map(call_choice, fn tile -> {tile, false} end)
-    end
+      for style_spec <- style do
+        case style_spec do
+          "call"                                  -> called_tile
+          "call_sideways"                         -> called_tile |> Utils.add_attr(["sideways"])
+          ix when is_integer(ix)                  -> Enum.at(tiles, ix)
+          ["sideways", ix] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["sideways"])
+          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Riichi.flip_facedown()
+          ["1x", "call"]                          -> called_tile |> Riichi.flip_facedown()
+          ["1x", tile]                            -> Utils.to_tile(tile) |> Riichi.flip_facedown()
+          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Riichi.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x_sideways", "call"]                 -> called_tile |> Riichi.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Riichi.flip_facedown() |> Utils.add_attr(["sideways"])
+          tile                                    -> Utils.to_tile(tile)
+        end
+      end
+    else call_choice end
   end
 
   def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
@@ -285,15 +281,11 @@ defmodule RiichiAdvanced.GameState.Actions do
     call = if called_tile != nil do
       style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
       style_call(style, call_choice, called_tile)
-    else
-      Enum.map(call_choice, fn tile -> {tile, false} end)
-    end
+    else call_choice end
 
     # add "concealed" to every tile if it's a hidden call
     hidden = Map.get(state.rules["buttons"][button_name], "call_hidden", false)
-    call = if hidden do
-      Enum.map(call, fn {tile, sideways} -> {Utils.add_attr(tile, ["concealed"]), sideways} end)
-    else call end
+    call = if hidden do Utils.add_attr(call, ["concealed"]) else call end
 
     # run before_call actions
     call = {call_name, call}
@@ -367,16 +359,16 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp upgrade_call(state, seat, call_name, call_choice, called_tile) do
     # find the index of the call whose tiles match call_choice
     index = state.players[seat].calls
-      |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
+      |> Enum.map(&Riichi.call_to_tiles/1)
       |> Enum.find_index(fn call_tiles -> Riichi.try_remove_all_tiles(call_choice, call_tiles) == [[]] end)
 
     # upgrade that call
-    {_name, call} = Enum.at(state.players[seat].calls, index)
-    call_choice = Riichi.call_to_tiles({"", call})
+    {name, call} = Enum.at(state.players[seat].calls, index)
+    call_choice = Riichi.call_to_tiles({name, call})
 
     # find the index of the sideways tile to determine the direction
-    sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
-    sideways_index_rev = Enum.find_index(Enum.reverse(call), fn {_tile, sideways} -> sideways end)
+    sideways_index = Enum.find_index(call, &Utils.has_attr?(&1, ["sideways"]))
+    sideways_index_rev = Enum.find_index(Enum.reverse(call), &Utils.has_attr?(&1, ["sideways"]))
     dir = cond do
       sideways_index == 0 -> :kamicha
       sideways_index_rev == 0 -> :shimocha # for 2-tile calls
@@ -915,7 +907,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
         call_joker_index = Enum.find_index(call_tiles, &Utils.same_tile(&1, fly_joker))
         new_call = with {call_type, call_content} <- call do
-          {call_type, List.update_at(call_content, call_joker_index, fn {_t, sideways} -> {tile, sideways} end)}
+          {call_type, List.update_at(call_content, call_joker_index, &Utils.replace_base_tile(&1, tile))}
         end
         push_message(state, [
           %{text: "Player #{context.seat} #{state.players[context.seat].nickname} swapped out a joker from the call"}
@@ -1136,7 +1128,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       #   state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, fn {tile, sideways} -> {Riichi.flip_faceup(tile), sideways} end)} end)
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, &Riichi.flip_faceup/1)} end)
           %Player{ player | calls: faceup_calls }
         end)
       "flip_first_visible_discard_facedown" -> 
