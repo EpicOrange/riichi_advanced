@@ -16,7 +16,6 @@ defmodule RiichiAdvanced.LogWalker do
       game_states: %{}, # kyoku_index => event_index => game state after the event happens, or at start
       game_state: %Game{},
     ]
-    use Accessible
   end
 
   def start_link(init_data) do

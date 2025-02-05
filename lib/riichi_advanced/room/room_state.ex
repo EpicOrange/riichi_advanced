@@ -10,7 +10,6 @@ defmodule RiichiAdvanced.RoomState do
       session_id: nil,
       seat: nil
     ]
-    use Accessible
   end
 
   defmodule Room do
@@ -46,7 +45,6 @@ defmodule RiichiAdvanced.RoomState do
       textarea_delta_uuids: [[]],
       textarea_version: 0,
     ]
-    use Accessible
   end
 
   def start_link(init_data) do

@@ -13,7 +13,6 @@ defmodule RiichiAdvanced.MessagesState do
       messages: [],
       disconnected: true
     ]
-    use Accessible
   end
 
   def start_link(init_data) do

@@ -71,7 +71,6 @@ defmodule RiichiAdvanced.GameState do
       closest_american_hands: [],
       ai_thinking: false,
     ]
-    use Accessible
   end
 
   defmodule Game do
@@ -154,7 +153,6 @@ defmodule RiichiAdvanced.GameState do
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
       processed_bloody_end: false,
     ]
-    use Accessible
   end
 
   def start_link(init_data) do

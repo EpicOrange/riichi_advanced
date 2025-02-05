@@ -8,7 +8,6 @@ defmodule RiichiAdvanced.LobbyState do
       nickname: nil,
       id: ""
     ]
-    use Accessible
   end
 
   defmodule LobbyRoom do
@@ -19,7 +18,6 @@ defmodule RiichiAdvanced.LobbyState do
       private: true,
       started: false
     ]
-    use Accessible
   end
 
   defmodule Lobby do
@@ -39,7 +37,6 @@ defmodule RiichiAdvanced.LobbyState do
       rooms: %{},
       display_name: ""
     ]
-    use Accessible
   end
 
   def start_link(init_data) do

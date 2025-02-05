@@ -19,7 +19,6 @@ defmodule RiichiAdvanced.LogControlState do
       game_state: nil,
       log: nil,
     ]
-    use Accessible
   end
 
   def start_link(init_data) do
