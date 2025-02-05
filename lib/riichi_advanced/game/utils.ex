@@ -141,7 +141,8 @@ defmodule RiichiAdvanced.Utils do
   # print tile, print hand
   # print tile, print hand
   def pt(tile) do
-    {tile, _attrs} = to_attr_tile(tile)
+    {tile, attrs} = to_attr_tile(tile)
+    tile = if "concealed" in attrs do :"1x" else tile end
     %{bold: true, color: tile_color(tile), text: "#{tile}"}
   end
   def ph(tiles), do: Enum.map(tiles, &pt/1)
