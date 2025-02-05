@@ -4,7 +4,7 @@ This documentation file contains the rules of American Mah-Jongg (NMJL-style), a
 
 See also [MahjongPros' ruleset](https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-american-mahjong).
 
-Note that American Mah-Jongg differs from the "base Asian mahjong variant" in many ways, so your knowledge of those variants may not necessarily transfer.
+Note that American Mah-Jongg differs from the "base Asian mahjong variant" presented in [base.md](base.md) in many ways, so your knowledge of those variants may not necessarily transfer. Nevertheless, this ruleset assumes that you have read that one.
 
 ---
 ## TL;DR summary for American Mah-Jongg players:
