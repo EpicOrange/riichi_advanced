@@ -30,7 +30,6 @@ defmodule RiichiAdvanced.YakuTest do
     seat = Map.get(test_spec, :seat, :east)
     hand = test_spec.hand
     calls = Map.get(test_spec, :calls, [])
-    |> Enum.map(fn {name, call} -> {name, Enum.map(call, &{&1, false})} end)
     state = put_in(state.players[seat].hand, hand)
     state = put_in(state.players[seat].calls, calls)
     state = put_in(state.kyoku, Map.get(test_spec, :round, 0))
