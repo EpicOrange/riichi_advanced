@@ -36,6 +36,10 @@ defmodule RiichiAdvanced.Riichi do
                :"01m", :"09m", :"01p", :"09p", :"01s", :"09s", :"01z", :"02z", :"03z", :"04z", :"05z", :"00z", :"06z", :"07z"]
   @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q", :"1a", :"2a", :"3a", :"4a", :"1y"]
   @joker      [:"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j", :"10j", :"12j", :"13j", :"14j", :"15j", :"16j", :"17j", :"18j", :"19j", :"2y"]
+  @aka        [:"0m", :"0p", :"0s", :"26z",
+               :"01m", :"02m", :"03m", :"04m", :"05m", :"25m", :"35m", :"06m", :"07m", :"08m", :"09m", :"010m",
+               :"01p", :"02p", :"03p", :"04p", :"05p", :"25p", :"35p", :"06p", :"07p", :"08p", :"09p", :"010p",
+               :"01s", :"02s", :"03s", :"04s", :"05s", :"25s", :"35s", :"06s", :"07s", :"08s", :"09s", :"010s"]
 
   def is_manzu?(tile), do: Enum.any?(@manzu, &Utils.same_tile(tile, &1))
   def is_pinzu?(tile), do: Enum.any?(@pinzu, &Utils.same_tile(tile, &1))
@@ -49,6 +53,7 @@ defmodule RiichiAdvanced.Riichi do
   def is_tanyaohai?(tile), do: Enum.any?(@tanyaohai, &Utils.same_tile(tile, &1))
   def is_flower?(tile), do: Enum.any?(@flower, &Utils.same_tile(tile, &1))
   def is_joker?(tile), do: Enum.any?(@joker, &Utils.same_tile(tile, &1))
+  def is_aka?(tile), do: Enum.any?(@aka, &Utils.same_tile(tile, &1))
 
   def is_num?(tile, num) do
     Enum.any?(case num do

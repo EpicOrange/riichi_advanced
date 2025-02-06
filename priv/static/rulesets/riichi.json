@@ -268,7 +268,7 @@
     ]
   ],
   "win_definition": [
-    [ "debug", "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
     [ [["quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
