@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -136,7 +137,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # if the winning tile is a joker, the following gets its assignment
     assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
-    state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls, winning_hand: assigned_winning_hand } end)
+    state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %PlayerCache{ &1.cache | winning_hand: assigned_winning_hand } })
     {state, assigned_winning_tile}
   end
 
@@ -887,7 +888,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     winning_tile = Enum.at(possible_winning_tiles, 0, nil)
     call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
-    state = update_player(state, seat, fn player -> %Player{ player | winning_hand: winning_hand } end)
+    state = update_player(state, seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | winning_hand: winning_hand } })
 
     # deal with jokers
     use_smt = Map.get(score_rules, "use_smt", true)
@@ -944,7 +945,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
-        IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+        IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].cache.winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
         new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end

@@ -206,8 +206,8 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def get_safe_tiles_against(seat, players, turn \\ nil) do
-    riichi_safe = if players[seat].riichi_discard_indices != nil do
-      for {dir, ix} <- players[seat].riichi_discard_indices do
+    riichi_safe = if players[seat].cache.riichi_discard_indices != nil do
+      for {dir, ix} <- players[seat].cache.riichi_discard_indices do
         discards = Enum.drop(players[dir].discards, ix)
         # last discard is not safe
         if turn == dir do Enum.drop(discards, -1) else discards end

@@ -29,8 +29,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
-          "arranged_hand" -> [{hand ++ state.players[context.seat].arranged_hand, calls}]
-          "arranged_calls" -> [{hand, calls ++ state.players[context.seat].arranged_calls}]
+          "arranged_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
+          "arranged_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
@@ -306,14 +306,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(cxt_player.winning_hand, doras) == num
+          Utils.count_tiles(cxt_player.cache.winning_hand, doras) == num
         else false end
       "winning_reverse_dora_count" ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(cxt_player.winning_hand, doras) == num
+          Utils.count_tiles(cxt_player.cache.winning_hand, doras) == num
         else false end
       "match"                    ->
         hand_calls = get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -541,7 +541,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "num_players"         -> length(state.available_seats) == Enum.at(opts, 0, 4)
       "is_tenpai_american"  ->
         player = state.players[context.seat]
-        Enum.any?(player.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
+        Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

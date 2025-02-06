@@ -6,6 +6,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Log, as: Log
@@ -854,10 +855,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
         end
-      "put_down_riichi_stick" -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"]) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
+      "put_down_riichi_stick" ->
+        riichi_discard_indices = Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end)
+        state
+        |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"])
+        |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, cache: %PlayerCache{ &1.cache | riichi_discard_indices: riichi_discard_indices } })
       "bet_points"            ->
         amount = interpret_amount(state, context, opts)
-        state |> Map.update!(:pot, & &1 + amount) |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
+        state
+        |> Map.update!(:pot, & &1 + amount)
+        |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
@@ -1035,16 +1042,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
           state ->
-            state = put_in(state.players[seat].saved_tile_aliases[label], state.players[seat].tile_aliases)
-            state = put_in(state.players[seat].saved_tile_mappings[label], state.players[seat].tile_mappings)
+            state = put_in(state.players[seat].cache.saved_tile_aliases[label], state.players[seat].tile_aliases)
+            state = put_in(state.players[seat].cache.saved_tile_mappings[label], state.players[seat].tile_mappings)
             state
         end
       "load_tile_aliases"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
           state ->
-            state = put_in(state.players[seat].tile_aliases, Map.get(state.players[seat].saved_tile_aliases, label, state.players[seat].tile_aliases))
-            state = put_in(state.players[seat].tile_mappings, Map.get(state.players[seat].saved_tile_mappings, label, state.players[seat].tile_mappings))
+            state = put_in(state.players[seat].tile_aliases, Map.get(state.players[seat].cache.saved_tile_aliases, label, state.players[seat].tile_aliases))
+            state = put_in(state.players[seat].tile_mappings, Map.get(state.players[seat].cache.saved_tile_mappings, label, state.players[seat].tile_mappings))
             state
         end
       "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_aliases: %{}, tile_mappings: %{} })

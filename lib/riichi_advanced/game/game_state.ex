@@ -27,8 +27,21 @@ defmodule RiichiAdvanced.GameState do
     ]
   end
 
+  defmodule PlayerCache do
+    defstruct [
+      saved_tile_mappings: %{},
+      saved_tile_aliases: %{},
+      riichi_discard_indices: nil,
+      playable_indices: [],
+      closest_american_hands: [],
+      winning_hand: nil,
+      arranged_hand: [],
+      arranged_calls: [],
+    ]
+  end
+
   defmodule Player do
-    # TODO shorten this to max 32 keys (currently 38)
+    # ensure this stays at or below 32 keys (currently 31)
     defstruct [
       # persistent
       score: 0,
@@ -47,8 +60,6 @@ defmodule RiichiAdvanced.GameState do
       call_buttons: %{},
       tile_mappings: %{},
       tile_aliases: %{},
-      saved_tile_mappings: %{},
-      saved_tile_aliases: %{},
       tile_ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
                        :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
                        :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s"},
@@ -63,18 +74,13 @@ defmodule RiichiAdvanced.GameState do
       status: MapSet.new(),
       counters: %{},
       riichi_stick: false,
-      riichi_discard_indices: nil,
       hand_revealed: false,
       num_scryed_tiles: 0,
       declared_yaku: nil,
       last_discard: nil, # for animation purposes and to avoid double discarding
-      winning_hand: nil,
       ready: false,
-      arranged_hand: [],
-      arranged_calls: [],
-      playable_indices: [],
-      closest_american_hands: [],
       ai_thinking: false,
+      cache: %PlayerCache{},
     ]
   end
 
@@ -567,7 +573,7 @@ defmodule RiichiAdvanced.GameState do
     state = start_timer(state)
 
     winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
-    state = update_player(state, seat, fn player -> %Player{ player | arranged_hand: winner.arranged_hand, arranged_calls: winner.arranged_calls } end)
+    state = update_player(state, seat, fn player -> %Player{ player | cache: %PlayerCache{ player.cache | arranged_hand: winner.arranged_hand, arranged_calls: winner.arranged_calls } } end)
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
@@ -1467,7 +1473,7 @@ defmodule RiichiAdvanced.GameState do
             params = %{
               player: state.players[state.turn],
               visible_tiles: get_visible_tiles(state, state.turn),
-              closest_american_hands: state.players[state.turn].closest_american_hands,
+              closest_american_hands: state.players[state.turn].cache.closest_american_hands,
             }
             send(Map.get(state, state.turn), {:your_turn, params})
           end
@@ -1504,7 +1510,7 @@ defmodule RiichiAdvanced.GameState do
             doras: get_doras(state),
             wall: Enum.drop(state.wall, state.wall_index),
             marked_objects: state.marking[seat],
-            closest_american_hands: state.players[state.turn].closest_american_hands,
+            closest_american_hands: state.players[state.turn].cache.closest_american_hands,
           }
           send(Map.get(state, seat), {:mark_tiles, params})
         end
@@ -1558,7 +1564,7 @@ defmodule RiichiAdvanced.GameState do
           params = %{
             player: state.players[seat],
             visible_tiles: get_visible_tiles(state, seat),
-            closest_american_hands: state.players[seat].closest_american_hands,
+            closest_american_hands: state.players[seat].cache.closest_american_hands,
           }
           send(Map.get(state, seat), {:your_turn, params})
         end
@@ -1692,8 +1698,9 @@ defmodule RiichiAdvanced.GameState do
       player = state.players[state.turn]
       GenServer.cast(self, {:set_playable_indices, state.turn, for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end})
     end)
+    # set interim playable indices to include every tile
     state = state
-    |> update_player(state.turn, &%Player{ &1 | playable_indices: (&1.hand ++ &1.draw) |> Enum.with_index() |> Enum.map(fn {_, i} -> i end)})
+    |> update_player(state.turn, &%Player{ &1 | cache: %PlayerCache{ &1.cache | playable_indices: Enum.with_index(&1.hand ++ &1.draw) |> Enum.map(fn {_, i} -> i end) } })
     |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, state.turn, pid))
     # IO.puts("done calculating playable indices for #{state.turn}")
     {:noreply, state}
@@ -1723,7 +1730,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:set_playable_indices, seat, playable_indices}, state) do
     state = state
-    |> update_player(seat, &%Player{ &1 | playable_indices: playable_indices})
+    |> update_player(seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | playable_indices: playable_indices } })
     |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, seat, nil))
     state = broadcast_state_change(state, false)
     {:noreply, state}
@@ -1731,7 +1738,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:set_closest_american_hands, seat, closest_american_hands}, state) do
     state = state
-    |> update_player(seat, &%Player{ &1 | closest_american_hands: closest_american_hands})
+    |> update_player(seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | closest_american_hands: closest_american_hands } })
     |> Map.put(:calculate_closest_american_hands_pid, nil)
     state = broadcast_state_change(state, false)
     {:noreply, state}

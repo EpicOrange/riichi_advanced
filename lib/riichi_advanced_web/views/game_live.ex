@@ -286,7 +286,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class={["big-text"]} :if={@loading}>Loading...</div>
       <div class="display-am-hand-hover" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}>
-        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].closest_american_hands do %>
+        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand})>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
@@ -538,7 +538,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       socket = socket
       |> assign(:state, state)
-      |> assign(:playable_indices, state.players[socket.assigns.seat].playable_indices)
+      |> assign(:playable_indices, state.players[socket.assigns.seat].cache.playable_indices)
       |> assign(:preplayed_index, nil)
       |> assign(:revealed_tiles, RiichiAdvanced.GameState.get_revealed_tiles(state))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, socket.assigns.seat))
