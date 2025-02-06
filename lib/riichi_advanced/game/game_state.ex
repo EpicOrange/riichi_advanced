@@ -321,6 +321,9 @@ defmodule RiichiAdvanced.GameState do
     # generate a UUID
     state = Map.put(state, :ref, Ecto.UUID.generate())
 
+    # terminate game if no one joins
+    :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
+
     {:ok, state}
   end
 
