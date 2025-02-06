@@ -17,8 +17,18 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
   
+  defmodule Choice do
+    defstruct [
+      name: "skip",
+      chosen_actions: nil,
+      chosen_called_tile: nil,
+      chosen_call_choice: nil,
+      chosen_saki_card: nil
+    ]
+  end
+
   defmodule Player do
-    # TODO shorten this to max 32 keys
+    # TODO shorten this to max 32 keys (currently 38)
     defstruct [
       # persistent
       score: 0,
@@ -35,7 +45,6 @@ defmodule RiichiAdvanced.GameState do
       button_choices: %{},
       auto_buttons: [],
       call_buttons: %{},
-      call_name: "",
       tile_mappings: %{},
       tile_aliases: %{},
       saved_tile_mappings: %{},
@@ -48,10 +57,6 @@ defmodule RiichiAdvanced.GameState do
                          :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
       # TODO make choice a data structure of its own, if it gets any more complex
       choice: nil,
-      chosen_actions: nil,
-      chosen_called_tile: nil,
-      chosen_call_choice: nil,
-      chosen_saki_card: nil,
       deferred_actions: [],
       deferred_context: %{},
       big_text: "",
@@ -1393,7 +1398,7 @@ defmodule RiichiAdvanced.GameState do
     state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
       state = Actions.temp_disable_play_tile(state, seat)
       # assume we're skipping our button choices
-      state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "", chosen_call_choice: nil, chosen_called_tile: nil, chosen_saki_card: nil })
+      state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
       actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
       state = Actions.submit_actions(state, seat, "play_tile", actions)
       state
@@ -1666,7 +1671,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:declare_yaku, seat, yakus}, state) do
     state = update_player(state, seat, &%Player{ &1 | declared_yaku: yakus })
-    button_name = state.players[seat].call_name
+    button_name = state.players[seat].choice.name
     actions = state.rules["buttons"][button_name]["actions"]
     state = Actions.submit_actions(state, seat, button_name, actions, nil, nil, nil, yakus)
     state = broadcast_state_change(state)

@@ -18,7 +18,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def make_button_choices(state, seat, button_name, button) do
     actions = button["actions"]
-    # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{choice}) gets to run actions #{inspect(actions)}")
+    # IO.puts("It's #{state.turn}'s turn, player #{seat} (choice: #{inspect(choice)}) gets to run actions #{inspect(actions)}")
     # check if a call action exists, if it's a call and multiple call choices are available
     choice_actions = Actions.extract_actions(actions, ["call", "self_call", "upgrade_call", "flower", "draft_saki_card", "mark", "choose_yaku"])
     cond do
@@ -178,7 +178,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
   end
 
   def press_call_button(state, seat, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil) do
-    button_name = state.players[seat].call_name
+    button_name = state.players[seat].choice.name
     if Map.has_key?(state.players[seat].button_choices, button_name) do
       # IO.puts("#{seat} pressed call button for button #{button_name}")
       state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
