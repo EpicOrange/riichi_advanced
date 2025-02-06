@@ -11,12 +11,12 @@
   {"id": "nagashi_yakuman", "name": "Nagashi Yakuman", "desc": "Nagashi is worth yakuman instead of mangan."},
   {"id": "kansai_no_furiten_riichi", "order": 1, "name": "No Furiten Riichi", "desc": "Riichi is disallowed while in furiten."},
   {"id": "kansai_no_100_sticks", "name": "No 100 sticks", "desc": "All scores are rounded to 1000s instead of 100s."},
-  {"id": "kansai_preset_yaku", "name": "Preset Yaku", "desc": "You must declare your yaku at the beginning, and you can only win with that exact set of yaku."},
+  {"id": "kansai_preset_yaku", "name": "Preset Yaku", "desc": "You must declare your yaku at the beginning, and you can only win with that exact set of yaku. (This mod is the result of a possible mistranslation and will be replaced with actual kanzen sakidzuke rules on a later date.)"},
   {"id": "kansai_30_fu", "conflicts": ["kansai_40_fu"], "name": "30 Fu", "desc": "Fu is fixed at 30."},
   {"id": "kansai_40_fu", "conflicts": ["kansai_30_fu"], "name": "40 Fu", "desc": "Fu is fixed at 40."}
 ] + .available_mods
 |
-.default_mods += ["kansai_draw", "kansai_flowers", "kansai_aka", "kansai_yaku", "nagashi_yakuman", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_preset_yaku", "kansai_30_fu", "sanma_no_tsumo_loss"]
+.default_mods += ["kansai_draw", "kansai_flowers", "kansai_aka", "kansai_yaku", "nagashi_yakuman", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_30_fu", "sanma_no_tsumo_loss"]
 |
 # notenrenchan for south round only
 .score_calculation.notenrenchan_south = true
