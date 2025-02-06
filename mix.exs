@@ -55,7 +55,7 @@ defmodule RiichiAdvanced.MixProject do
       {:bandit, "~> 1.5"},
       {:debounce, "~> 1.0.0"},
       {:mutex, "~> 2.0.0"},
-      # {:accessible, "~> 0.3.0"},
+      {:xeo, "~> 0.1.0"},
       {:hackney, "~> 1.9"},
       {:decimal, "~> 2.0"},
       {:nimble_parsec, "~> 1.4.0"},

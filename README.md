@@ -1,6 +1,6 @@
 # Riichi Advanced
 
-![](title.png)
+![](priv/static/images/title.png)
 
 - Play now: <https://riichiadvanced.com/>
 - Discord: <https://discord.gg/5QQHmZQavP>

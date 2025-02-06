@@ -14,6 +14,7 @@
     <script>window.userToken = "<%= assigns[:user_token] %>";</script>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
+    <%= RiichiAdvancedWeb.Seo.tags(@conn) %>
   </head>
   <body class="bg-black">
     <%= @inner_content %>
