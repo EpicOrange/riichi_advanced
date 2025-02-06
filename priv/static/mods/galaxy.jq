@@ -212,7 +212,7 @@ else . end
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
     ["clear_tile_aliases"], # disable jokers
     ["set_counter", "fu", 30]
-  ]],
+  ]]
 ]
 |
 .win_timer = 20
