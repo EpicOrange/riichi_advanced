@@ -1,9 +1,9 @@
 # it's all aka now
 .wall |= map(if IN("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","1z","2z","3z","4z","5z","6z","7z","0z") then "0" + .
-  elif "0m" then "05m"
-  elif "0p" then "05p"
-  elif "0s" then "05s"
-  elif "0t" then "05t"
+  elif . == "0m" then "05m"
+  elif . == "0p" then "05p"
+  elif . == "0s" then "05s"
+  elif . == "0t" then "05t"
 else . end)
 |
 # set each aka dora as single value jokers
