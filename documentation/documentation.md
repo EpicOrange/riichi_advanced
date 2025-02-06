@@ -430,7 +430,7 @@ Rules:
 - `set_definitions`: List of definitions for sets used in match definitions, described above
 - `shown_statuses`: List of statuses to show (private to the player)
 - `starting_tiles`: Number of tiles every player starts with every round
-- `wall`: The list of tiles used in the game
+- `wall`: The list of tiles used in the game. [Here are all the tiles available in the tileset currently.](tiles.md)
 
 Yaku and scoring:
 
