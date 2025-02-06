@@ -1,6 +1,6 @@
-# [WIP] American Mah-Jongg (NMJL-style)
+# American Mah-Jongg (NMJL-style)
 
-This documentation file contains the rules of American Mah-Jongg (NMJL-style), as might be implemented in an online client like Riichi Advanced. Full rules for real-life play may be found in the official rulebook published by the National Mah-Jongg League, [*Mah Jongg Made Easy*](https://www.nationalmahjonggleague.org/store.aspx).
+This documentation file contains the rules of American Mah-Jongg (NMJL-style), as might be implemented in an online client like Riichi Advanced. Some rules for real-life play may be found in the official rulebook published by the National Mah-Jongg League, [*Mah Jongg Made Easy*](https://www.nationalmahjonggleague.org/store.aspx).
 
 See also [MahjongPros' ruleset](https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-american-mahjong).
 
@@ -14,11 +14,11 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Riichi Advanced will not let you draw a tile when you shouldn't, or discard a tile when you shouldn't.
 - Riichi Advanced will not let you make an incorrect exposure (i.e. one that isn't a Pung, Kong, or Quint) or Mah Jongg in error. It will, however, let you make exposures that would make your hand dead due to no hand on the Card being possible.
 - Riichi Advanced requires you to name what kind of exposure you're calling for (Pung/Kong/Quint).
-- Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange.
+- Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange. You may, however, perform a joker exchange with the tiles in that exposure.
 - Riichi Advanced will not require you to name every discard.
 - Riichi Advanced will pause the game and keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass it up.
 - Blind passes in the Charleston are evaluated starting with East, rather than with the player with the fewest tiles to blind-pass.
-- Death Challenges are currently not implemented. But when they are, they will be adjudicated instantly, and an incorrect challenge results in the challenger's hand being dead.
+- Declaring another player's hand dead is not implemented because it's a massive headache. See the **Dead Hand** section below.
 - Other differences listed in the "TODOS" section below:
 
 ---
@@ -26,30 +26,6 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 
 - Implement Heavenly Hand (East winning before the Charleston begins).
 - Implement the 75-point hand on the AMJfE Card. Currently it's unimplemented because it would require us to write down 98 different hands.
-- Check how the NMJL rules on the scenario "a player performs a Joker Exchange, then declares Mah Jongg; is it a win by self-draw?", in the following three cases:
-  - The Joker Exchange was with someone else's exposure;
-  - The Joker Exchange was with their own exposure from a previous turn;
-  - The Joker Exchange was with their own exposure that they exposed on the same turn, just prior to attempting the Joker Exchange.
-- Death Challenges:
-  - Check whether this is implemented at all.
-  - Implement the various scenarios of multiple players being declared dead.
-  - Confirm with the NMJL as to which exposures may be joker-swapped after a player is declared dead, in the following cases (2024 NMJL Card):
-    ![image](https://github.com/user-attachments/assets/52db32f6-744b-4e73-a3e6-9800df815f09)
-  - Notes on each column:
-    1. NEWS cannot be melded. Players did not notice this exposure was made until the second exposure was called. (Not possible in Riichi Advanced, included for completeness.)
-    2. No hand on the 2024 NMJL Card with FFJ. Players did not notice this exposure was made until the second exposure was called.
-    3. No hand on the 2024 NMJL Card with 11J 8*. But either exposure on its own would be fine.
-    4. Only hand on the 2024 NMJL Card with 33J 66J off-suit must be concealed (369 #7). (But 33J 666J can be exposed CR #7.)
-    5. Only hand on the 2024 NMJL Card with NNJ 11J must be concealed (W&D #7). (But NNJ 111J can be W&D #3.)
-    6. Only hand on the 2024 NMJL Card with 11J N* must be concealed (W&D #7). (11J NNNJ is not a hand on the card.)
-    7. Player is short a tile. (Not possible in Riichi Advanced, included for completeness.)
-  - Notes on each row:
-    1. Not possible in Riichi Advanced. Included for completeness.
-    2. Will be treated differently from IRL, since there is no way to change an exposure after it's called in Riichi Advanced. Will likely be treated like row 3.
-    3. Applicable to Riichi Advanced.
-    4. Applicable to Riichi Advanced.
-    5. Applicable to Riichi Advanced.
-    6. Not possible in Riichi Advanced. Included for completeness.
 
 ---
 
@@ -142,19 +118,18 @@ To read the Card (using the free ILoveMahj Card as an example):
 - A hand that is NOT from the Singles and Pairs category, and does not contain any jokers, has its score doubled.
 - If the hand was won by a discard, the discarder pays twice this score, while everyone else pays this score.
 - If this hand was won by self-draw, everyone pays twice this score.
-- If the last move by the winner before declaring Mah Jongg was to perform a joker exchange, this counts as a win by self-draw no matter whose exposure the joker was swapped from, or whether the winner's turn started by calling someone's discard. [TODO: The NMJL's rules aren't actually too clear on this point.]
+- If the last move by the winner before declaring Mah Jongg was to perform a joker exchange, this counts as a win by self-draw no matter which exposure the joker was swapped from, or whether the winner's turn started by calling someone's discard.
 - The dealer does not get any bonus multipliers for being dealer, unlike in many Asian mahjong variants.
 
-## Death Challenge
+## Dead Hand
 
-[TODO: Check whether implementation of this in Riichi Advanced exists.]
+There is currently no way to declare that another player has a dead hand in Riichi Advanced. This is for the following reasons:
 
-- If one player suspects that a second player can no longer win based on public information (i.e. what has been exposed and discarded, but not the concealed contents of anyone's hands), they may declare that player dead. This is called a Death Challenge. [TODO: Check whether Riichi Advanced has Death Challenges implemented.]
-- If the Death Challenge is valid, that player is now dead. If not, the challenger is now dead. (Note that this is different from *MJME*, where an incorrect Death Challenge results in the challenger paying 50¢ to the challenged.)
-- Dead players may no longer draw, discard, call discards for exposure or Mah Jongg, perform joker exchanges, or declare other players dead. However, they still pay in the event of someone else winning.
+- The rules on dead hands in the official rulebook, *Mah Jongg Made Easy*, are too ambiguously-written to code up. (In some cases, the rulebook presents contradictory rulings. In at least one case, the rulebook allows for calling a player's hand dead when they very clearly aren't.)
+- There seems to be no agreement among players as to which exposures are returned to the hand when a player's hand is declared dead, and it seems like players do not always interpret the rules in *MJME* the same way.
+- There are so, so, so, so many edge cases.
 
-- Any exposures made by a player on any turns prior to them being declared dead may still be used for joker exchanges, but any exposures made on that turn may not. [TODO: Check whether this is the case; specifically, if a player is declared dead after they have made an exposure but before they have discarded. Also check what the NMJL Rules say about being declared dead after making an exposure then a joker exchange but before discard.] [**UPDATE 2025-01-11**: Apparently the NMJL's own rules on this are very unclearly-worded. I'll have to ask someone to send in a letter for clarification.]
-- Multiple players can go dead in a round. [TODO: Implement the scenario that if 3 players are declared dead, the hand is aborted.]
+(Author's note: I have spent over a month trying to get answers to how this is supposed to work, but every answer I get just spawns more edge cases and more questions. I'm leaving it here before I lose my sanity and my hair.)
 
 ## Another Game
 
@@ -174,7 +149,7 @@ The following mods are currently available for American:
 
 The following mods are planned to be supported (not necessarily in this order):
 
-- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, **any other player** [note: wait, really?! // update: apparently this "only on others' turns" is specific to some playgroups and not others; need to decide how you want to implement this] may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, **any other player** [TODO note: wait, really?! // update: apparently this "only on others' turns" is specific to some playgroups and not others; need to decide how you want to implement this] may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
 - PIE: Each player starts with 600¢. If a player runs out of ¢, they need not pay.
 - Stacks: Instead of performing the Charleston with other players, perform the Charleston with 7 stacks of 3 tiles in front of you. After the Charleston is complete, the remaining tiles are all shuffled back into the wall.
 - Futures: Each player gets to peek at their next draw.
