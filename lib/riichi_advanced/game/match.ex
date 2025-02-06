@@ -229,13 +229,14 @@ defmodule RiichiAdvanced.Match do
       end
     end)
     |> Enum.uniq()
-    # also add all tile mappings
-    |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
-    |> Enum.uniq()
     # also strip attrs
     base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
+    # also add all tile mappings
+    base_tiles = base_tiles
+    |> Enum.flat_map(&Map.get(tile_mappings, &1, [&1]))
+    |> Enum.uniq()
     # never let :any be a base tile
-    base_tiles = Enum.reject(base_tiles, & &1 == nil || Utils.strip_attrs(&1) == :any)
+    |> Enum.reject(& &1 == nil || Utils.strip_attrs(&1) == :any)
     # if there are no offsets, always return 1m as a base tile
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
@@ -337,7 +338,7 @@ defmodule RiichiAdvanced.Match do
                     [] -> []
                     hand_calls_groups ->
                       report = if debug do
-                        line1 = "Acc (before removal):"
+                        line1 = "Acc (before removal): (base tiles #{inspect(base_tiles)})"
                         lines = for {hand, calls, remaining_groups} <- hand_calls_groups do
                           "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
                         end

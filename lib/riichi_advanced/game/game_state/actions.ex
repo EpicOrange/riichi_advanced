@@ -466,7 +466,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras)
+          Utils.count_tiles(hand, doras, state.players[context.seat].tile_aliases)
         else 0 end
       ["count_reverse_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
@@ -474,7 +474,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras)
+          Utils.count_tiles(hand, doras, state.players[context.seat].tile_aliases)
         else 0 end
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
