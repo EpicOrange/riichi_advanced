@@ -4,7 +4,7 @@ This document is a reference for all of the tiles currently supported in the til
 
 ## Standard tiles + variant white dragons
 
-![](tile_reference_1.png)
+![](tile_reference1.png)
 
 - `0m`, `1m`, `2m`, `3m`, `4m`, `5m`, `6m`, `7m`, `8m`, `9m`
 - `0p`, `1p`, `2p`, `3p`, `4p`, `5p`, `6p`, `7p`, `8p`, `9p`
@@ -13,7 +13,7 @@ This document is a reference for all of the tiles currently supported in the til
 
 ## Flowers
 
-![](tile_reference_2.png)
+![](tile_reference2.png)
 
 - `1f`, `2f`, `3f`, `4f`, `1g`, `2g`, `3g`, `4g`
 - `1k`, `2k`, `3k`, `4k`, `1q`, `2q`, `3q`, `4q`
@@ -21,14 +21,14 @@ This document is a reference for all of the tiles currently supported in the til
 
 ## Jokers
 
-![](tile_reference_3.png)
+![](tile_reference3.png)
 
 - `1j`, `2j`, `3j`, `4j`, `5j`, `6j`, `7j`, `8j`
 - `9j`, `10j`, `12j`, `13j`, `15j`, `16j`, `18j`, `19j`
 
 ## Star and Galaxy tiles
 
-![](tile_reference_4.png)
+![](tile_reference4.png)
 
 - `1t`, `2t`, `3t`, `4t`, `5t`, `6t`, `7t`, `8t`, `9t`, `10t`
 - `11m`, `12m`, `13m`, `14m`, `15m`, `16m`, `17m`, `18m`, `19m`, `110m`
@@ -39,7 +39,7 @@ This document is a reference for all of the tiles currently supported in the til
 
 ## Aka and other
 
-![](tile_reference_5.png)
+![](tile_reference5.png)
 
 - `01m`, `02m`, `03m`, `04m`, `25m`, `35m`, `06m`, `07m`, `08m`, `09m`
 - `010m`, `01p`, `02p`, `03p`, `04p`, `25p`, `35p`, `06p`, `07p`, `08p`
