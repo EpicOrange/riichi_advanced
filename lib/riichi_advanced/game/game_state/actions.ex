@@ -1369,7 +1369,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
                 state = run_actions(state, pre_actions, %{seat: seat})
                 # setup marking
-                cancellable = Map.get(state.rules["buttons"][choice], "cancellable", true)
+                cancellable = Map.get(state.rules["buttons"][choice.name], "cancellable", true)
                 state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions)
                 if Debug.debug_actions() do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
@@ -1507,7 +1507,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     |> Enum.reduce(%{}, fn m, acc -> Map.merge(m, acc, fn _k, l, r -> l ++ r end) end)
     state = for {choice, seats} <- conflicting_players, reduce: state do
       state ->
-        priority_list = state.rules["buttons"][choice]["call_priority_list"]
+        priority_list = state.rules["buttons"][choice.name]["call_priority_list"]
         winning_seat = seats
         |> Enum.sort_by(fn seat ->
           context = %{seat: seat, call_name: choice, called_tile: state.players[seat].chosen_called_tile, call_choice: state.players[seat].chosen_call_choice}
