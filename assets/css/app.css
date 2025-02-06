@@ -275,6 +275,7 @@ div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
 div.hand.marking { z-index: 10; }
 div.hand.marking.self { z-index: 11; }
+div.hand.marking:hover { z-index: 20; }
 
 /* tile attrs */
 div.tile.reversed { transform: scaleX(-100%); }
@@ -664,6 +665,7 @@ div.corner-info {
   padding-top: calc(1.5 * var(--tile-size) - 0.75em);
   box-sizing: border-box;
   user-select: none;
+  z-index: 2;
 }
 div.corner-info:hover { z-index: 5; } /* hovered corner should cover other corners */
 div.corner-info.shimocha { transform: rotate(270deg); }
