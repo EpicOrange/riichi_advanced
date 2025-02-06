@@ -56,6 +56,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
             # TODO use Enum.drop_while instead to get num
             [num] = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "draft_saki_card" do [Enum.at(opts, 0, 4)] else [] end end)
             {state, cards} = Saki.draw_saki_cards(state, num)
+            state = if Enum.empty?(cards) do
+              show_error(state, "WARNING: not enough sakicards in the deck to play sakicards!")
+            else state end
             call_choices = %{"saki" => Enum.map(cards, fn card -> [card] end)}
             {state, call_choices}
           true ->
