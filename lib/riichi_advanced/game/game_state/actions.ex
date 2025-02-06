@@ -1,5 +1,6 @@
 
 defmodule RiichiAdvanced.GameState.Actions do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
@@ -825,7 +826,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
       "sort_hand"             ->
         {hand, orig_ixs} = Enum.with_index(state.players[context.seat].hand)
-        |> Enum.sort_by(fn {tile, _ix} -> Utils.sort_value(tile) end)
+        |> Enum.sort_by(fn {tile, _ix} -> Constants.sort_value(tile) end)
         |> Enum.unzip()
         ix_map = Enum.with_index(orig_ixs) |> Map.new()
         # map marked tiles' indices

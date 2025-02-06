@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.GameLive do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
@@ -314,7 +315,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <%= if @visible_waits != nil and @show_waits_index != nil and Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
         <div class="visible-waits-container">
           <div class="visible-waits">
-            <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Utils.sort_value(wait) end) do %>
+            <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Constants.sort_value(wait) end) do %>
               <div class="visible-wait">
                 <div class="visible-wait-num"><%= num %></div>
                 <div class={Utils.get_tile_class(wait, 0)}></div>
