@@ -298,7 +298,7 @@
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "match_start", "first_charleston", "charleston_right"],
+      ["set_status_all", "match_start", "first_charleston", "charleston_right", "heavenly_available"],
       ["set_tile_alias_all", ["1j"], ["any"]]
     ]
   },
@@ -358,7 +358,7 @@
       "show_when": [{"name": "status", "opts": ["charleston_left"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
-          ["unset_status", "charleston_left"],
+          ["unset_status", "charleston_left", "heavenly_available"],
           ["merge_draw"],
           ["sort_hand"],
           ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [["draw", 3, "1x"]]]
@@ -374,7 +374,7 @@
       "display_name": "Select three tiles to pass across",
       "show_when": [{"name": "status", "opts": ["charleston_across"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"], ["merge_draw"], ["sort_hand"]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across", "heavenly_available"], ["merge_draw"], ["sort_hand"]]],
         ["charleston_across"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_left"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]],
@@ -388,7 +388,7 @@
       "show_when": [{"name": "status", "opts": ["charleston_right"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
-          ["unset_status", "charleston_right"],
+          ["unset_status", "charleston_right", "heavenly_available"],
           ["merge_draw"],
           ["sort_hand"],
           ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [["draw", 3, "1x"]]]
@@ -568,6 +568,16 @@
         ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
         ["swap_out_fly_joker", "1j"]
       ]
+    },
+    "mahjong_heavenly": {
+      "display_name": "Mah Jongg",
+      "show_when": [
+        {"name": "status", "opts": ["heavenly_available", "charleston_left"]}, "our_turn", "is_tenpai_american", {"name": "match", "opts": [["hand", "call_tiles", "draw"], ["win"]]}
+      ],
+      "actions": [
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
+      ],
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
     "mahjong_draw": {
       "display_name": "Mah Jongg",
@@ -754,6 +764,6 @@
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
   "four_rows_discards": true,
-  "dead_hand_buttons": false,
+//  "dead_hand_buttons": true,
   "max_rounds": 8
 }
