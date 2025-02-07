@@ -1,0 +1,317 @@
+{
+  // TODO: Figure out how to put "and must contain at least 8 tiles of one suit" in the win conditions.
+  // is Chow not allowed in Hefei?
+  
+  "default_mods": [],
+  "available_mods": [],
+  "display_name": "Hefei Mahjong",
+  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-hefei-mahjong",
+  "wall": ["2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s"],
+  "set_definitions": {
+    "pair": [0, 0],
+    "shuntsu": [0, 1, 2],
+    "koutsu": [0, 0, 0],
+    "quad": [0, 0, 0, 0],
+    "ryanmen/penchan": [0, 1],
+    "kanchan": [0, 2],
+    "iipeikou": [0, 0, 1, 1, 2, 2],
+    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
+  },
+  "tenpai_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 6] ]
+  ],
+  "win_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 7] ]
+  ],
+  "suuankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "suuankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  
+  "double_sequences_definition": [
+    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+  ],
+  "2_double_sequences_definition": [
+    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 2], [["pair"], 1] ]
+  ],
+  "tile_hog_definition": [
+    [ "exhaustive", [[[[0,0,0],[0,1,2]],[[0,1,2],[1,1,1]],[[0,1,2],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ "exhaustive", [[[[0,0],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[1,1]],[[0,1,2],[0,1,2],[2,2]],[[0,1,2],[1,1],[1,2,3]],[[0,1,2],[1,2,3],[2,2]],[[0,1,2],[2,2],[2,3,4]]], 1], [["shuntsu", "koutsu"], 2] ],
+    [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[0,1,2],[1,2,3]],[[0,1,2],[0,1,2],[0,1,2],[2,3,4]],[[0,1,2],[0,1,2],[1,2,3],[1,2,3]],[[0,1,2],[0,1,2],[1,2,3],[2,3,4]],[[0,1,2],[0,1,2],[2,3,4],[2,3,4]],[[0,1,2],[1,2,3],[1,2,3],[1,2,3]],[[0,1,2],[1,2,3],[1,2,3],[2,3,4]],[[0,1,2],[1,2,3],[2,3,4],[2,3,4]],[[0,1,2],[2,3,4],[2,3,4],[2,3,4]]], 1], [["pair"], 1] ]
+  ],
+  "pure_shifted_pungs_definition": [
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+  ],
+  "yaku": [
+    { "display_name": "Win", "value": 15, "when": ["win"] },
+      //figure out how to program this one
+    // { "display_name": "Suit Bonus", "value": [1 per tile above 8 in the majority suit], "when": [] },
+    { "display_name": "Single Wait", "value": 1, "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
+      // yeah i don't get this one
+    // { "display_name": "Same Number Bonus", "value": [1 per "extra" tile], "when": [] },
+      // work on this one later
+    // { "display_name": "Concealed Pung", "value": [1 per concealed pung in the hand], "when": [] },
+    { "display_name": "Double Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["double_sequences"]]}] },
+    { "display_name": "Double Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2_double_sequences"]]}] },
+    {
+      "display_name": "Two Suits Only",
+      "value": 2,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p"]},
+        {"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2s","3s","4s","5s","6s","7s","8s"]},
+        {"name": "winning_hand_consists_of", "opts": ["2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}
+      ]]
+    },
+    { "display_name": "Concealed Double Sequences", "value": 4, "when": [{"name": "match", "opts": [["hand"], ["double_sequences"]]}] },
+    { "display_name": "Concealed Kong", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
+    { "display_name": "Concealed Kongs", "value": 8, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
+    { "display_name": "Concealed Kongs", "value": 4 "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
+    { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
+    { "display_name": "Tile Hog", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] }
+  ],
+  // separating off the "Special Hands" for now because I don't know whether these override the above or not
+  "special_yaku": [
+    { "display_name": "Seven Pairs", "value": 10, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
+    { "display_name": "Luxury Seven Pairs", "value": 50, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 1], [["pair"], 5]]]]}] },
+    { "display_name": "Double Luxury Seven Pairs", "value": 100, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2], [["pair"], 3]]]]}] },
+      // question: does the sea fishing phase begin when there are four tiles left in the wall, or when someone needs to draw the fourth-to-last tile of the wall? that is, what happens when someone discards or wins off of the fifth-to-last tile?
+    { "display_name": "Sea Floor", "value": 15, "when": [{"name": "status", "opts": ["sea_floor"]}] },
+      // does Pure Suit override Suit Bonus?
+    {
+      "display_name": "Pure Suit",
+      "value": 100,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m"]},
+        {"name": "winning_hand_consists_of", "opts": ["2p","3p","4p","5p","6p","7p","8p"]},
+        {"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","5s","6s","7s","8s"]}
+      ]]
+    },
+    { "display_name": "Pure Shifted Pungs", "value": 100, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pure_shifted_pungs"]]}] },
+    {
+      "display_name": "Four Concealed Pungs",
+      "value": 100,
+      "when": [[
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
+      ]]
+    },
+    // { "display_name": "Ten Identical Tiles", "value": 100, "when": [[10 or more tiles of the same number]] },
+    { "display_name": "Double Concealed Double Sequences", "value": 100, "when": [{"name": "match", "opts": [["hand"], ["2_double_sequences"]]}] },
+      // double-check that these defs for Heavenly and Earthly are correct
+      // also remember to set/unset the discards_empty status when appropriate
+    { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] }
+  ],
+  "yaku_precedence": {
+    "Concealed Kongs": ["Concealed Kong"],
+    "Concealed Double Sequences": ["Double Sequences"],
+      // double-check if Pure Suit overrides Suit Bonus
+    "Full Flush": ["Half Flush"]
+  },
+  "score_calculation": {
+      // get the entire scoring section straight
+    "scoring_method": "score_table",
+    "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+    "discarder_multiplier": 2,
+    "non_discarder_multiplier": 0,
+    "self_draw_multiplier": 1,
+    "yaku_lists": ["yaku", "special_yaku"],
+    "agarirenchan": true,
+    "point_name": "嘴",
+    "win_by_discard_label": "Hu",
+    "win_by_draw_label": "Zimo",
+    "win_by_discard_name": "Hu",
+    "win_by_discard_name_2": "Double Hu",
+    "win_by_discard_name_3": "Triple Hu",
+    "win_by_draw_name": "Zimo",
+    "exhaustive_draw_name": "Draw"
+  },
+  "play_restrictions": [
+      // makes it impossible to discard the last four draws. passing the turn during this is done with the "No Win" button
+    [[], {"name": "status", "opts": ["sea_floor"]}]
+  ],
+  "before_turn_change": {
+    "actions": [
+      ["unset_status", "kan", "double_kan"],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+    ]
+  },
+  "after_turn_change": {
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]]
+    ]
+  },
+  "after_call": {
+    "actions": []
+  },
+  "after_start": {
+    "actions": [["set_status_all", "first_turn", "match_start"]]
+  },
+  "after_draw": {
+    "actions": [["when", {"name": "not_tiles_remaining", "opts": [4]}, ["set_status_all", "sea_floor"]]]
+  },
+  "buttons": {
+      // check if Chow is allowed in Hefei mahjong.
+    "chii": {
+      "display_name": "Chow",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
+    },
+    "pon": {
+      "display_name": "Pong",
+      "call": [[0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii"]
+    },
+    "daiminkan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [
+        ["big_text", "Kong"], ["call"], ["change_turn", "self"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ],
+      "precedence_over": ["chii", "pon"]
+    },
+    "ankan": {
+      "display_name": "Concealed Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "actions": [
+        ["big_text", "Kong"], ["self_call"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ]
+    },
+    "kakan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "upgrades": "pon",
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "actions": [
+        ["big_text", "Kong"], ["upgrade_call"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ]
+    },
+    "ron": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        "someone_else_just_discarded",
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "precedence_over": ["chii", "pon", "daiminkan"]
+    },
+      // check if chankan is allowed in Hefei mahjong
+    "chankan": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        [
+          [
+            {"name": "last_call_is", "opts": ["kakan"]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ],
+          [
+            {"name": "last_call_is", "opts": ["ankan"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ]
+        ]
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+      "precedence_over": ["chii", "pon", "daiminkan"]
+    },
+    "tsumo": {
+      "display_name": "Zimo",
+      "show_when": [
+        "our_turn",
+        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
+      ],
+      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
+    },
+    "sea_floor_no_win": {
+      "display_name": "No Win",
+      "show_when": ["our_turn", "has_draw", {"name": "status", "opts": ["sea_floor"]}],
+      "actions": [["big_text", "No Win"], ["advance_turn"]],
+      "unskippable": true
+    }
+  },
+  "auto_buttons": {
+    "1_auto_sort": {
+      "display_name": "A",
+      "desc": "Automatically sort your hand.",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    },
+    "2_auto_ron": {
+      "display_name": "R",
+      "desc": "Automatically declare wins.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
+        ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "4_auto_no_call": {
+      "display_name": "C",
+      "desc": "Skip all calls except wins.",
+      "actions": [
+        ["when", [
+            "not_our_turn",
+            {"name": "buttons_include", "opts": ["skip"]},
+            {"name": "buttons_exclude", "opts": ["ron"]}
+          ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "5_auto_discard": {
+      "display_name": "D",
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    }
+  },
+  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
+  "initial_score": 0,
+  "starting_tiles": 13,
+  "max_rounds": 16
+}
