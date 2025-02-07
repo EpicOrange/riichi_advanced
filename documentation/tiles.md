@@ -23,8 +23,11 @@ This document is a reference for all of the tiles currently supported in the til
 
 ![](tile_reference3.png)
 
-- `1j`, `2j`, `3j`, `4j`, `5j`, `6j`, `7j`, `8j`
-- `9j`, `10j`, `12j`, `13j`, `15j`, `16j`, `18j`, `19j`
+- `1j`, `0j`, `2j`, `3j`, `4j`, `5j`, `6j`, `7j`,
+- `8j`, `9j`, `10j`, `12j`, `14j`, `15j`, `17j`, `18j`,
+- `19j`, `37j`, `46j`, `147j`, `258j`, `369j`, `123j`, `456j`,
+- `789j`, `91j`, `73j`, `64j`, `852j`, `02j`, `11j`, `22j`,
+- `30j`, `31j`, `32j`, `33j`, `34j`, `2y`
 
 ## Star and Galaxy tiles
 
@@ -37,7 +40,7 @@ This document is a reference for all of the tiles currently supported in the til
 - `11t`, `12t`, `13t`, `14t`, `15t`, `16t`, `17t`, `18t`, `19t`, `110t`
 - `11z`, `12z`, `13z`, `14z`, `15z`, `16z`, `17z`, `0t`
 
-## Aka and other
+## Aka
 
 ![](tile_reference5.png)
 
@@ -46,4 +49,10 @@ This document is a reference for all of the tiles currently supported in the til
 - `09p`, `010p`, `01s`, `02s`, `03s`, `04s`, `25s`, `35s`, `06s`, `07s`
 - `08s`, `09s`, `010s`, `01t`, `02t`, `03t`, `04t`, `25t`, `35t`, `06t`
 - `07t`, `08t`, `09t`, `010t`, `01z`, `02z`, `03z`, `04z`, `00z`, `05z`
-- `06z`, `07z`, `2y`, `10m`, `10p`, `10s`, `25z`, `26z`, `27z`, `1x`
+- `06z`, `07z`
+
+## Other
+
+![](tile_reference6.png)
+
+- `10m`, `10p`, `10s`, `25z`, `26z`, `27z`, `1x`, `2x` (tile-width space), `3x` (half-width space), `4x` (zero-width space)

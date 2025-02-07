@@ -726,7 +726,7 @@ div.tile {
   --tile-width: calc(0.75 * var(--tile-size));
   --tile-height: calc(1 * var(--tile-size));
   --border-width: 0px;
-  --num-tiles: 194;
+  --num-tiles: 215;
   border: var(--border-width) solid var(--tile-back);
   width: var(--tile-width);
   height: var(--tile-height);
@@ -843,15 +843,15 @@ div.tile.\31 y { background-position-y: calc(-51 * var(--tile-size) - var(--bord
 div.tile.\32 y { background-position-y: calc(-52 * var(--tile-size) - var(--border-width)); }
 div.tile.\38 z { background-position-y: calc(-53 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 j { background-position-y: calc(-54 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 j { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 j { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 j { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 j { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 j { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 j { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 j { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 j { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 j { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 j { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 j { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 j { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 j { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 j { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 k { background-position-y: calc(-64 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 k { background-position-y: calc(-65 * var(--tile-size) - var(--border-width)); }
 div.tile.\33 k { background-position-y: calc(-66 * var(--tile-size) - var(--border-width)); }
@@ -903,14 +903,14 @@ div.tile.\31 \30 s { background-position-y: calc(-111 * var(--tile-size) - var(-
 div.tile.\32 \35 z { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 \36 z { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 \37 z { background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 j { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 j { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 j { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 j { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 j { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 j { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \30 j { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \32 j { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \33 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \34 j { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \35 j { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \36 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \37 j { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \38 j { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 t { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 t { background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 t { background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
@@ -987,6 +987,27 @@ div.tile.\30 \30 z { background-position-y: calc(-190 * var(--tile-size) - var(-
 div.tile.\30 \35 z { background-position-y: calc(-191 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 \36 z { background-position-y: calc(-192 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 \37 z { background-position-y: calc(-193 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \39 j { background-position-y: calc(-194 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \37 j { background-position-y: calc(-195 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \36 j { background-position-y: calc(-196 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \34 \37 j { background-position-y: calc(-197 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 \38 j { background-position-y: calc(-198 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \36 \39 j { background-position-y: calc(-199 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \32 \33 j { background-position-y: calc(-200 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \35 \36 j { background-position-y: calc(-201 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 \38 \39 j { background-position-y: calc(-202 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 \31 j { background-position-y: calc(-203 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 \33 j { background-position-y: calc(-204 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 \34 j { background-position-y: calc(-205 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 \35 \32 j { background-position-y: calc(-206 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \32 j { background-position-y: calc(-207 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \31 j { background-position-y: calc(-208 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \32 j { background-position-y: calc(-209 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \30 j { background-position-y: calc(-210 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \31 j { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \32 j { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \33 j { background-position-y: calc(-213 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \34 j { background-position-y: calc(-214 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
