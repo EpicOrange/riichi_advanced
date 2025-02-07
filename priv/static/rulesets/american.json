@@ -254,7 +254,7 @@
     "exhaustive_draw_name": "Draw"
   },
   "play_restrictions": [
-    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]]
+//    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]]
   ],
   "functions": {
     "blind_pass_left": [
@@ -289,11 +289,11 @@
   },
   "after_turn_change": {
     "actions": [
-      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      // if dead hand, skip your turn, otherwise, draw a tile
-      ["ite", [{"name": "status", "opts": ["dead_hand"]}], [["advance_turn"]], [
-        ["when", ["not_no_tiles_remaining"], [["draw"]]]
-      ]]
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]]
+	    // if dead hand, skip your turn, otherwise, draw a tile
+//      ["ite", [{"name": "status", "opts": ["dead_hand"]}], [["advance_turn"]], [
+//      	["when", ["not_no_tiles_remaining"], [["draw"]]]
+//      ]]
     ]
   },
   "after_start": {
@@ -603,73 +603,73 @@
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
-    },
-    "declare_dead_0_shimocha": {
-      "display_name": "Declare player on right dead",
-      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
-      "actions": [
-        ["unset_status", "declare_shimocha_dead"],
-        ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
-          ["big_text", "Dead hand", "shimocha"],
-          ["push_message", "declared a player's hand dead"],
-          ["as", "shimocha", [["set_status", "dead_hand"]]],
-          ["when", [{"name": "current_turn_is", "opts": ["shimocha"]}], [["advance_turn"]]]
-        ], [
-          ["big_text", "Not dead", "shimocha"],
-          ["big_text", "Dead hand"],
-          ["push_message", "incorrectly declared a player's hand dead"],
-          ["set_status", "dead_hand"]
-        ]]
-      ],
-      "unskippable": true
-    },
-    "declare_dead_0_toimen": {
-      "display_name": "Declare player across dead",
-      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
-      "actions": [
-        ["unset_status", "declare_toimen_dead"],
-        ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
-          ["big_text", "Dead hand", "toimen"],
-          ["push_message", "declared a player's hand dead"],
-          ["as", "toimen", [["set_status", "dead_hand"]]],
-          ["when", [{"name": "current_turn_is", "opts": ["toimen"]}], [["advance_turn"]]]
-        ], [
-          ["big_text", "Not dead", "toimen"],
-          ["big_text", "Dead hand"],
-          ["push_message", "incorrectly declared a player's hand dead"],
-          ["set_status", "dead_hand"]
-        ]]
-      ],
-      "unskippable": true
-    },
-    "declare_dead_0_kamicha": {
-      "display_name": "Declare player on left dead",
-      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
-      "actions": [
-        ["unset_status", "declare_kamicha_dead"],
-        ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
-          ["big_text", "Dead hand", "kamicha"],
-          ["push_message", "declared a player's hand dead"],
-          ["as", "kamicha", [["set_status", "dead_hand"]]],
-          ["when", [{"name": "current_turn_is", "opts": ["kamicha"]}], [["advance_turn"]]]
-        ], [
-          ["big_text", "Not dead", "kamicha"],
-          ["big_text", "Dead hand"],
-          ["push_message", "incorrectly declared a player's hand dead"],
-          ["set_status", "dead_hand"]
-        ]]
-      ],
-      "unskippable": true
-    },
-    "declare_dead_1_cancel": {
-      "display_name": "Cancel",
-      "show_when": [{"name": "not_status_missing", "opts": ["declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"]}],
-      "actions": [
-        ["push_message", "cancelled their challenge"],
-        ["unset_status", "declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"]
-      ],
-      "unskippable": true
     }
+//    "declare_dead_0_shimocha": {
+//      "display_name": "Declare player on right dead",
+//      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
+//      "actions": [
+//        ["unset_status", "declare_shimocha_dead"],
+//        ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
+//          ["big_text", "Dead hand", "shimocha"],
+//          ["push_message", "declared a player's hand dead"],
+//          ["as", "shimocha", [["set_status", "dead_hand"]]],
+//          ["when", [{"name": "current_turn_is", "opts": ["shimocha"]}], [["advance_turn"]]]
+//        ], [
+//          ["big_text", "Not dead", "shimocha"],
+//          ["big_text", "Dead hand"],
+//          ["push_message", "incorrectly declared a player's hand dead"],
+//          ["set_status", "dead_hand"]
+//        ]]
+//      ],
+//      "unskippable": true
+//    },
+//    "declare_dead_0_toimen": {
+//      "display_name": "Declare player across dead",
+//      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
+//      "actions": [
+//        ["unset_status", "declare_toimen_dead"],
+//        ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
+//          ["big_text", "Dead hand", "toimen"],
+//          ["push_message", "declared a player's hand dead"],
+//          ["as", "toimen", [["set_status", "dead_hand"]]],
+//          ["when", [{"name": "current_turn_is", "opts": ["toimen"]}], [["advance_turn"]]]
+//        ], [
+//          ["big_text", "Not dead", "toimen"],
+//          ["big_text", "Dead hand"],
+//          ["push_message", "incorrectly declared a player's hand dead"],
+//          ["set_status", "dead_hand"]
+//        ]]
+//      ],
+//      "unskippable": true
+//    },
+//    "declare_dead_0_kamicha": {
+//      "display_name": "Declare player on left dead",
+//      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
+//      "actions": [
+//        ["unset_status", "declare_kamicha_dead"],
+//        ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
+//          ["big_text", "Dead hand", "kamicha"],
+//          ["push_message", "declared a player's hand dead"],
+//          ["as", "kamicha", [["set_status", "dead_hand"]]],
+//          ["when", [{"name": "current_turn_is", "opts": ["kamicha"]}], [["advance_turn"]]]
+//        ], [
+//          ["big_text", "Not dead", "kamicha"],
+//          ["big_text", "Dead hand"],
+//          ["push_message", "incorrectly declared a player's hand dead"],
+//          ["set_status", "dead_hand"]
+//        ]]
+//      ],
+//      "unskippable": true
+//    },
+//    "declare_dead_1_cancel": {
+//      "display_name": "Cancel",
+//      "show_when": [{"name": "not_status_missing", "opts": ["declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"]}],
+//      "actions": [
+//        ["push_message", "cancelled their challenge"],
+//        ["unset_status", "declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"]
+//      ],
+//      "unskippable": true
+//    }
     // TODO messages should mention direction of player
   },
   "auto_buttons": {
@@ -754,6 +754,6 @@
   "starting_tiles": 13,
   "initial_dead_wall_length": 14,
   "four_rows_discards": true,
-  "dead_hand_buttons": true,
+  "dead_hand_buttons": false,
   "max_rounds": 8
 }
