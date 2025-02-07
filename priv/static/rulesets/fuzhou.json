@@ -28,6 +28,12 @@
   // yes yaku score: same but instead of the initial 1 point it's the yaku value, and you double the rest as if tsumo
   // all players pay this value
   // if nondealer won, dealer additionally pays 2 per repeat
+// mods/rule-variants
+  // reddit post says only red dragon is a flower, not all 3 dragons
+  // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
+  // cool new rule: if you discard gold, no one can call chii/pon/kan on it, but you can't ron for the remainder of the round
+  // mahjongpros also seem to have a few more yaku
+
 
   "default_mods": [],
   "available_mods": [],
