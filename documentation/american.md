@@ -16,6 +16,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Riichi Advanced requires you to name what kind of exposure you're calling for (Pung/Kong/Quint).
 - Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange. You may, however, perform a joker exchange with the tiles in that exposure.
 - Riichi Advanced will not require you to name your discards.
+- Discards in Riichi Advanced are arranged in order in front of each player. (It's **Riichi** Advanced, so everything is a Riichi variant.)
 - Riichi Advanced will keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass.
 - Blind passes in the Charleston are evaluated starting with East, rather than with the player with the fewest tiles to blind-pass.
 - Declaring another player's hand dead is not implemented. See the **Dead Hand** section below.
