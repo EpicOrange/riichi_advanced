@@ -1,5 +1,5 @@
 {
-    //TODO: make the dora indicator and dora a joker. add yaku, yaku precedence, and scoring. implement die rolls and reading the dice so that the dora indicator is correctly calculated.
+    //TODO: make the dora indicator and dora a joker. add yaku, yaku precedence, and scoring. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile).
   "default_mods": [],
   "available_mods": [],
   "display_name": "Tianjin Mahjong",
