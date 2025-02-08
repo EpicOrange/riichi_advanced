@@ -21,13 +21,14 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Attempting to declare another player's hand dead may only be done on your turn. This is adjudicated by the game engine immediately. If you are correct, they are immediately disqualified; if you are incorrect, you are immediately disqualified instead. See the **Dead Hand** section below for more information.
 - When a player is disqualified, all of their exposures remain exposed and available for joker exchanges (with none of them going back to their hand). This includes any exposures that "caused their hand to be dead", as well as any and all exposures that were made after this happened.
 - Blind passes in the Charleston are evaluated starting with East, rather than with the player with the fewest tiles to blind-pass.
+- There are seven buttons in the bottom left of the interface, used for automatic actions. See the **Auto-buttons in Riichi Advanced** section for more.
 - Other differences listed in the "TODOS" section below:
 
 ---
 ## TODOS:
 
 - Implement the 75-point hand on the AMJfE Card. Currently it's unimplemented because it would require us to write down 98 different hands.
-- Implement Sextets. To be done when we implement a Card that *has* a Sextet.
+- Implement Sextets. To be done when we implement a Card that has a Sextet.
 - Implement score and exposed/concealed info for each hand in "Show Nearest Hands".
 
 ---
@@ -131,19 +132,30 @@ To read the Card:
 
 - A dead hand is one which can no longer win, based on the contents of the discard pool and the exposures currently visible.
   - For instance, suppose a player has the exposed kongs 2222 Bams and 8888 Craks. They can only win with 2468 #7; their hand needs two more 4 Dots, two more 6 Dots, and two more flowers. If either three of the required 4 Dots, three of the required 6 Dots, or seven of the required flowers are visible in discards or in other player's exposures, their hand is dead.
-- On a player's turn, they may declare any opponent's hand to be dead.
-  - If they are correct, that opponent is disqualified. The player with the current turn then continues their turn, which may include performing a joker exchange, and/or declaring another opponent's hand dead.
-  - If they are incorrect, they are disqualified instead. They immediately end their turn without discarding, and play passes to the next non-disqualified player.
+- On a player's turn, they may declare any opponent's hand to be dead. (In Riichi Advanced, this is done by pressing the "💀❓" button next to that player's exposures.)
+  - If the declarer is correct, that opponent is disqualified. The player with the current turn then continues their turn, which may include performing a joker exchange, and/or declaring another opponent's hand dead.
+  - If the declarer is incorrect, the declarer is disqualified instead. They immediately end their turn without discarding, and play passes to the next non-disqualified player.
   - Disqualified players may no longer draw, discard, call tiles for exposure, perform joker exchanges, declare another player's hand dead, or declare Mah-Jongg. Their turns are fully skipped.
   - All exposures of a disqualified player remain on the table. Players may still perform joker exchanges with all jokers in such exposures, even if those exposures "caused the hand to become dead".
   - Players may not declare their own hand dead.
 - If three players are disqualified, the game ends, with nobody paying anyone.
 
-> ### NOTE: If you're an American Mah-Jongg player, the rules for dead hands in Riichi Advanced are different from the rules you may be used to. We couldn't find a clear and comprehensive description for how most players rule on dead hands, that also covered the many edge cases we could think of (*MJME* was no help). We also couldn't find agreement among experts on some of our edge cases. So, we feel that our own rules here are a suitable compromise that allows players to declare other players' hands dead, while being simple enough to implement, and understandable enough that everyone will rule the same way on a situation.
+> ### NOTE: If you're an American Mah-Jongg player, the rules for dead hands in Riichi Advanced are different from the rules you may be used to. We couldn't find a clear and comprehensive description for how most players rule on dead hands, that also covered the many edge cases we could think of (*MJME* was insufficient). We also couldn't find agreement among experts on some of our edge cases. So, we feel that our own rules here are the best compromise we can reasonably implement.
 
 ## Another Game
 
 - Dealership always passes to the next player, regardless of whether the current dealer wins, and regardless of how many players were disqualified.
+
+## Auto-buttons in Riichi Advanced
+
+- In the lower left of the interface, there are seven buttons. These automatically do certain things for you, and they work as follows:
+  - A: Auto Sort. This automatically sorts your hand by suit, then by increasing rank, with winds, dragons, jokers, and flowers on the right. This is enabled at the start of every hand by default. Should you wish to manually rearrange your hand by dragging tiles around, turn this off.
+  - M: Auto Mah Jongg. This automatically declares Mah Jongg for you if it's possible.
+  - C: Skip Calls. This skips all calls, except for Mah Jongg.
+  - JC: Skip Joker Calls. Like Skip Calls, but this skips all calls that use only your jokers; i.e. that do not match a natural already in your hand. Useful for if you have two or more jokers in your hand and don't want to keep clicking "Cancel" on every discard.
+  - DC: Skip Deadening Calls. Like Skip Calls, but this skips all calls that would result in your hand becoming dead. Enabled by default.
+  - D: Auto Discard. Discards the tile you draw, unless you have the ability to swap a joker or declare Mah Jongg.
+  - DD: Auto Discard Different. Like Auto Discard, but it only discards tiles that you don't already have in your hand.
 
 ---
 ## Mod list
