@@ -616,6 +616,7 @@
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
     }
+	  // TODO: Change push messages to mention player's names instead of just saying the player directions.
     "declare_dead_0_shimocha": {
       "display_name": "Declare hand on right dead",
       "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}, "our_turn"],
@@ -632,7 +633,7 @@
           ["push_message", "incorrectly declared player on left's hand dead"],
           ["push_message", "is now disqualified"],
           ["set_status", "dead_hand"],
-					["advance_turn"]
+          ["advance_turn"]
         ]]
       ],
       "unskippable": true
@@ -653,7 +654,7 @@
           ["push_message", "incorrectly declared opposite player's hand dead"],
           ["push_message", "is now disqualified"],
           ["set_status", "dead_hand"],
-					["advance_turn"]
+          ["advance_turn"]
         ]]
       ],
       "unskippable": true
@@ -674,7 +675,7 @@
           ["push_message", "incorrectly declared player on left's hand dead"],
           ["push_message", "is now disqualified"],
           ["set_status", "dead_hand"],
-					["advance_turn"]
+          ["advance_turn"]
         ]]
       ],
       "unskippable": true
