@@ -140,7 +140,7 @@ To read the Card:
   - Players may not declare their own hand dead.
 - If three players are disqualified, the game ends, with nobody paying anyone.
 
-> ### NOTE: If you're an American Mah-Jongg player, the rules for dead hands in Riichi Advanced are different from the rules you may be used to. We couldn't find a clear and comprehensive description for how most players rule on dead hands, that also covered the many edge cases we could think of (*MJME* was insufficient). We also couldn't find agreement among experts on some of our edge cases. So, we feel that our own rules here are the best compromise we can reasonably implement.
+> #### NOTE: If you play American Mah-Jongg, the rules for dead hands in Riichi Advanced are different from the rules you may be used to. We couldn't find a clear description for how most players rule on dead hands, that also covered the many edge cases we could think of (*MJME* was insufficient). We also couldn't find agreement among experts on some of our edge cases. So, we feel that our own rules here, which avoids all of the finicky rules situations we could think of, are the best compromise we can reasonably implement.
 
 ## Another Game
 
