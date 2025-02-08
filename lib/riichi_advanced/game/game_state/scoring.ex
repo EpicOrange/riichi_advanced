@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.Riichi, as: Riichi
@@ -152,7 +153,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
 
-    IO.puts("Joker assignments (seat_scores_points): #{inspect(joker_assignments)}")
+    if Debug.print_wins() do
+      IO.puts("Joker assignments (seat_scores_points): #{inspect(joker_assignments)}")
+    end
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
@@ -936,7 +939,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         res
       else [%{}] end
     end
-    IO.puts("Joker assignments (calculate_winner_details): #{inspect(joker_assignments)}")
+    if Debug.print_wins() do
+      IO.puts("Joker assignments (calculate_winner_details): #{inspect(joker_assignments)}")
+    end
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
 
     # check if we're dealer
@@ -972,7 +977,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
-        IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].cache.winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+        if Debug.print_wins() do
+          IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].cache.winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+        end
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
         new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end
@@ -980,7 +987,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # score yaku
         yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
         {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
-        IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
+        if Debug.print_wins() do
+          IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
+        end
         {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
       end)
     end
