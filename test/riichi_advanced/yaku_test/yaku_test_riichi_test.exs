@@ -4,6 +4,44 @@ defmodule RiichiAdvanced.YakuTest.Riichi do
 
   # TODO local yaku lol
 
+  test "riichi advanced" do
+    config = """
+    {
+      "starting_hand": {
+        "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"],
+        "south": [],
+        "west": [],
+        "north": []
+      },
+      "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+    }
+    """
+    # TODO compile something shorter into event stream
+    events = [
+      %{
+        "index" => 0,
+        "type" => "draw",
+        "tile" => "1z",
+        "player" => 0,
+        "kan_draw" => false
+      },
+      %{
+        "index" => 1,
+        "type" => "buttons_pressed",
+        "buttons" => [%{"button" => "tsumo"}, nil, nil, nil],
+        "player" => 0
+      }
+    ]
+    TestUtils.test_yaku_advanced("riichi", [], config, events, %{
+      east: %{
+        yaku: [],
+        yaku2: [{"Tenhou", 1}, {"Kokushi Musou Juusan Menmachi", 2}],
+        minipoints: 30
+      }
+    })
+  end
+
+
   test "riichi standard yaku" do
     # tanyao nomi
     TestUtils.test_yaku("riichi", [], %{

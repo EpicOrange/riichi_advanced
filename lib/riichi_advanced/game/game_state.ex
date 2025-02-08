@@ -400,14 +400,14 @@ defmodule RiichiAdvanced.GameState do
             if seat != nil do Map.put(hands, seat, starting_hand) else hands end
         end
       else hands end
+      wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
       # "starting_draws" debug key
       wall = if Map.has_key?(state.rules, "starting_draws") do
-        initial_ix = starting_tiles*4
         replacements = state.rules["starting_draws"]
         |> Enum.map(&Utils.to_tile/1)
         |> Enum.with_index()
         for {tile, i} <- replacements, reduce: wall do
-          wall -> List.replace_at(wall, initial_ix + i, tile)
+          wall -> List.replace_at(wall, wall_index + i, tile)
         end
       else wall end
 
@@ -422,6 +422,8 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
+      |> Map.put(:wall_index, wall_index)
+      |> Map.put(:dead_wall_index, 0)
       |> Map.put(:revealed_tiles, revealed_tiles)
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
@@ -458,6 +460,7 @@ defmodule RiichiAdvanced.GameState do
           ++ Map.get(hands, :north, [])
           ++ kyoku_log["wall"]
       |> Enum.map(&Utils.to_tile/1)
+      wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
 
       # reconstruct dead wall
       dead_wall = Enum.zip(kyoku_log["uras"], kyoku_log["doras"])
@@ -475,6 +478,8 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
+      |> Map.put(:wall_index, wall_index)
+      |> Map.put(:dead_wall_index, 0)
       |> Map.put(:reserved_tiles, reserved_tiles)
       |> Map.put(:revealed_tiles, revealed_tiles)
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
@@ -504,8 +509,6 @@ defmodule RiichiAdvanced.GameState do
       {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
     state = state
-    |> Map.put(:wall_index, Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum())
-    |> Map.put(:dead_wall_index, 0)
     |> update_all_players(&%Player{
          score: scores[&1],
          start_score: scores[&1],

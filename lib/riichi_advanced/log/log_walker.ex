@@ -8,7 +8,7 @@ defmodule RiichiAdvanced.LogWalker do
     defstruct [
       # params
       ruleset: nil,
-      session_id: nil,
+      room_code: nil,
       # pids
       supervisor: nil,
       game_state_pid: nil,
@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.LogWalker do
     GenServer.start_link(
       __MODULE__,
       %{
-        session_id: Keyword.get(init_data, :session_id),
+        room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset),
       },
       name: Keyword.get(init_data, :name))
@@ -33,14 +33,14 @@ defmodule RiichiAdvanced.LogWalker do
     IO.puts("Log walker PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log", state.ruleset, state.session_id))
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.session_id <> "_walker"))
+    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log", state.ruleset, state.room_code))
+    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code <> "_walker"))
     GenServer.call(game_state, {:put_log_loading_mode, true})
     GenServer.call(game_state, {:put_log_seeking_mode, true})
 
     state = Map.merge(state, %LogWalker{
       ruleset: state.ruleset,
-      session_id: state.session_id,
+      room_code: state.room_code,
       supervisor: supervisor,
       game_state_pid: game_state,
     })

@@ -5,11 +5,14 @@ defmodule RiichiAdvanced.LogControlState do
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
+  # TODO turn this into a protocol
+  # since LogWalker state implements this too
+  # also yaku tests mock one of these states
   defmodule LogControl do
     defstruct [
       # params
       ruleset: nil,
-      session_id: nil,
+      room_code: nil,
       # pids
       supervisor: nil,
       game_state_pid: nil,
@@ -26,7 +29,7 @@ defmodule RiichiAdvanced.LogControlState do
     GenServer.start_link(
       __MODULE__,
       %{
-        session_id: Keyword.get(init_data, :session_id),
+        room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset),
       },
       name: Keyword.get(init_data, :name))
@@ -36,13 +39,13 @@ defmodule RiichiAdvanced.LogControlState do
     IO.puts("Log control state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.session_id))
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.session_id))
-    [{log_walker, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_walker", state.ruleset, state.session_id))
+    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code))
+    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code))
+    [{log_walker, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_walker", state.ruleset, state.room_code))
 
     state = Map.merge(state, %LogControl{
       ruleset: state.ruleset,
-      session_id: state.session_id,
+      room_code: state.room_code,
       supervisor: supervisor,
       game_state_pid: game_state,
       log_walker_pid: log_walker,
@@ -164,6 +167,8 @@ defmodule RiichiAdvanced.LogControlState do
     GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
     state
   end
+
+  # this is stupid, we should just have a :send_event that checks the passed-in event["type"]
 
   def handle_call({:send_discard, skip_anim, discard_event}, _from, state) do
     state = send_discard(state, skip_anim, discard_event)

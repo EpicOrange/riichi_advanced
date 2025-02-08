@@ -181,17 +181,19 @@ defmodule RiichiAdvanced.GameState.Buttons do
   end
 
   def press_call_button(state, seat, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil) do
-    button_name = state.players[seat].choice.name
-    if Map.has_key?(state.players[seat].button_choices, button_name) do
-      # IO.puts("#{seat} pressed call button for button #{button_name}")
-      state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
-      actions = state.rules["buttons"][button_name]["actions"]
-      state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
-      state = broadcast_state_change(state)
-      state
-    else
-      IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")
-      state
+    if state.players[seat].choice != nil do
+      button_name = state.players[seat].choice.name
+      if Map.has_key?(state.players[seat].button_choices, button_name) do
+        # IO.puts("#{seat} pressed call button for button #{button_name}")
+        state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
+        actions = state.rules["buttons"][button_name]["actions"]
+        state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
+        state = broadcast_state_change(state)
+        state
+      else
+        IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")
+        state
+      end
     end
   end
 
