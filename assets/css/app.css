@@ -276,6 +276,42 @@ div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
 div.hand.marking { z-index: 10; }
 div.hand.marking.self { z-index: 11; }
 div.hand.marking:hover { z-index: 20; }
+/* dead hand buttons */
+div.calls > div.dead-hand-button {
+  border-radius: 50%;
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  background: var(--tile-back);
+  opacity: 0.5;
+  font-weight: 800;
+  margin-left: calc(0.25 * var(--tile-size));
+}
+div.calls > div.dead-hand-button::before {
+  content: "☠";
+  font-size: calc(0.8 * var(--tile-size));
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  color: var(--tile-front);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateX(calc(-0.1 * var(--tile-size)));
+}
+div.calls > div.dead-hand-button::after {
+  content: "?";
+  font-size: calc(0.5 * var(--tile-size));
+  width: calc(0.5 * var(--tile-size));
+  height: calc(0.5 * var(--tile-size));
+  color: var(--tile-front);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(calc(0.5 * var(--tile-size)), calc(-0.9 * var(--tile-size)));
+}
+div.calls > div.dead-hand-button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
 
 /* tile attrs */
 div.tile.reversed { transform: scaleX(-100%); }
@@ -686,22 +722,6 @@ div.corner-info > div.round-marker {
 }
 div.corner-info > div.saki-cards {
   display: flex;
-}
-div.corner-info > div.dead-hand-button {
-  position: absolute;
-  border-radius: 50%;
-  font-size: calc(0.8 * var(--tile-size));
-  width: calc(1 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
-  background: var(--tile-back);
-  color: var(--tile-front);
-  opacity: 0.5;
-  bottom: 0;
-  left: calc(50% - 0.5 * var(--tile-size));
-}
-div.corner-info > div.dead-hand-button:hover {
-  cursor: pointer;
-  opacity: 1;
 }
 @keyframes aiThinking {
   25% { content: "."; }

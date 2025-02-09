@@ -124,6 +124,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         call_choice={@hovered_call_choice}
         playable_indices={@playable_indices}
         preplayed_index={@preplayed_index}
+        dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         play_tile={&send(self(), {:play_tile, &1})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
@@ -152,7 +153,6 @@ defmodule RiichiAdvancedWeb.GameLive do
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
-        dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
         ai_thinking={@state.players[seat].ai_thinking}
         :for={{seat, player} <- @state.players} />
