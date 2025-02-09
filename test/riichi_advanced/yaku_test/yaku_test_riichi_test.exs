@@ -16,21 +16,9 @@ defmodule RiichiAdvanced.YakuTest.Riichi do
       "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
     }
     """
-    # TODO compile something shorter into event stream
     events = [
-      %{
-        "index" => 0,
-        "type" => "draw",
-        "tile" => "1z",
-        "player" => 0,
-        "kan_draw" => false
-      },
-      %{
-        "index" => 1,
-        "type" => "buttons_pressed",
-        "buttons" => [%{"button" => "tsumo"}, nil, nil, nil],
-        "player" => 0
-      }
+      %{"type" => "draw", "tile" => "1z", "player" => 0},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ]
     TestUtils.test_yaku_advanced("riichi", [], config, events, %{
       east: %{

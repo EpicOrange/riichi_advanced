@@ -57,17 +57,23 @@ defmodule RiichiAdvanced.TestUtils do
     assert fu == Map.get(test_spec, :expected_minipoints, fu)
   end
 
+  def verify_events(events) do
+    for {event, i} <- Enum.with_index(events) do
+      Map.put(event, "index", i)
+    end
+  end
+
   def test_yaku_advanced(ruleset, mods, config, events, expected_winners) do
     test_state = initialize_test_state(ruleset, mods, config)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
-    
-    test_state = for event <- events, reduce: test_state do
+
+    test_state = for event <- verify_events(events), reduce: test_state do
       test_state -> case event["type"] do
-          "discard"         -> LogControl.send_discard(test_state, true, event)
-          "buttons_pressed" -> LogControl.send_button_press(test_state, true, event)
-          "mark"            -> LogControl.send_mark(test_state, true, event)
-          _                 -> test_state
-        end
+        "discard"         -> LogControl.send_discard(test_state, true, event)
+        "buttons_pressed" -> LogControl.send_button_press(test_state, true, event)
+        "mark"            -> LogControl.send_mark(test_state, true, event)
+        _                 -> test_state
+      end
     end
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
