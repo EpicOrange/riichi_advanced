@@ -863,10 +863,10 @@
     "Five Mixed Small Shifted Triplets": ["Four Mixed Small Shifted Triplets"],
     "Small Triple Triplets": ["Double Triplets"],
     "Triple Triplets": ["Double Triplets"],
-    "Quadruple Triplets": ["Triple Triplets"],
+    "Quadruple Triplets": ["Triple Triplets", "Double Triplets"],
     "Triple Sequences": ["Double Sequences"],
-    "Pure Triple Sequence": ["Triple Sequences"],
-    "Pure Quadruple Sequence": ["Pure Triple Sequence"],
+    "Pure Triple Sequence": ["Triple Sequences", "Double Sequences"],
+    "Pure Quadruple Sequence": ["Pure Triple Sequence", "Triple Sequences", "Double Sequences"],
     "Double Short Straight": ["Short Straight"],
     "Pure Double Short Straight": ["Short Straight", "Double Short Straight"],
     "Double Identical Sequences": [
