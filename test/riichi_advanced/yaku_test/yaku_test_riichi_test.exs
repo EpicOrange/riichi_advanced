@@ -4,52 +4,84 @@ defmodule RiichiAdvanced.YakuTest.Riichi do
 
   # TODO local yaku lol
 
-  test "riichi advanced" do
-    config = """
+  test "riichi - tanyao nomi" do
+    TestUtils.test_yaku_advanced("riichi", [], """
     {
       "starting_hand": {
-        "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"],
-        "south": [],
-        "west": [],
-        "north": []
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+      "starting_draws": ["1z", "6p"]
     }
-    """
-    events = [
-      %{"type" => "draw", "tile" => "1z", "player" => 0},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
-    ]
-    TestUtils.test_yaku_advanced("riichi", [], config, events, %{
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Tenhou", 1}, {"Kokushi Musou Juusan Menmachi", 2}],
+        yaku: [{"Tanyao", 1}],
+        yaku2: [],
+        minipoints: 40
+      }
+    })
+  end
+  
+  test "riichi - open tanyao sanshoku" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "2s", "3s", "4s", "2p", "3p", "4p", "7m", "5m", "5m", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "5m", "7m"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Tanyao", 1}, {"Sanshoku", 1}],
+        yaku2: [],
         minipoints: 30
       }
     })
   end
 
+  test "riichi - non-pinfu closed tsumo sanshoku" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "2s", "3s", "4s", "2p", "3p", "4p", "7m", "7m", "8m", "9m"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "1z", "1z", "1z", "7m"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Tsumo", 1}, {"Sanshoku", 2}],
+        yaku2: [],
+        minipoints: 30
+      }
+    })
+  end
 
-  test "riichi standard yaku" do
-    # tanyao nomi
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p"],
-      winning_tile: :"6p",
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [{"Tanyao", 1}],
-      expected_minipoints: 40,
-    })
-    # open tanyao sanshoku
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"2m", :"3m", :"4m", :"2s", :"3s", :"4s", :"2p", :"3p", :"4p", :"7m"],
-      calls: [{"pon", [:"5m", :"5m", :"5m"]}],
-      winning_tile: :"7m",
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [{"Tanyao", 1}, {"Sanshoku", 1}],
-      expected_minipoints: 30,
-    })
+  test "riichi standard yaku old" do
     # non-pinfu closed tsumo sanshoku
     TestUtils.test_yaku("riichi", [], %{
       hand: [:"2m", :"3m", :"4m", :"2s", :"3s", :"4s", :"2p", :"3p", :"4p", :"7m", :"7m", :"8m", :"9m"],
