@@ -1,6 +1,10 @@
 {
-  // TODO: Figure out how to put "and must contain at least 8 tiles of one suit" in the win conditions.
-  // is Chow not allowed in Hefei?
+  // TODOs: 
+  // how is Same Number Bonus defined?
+  // does Pure Suit override Suit Bonus?
+  // check if Chow and chankan are allowed in Hefei mahjong
+  // check what the payouts per player on ron/tsumo are
+  // 
   
   "default_mods": [],
   "available_mods": [],
@@ -37,14 +41,62 @@
     "iipeikou": [0, 0, 1, 1, 2, 2],
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
-  "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 6] ]
+  "tenpai_definition": [ //or
+    [ //and
+      [ //or
+        [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+        [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+        [ [["pair"], 6] ]
+      ],
+      [ //or
+        [["2m", "3m", "4m", "5m", "6m", "7m"], 7],
+        [["2p", "3p", "4p", "5p", "6p", "7p"], 7],
+        [["2s", "3s", "4s", "5s", "6s", "7s"], 7]
+      ]
+    ]
   ],
-  "win_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 7] ]
+  "win_definition": [ //or
+    [ //and
+      [ //or
+        [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+        [ [["pair"], 7] ]
+      ],
+      [ //or
+        [["2m", "3m", "4m", "5m", "6m", "7m"], 8],
+        [["2p", "3p", "4p", "5p", "6p", "7p"], 8],
+        [["2s", "3s", "4s", "5s", "6s", "7s"], 8]
+      ]
+    ]
+  ],
+  "iiankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -4], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "iiankou_ron_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 1], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 3], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -4], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "ryanankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "ryanankou_ron_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "sanankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "sanankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
   ],
   "suuankou_tsumo_definition": [
     [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
@@ -69,13 +121,42 @@
   ],
   "yaku": [
     { "display_name": "Win", "value": 15, "when": ["win"] },
-      //figure out how to program this one
-    // { "display_name": "Suit Bonus", "value": [1 per tile above 8 in the majority suit], "when": [] },
+    { "display_name": "Suit Bonus", "value": "suit_bonus", "when": [{"name": "counter_at_least", "opts": ["suit_bonus", 1]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
       // yeah i don't get this one
     // { "display_name": "Same Number Bonus", "value": [1 per "extra" tile], "when": [] },
-      // work on this one later
-    // { "display_name": "Concealed Pung", "value": [1 per concealed pung in the hand], "when": [] },
+    {
+      "display_name": "Concealed Pung",
+      "value": 1,
+      "when": [[
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["iiankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["iiankou_ron"]]}]
+      ]]
+    },
+    {
+      "display_name": "Concealed Pungs",
+      "value": 2,
+      "when": [[
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_ron"]]}]
+      ]]
+    },
+    {
+      "display_name": "Concealed Pungs",
+      "value": 1,
+      "when": [[
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_ron"]]}]
+      ]]
+    },
+    {
+      "display_name": "Concealed Pungs",
+      "value": 1,
+      "when": [[
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
+      ]]
+    },
     { "display_name": "Double Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["double_sequences"]]}] },
     { "display_name": "Double Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["2_double_sequences"]]}] },
     {
@@ -90,16 +171,16 @@
     { "display_name": "Concealed Double Sequences", "value": 4, "when": [{"name": "match", "opts": [["hand"], ["double_sequences"]]}] },
     { "display_name": "Concealed Kong", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
     { "display_name": "Concealed Kongs", "value": 8, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
-    { "display_name": "Concealed Kongs", "value": 4 "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
+    { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
     { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
     { "display_name": "Tile Hog", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] }
   ],
-  // separating off the "Special Hands" for now because I don't know whether these override the above or not
+    // separating off the "Special Hands" for now because I don't know whether these override the above or not
+    // looks like they don't
   "special_yaku": [
     { "display_name": "Seven Pairs", "value": 10, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
     { "display_name": "Luxury Seven Pairs", "value": 50, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 1], [["pair"], 5]]]]}] },
     { "display_name": "Double Luxury Seven Pairs", "value": 100, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2], [["pair"], 3]]]]}] },
-      // question: does the sea fishing phase begin when there are four tiles left in the wall, or when someone needs to draw the fourth-to-last tile of the wall? that is, what happens when someone discards or wins off of the fifth-to-last tile?
     { "display_name": "Sea Floor", "value": 15, "when": [{"name": "status", "opts": ["sea_floor"]}] },
       // does Pure Suit override Suit Bonus?
     {
@@ -122,21 +203,22 @@
     },
     // { "display_name": "Ten Identical Tiles", "value": 100, "when": [[10 or more tiles of the same number]] },
     { "display_name": "Double Concealed Double Sequences", "value": 100, "when": [{"name": "match", "opts": [["hand"], ["2_double_sequences"]]}] },
-      // double-check that these defs for Heavenly and Earthly are correct
-      // also remember to set/unset the discards_empty status when appropriate
-    { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "status", "opts": ["discards_empty"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+      // double-check that this def for Earthly is correct
+    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   "yaku_precedence": {
     "Concealed Kongs": ["Concealed Kong"],
+    "Concealed Pungs": ["Concealed Pung"],
     "Concealed Double Sequences": ["Double Sequences"],
       // double-check if Pure Suit overrides Suit Bonus
     "Full Flush": ["Half Flush"]
   },
   "score_calculation": {
       // get the entire scoring section straight
-    "scoring_method": "score_table",
-    "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+    "scoring_method": "multiplier",
+    "score_multiplier": 20,
+      // check payouts-per-player in Hefei
     "discarder_multiplier": 2,
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
@@ -157,44 +239,64 @@
   ],
   "before_turn_change": {
     "actions": [
-      ["unset_status", "kan", "double_kan"],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+      ["unset_status", "kan", "double_kan", "first_turn"]
     ]
   },
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]]
+      ["when", ["not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "after_call": {
     "actions": []
   },
   "after_start": {
-    "actions": [["set_status_all", "first_turn", "match_start"]]
+    "actions": [["set_status_all", "first_turn"]]
   },
   "after_draw": {
+      // question: does the sea fishing phase begin when there are four tiles left in the wall, or when someone needs to draw the fourth-to-last tile of the wall? that is, what happens when someone discards or wins off of the fifth-to-last tile? at the moment i have it that the sea-fishing phase begins when the fourth-to-last tile is drawn.
     "actions": [["when", {"name": "not_tiles_remaining", "opts": [4]}, ["set_status_all", "sea_floor"]]]
   },
+  "before_win": {
+    "actions": [
+      ["set_counter", "manzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2m", "3m", "4m", "5m", "6m", "7m"]],
+      ["set_counter", "pinzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2p", "3p", "4p", "5p", "6p", "7p"]],
+      ["set_counter", "souzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2s", "3s", "4s", "5s", "6s", "7s"]],
+      ["when", {"name": "counter_at_least", "opts": ["manzu_count", 8]}, [
+          ["set_counter", "suit_bonus", "manzu_count"]
+        ]
+      ],
+      ["when", {"name": "counter_at_least", "opts": ["pinzu_count", 8]}, [
+          ["set_counter", "suit_bonus", "pinzu_count"]
+        ]
+      ],
+      ["when", {"name": "counter_at_least", "opts": ["souzu_count", 8]}, [
+          ["set_counter", "suit_bonus", "souzu_count"]
+        ]
+      ],
+      ["subtract_counter", "suit_bonus", 8]
+    ]
+  },
   "buttons": {
-      // check if Chow is allowed in Hefei mahjong.
-    "chii": {
-      "display_name": "Chow",
-      "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
-      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
-    },
+      //TODO: check if Chow is allowed in Hefei mahjong.
+//    "chii": {
+//      "display_name": "Chow",
+//      "call": [[-2, -1], [-1, 1], [1, 2]],
+//      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+//      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
+//    },
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -206,7 +308,7 @@
     "ankan": {
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -218,7 +320,7 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -237,7 +339,7 @@
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
     },
-      // check if chankan is allowed in Hefei mahjong
+      //TODO: check if chankan is allowed in Hefei mahjong
     "chankan": {
       "display_name": "Hu",
       "show_when": [
@@ -262,7 +364,6 @@
       "display_name": "Zimo",
       "show_when": [
         "our_turn",
-        {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
