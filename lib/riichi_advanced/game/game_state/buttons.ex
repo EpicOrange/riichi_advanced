@@ -194,7 +194,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
         IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")
         state
       end
-    end
+    else state end
   end
 
   # returns true if no button choices remain
