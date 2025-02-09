@@ -19,7 +19,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Discards in Riichi Advanced are arranged in order in front of each player. (It's **Riichi** Advanced, so everything is a Riichi variant.)
 - Riichi Advanced will keep the Window of Opportunity for calling a discard open until each player who can call it decides whether to call it or pass.
 - Attempting to declare another player's hand dead may only be done on your turn. This is adjudicated by the game engine immediately. If you are correct, they are immediately disqualified; if you are incorrect, you are immediately disqualified instead. See the **Dead Hand** section below for more information.
-- When a player is disqualified, all of their exposures remain exposed and available for joker exchanges (with none of them going back to their hand). This includes any exposures that "caused their hand to be dead", as well as any and all exposures that were made after this happened.
+- When a player is disqualified, all of their exposures remain exposed and available for joker exchanges (with none of them going back to their hand). This includes any exposures that "caused their hand to be dead", as well as any and all exposures that were made after this happened, and even if that player was playing a concealed hand. Again, see the **Dead Hand** section below for more information.
 - Blind passes in the Charleston are evaluated starting with East, rather than with the player with the fewest tiles to blind-pass.
 - There are seven buttons in the bottom left of the interface, used for automatic actions. See the **Auto-buttons in Riichi Advanced** section for more.
 - Other differences listed in the "TODOS" section below:
@@ -89,9 +89,9 @@ The following Cards are supported by Riichi Advanced:
 
 - [NMJL 2024](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
-- [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
-- [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
+- [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
+- [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 
 [TODO: implement the 75-point hand on the AMJfE Card.]
 
@@ -140,7 +140,7 @@ To read the Card:
   - Players may not declare their own hand dead.
 - If three players are disqualified, the game ends, with nobody paying anyone.
 
-> #### NOTE: If you play American Mah-Jongg, the rules for dead hands in Riichi Advanced are different from the rules you may be used to. We couldn't find a clear description for how most players rule on dead hands, that also covered the many edge cases we could think of (*MJME* was insufficient). We also couldn't find agreement among experts on some of our edge cases. So, we feel that our own rules here, which avoids all of the finicky rules situations we could think of, are the best compromise we can reasonably implement.
+> #### NOTE: If you play American Mah-Jongg, the rules for dead hands in Riichi Advanced are different from the rules you may be used to. We couldn't find a clear description for how most players rule on dead hands, that also covered the many edge cases we could think of (*MJME* was insufficient). We also couldn't find agreement among experts on how some of these edge cases should be ruled. So, we decided to come up with our own ruleset, which avoids all of the Awful Rules Scenarios™ we came up with, while still allowing players to call other players' hands dead. We think this is the best compromise we can currently reasonably implement.
 
 ## Another Game
 
