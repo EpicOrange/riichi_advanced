@@ -864,8 +864,10 @@ defmodule RiichiAdvanced.GameState do
   def from_named_tile(state, tile_name) do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
-        ix = Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end)
-        Enum.at(state.dead_wall, -ix-1)
+        case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
+          nil -> Map.get(state.tags, tile_name, nil) # check tags
+          ix  -> Enum.at(state.dead_wall, -ix-1)
+        end
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
       is_integer(tile_name) -> Enum.at(state.dead_wall, tile_name)
       is_atom(tile_name) -> tile_name
