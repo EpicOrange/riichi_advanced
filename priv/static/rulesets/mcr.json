@@ -584,7 +584,7 @@
     "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
     "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
     "All Honors": ["All Terminals and Honors", "Half Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
-    "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
+    "Four Concealed Pungs": ["Three Concealed Pungs", "Two Concealed Pungs", "All Pungs", "Concealed Hand"],
     "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
     // 48
     "Quadruple Chow": ["Pure Triple Chow", "Pure Double Chow", "Tile Hog"],
