@@ -41,8 +41,8 @@
            "0z", "0z", "0z", "0z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z",
-           "12j", "13j", "14j", "15j",
-           "16j", "17j", "18j", "19j"],
+           "10j", "12j", "3j", "14j",
+           "15j", "16j", "17j", "18j"],
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
@@ -117,19 +117,19 @@
     [ "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 1] ]
   ],
   "joker_tanki_tenpai_definition": [
-    [ "exhaustive", [["12j", "13j"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ [["12j", "13j"], 1], [["pair"], 6] ],
-    [ "unique", [["12j", "13j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j"], 1], [["13j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
-    [ "unique", [["12j", "13j"], 1], [["1m","4m","7m","1p","4p","7p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["2m","5m","8m","2p","5p","8p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["12j", "13j"], 1], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ]
+    [ "exhaustive", [["10j", "12j"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["10j", "12j"], 1], [["pair"], 6] ],
+    [ "unique", [["10j", "12j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j"], 1], [["12j"], 1], [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
+    [ "unique", [["10j", "12j"], 1], [["1m","4m","7m","1p","4p","7p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["2m","5m","8m","2p","5p","8p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
+    [ "unique", [["10j", "12j"], 1], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
@@ -157,7 +157,7 @@
     [ [["pair"], 1], "restart", [["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 1], [["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1], [["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1], [["1z","2z","3z","4z"], 1], [["0z","6z","7z"], 1], "restart", "unique", [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 13], [["3m","6m","9m","3p","6p","9p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 1] ]
   ],
   "any_joker_definition": [
-    [ "nojoker", [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1] ]
+    [ "nojoker", [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1] ]
   ],
   "十三不搭_definition": [
     [ [["pair"], 1], "restart", "unique", [["1m","4m","7m","1p","4p","7p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
@@ -995,14 +995,14 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "discards_empty"],
-      ["set_tile_alias_all", ["12j"], ["any"]],
-      ["set_tile_alias_all", ["13j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["14j"], ["1z","2z","3z","4z","0z","6z","7z"]],
-      ["set_tile_alias_all", ["15j"], ["0z","6z","7z"]],
-      ["set_tile_alias_all", ["16j"], ["1z","2z","3z","4z"]],
-      ["set_tile_alias_all", ["17j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
-      ["set_tile_alias_all", ["18j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["19j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
+      ["set_tile_alias_all", ["10j"], ["any"]],
+      ["set_tile_alias_all", ["12j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+      ["set_tile_alias_all", ["3j"], ["1z","2z","3z","4z","0z","6z","7z"]],
+      ["set_tile_alias_all", ["14j"], ["0z","6z","7z"]],
+      ["set_tile_alias_all", ["15j"], ["1z","2z","3z","4z"]],
+      ["set_tile_alias_all", ["16j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
+      ["set_tile_alias_all", ["17j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+      ["set_tile_alias_all", ["18j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
     ]
   },
   "buttons": {
@@ -1012,7 +1012,7 @@
       "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Sheung"], ["call"], ["change_turn", "self"]],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+        {"name": "not_call_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1]}
       ]
     },
     "pon": {
@@ -1022,12 +1022,12 @@
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"],
       "call_priority_list": [
-        [{"name": "not_call_choice_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["13j", "14j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["12j"], 1]}]
+        [{"name": "not_call_choice_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1]}],
+        [{"name": "call_choice_contains", "opts": [["14j", "15j", "16j", "17j", "18j"], 1]}],
+        [{"name": "call_choice_contains", "opts": [["12j", "3j"], 1]}],
+        [{"name": "call_choice_contains", "opts": [["10j"], 1]}]
       ],
-      "call_conditions": [{"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}]
+      "call_conditions": [{"name": "not_call_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 2]}]
     },
     "daiminkan": {
       "display_name": "Kong",
@@ -1040,12 +1040,12 @@
       ],
       "precedence_over": ["chii", "pon"],
       "call_priority_list": [
-        [{"name": "not_call_choice_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["15j", "16j", "17j", "18j", "19j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["13j", "14j"], 1]}],
-        [{"name": "call_choice_contains", "opts": [["12j"], 1]}]
+        [{"name": "not_call_choice_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1]}],
+        [{"name": "call_choice_contains", "opts": [["14j", "15j", "16j", "17j", "18j"], 1]}],
+        [{"name": "call_choice_contains", "opts": [["12j", "3j"], 1]}],
+        [{"name": "call_choice_contains", "opts": [["10j"], 1]}]
       ],
-      "call_conditions": [{"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 2]}]
+      "call_conditions": [{"name": "not_call_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 2]}]
     },
     "ankan": {
       "display_name": "Self Kong",
@@ -1059,7 +1059,7 @@
         ["draw", 1, "opposite_end"]
       ],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+        {"name": "not_call_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1]}
       ]
     },
     "kakan": {
@@ -1073,7 +1073,7 @@
         ["draw", 1, "opposite_end"]
       ],
       "call_conditions": [
-        {"name": "not_called_tile_contains", "opts": [["12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], 1]}
+        {"name": "not_called_tile_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1]}
       ]
     },
     "ron": {
@@ -1146,7 +1146,7 @@
     "joker": {
       "display_name": "Flower",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "won"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_joker"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "12j", "13j", "14j", "15j", "16j", "17j", "18j", "19j"], ["set_status", "joker"], ["draw", 1, "opposite_end"]]
+      "actions": [["big_text", "Flower"], ["flower", "10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], ["set_status", "joker"], ["draw", 1, "opposite_end"]]
     }
   },
   "auto_buttons": {

@@ -246,14 +246,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score = score * if is_dealer do dealer_multiplier else 1 end |> Utils.try_integer()
     score = score + if is_self_draw do self_draw_bonus else 0 end
 
-    # apply tsumo loss
+    # apply tsumo loss (sanma only)
     tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
-    score = if is_self_draw and tsumo_loss do
-      # assumes 3-player
-      han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-      {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
-      if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
-    else score end
+    score = cond do
+      length(state.available_seats) != 3 -> score
+      (is_self_draw and tsumo_loss == true) or tsumo_loss == "ron_loss" ->
+        han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+        {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
+        if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
+      tsumo_loss == "add_1000" -> score + 2000
+      tsumo_loss == "double_collection" -> score * 2
+      true -> score
+    end
 
     max_score = Map.get(score_rules, "max_score", :infinity)
     score = min(score, max_score)
@@ -381,9 +385,32 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # for riichi, reverse-calculate the ko and oya parts of the total points
         split_oya_ko_payment = Map.get(score_rules, "split_oya_ko_payment", false)
         num_players = length(state.available_seats)
+        # calculate ko and oya payment from basic_score
+        # (if dealer tsumo, oya payment is unused)
         {ko_payment, oya_payment} = if split_oya_ko_payment and num_players >= 3 do
           han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-          Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
+          tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
+          {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
+          cond do
+            num_players == 4 or tsumo_loss in [true, "ron_loss"] -> {ko_payment, oya_payment}
+            tsumo_loss == "add_1000" ->
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score - 2000, is_dealer, 4, han_fu_rounding_factor)
+              {1000 + ko_payment, 1000 + oya_payment}
+            tsumo_loss == "unequal_split" -> {ko_payment, oya_payment}
+            tsumo_loss == "north_to_oya" and not is_dealer ->
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, 4, han_fu_rounding_factor)
+              {ko_payment, oya_payment + ko_payment}
+            tsumo_loss in [false, "north_split", "north_to_oya"] ->
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, 4, han_fu_rounding_factor)
+              half_ko_payment = Utils.try_integer(ko_payment / 2)
+              {ko_payment + half_ko_payment, oya_payment + half_ko_payment}
+            tsumo_loss in ["equal_split", "double_collection"] ->
+              payment = Utils.try_integer(basic_score / 2)
+              {payment, payment}
+            true ->
+              IO.puts("Invalid tsumo_loss value (defaults to true): #{inspect(tsumo_loss)}")
+              {ko_payment, oya_payment}
+          end
         else
           self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
           self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)

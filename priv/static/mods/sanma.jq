@@ -10,6 +10,8 @@ def replace($from; $to):
 |
 .initial_score = 35000
 |
+.max_rounds = 6
+|
 .default_mods -= ["suufon_renda", "suucha_riichi"]
 |
 # add no tsumo loss mod to the list

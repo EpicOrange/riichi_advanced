@@ -2,29 +2,13 @@ defmodule RiichiAdvanced.YakuTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.TestUtils, as: TestUtils
   alias RiichiAdvanced.Utils, as: Utils
 
   # TODO dozens of yaku tests, including local yaku...
 
-  def initialize_game_state(ruleset, mods) do
-    room_code = Ecto.UUID.generate()
-    config = nil
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
-    {:ok, _pid} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, room_code))
-
-    # suppress all IO from game_state
-    {:ok, io} = StringIO.open("")
-    Process.group_leader(game_state, io)
-
-    # activate game
-    GenServer.cast(game_state, {:initialize_game, nil})
-
-    GenServer.call(game_state, :get_state)
-  end
-
   def test_yaku(ruleset, mods, test_spec) do
-    state = initialize_game_state(ruleset, mods)
+    state = TestUtils.initialize_game_state(ruleset, mods)
     yaku_list_names = Map.get(test_spec, :yaku_lists, Conditions.get_yaku_lists(state))
 
     seat = Map.get(test_spec, :seat, :east)
