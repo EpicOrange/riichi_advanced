@@ -851,7 +851,7 @@
     "Three Kongs": ["Two Kongs"],
     "Four Kongs": ["Three Kongs"],
     "Three Concealed Triplets": ["Two Concealed Triplets"],
-    "Four Concealed Triplets": ["Three Concealed Triplets"],
+    "Four Concealed Triplets": ["Three Concealed Triplets", "Two Concelaed Triplets"],
     "Three Small Shifted Triplets": ["Two Shifted Triplets"],
     "Three Pure Shifted Triplets": ["Two Shifted Triplets"],
     "Four Pure Small Shifted Triplets": ["Three Small Shifted Triplets"],
