@@ -410,6 +410,16 @@ defmodule RiichiAdvanced.GameState do
           wall -> List.replace_at(wall, wall_index + i, tile)
         end
       else wall end
+      # "starting_dead_wall" debug key
+      wall = if Map.has_key?(state.rules, "starting_dead_wall") do
+        replacements = state.rules["starting_dead_wall"]
+        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.with_index()
+        |> Enum.reverse()
+        for {tile, i} <- replacements, reduce: wall do
+          wall -> List.replace_at(wall, -i-1, tile)
+        end
+      else wall end
 
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
       {wall, dead_wall} = if dead_wall_length > 0 do
@@ -427,6 +437,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:revealed_tiles, revealed_tiles)
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+      |> Map.put(:kyoku, Map.get(state.rules, "starting_round", 0))
 
       # reserve some tiles in the dead wall
       reserved_tiles = Map.get(rules, "reserved_tiles", [])
