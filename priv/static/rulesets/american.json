@@ -255,7 +255,7 @@
     "exhaustive_draw_name": "Draw"
   },
   "play_restrictions": [
-    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]]
+    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]],
     [["any"], [{"name": "status", "opts": ["dead_hand"]}]]
   ],
   "functions": {
@@ -291,7 +291,7 @@
   },
   "after_turn_change": {
     "actions": [
-      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]]
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
 	    // if dead hand, skip your turn, otherwise, draw a tile
       ["ite", [{"name": "status", "opts": ["dead_hand"]}], [["advance_turn"]], [
       	["when", ["not_no_tiles_remaining"], [["draw"]]]
@@ -615,7 +615,7 @@
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
-    }
+    },
 	  // TODO: Change push messages to mention player's names instead of just saying the player directions.
     "declare_dead_0_shimocha": {
       "display_name": "Declare hand on right dead",
@@ -634,7 +634,8 @@
           ["push_message", "is now disqualified"],
           ["set_status", "dead_hand"],
           ["advance_turn"]
-        ]]
+        ]],
+	["when", [{"name": "toimen_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], ["abortive_draw", "three_dead_hands"]]
       ],
       "unskippable": true
     },
@@ -655,7 +656,8 @@
           ["push_message", "is now disqualified"],
           ["set_status", "dead_hand"],
           ["advance_turn"]
-        ]]
+        ]],
+	["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], ["abortive_draw", "three_dead_hands"]]
       ],
       "unskippable": true
     },
@@ -676,7 +678,8 @@
           ["push_message", "is now disqualified"],
           ["set_status", "dead_hand"],
           ["advance_turn"]
-        ]]
+        ]],
+	["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "toimen_status", "opts": ["dead_hand"]}], ["abortive_draw", "three_dead_hands"]]
       ],
       "unskippable": true
     },
