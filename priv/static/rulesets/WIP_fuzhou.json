@@ -3,7 +3,7 @@
   
 // here's Fuzhou mahjong i guess
   //✅ 144 tiles (riichi + 8 flowers)
-  //✅ winds and chun are also flowers. so 28 flowers...
+  //✅ winds and dragons are also flowers. so 28 flowers...
   //✅ like hkos, declare flowers at the start before playing
   //✅ like taiwanese, 16 tile hands, 5 sets and a pair
   //✅ dead wall is 16 tiles. reveal the 8th tile from the dead wall, that's the "gold" tile.
@@ -38,7 +38,7 @@
   "default_mods": [],
   "available_mods": [],
   "display_name": "Fuzhou",
-  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-fuzhou-mahjong?_pos=1&_psq=Fuzhou&_ss=e&_v=1.0",
+  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-fuzhou-mahjong",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -75,6 +75,14 @@
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
            "1g", "2g", "3g", "4g"],
+    //bodge: use dora_indicators to indicate the gold tile
+  "dora_indicators": {
+    "1m": ["1m"],  "2m": ["2m"],  "3m": ["3m"],  "4m": ["4m"],  "5m": ["5m"],  "6m": ["6m"],  "7m": ["7m"],  "8m": ["8m"],  "9m": ["9m"],  "0m": ["5m"],
+    "1p": ["1p"],  "2p": ["2p"],  "3p": ["3p"],  "4p": ["4p"],  "5p": ["5p"],  "6p": ["6p"],  "7p": ["7p"],  "8p": ["8p"],  "9p": ["9p"],  "0p": ["5p"],
+    "1s": ["1s"],  "2s": ["2s"],  "3s": ["3s"],  "4s": ["4s"],  "5s": ["5s"],  "6s": ["6s"],  "7s": ["7s"],  "8s": ["8s"],  "9s": ["9s"],  "0s": ["5s"],
+      // what happens if the gold tile flipped over is a flower or honour?
+    "1z": ["1z"],  "2z": ["2z"],  "3z": ["3z"],  "4z": ["4z"],  "5z": ["5z"],  "6z": ["6z"],  "7z": ["7z"], "1f": ["1f", "2f", "3f", "4f"], "2f": ["1f", "2f", "3f", "4f"], "3f": ["1f", "2f", "3f", "4f"], "4f": ["1f", "2f", "3f", "4f"], "1g": ["1g", "2g", "3g", "4g"], "2g": ["1g", "2g", "3g", "4g"], "3g": ["1g", "2g", "3g", "4g"], "4g": ["1g", "2g", "3g", "4g"]
+  },
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
@@ -430,11 +438,11 @@
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "status_missing", "opts": ["flower"]}, {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "7z"], 1] ]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "status_missing", "opts": ["flower"]}, {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "5z", "6z", "7z"], 1] ]]]}],
       "actions": [
         ["big_text", "Flower"],
         ["set_status", "flower"],
-        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "7z"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "5z", "6z", "7z"],
         ["draw", 1, "opposite_end"],
         ["shift_tile_to_dead_wall", 1],
         ["unset_status", "flower"]
@@ -443,7 +451,7 @@
     },
     "start_no_flower": {
       "display_name": "No flowers",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "status_missing", "opts": ["flower"]}, {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "7z"], 1] ]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "status_missing", "opts": ["flower"]}, {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "5z", "6z", "7z"], 1] ]]]}],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"]],
       "unskippable": true
     },
@@ -566,11 +574,11 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start", "flower"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "7z"], 1]]]]}],
+      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start", "flower"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "5z", "6z", "7z"], 1]]]]}],
       "actions": [
         ["big_text", "Flower"],
         ["set_status", "flower"],
-        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "7z"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "5z", "6z", "7z"],
         ["when", ["not_no_tiles_remaining"], [
             ["draw", 1, "opposite_end"],
             ["shift_tile_to_dead_wall", 1]
