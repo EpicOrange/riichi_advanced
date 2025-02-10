@@ -105,7 +105,7 @@ defmodule RiichiAdvanced.ModLoader do
   }
 
   defp read_ruleset_json(ruleset) do
-    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset <> ".json"}")) do
+    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      -> "{}"
     end

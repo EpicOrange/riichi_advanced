@@ -173,6 +173,7 @@ defmodule RiichiAdvanced.GameState do
       tags: %{},
       log_state: %{},
       call_stack: [], # call stack limit is 10 for now
+      forced_event: nil, # for tutorials
 
       # working game state (reset on new round)
       # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
@@ -1445,26 +1446,38 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast({:force_event, event}, state) do
+    IO.puts("Forcing event #{inspect(event)}")
+    {:noreply, Map.put(state, :forced_event, event)}
+  end
+
   def handle_cast({:play_tile, seat, index}, state) do
-    tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
-    can_discard = Actions.can_discard(state, seat)
-    playable = is_playable?(state, seat, tile)
-    if not can_discard or not playable do
-      IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
-    end
-    state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
-      state = Actions.temp_disable_play_tile(state, seat)
-      # assume we're skipping our button choices
-      state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
-      actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
-      state = Actions.submit_actions(state, seat, "play_tile", actions)
-      state
-    else state end
-    {:noreply, state}
+    if state.forced_event in [nil, ["play_tile", Atom.to_string(seat), index]] do
+      tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
+      can_discard = Actions.can_discard(state, seat)
+      playable = is_playable?(state, seat, tile)
+      if not can_discard or not playable do
+        IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
+      end
+      state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
+        state = Actions.temp_disable_play_tile(state, seat)
+        # assume we're skipping our button choices
+        state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
+        actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
+        state = Actions.submit_actions(state, seat, "play_tile", actions)
+        state
+      else state end
+      |> Map.put(:forced_event, nil)
+      {:noreply, state}
+    else {:noreply, state} end
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
-    {:noreply, Buttons.press_button(state, seat, button_name)}
+    if state.forced_event in [nil, ["press_button", Atom.to_string(seat), button_name]] do
+      state = Buttons.press_button(state, seat, button_name)
+      |> Map.put(:forced_event, nil)
+      {:noreply, state}
+    else {:noreply, state} end
   end
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do

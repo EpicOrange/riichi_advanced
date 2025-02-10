@@ -37,6 +37,8 @@ defmodule RiichiAdvancedWeb.Router do
       live "/lobby/:ruleset", LobbyLive
       live "/room/:ruleset/:room_code", RoomLive
       live "/game/:ruleset/:room_code", GameLive
+      # live "/tutorial/:ruleset", TutorialMenuLive
+      live "/tutorial/:ruleset/:sequence", GameLive
       live "/log", LogMenuLive
       live "/log/:id", LogLive
       live "/about", AboutLive
@@ -49,22 +51,22 @@ defmodule RiichiAdvancedWeb.Router do
   #   pipe_through :api
   # end
 
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:riichi_advanced, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
+  # # Enable LiveDashboard and Swoosh mailbox preview in development
+  # if Application.compile_env(:riichi_advanced, :dev_routes) do
+  #   # If you want to use the LiveDashboard in production, you should put
+  #   # it behind authentication and allow only admins to access it.
+  #   # If your application does not have an admins-only section yet,
+  #   # you can use Plug.BasicAuth to set up some basic authentication
+  #   # as long as you are also using SSL (which you should anyway).
+  #   import Phoenix.LiveDashboard.Router
 
-    scope "/dev" do
-      pipe_through :browser
+  #   scope "/dev" do
+  #     pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: RiichiAdvancedWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-  end
+  #     live_dashboard "/dashboard", metrics: RiichiAdvancedWeb.Telemetry
+  #     forward "/mailbox", Plug.Swoosh.MailboxPreview
+  #   end
+  # end
   
   def generate_room_code(conn, _opts) do
     put_session(conn, :room_code, get_session(conn, :room_code) || Ecto.UUID.generate())
