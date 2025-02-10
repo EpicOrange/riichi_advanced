@@ -339,8 +339,9 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :players, Map.new(state.available_seats, fn seat -> {seat, %Player{}} end))
     state = Log.init_log(state)
 
+    state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
+    
     initial_score = Map.get(rules, "initial_score", 0)
-
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
 
     state = if not Enum.empty?(Debug.debug_am_match_definitions()) do
@@ -466,7 +467,6 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:revealed_tiles, revealed_tiles)
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
-      |> Map.put(:kyoku, Map.get(state.rules, "starting_round", 0))
 
       # reserve some tiles in the dead wall
       reserved_tiles = Map.get(rules, "reserved_tiles", [])

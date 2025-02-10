@@ -691,7 +691,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           true                        -> winner.payer # if there are multiple first winners, the payer becomes the next dealer instead
         end
         Utils.get_relative_seat(dealer_seat, new_dealer_seat)
-      agarirenchan and Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku, state.available_seats)) -> :self
+      agarirenchan and Riichi.get_east_player_seat(state.kyoku, state.available_seats) in state.winner_seats -> :self
       true -> :shimocha
     end
 

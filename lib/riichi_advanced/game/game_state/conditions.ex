@@ -376,7 +376,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, cxt_player.tile_behavior, []), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
-            call = {context.call_name, call_tiles}
+            call = {context.choice.name, call_tiles}
             waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, state.all_tiles, cxt_player.tile_behavior)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
@@ -391,7 +391,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         draw = cxt_player.draw
         calls = cxt_player.calls
         call_tiles = [context.choice.chosen_called_tile | context.choice.chosen_call_choice]
-        call = {context.call_name, call_tiles}
+        call = {context.choice.name, call_tiles}
         waits_before = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, cxt_player.tile_behavior, true)
         [call_removed | _] = Match.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
         waits_after = Riichi.get_waits(call_removed, calls ++ [call], win_definitions, state.all_tiles, cxt_player.tile_behavior, true)
