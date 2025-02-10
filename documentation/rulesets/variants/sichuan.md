@@ -1,6 +1,6 @@
 # Sichuan Bloody Rules (SBR)
 
-This ruleset assumes that you have read [base.md](documentation/base.md).
+This ruleset assumes that you have read [base.md](/documentation/base.md).
 
 The wall for SBR consists of the 1-9 character tiles, 1-9 circle tiles, and 1-9 bamboo tiles. Winds, dragons, flowers, and seasons are not used in this variant.
 

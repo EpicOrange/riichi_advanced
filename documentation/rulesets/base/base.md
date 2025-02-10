@@ -8,17 +8,17 @@ Note that our rulesets are specific to Riichi Advanced, and do not contain compl
 
 Mahjong is a four-player game played with 34 different kinds of tiles:
 
-- numbered 1-9 __character__ tiles ![](tiles/1m.svg)![](tiles/2m.svg)![](tiles/3m.svg)![](tiles/4m.svg)![](tiles/5m.svg)![](tiles/6m.svg)![](tiles/7m.svg)![](tiles/8m.svg)![](tiles/9m.svg) (aka __manzu__ or __craks__),
-- numbered 1-9 __circle__ tiles ![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg) (aka __pinzu__ or __dots__),
-- numbered 1-9 __bamboo__ tiles ![](tiles/1s.svg)![](tiles/2s.svg)![](tiles/3s.svg)![](tiles/4s.svg)![](tiles/5s.svg)![](tiles/6s.svg)![](tiles/7s.svg)![](tiles/8s.svg)![](tiles/9s.svg) (aka __souzu__ or __bams__),
-- four wind tiles ![](tiles/1z.svg)![](tiles/2z.svg)![](tiles/3z.svg)![](tiles/4z.svg) (east, south, west, north),
-- and three dragon tiles ![](tiles/5z.svg)![](tiles/6z.svg)![](tiles/7z.svg) (white dragon, green dragon, red dragon).
+- numbered 1-9 __character__ tiles ![](/documentation/tiles//1m.svg)![](/documentation/tiles//2m.svg)![](/documentation/tiles//3m.svg)![](/documentation/tiles//4m.svg)![](/documentation/tiles//5m.svg)![](/documentation/tiles//6m.svg)![](/documentation/tiles//7m.svg)![](/documentation/tiles//8m.svg)![](/documentation/tiles//9m.svg) (aka __manzu__ or __craks__),
+- numbered 1-9 __circle__ tiles ![](/documentation/tiles//1p.svg)![](/documentation/tiles//2p.svg)![](/documentation/tiles//3p.svg)![](/documentation/tiles//4p.svg)![](/documentation/tiles//5p.svg)![](/documentation/tiles//6p.svg)![](/documentation/tiles//7p.svg)![](/documentation/tiles//8p.svg)![](/documentation/tiles//9p.svg) (aka __pinzu__ or __dots__),
+- numbered 1-9 __bamboo__ tiles ![](/documentation/tiles//1s.svg)![](/documentation/tiles//2s.svg)![](/documentation/tiles//3s.svg)![](/documentation/tiles//4s.svg)![](/documentation/tiles//5s.svg)![](/documentation/tiles//6s.svg)![](/documentation/tiles//7s.svg)![](/documentation/tiles//8s.svg)![](/documentation/tiles//9s.svg) (aka __souzu__ or __bams__),
+- four wind tiles ![](/documentation/tiles//1z.svg)![](/documentation/tiles//2z.svg)![](/documentation/tiles//3z.svg)![](/documentation/tiles//4z.svg) (east, south, west, north),
+- and three dragon tiles ![](/documentation/tiles//5z.svg)![](/documentation/tiles//6z.svg)![](/documentation/tiles//7z.svg) (white dragon, green dragon, red dragon).
 
 Winds and dragons are collectively termed "__honors__". 1s and 9s are collectively termed "__terminals__".
 
-There are four copies of each tile, giving a total of 136 tiles in the __wall__. Riichi Advanced mods may add or subtract from this tileset, but this is the default tileset. In the game messages, manzu are notated 1m to 9m, pinzu 1p to 9p, souzu 1s to 9s, wind tiles 1z to 4z, and dragons 5z to 7z, in the order indicated above. (Most mahjong variants use the variant white dragon ![](tiles/0z.svg), which is notated 0z.)
+There are four copies of each tile, giving a total of 136 tiles in the __wall__. Riichi Advanced mods may add or subtract from this tileset, but this is the default tileset. In the game messages, manzu are notated 1m to 9m, pinzu 1p to 9p, souzu 1s to 9s, wind tiles 1z to 4z, and dragons 5z to 7z, in the order indicated above. (Most mahjong variants use the variant white dragon ![](/documentation/tiles//0z.svg), which is notated 0z.)
 
-The goal of mahjong is to maximize your points. To earn points, you must be the first in each round to complete a 14-tile hand. A hand is generally defined as four sets and a pair. A __set__ is either a 3-tile sequence in the same numbered suit, like ![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg), or a triplet of the same tile, like ![](tiles/2z.svg)![](tiles/2z.svg)![](tiles/2z.svg). Your starting hand of 13 tiles might not contain any ready-made sets, so you must progress your hand by drawing a tile each turn, and then discarding a tile if you have not completed a hand. You do not declare your sets when they are made; they remain hidden in your hand.
+The goal of mahjong is to maximize your points. To earn points, you must be the first in each round to complete a 14-tile hand. A hand is generally defined as four sets and a pair. A __set__ is either a 3-tile sequence in the same numbered suit, like ![](/documentation/tiles//1p.svg)![](/documentation/tiles//2p.svg)![](/documentation/tiles//3p.svg), or a triplet of the same tile, like ![](/documentation/tiles//2z.svg)![](/documentation/tiles//2z.svg)![](/documentation/tiles//2z.svg). Your starting hand of 13 tiles might not contain any ready-made sets, so you must progress your hand by drawing a tile each turn, and then discarding a tile if you have not completed a hand. You do not declare your sets when they are made; they remain hidden in your hand.
 
 The game starts with everyone being dealt 13 tiles from the wall. The East player (also known as the __dealer__) is dealt a 14th tile to start the game. Play starts from the dealer's first discard and continues counterclockwise, with each player drawing and discarding a tile.
 
@@ -42,8 +42,8 @@ As discussed previously, you may call kong on a discarded tile if you have three
 There are three ways to kong, and they all involve forming quads:
 
 - __Open Kong / Daiminkan__: This is calling a discard with a triplet of the same tile in hand, as discussed previously. After calling an open kong, you draw a replacement tile, and then discard to end your turn.
-- __Added Kong / Shouminkan / Kakan__: If you called pung on e.g. ![](tiles/6z.svg)![](tiles/6z.svg)![](tiles/6z.svg) and later draw a ![](tiles/6z.svg), you may call kong during your turn to add your drawn ![](tiles/6z.svg) to the existing pung. Like with an open kong, you draw a replacement tile, and then discard to end your turn.
-- __Closed Kong / Ankan__: If at any point during your turn you have four of the same tile in hand, such as ![](tiles/5p.svg)![](tiles/5p.svg)![](tiles/5p.svg)![](tiles/5p.svg), you may call kong to set those aside (in some variants, they are set aside face-up, and in others, face-down). A closed kong importantly __does not open your hand__. Like with an open kong, you draw a replacement tile, and then discard to end your turn.
+- __Added Kong / Shouminkan / Kakan__: If you called pung on e.g. ![](/documentation/tiles//6z.svg)![](/documentation/tiles//6z.svg)![](/documentation/tiles//6z.svg) and later draw a ![](/documentation/tiles//6z.svg), you may call kong during your turn to add your drawn ![](/documentation/tiles//6z.svg) to the existing pung. Like with an open kong, you draw a replacement tile, and then discard to end your turn.
+- __Closed Kong / Ankan__: If at any point during your turn you have four of the same tile in hand, such as ![](/documentation/tiles//5p.svg)![](/documentation/tiles//5p.svg)![](/documentation/tiles//5p.svg)![](/documentation/tiles//5p.svg), you may call kong to set those aside (in some variants, they are set aside face-up, and in others, face-down). A closed kong importantly __does not open your hand__. Like with an open kong, you draw a replacement tile, and then discard to end your turn.
 
 If the tile added to make an Added Kong can complete another player's hand, that player may call Hu on that tile, interruping the formation of the Added Kong. This is called "Robbing a Kong".
 
@@ -59,8 +59,8 @@ The round wind starts off as East. After dealership has passed four times, the r
 
 Some variants include the following tiles:
 
-- Flowers: ![](tiles/1f.svg)![](tiles/2f.svg)![](tiles/3f.svg)![](tiles/4f.svg)
-- Seasons: ![](tiles/1g.svg)![](tiles/2g.svg)![](tiles/3g.svg)![](tiles/4g.svg)
+- Flowers: ![](/documentation/tiles//1f.svg)![](/documentation/tiles//2f.svg)![](/documentation/tiles//3f.svg)![](/documentation/tiles//4f.svg)
+- Seasons: ![](/documentation/tiles//1g.svg)![](/documentation/tiles//2g.svg)![](/documentation/tiles//3g.svg)![](/documentation/tiles//4g.svg)
 
 In such variants, the following usually happens:
 

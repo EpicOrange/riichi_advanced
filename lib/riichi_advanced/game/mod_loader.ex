@@ -48,7 +48,7 @@ defmodule RiichiAdvanced.ModLoader do
   @modpacks %{
     "sanma" => %{
       display_name: "Sanma",
-      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/rulesets/riichiVarients/sanma.md",
       ruleset: "riichi",
       mods: ["sanma"],
       default_mods: [],
@@ -76,14 +76,14 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "galaxy" => %{
       display_name: "Galaxy Mahjong",
-      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/rulesets/riichiVarients/galaxy.md",
       ruleset: "riichi",
       mods: [],
       default_mods: ["galaxy"],
     },
     "chinitsu" => %{
       display_name: "Chinitsu Challenge",
-      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/rulesets/riichiVarients/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: ["chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
@@ -97,7 +97,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "kansai" => %{
       display_name: "Kansai Sanma",
-      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/ruleset/riichiVarients/kansai.md",
       ruleset: "riichi",
       mods: ["sanma", "dora", "aka", "nagashi", "kansai"],
       default_mods: ["tobi"],

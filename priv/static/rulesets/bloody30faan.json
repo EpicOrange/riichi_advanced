@@ -6,7 +6,7 @@
     {"id": "b30fj_zh", "name": "Chinese Yaku Names", "desc": "Display yaku names in Traditional Chinese."}
   ],
   "display_name": "Bloody 30 Faan Jokers",
-  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/bloody30faan.md",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/rulesets/variants/bloody30faan.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
