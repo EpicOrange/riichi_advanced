@@ -1,32 +1,5 @@
-{// ningbo mahjong
-
-//✅ riichi tiles + 8 flowers
-//✅ 16 rounds
-//✅ 14 tile dead wall
-//✅ same joker rules as tianjin (flip a dora indicator but it's actually a joker indicator, and the indicator is also a joker, so 7 jokers).
-//✅ a flower indicator indicates all flower tiles as jokers
-// joker is called baida
-//✅ can use baida to call and to win
-//✅ declare flowers before play. must declare drawn flowers later; can't hold onto them or discard them.
-//✅ ankan is concealed -- no one can see it until the end of the round
-
-// win con
-
-//✅ 4 sets and a pair
-//✅ 4 tai minimum
-
-// Some updates here:
-//✅ -Chows/Chis are not allowed
-//✅ -Updated scoring formula: Total Payout = Tai/Points x Multipliers for Special Situations (Rinshan or Pao)
-//✅ -Updated all scoring hands, tenhou 8->10, chihou 10, all 8 flowers 10, tsuuiisou 4->10
-//✅ -Rinshin Additional x2, Chankan x5,
-//✅ -No dealer bonus
-//✅ -Tai to Points 1 to 1
-//✅ -Non-discarders do not pay for Ron
-//⚠️ Real tiles have precedence over Baida (Wild Tiles).
-
-  
-    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated. Check precedence for baida tiles. Check what happens if baida indicator is flower/honour. implement "Baida Reuse" yaku
+{ 
+    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement "Baida Reuse" yaku. implement closed-kong-of-baida exception.
   "default_mods": [],
   "available_mods": [],
   "display_name": "Ningbo mahjong",
@@ -71,8 +44,7 @@
     "1m": ["1m", "2m"],  "2m": ["2m", "3m"],  "3m": ["3m", "4m"],  "4m": ["4m", "5m"],  "5m": ["5m", "6m"],  "6m": ["6m", "7m"],  "7m": ["7m", "8m"],  "8m": ["8m", "9m"],  "9m": ["9m", "1m"],  "0m": ["5m", "6m"],
     "1p": ["1p", "2p"],  "2p": ["2p", "3p"],  "3p": ["3p", "4p"],  "4p": ["4p", "5p"],  "5p": ["5p", "6p"],  "6p": ["6p", "7p"],  "7p": ["7p", "8p"],  "8p": ["8p", "9p"],  "9p": ["9p", "1p"],  "0p": ["5p", "6p"],
     "1s": ["1s", "2s"],  "2s": ["2s", "3s"],  "3s": ["3s", "4s"],  "4s": ["4s", "5s"],  "5s": ["5s", "6s"],  "6s": ["6s", "7s"],  "7s": ["7s", "8s"],  "8s": ["8s", "9s"],  "9s": ["9s", "1s"],  "0s": ["5s", "6s"],
-      // what happens if the Baida indicator is an honour?
-    // "1z": ["1z"],  "2z": ["2z"],  "3z": ["3z"],  "4z": ["4z"],  "0z": ["0z"],  "6z": ["6z"],  "7z": ["7z"],
+    "1z": ["1z", "2z"],  "2z": ["2z", "3z"],  "3z": ["3z", "4z"],  "4z": ["4z", "1z"],  "0z": ["0z", "6z"],  "6z": ["6z", "7z"],  "7z": ["7z", "0z"],
     "1f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "2f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "3f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "4f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "1g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "2g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "3g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
   },
   "set_definitions": {
@@ -134,7 +106,6 @@
     { "display_name": "Edge Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["edge_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Closed Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-      //to clarify: what exactly does "Wild Tile/Baida Win" mean? i'm going to assume for now it means that the winning tile is a baida
     { "display_name": "Win On Baida", "value": 1, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] },
     { "display_name": "No Baida", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [["joker"], 1]]}] },
     {
@@ -196,8 +167,8 @@
     { "display_name": "Three Meld Penalty", "value": 5, "when": [{"name": "status", "opts": ["three_meld_penalty"]}] }
   ],
   "yaku_precedence": {
+      // should probably go over the yaku precedence again at some point
     "Full Flush": ["Half Flush"],
-      //check that this one is the case
     "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
   },
   "score_calculation": {
@@ -272,11 +243,13 @@
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
       "unskippable": true
     },
-      //TODO: daiminkan and pon appear to be resolved by # of jokers?
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["pon", "daiminkan"],
       "call_priority_list": [
@@ -289,6 +262,9 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -308,6 +284,10 @@
       "call_style": {"self": [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]},
       "call_hidden": true,
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+          // TODO: implement exception for closed-kong-ing the jokers
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -320,6 +300,9 @@
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
