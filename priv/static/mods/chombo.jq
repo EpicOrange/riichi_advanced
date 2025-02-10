@@ -10,11 +10,17 @@ def make_chombo_button($text; $win_action; $winning_tile; $yaku_check; $yaku2_ch
 def disable_when_dead:
   .show_when = [{"name": "status_missing", "opts": ["dead_hand"]}] + .show_when;
 
-.buttons.ron |= make_chombo_button("Ron"; "win_by_discard"; "last_discard"; "has_yaku_with_discard"; "has_yaku2_with_discard"; ["not_our_turn", "someone_else_just_discarded"])
+if (.buttons | has("ron")) then
+  .buttons.ron |= make_chombo_button("Ron"; "win_by_discard"; "last_discard"; "has_yaku_with_discard"; "has_yaku2_with_discard"; ["not_our_turn", "someone_else_just_discarded"])
+else . end
 |
-.buttons.chankan |= make_chombo_button("Ron"; "win_by_call"; "last_called_tile"; "has_yaku_with_call"; "has_yaku2_with_call"; ["not_our_turn", {"name": "last_call_is", "opts": ["kakan", "ankan"]}])
+if (.buttons | has("chankan")) then
+  .buttons.chankan |= make_chombo_button("Ron"; "win_by_call"; "last_called_tile"; "has_yaku_with_call"; "has_yaku2_with_call"; ["not_our_turn", {"name": "last_call_is", "opts": ["kakan", "ankan"]}])
+else . end
 |
-.buttons.tsumo |= make_chombo_button("Tsumo"; "win_by_draw"; "draw"; "has_yaku_with_hand"; "has_yaku2_with_hand"; ["our_turn", "has_draw"])
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo |= make_chombo_button("Tsumo"; "win_by_draw"; "draw"; "has_yaku_with_hand"; "has_yaku2_with_hand"; ["our_turn", "has_draw"])
+else . end
 |
 .functions.chombo = [
   ["set_status", "dead_hand"],
