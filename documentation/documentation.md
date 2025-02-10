@@ -493,7 +493,6 @@ Other:
 - `["subtract_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but subtracts.
 - `["multiply_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but multiplies.
 - `["divide_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
-- `["set_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
 - `["big_text", text, seat]`: Popup big text for the current player, or the given seat if `seat` is specified. Allowed values of `seat` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`
 - `["pause", ms]`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
 - `["sort_hand"]`: Sort the current player's hand.
