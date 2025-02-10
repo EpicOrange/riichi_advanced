@@ -15,6 +15,8 @@ Infinitely extensible mahjong web client featuring the following:
 
 Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bug reporting! (There are a lot of funny bugs, don't miss out!)
 
+If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)!
+
 ## Table of contents
 
 - [Changelog](#changelog)
