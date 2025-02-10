@@ -56,12 +56,19 @@ defmodule RiichiAdvanced.GameState do
         %{tile2 => [Utils.add_attr(tile1, attrs)]}
       end |> Enum.reduce(%{}, &Map.merge(&1, &2, fn _k, l, r -> l ++ r end))
     end
+    def is_any_joker?(tile, tile_behavior) do
+      {tile2, attrs2} = Utils.to_attr_tile(tile)
+      attrs2 = MapSet.new(attrs2)
+      Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {attrs, aliases} ->
+        MapSet.subset?(MapSet.new(attrs), attrs2) and tile2 in aliases
+      end)
+    end
     def is_joker?(tile, tile_behavior) do
-      {tile2, required_attrs} = Utils.to_attr_tile(tile)
-      required_attrs = MapSet.new(required_attrs)
+      {tile2, attrs2} = Utils.to_attr_tile(tile)
+      attrs2 = MapSet.new(attrs2)
       Enum.any?(tile_behavior.aliases, fn {_tile1, attrs_aliases} ->
         Enum.any?(attrs_aliases, fn {attrs, aliases} ->
-          MapSet.subset?(required_attrs, MapSet.new(attrs)) and tile2 in aliases
+          MapSet.subset?(MapSet.new(attrs), attrs2) and tile2 in aliases
         end)
       end)
     end

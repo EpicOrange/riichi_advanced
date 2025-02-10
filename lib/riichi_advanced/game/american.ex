@@ -233,7 +233,7 @@ defmodule RiichiAdvanced.GameState.American do
           all_same = Enum.all?(groups, &is_list(&1) and Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
           if all_same do
             len = length(Enum.at(groups, 0))
-            groups = Enum.map(groups, &case &1 do [t | _] -> t; _ -> &1 end)
+            groups = Enum.map(groups, fn [t | _] -> t; x -> x end)
             [groups, len * num]
           else [groups, num] end
         end)
@@ -276,7 +276,7 @@ defmodule RiichiAdvanced.GameState.American do
                   # first phase: remove a nonjoker
                   new_hand = Enum.find_value(groups, fn group ->
                     # calls were taken care of above, so we can just focus on hand
-                    case Match._remove_group(hand, [], group, base_tile, %TileBehavior{ tile_behavior | aliases: %{} }) do
+                    case Match._remove_group(hand, [], group, base_tile, %TileBehavior{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }) do
                       [{hand, _} | _] -> hand
                       []              ->
                         # if am_match_definition == "NN EEE 2024a WWW SS" do
@@ -394,9 +394,9 @@ defmodule RiichiAdvanced.GameState.American do
             # if this group doesn't match a call, instantiate using base tile
             nil  ->
               hand = if unique do
-                # replace groups with :ignore until you have the right number of groups
-                # if the group is a tile in hand, try to avoid ignoring it if possible
-                num_actual_groups = max(0, Enum.count(groups, & &1 not in Match.group_keywords()) - num)
+                # replace tiles with :ignore until you have the right number of tiles
+                # if we have the tile in hand, try to avoid ignoring it if possible
+                num_ignores = max(0, Enum.count(groups, & &1 not in Match.group_keywords()) - num)
                 groups
                 |> Enum.with_index()
                 |> Enum.sort_by(fn {group, _i} -> cond do
@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.GameState.American do
                   true -> 1
                 end end)
                 |> Enum.map(fn {_group, i} -> i end)
-                |> Enum.take(num_actual_groups)
+                |> Enum.take(num_ignores)
                 |> Enum.reduce(groups, &List.replace_at(&2, &1, :ignore))
               else
                 groups
@@ -424,26 +424,34 @@ defmodule RiichiAdvanced.GameState.American do
           end
           if nojoker_ix != nil do Enum.split(instance, nojoker_ix) else {instance, []} end
         _ -> {[], []}
-      end
+      end 
     end
     |> Enum.unzip()
+    joker = joker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
+    nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
+    # break into groups of identical tiles, treating flowers as same tile
+    # this is so we can match with calls next
+    joker = Enum.chunk_while(joker, [], fn x, acc ->
+      if Enum.empty?(acc) or Utils.same_tile(x, Enum.at(acc, 0), tile_behavior) do
+        {:cont, [x | acc]}
+      else
+        {:cont, acc, [x]}
+      end
+    end, &{:cont, &1, &1})
 
     # remove calls from the instantiation -- this must account for all the calls
-    joker = Enum.flat_map(joker, fn item -> Enum.group_by(item, & &1) |> Map.values() end)
     joker = for call <- calls, reduce: joker do
-      nil -> nil
+      [] -> []
       joker ->
         stripped_call = Utils.replace_jokers(call, [:"1j"], tile_behavior) |> Utils.strip_attrs()
-        case Enum.find_index(joker, & &1 == stripped_call) do
-          nil -> nil # call not found, abort
+        # here we use remove_group instead of match_hand to ensure the length of the call is matched too
+        case Enum.find_index(joker, &Match._remove_group(&1, [], stripped_call, base_tile, tile_behavior) == [{[], []}]) do
+          nil -> [] # call not found, abort
           i   -> List.delete_at(joker, i)
         end
-    end
-    if joker != nil do
-      joker = joker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-      nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-      if nil in joker or nil in nojoker do nil else {joker, nojoker} end
-    else nil end
+    end |> Enum.concat()
+
+    if Enum.empty?(joker) or nil in joker or nil in nojoker do nil else {joker, nojoker} end
   end
 
   def compute_closest_american_hands(state, seat, am_match_definitions, num) do
@@ -511,7 +519,9 @@ defmodule RiichiAdvanced.GameState.American do
       fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["inactive"])
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do
-        IO.puts("Failed to arrange #{inspect(hand)} => #{inspect(fixed_hand)} / #{inspect(Enum.map(calls, &Utils.call_to_tiles/1))} into #{am_match_definition}")
+        if seat == :east do
+          IO.puts("Failed to arrange #{inspect(hand)} => #{inspect(fixed_hand)} / #{inspect(Enum.map(calls, &Utils.call_to_tiles/1))} into #{am_match_definition}")
+        end
         nil
       else
         # IO.puts("#{am_match_definition}\n=> #{inspect(fixed_hand)}\n=> #{inspect(arranged_hand)}")

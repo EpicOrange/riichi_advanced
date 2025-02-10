@@ -70,7 +70,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "hand_draw_nonjoker_any" ->
             player = state.players[context.seat]
             Enum.flat_map(player.hand ++ player.draw, fn tile ->
-              [{hand ++ if TileBehavior.is_joker?(tile, player.tile_behavior) do [] else [tile] end, calls}]
+              [{hand ++ if TileBehavior.is_any_joker?(tile, player.tile_behavior) do [] else [tile] end, calls}]
             end)
           "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
           "self_joker_meld_tiles" ->
