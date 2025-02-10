@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.GameState do
     state = Log.init_log(state)
 
     state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
-    
+
     initial_score = Map.get(rules, "initial_score", 0)
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
 
@@ -625,7 +625,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     push_message(state, [
-      %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+      %{text: "Player #{player_name(state, seat)} called "},
       %{bold: true, text: "#{String.downcase(winner.winning_tile_text)}"},
       %{text: " on "},
       Utils.pt(winner.winning_tile),
@@ -1095,6 +1095,10 @@ defmodule RiichiAdvanced.GameState do
     end)
   end
 
+  def player_name(state, seat) do
+    "#{Riichi.get_seat_wind(state.kyoku, seat, state.available_seats)} #{state.players[seat].nickname}"
+  end
+
   def push_message(state, message) do
     if not state.log_loading_mode do
       for {_seat, messages_state} <- state.messages_states, messages_state != nil do
@@ -1214,12 +1218,12 @@ defmodule RiichiAdvanced.GameState do
     state = put_in(state.messages_states[seat], nil)
 
     state = if seat in [:east, :south, :west, :north] do
+      IO.puts("Player #{player_name(state, seat)} exited")
       state = Map.put(state, seat, nil)
       state = update_player(state, seat, &%Player{ &1 | nickname: nil })
-      IO.puts("Player #{seat} exited")
 
       # tell everyone else
-      push_message(state, %{text: "Player #{seat} #{state.players[seat].nickname} exited"})
+      push_message(state, %{text: "Player #{player_name(state, seat)} exited"})
       state
     else state end
 
