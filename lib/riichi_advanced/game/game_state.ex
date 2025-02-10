@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.LobbyState.LobbyRoom, as: LobbyRoom
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
@@ -1373,7 +1374,9 @@ defmodule RiichiAdvanced.GameState do
           state = Map.put(state, dir, ai_pid)
 
           # mark the ai as having clicked the timer, if one exists
-          state = update_player(state, dir, &%Player{ &1 | nickname: nil, ready: true })
+          # also give them a nickname that hasn't been used
+          nicknames = Constants.ai_names() -- Enum.map(state.players, fn {_seat, player} -> player.nickname end)
+          state = update_player(state, dir, &%Player{ &1 | nickname: Enum.random(nicknames), ready: true })
           
           state
       end
