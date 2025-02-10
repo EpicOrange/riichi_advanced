@@ -191,9 +191,9 @@
     { "display_name": "Robbing a Kong", "value": 0, "when": ["won_by_call"] }
   ],
   "yaku_multiplier": [
-    { "display_name": "Robbing a Kong", "value": x5, "when": ["won_by_call"] },
-    { "display_name": "After A Kong", "value": x2, "when": [{"name": "status", "opts": ["kan"]}] },
-    // { "display_name": "Three Meld Penalty", "value": x5, "when": [{"name": "status", "opts": ["three_meld_penalty"]}] }
+    { "display_name": "Robbing a Kong", "value": 5, "when": ["won_by_call"] },
+    { "display_name": "After A Kong", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Three Meld Penalty", "value": 5, "when": [{"name": "status", "opts": ["three_meld_penalty"]}] }
   ],
   "yaku_precedence": {
     "Full Flush": ["Half Flush"],
