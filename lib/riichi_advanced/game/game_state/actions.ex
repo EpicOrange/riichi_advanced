@@ -901,7 +901,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), false)
       "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), true)
       "swap_marked_calls" ->
-        marked_call = Marking.get_marked(marked_objects, :call)
+        marked_call = Marking.get_marked(marked_objects, :calls)
         {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
         {call2, call_seat2, call_index2} = Enum.at(marked_call, 1)
 
@@ -912,7 +912,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "swap_out_fly_joker" ->
         {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
-        {call, call_seat, call_index} = Marking.get_marked(marked_objects, :call) |> Enum.at(0)
+        {call, call_seat, call_index} = Marking.get_marked(marked_objects, :calls) |> Enum.at(0)
         fly_joker = Enum.at(opts, 0, "1j") |> Utils.to_tile()
         call_tiles = Utils.call_to_tiles(call)
 

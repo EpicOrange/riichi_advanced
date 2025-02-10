@@ -253,6 +253,7 @@ div.hand.kamicha {
   left: var(--tile-size);
   transform: rotate(90deg);
   transform-origin: top left;
+  z-index: 10; /* so div.hand.self doesn't block it */
 }
 div.calls:hover { z-index: 100; }
 div.draws::before, div.tiles:hover::before, div.calls:hover::before {

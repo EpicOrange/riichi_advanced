@@ -425,12 +425,12 @@ defmodule RiichiAdvanced.AIPlayer do
             true -> {state, []}
           end
         "american" ->
-          if Marking.is_marking?(marked_objects, :call) do
+          if Marking.is_marking?(marked_objects, :calls) do
             # we're swapping out a joker
             # check if any of our choices is a call
-            if Enum.any?(choices, fn {{_seat, source, _obj}, _i} -> source == :call end) do
+            if Enum.any?(choices, fn {{_seat, source, _obj}, _i} -> source == :calls end) do
               # select the call first
-              {state, Enum.filter(choices, fn {{_seat, source, _obj}, _i} -> source == :call end)}
+              {state, Enum.filter(choices, fn {{_seat, source, _obj}, _i} -> source == :calls end)}
             else
               # if we selected a call already, select the first valid tile
               {state, choices}
