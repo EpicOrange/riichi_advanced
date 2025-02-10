@@ -1,9 +1,6 @@
 {
   // TODOs: 
-  // how is Same Number Bonus defined?
-  // does Pure Suit override Suit Bonus?
-  // check if chankan are allowed in Hefei mahjong
-  // check what the payouts per player on ron/tsumo are
+  // check def for Earthly Hand
   
   "default_mods": [],
   "available_mods": [],
@@ -122,8 +119,7 @@
     { "display_name": "Win", "value": 15, "when": ["win"] },
     { "display_name": "Suit Bonus", "value": "suit_bonus", "when": [{"name": "counter_at_least", "opts": ["suit_bonus", 1]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-      // yeah i don't get this one
-    // { "display_name": "Same Number Bonus", "value": [1 per "extra" tile], "when": [] },
+    { "display_name": "Same Number Bonus", "value": ["same_number_bonus"], "when": [] },
     {
       "display_name": "Concealed Pung",
       "value": 1,
@@ -181,7 +177,6 @@
     { "display_name": "Luxury Seven Pairs", "value": 50, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 1], [["pair"], 5]]]]}] },
     { "display_name": "Double Luxury Seven Pairs", "value": 100, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2], [["pair"], 3]]]]}] },
     { "display_name": "Sea Floor", "value": 15, "when": [{"name": "status", "opts": ["sea_floor"]}] },
-      // does Pure Suit override Suit Bonus?
     {
       "display_name": "Pure Suit",
       "value": 100,
@@ -200,26 +195,24 @@
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
       ]]
     },
-    // { "display_name": "Ten Identical Tiles", "value": 100, "when": [[10 or more tiles of the same number]] },
+    { "display_name": "Ten Identical Tiles", "value": 100, "when": [{"name": "status", "opts": ["ten_identical_tiles"]}] },
     { "display_name": "Double Concealed Double Sequences", "value": 100, "when": [{"name": "match", "opts": [["hand"], ["2_double_sequences"]]}] },
     { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-      // double-check that this def for Earthly is correct
-    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "anyone_status", "opts": ["first_turn"]}, "no_calls_yet", {"name": "not_seat_is", "opts": ["east"]}] },
     { "display_name": "Dealer Repeat", "value": "honba", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["honba", 1]}] }
   ],
   "yaku_precedence": {
     "Concealed Kongs": ["Concealed Kong"],
     "Concealed Pungs": ["Concealed Pung"],
     "Concealed Double Sequences": ["Double Sequences"],
-      // double-check if Pure Suit overrides Suit Bonus
+    "Pure Suit": ["Suit Bonus"],
+    "Ten Identical Tiles": ["Same Number Bonus"],
     "Full Flush": ["Half Flush"]
   },
   "score_calculation": {
-      // get the entire scoring section straight
     "scoring_method": "multiplier",
     "score_multiplier": 20,
-      // check payouts-per-player in Hefei
-    "discarder_multiplier": 2,
+    "discarder_multiplier": 1,
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
     "yaku_lists": ["yaku", "special_yaku"],
@@ -255,14 +248,13 @@
     "actions": [["set_status_all", "first_turn"]]
   },
   "after_draw": {
-      // question: does the sea fishing phase begin when there are four tiles left in the wall, or when someone needs to draw the fourth-to-last tile of the wall? that is, what happens when someone discards or wins off of the fifth-to-last tile? at the moment i have it that the sea-fishing phase begins when the fourth-to-last tile is drawn.
     "actions": [["when", {"name": "not_tiles_remaining", "opts": [4]}, ["set_status_all", "sea_floor"]]]
   },
   "before_win": {
     "actions": [
-      ["set_counter", "manzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2m", "3m", "4m", "5m", "6m", "7m"]],
-      ["set_counter", "pinzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2p", "3p", "4p", "5p", "6p", "7p"]],
-      ["set_counter", "souzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2s", "3s", "4s", "5s", "6s", "7s"]],
+      ["set_counter", "manzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2m", "3m", "4m", "5m", "6m", "7m", "8m"]],
+      ["set_counter", "pinzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2p", "3p", "4p", "5p", "6p", "7p", "8p"]],
+      ["set_counter", "souzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2s", "3s", "4s", "5s", "6s", "7s", "8s"]],
       ["when", {"name": "counter_at_least", "opts": ["manzu_count", 8]}, [
           ["set_counter", "suit_bonus", "manzu_count"]
         ]
@@ -275,7 +267,31 @@
           ["set_counter", "suit_bonus", "souzu_count"]
         ]
       ],
-      ["subtract_counter", "suit_bonus", 8]
+      ["subtract_counter", "suit_bonus", 8],
+      ["set_counter", "two_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2m", "2p", "2s"]],
+      ["set_counter", "three_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["3m", "3p", "3s"]],
+      ["set_counter", "four_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["4m", "4p", "4s"]],
+      ["set_counter", "five_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["5m", "5p", "5p"]],
+      ["set_counter", "six_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["6m", "6p", "6s"]],
+      ["set_counter", "seven_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["7m", "7p", "7s"]],
+      ["set_counter", "eight_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["8m", "8p", "8s"]],
+      ["when", {"name": "counter_at_least", "opts": ["two_count", 4]}, [  ["add_counter", "same_number_bonus", "two_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", {"name": "counter_at_least", "opts": ["three_count", 4]}, [  ["add_counter", "same_number_bonus", "three_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", {"name": "counter_at_least", "opts": ["four_count", 4]}, [  ["add_counter", "same_number_bonus", "four_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", {"name": "counter_at_least", "opts": ["five_count", 4]}, [  ["add_counter", "same_number_bonus", "five_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", {"name": "counter_at_least", "opts": ["six_count", 4]}, [  ["add_counter", "same_number_bonus", "six_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", {"name": "counter_at_least", "opts": ["seven_count", 4]}, [  ["add_counter", "same_number_bonus", "seven_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", {"name": "counter_at_least", "opts": ["eight_count", 4]}, [  ["add_counter", "same_number_bonus", "eight_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
+      ["when", [[
+          {"name": "counter_at_least", "opts": ["two_count", 10]},
+          {"name": "counter_at_least", "opts": ["three_count", 10]},
+          {"name": "counter_at_least", "opts": ["four_count", 10]},
+          {"name": "counter_at_least", "opts": ["five_count", 10]},
+          {"name": "counter_at_least", "opts": ["six_count", 10]},
+          {"name": "counter_at_least", "opts": ["seven_count", 10]},
+          {"name": "counter_at_least", "opts": ["eight_count", 10]}
+        ]], ["set_status", "ten_identical_tiles"]
+      ]
     ]
   },
   "buttons": {
@@ -332,7 +348,6 @@
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
     },
-      //TODO: check if chankan is allowed in Hefei mahjong
     "chankan": {
       "display_name": "Hu",
       "show_when": [
