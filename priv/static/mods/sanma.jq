@@ -43,7 +43,7 @@ walk(if . == "pei" then "pei_triplet" else . end)
   "tsumo_loss": true
 }
 |
-.functions.discard_passed += [["as", "others", [["unset_status", "pei"]]]]
+.functions.discard_passed |= [["as", "others", [["unset_status", "pei"]]]] + .
 |
 # nukidora
 .extra_yaku += [

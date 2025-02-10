@@ -71,6 +71,8 @@ else . end
   ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]]
 else . end)
 |
+.functions.discard_passed |= [["as", "others", [["unset_status", "just_reached"]]]] + .
+|
 .functions.put_down_riichi_stick = [
   ["when", [{"name": "status_missing", "opts": ["put_down_riichi_stick"]}], [
     ["subtract_score", "riichi_value"], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]
