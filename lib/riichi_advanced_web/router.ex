@@ -30,11 +30,8 @@ defmodule RiichiAdvancedWeb.Router do
 
   scope "/", RiichiAdvancedWeb do
     pipe_through [:browser, :auth]
-
-    # design
-    # get "/", GameController, :game
-
-    # interactive
+    get "/room/:ruleset", RedirectController, :lobby
+    get "/game/:ruleset", RedirectController, :lobby
     live_session :default do
       live "/", IndexLive
       live "/lobby/:ruleset", LobbyLive
@@ -44,6 +41,7 @@ defmodule RiichiAdvancedWeb.Router do
       live "/log/:id", LogLive
       live "/about", AboutLive
     end
+    get "/*_", RedirectController, :home
   end
 
   # Other scopes may use custom stacks.
