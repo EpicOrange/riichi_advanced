@@ -147,9 +147,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # t = System.system_time(:millisecond)
     score_rules = state.rules["score_calculation"]
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior)
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -926,12 +926,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # deal with jokers
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      jokers = Map.keys(state.players[seat].tile_mappings)
-      if Utils.has_matching_tile?(smt_hand ++ call_tiles, jokers) do
+      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, state.players[seat].tile_behavior)) do
         # run smt, but push a message if it takes more than 0.5 seconds
-        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings) end)
+        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior) end)
         notify_task = Task.async(fn ->
           :timer.sleep(500)
           push_message(state, [%{text: "Running joker solver..."}])

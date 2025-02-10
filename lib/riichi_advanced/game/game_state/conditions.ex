@@ -210,7 +210,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "can_upgrade_call"            -> cxt_player.calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.map(&Utils.call_to_tiles/1)
-        |> Enum.any?(&Riichi.can_call?(context.calls_spec, &1, cxt_player.hand ++ cxt_player.draw, cxt_player.tile_behavior))
+        |> Enum.any?(&Riichi.can_call?(context.calls_spec, &1, cxt_player.tile_behavior, cxt_player.hand ++ cxt_player.draw))
       "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].draw)
       "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].aside)
       "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].calls)
