@@ -1,4 +1,41 @@
 {
+
+// tianjin mahjong
+
+//✅ tiles are the same as riichi
+//✅ dead wall is determined by die roll. if you roll 5, then 10 tile dead wall, for example. flip the last tile in the dead wall over to get the joker indicator
+//⚠️ there are 7 jokers: the 3 other joker indicators and the 4 copies of the next tile (same rule as dora, except dragon order is reversed: chun hatsu haku).
+    // actually, MahjongPros has the dragon order the same as Riichi. need confirmation here
+//⚠️ jokers are any-tile jokers, and you cannot discard them. not clear if you can call with them, but i assume so
+    //✅ MahjongPros says that jokers can be discarded, but can't be called with.
+
+// win con
+
+//✅ 4 sets and a pair plus a yaku
+//✅ no chiitoi or kokushi
+
+// yaku
+
+// joker tanki: your final wait was tanki on joker. 2x points
+// no jokers: you had no jokers, ever. 2x points
+// 46m wait: you won with a 46m wait. i believe waiting on 4446m and drawing joker still counts. 3x points
+// dragon: ittsu. 4x points
+// joker dragon: ittsu but same suit as one (or both? idk) of the jokers. 2x points
+// rinshan: 2x points
+// tenhou (+chiihou?): 8x points
+
+// scoring
+
+//✅ everyone starts with 50 points
+// on a win, it's 1 point times all yaku multipliers, won from all players (no dealer modifier)
+// actually the beginning of the round the dealer may optionally choose to "step up", the effect is essentially wareme on dealer
+// minkan is 1 from all players (i believe this is paid immediately)
+// ankan is 2 from all players
+// joker kan is instead 8 from all players
+// additionally if you do suufonrenda (but with any tile) the dealer immediately pays 1 to every player
+
+
+    
     //TODO: make the dora indicator and dora a joker. add yaku, yaku precedence, and scoring. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile).
   "default_mods": [],
   "available_mods": [],
@@ -38,6 +75,13 @@
            "0z", "0z", "0z", "0z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z"],
+  "dora_indicators": {
+    "1m": ["1m", "2m"],  "2m": ["2m", "3m"],  "3m": ["3m", "4m"],  "4m": ["4m", "5m"],  "5m": ["5m", "6m"],  "6m": ["6m", "7m"],  "7m": ["7m", "8m"],  "8m": ["8m", "9m"],  "9m": ["9m", "1m"],  "0m": ["5m", "6m"],
+    "1p": ["1p", "2p"],  "2p": ["2p", "3p"],  "3p": ["3p", "4p"],  "4p": ["4p", "5p"],  "5p": ["5p", "6p"],  "6p": ["6p", "7p"],  "7p": ["7p", "8p"],  "8p": ["8p", "9p"],  "9p": ["9p", "1p"],  "0p": ["5p", "6p"],
+    "1s": ["1s", "2s"],  "2s": ["2s", "3s"],  "3s": ["3s", "4s"],  "4s": ["4s", "5s"],  "5s": ["5s", "6s"],  "6s": ["6s", "7s"],  "7s": ["7s", "8s"],  "8s": ["8s", "9s"],  "9s": ["9s", "1s"],  "0s": ["5s", "6s"],
+      // double-check that the order of dragons is correct here
+    "1z": ["1z", "2z"],  "2z": ["2z", "3z"],  "3z": ["3z", "4z"],  "4z": ["4z", "1z"],  "0z": ["0z", "6z"],  "6z": ["6z", "7z"],  "7z": ["7z", "0z"]
+  },
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],
@@ -106,10 +150,12 @@
     { "display_name": "All Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}] },
     // Others
     { "display_name": "Thirteen Orphans", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}] },
-    { "display_name": "Nine Gates", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}] },
-    { "display_name": "Blessing of Heaven", "value": 13, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
-    { "display_name": "Blessing of Earth", "value": 13, "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"] },
-    { "display_name": "Blessing of Man", "value": 13, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"] }
+    { "display_name": "Nine Gates", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}] }
+  ],
+  "yaku_multiplier": [
+    { "display_name": "Kong Blossom", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Heavenly Hand", "value": 6, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Hand", "value": 4, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   "yaku_precedence": {
       // TODO: fix up yaku precedence list once you've implemented yaku
@@ -121,31 +167,32 @@
     "Full Flush": ["Half Flush"],
     "Big Four Winds": ["Small Four Winds"],
     "Big Three Dragons": ["Small Three Dragons"],
-    "Blessing of Earth": ["Blessing of Man"],
     "Four Concealed Triplets": ["All Triplets"],
     "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
+    
+    "Heavenly Hand": ["Earthly Hand", "Kong Blossom"],
+    "Earthly Hand": ["Kong Blossom"],
   },
   "score_calculation": {
       // TODO: fix up scoring. scoring looks complicated :(
-    "scoring_method": "score_table",
-    "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
-    "discarder_multiplier": 2,
+    "scoring_method": "multiplier",
+    "score_multiplier": "points2",
+    "yaku_lists": ["yaku"],
+    "yaku2_lists": ["yaku_multiplier"],
+    "point_name": "Fan",
+    "point2_name": "x",
+    "right_display": "points2",
+    "score_denomination": "",
+    "discarder_multiplier": 1000,
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
-    "yaku_lists": ["yaku"],
     "agarirenchan": true,
-    "point_name": "Fan",
-    "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
-    "win_by_discard_name": "Hu",
-    "win_by_discard_name_2": "Double Hu",
-    "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
-  "play_restrictions": [
-    [["flower"], []]
-  ],
+  "persistent_counters": ["challenge_tokens"],
+  "play_restrictions": [],
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "double_kan"],
@@ -156,7 +203,8 @@
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]],
+      ["when_anyone", [{"name": "counter_missing", "opts": ["challenge_tokens"]}], [["set_counter", "challenge_tokens", 2]]]
     ]
   },
   "after_call": {
@@ -166,7 +214,8 @@
     "actions": [["set_status_all", "first_turn", "match_start"]]
   },
   "buttons": {
-      // Ideally, doubling down, challenging the dealer, and so forth, should be done BEFORE the tiles are dealt. But I don't know how to make that happen, so for now it happens after the tiles are dealt.
+      // Doubling down and challenging the dealer are supposed to be done BEFORE the tiles are dealt. But I don't know how to make that happen, so for now it happens after the tiles are dealt.
+      // Can players challenge the dealer if the dealer already doubles down? How do payments work in that case?
     "start_double_down": {
       "display_name": "Double Down",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "seat_is", "opts": ["east"]}],
@@ -175,8 +224,8 @@
     },
     "start_challenge_dealer": {
       "display_name": "Challenge Dealer",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}],
-      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer"], ["unset_status", "match_start"]],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 1]}],
+      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer"], ["unset_status", "match_start"], ["subtract_counter", "challenge_tokens", 1]],
       "unskippable": true
     },
     "start_pass": {
@@ -185,16 +234,20 @@
       "actions": [["big_text", "Pass"], ["unset_status", "match_start"]],
       "unskippable": true
     },
-    "chii": {
-      "display_name": "Chow",
-      "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
-      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
-    },
+      // going to assume that Chow is not allowed in Tianjin mahjong
+//    "chii": {
+//      "display_name": "Chow",
+//      "call": [[-2, -1], [-1, 1], [1, 2]],
+//      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+//      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
+//    },
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
@@ -204,6 +257,9 @@
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
       "show_when": [
         "not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [
         ["big_text", "Kong"], ["call"],
         ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["big_text", "  -1  ", "last_discarder"],
@@ -217,6 +273,9 @@
       "call": [[0, 0, 0]],
       "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [
         ["big_text", "Kong"], ["self_call"], ["set_status", "kan"],
         ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
@@ -230,6 +289,9 @@
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [["joker"], 1]}
+      ],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
         ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["big_text", "  -1  ", "shimocha"]]],
@@ -237,17 +299,6 @@
         ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["big_text", "  -1  ", "kamicha"]]],
         ["draw"]
       ]
-    },
-    "ron": {
-      "display_name": "Hu",
-      "show_when": [
-        "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-        "someone_else_just_discarded",
-        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
-      ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "daiminkan"]
     },
       //check if chankan is allowed.
     "chankan": {
@@ -317,7 +368,7 @@
     }
   },
   "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
-  "initial_score": 0,
+  "initial_score": 50,
   "starting_tiles": 13,
   "max_rounds": 16,
     // change this to be dependent on the second die roll-- dammit, we have to implement rerolling the dice. For now, I'll assume the second die roll is always 7.
