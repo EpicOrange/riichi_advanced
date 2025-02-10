@@ -4,7 +4,6 @@
   // does Pure Suit override Suit Bonus?
   // check if Chow and chankan are allowed in Hefei mahjong
   // check what the payouts per player on ron/tsumo are
-  // implement honba
   
   "default_mods": [],
   "available_mods": [],
@@ -205,7 +204,8 @@
     { "display_name": "Double Concealed Double Sequences", "value": 100, "when": [{"name": "match", "opts": [["hand"], ["2_double_sequences"]]}] },
     { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
       // double-check that this def for Earthly is correct
-    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] },
+    { "display_name": "Dealer Repeat", "value": "honba", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["honba", 1]}] }
   ],
   "yaku_precedence": {
     "Concealed Kongs": ["Concealed Kong"],
@@ -414,5 +414,6 @@
   "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "max_rounds": 16
+  "max_rounds": 16,
+  "display_honba": true
 }
