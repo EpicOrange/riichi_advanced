@@ -30,22 +30,20 @@ defmodule RiichiAdvanced.AIPlayer do
       # TODO as well as heuristics provided by the ruleset
       # hand = state.player.hand ++ state.player.draw
       # calls = state.player.calls
-      # ordering = state.player.tile_ordering
-      # ordering_r = state.player.tile_ordering_r
-      # tile_aliases = state.player.tile_aliases
+      # tile_behavior = state.player.tile_behavior
       best_playables = playables
 
       # TODO ukeire counting is really slow
       # because we need "exhaustive" to check for waits in Riichi.get_waits_and_ukeire
       # disable it for now
 
-      # use_ukeire = Enum.empty?(tile_aliases)
+      # use_ukeire = Enum.empty?(tile_behavior.aliases)
       # best_playables = if use_ukeire do
       #   playable_waits = playables
       #   |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
       #   |> Enum.map(fn {tile, ix} ->
       #     if win_definition != nil do
-      #       {tile, ix, Riichi.get_waits_and_ukeire(hand -- [tile], calls, win_definition, state.wall, visible_tiles, ordering, ordering_r, tile_aliases, true)}
+      #       {tile, ix, Riichi.get_waits_and_ukeire(hand -- [tile], calls, win_definition, state.wall, visible_tiles, tile_behavior, true)}
       #     else {tile, ix, %{}} end
       #   end)
 
@@ -72,9 +70,7 @@ defmodule RiichiAdvanced.AIPlayer do
   defp choose_discard(state, playables, visible_tiles) do
     hand = state.player.hand ++ state.player.draw
     calls = state.player.calls
-    ordering = state.player.tile_ordering
-    ordering_r = state.player.tile_ordering_r
-    tile_aliases = state.player.tile_aliases
+    tile_behavior = state.player.tile_behavior
     shanten_definitions = [
       {-1, state.shanten_definitions.win},
       {0,  state.shanten_definitions.tenpai},
@@ -88,7 +84,7 @@ defmodule RiichiAdvanced.AIPlayer do
     shanten_definitions = Enum.drop(shanten_definitions, max(0, min(state.shanten, length(shanten_definitions) - 1) - 1))
     {ret, shanten} = for {{i, shanten_definition}, {_j, win_definition}} <- Enum.zip(Enum.drop(shanten_definitions, 1), Enum.drop(shanten_definitions, -1)), reduce: {nil, 6} do
       {nil, _} ->
-        ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, ordering, ordering_r, tile_aliases)
+        ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
         |> choose_playable_tile(state, playables, visible_tiles, win_definition)
         if Debug.debug_ai() and ret != nil do
           IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
@@ -98,7 +94,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
 
     if ret == nil do # shanten > 6?
-      ret = Riichi.get_disconnected_tiles(hand, ordering, ordering_r, tile_aliases)
+      ret = Riichi.get_disconnected_tiles(hand, tile_behavior)
       |> choose_playable_tile(state, playables, visible_tiles, nil)
       {ret, :infinity}
     else {ret, shanten} end
@@ -141,10 +137,10 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  defp get_minefield_discard_danger(minefield_tiles, waits, wall, doras, visible_tiles, tile, ordering, ordering_r) do
+  defp get_minefield_discard_danger(minefield_tiles, waits, wall, doras, visible_tiles, tile, tile_behavior) do
     # really dumb heuristic for now
     genbutsu = Utils.strip_attrs(visible_tiles -- minefield_tiles)
-    suji = Riichi.genbutsu_to_suji(genbutsu, ordering, ordering_r)
+    suji = Riichi.genbutsu_to_suji(genbutsu, tile_behavior)
     hidden_count = Enum.count(wall -- visible_tiles, & &1 == tile)
     centralness = Riichi.get_centralness(tile)
     # true & higher numbers = don't discard
@@ -292,14 +288,14 @@ defmodule RiichiAdvanced.AIPlayer do
       else
         # pick these (in order of precedence)
         cond do
-          "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "ron"
-          "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "tsumo"
-          "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "hu"
-          "zimo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "zimo"
-          "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_discard"
-          "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_draw"
-          "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_draw"
-          "riichi" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.tenpai, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "riichi"
+          "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
+          "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"
+          "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "hu"
+          "zimo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "zimo"
+          "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_discard"
+          "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
+          "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
+          "riichi" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.tenpai, player.tile_behavior) -> "riichi"
           "ankan" in player.buttons -> "ankan"
           # "daiminkan" in player.buttons -> "daiminkan"
           # "pon" in player.buttons -> "pon"
@@ -381,7 +377,7 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info({:set_best_minefield_hand, minefield_tiles, minefield_hand}, state) do
-    minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win, state.wall, state.player.tile_ordering, state.player.tile_ordering_r, state.player.tile_aliases, true)
+    minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win, state.wall, state.player.tile_behavior, true)
     state = state
     |> Map.put(:minefield_tiles, minefield_tiles)
     |> Map.put(:minefield_hand, minefield_hand)
@@ -421,7 +417,7 @@ defmodule RiichiAdvanced.AIPlayer do
               end
             Marking.is_marking?(marked_objects, :aside) and length(player.hand) == 13 ->
               # discard stage
-              choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_ordering, player.tile_ordering_r) end, &<=/2, fn -> nil end)
+              choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_behavior) end, &<=/2, fn -> nil end)
               {state, if choice == nil do [] else [choice] end}
             true -> {state, []}
           end

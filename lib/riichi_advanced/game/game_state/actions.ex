@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
@@ -401,18 +402,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        ordering = state.players[context.seat].tile_ordering
-        ordering_r = state.players[context.seat].tile_ordering_r
-        tile_aliases = state.players[context.seat].tile_aliases
-        Match.binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+        tile_behavior = state.players[context.seat].tile_behavior
+        Match.binary_search_count_matches(hand_calls, match_definitions, tile_behavior)
       ["count_matching_ways" | opts] ->
         # count how many given hand-calls combinations matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        ordering = state.players[context.seat].tile_ordering
-        ordering_r = state.players[context.seat].tile_ordering_r
-        tile_aliases = state.players[context.seat].tile_aliases
-        Enum.count(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+        tile_behavior = state.players[context.seat].tile_behavior
+        Enum.count(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       ["tiles_in_wall" | _opts] -> length(state.wall) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
@@ -466,7 +463,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras, state.players[context.seat].tile_aliases)
+          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
         else 0 end
       ["count_reverse_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
@@ -474,7 +471,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras, state.players[context.seat].tile_aliases)
+          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
         else 0 end
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
@@ -485,7 +482,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         score_rules = state.rules["score_calculation"]
         enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Scoring.get_yakuhai(state, context.seat), player.tile_ordering, player.tile_ordering_r, player.tile_aliases, enable_kontsu_fu)
+        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Scoring.get_yakuhai(state, context.seat), player.tile_behavior, enable_kontsu_fu)
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->
@@ -573,17 +570,13 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp set_tile_alias(state, seat, from_tiles, to_tiles) do
     from_tiles = MapSet.new(from_tiles)
-    aliases = for to <- to_tiles, reduce: state.players[seat].tile_aliases do
-      aliases ->
-        {to, attrs} = Utils.to_attr_tile(to)
-        Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
-    end
-    state = update_player(state, seat, &%Player{ &1 | tile_aliases: aliases })
-    mappings = for from <- from_tiles, reduce: state.players[seat].tile_mappings do
-      mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
-    end
-    state = update_player(state, seat, &%Player{ &1 | tile_mappings: mappings })
-    state
+    update_player(state, seat, fn player -> %Player{ player | tile_behavior: Map.update!(player.tile_behavior, :aliases, fn aliases ->
+      for to <- to_tiles, reduce: aliases do
+        aliases ->
+          {to, attrs} = Utils.to_attr_tile(to)
+          Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
+      end
+    end) } end)
   end
 
   def add_attr_matching(tiles, attrs, tile_specs) do
@@ -1043,37 +1036,35 @@ defmodule RiichiAdvanced.GameState.Actions do
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
           state ->
-            state = put_in(state.players[seat].cache.saved_tile_aliases[label], state.players[seat].tile_aliases)
-            state = put_in(state.players[seat].cache.saved_tile_mappings[label], state.players[seat].tile_mappings)
+            state = put_in(state.players[seat].cache.saved_tile_aliases[label], state.players[seat].tile_behavior.aliases)
+            state = put_in(state.players[seat].cache.saved_tile_mappings[label], state.players[seat].tile_behavior.mappings)
             state
         end
       "load_tile_aliases"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
           state ->
-            state = put_in(state.players[seat].tile_aliases, Map.get(state.players[seat].cache.saved_tile_aliases, label, state.players[seat].tile_aliases))
-            state = put_in(state.players[seat].tile_mappings, Map.get(state.players[seat].cache.saved_tile_mappings, label, state.players[seat].tile_mappings))
+            state = put_in(state.players[seat].tile_behavior.aliases, Map.get(state.players[seat].cache.saved_tile_aliases, label, state.players[seat].tile_behavior.aliases))
+            state = put_in(state.players[seat].tile_behavior.mappings, Map.get(state.players[seat].cache.saved_tile_mappings, label, state.players[seat].tile_behavior.mappings))
             state
         end
-      "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_aliases: %{}, tile_mappings: %{} })
+      "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{ &1.tile_behavior | aliases: %{} } })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        state = update_player(state, context.seat, &%Player{ &1 |
-          tile_ordering: Map.merge(&1.tile_ordering, ordering),
-          tile_ordering_r: Map.merge(&1.tile_ordering_r, ordering_r)
-        })
-        state
+        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
+          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
+          ordering_r: Map.merge(&1.tile_obehavior.ordering_r, ordering_r)
+        } })
       "set_tile_ordering_all"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        state = update_all_players(state, fn _seat, player -> %Player{ player |
-          tile_ordering: Map.merge(player.tile_ordering, ordering),
-          tile_ordering_r: Map.merge(player.tile_ordering_r, ordering_r)
-        } end)
-        state
+        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
+          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
+          ordering_r: Map.merge(&1.tile_obehavior.ordering_r, ordering_r)
+        } })
       "add_attr" ->
         targets = Enum.at(opts, 0, [])
         attrs = Enum.at(opts, 1, [])

@@ -5,6 +5,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -36,10 +37,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
   defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
     yaku_names = Enum.map(yaku_list, & &1["display_name"])
     existing_yaku_names = Enum.map(existing_yaku, fn {name, _value} -> name end)
-    case RiichiAdvanced.ETSCache.get({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, state.players[seat].tile_aliases, winning_tile, win_source, yaku_names, existing_yaku_names}) do
+    case RiichiAdvanced.ETSCache.get({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, TileBehavior.hash(state.players[seat].tile_behavior), winning_tile, win_source, yaku_names, existing_yaku_names}) do
       [] -> 
         result = _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
-        RiichiAdvanced.ETSCache.put({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, state.players[seat].tile_aliases, winning_tile, win_source, yaku_names, existing_yaku_names}, result)
+        RiichiAdvanced.ETSCache.put({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, TileBehavior.hash(state.players[seat].tile_behavior), winning_tile, win_source, yaku_names, existing_yaku_names}, result)
         result
       [result] -> result
     end
@@ -74,7 +75,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else
       score_rules = state.rules["score_calculation"]
       enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
-      Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, get_yakuhai(state, seat), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
+      Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, get_yakuhai(state, seat), state.players[seat].tile_behavior, enable_kontsu_fu)
     end
   end
 
@@ -491,7 +492,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       delta_scores = if "use_arakawa_kei_scoring" in winner.player.status do
         win_definitions = translate_match_definitions(state, ["win"])
         visible_tiles = get_visible_tiles(state, winner.seat)
-        waits = Riichi.get_waits_and_ukeire(winner.player.hand, winner.player.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+        waits = Riichi.get_waits_and_ukeire(winner.player.hand, winner.player.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_behavior)
         if "arakawa-kei" in winner.player.status do
           # everyone pays winner 100 points per live out
           ukeire = waits |> Map.values() |> Enum.sum()
@@ -547,7 +548,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if delta_scores[seat] < 0 and "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
               win_definitions = translate_match_definitions(state, ["win"])
-              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, state.all_tiles, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) ++ [:"2x"]
+              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, state.all_tiles, player.tile_behavior) ++ [:"2x"]
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
                 winner = calculate_winner_details(state, seat, waits, :discard, true)
@@ -719,7 +720,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           state ->
             # calculate possible waits
             winner = state.players[seat]
-            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, state.all_tiles, winner.tile_behavior)
 
             # display nothing if waits are empty
             # shouldn't happen under normal conditions, since tenpai implies nonempty waits
@@ -870,11 +871,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
       am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
       am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-      ordering = state.players[seat].tile_ordering
-      ordering_r = state.players[seat].tile_ordering_r
-      tile_aliases = state.players[seat].tile_aliases
+      tile_behavior = state.players[seat].tile_behavior
       new_winning_tile = Utils.strip_attrs(new_winning_tile)
-      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, ordering, ordering_r, tile_aliases)
+      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, tile_behavior)
       if arranged_hand != nil do
         arranged_hand = arranged_hand
         |> Enum.intersperse([:"3x"])

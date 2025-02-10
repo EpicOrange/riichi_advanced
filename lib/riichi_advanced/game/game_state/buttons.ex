@@ -32,17 +32,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
         is_saki_card = Enum.any?(choice_actions, fn [action | _opts] -> action == "draft_saki_card" end)
         hand = Utils.add_attr(state.players[seat].hand, ["hand"])
         draw = Utils.add_attr(state.players[seat].draw, ["hand"])
-        ordering = state.players[seat].tile_ordering
-        ordering_r = state.players[seat].tile_ordering_r
-        tile_aliases = state.players[seat].tile_aliases
-        tile_mappings = state.players[seat].tile_mappings
+        tile_behavior = state.players[seat].tile_behavior
         {state, call_choices} = cond do
           is_upgrade ->
             call_choices = state.players[seat].calls
             |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
             |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["hand", "called"])) end)
             |> Enum.map(fn call_tiles ->
-                 Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, hand ++ draw, tile_aliases, tile_mappings)
+                 Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
             |> Enum.flat_map(&Enum.map(&1, fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end))
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
@@ -64,7 +61,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, call_choices}
           true ->
             callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-            call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, ordering, ordering_r, callable_tiles, tile_aliases, tile_mappings)
+            call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, tile_behavior, callable_tiles)
             |> Enum.map(fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end)
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
             {state, call_choices}

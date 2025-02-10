@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -126,22 +127,20 @@ defmodule RiichiAdvanced.GameState.Marking do
             |> Enum.concat()
             |> Enum.all?(fn {tile2, _, _} -> Riichi.same_number?(tile, tile2) end)
           else false end
-        "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
+        "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_behavior)
         "match_hand_to_marked_call" ->
-          jokers = Map.keys(state.players[marking_player].tile_mappings)
           state.marking[marking_player]
           |> Enum.filter(fn {src, _mark_info} -> src == :calls end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
           |> Enum.all?(fn {call, _, _} ->
             call_tile = Utils.call_to_tiles(call)
-            |> Enum.reject(& &1 in jokers)
+            |> Enum.reject(&TileBehavior.is_joker?(&1, state.players[marking_player].tile_behavior))
             |> Enum.at(0)
             Utils.same_tile(tile, Utils.strip_attrs(call_tile)) end)
         "match_call_to_marked_hand" ->
-          jokers = Map.keys(state.players[marking_player].tile_mappings)
           call_tile = Utils.call_to_tiles(tile)
-          |> Enum.reject(& &1 in jokers)
+          |> Enum.reject(&TileBehavior.is_joker?(&1, state.players[marking_player].tile_behavior))
           |> Enum.at(0)
           state.marking[marking_player]
           |> Enum.filter(fn {src, _mark_info} -> src == :hand end)
@@ -163,10 +162,8 @@ defmodule RiichiAdvanced.GameState.Marking do
         "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
         "visible"           -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"])
-        "not_joker"         -> not Map.has_key?(state.players[marking_player].tile_mappings, tile)
-        "call_has_joker"    ->
-          jokers = Map.keys(state.players[marking_player].tile_mappings)
-          Utils.has_matching_tile?(Utils.call_to_tiles(tile), jokers)
+        "not_joker"         -> not TileBehavior.is_joker?(tile, state.players[marking_player].tile_behavior)
+        "call_has_joker"    -> Enum.any?(Utils.call_to_tiles(tile), &TileBehavior.is_joker?(&1, state.players[marking_player].tile_behavior))
         "not_riichi"        -> "riichi" not in state.players[marking_player].status or index >= length(state.players[marking_player].hand)
         "last_discard"      ->
           case source do
