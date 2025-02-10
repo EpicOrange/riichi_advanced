@@ -2,7 +2,7 @@
   // TODOs: 
   // how is Same Number Bonus defined?
   // does Pure Suit override Suit Bonus?
-  // check if Chow and chankan are allowed in Hefei mahjong
+  // check if chankan are allowed in Hefei mahjong
   // check what the payouts per player on ron/tsumo are
   
   "default_mods": [],
@@ -279,13 +279,6 @@
     ]
   },
   "buttons": {
-      //TODO: check if Chow is allowed in Hefei mahjong.
-//    "chii": {
-//      "display_name": "Chow",
-//      "call": [[-2, -1], [-1, 1], [1, 2]],
-//      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
-//      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
-//    },
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
