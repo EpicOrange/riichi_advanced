@@ -738,6 +738,8 @@ The idea is that you multiply `points` by some number (can be less than 1) to ge
 
 If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
 
+You can also set `"score_multiplier": "points2"` to let `yaku2` act as multipliers. In other words, `yaku` will be summed and then multiplied with the product of `yaku2`. See `ningbo.json`.
+
 ### `"scoring_method": "score_table"`
 
 Here, `points` is used as a (string) index into a points table, whose keys must be strings per the JSON schema. For example, in Hong Kong Old Style, the score doubles every Fan, and doubles every two Fan after 4 Fan, so you would put:

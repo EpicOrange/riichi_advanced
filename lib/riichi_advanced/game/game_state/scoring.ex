@@ -187,9 +187,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {score, points, points2, name} = case scoring_method do
       "multiplier" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        score = points * Map.get(score_rules, "score_multiplier", 1)
+        points2 = Enum.reduce(yaku2, 1, fn {_name, value}, acc -> acc * value end)
+        score_multiplier = case Map.get(score_rules, "score_multiplier", 1) do
+          "points2"        -> points2
+          score_multiplier -> score_multiplier
+        end
+        score = points * score_multiplier
         score_name = Map.get(score_rules, "score_name", "")
-        {score, points, 0, score_name}
+        {score, points, points2, score_name}
       "score_table" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         score = Map.get(score_rules["score_table"], Integer.to_string(points), score_rules["score_table"]["max"])
