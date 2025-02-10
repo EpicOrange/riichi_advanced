@@ -52,8 +52,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "kamicha_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :kamicha)].calls}]
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "tile" -> [{hand ++ [context.tile], calls}]
-          "called_tile" -> [{hand ++ [context.called_tile], calls}]
-          "call_choice" -> [{hand ++ context.call_choice, calls}]
+          "called_tile" -> [{hand ++ [context.choice.chosen_called_tile], calls}]
+          "call_choice" -> [{hand ++ context.choice.chosen_call_choice, calls}]
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
@@ -395,7 +395,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         hand = cxt_player.hand
         draw = cxt_player.draw
         calls = cxt_player.calls
-        call_tiles = [context.called_tile | context.call_choice]
+        call_tiles = [context.choice.chosen_called_tile | context.choice.chosen_call_choice]
         call = {context.call_name, call_tiles}
         waits_before = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, ordering, ordering_r, tile_aliases, true)
         [call_removed | _] = Match.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
@@ -424,17 +424,17 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
-        called_tiles = [context.called_tile] ++ context.call_choice
+        called_tiles = [context.choice.chosen_called_tile] ++ context.choice.chosen_call_choice
         Utils.count_tiles(called_tiles, tiles) >= count
       "called_tile_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
-        called_tiles = [context.called_tile]
+        called_tiles = [context.choice.chosen_called_tile]
         Utils.count_tiles(called_tiles, tiles) >= count
       "call_choice_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
-        called_tiles = context.call_choice
+        called_tiles = context.choice.chosen_call_choice
         Utils.count_tiles(called_tiles, tiles) >= count
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do

@@ -1511,7 +1511,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         priority_list = state.rules["buttons"][choice.name]["call_priority_list"]
         winning_seat = seats
         |> Enum.sort_by(fn seat ->
-          context = %{seat: seat, call_name: choice, called_tile: state.players[seat].chosen_called_tile, call_choice: state.players[seat].chosen_call_choice}
+          context = %{seat: seat, choice: choice}
           ix = Enum.find_index(priority_list, fn conditions -> Conditions.check_cnf_condition(state, conditions, context) end)
           if ix == nil do :infinity else ix end
         end)

@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
@@ -72,7 +73,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
         call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
           conditions = state.rules["buttons"][button_name]["call_conditions"]
           for {called_tile, choices} <- call_choices do
-            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
+            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
           end
         else call_choices end
         |> Map.new()
