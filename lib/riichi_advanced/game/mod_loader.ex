@@ -145,7 +145,10 @@ defmodule RiichiAdvanced.ModLoader do
     // "starting_hand": {
     //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
     // },
-    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"],
+    // "starting_dead_wall": ["5m", "4m"], // so the first kan draw is 5m. this goes backwards
+    // "starting_round": 4, // start in south round
+    // "debug_status": true // show statuses, counters, and buttons
   }
   """
 
