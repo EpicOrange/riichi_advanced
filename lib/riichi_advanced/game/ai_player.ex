@@ -298,6 +298,7 @@ defmodule RiichiAdvanced.AIPlayer do
           "zimo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "zimo"
           "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_discard"
           "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_draw"
+          "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_draw"
           "riichi" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.tenpai, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "riichi"
           "ankan" in player.buttons -> "ankan"
           # "daiminkan" in player.buttons -> "daiminkan"
