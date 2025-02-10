@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
@@ -264,8 +265,9 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  def handle_info({:buttons, %{player: player, turn: turn}}, state) do
+  def handle_info({:buttons, params}, state) do
     t = System.os_time(:millisecond)
+    %{player: player, turn: turn, last_discard: last_discard} = params
     if state.initialized do
       state = Map.put(state, :player, player)
       # pick a random button
@@ -290,13 +292,13 @@ defmodule RiichiAdvanced.AIPlayer do
       else
         # pick these (in order of precedence)
         cond do
-          "ron" in player.buttons -> "ron"
-          "tsumo" in player.buttons -> "tsumo"
-          "hu" in player.buttons -> "hu"
-          "zimo" in player.buttons -> "zimo"
-          "mahjong_discard" in player.buttons -> "mahjong_discard"
-          "mahjong_draw" in player.buttons -> "mahjong_draw"
-          "riichi" in player.buttons -> "riichi"
+          "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "ron"
+          "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "tsumo"
+          "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "hu"
+          "zimo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "zimo"
+          "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_discard"
+          "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "mahjong_draw"
+          "riichi" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.tenpai, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) -> "riichi"
           "ankan" in player.buttons -> "ankan"
           # "daiminkan" in player.buttons -> "daiminkan"
           # "pon" in player.buttons -> "pon"
@@ -339,7 +341,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {:noreply, state}
     else
       # reschedule this for after we initialize
-      :timer.apply_after(1000, Kernel, :send, [self(), {:buttons, %{player: player, turn: turn}}])
+      :timer.apply_after(1000, Kernel, :send, [self(), {:buttons, params}])
       {:noreply, state}
     end
   end

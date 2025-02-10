@@ -1,5 +1,5 @@
 def make_chombo_button($text; $win_action; $winning_tile; $yaku_check; $yaku2_check; $check):
-  .show_when = [{"name": "not_status", "opts": ["just_reached"]}] + $check + [["not_is_ai", {"name": "match", "opts": [["hand", "calls", $winning_tile], ["win"]]}]]
+  .show_when = [{"name": "not_status", "opts": ["just_reached"]}] + $check
   |
   .actions = [
     ["ite", [{"name": "match", "opts": [["hand", "calls", $winning_tile], ["win"]]}, [{"name": $yaku_check, "opts": [1]}, {"name": $yaku2_check, "opts": [1]}]], [
@@ -41,7 +41,7 @@ def disable_when_dead:
 .buttons |= with_entries(.value |= disable_when_dead)
 |
 # make riichi always available
-.buttons.riichi.show_when |= map(if . == {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]} then ["not_is_ai", .] else . end)
+.buttons.riichi.show_when |= map(select(. != {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}))
 |
 # you can riichi discard any tile
 .play_restrictions |= map(select(. != [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]]))

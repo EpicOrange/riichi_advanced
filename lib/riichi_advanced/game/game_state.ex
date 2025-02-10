@@ -1501,9 +1501,11 @@ defmodule RiichiAdvanced.GameState do
             has_buttons = not Enum.empty?(state.players[seat].buttons)
             has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
             has_marking_ui = not Enum.empty?(state.marking[seat])
+            last_discard_action = get_last_discard_action(state)
+            last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
             if is_pid(Map.get(state, seat)) and has_buttons and not has_call_buttons and not has_marking_ui do
               # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-              send(Map.get(state, seat), {:buttons, %{player: state.players[seat], turn: state.turn}})
+              send(Map.get(state, seat), {:buttons, %{player: state.players[seat], turn: state.turn, last_discard: last_discard}})
             end
           end)
         end
