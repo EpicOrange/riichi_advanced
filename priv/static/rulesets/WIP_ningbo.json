@@ -17,7 +17,7 @@
 
 // Some updates here:
 //✅ -Chows/Chis are not allowed
-//⚠️ -Updated scoring formula: Total Payout = Tai/Points x Multipliers for Special Situations (Rinshan or Pao)
+//✅ -Updated scoring formula: Total Payout = Tai/Points x Multipliers for Special Situations (Rinshan or Pao)
 //✅ -Updated all scoring hands, tenhou 8->10, chihou 10, all 8 flowers 10, tsuuiisou 4->10
 //✅ -Rinshin Additional x2, Chankan x5,
 //✅ -No dealer bonus
@@ -26,7 +26,7 @@
 //⚠️ Real tiles have precedence over Baida (Wild Tiles).
 
   
-    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated.
+    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated. Check precedence for baida tiles. Check what happens if baida indicator is flower/honour. implement "Baida Reuse" yaku
   "default_mods": [],
   "available_mods": [],
   "display_name": "Ningbo mahjong",
