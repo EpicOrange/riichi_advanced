@@ -1259,7 +1259,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp _run_actions(state, not_actions, _context) do
     IO.puts("Can't run actions #{inspect(not_actions)}")
     IO.inspect(Process.info(self(), :current_stacktrace))
-    state
+    {state, []}
   end
 
   def run_actions(state, actions, context) do

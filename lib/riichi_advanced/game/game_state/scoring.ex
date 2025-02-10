@@ -486,7 +486,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       delta_scores = if "use_arakawa_kei_scoring" in winner.player.status do
         win_definitions = translate_match_definitions(state, ["win"])
         visible_tiles = get_visible_tiles(state, winner.seat)
-        waits = Riichi.get_waits_and_ukeire(winner.hand, winner.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+        waits = Riichi.get_waits_and_ukeire(winner.player.hand, winner.player.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
         if "arakawa-kei" in winner.player.status do
           # everyone pays winner 100 points per live out
           ukeire = waits |> Map.values() |> Enum.sum()
@@ -714,7 +714,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           state ->
             # calculate possible waits
             winner = state.players[seat]
-            waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
 
             # display nothing if waits are empty
             # shouldn't happen under normal conditions, since tenpai implies nonempty waits
