@@ -170,7 +170,6 @@ defmodule RiichiAdvanced.GameState do
       kyoku: 0,
       honba: 0,
       pot: 0,
-      tags: %{},
       log_state: %{},
       call_stack: [], # call stack limit is 10 for now
       forced_event: nil, # for tutorials
@@ -192,6 +191,7 @@ defmodule RiichiAdvanced.GameState do
       saved_revealed_tiles: [],
       max_revealed_tiles: 0,
       drawn_reserved_tiles: [],
+      tags: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
       processed_bloody_end: false,
     ]
@@ -548,6 +548,7 @@ defmodule RiichiAdvanced.GameState do
     # initialize other constants
     persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
     persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
+    persistent_tags = if Map.has_key?(rules, "persistent_tags") do rules["persistent_tags"] else [] end
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
       {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
@@ -559,7 +560,7 @@ defmodule RiichiAdvanced.GameState do
          hand: hands[&1],
          auto_buttons: initial_auto_buttons,
          status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
-         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
+         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
        })
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -572,6 +573,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:delta_scores, %{})
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
+    |> Map.update!(:tags, &Enum.filter(&1, fn {tag, _tiles} -> tag in persistent_tags end) |> Map.new())
 
     # initialize marking
     state = Marking.initialize_marking(state)
@@ -908,7 +910,7 @@ defmodule RiichiAdvanced.GameState do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
-          nil -> Map.get(state.tags, tile_name, nil) # check tags
+          nil -> Map.get(state.tags, tile_name, []) |> Enum.at(0) # check tags
           ix  -> Enum.at(state.dead_wall, -ix-1)
         end
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
