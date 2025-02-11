@@ -6,7 +6,8 @@
       "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
       "north": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"]
     },
-    "starting_draws": ["4s", "1z", "2z", "3z", "1m", "9p", "9p", "1m", "4s"]
+    "starting_draws": ["4s", "1z", "2z", "3z", "1m", "9p", "9p", "1m", "4s"],
+    "tsumogiri_bots": true
   },
   "scenes": {
     "start": [
@@ -88,7 +89,7 @@
       ["sleep", 5000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "Click to return to the remaining tutorials."
+        "text": "Click to return to the list of tutorials."
       }],
       ["await_click", "scene9"]
     ],

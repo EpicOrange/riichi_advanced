@@ -1367,12 +1367,13 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:fill_empty_seats_with_ai, disconnected?}, state) do
+    tsumogiri_bot = Map.get(state.rules, "tsumogiri_bots", Debug.debug())
     state = if not state.log_seeking_mode do
       state = for dir <- state.available_seats, Map.get(state, dir) == nil, disconnected? or not Map.has_key?(state.reserved_seats, dir), reduce: state do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions, tsumogiri_bot: tsumogiri_bot}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -1415,6 +1416,7 @@ defmodule RiichiAdvanced.GameState do
   end
   def handle_cast(:unpause, state) do
     state = Map.put(state, :game_active, true)
+    notify_ai(state)
     {:noreply, state}
   end
   def handle_cast({:unpause, context}, state) do
@@ -1460,6 +1462,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:play_tile, seat, index}, state) do
     if state.forced_event in [nil, ["play_tile", Atom.to_string(seat), index]] do
+      state = Map.put(state, :forced_event, nil)
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
@@ -1474,21 +1477,24 @@ defmodule RiichiAdvanced.GameState do
         state = Actions.submit_actions(state, seat, "play_tile", actions)
         state
       else state end
-      |> Map.put(:forced_event, nil)
       {:noreply, state}
     else {:noreply, state} end
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
     if state.forced_event in [nil, ["press_button", Atom.to_string(seat), button_name]] do
+      state = Map.put(state, :forced_event, nil)
       state = Buttons.press_button(state, seat, button_name)
-      |> Map.put(:forced_event, nil)
       {:noreply, state}
     else {:noreply, state} end
   end
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do
-    {:noreply, Buttons.press_call_button(state, seat, call_choice, called_tile)}
+    if state.forced_event in [nil, ["press_call_button", Atom.to_string(seat), Enum.map(call_choice, &Utils.tile_to_string/1), Utils.tile_to_string(called_tile)]] do
+      state = Map.put(state, :forced_event, nil)
+      state = Buttons.press_call_button(state, seat, call_choice, called_tile)
+      {:noreply, state}
+    else {:noreply, state} end
   end
   
   def handle_cast({:press_first_call_button, seat, button_name}, state) do
@@ -1525,12 +1531,14 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:cancel_call_buttons, seat}, state) do
-    # go back to button clicking phase
-    state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
-    notify_ai(state)
+    if state.forced_event == nil do
+      # go back to button clicking phase
+      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
+      notify_ai(state)
 
-    state = broadcast_state_change(state)
-    {:noreply, state}
+      state = broadcast_state_change(state)
+      {:noreply, state}
+    else {:noreply, state} end
   end
 
   def handle_cast(:notify_ai, state) do

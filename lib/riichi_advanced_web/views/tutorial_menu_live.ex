@@ -3,7 +3,10 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   use RiichiAdvancedWeb, :live_view
 
   @tutorials %{
-    "riichi" => ["main": "Test tutorial"]
+    "riichi" => [
+      {"riichi_basics", "Basic flow of the game", :east},
+      {"riichi_calls", "Calling tiles", :north}
+    ]
   }
 
   def mount(params, _session, socket) do
@@ -60,7 +63,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
           Hit the back button to return to the main menu.
         <% else %>
           <div class="tutorial-menu-buttons">
-            <button phx-cancellable-click="goto_tutorial" phx-value-index={i} phx-value-sequence={sequence} :for={{{sequence, name}, i} <- Enum.with_index(@available_tutorials)}>
+            <button phx-cancellable-click="goto_tutorial" phx-value-index={i} phx-value-sequence={sequence} phx-value-seat={seat} :for={{{sequence, name, seat}, i} <- Enum.with_index(@available_tutorials)}>
               Tutorial <%= i + 1 %>:
               <%= if @clicked_index == Integer.to_string(i) do %> Loading... <% else %> <%= name %> <% end %>
             </button>
@@ -91,9 +94,9 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     {:noreply, socket}
   end
   
-  def handle_event("goto_tutorial", %{"sequence" => sequence, "index" => i}, socket) do
+  def handle_event("goto_tutorial", %{"sequence" => sequence, "seat" => seat, "index" => i}, socket) do
     socket = assign(socket, :clicked_index, i)
-    send(self(), {:goto_tutorial, sequence})
+    send(self(), {:goto_tutorial, sequence, seat})
     {:noreply, socket}
   end
 
@@ -101,8 +104,8 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     {:noreply, socket}
   end
 
-  def handle_info({:goto_tutorial, sequence}, socket) do
-    socket = push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}/#{sequence}?nickname=#{socket.assigns.nickname}")
+  def handle_info({:goto_tutorial, sequence, seat}, socket) do
+    socket = push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}/#{sequence}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
     {:noreply, socket}
   end
 
