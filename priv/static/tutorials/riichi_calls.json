@@ -6,7 +6,7 @@
       "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
       "north": ["3m", "4m", "4m", "1p", "2p", "3p", "4p", "5p", "1s", "1s", "1z", "1z", "5z"]
     },
-    "starting_draws": ["3z", "7z", "3p", "3z", "1z"],
+    "starting_draws": ["3z", "7z", "3p", "3z", "1z", "8m", "9m", "5m"],
     "tsumogiri_bots": true
   },
   "scenes": {
