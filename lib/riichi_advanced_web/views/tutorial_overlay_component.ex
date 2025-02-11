@@ -5,6 +5,7 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
     socket = socket
     |> assign(:objects, [])
     |> assign(:focuses, [])
+    |> assign(:deferred_actions, [])
     |> assign(:waiting_for_click, false)
     |> assign(:initialized, false)
     {:ok, socket}
@@ -25,15 +26,23 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         socket
         |> assign(:objects, [])
         |> assign(:focuses, [])
-      "force_event" ->
-        next_scene = Enum.at(opts, 0, "")
-        event = Enum.at(opts, 1, %{})
+      "await_event" ->
+        event = Enum.at(opts, 0, %{})
+        next_scene = Enum.at(opts, 1, :resume)
         socket.assigns.force_event.(next_scene, event)
         socket
+        |> assign(:deferred_actions, actions)
+      "block_events" ->
+        socket.assigns.force_event.(nil, [])
+        socket
+      "unblock_events" ->
+        socket.assigns.force_event.(nil, nil)
+        socket
       "await_click" ->
-        next_scene = Enum.at(opts, 0, "")
+        next_scene = Enum.at(opts, 0, :resume)
         socket.assigns.await_click.(next_scene)
         socket
+        |> assign(:deferred_actions, actions)
       "pause" ->
         GenServer.cast(socket.assigns.game_state, :pause)
         socket
@@ -48,7 +57,7 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         send(self(), :back)
         socket
     end
-    if action == "sleep" do
+    if action in ["sleep", "await_click", "await_event"] do
       socket
     else 
       run_actions(socket, actions)
@@ -98,7 +107,7 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
     |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     actions = Map.get(assigns, :actions, [])
-
+    actions = if actions == :resume do socket.assigns.deferred_actions else actions end
     socket = run_actions(socket, actions)
 
     {:ok, socket}

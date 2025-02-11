@@ -342,6 +342,7 @@ defmodule RiichiAdvanced.GameState do
     state = Log.init_log(state)
 
     state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
+    state = Map.put(state, :honba, Map.get(state.rules, "starting_honba", 0))
 
     initial_score = Map.get(rules, "initial_score", 0)
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
@@ -1462,7 +1463,6 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:play_tile, seat, index}, state) do
     if state.forced_event in [nil, ["play_tile", Atom.to_string(seat), index]] do
-      state = Map.put(state, :forced_event, nil)
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
@@ -1470,6 +1470,7 @@ defmodule RiichiAdvanced.GameState do
         IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
       end
       state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
+        state = Map.put(state, :forced_event, nil)
         state = Actions.temp_disable_play_tile(state, seat)
         # assume we're skipping our button choices
         state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
@@ -1478,7 +1479,10 @@ defmodule RiichiAdvanced.GameState do
         state
       else state end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      # IO.inspect("Blocked #{inspect({:play_tile, seat, index})}; waiting for #{inspect(state.forced_event)}")
+      {:noreply, state}
+    end
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
