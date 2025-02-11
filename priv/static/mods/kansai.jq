@@ -9,9 +9,9 @@
   {"id": "kansai_aka", "name": "Kansai Aka", "desc": "Every five is akadora."},
   {"id": "kansai_yaku", "name": "Kansai Yaku", "desc": "Adds the following yaku: Three Consecutive Triplets (2 han), Four Consecutive Triplets (yakuman), Honitsu Chiitoitsu (6 han), Chinitsu Chiitoitsu (yakuman). In addition, Tsumo invalidates Pinfu."},
   {"id": "nagashi_yakuman", "name": "Nagashi Yakuman", "desc": "Nagashi is worth yakuman instead of mangan."},
-  {"id": "kansai_no_furiten_riichi", "order": 1, "name": "No Furiten Riichi", "desc": "Riichi is disallowed while in furiten."},
+  {"id": "kansai_no_furiten_riichi", "order": 1, "deps": ["yaku/riichi"], "name": "No Furiten Riichi", "desc": "Riichi is disallowed while in furiten."},
   {"id": "kansai_no_100_sticks", "name": "No 100 sticks", "desc": "All scores are rounded to 1000s instead of 100s."},
-  {"id": "kansai_preset_yaku", "name": "Preset Yaku", "desc": "You must declare your yaku at the beginning, and you can only win with that exact set of yaku. (This mod is the result of a possible mistranslation and will be replaced with actual kanzen sakidzuke rules on a later date.)"},
+  # {"id": "kansai_preset_yaku", "name": "Preset Yaku", "desc": "You must declare your yaku at the beginning, and you can only win with that exact set of yaku. (This mod is the result of a possible mistranslation and will be replaced with actual kanzen sakidzuke rules on a later date.)"},
   {"id": "kansai_30_fu", "conflicts": ["kansai_40_fu"], "name": "30 Fu", "desc": "Fu is fixed at 30."},
   {"id": "kansai_40_fu", "conflicts": ["kansai_30_fu"], "name": "40 Fu", "desc": "Fu is fixed at 40."}
 ] + .available_mods

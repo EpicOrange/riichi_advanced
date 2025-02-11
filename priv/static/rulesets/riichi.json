@@ -9,7 +9,7 @@
   // there -- Hong Kong, American, Saki-power-infused mahjong.
 
   "default_mods": [
-    "dora", "ura", "kandora", "aka",
+    "kan", "yaku/riichi", "dora", "ura", "kandora", "aka",
     "yaku/ippatsu",
     "nagashi",
     "tobi",
@@ -24,6 +24,7 @@
   ],
   "available_mods": [
     "Rules",
+    {"id": "kan", "order": -1, "name": "Kan", "desc": "Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game."},
     {"id": "nagashi", "name": "Nagashi", "desc": "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."},
     {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
     {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
@@ -32,13 +33,13 @@
     {"id": "tenpaiyame", "deps": ["tenpairenchan"], "name": "Tenpaiyame", "desc": "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."},
     {"id": "sudden_death", "name": "Sudden Death", "desc": "Sets a goal of 30000 points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below 30000 points, play continues to the West (South) round until someone surpasses 30000 points, or at the end of West 4 (South 4)."},
     {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
-    {"id": "immediate_kan_dora", "order": 1, "deps": ["kandora", "dora"], "name": "Immediate Kan Dora", "desc": "Flip kan dora immediately after daiminkan and kakan."},
+    {"id": "immediate_kan_dora", "order": 1, "deps": ["kan", "kandora", "dora"], "name": "Immediate Kan Dora", "desc": "Flip kan dora immediately after daiminkan and kakan."},
     {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},
     {"id": "kuikae_ari", "name": "Kuikae Ari", "desc": "Allow swap-calling."},
     {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
-    {"id": "drawless_riichi", "name": "Drawless Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
-    {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
+    {"id": "drawless_riichi", "name": "Drawless Riichi", "deps": ["yaku/riichi"], "desc": "You may riichi even if you have no draws remaining in the wall."},
+    {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "deps": ["yaku/riichi"], "desc": "Makes riichi bet 5000 instead of 1000. Winning with riichi is still 1 han."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "double_wind_4_fu", "name": "Double Wind 4 Fu", "desc": "A pair of round+seat winds is worth 4 fu instead of 2 fu."},
     {"id": "three_dora_start", "order": 1, "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
@@ -54,8 +55,8 @@
     {"id": "kansai_chiitoitsu", "name": "Kansai Chiitoitsu", "desc": "Chiitoitsu now allows repeated pairs."},
     "Abortive Draws",
     {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
-    {"id": "suucha_riichi", "name": "Suucha Riichi", "desc": "Enable 4 riichi abortive draw."},
-    {"id": "suukaikan", "name": "Suukaikan", "desc": "Enable 4 kan abortive draw."},
+    {"id": "suucha_riichi", "name": "Suucha Riichi", "deps": ["yaku/riichi"], "desc": "Enable 4 riichi abortive draw."},
+    {"id": "suukaikan", "deps": ["kan"], "name": "Suukaikan", "desc": "Enable 4 kan abortive draw."},
     {"id": "sanchahou", "conflicts": ["head_bump"], "name": "Sanchahou", "desc": "Enable triple ron abortive draw."},
     {"id": "kyuushu_kyuuhai", "name": "Kyuushu Kyuuhai", "desc": "Enable 9 distinct terminal/honor abortive draw."},
     "Dora",
@@ -66,17 +67,18 @@
     {"id": "aka_6", "deps": ["aka_4", "aka"], "conflicts": ["chinitsu"], "name": "Six Aka", "desc": "Adds another two red fives (of characters and bamboos)."},
     {"id": "aka_12", "deps": ["aka_6", "aka_4", "aka"], "conflicts": ["chinitsu"], "name": "Twelve Aka", "desc": "Changes all fives to red fives."},
     {"id": "its_all_aka", "deps": ["aka"], "order": 3, "name": "It's All Aka?", "desc": "Changes all tiles to aka."},
-    {"id": "kandora", "deps": ["dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
+    {"id": "kandora", "deps": ["kan", "dora"], "name": "Kandora", "desc": "Enables dora flip on kan."},
     "Yaku",
     // 1 han
-    {"id": "yaku/ippatsu", "name": "Ippatsu", "desc": "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."},
-    {"id": "yaku/tsubame_gaeshi", "name": "Tsubame Gaeshi", "desc": "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."},
+    {"id": "yaku/riichi", "order": -1, "name": "Riichi", "desc": "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."},
+    {"id": "yaku/ippatsu", "name": "Ippatsu", "deps": ["yaku/riichi"], "desc": "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."},
+    {"id": "yaku/tsubame_gaeshi", "name": "Tsubame Gaeshi", "deps": ["yaku/riichi"], "desc": "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."},
     {"id": "yaku/shiiaru_raotai", "name": "Shiiaru Raotai", "desc": "Local yaku. \"Twelve Tiles Down\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."},
-    {"id": "yaku/kanburi", "name": "Kanburi", "desc": "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."},
+    {"id": "yaku/kanburi", "deps": ["kan"], "name": "Kanburi", "desc": "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."},
     {"id": "yaku/honors_chiitoitsu", "name": "Honors Chiitoitsu", "desc": "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."},
     {"id": "yaku/uushin_tsuukan", "name": "Uushin Tsuukan", "desc": "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."},
     // 2 han
-    {"id": "yaku/open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."},
+    {"id": "yaku/open_riichi", "name": "Open Riichi", "deps": ["yaku/riichi"], "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."},
     {"id": "yaku/sanrenkou", "name": "Sanrenkou", "desc": "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."},
     {"id": "yaku/sanshoku_ittsu", "name": "Sanshoku Ittsu", "desc": "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."},
     {"id": "yaku/kyandonhou", "name": "Kyandonhou", "desc": "Local yaku. \"Twice Mixed Double Sequence\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."},
@@ -86,7 +88,7 @@
     {"id": "yaku/suuzuukou", "name": "Suuzuukou", "desc": "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."},
     {"id": "yaku/uumensai", "name": "Uumensai", "desc": "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."},
     {"id": "yaku/sanpuukou", "name": "Sanpuukou", "desc": "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."},
-    {"id": "yaku/renkaihou", "name": "Renkaihou", "desc": "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."},
+    {"id": "yaku/renkaihou", "deps": ["kan"], "name": "Renkaihou", "desc": "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."},
     {"id": "yaku/mondeikou", "deps": ["aka", "aka_4"], "name": "Mondeikou", "desc": "Local yaku. If you have all 4 aka, 2 han on top of aka. This counts as a yaku."},
     // 3 han
     {"id": "yaku/isshoku_sanjun", "name": "Isshoku Sanjun", "desc": "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."},
@@ -97,8 +99,8 @@
     {"id": "yaku/renhou_mangan", "conflicts": ["yaku/renhou_yakuman"], "name": "Renhou Mangan", "desc": "Local yaku. Instant mangan if you win off the first tile someone dropped before your first draw. Calls invalidate."},
     {"id": "yaku/kinkei_dokuritsu", "name": "Kinkei Dokuritsu", "desc": "Local yaku. \"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."},
     {"id": "yaku/touchao_hanchanshue", "name": "Touchao Hanchanshue", "desc": "Local yaku. \"Fishing Alone in the Cold River Snow\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."},
-    {"id": "yaku/uupin_kaihou", "name": "Uupin Kaihou", "desc": "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."},
-    {"id": "yaku/ryanzou_chankan", "name": "Ryanzou Chankan", "desc": "Local yaku. \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo)."},
+    {"id": "yaku/uupin_kaihou", "deps": ["kan"], "name": "Uupin Kaihou", "desc": "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."},
+    {"id": "yaku/ryanzou_chankan", "deps": ["kan"], "name": "Ryanzou Chankan", "desc": "Local yaku. \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo)."},
     {"id": "yaku/iipin_mouyue", "name": "Iipin Mouyue", "desc": "Local yaku. \"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles)."},
     {"id": "yaku/chuupin_raoyui", "name": "Chuupin Raoyui", "desc": "Local yaku. \"Catching Fish from the Bottom of the River\". Mangan if you win with houtei (not haitei) on the 9p (9 circles)."},
     {"id": "yaku/shanron_chonchu", "name": "Shanron Chonchu", "desc": "Local yaku. \"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap."},
@@ -107,8 +109,8 @@
     "Yakuman",
     {"id": "yaku/renhou_yakuman", "conflicts": ["yaku/renhou_mangan"], "name": "Renhou Yakuman", "desc": "Local yaku. Instant yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."},
     {"id": "yaku/paarenchan", "conflicts": ["yakuman_only"], "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
-    {"id": "yaku/ishino_uenimo_sannen", "name": "Ishino Uenimo Sannen", "desc": "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."},
-    {"id": "yaku/toukanhou", "name": "Toukanhou", "desc": "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."},
+    {"id": "yaku/ishino_uenimo_sannen", "name": "Ishino Uenimo Sannen", "deps": ["yaku/riichi"], "desc": "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."},
+    {"id": "yaku/toukanhou", "deps": ["kan"], "name": "Toukanhou", "desc": "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."},
     {"id": "yaku/shiisanpuutaa", "name": "Shiisanpuutaa", "desc": "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."},
     {"id": "yaku/shiisanuushi", "name": "Shiisanuushi", "desc": "Local yakuman. \"Thirteen Independent\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."},
     {"id": "yaku/suurenkou", "name": "Suurenkou", "desc": "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."},
@@ -130,8 +132,8 @@
     {"id": "yaku/tohoku_shinkansen", "name": "Tohoku Shinkansen", "desc": "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."},
     {"id": "yaku/blue_tunnel", "name": "Blue Tunnel", "desc": "Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman."},
     {"id": "yaku/junsei_ryuuiisou", "name": "Junsei Ryuuiisou", "desc": "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."},
-    {"id": "yaku/chousangen", "name": "Chousangen", "desc": "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."},
-    {"id": "yaku/chousuushii", "name": "Chousuushii", "desc": "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."},
+    {"id": "yaku/chousangen", "deps": ["kan"], "name": "Chousangen", "desc": "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."},
+    {"id": "yaku/chousuushii", "deps": ["kan"], "name": "Chousuushii", "desc": "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."},
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
@@ -141,13 +143,13 @@
     {"id": "galaxy", "order": 2, "conflicts": ["chinitsu"], "name": "Galaxy Mahjong", "desc": "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
     {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."},
     {"id": "no_honors", "conflicts": ["shiro_pocchi", "golden_chun", "blue_dragon"], "name": "No Honors", "desc": "Removes the honor tiles (winds and dragons) from the game."},
-    {"id": "shiro_pocchi", "order": 2, "conflicts": ["no_honors", "chinitsu"], "name": "Shiro Pocchi", "desc": "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."},
-    {"id": "golden_chun", "deps": ["shiro_pocchi"], "conflicts": ["no_honors", "chinitsu"], "name": "Golden Chun", "desc": "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which acts as a joker for any five, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."},
+    {"id": "shiro_pocchi", "order": 2, "deps": ["yaku/riichi"], "conflicts": ["no_honors", "chinitsu"], "name": "Shiro Pocchi", "desc": "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."},
+    {"id": "golden_chun", "deps": ["yaku/riichi", "shiro_pocchi"], "conflicts": ["no_honors", "chinitsu"], "name": "Golden Chun", "desc": "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which acts as a joker for any five, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."},
     {"id": "blue_dragon", "conflicts": ["no_honors", "chinitsu"], "name": "Blue Dragon (beta)", "desc": "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."},
     {"id": "shouhai", "order": 3, "name": "Shouhai", "desc": "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."},
     {"id": "chinitsu", "conflicts": ["aka", "aka_4", "yaku/mondeikou", "galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
     {"id": "washizu", "order": 1, "name": "Washizu", "desc": "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."},
-    {"id": "calls_are_forced", "conflicts": ["chombo"], "name": "Calls Are Forced", "desc": "Forces you to make all available calls, including riichi. You still get to choose if multiple calls are available."},
+    {"id": "calls_are_forced", "conflicts": ["chombo"], "name": "Calls Are Forced", "desc": "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."},
     {"id": "chombo", "conflicts": ["calls_are_forced"], "name": "Chombo", "desc": "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."},
     {"id": "riichi_jp", "name": "Japanese Yaku Names", "desc": "Display yaku names in Japanese."}
 
@@ -251,16 +253,6 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
     ]
   ],
-  // used to check for riichi eligibility
-  "tenpai_14_definition": [
-    [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
-    ]
-  ],
   "kokushi_tenpai_definition": [
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
@@ -300,10 +292,7 @@
     [ "exhaustive", [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
   ],
   "yaku": [
-    { "display_name": "Riichi", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}] },
     { "display_name": "Tsumo", "value": 1, "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
-    { "display_name": "Chankan", "value": 1, "when": ["won_by_call"] },
-    { "display_name": "Rinshan", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Haitei", "value": 1, "when": ["no_tiles_remaining", "won_by_draw"] },
     { "display_name": "Houtei", "value": 1, "when": ["no_tiles_remaining", "not_won_by_draw"] },
     {
@@ -347,7 +336,6 @@
         [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
-    { "display_name": "Double Riichi", "value": 2, "when": [{"name": "status", "opts": ["double_riichi"]}] },
     { "display_name": "Chiitoitsu", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
     {
       "display_name": "Chanta",
@@ -362,7 +350,6 @@
     { "display_name": "Ittsu", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Sanshoku", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["sanshoku_doujun"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Sanshoku Doukou", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["sanshoku_doukou"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
-    { "display_name": "Sankantsu", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["daiminkan", "ankan", "kakan"], 3] ]]]}] },
     { "display_name": "Toitoi", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["koutsu"], 4], [["pair"], 1] ]]]}] },
     {
       "display_name": "Sanankou",
@@ -443,8 +430,7 @@
     { "display_name": "Kokushi Musou", "value": 1, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}] },
     { "display_name": "Kokushi Musou Juusan Menmachi", "value": 2, "when": [{"name": "match", "opts": [["hand"], [[[["orphans_all"], 1]]]]}] },
     { "display_name": "Daisuushii", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["daisuushii"]]}] },
-    { "display_name": "Shousuushii", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]}] },
-    { "display_name": "Suukantsu", "value": 1, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}] }
+    { "display_name": "Shousuushii", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuushii"]]}] }
   ],
   "meta_yakuman": [
     // tenhou upgrades certain yakuman to double yakuman
@@ -500,7 +486,6 @@
     "yaku2_overrides_yaku1": true,
     "draw_tenpai_payments": [1000, 1500, 3000],
     "split_oya_ko_payment": true,
-    "riichi_value": 1000,
     "honba_value": 100,
     "right_display": "minipoints",
     "point_name": "Han",
@@ -516,49 +501,21 @@
     "exhaustive_draw_name": "Ryuukyoku"
   },
   "play_restrictions": [
-    [["any"], [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["just_reached"]}, "not_is_drawn_tile"]],
-    [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]],
     [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
   ],
   "functions": {
     // this is run after every call and discard, before the turn changes
     "turn_cleanup": [
-      // if we just reached then place down a riichi stick
-      ["when", [{"name": "status", "opts": ["just_reached"]}], [["as", "last_discarder", [["run", "put_down_riichi_stick"]]]]],
-      // unset furiten (unless in riichi)
-      ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]],
+      // unset furiten
+      ["unset_status", "furiten"],
       // tenpai check
       ["ite", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]], [["unset_status", "tenpai"]]]
     ],
     "discard_passed": [
-      // unset temporary statuses from others
-      ["as", "others", [["unset_status", "just_reached", "kan"]]],
       // furiten check
-      ["when_anyone",
-        [[
-          {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-          [
-            {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ]
-        ]],
+      ["when_anyone", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
         [["set_status", "furiten"]]
       ]
-    ],
-    "do_kan_draw": [
-      ["set_status", "kan"],
-      ["shift_tile_to_dead_wall", 1],
-      ["draw", 1, "opposite_end"]
-    ],
-    "put_down_riichi_stick": [
-      ["when", [{"name": "status_missing", "opts": ["put_down_riichi_stick"]}], [
-        ["subtract_score", "riichi_value"], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]
-      ]]
     ]
   },
   "before_turn_change": {
@@ -597,7 +554,7 @@
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
@@ -605,59 +562,9 @@
       "display_name": "Pon",
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii", "pon"]
-    },
-    "daiminkan": {
-      "display_name": "Kan",
-      "call": [[0, 0, 0]],
-      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, {"name": "tile_not_drawn", "opts": [-4]}, "call_available"],
-      "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"], ["run", "do_kan_draw"]],
-      "precedence_over": ["chii", "pon", "daiminkan"]
-    },
-    "ankan": {
-      "display_name": "Ankan",
-      "call": [[0, 0, 0]],
-      "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
-      "call_conditions": [[
-        {"name": "status_missing", "opts": ["riichi"]},
-        {"name": "not_call_changes_waits", "opts": ["win"]}
-      ]],
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}, "self_call_available"],
-      "actions": [["big_text", "Kan"], ["self_call"], ["run", "do_kan_draw"]]
-    },
-    "kakan": {
-      "display_name": "Kan",
-      "call": [[0, 0, 0]],
-      "call_style": {
-        "kamicha": [["sideways", 0], "call_sideways", 1, 2],
-        "toimen": [0, ["sideways", 1], "call_sideways", 2],
-        "shimocha": [0, 1, ["sideways", 2], "call_sideways"]
-      },
-      "upgrades": "pon",
-      // not sure why we have "not_just_discarded", "not_just_called" instead of "has_draw"
-      "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}],
-      "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw"]]
-    },
-    "riichi": {
-      "display_name": "Riichi",
-      "show_when": [
-        "our_turn",
-        "has_draw",
-        {"name": "status_missing", "opts": ["riichi"]},
-        {"name": "has_score", "opts": ["riichi_value"]},
-        "next_draw_possible",
-        {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}
-      ],
-      "actions": [
-        ["big_text", "Riichi"],
-        ["set_status", "riichi", "just_reached"],
-        ["push_message", "declared riichi"],
-        ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
-      ]
     },
     "ron": {
       "display_name": "Ron",
@@ -671,29 +578,7 @@
         [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
       ],
       "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "daiminkan"]
-    },
-    "chankan": {
-      "display_name": "Ron",
-      "show_when": [
-        "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-        {"name": "status_missing", "opts": ["furiten"]},
-        {"name": "status_missing", "opts": ["just_reached"]},
-        [
-          [
-            {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ]
-        ]
-      ],
-      "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["chii", "pon", "daiminkan"]
+      "precedence_over": ["chii", "pon"]
     },
     "tsumo": {
       "display_name": "Tsumo",
@@ -745,7 +630,6 @@
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call"],
   "shown_statuses": ["furiten"],
-  "display_riichi_sticks": true,
   "display_honba": true,
   "display_wall": true,
   "initial_score": 25000,

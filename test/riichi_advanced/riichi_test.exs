@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.RiichiTest do
   use ExUnit.Case, async: true
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
 
   @riichi_win_definition [
@@ -75,27 +76,27 @@ defmodule RiichiAdvanced.RiichiTest do
 
   test "standard hand win" do
     hand = [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p", :"6p"]
-    assert Match.match_hand(hand, [], @riichi_win_definition, @ordering, @ordering_r, %{})
+    assert Match.match_hand(hand, [], @riichi_win_definition, %TileBehavior{ ordering: @ordering, ordering_r: @ordering_r })
   end
 
   test "tenpai is not win" do
     hand = [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p", :"7p"]
-    assert not Match.match_hand(hand, [], @riichi_win_definition, @ordering, @ordering_r, %{})
+    assert not Match.match_hand(hand, [], @riichi_win_definition, %TileBehavior{ ordering: @ordering, ordering_r: @ordering_r })
   end
 
   test "seven pairs win" do
     hand = [:"1m", :"1m", :"4m", :"4m", :"6m", :"6m", :"2p", :"2p", :"7p", :"7p", :"8s", :"8s", :"3z", :"3z"]
-    assert Match.match_hand(hand, [], @riichi_win_definition, @ordering, @ordering_r, %{})
+    assert Match.match_hand(hand, [], @riichi_win_definition, %TileBehavior{ ordering: @ordering, ordering_r: @ordering_r })
   end
 
   test "invalid seven pairs win" do
     hand = [:"1m", :"1m", :"1m", :"1m", :"6m", :"6m", :"2p", :"2p", :"7p", :"7p", :"8s", :"8s", :"3z", :"3z"]
-    assert not Match.match_hand(hand, [], @riichi_win_definition, @ordering, @ordering_r, %{})
+    assert not Match.match_hand(hand, [], @riichi_win_definition, %TileBehavior{ ordering: @ordering, ordering_r: @ordering_r })
   end
 
   test "kokushi win" do
     hand = [:"1m", :"9m", :"1p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"9p", :"6z", :"7z", :"7z"]
-    assert Match.match_hand(hand, [], @riichi_win_definition, @ordering, @ordering_r, %{})
+    assert Match.match_hand(hand, [], @riichi_win_definition, %TileBehavior{ ordering: @ordering, ordering_r: @ordering_r })
   end
 
   # need to test:

@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
@@ -277,7 +278,10 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
+  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+    ordering = tile_behavior.ordering
+    tile_mappings = TileBehavior.tile_mappings(tile_behavior)
+
     calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.with_index()
@@ -620,7 +624,7 @@ defmodule RiichiAdvanced.SMT do
 
     optimzation_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
       call = {"", Enum.map(call, &{&1, false})} # TODO replace this dumb call format
-      tile = Utils.get_joker_meld_tile(call, jokers)
+      tile = Utils.get_joker_meld_tile(call, jokers, tile_mappings)
       "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
     end |> Enum.join()
 

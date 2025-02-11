@@ -1,12 +1,13 @@
 defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Game, as: Game
+  alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
-    |> assign(:log_id, params["room_code"])
+    |> assign(:log_id, params["log_id"])
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -52,8 +53,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       socket = socket
       |> assign(:ruleset, ruleset)
-      |> assign(:room_code, "log") # debug
-      # |> assign(:room_code, socket.id)
+      |> assign(:room_code, Ecto.UUID.generate())
       |> assign(:log, log)
       |> assign(:log_json, log_json)
 
@@ -318,13 +318,13 @@ defmodule RiichiAdvancedWeb.LogLive do
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Utils.to_tile(called_tile)}})
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, choice: %Choice{ name: call_name, chosen_call_choice: call_choice, chosen_called_tile: Utils.to_tile(called_tile) }}})
     {:noreply, socket}
   end
 
   def handle_event("call_button_clicked", %{"name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: nil}})
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, choice: %Choice{ name: call_name, chosen_call_choice: call_choice, chosen_called_tile: nil }}})
     {:noreply, socket}
   end
 

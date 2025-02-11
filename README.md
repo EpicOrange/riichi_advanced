@@ -15,6 +15,8 @@ Infinitely extensible mahjong web client featuring the following:
 
 Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bug reporting! (There are a lot of funny bugs, don't miss out!)
 
+If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)!
+
 ## Table of contents
 
 - [Changelog](#changelog)
@@ -167,7 +169,9 @@ This should start the server up at `https://localhost:4000`. (Make sure to use `
 
 ## Acknowledgments
 
-Special thanks to the following sites for offering English-based rulesets:
+The basic [tileset](documentation/tiles.md) used in this game is taken [from this repository](https://github.com/FluffyStuff/riichi-mahjong-tiles). Thank you to @FluffyStuff!
+
+In addition, special thanks to the following sites for offering English-based rulesets:
 
 - [Mahjong Pros](https://mahjongpros.com/)
 - [Sloperama](https://www.sloperama.com/mahjongg/index.html)

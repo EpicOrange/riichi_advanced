@@ -89,7 +89,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />
         <div class="enter-buttons">
-          <button type="submit">Enter</button>
+          <button name="play" type="submit">Play</button>
+          <button name="learn" type="submit">Learn</button>
           <button type="button" phx-cancellable-click="toggle_show_room_code">
             <%= if @show_room_code_buttons do %>
               Close
@@ -127,33 +128,42 @@ defmodule RiichiAdvancedWeb.IndexLive do
     {:noreply, socket}
   end
 
-  def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname}, socket) do
-    if socket.assigns.show_room_code_buttons do
-      socket = if length(socket.assigns.room_code) == 3 do
-        # enter private room, or create a new room
-        room_code = Enum.join(socket.assigns.room_code, ",")
-        push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
-      else socket end
-      {:noreply, socket}
-    else
-      # get all running session ids for this ruleset
-      room_codes = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
-      |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
-      |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
-      |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
-      # check if there are any public rooms of this ruleset
-      # if not, skip the lobby and go directly to making a new table
-      has_public_room = Enum.any?(room_codes, fn room_code -> 
-        [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, room_code))
-        room_state = GenServer.call(room_state_pid, :get_state)
-        not room_state.private
-      end)
-      socket = if has_public_room do
-        push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
+  def handle_event("redirect", params, socket) do
+    %{"ruleset" => ruleset, "nickname" => nickname} = params
+    if Map.has_key?(params, "play") do
+      if socket.assigns.show_room_code_buttons do
+        socket = if length(socket.assigns.room_code) == 3 do
+          # enter private room, or create a new room
+          room_code = Enum.join(socket.assigns.room_code, ",")
+          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
+        else socket end
+        {:noreply, socket}
       else
-        {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
-        push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
+        # get all running session ids for this ruleset
+        room_codes = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
+        |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+        |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
+        |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
+        # check if there are any public rooms of this ruleset
+        # if not, skip the lobby and go directly to making a new table
+        has_public_room = Enum.any?(room_codes, fn room_code -> 
+          [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, room_code))
+          room_state = GenServer.call(room_state_pid, :get_state)
+          not room_state.private
+        end)
+        socket = if has_public_room do
+          push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
+        else
+          {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
+          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
+        end
+        {:noreply, socket}
       end
+    else
+      # tutorial
+      socket = if ruleset != "custom" do
+        push_navigate(socket, to: ~p"/tutorial/#{ruleset}?nickname=#{nickname}")
+      else socket end
       {:noreply, socket}
     end
   end
