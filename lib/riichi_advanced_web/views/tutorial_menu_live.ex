@@ -6,6 +6,9 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     "riichi" => [
       {"riichi_basics", "Basic flow of the game", :east},
       {"riichi_calls", "Calling tiles", :north}
+    ],
+    "sanma" => [
+      {"sanma_vs_riichi", "Differences from four-player", :south}
     ]
   }
 
