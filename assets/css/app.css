@@ -3135,3 +3135,49 @@ div.tutorial-focus {
   background: black;
   mask-composite: intersect;
 }
+
+/* tutorial menu */
+header.tutorial-menu-header {
+  position: absolute;
+  color: white;
+  width: 100%;
+  top: calc(-0.5 * var(--tile-size));
+  font-size: calc(0.6 * var(--tile-size));
+}
+header.tutorial-menu-header > h3 {
+  font-size: calc(0.8 * var(--tile-size));
+  font-weight: 400;
+  white-space: nowrap;
+}
+div.tutorial-menu-container, div.tutorial-menu-buttons {
+  font-size: calc(0.6 * var(--tile-size));
+  color: white;
+  width: 100%;
+  height: 100%;
+}
+div.tutorial-menu-container {
+  padding-top: calc(2 * var(--tile-size));
+}
+div.tutorial-menu-buttons {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: auto;
+}
+div.tutorial-menu-buttons > button {
+  height: calc(2 * var(--tile-size));
+  margin: calc(0.5 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  background: var(--tile-front);
+  font-size: calc(0.6 * var(--tile-size));
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+}
+div.tutorial-menu-buttons > button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
+}
