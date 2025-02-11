@@ -3102,6 +3102,16 @@ div.tutorial-overlay {
   z-index: 100;
   pointer-events: none;
 }
+div.tutorial-overlay-objects {
+  position: relative;
+  margin-left: calc(-0.5 * var(--tile-size));
+  margin-top: calc(-0.5 * var(--tile-size));
+  width: calc(100% + 1 * var(--tile-size));
+  height: calc(100% + 1 * var(--tile-size));
+}
+div.tutorial-overlay-objects.awaiting-click {
+  pointer-events: initial;
+}
 div.tutorial-text {
   position: absolute;
   width: calc(var(--width) * var(--tile-size));
@@ -3117,14 +3127,11 @@ div.tutorial-text {
 }
 div.tutorial-text > p:first-child { margin-top: 0; }
 div.tutorial-text > p:last-child { margin-bottom: 0; }
-
 div.tutorial-focus {
-  background: black;
   position: absolute;
-  margin-left: calc(-0.5 * var(--tile-size));
-  margin-top: calc(-0.5 * var(--tile-size));
-  width: calc(100% + 1 * var(--tile-size));
-  height: calc(100% + 1 * var(--tile-size));
-  mask-image: radial-gradient(circle at calc((var(--x) + 0.5) * var(--tile-size)) calc((var(--y) + 0.5) * var(--tile-size)), transparent calc(var(--width) * var(--tile-size)), black calc(var(--width) * var(--tile-size)));
+  width: 100%;
+  height: 100%;
   opacity: 0.5;
+  background: black;
+  mask-composite: intersect;
 }

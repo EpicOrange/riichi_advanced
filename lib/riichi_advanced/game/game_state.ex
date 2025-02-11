@@ -1409,6 +1409,14 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast(:pause, state) do
+    state = Map.put(state, :game_active, false)
+    {:noreply, state}
+  end
+  def handle_cast(:unpause, state) do
+    state = Map.put(state, :game_active, true)
+    {:noreply, state}
+  end
   def handle_cast({:unpause, context}, state) do
     actions = state.players[context.seat].deferred_actions
     IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
@@ -1447,7 +1455,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:force_event, event}, state) do
-    IO.puts("Forcing event #{inspect(event)}")
     {:noreply, Map.put(state, :forced_event, event)}
   end
 
