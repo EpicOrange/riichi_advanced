@@ -7,7 +7,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
-    |> assign(:log_id, params["room_code"])
+    |> assign(:log_id, params["log_id"])
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -53,8 +53,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       socket = socket
       |> assign(:ruleset, ruleset)
-      |> assign(:room_code, "log") # debug
-      # |> assign(:room_code, socket.id)
+      |> assign(:room_code, Ecto.UUID.generate())
       |> assign(:log, log)
       |> assign(:log_json, log_json)
 

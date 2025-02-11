@@ -40,7 +40,7 @@ defmodule RiichiAdvancedWeb.Router do
       live "/tutorial/:ruleset", TutorialMenuLive
       live "/tutorial/:ruleset/:sequence", GameLive
       live "/log", LogMenuLive
-      live "/log/:id", LogLive
+      live "/log/:log_id", LogLive
       live "/about", AboutLive
     end
     get "/*_", RedirectController, :home
