@@ -626,7 +626,7 @@
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
           ["big_text", "Dead hand", "shimocha"],
           ["push_message", "correctly declared player on left's hand dead"],
-          ["as", "shimocha", ["push_message", "is now disqualified"]],
+          ["as", "shimocha", [["push_message", "is now disqualified"]]],
           ["as", "shimocha", [["set_status", "dead_hand"]]]
         ], [
           ["big_text", "Not dead", "shimocha"],
@@ -648,7 +648,7 @@
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
           ["big_text", "Dead hand", "toimen"],
           ["push_message", "correctly declared opposite player's hand dead"],
-          ["as", "toimen", ["push_message", "is now disqualified"]],
+          ["as", "toimen", [["push_message", "is now disqualified"]]],
           ["as", "toimen", [["set_status", "dead_hand"]]]
         ], [
           ["big_text", "Not dead", "toimen"],
@@ -670,7 +670,7 @@
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
           ["big_text", "Dead hand", "kamicha"],
           ["push_message", "correctly declared player on left's hand dead"],
-          ["as", "kamicha", ["push_message", "is now disqualified"]],
+          ["as", "kamicha", [["push_message", "is now disqualified"]]],
           ["as", "kamicha", [["set_status", "dead_hand"]]]
         ], [
           ["big_text", "Not dead", "kamicha"],
