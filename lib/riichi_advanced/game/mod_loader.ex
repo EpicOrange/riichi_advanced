@@ -21,7 +21,9 @@ defmodule RiichiAdvanced.ModLoader do
     |> then(&".enabled_mods += #{mod_names_to_array(mod_names)}"<>&1)
     # IO.puts(mod_contents)
 
-    IO.puts("Applying mods [#{Enum.join(mod_names, ", ")}]")
+    if Debug.print_mods() do
+      IO.puts("Applying mods [#{Enum.join(mod_names, ", ")}]")
+    end
     JQ.query_string_with_string!(ruleset_json, mod_contents)
   end
 
@@ -103,7 +105,7 @@ defmodule RiichiAdvanced.ModLoader do
   }
 
   defp read_ruleset_json(ruleset) do
-    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset <> ".json"}")) do
+    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      -> "{}"
     end
@@ -143,7 +145,10 @@ defmodule RiichiAdvanced.ModLoader do
     // "starting_hand": {
     //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
     // },
-    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"],
+    // "starting_dead_wall": ["5m", "4m"], // so the first kan draw is 5m. this goes backwards
+    // "starting_round": 4, // start in south round
+    // "debug_status": true // show statuses, counters, and buttons
   }
   """
 

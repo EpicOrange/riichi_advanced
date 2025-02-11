@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
@@ -31,17 +32,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
         is_saki_card = Enum.any?(choice_actions, fn [action | _opts] -> action == "draft_saki_card" end)
         hand = Utils.add_attr(state.players[seat].hand, ["hand"])
         draw = Utils.add_attr(state.players[seat].draw, ["hand"])
-        ordering = state.players[seat].tile_ordering
-        ordering_r = state.players[seat].tile_ordering_r
-        tile_aliases = state.players[seat].tile_aliases
-        tile_mappings = state.players[seat].tile_mappings
+        tile_behavior = state.players[seat].tile_behavior
         {state, call_choices} = cond do
           is_upgrade ->
             call_choices = state.players[seat].calls
             |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
             |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["hand", "called"])) end)
             |> Enum.map(fn call_tiles ->
-                 Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, ordering, ordering_r, hand ++ draw, tile_aliases, tile_mappings)
+                 Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
             |> Enum.flat_map(&Enum.map(&1, fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end))
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
@@ -63,7 +61,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             {state, call_choices}
           true ->
             callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
-            call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, ordering, ordering_r, callable_tiles, tile_aliases, tile_mappings)
+            call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, tile_behavior, callable_tiles)
             |> Enum.map(fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end)
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
             {state, call_choices}
@@ -72,7 +70,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
         call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
           conditions = state.rules["buttons"][button_name]["call_conditions"]
           for {called_tile, choices} <- call_choices do
-            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_name: button_name, called_tile: called_tile, call_choice: call_choice}) end)}
+            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
           end
         else call_choices end
         |> Map.new()
@@ -181,18 +179,20 @@ defmodule RiichiAdvanced.GameState.Buttons do
   end
 
   def press_call_button(state, seat, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil) do
-    button_name = state.players[seat].choice.name
-    if Map.has_key?(state.players[seat].button_choices, button_name) do
-      # IO.puts("#{seat} pressed call button for button #{button_name}")
-      state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
-      actions = state.rules["buttons"][button_name]["actions"]
-      state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
-      state = broadcast_state_change(state)
-      state
-    else
-      IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")
-      state
-    end
+    if state.players[seat].choice != nil do
+      button_name = state.players[seat].choice.name
+      if Map.has_key?(state.players[seat].button_choices, button_name) do
+        # IO.puts("#{seat} pressed call button for button #{button_name}")
+        state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
+        actions = state.rules["buttons"][button_name]["actions"]
+        state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
+        state = broadcast_state_change(state)
+        state
+      else
+        IO.puts("#{seat} tried to press call button for nonexistent button #{button_name}")
+        state
+      end
+    else state end
   end
 
   # returns true if no button choices remain

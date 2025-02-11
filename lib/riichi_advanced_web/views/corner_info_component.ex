@@ -6,7 +6,6 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
 
   def mount(socket) do
     socket = assign(socket, :display_round_marker, false)
-    socket = assign(socket, :dead_hand_buttons, false)
     socket = assign(socket, :ai_thinking, false)
     {:ok, socket}
   end
@@ -23,7 +22,6 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
           <div class={["saki-card", @saki.version, to_card_class(card), Saki.is_disabled_saki_card?(card) && "disabled"]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>
       <% end %>
-      <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and @seat != @viewer and @viewer != :spectator}>!</div>
       <div class="ai-thinking" :if={@ai_thinking}></div>
     </div>
     """

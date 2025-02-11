@@ -131,4 +131,22 @@ defmodule RiichiAdvanced.Constants do
     end
   end
 
+  @ai_names [
+    "Betaori (AI)",
+    "Chombo (AI)",
+    "Furiten (AI)",
+    "Jigoku (AI)",
+    "Noten (AI)",
+    "Oyakaburi (AI)",
+    "Pao (AI)",
+    "Penchan (AI)",
+    "Tobi (AI)",
+    "Uushanten (AI)",
+    "Yakitori (AI)",
+    "Yakuless (AI)",
+    "Yasume (AI)",
+  ]
+
+  def ai_names, do: @ai_names
+
 end

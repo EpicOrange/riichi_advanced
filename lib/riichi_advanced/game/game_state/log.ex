@@ -56,7 +56,11 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def log(state, seat, event_type, params) do
-    update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
+    if seat != nil do
+      update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
+    else
+      update_in(state.log_state.log, &[%GameEvent{ event_type: event_type, params: params } | &1])
+    end
   end
 
   defp modify_last_draw_discard(state, fun) do
@@ -73,9 +77,9 @@ defmodule RiichiAdvanced.GameState.Log do
     state = case Enum.at(state.log_state.log, 0) do
       event when (event != nil and event.event_type == :buttons_pressed) ->
         if create_at_seat != nil and Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
-          log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
+          log(state, nil, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
         else state end
-      _ -> log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
+      _ -> log(state, nil, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
     end
     update_in(state.log_state.log, &List.update_at(&1, 0, fun))
   end

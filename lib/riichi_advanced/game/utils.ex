@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
 
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   def to_tile(tile_spec) do
     case tile_spec do
       [tile_spec | attrs] -> {Constants.to_tile()[tile_spec], attrs}
@@ -101,30 +102,45 @@ defmodule RiichiAdvanced.Utils do
 
   # find all jokers that map to the same tile(s) as the given one
   # together with the tile(s) they are connected by
-  def apply_tile_aliases(joker, tile_aliases) do
-    if is_list(joker) do
-      Enum.map(joker, &apply_tile_aliases(&1, tile_aliases))
+  def apply_tile_aliases(tile, tile_behavior) do
+    if is_list(tile) or is_struct(tile, MapSet) do
+      Enum.map(tile, &apply_tile_aliases(&1, tile_behavior))
       |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else
-      {joker_tile, joker_attrs} = to_attr_tile(joker)
-      any_tiles = Map.get(tile_aliases, :any, %{}) |> Map.values() |> Enum.concat()
-      Map.get(tile_aliases, joker_tile, [])
-      |> Enum.filter(fn {attrs, _aliases} -> MapSet.subset?(MapSet.new(attrs), MapSet.new(joker_attrs)) end)
-      |> Enum.map(fn {_attrs, aliases} -> MapSet.new(aliases) end)
-      |> Enum.reduce(MapSet.new([joker | any_tiles]), &MapSet.union/2)
+      {tile, attrs} = to_attr_tile(tile)
+      # every joker is connected to any-tile jokers
+      any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
+      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
+        if (tile == tile2 or tile in aliases) and MapSet.subset?(MapSet.new(attrs2), MapSet.new(attrs)) do
+          MapSet.new(aliases, &add_attr(&1, attrs2)) |> MapSet.put(tile2)
+        else MapSet.new() end
+      end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
     end
   end
 
   # tile1 must have at least the attributes of tile2 (or any of its aliases)
-  def same_tile(tile1, tile2, tile_aliases \\ %{}) do
-    l1 = strip_attrs(MapSet.new([tile1]))
-    l2 = strip_attrs(apply_tile_aliases(tile2, tile_aliases))
-    same_id = :any in l1 or :any in l2
-    or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
-    or Enum.any?(l1, fn tile -> tile in l2 end)
-    {_, attrs2} = to_attr_tile(tile2)
+  def same_tile(tile1, tile2) do
+    l1 = strip_attrs(tile1)
+    {l2, attrs2} = to_attr_tile(tile2)
+    same_id = :any in [l1, l2]
+           or (l2 == :faceup and l1 not in [:"1x", :"2x", :"3x", :"4x"])
+           or l1 == l2
     attrs_match = has_attr?(tile1, attrs2)
     same_id and attrs_match
+  end
+  def same_tile(tile1, tile2, tile_behavior) do
+    if Enum.empty?(tile_behavior.aliases) do
+      same_tile(tile1, tile2)
+    else
+      l1 = strip_attrs(apply_tile_aliases(tile1, tile_behavior))
+      l2 = strip_attrs(apply_tile_aliases(tile2, tile_behavior))
+      same_id = :any in l1 or :any in l2
+      or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
+      or tile1 in l2 or tile2 in l1
+      {_, attrs2} = to_attr_tile(tile2)
+      attrs_match = has_attr?(tile1, attrs2)
+      same_id and attrs_match
+    end
   end
 
   def to_manzu(tile) do
@@ -136,36 +152,24 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  def same_number(tile1, tile2, tile_aliases \\ %{}) do
+  def same_number(tile1, tile2, tile_behavior \\ %TileBehavior{}) do
     {t1, attrs1} = to_attr_tile(tile1)
     {t2, attrs2} = to_attr_tile(tile2)
-    same_tile({to_manzu(t1), attrs1}, {to_manzu(t2), attrs2}, tile_aliases)
+    same_tile({to_manzu(t1), attrs1}, {to_manzu(t2), attrs2}, tile_behavior)
   end
 
-  def has_matching_tile?(hand, tiles, tile_aliases \\ %{}) do
+  def has_matching_tile?(hand, tiles, tile_behavior \\ %TileBehavior{}) do
     Enum.any?(hand, fn hand_tile ->
-      Enum.any?(tiles, &same_tile(hand_tile, &1, tile_aliases))
+      Enum.any?(tiles, &same_tile(hand_tile, &1, tile_behavior))
     end)
   end
 
-  def count_tiles(hand, tiles, tile_aliases \\ %{}) do
+  def count_tiles(hand, tiles, tile_behavior \\ %TileBehavior{}) do
     for hand_tile <- hand do
-      if Enum.any?(tiles, &same_tile(hand_tile, &1, tile_aliases)) do 1 else 0 end
+      if Enum.any?(tiles, &same_tile(hand_tile, &1, tile_behavior)) do 1 else 0 end
     end |> Enum.sum()
   end
-  
-  # greedy algorithm
-  def match_tiles(hand, tiles, tile_aliases \\ %{}, unused \\ [], matches \\ [])
-  def match_tiles([], tiles, _tile_aliases, unused, matches), do: {Enum.reverse(unused), tiles, matches}
-  def match_tiles([tile | hand], tiles, tile_aliases, unused, matches) do
-    case Enum.find_index(tiles, &same_tile(tile, &1, tile_aliases)) do
-      nil -> match_tiles(hand, tiles, tile_aliases, [tile | unused], matches)
-      i   ->
-        {tile2, tiles} = List.pop_at(tiles, i)
-        match_tiles(hand, tiles, tile_aliases, unused, [{tile, tile2} | matches])
-    end
-  end
-  
+
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = case seat do
@@ -292,18 +296,20 @@ defmodule RiichiAdvanced.Utils do
   end
 
   # get the principal tile from a meld consisting of all one tile and jokers
-  def _get_joker_meld_tile(tiles, joker_tiles) do
+  def _get_joker_meld_tile(tiles, joker_tiles, tile_behavior) do
+    # don't pass tile_behavior to has_matching_tile?/3 here
+    # so that we only get exact matches for the joker tile
     non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
     has_joker = length(non_joker_tiles) < length(tiles)
     has_nonjoker = length(non_joker_tiles) > 0
     if has_joker and has_nonjoker do
       [tile | rest] = non_joker_tiles
       tile = strip_attrs(tile)
-      if Enum.all?(rest, &same_tile(&1, tile)) do tile else nil end
+      if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else nil end
     else nil end
   end
-  def get_joker_meld_tile(call, joker_tiles) do
-    _get_joker_meld_tile(call_to_tiles(call), joker_tiles)
+  def get_joker_meld_tile(call, joker_tiles, tile_behavior) do
+    _get_joker_meld_tile(call_to_tiles(call), joker_tiles, tile_behavior)
   end
 
   def replace_base_tile(tile, new_base_tile) do
@@ -311,17 +317,19 @@ defmodule RiichiAdvanced.Utils do
     add_attr(new_base_tile, attrs)
   end
 
-  def replace_jokers(tiles, joker_tiles) do
-    if Enum.any?(tiles, &has_matching_tile?([&1], joker_tiles)) do
-      List.duplicate(_get_joker_meld_tile(tiles, joker_tiles), length(tiles))
+  def replace_jokers(tiles, joker_tiles, tile_behavior) do
+    # don't pass tile_behavior to has_matching_tile?/3 here
+    # so that we only get exact matches for the joker tile
+    if has_matching_tile?(tiles, joker_tiles) do
+      List.duplicate(_get_joker_meld_tile(tiles, joker_tiles, tile_behavior), length(tiles))
     else tiles end
   end
 
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
-  def replace_jokers_in_calls(calls, joker_tiles) do
+  def replace_jokers_in_calls(calls, joker_tiles, tile_behavior) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
-        meld_tile = get_joker_meld_tile({name, call}, joker_tiles)
+      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles, tile_behavior)) do
+        meld_tile = get_joker_meld_tile({name, call}, joker_tiles, tile_behavior)
         {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
     end)
@@ -334,6 +342,7 @@ defmodule RiichiAdvanced.Utils do
       maximum_bipartite_matching(adj, pairing, pairing_r)
     else {pairing, pairing_r} end
   end
+  defp maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r) when map_size(adj) == 0, do: {pairing, pairing_r}
   defp maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r) do
     start_pts = Map.keys(adj) -- Map.keys(pairing)
     {layers, _, _, _} = Enum.reduce_while(1..map_size(adj), {[], start_pts, MapSet.new(start_pts), MapSet.new()}, fn _, {layers, prev_layer, visited, visited_r} ->

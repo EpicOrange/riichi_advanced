@@ -22,6 +22,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :aside, [])
     socket = assign(socket, :draw, [])
     socket = assign(socket, :marking, %{})
+    socket = assign(socket, :dead_hand_buttons, false)
     {:ok, socket}
   end
 
@@ -100,12 +101,13 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <div class="calls">
         <%= if not Enum.empty?(@marking) do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
-            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :call}) do %>
+            <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
+            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) do %>
               <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
                 <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} :for={tile <- call}></div>
               </div>
             <% else %>
-              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :call}) do %>
+              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) do %>
                 <div class="call">
                   <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} :for={tile <- call}></div>
                 </div>
@@ -118,6 +120,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         <% else %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
+            <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
             <div class="call">
               <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
             </div>
@@ -182,7 +185,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def handle_event("mark_call", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :call})
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :calls})
     {:noreply, socket}
   end
 
