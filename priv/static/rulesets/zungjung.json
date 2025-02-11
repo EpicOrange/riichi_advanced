@@ -1,15 +1,12 @@
 {
   // <MASTER TODO LIST:>
   // * Add mods.
-  // * Check that the Blessing hands can't trigger after East makes a concealed kong.
   // * Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .
   // * Figure out how to code the weird-ass scoring quirks:
   // ** 320 point limit except for "Listed Limit" hands (not sure how to code this, but I feel it might be possible?)
   // ** only one "Listed Limit" hand being counted at once, and all such hands overriding the 320 point limit (DONE!)
   // ** the "everyone pays the value of the hand up to 25 points, then responsible player pays the remainder" rule (not sure this is codeable yet!)
   // ** the "discarder of first copy of the winning tile in that go-around is responsible" rule (probably doable with a "responsible" tag the way Riichi has a "furiten" tag)
-  // * Make sure atamahane is used.
-  // * Seek confirmation on whether Nine Gates can be open, and whether it can be impure.
   // * Figure out the difference between "win_by_discard_label" and "win_by_discard_name". Ditto for "win_by_draw_label" and "win_by_draw_name". Once done, convert these as appropriate.
   
   // <TODO: Add the following mods:>
@@ -234,33 +231,33 @@
     {
       "display_name": "Nine Gates",
       "value": 13,
-      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand"], [["chuurenpoutou"], 1]]}]
     },
 	// 3.0 Honor Tiles
     // <TODO: make sure this bit works correctly>
     {
       "display_name": "Value Honor",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["haku"], 1]]}]
     },
     {
       "display_name": "Value Honor",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["hatsu"], 1]]}]
     },
     {
       "display_name": "Value Honor",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["chun"], 1]]}]
     },
     {
       "display_name": "Value Honor",
       "value": 10,
       "when": [[
-        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
-        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["ton"], 1]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["nan"], 1]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["shaa"], 1]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["pei"], 1]]}]
       ]]
     },
     {
@@ -455,16 +452,15 @@
       "value": 10,
       "when": ["won_by_call"]
     },
-	// <TODO: Check if the Blessing hands trigger after East makes a concealed kong. They shouldn't.>
     {
       "display_name": "Blessing of Heaven",
       "value": 155,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"]
+      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}, "not_has_calls"]
     },
     {
       "display_name": "Blessing of Earth",
       "value": 155,
-      "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"]
+      "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard", {"name": "not_has_calls", "as": "east"}]
     },
 	// 10.0 Irregular Hands
     {
@@ -804,7 +800,7 @@
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron"]
     },
     "chankan": {
       "display_name": "Hu",
@@ -824,7 +820,7 @@
         ]
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Zimo",
@@ -834,7 +830,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
     }
     // "flower": {
     //   "display_name": "Flower",
