@@ -1,6 +1,9 @@
 defmodule RiichiAdvanced.KoOyaTsumoTest do
   use ExUnit.Case, async: true
+  alias RiichiAdvanced.GameState, as: GameState
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.TestUtils, as: TestUtils
 
   def test_ko_oya_3p(score, expected) do
     assert expected == Riichi.calc_ko_oya_points(score, false, 3, 100)
@@ -52,7 +55,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     test_ko_oya_3p(24000, {8000, 16000}) # yakuman
   end
 
-  test "ko oya 3p no tsumo loss" do
+  test "ko oya 3p unequal_split" do
     test_ko_oya_3p(1300, {500, 900}) # 2/20, 1/40
     test_ko_oya_3p(2600, {900, 1700}) # 3/20, 2/40
     test_ko_oya_3p(5200, {1800, 3500}) # 4/20, 3/40
@@ -71,6 +74,64 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     test_ko_oya_3p(16000, {5400, 10700}) # baiman
     test_ko_oya_3p(24000, {8000, 16000}) # sanbaiman
     test_ko_oya_3p(32000, {10700, 21300}) # yakuman
+  end
+
+  def tsumo_loss_yakuman_test(tsumo_loss, seat, expected_score, expected_delta_scores) do
+    mods = ["ura", "kandora", "yaku/ippatsu", "nagashi", "tobi", "suufon_renda", "suucha_riichi", "suukaikan", "agarirenchan", "tenpairenchan", "kyuushu_kyuuhai", "double_wind_4_fu", "yaku/renhou_yakuman", "pao", "show_waits", "kansai_draw", "kansai_flowers", "kansai_aka", "kansai_yaku", "nagashi_yakuman", "kansai_no_furiten_riichi", "kansai_30_fu"]
+    test_state = TestUtils.initialize_test_state("kansai", mods, "{\"score_calculation\": {\"tsumo_loss\": #{inspect(tsumo_loss)}}}")
+    state = GenServer.call(test_state.game_state_pid, :get_state)
+    hand = [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p"]
+    draw = [:"6p"]
+    calls = []
+    state = put_in(state.turn, seat)
+    state = put_in(state.players[seat].hand, hand)
+    state = put_in(state.players[seat].draw, draw)
+    state = put_in(state.players[seat].calls, calls)
+    state = update_in(state.players[seat].status, &MapSet.put(&1, "discards_empty")) # trigger tenhou
+    state = GameState.win(state, seat, :"6p", :draw)
+    {_state, delta_scores, _delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
+    score = state.winners[seat].score
+    assert score == expected_score
+    assert delta_scores == expected_delta_scores
+  end
+
+  # tsumo loss values
+  # https://ja.wikipedia.org/wiki/%E4%B8%89%E4%BA%BA%E9%BA%BB%E9%9B%80#%E6%AF%94%E8%BC%83%E8%A1%A8
+  test "tsumo_loss == true" do
+    tsumo_loss_yakuman_test(true, :east, 32000, %{east: 32000, south: -16000, west: -16000})
+    tsumo_loss_yakuman_test(true, :south, 24000, %{east: -16000, south: 24000, west: -8000})
+  end
+  test "tsumo_loss == add_1000" do
+    tsumo_loss_yakuman_test("add_1000", :east, 50000, %{east: 34000, south: -17000, west: -17000})
+    tsumo_loss_yakuman_test("add_1000", :south, 34000, %{east: -17000, south: 26000, west: -9000})
+  end
+  test "tsumo_loss == unequal_split" do
+    tsumo_loss_yakuman_test("unequal_split", :east, 48000, %{east: 48000, south: -24000, west: -24000})
+    tsumo_loss_yakuman_test("unequal_split", :south, 32000, %{east: -21300, south: 32000, west: -10700})
+  end
+  test "tsumo_loss == false" do # same as north_split
+    tsumo_loss_yakuman_test(false, :east, 48000, %{east: 48000, south: -24000, west: -24000})
+    tsumo_loss_yakuman_test(false, :south, 32000, %{east: -20000, south: 32000, west: -12000})
+  end
+  test "tsumo_loss == north_split" do
+    tsumo_loss_yakuman_test("north_split", :east, 48000, %{east: 48000, south: -24000, west: -24000})
+    tsumo_loss_yakuman_test("north_split", :south, 32000, %{east: -20000, south: 32000, west: -12000})
+  end
+  test "tsumo_loss == equal_split" do
+    tsumo_loss_yakuman_test("equal_split", :east, 48000, %{east: 48000, south: -24000, west: -24000})
+    tsumo_loss_yakuman_test("equal_split", :south, 32000, %{east: -16000, south: 32000, west: -16000})
+  end
+  test "tsumo_loss == north_to_oya" do
+    tsumo_loss_yakuman_test("north_to_oya", :east, 48000, %{east: 48000, south: -24000, west: -24000})
+    tsumo_loss_yakuman_test("north_to_oya", :south, 32000, %{east: -24000, south: 32000, west: -8000})
+  end
+  test "tsumo_loss == double_collection" do
+    tsumo_loss_yakuman_test("double_collection", :east, 96000, %{east: 96000, south: -48000, west: -48000})
+    tsumo_loss_yakuman_test("double_collection", :south, 64000, %{east: -32000, south: 64000, west: -32000})
+  end
+  test "tsumo_loss == ron_loss" do
+    tsumo_loss_yakuman_test("ron_loss", :east, 32000, %{east: 32000, south: -16000, west: -16000})
+    tsumo_loss_yakuman_test("ron_loss", :south, 24000, %{east: -16000, south: 24000, west: -8000})
   end
 
 end

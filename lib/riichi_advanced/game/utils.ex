@@ -1,68 +1,22 @@
 defmodule RiichiAdvanced.Utils do
-  alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Constants, as: Constants
 
-  @to_tile %{"1m"=>:"1m", "2m"=>:"2m", "3m"=>:"3m", "4m"=>:"4m", "5m"=>:"5m", "6m"=>:"6m", "7m"=>:"7m", "8m"=>:"8m", "9m"=>:"9m", "0m"=>:"0m",
-             "1p"=>:"1p", "2p"=>:"2p", "3p"=>:"3p", "4p"=>:"4p", "5p"=>:"5p", "6p"=>:"6p", "7p"=>:"7p", "8p"=>:"8p", "9p"=>:"9p", "0p"=>:"0p",
-             "1s"=>:"1s", "2s"=>:"2s", "3s"=>:"3s", "4s"=>:"4s", "5s"=>:"5s", "6s"=>:"6s", "7s"=>:"7s", "8s"=>:"8s", "9s"=>:"9s", "0s"=>:"0s",
-             "1t"=>:"1t", "2t"=>:"2t", "3t"=>:"3t", "4t"=>:"4t", "5t"=>:"5t", "6t"=>:"6t", "7t"=>:"7t", "8t"=>:"8t", "9t"=>:"9t", "0t"=>:"0t",
-             "1z"=>:"1z", "2z"=>:"2z", "3z"=>:"3z", "4z"=>:"4z", "5z"=>:"5z", "6z"=>:"6z", "7z"=>:"7z", "0z"=>:"0z", "8z"=>:"8z",
-             "1x"=>:"1x", "2x"=>:"2x", "3x"=>:"3x", "4x"=>:"4x",
-             "1f"=>:"1f", "2f"=>:"2f", "3f"=>:"3f", "4f"=>:"4f",
-             "1g"=>:"1g", "2g"=>:"2g", "3g"=>:"3g", "4g"=>:"4g",
-             "1a"=>:"1a", "2a"=>:"2a", "3a"=>:"3a", "4a"=>:"4a",
-             "1y"=>:"1y", "2y"=>:"2y",
-             "1j"=>:"1j", "2j"=>:"2j", "3j"=>:"3j", "4j"=>:"4j", "5j"=>:"5j", "6j"=>:"6j", "7j"=>:"7j", "8j"=>:"8j", "9j"=>:"9j", "10j"=>:"10j",
-             "12j"=>:"12j", "13j"=>:"13j", "14j"=>:"14j", "15j"=>:"15j", "16j"=>:"16j", "17j"=>:"17j", "18j"=>:"18j", "19j"=>:"19j", 
-             "1k"=>:"1k", "2k"=>:"2k", "3k"=>:"3k", "4k"=>:"4k",
-             "1q"=>:"1q", "2q"=>:"2q", "3q"=>:"3q", "4q"=>:"4q",
-             "11m"=>:"11m", "12m"=>:"12m", "13m"=>:"13m", "14m"=>:"14m", "15m"=>:"15m", "16m"=>:"16m", "17m"=>:"17m", "18m"=>:"18m", "19m"=>:"19m",
-             "11p"=>:"11p", "12p"=>:"12p", "13p"=>:"13p", "14p"=>:"14p", "15p"=>:"15p", "16p"=>:"16p", "17p"=>:"17p", "18p"=>:"18p", "19p"=>:"19p",
-             "11s"=>:"11s", "12s"=>:"12s", "13s"=>:"13s", "14s"=>:"14s", "15s"=>:"15s", "16s"=>:"16s", "17s"=>:"17s", "18s"=>:"18s", "19s"=>:"19s",
-             "11t"=>:"11t", "12t"=>:"12t", "13t"=>:"13t", "14t"=>:"14t", "15t"=>:"15t", "16t"=>:"16t", "17t"=>:"17t", "18t"=>:"18t", "19t"=>:"19t",
-             "11z"=>:"11z", "12z"=>:"12z", "13z"=>:"13z", "14z"=>:"14z", "15z"=>:"15z", "16z"=>:"16z", "17z"=>:"17z",
-             "110m"=>:"110m", "110p"=>:"110p", "110s"=>:"110s", "110t"=>:"110t",
-             "10m"=>:"10m", "10p"=>:"10p", "10s"=>:"10s", "10t"=>:"10t",
-             "25z"=>:"25z", "26z"=>:"26z", "27z"=>:"27z",
-             "any"=>:any, "faceup"=>:faceup,
-             :"1m"=>:"1m", :"2m"=>:"2m", :"3m"=>:"3m", :"4m"=>:"4m", :"5m"=>:"5m", :"6m"=>:"6m", :"7m"=>:"7m", :"8m"=>:"8m", :"9m"=>:"9m", :"0m"=>:"0m",
-             :"1p"=>:"1p", :"2p"=>:"2p", :"3p"=>:"3p", :"4p"=>:"4p", :"5p"=>:"5p", :"6p"=>:"6p", :"7p"=>:"7p", :"8p"=>:"8p", :"9p"=>:"9p", :"0p"=>:"0p",
-             :"1s"=>:"1s", :"2s"=>:"2s", :"3s"=>:"3s", :"4s"=>:"4s", :"5s"=>:"5s", :"6s"=>:"6s", :"7s"=>:"7s", :"8s"=>:"8s", :"9s"=>:"9s", :"0s"=>:"0s",
-             :"1t"=>:"1t", :"2t"=>:"2t", :"3t"=>:"3t", :"4t"=>:"4t", :"5t"=>:"5t", :"6t"=>:"6t", :"7t"=>:"7t", :"8t"=>:"8t", :"9t"=>:"9t", :"0t"=>:"0t",
-             :"1z"=>:"1z", :"2z"=>:"2z", :"3z"=>:"3z", :"4z"=>:"4z", :"5z"=>:"5z", :"6z"=>:"6z", :"7z"=>:"7z", :"0z"=>:"0z", :"8z"=>:"8z",
-             :"1x"=>:"1x", :"2x"=>:"2x", :"3x"=>:"3x", :"4x"=>:"4x",
-             :"1f"=>:"1f", :"2f"=>:"2f", :"3f"=>:"3f", :"4f"=>:"4f",
-             :"1g"=>:"1g", :"2g"=>:"2g", :"3g"=>:"3g", :"4g"=>:"4g",
-             :"1a"=>:"1a", :"2a"=>:"2a", :"3a"=>:"3a", :"4a"=>:"4a",
-             :"1y"=>:"1y", :"2y"=>:"2y",
-             :"1j"=>:"1j", :"2j"=>:"2j", :"3j"=>:"3j", :"4j"=>:"4j", :"5j"=>:"5j", :"6j"=>:"6j", :"7j"=>:"7j", :"8j"=>:"8j", :"9j"=>:"9j", :"10j"=>:"10j",
-             :"12j"=>:"12j", :"13j"=>:"13j", :"14j"=>:"14j", :"15j"=>:"15j", :"16j"=>:"16j", :"17j"=>:"17j", :"18j"=>:"18j", :"19j"=>:"19j",
-             :"1k"=>:"1k", :"2k"=>:"2k", :"3k"=>:"3k", :"4k"=>:"4k",
-             :"1q"=>:"1q", :"2q"=>:"2q", :"3q"=>:"3q", :"4q"=>:"4q",
-             :"11m"=>:"11m", :"12m"=>:"12m", :"13m"=>:"13m", :"14m"=>:"14m", :"15m"=>:"15m", :"16m"=>:"16m", :"17m"=>:"17m", :"18m"=>:"18m", :"19m"=>:"19m",
-             :"11p"=>:"11p", :"12p"=>:"12p", :"13p"=>:"13p", :"14p"=>:"14p", :"15p"=>:"15p", :"16p"=>:"16p", :"17p"=>:"17p", :"18p"=>:"18p", :"19p"=>:"19p",
-             :"11s"=>:"11s", :"12s"=>:"12s", :"13s"=>:"13s", :"14s"=>:"14s", :"15s"=>:"15s", :"16s"=>:"16s", :"17s"=>:"17s", :"18s"=>:"18s", :"19s"=>:"19s",
-             :"11t"=>:"11t", :"12t"=>:"12t", :"13t"=>:"13t", :"14t"=>:"14t", :"15t"=>:"15t", :"16t"=>:"16t", :"17t"=>:"17t", :"18t"=>:"18t", :"19t"=>:"19t",
-             :"11z"=>:"11z", :"12z"=>:"12z", :"13z"=>:"13z", :"14z"=>:"14z", :"15z"=>:"15z", :"16z"=>:"16z", :"17z"=>:"17z",
-             :"110m"=>:"110m", :"110p"=>:"110p", :"110s"=>:"110s", :"110t"=>:"110t",
-             :"10m"=>:"10m", :"10p"=>:"10p", :"10s"=>:"10s", :"10t"=>:"10t",
-             :"25z"=>:"25z", :"26z"=>:"26z", :"27z"=>:"27z",
-             :any=>:any, :faceup=>:faceup,
-            }
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   def to_tile(tile_spec) do
     case tile_spec do
-      [tile_spec | attrs] -> {@to_tile[tile_spec], attrs}
-      %{"tile" => tile_spec, "attrs" => attrs} -> {@to_tile[tile_spec], attrs}
-      {tile_spec, attrs} -> {@to_tile[tile_spec], attrs}
-      _ -> @to_tile[tile_spec]
+      [tile_spec | attrs] -> {Constants.to_tile()[tile_spec], attrs}
+      %{"tile" => tile_spec, "attrs" => attrs} -> {Constants.to_tile()[tile_spec], attrs}
+      {tile_spec, attrs} -> {Constants.to_tile()[tile_spec], attrs}
+      _ -> Constants.to_tile()[tile_spec]
     end
   end
 
   def is_tile(tile_spec) do
     case tile_spec do
-      [tile_spec | _attrs] -> Map.has_key?(@to_tile, tile_spec)
-      %{"tile" => tile_spec, "attrs" => _attrs} -> Map.has_key?(@to_tile, tile_spec)
-      {tile_spec, attrs} -> Map.has_key?(@to_tile, tile_spec) && is_list(attrs)
-      _ -> Map.has_key?(@to_tile, tile_spec)
+      [tile_spec | _attrs] -> Map.has_key?(Constants.to_tile(), tile_spec)
+      %{"tile" => tile_spec, "attrs" => _attrs} -> Map.has_key?(Constants.to_tile(), tile_spec)
+      {tile_spec, attrs} -> Map.has_key?(Constants.to_tile(), tile_spec) and is_list(attrs)
+      _ -> Map.has_key?(Constants.to_tile(), tile_spec)
     end
   end
 
@@ -86,6 +40,7 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def add_attr(tile, []), do: tile
   def add_attr(tile, attrs) do
     case tile do
       {tile, existing_attrs} -> {tile, Enum.uniq(existing_attrs ++ attrs)}
@@ -95,6 +50,7 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def remove_attr(tile, []), do: tile
   def remove_attr(tile, attrs) do
     case tile do
       {tile, existing_attrs} ->
@@ -126,86 +82,65 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  @tile_color %{:"1m"=>"pink", :"2m"=>"pink", :"3m"=>"pink", :"4m"=>"pink", :"5m"=>"pink", :"6m"=>"pink", :"7m"=>"pink", :"8m"=>"pink", :"9m"=>"pink", :"0m"=>"red",
-                :"1p"=>"lightblue", :"2p"=>"lightblue", :"3p"=>"lightblue", :"4p"=>"lightblue", :"5p"=>"lightblue", :"6p"=>"lightblue", :"7p"=>"lightblue", :"8p"=>"lightblue", :"9p"=>"lightblue", :"0p"=>"red",
-                :"1s"=>"lightgreen", :"2s"=>"lightgreen", :"3s"=>"lightgreen", :"4s"=>"lightgreen", :"5s"=>"lightgreen", :"6s"=>"lightgreen", :"7s"=>"lightgreen", :"8s"=>"lightgreen", :"9s"=>"lightgreen", :"0s"=>"red",
-                :"1x"=>"orange", :"2x"=>"orange",
-                :"11m"=>"cyan", :"12m"=>"cyan", :"13m"=>"cyan", :"14m"=>"cyan", :"15m"=>"cyan", :"16m"=>"cyan", :"17m"=>"cyan", :"18m"=>"cyan", :"19m"=>"cyan",
-                :"11p"=>"cyan", :"12p"=>"cyan", :"13p"=>"cyan", :"14p"=>"cyan", :"15p"=>"cyan", :"16p"=>"cyan", :"17p"=>"cyan", :"18p"=>"cyan", :"19p"=>"cyan",
-                :"11s"=>"cyan", :"12s"=>"cyan", :"13s"=>"cyan", :"14s"=>"cyan", :"15s"=>"cyan", :"16s"=>"cyan", :"17s"=>"cyan", :"18s"=>"cyan", :"19s"=>"cyan",
-                :"11z"=>"cyan", :"12z"=>"cyan", :"13z"=>"cyan", :"14z"=>"cyan", :"15z"=>"cyan", :"16z"=>"cyan", :"17z"=>"cyan"}
-  def tile_color(tile), do: Map.get(@tile_color, tile, "white")
+  def tile_color(tile), do: Map.get(Constants.tile_color(), tile, "white")
 
   # print tile, print hand
   # print tile, print hand
   def pt(tile) do
-    {tile, _attrs} = to_attr_tile(tile)
+    {tile, attrs} = to_attr_tile(tile)
+    tile = if "concealed" in attrs do :"1x" else tile end
     %{bold: true, color: tile_color(tile), text: "#{tile}"}
   end
   def ph(tiles), do: Enum.map(tiles, &pt/1)
 
-  def sort_value(tile) do
-    {tile, _attrs} = to_attr_tile(tile)
-    case tile do
-      :"1m" ->  10; :"2m" ->  20; :"3m" ->  30; :"4m" ->  40; :"0m" ->  50; :"5m" ->  51; :"6m" ->  60; :"7m" ->  70; :"8m" ->  80; :"9m" ->  90; :"10m" -> 95;
-      :"1p" -> 110; :"2p" -> 120; :"3p" -> 130; :"4p" -> 140; :"0p" -> 150; :"5p" -> 151; :"6p" -> 160; :"7p" -> 170; :"8p" -> 180; :"9p" -> 190; :"10p" -> 195;
-      :"1s" -> 210; :"2s" -> 220; :"3s" -> 230; :"4s" -> 240; :"0s" -> 250; :"5s" -> 251; :"6s" -> 260; :"7s" -> 270; :"8s" -> 280; :"9s" -> 290; :"10s" -> 295;
-      :"1t" -> 310; :"2t" -> 320; :"3t" -> 330; :"4t" -> 340; :"0t" -> 350; :"5t" -> 351; :"6t" -> 360; :"7t" -> 370; :"8t" -> 380; :"9t" -> 390; :"10t" -> 395;
-      :"11m" ->  12; :"12m" ->  22; :"13m" ->  32; :"14m" ->  42; :"15m" ->  52; :"16m" ->  62; :"17m" ->  72; :"18m" ->  82; :"19m" ->  92; :"110m" ->  96;
-      :"11p" -> 112; :"12p" -> 122; :"13p" -> 132; :"14p" -> 142; :"15p" -> 152; :"16p" -> 162; :"17p" -> 172; :"18p" -> 182; :"19p" -> 192; :"110p" -> 196;
-      :"11s" -> 212; :"12s" -> 222; :"13s" -> 232; :"14s" -> 242; :"15s" -> 252; :"16s" -> 262; :"17s" -> 272; :"18s" -> 282; :"19s" -> 292; :"110s" -> 296;
-      :"11t" -> 312; :"12t" -> 322; :"13t" -> 332; :"14t" -> 342; :"15t" -> 352; :"16t" -> 362; :"17t" -> 372; :"18t" -> 382; :"19t" -> 392; :"110t" -> 396;
-      :"1z" -> 1310; :"2z" -> 1320; :"3z" -> 1330; :"4z" -> 1340; :"0z" -> 1350; :"5z" -> 1351; :"8z" -> 1352; :"6z" -> 1360; :"7z" -> 1370;
-      :"11z" -> 1312; :"12z" -> 1322; :"13z" -> 1332; :"14z" -> 1342; :"15z" -> 1352; :"16z" -> 1362; :"17z" -> 1372;
-      :"25z" -> 1353; :"26z" -> 1363; :"27z" -> 1373;
-      :"1f" -> 2380; :"2f" -> 2390; :"3f" -> 2400; :"4f" -> 2410;
-      :"1g" -> 2420; :"2g" -> 2430; :"3g" -> 2440; :"4g" -> 2450;
-      :"1a" -> 2460; :"2a" -> 2470; :"3a" -> 2480; :"4a" -> 2490;
-      :"1y" -> 2500; :"2y" -> 2510;
-      :"1j" -> 2520;
-      :"2j" -> 2530; :"7j" -> 2540; :"8j" -> 2550; :"9j" -> 2560; :"3j" -> 2570; :"4j" -> 2580; :"10j" -> 2590; :"5j" -> 2600; :"6j" -> 2610; 
-      :"12j" -> 2531; :"17j" -> 2541; :"18j" -> 2551; :"19j" -> 2561; :"13j" -> 2571; :"14j" -> 2581; :"15j" -> 2601; :"16j" -> 2611; 
-      :"1k" -> 2620; :"2k" -> 2630; :"3k" -> 2640; :"4k" -> 2650;
-      :"1q" -> 2660; :"2q" -> 2670; :"3q" -> 2680; :"4q" -> 2690;
-      :"1x" -> 5000; :"2x" -> 5001; :"3x" -> 5002; :"4x" -> 5003
-      _ ->
-        IO.puts("Unrecognized tile #{inspect(tile)}, cannot sort!")
-        0
-    end
-  end
   def sort_tiles(tiles, joker_assignment \\ %{}) do
     tiles
     |> Enum.with_index()
-    |> Enum.sort_by(fn {tile, ix} -> sort_value(Map.get(joker_assignment, ix, tile)) end)
+    |> Enum.sort_by(fn {tile, ix} -> Constants.sort_value(Map.get(joker_assignment, ix, tile)) end)
     |> Enum.map(fn {tile, _ix} -> tile end)
   end
 
   # find all jokers that map to the same tile(s) as the given one
   # together with the tile(s) they are connected by
-  def apply_tile_aliases(joker, tile_aliases) do
-    if is_list(joker) do
-      Enum.map(joker, &apply_tile_aliases(&1, tile_aliases))
+  def apply_tile_aliases(tile, tile_behavior) do
+    if is_list(tile) or is_struct(tile, MapSet) do
+      Enum.map(tile, &apply_tile_aliases(&1, tile_behavior))
       |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else
-      {joker_tile, joker_attrs} = to_attr_tile(joker)
-      any_tiles = Map.get(tile_aliases, :any, %{}) |> Map.values() |> Enum.concat()
-      Map.get(tile_aliases, joker_tile, [])
-      |> Enum.filter(fn {attrs, _aliases} -> MapSet.subset?(MapSet.new(attrs), MapSet.new(joker_attrs)) end)
-      |> Enum.map(fn {_attrs, aliases} -> MapSet.new(aliases) end)
-      |> Enum.reduce(MapSet.new([joker | any_tiles]), &MapSet.union/2)
+      {tile, attrs} = to_attr_tile(tile)
+      # every joker is connected to any-tile jokers
+      any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
+      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
+        if (tile == tile2 or tile in aliases) and MapSet.subset?(MapSet.new(attrs2), MapSet.new(attrs)) do
+          MapSet.new(aliases, &add_attr(&1, attrs2)) |> MapSet.put(tile2)
+        else MapSet.new() end
+      end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
     end
   end
 
   # tile1 must have at least the attributes of tile2 (or any of its aliases)
-  def same_tile(tile1, tile2, tile_aliases \\ %{}) do
-    l1 = strip_attrs(MapSet.new([tile1]))
-    l2 = strip_attrs(apply_tile_aliases(tile2, tile_aliases))
-    same_id = :any in l1 || :any in l2
-    || (:faceup in l2 && Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
-    || Enum.any?(l1, fn tile -> tile in l2 end)
-    {_, attrs2} = to_attr_tile(tile2)
+  def same_tile(tile1, tile2) do
+    l1 = strip_attrs(tile1)
+    {l2, attrs2} = to_attr_tile(tile2)
+    same_id = :any in [l1, l2]
+           or (l2 == :faceup and l1 not in [:"1x", :"2x", :"3x", :"4x"])
+           or l1 == l2
     attrs_match = has_attr?(tile1, attrs2)
-    same_id && attrs_match
+    same_id and attrs_match
+  end
+  def same_tile(tile1, tile2, tile_behavior) do
+    if Enum.empty?(tile_behavior.aliases) do
+      same_tile(tile1, tile2)
+    else
+      l1 = strip_attrs(apply_tile_aliases(tile1, tile_behavior))
+      l2 = strip_attrs(apply_tile_aliases(tile2, tile_behavior))
+      same_id = :any in l1 or :any in l2
+      or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
+      or tile1 in l2 or tile2 in l1
+      {_, attrs2} = to_attr_tile(tile2)
+      attrs_match = has_attr?(tile1, attrs2)
+      same_id and attrs_match
+    end
   end
 
   def to_manzu(tile) do
@@ -217,30 +152,24 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  def same_number(tile1, tile2, tile_aliases \\ %{}) do
+  def same_number(tile1, tile2, tile_behavior \\ %TileBehavior{}) do
     {t1, attrs1} = to_attr_tile(tile1)
     {t2, attrs2} = to_attr_tile(tile2)
-    same_tile({to_manzu(t1), attrs1}, {to_manzu(t2), attrs2}, tile_aliases)
+    same_tile({to_manzu(t1), attrs1}, {to_manzu(t2), attrs2}, tile_behavior)
   end
 
-  def count_tiles(hand, tiles, tile_aliases \\ %{}) do
+  def has_matching_tile?(hand, tiles, tile_behavior \\ %TileBehavior{}) do
+    Enum.any?(hand, fn hand_tile ->
+      Enum.any?(tiles, &same_tile(hand_tile, &1, tile_behavior))
+    end)
+  end
+
+  def count_tiles(hand, tiles, tile_behavior \\ %TileBehavior{}) do
     for hand_tile <- hand do
-      if Enum.any?(tiles, &same_tile(hand_tile, &1, tile_aliases)) do 1 else 0 end
+      if Enum.any?(tiles, &same_tile(hand_tile, &1, tile_behavior)) do 1 else 0 end
     end |> Enum.sum()
   end
-  
-  # greedy algorithm
-  def match_tiles(hand, tiles, tile_aliases \\ %{}, unused \\ [], matches \\ [])
-  def match_tiles([], tiles, _tile_aliases, unused, matches), do: {Enum.reverse(unused), tiles, matches}
-  def match_tiles([tile | hand], tiles, tile_aliases, unused, matches) do
-    case Enum.find_index(tiles, &same_tile(tile, &1, tile_aliases)) do
-      nil -> match_tiles(hand, tiles, tile_aliases, [tile | unused], matches)
-      i   ->
-        {tile2, tiles} = List.pop_at(tiles, i)
-        match_tiles(hand, tiles, tile_aliases, unused, [{tile, tile2} | matches])
-    end
-  end
-  
+
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = case seat do
@@ -317,13 +246,13 @@ defmodule RiichiAdvanced.Utils do
     transparent = has_attr?(tile, ["transparent"])
     inactive = has_attr?(tile, ["inactive"])
     hidden = has_attr?(tile, ["hidden"])
-    reversed = transparent && id == :"1x"
-    id = if reversed do Riichi.flip_faceup(tile) |> strip_attrs() else id end
-    facedown = has_attr?(tile, ["facedown"]) && Map.get(assigns, :hover_index, nil) != i
-    played = animate_played && Map.get(assigns, :your_hand?, true) && Map.get(assigns, :preplayed_index, nil) == i
-    sideways = i == Map.get(assigns, :riichi_index, nil) && "sideways"
-    just_played = Map.get(assigns, :just_discarded?, false) && Map.has_key?(assigns, :pond) && i == length(assigns.pond) - 1
-    riichi = Map.has_key?(assigns, :riichi_index) && i == assigns.riichi_index
+    reversed = transparent and id == :"1x"
+    id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
+    facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
+    played = animate_played and Map.get(assigns, :your_hand?, true) and Map.get(assigns, :preplayed_index, nil) == i
+    sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
+    just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
+    riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
     [
       "tile", id,
       facedown && "facedown",
@@ -338,33 +267,70 @@ defmodule RiichiAdvanced.Utils do
     ] ++ extra_classes
   end
 
-  # get the principal tile from a meld consisting of all one tile and jokers
-  def _get_joker_meld_tile(tiles, joker_tiles) do
-    non_joker_tiles = Enum.reject(tiles, &count_tiles([&1], joker_tiles) > 0)
-    has_joker = length(non_joker_tiles) < length(tiles)
-    has_nonjoker = length(non_joker_tiles) > 0
-    if has_joker && has_nonjoker do
-      [tile | rest] = non_joker_tiles
-      tile = strip_attrs(tile)
-      if Enum.all?(rest, &same_tile(&1, tile)) do tile else nil end
-    else nil end
-  end
-  def get_joker_meld_tile(call, joker_tiles) do
-    _get_joker_meld_tile(Riichi.call_to_tiles(call), joker_tiles)
+  def flip_faceup(tile) do
+    case tile do
+      {:"1x", attrs} ->
+        tile_attr = Enum.find(attrs, &is_tile/1)
+        if tile_attr != nil do
+          to_tile([tile_attr | attrs]) |> remove_attr([tile_attr])
+        else tile end
+      tile -> tile
+    end
   end
 
-  def replace_jokers(tiles, joker_tiles) do
-    if Enum.any?(tiles, &count_tiles([&1], joker_tiles) > 0) do
-      List.duplicate(_get_joker_meld_tile(tiles, joker_tiles), length(tiles))
+  def flip_facedown(tile) do
+    case tile do
+      :"1x" -> :"1x"
+      {:"1x", attrs} -> {:"1x", attrs}
+      tile -> {:"1x", tile_to_attrs(tile)}
+    end
+  end
+
+  def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
+    tiles = Enum.map(call, &flip_faceup/1)
+    if replace_am_jokers and has_matching_tile?(tiles, [:"1j"]) do
+      # replace all american jokers with the nonjoker tile
+      nonjoker = Enum.find(tiles, &not same_tile(&1, :"1j")) |> strip_attrs()
+      Enum.map(tiles, fn t -> if same_tile(t, :"1j") do nonjoker else t end end)
+    else tiles end
+  end
+
+  # get the principal tile from a meld consisting of all one tile and jokers
+  def _get_joker_meld_tile(tiles, joker_tiles, tile_behavior) do
+    # don't pass tile_behavior to has_matching_tile?/3 here
+    # so that we only get exact matches for the joker tile
+    non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
+    has_joker = length(non_joker_tiles) < length(tiles)
+    has_nonjoker = length(non_joker_tiles) > 0
+    if has_joker and has_nonjoker do
+      [tile | rest] = non_joker_tiles
+      tile = strip_attrs(tile)
+      if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else nil end
+    else nil end
+  end
+  def get_joker_meld_tile(call, joker_tiles, tile_behavior) do
+    _get_joker_meld_tile(call_to_tiles(call), joker_tiles, tile_behavior)
+  end
+
+  def replace_base_tile(tile, new_base_tile) do
+    {_tile, attrs} = to_attr_tile(tile)
+    add_attr(new_base_tile, attrs)
+  end
+
+  def replace_jokers(tiles, joker_tiles, tile_behavior) do
+    # don't pass tile_behavior to has_matching_tile?/3 here
+    # so that we only get exact matches for the joker tile
+    if has_matching_tile?(tiles, joker_tiles) do
+      List.duplicate(_get_joker_meld_tile(tiles, joker_tiles, tile_behavior), length(tiles))
     else tiles end
   end
 
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
-  def replace_jokers_in_calls(calls, joker_tiles) do
+  def replace_jokers_in_calls(calls, joker_tiles, tile_behavior) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls && Enum.any?(call, fn {tile, _sideways} -> count_tiles([tile], joker_tiles) > 0 end) do
-        meld_tile = get_joker_meld_tile({name, call}, joker_tiles)
-        {name, Enum.map(call, fn {_tile, sideways} -> {meld_tile, sideways} end)}
+      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles, tile_behavior)) do
+        meld_tile = get_joker_meld_tile({name, call}, joker_tiles, tile_behavior)
+        {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
     end)
   end
@@ -376,6 +342,7 @@ defmodule RiichiAdvanced.Utils do
       maximum_bipartite_matching(adj, pairing, pairing_r)
     else {pairing, pairing_r} end
   end
+  defp maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r) when map_size(adj) == 0, do: {pairing, pairing_r}
   defp maximum_bipartite_matching_hopcroft_karp_pass(adj, pairing, pairing_r) do
     start_pts = Map.keys(adj) -- Map.keys(pairing)
     {layers, _, _, _} = Enum.reduce_while(1..map_size(adj), {[], start_pts, MapSet.new(start_pts), MapSet.new()}, fn _, {layers, prev_layer, visited, visited_r} ->
@@ -392,7 +359,7 @@ defmodule RiichiAdvanced.Utils do
       visited = MapSet.union(visited, MapSet.new(new_layer))
       visited_r = MapSet.union(visited_r, MapSet.new(opp_layer))
       acc = {[MapSet.new(new_layer) | layers], new_layer, visited, visited_r}
-      if nil in new_layer || MapSet.size(visited) == map_size(adj) do
+      if nil in new_layer or MapSet.size(visited) == map_size(adj) do
         {:halt, acc}
       else
         {:cont, acc}

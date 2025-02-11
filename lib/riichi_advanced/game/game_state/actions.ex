@@ -1,12 +1,18 @@
 
 defmodule RiichiAdvanced.GameState.Actions do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
+  alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
-  alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   require Logger
@@ -27,16 +33,16 @@ defmodule RiichiAdvanced.GameState.Actions do
   # we use this to ensure no double discarding
   def can_discard(state, seat, ignore_turn \\ false) do
     our_turn = seat == state.turn
-    ((our_turn && state.players[seat].last_discard == nil && state.awaiting_discard) || ignore_turn)
-    && not has_unskippable_button?(state, seat)
-    && Enum.empty?(state.players[seat].call_buttons)
-    && not Marking.needs_marking?(state, seat)
+    ((our_turn and state.players[seat].last_discard == nil and state.awaiting_discard) or ignore_turn)
+    and not has_unskippable_button?(state, seat)
+    and Enum.empty?(state.players[seat].call_buttons)
+    and not Marking.needs_marking?(state, seat)
   end
 
   def register_discard(state, seat, tile, tsumogiri \\ true) do
     state = update_action(state, seat, :discard, %{tile: tile})
     push_message(state, [
-      %{text: "Player #{seat} #{state.players[seat].nickname} discarded"},
+      %{text: "Player #{player_name(state, seat)} discarded"},
       Utils.pt(tile)
     ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
     riichi = "just_reached" in state.players[seat].status
@@ -55,7 +61,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def play_tile(state, seat, tile, index) do
-    if can_discard(state, seat) && is_playable?(state, seat, tile) do
+    if can_discard(state, seat) and is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
       tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
@@ -140,7 +146,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         # otherwise, we draw a tile as normal
         true ->
           # if we're drawing a specific tile, update drawn_reserved_tiles with that tile
-          state = if is_binary(tile_name) && tile_name in state.reserved_tiles do
+          state = if is_binary(tile_name) and tile_name in state.reserved_tiles do
             Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
           else state end
           # grab the named tile (no op if the tile name is a normal tile)
@@ -175,10 +181,10 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def run_on_no_valid_tiles(state, seat, gas \\ 100) do
     if gas > 0 do
-      if not Enum.any?(state.players[seat].hand, fn tile -> is_playable?(state, seat, tile) end) &&
+      if not Enum.any?(state.players[seat].hand, fn tile -> is_playable?(state, seat, tile) end) and
          not Enum.any?(state.players[seat].draw, fn tile -> is_playable?(state, seat, tile) end) do
         state = run_actions(state, state.rules["on_no_valid_tiles"]["actions"], %{seat: seat})
-        if Map.has_key?(state.rules["on_no_valid_tiles"], "recurse") && state.rules["on_no_valid_tiles"]["recurse"] do
+        if Map.has_key?(state.rules["on_no_valid_tiles"], "recurse") and state.rules["on_no_valid_tiles"]["recurse"] do
           run_on_no_valid_tiles(state, seat, gas - 1)
         else state end
       else state end
@@ -201,10 +207,10 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     if state.game_active do
       # run on turn change, unless this turn change was triggered by an action
-      state = if not via_action && prev_turn != nil && seat != prev_turn && Map.has_key?(state.rules, "before_turn_change") do
+      state = if not via_action and prev_turn != nil and seat != prev_turn and Map.has_key?(state.rules, "before_turn_change") do
         run_actions(state, state.rules["before_turn_change"]["actions"], %{seat: prev_turn})
       else state end
-      state = if not via_action && seat != prev_turn && Map.has_key?(state.rules, "after_turn_change") do
+      state = if not via_action and seat != prev_turn and Map.has_key?(state.rules, "after_turn_change") do
         run_actions(state, state.rules["after_turn_change"]["actions"], %{seat: seat})
       else state end
 
@@ -247,26 +253,22 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp style_call(style, call_choice, called_tile) do
     if called_tile != nil do
       tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
-      for style_spec <- style, reduce: [] do
-        acc ->
-          tile = case style_spec do
-            "call"                                  -> {called_tile, false}
-            "call_sideways"                         -> {called_tile, true}
-            ix when is_integer(ix)                  -> {Enum.at(tiles, ix), false}
-            ["sideways", ix] when is_integer(ix)    -> {Enum.at(tiles, ix), true}
-            ["1x", ix] when is_integer(ix)          -> {Enum.at(tiles, ix) |> Riichi.flip_facedown(), false}
-            ["1x", "call"]                          -> {called_tile |> Riichi.flip_facedown(), false}
-            ["1x", tile]                            -> {Utils.to_tile(tile) |> Riichi.flip_facedown(), false}
-            ["1x_sideways", ix] when is_integer(ix) -> {Enum.at(tiles, ix) |> Riichi.flip_facedown(), true}
-            ["1x_sideways", "call"]                 -> {called_tile |> Riichi.flip_facedown(), true}
-            ["1x_sideways", tile]                   -> {Utils.to_tile(tile) |> Riichi.flip_facedown(), true}
-            tile                                    -> {Utils.to_tile(tile), false}
-          end
-          [tile | acc]
-      end |> Enum.reverse()
-    else
-      Enum.map(call_choice, fn tile -> {tile, false} end)
-    end
+      for style_spec <- style do
+        case style_spec do
+          "call"                                  -> called_tile
+          "call_sideways"                         -> called_tile |> Utils.add_attr(["sideways"])
+          ix when is_integer(ix)                  -> Enum.at(tiles, ix)
+          ["sideways", ix] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["sideways"])
+          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.flip_facedown()
+          ["1x", "call"]                          -> called_tile |> Utils.flip_facedown()
+          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.flip_facedown()
+          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x_sideways", "call"]                 -> called_tile |> Utils.flip_facedown() |> Utils.add_attr(["sideways"])
+          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.flip_facedown() |> Utils.add_attr(["sideways"])
+          tile                                    -> Utils.to_tile(tile)
+        end
+      end
+    else call_choice end
   end
 
   def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
@@ -285,9 +287,11 @@ defmodule RiichiAdvanced.GameState.Actions do
     call = if called_tile != nil do
       style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
       style_call(style, call_choice, called_tile)
-    else
-      Enum.map(call_choice, fn tile -> {tile, false} end)
-    end
+    else call_choice end
+
+    # add "concealed" to every tile if it's a hidden call
+    hidden = Map.get(state.rules["buttons"][button_name], "call_hidden", false)
+    call = if hidden do Utils.add_attr(call, ["concealed"]) else call end
 
     # run before_call actions
     call = {call_name, call}
@@ -303,7 +307,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     hand = Utils.add_attr(state.players[seat].hand, ["hand"])
     draw = Utils.add_attr(state.players[seat].draw, ["hand"])
-    new_hand = Riichi.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
+    new_hand = Match.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["hand", "draw"])
     new_hand = if new_hand == nil do
       Logger.error("Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       hand
@@ -319,14 +323,14 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # messages and log
     cond do
-      Map.get(state.rules["buttons"][button_name], "call_hidden", false) ->
+      hidden ->
         push_message(state, [
-          %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+          %{text: "Player #{player_name(state, seat)} called "},
           %{bold: true, text: "#{call_name}"}
         ])
       called_tile != nil ->
         push_message(state, [
-          %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+          %{text: "Player #{player_name(state, seat)} called "},
           %{bold: true, text: "#{call_name}"},
           %{text: " on "},
           Utils.pt(called_tile),
@@ -334,7 +338,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         ] ++ Utils.ph(call_choice))
       true ->
         push_message(state, [
-          %{text: "Player #{seat} #{state.players[seat].nickname} called "},
+          %{text: "Player #{player_name(state, seat)} called "},
           %{bold: true, text: "#{call_name}"},
           %{text: " on "}
         ] ++ Utils.ph(call_choice))
@@ -354,23 +358,23 @@ defmodule RiichiAdvanced.GameState.Actions do
       run_actions(state, state.rules["after_call"]["actions"], %{seat: seat, callee: state.turn, caller: seat, call: call})
     else state end
 
-    state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
+    state = update_player(state, seat, &%Player{ &1 | call_buttons: %{} })
     state
   end
 
   defp upgrade_call(state, seat, call_name, call_choice, called_tile) do
     # find the index of the call whose tiles match call_choice
     index = state.players[seat].calls
-      |> Enum.map(fn {_name, call} -> Enum.map(call, fn {tile, _sideways} -> tile end) end)
-      |> Enum.find_index(fn call_tiles -> Riichi.try_remove_all_tiles(call_choice, call_tiles) == [[]] end)
+      |> Enum.map(&Utils.call_to_tiles/1)
+      |> Enum.find_index(fn call_tiles -> Match.try_remove_all_tiles(call_choice, call_tiles) == [[]] end)
 
     # upgrade that call
-    {_name, call} = Enum.at(state.players[seat].calls, index)
-    call_choice = Riichi.call_to_tiles({"", call})
+    {name, call} = Enum.at(state.players[seat].calls, index)
+    call_choice = Utils.call_to_tiles({name, call})
 
     # find the index of the sideways tile to determine the direction
-    sideways_index = Enum.find_index(call, fn {_tile, sideways} -> sideways end)
-    sideways_index_rev = Enum.find_index(Enum.reverse(call), fn {_tile, sideways} -> sideways end)
+    sideways_index = Enum.find_index(call, &Utils.has_attr?(&1, ["sideways"]))
+    sideways_index_rev = Enum.find_index(Enum.reverse(call), &Utils.has_attr?(&1, ["sideways"]))
     dir = cond do
       sideways_index == 0 -> :kamicha
       sideways_index_rev == 0 -> :shimocha # for 2-tile calls
@@ -386,9 +390,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     call = style_call(style, call_choice, called_tile)
 
     upgraded_call = {call_name, call}
-    state = update_player(state, seat, &%Player{ &1 | hand: Riichi.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand"]), [called_tile]) |> Enum.at(0) |> Utils.remove_attr(["hand"]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
+    state = update_player(state, seat, &%Player{ &1 | hand: Match.try_remove_all_tiles(Utils.add_attr(&1.hand, ["hand"]) ++ Utils.add_attr(&1.draw, ["hand"]), [called_tile]) |> Enum.at(0) |> Utils.remove_attr(["hand"]), draw: [], calls: List.replace_at(state.players[seat].calls, index, upgraded_call) })
     state = update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
-    state = update_player(state, seat, &%Player{ &1 | call_buttons: %{}, call_name: "" })
+    state = update_player(state, seat, &%Player{ &1 | call_buttons: %{} })
     state
   end
 
@@ -398,18 +402,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        ordering = state.players[context.seat].tile_ordering
-        ordering_r = state.players[context.seat].tile_ordering_r
-        tile_aliases = state.players[context.seat].tile_aliases
-        Riichi.binary_search_count_matches(hand_calls, match_definitions, ordering, ordering_r, tile_aliases)
+        tile_behavior = state.players[context.seat].tile_behavior
+        Match.binary_search_count_matches(hand_calls, match_definitions, tile_behavior)
       ["count_matching_ways" | opts] ->
         # count how many given hand-calls combinations matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
-        ordering = state.players[context.seat].tile_ordering
-        ordering_r = state.players[context.seat].tile_ordering_r
-        tile_aliases = state.players[context.seat].tile_aliases
-        Enum.count(hand_calls, fn {hand, calls} -> Riichi.match_hand(hand, calls, match_definitions, ordering, ordering_r, tile_aliases) end)
+        tile_behavior = state.players[context.seat].tile_behavior
+        Enum.count(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       ["tiles_in_wall" | _opts] -> length(state.wall) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
@@ -427,7 +427,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["num_matching_melded_tiles_all" | opts] ->
         for {_seat, player} <- state.players do
           player.calls
-          |> Enum.flat_map(&Riichi.call_to_tiles/1)
+          |> Enum.flat_map(&Utils.call_to_tiles/1)
           |> Enum.count(&Riichi.tile_matches(opts, %{tile: &1}))
         end |> Enum.sum()
       ["half_score" | _opts] -> Utils.half_score_rounded_up(state.players[context.seat].score)
@@ -451,7 +451,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         num_tiles = length(state.players[seat].hand)
         num_tiles = num_tiles + length(state.players[seat].draw)
         num_tiles = num_tiles + length(state.players[seat].aside)
-        num_tiles = num_tiles + length(Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1))
+        num_tiles = num_tiles + length(Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1))
         num_tiles = num_tiles + if won_by_draw do 0 else 1 end
         num_tiles
       ["count_draws" | opts] ->
@@ -460,18 +460,18 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["count_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras)
+          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
         else 0 end
       ["count_reverse_dora" | opts] ->
         dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
         {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Riichi.call_to_tiles/1)
+        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras)
+          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
         else 0 end
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
@@ -482,7 +482,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         score_rules = state.rules["score_calculation"]
         enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Scoring.get_yakuhai(state, context.seat), player.tile_ordering, player.tile_ordering_r, player.tile_aliases, enable_kontsu_fu)
+        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Scoring.get_yakuhai(state, context.seat), player.tile_behavior, enable_kontsu_fu)
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->
@@ -570,17 +570,13 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp set_tile_alias(state, seat, from_tiles, to_tiles) do
     from_tiles = MapSet.new(from_tiles)
-    aliases = for to <- to_tiles, reduce: state.players[seat].tile_aliases do
-      aliases ->
-        {to, attrs} = Utils.to_attr_tile(to)
-        Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
-    end
-    state = update_player(state, seat, &%Player{ &1 | tile_aliases: aliases })
-    mappings = for from <- from_tiles, reduce: state.players[seat].tile_mappings do
-      mappings -> Map.update(mappings, from, Enum.uniq(to_tiles), fn to -> Enum.uniq(to ++ to_tiles) end)
-    end
-    state = update_player(state, seat, &%Player{ &1 | tile_mappings: mappings })
-    state
+    update_player(state, seat, fn player -> %Player{ player | tile_behavior: Map.update!(player.tile_behavior, :aliases, fn aliases ->
+      for to <- to_tiles, reduce: aliases do
+        aliases ->
+          {to, attrs} = Utils.to_attr_tile(to)
+          Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
+      end
+    end) } end)
   end
 
   def add_attr_matching(tiles, attrs, tile_specs) do
@@ -649,7 +645,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp get_move_tiles_targets(state, seat, source, opts) do
     all_seat_specs = Conditions.all_seat_specs()
-    {flags, tile_specs} = Enum.split_with(opts, & &1 == "marked" || &1 in all_seat_specs)
+    {flags, tile_specs} = Enum.split_with(opts, & &1 == "marked" or &1 in all_seat_specs)
     marked_objects = state.marking[seat]
     seats = Enum.flat_map(flags, fn flag ->
       if flag in all_seat_specs do
@@ -754,7 +750,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def declare_yaku(state, seat) do
-    prefix = %{text: "Player #{seat} #{state.players[seat].nickname} declared the following yaku:"}
+    prefix = %{text: "Player #{player_name(state, seat)} declared the following yaku:"}
     yaku_string = Enum.map(state.players[seat].declared_yaku, fn yaku -> %{bold: true, text: yaku} end)
     push_message(state, [prefix] ++ yaku_string)
     state
@@ -775,7 +771,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
         state
       "push_message"          ->
-        push_message(state, Enum.map(["Player #{context.seat} #{state.players[context.seat].nickname}"] ++ opts, fn msg -> %{text: msg} end))
+        push_message(state, Enum.map(["Player #{player_name(state, context.seat)}"] ++ opts, fn msg -> %{text: msg} end))
         state
       "push_system_message"   ->
         push_message(state, Enum.map(opts, fn msg -> %{text: msg} end))
@@ -784,11 +780,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
       "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
-      "call"                  -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :discards)
-      "self_call"             -> trigger_call(state, context.seat, context.call_name, context.call_choice, context.called_tile, :hand)
-      "upgrade_call"          -> upgrade_call(state, context.seat, context.call_name, context.call_choice, context.called_tile)
-      "flower"                -> trigger_call(state, context.seat, context.call_name, context.call_choice, nil, :hand)
-      "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice)
+      "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :discards)
+      "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand)
+      "upgrade_call"          -> upgrade_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile)
+      "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand)
+      "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice.chosen_saki_card)
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)
       "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")), true)
@@ -800,7 +796,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         tile = state.players[seat].pond
         |> Enum.reverse()
         |> Enum.drop(1)
-        |> Enum.find(fn tile -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0 end)
+        |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
         win(state, context.seat, tile, :discard)
       "ryuukyoku"             -> exhaustive_draw(state)
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
@@ -823,7 +819,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
       "sort_hand"             ->
         {hand, orig_ixs} = Enum.with_index(state.players[context.seat].hand)
-        |> Enum.sort_by(fn {tile, _ix} -> Utils.sort_value(tile) end)
+        |> Enum.sort_by(fn {tile, _ix} -> Constants.sort_value(tile) end)
         |> Enum.unzip()
         ix_map = Enum.with_index(orig_ixs) |> Map.new()
         # map marked tiles' indices
@@ -853,13 +849,19 @@ defmodule RiichiAdvanced.GameState.Actions do
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
         end
-      "put_down_riichi_stick" -> state |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"]) |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, riichi_discard_indices: Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end) })
+      "put_down_riichi_stick" ->
+        riichi_discard_indices = Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end)
+        state
+        |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"])
+        |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, cache: %PlayerCache{ &1.cache | riichi_discard_indices: riichi_discard_indices } })
       "bet_points"            ->
         amount = interpret_amount(state, context, opts)
-        state |> Map.update!(:pot, & &1 + amount) |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
+        state
+        |> Map.update!(:pot, & &1 + amount)
+        |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
       "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
-      "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || seat != context.seat } end)
+      "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
       "discard_draw"          ->
         GenServer.cast(self(), {:play_tile, context.seat, length(state.players[context.seat].hand)})
         state
@@ -892,7 +894,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), false)
       "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), true)
       "swap_marked_calls" ->
-        marked_call = Marking.get_marked(marked_objects, :call)
+        marked_call = Marking.get_marked(marked_objects, :calls)
         {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
         {call2, call_seat2, call_index2} = Enum.at(marked_call, 1)
 
@@ -903,16 +905,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "swap_out_fly_joker" ->
         {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
-        {call, call_seat, call_index} = Marking.get_marked(marked_objects, :call) |> Enum.at(0)
+        {call, call_seat, call_index} = Marking.get_marked(marked_objects, :calls) |> Enum.at(0)
         fly_joker = Enum.at(opts, 0, "1j") |> Utils.to_tile()
-        call_tiles = Riichi.call_to_tiles(call)
+        call_tiles = Utils.call_to_tiles(call)
 
         call_joker_index = Enum.find_index(call_tiles, &Utils.same_tile(&1, fly_joker))
         new_call = with {call_type, call_content} <- call do
-          {call_type, List.update_at(call_content, call_joker_index, fn {_t, sideways} -> {tile, sideways} end)}
+          {call_type, List.update_at(call_content, call_joker_index, &Utils.replace_base_tile(&1, tile))}
         end
         push_message(state, [
-          %{text: "Player #{context.seat} #{state.players[context.seat].nickname} swapped out a joker from the call"}
+          %{text: "Player #{player_name(state, context.seat)} swapped out a joker from the call"}
         ] ++ Utils.ph(call_tiles))
 
         # replace hand tile with joker
@@ -1034,37 +1036,35 @@ defmodule RiichiAdvanced.GameState.Actions do
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
           state ->
-            state = put_in(state.players[seat].saved_tile_aliases[label], state.players[seat].tile_aliases)
-            state = put_in(state.players[seat].saved_tile_mappings[label], state.players[seat].tile_mappings)
+            state = put_in(state.players[seat].cache.saved_tile_aliases[label], state.players[seat].tile_behavior.aliases)
+            state = put_in(state.players[seat].cache.saved_tile_mappings[label], state.players[seat].tile_behavior.mappings)
             state
         end
       "load_tile_aliases"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
           state ->
-            state = put_in(state.players[seat].tile_aliases, Map.get(state.players[seat].saved_tile_aliases, label, state.players[seat].tile_aliases))
-            state = put_in(state.players[seat].tile_mappings, Map.get(state.players[seat].saved_tile_mappings, label, state.players[seat].tile_mappings))
+            state = put_in(state.players[seat].tile_behavior.aliases, Map.get(state.players[seat].cache.saved_tile_aliases, label, state.players[seat].tile_behavior.aliases))
+            state = put_in(state.players[seat].tile_behavior.mappings, Map.get(state.players[seat].cache.saved_tile_mappings, label, state.players[seat].tile_behavior.mappings))
             state
         end
-      "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_aliases: %{}, tile_mappings: %{} })
+      "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{ &1.tile_behavior | aliases: %{} } })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        state = update_player(state, context.seat, &%Player{ &1 |
-          tile_ordering: Map.merge(&1.tile_ordering, ordering),
-          tile_ordering_r: Map.merge(&1.tile_ordering_r, ordering_r)
-        })
-        state
+        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
+          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
+          ordering_r: Map.merge(&1.tile_obehavior.ordering_r, ordering_r)
+        } })
       "set_tile_ordering_all"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        state = update_all_players(state, fn _seat, player -> %Player{ player |
-          tile_ordering: Map.merge(player.tile_ordering, ordering),
-          tile_ordering_r: Map.merge(player.tile_ordering_r, ordering_r)
-        } end)
-        state
+        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
+          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
+          ordering_r: Map.merge(&1.tile_obehavior.ordering_r, ordering_r)
+        } })
       "add_attr" ->
         targets = Enum.at(opts, 0, [])
         attrs = Enum.at(opts, 1, [])
@@ -1120,21 +1120,21 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state) # TODO remove
         state
-      # "flip_draw_faceup" -> update_player(state, context.seat, fn player -> %Player{ player | draw: Enum.map(player.draw, &Riichi.flip_faceup/1) } end)
+      # "flip_draw_faceup" -> update_player(state, context.seat, fn player -> %Player{ player | draw: Enum.map(player.draw, &Utils.flip_faceup/1) } end)
       # "flip_last_discard_faceup"  ->
       #   last_discarder = get_last_discard_action(state).seat
-      #   tile = Riichi.flip_faceup(get_last_discard_action(state).tile)
+      #   tile = Utils.flip_faceup(get_last_discard_action(state).tile)
       #   state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
       #   state = update_action(state, last_discarder, :discard, %{tile: tile})
       #   state = Buttons.recalculate_buttons(state) # TODO remove
       #   state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, fn {tile, sideways} -> {Riichi.flip_faceup(tile), sideways} end)} end)
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, &Utils.flip_faceup/1)} end)
           %Player{ player | calls: faceup_calls }
         end)
       "flip_first_visible_discard_facedown" -> 
-        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") && not Utils.same_tile(tile, :"2x") end)
+        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
         if ix != nil do
           update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
         else state end
@@ -1166,14 +1166,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         else state end
       "check_discard_passed" ->
         last_action = get_last_action(state)
-        if last_action != nil && last_action.action == :discard && Map.has_key?(state.rules, "after_discard_passed") do
+        if last_action != nil and last_action.action == :discard and Map.has_key?(state.rules, "after_discard_passed") do
           run_actions(state, state.rules["after_discard_passed"]["actions"], %{seat: context.seat})
         else state end
       "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
       "scry_all"        ->
         num = Enum.at(opts, 0, 1)
         push_message(state, [
-          %{text: "Player #{context.seat} #{state.players[context.seat].nickname} revealed "}
+          %{text: "Player #{player_name(state, context.seat)} revealed "}
         ] ++ Utils.ph(state.wall |> Enum.drop(state.wall_index) |> Enum.take(num)))
         update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
@@ -1192,7 +1192,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "delete_tiles"    ->
         # TODO allow specifying target
         tiles = Enum.map(opts, &Utils.to_tile/1)
-        state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.count_tiles([t], tiles) > 0 end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
+        state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.has_matching_tile?([t], tiles) end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
         state
       "pass_draws"      ->
         to = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
@@ -1219,17 +1219,17 @@ defmodule RiichiAdvanced.GameState.Actions do
       _ ->
         # if our action updates state, then we need to recalculate buttons
         # this is so other players can react to certain actions
-        if not uninterruptible && Map.has_key?(state.interruptible_actions, action) do
+        if not uninterruptible and Map.has_key?(state.interruptible_actions, action) do
           state = if state.visible_screen != nil do
             # if viewing a win screen, never display buttons
-            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{}, call_buttons: %{}, call_name: "", chosen_call_choice: nil, chosen_called_tile: nil, chosen_saki_card: nil } end)
+            update_all_players(state, fn _seat, player -> %Player{ player | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil } end)
           else
             Buttons.recalculate_buttons(state, state.interruptible_actions[action])
           end
           buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
           # IO.puts("buttons_before: #{inspect(buttons_before)}")
           # IO.puts("buttons_after: #{inspect(buttons_after)}")
-          if buttons_before == buttons_after || Buttons.no_buttons_remaining?(state) do
+          if buttons_before == buttons_after or Buttons.no_buttons_remaining?(state) do
             _run_actions(state, actions, context)
           else
             # if buttons changed, stop evaluating actions here
@@ -1244,13 +1244,18 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
   defp _run_actions(state, [action | actions], context) do
-    IO.puts("Unhandled action spec #{action}")
+    IO.puts("Unhandled action spec #{inspect(action)}")
     _run_actions(state, actions, context)
+  end
+  defp _run_actions(state, not_actions, _context) do
+    IO.puts("Can't run actions #{inspect(not_actions)}")
+    IO.inspect(Process.info(self(), :current_stacktrace))
+    {state, []}
   end
 
   def run_actions(state, actions, context) do
     if Debug.debug_actions() do
-      if (Enum.empty?(actions) || (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"]) do
+      if (Enum.empty?(actions) or (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"]) do
         IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
       end
     end
@@ -1279,8 +1284,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   # TODO make context optional and use player.deferred_context instead
   def run_deferred_actions(state, context) do
     actions = state.players[context.seat].deferred_actions
-    if state.game_active && not Enum.empty?(actions) do
-      state = update_player(state, context.seat, &%Player{ &1 | choice: nil, chosen_actions: nil, deferred_actions: [], deferred_context: %{} })
+    if state.game_active and not Enum.empty?(actions) do
+      state = update_player(state, context.seat, &%Player{ &1 | choice: nil, deferred_actions: [], deferred_context: %{} })
       if Debug.debug_actions() do
         IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
       end
@@ -1300,7 +1305,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
           run_deferred_actions(state, player.deferred_context)
         else state end
-        state = if not Enum.empty?(state.marking[seat]) && Marking.is_done?(state, seat) do
+        state = if not Enum.empty?(state.marking[seat]) and Marking.is_done?(state, seat) do
           state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})
           Marking.reset_marking(state, seat)
         else state end
@@ -1318,6 +1323,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     Enum.flat_map(state.players, fn {dir, player} -> if dir != seat do ["skip"] ++ get_superceded_buttons(state, player.choice) else [] end end)
   end
 
+  # triggered when all players' choices are non-nil
   defp adjudicate_actions(state) do
     if state.game_active do
       lock = Mutex.await(state.mutex, __MODULE__)
@@ -1328,34 +1334,25 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # clear ai thinking and last discard
       state = update_all_players(state, fn _seat, player -> %Player{ player | ai_thinking: false, last_discard: nil } end)
-      # trigger all non-nil choices
+      # trigger all choices that aren't "skip"
       state = for {seat, player} <- state.players, reduce: state do
         state ->
           choice = player.choice
-          actions = player.chosen_actions
-          button_choices = player.button_choices
           # don't clear deferred actions here
           # for example, someone might play a tile and have advance_turn interrupted by their own button
           # if they choose to skip, we still want to advance turn
           # also don't clear buttons here!! buttons are only cleared by player and in evaluate_choices
-          state = update_player(state, seat, fn player -> %Player{ player | choice: nil, chosen_actions: nil } end)
-          state = if choice != nil do
-            button_choice = if button_choices != nil do
-              Map.get(button_choices, choice, nil)
-            else nil end
+          state = update_player(state, seat, fn player -> %Player{ player | choice: nil } end)
+          state = if choice != nil and choice.name != "skip" do
+            actions = choice.chosen_actions
+            button_choices = player.button_choices
+            button_choice = if button_choices != nil do Map.get(button_choices, choice.name, nil) else nil end
             case button_choice do
               {:call, _call_choices} ->
-                # to have submitted a call action with call choices,
-                # we must have a chosen_called_tile and chosen_call_choice available
-                context = if player.chosen_saki_card != nil do
-                  %{seat: seat, call_name: choice, choice: player.chosen_saki_card}
-                else
-                  %{seat: seat, call_name: choice, called_tile: player.chosen_called_tile, call_choice: player.chosen_call_choice}
-                end
                 if Debug.debug_actions() do
                   IO.puts("Running call actions for #{seat}: #{inspect(actions)}")
                 end
-                state = run_actions(state, actions, context)
+                state = run_actions(state, actions, %{seat: seat, choice: choice})
                 state
               {:mark, mark_spec, pre_actions, post_actions} ->
                 # run pre-mark actions
@@ -1364,7 +1361,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
                 state = run_actions(state, pre_actions, %{seat: seat})
                 # setup marking
-                cancellable = Map.get(state.rules["buttons"][choice], "cancellable", true)
+                cancellable = Map.get(state.rules["buttons"][choice.name], "cancellable", true)
                 state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions)
                 if Debug.debug_actions() do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
@@ -1416,33 +1413,48 @@ defmodule RiichiAdvanced.GameState.Actions do
   # TODO after refactoring choices, this function should become very simple
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
-    made_choice = state.players[seat].choice != nil && state.players[seat].choice != "skip"
+    made_choice = state.players[seat].choice != nil and state.players[seat].choice.name != "skip"
     marking = Marking.needs_marking?(state, seat)
     declaring_yaku = state.players[seat].declared_yaku == []
-    not no_call_buttons || made_choice || marking || declaring_yaku
+    not no_call_buttons or made_choice or marking or declaring_yaku
   end
 
   def evaluate_choices(state, from_deferred_actions \\ false) do
+    if Debug.debug_actions() do
+      IO.puts("Evaluating the following choices:")
+      IO.inspect(Enum.map(state.players, fn {_seat, player} -> player.choice end))
+    end
+
     # for the current turn's player, if they just acted (have deferred actions) and have no buttons, their choice is "skip"
     # for other players who have no buttons and have not made a choice yet, their choice is "skip"
     # also for other players who have made a choice, if their choice is superceded by others then set it to "skip"
     last_action = get_last_action(state)
-    turn_just_acted = last_action != nil && not Enum.empty?(state.players[state.turn].deferred_actions) && last_action.seat == state.turn
+    turn_just_acted = last_action != nil and not Enum.empty?(state.players[state.turn].deferred_actions) and last_action.seat == state.turn
     last_discard_action = get_last_discard_action(state)
-    turn_just_discarded = last_discard_action != nil && last_discard_action.seat == state.turn
+    turn_just_discarded = last_discard_action != nil and last_discard_action.seat == state.turn
     extra_turn = "extra_turn" in state.players[state.turn].status
     state = for {seat, player} <- state.players, reduce: state do
       state -> cond do
-        seat == state.turn && (turn_just_acted || (turn_just_discarded && not extra_turn)) && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->
-          # IO.puts("Player #{seat} must skip due to having just discarded")
-          update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-        seat != state.turn && player.choice == nil && Enum.empty?(player.buttons) && not performing_intermediate_action?(state, seat) ->
-          # IO.puts("Player #{seat} must skip due to having no buttons")
-          update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-        seat != state.turn && player.choice != nil && player.choice in get_all_superceded_buttons(state, seat) && player.choice not in get_superceded_buttons(state, player.choice) ->
-          # IO.puts("Player #{seat} must skip due to having buttons superceded")
-          update_player(state, seat, &%Player{ &1 | choice: "skip", chosen_actions: [] })
-        true -> state
+        seat == state.turn and (turn_just_acted or (turn_just_discarded and not extra_turn)) and Enum.empty?(player.buttons) and not performing_intermediate_action?(state, seat) ->
+          if Debug.debug_actions() do
+            IO.puts("Player #{seat} must skip due to having just discarded")
+          end
+          update_player(state, seat, &%Player{ &1 | choice: %Choice{ name: "skip" } })
+        seat != state.turn and player.choice == nil and Enum.empty?(player.buttons) and not performing_intermediate_action?(state, seat) ->
+          if Debug.debug_actions() do
+            IO.puts("Player #{seat} must skip due to having no buttons")
+          end
+          update_player(state, seat, &%Player{ &1 | choice: %Choice{ name: "skip" } })
+        seat != state.turn and player.choice != nil and player.choice.name in get_all_superceded_buttons(state, seat) and player.choice not in get_superceded_buttons(state, player.choice.name) ->
+          if Debug.debug_actions() do
+            IO.puts("Player #{seat} must skip due to having buttons superceded")
+          end
+          update_player(state, seat, &%Player{ &1 | choice: %Choice{ name: "skip" } })
+        true ->
+          if Debug.debug_actions() do
+            IO.puts("Player #{seat} still has a choice to make")
+          end
+          state
       end
     end
 
@@ -1453,21 +1465,21 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = for seat <- ordered_seats, reduce: state do
       state ->
         choice = state.players[seat].choice
-        if choice not in [nil, "skip", "play_tile"] do
-          superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice) do
-            Map.get(state.rules["buttons"][choice], "precedence_over", [])
+        if choice != nil and choice.name not in [nil, "skip", "play_tile"] do
+          superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice.name) do
+            Map.get(state.rules["buttons"][choice.name], "precedence_over", [])
           else [] end
           # replace with "skip" every choice that is superceded by our choice
 
           update_all_players(state, fn dir, player ->
             not_us = seat != dir
-            choice_superceded = player.choice in superceded_choices
-            all_choices_superceded = player.choice == nil && Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
-            if not_us && (choice_superceded || all_choices_superceded) do
+            choice_superceded = player.choice != nil and player.choice.name in superceded_choices
+            all_choices_superceded = player.choice != nil and player.choice.name == nil and Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
+            if not_us and (choice_superceded or all_choices_superceded) do
               if Debug.debug_actions() do
-                IO.puts("Superceding choice for #{dir} due to existing #{choice}")
+                IO.puts("Superceding choice for #{dir} due to existing #{inspect(choice)}")
               end
-              %Player{ player | choice: "skip", chosen_actions: [], buttons: [] }
+              %Player{ player | choice: %Choice{ name: "skip" }, buttons: [] }
             else player end
           end)
         else state end
@@ -1487,10 +1499,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     |> Enum.reduce(%{}, fn m, acc -> Map.merge(m, acc, fn _k, l, r -> l ++ r end) end)
     state = for {choice, seats} <- conflicting_players, reduce: state do
       state ->
-        priority_list = state.rules["buttons"][choice]["call_priority_list"]
+        priority_list = state.rules["buttons"][choice.name]["call_priority_list"]
         winning_seat = seats
         |> Enum.sort_by(fn seat ->
-          context = %{seat: seat, call_name: choice, called_tile: state.players[seat].chosen_called_tile, call_choice: state.players[seat].chosen_call_choice}
+          context = %{seat: seat, choice: choice}
           ix = Enum.find_index(priority_list, fn conditions -> Conditions.check_cnf_condition(state, conditions, context) end)
           if ix == nil do :infinity else ix end
         end)
@@ -1498,9 +1510,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         update_all_players(state, fn dir, player ->
           if dir in (seats -- [winning_seat]) do
             if Debug.debug_actions() do
-              IO.puts("Superceding choice for #{dir} due to existing #{choice} having higher call priority")
+              IO.puts("Superceding choice for #{dir} due to existing #{inspect(choice)} having higher call priority")
             end
-            %Player{ player | choice: "skip", chosen_actions: [], buttons: [] }
+            %Player{ player | choice: %Choice{ name: "skip" }, buttons: [] }
           else player end
         end)
     end
@@ -1509,11 +1521,11 @@ defmodule RiichiAdvanced.GameState.Actions do
     if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
       # if every action is skip, we need to resume deferred actions for all players
       # otherwise, adjudicate actions as normal
-      if Enum.all?(state.players, fn {_seat, player} -> player.choice == "skip" end) do
-        if state.game_active && not from_deferred_actions do
+      if Enum.all?(state.players, fn {_seat, player} -> player.choice.name == "skip" end) do
+        if state.game_active and not from_deferred_actions do
           # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
-          state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil, chosen_actions: nil } end)
+          state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil } end)
           state = broadcast_state_change(state, true) # need to newly calculate playable indices
           state
         else state end
@@ -1529,16 +1541,15 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   # TODO this argument list is stupid, need to refactor it to a map
-  # might as well move and rename call_name too, since that's used to save button name in general
-  def submit_actions(state, seat, choice, actions, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil, declared_yakus \\ nil) do
+  def submit_actions(state, seat, choice_name, actions, call_choice \\ nil, called_tile \\ nil, saki_card \\ nil, declared_yakus \\ nil) do
     player = state.players[seat]
-    if state.game_active && player.choice == nil do
+    if state.game_active and (player.choice == nil or player.choice.name == choice_name) do
       if Debug.debug_actions() do
-        IO.puts("Submitting choice for #{seat}: #{choice}, #{inspect(actions)}")
+        IO.puts("Submitting choice for #{seat}: #{choice_name}, #{inspect(actions)}")
       end
 
-      {called_tile, call_choice, call_choices} = if called_tile == nil && call_choice == nil && declared_yakus == nil && player.button_choices != nil do
-        button_choice = Map.get(player.button_choices, choice, nil)
+      {called_tile, call_choice, call_choices} = if called_tile == nil and call_choice == nil and declared_yakus == nil and player.button_choices != nil do
+        button_choice = Map.get(player.button_choices, choice_name, nil)
         case button_choice do
           {:call, call_choices} ->
             flattened_call_choices = call_choices |> Map.values() |> Enum.concat()
@@ -1555,11 +1566,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       else {called_tile, call_choice, nil} end
 
-      if called_tile == nil && call_choice == nil && saki_card == nil && declared_yakus == nil && call_choices != nil do
+      if called_tile == nil and call_choice == nil and saki_card == nil and declared_yakus == nil and call_choices != nil do
         case call_choices do
           :declare_yaku ->
             # show declare yaku 
-            state = update_player(state, seat, &%Player{ &1 | declared_yaku: [], call_name: choice })
+            state = update_player(state, seat, &%Player{ &1 | declared_yaku: [], choice: %Choice{ name: choice_name } })
             notify_ai_declare_yaku(state, seat)
             state
           _ ->
@@ -1568,13 +1579,13 @@ defmodule RiichiAdvanced.GameState.Actions do
             if Debug.debug_actions() do
               IO.puts("Showing call buttons for #{seat}: #{inspect(actions)}")
             end
-            state = update_player(state, seat, fn player -> %Player{ player | call_buttons: call_choices, call_name: choice } end)
+            state = update_player(state, seat, &%Player{ &1 | call_buttons: call_choices, choice: %Choice{ name: choice_name } })
             notify_ai_call_buttons(state, seat)
             state
         end
       else
         # log the button press
-        state = case choice do
+        state = case choice_name do
           "skip" -> state
           "play_tile" -> state
           _ ->
@@ -1583,12 +1594,11 @@ defmodule RiichiAdvanced.GameState.Actions do
               call_choice != nil -> %{call_choice: call_choice, called_tile: called_tile}
               true -> %{}
             end
-            Log.add_button_press(state, seat, choice, data)
+            Log.add_button_press(state, seat, choice_name, data)
         end
         # set choice now that a choice has been made
-        # TODO refactor choice to be a map or tuple maybe
-        state = update_player(state, seat, &%Player{ &1 | choice: choice, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card })
-        state = if choice != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
+        state = update_player(state, seat, &%Player{ &1 | choice: %Choice{ name: choice_name, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card } })
+        state = if choice_name != "skip" do update_player(state, seat, &%Player{ &1 | deferred_actions: [] }) else state end
         evaluate_choices(state)
       end
     else state end

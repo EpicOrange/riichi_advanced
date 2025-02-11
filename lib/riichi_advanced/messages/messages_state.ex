@@ -1,20 +1,19 @@
-defmodule Messages do
-  defstruct [
-    # params
-    socket_id: nil,
-    # pids
-    supervisor: nil,
-    exit_monitor: nil,
-
-    # state
-    messages: [],
-    disconnected: true
-  ]
-  use Accessible
-end
-
 defmodule RiichiAdvanced.MessagesState do
   use GenServer
+
+  defmodule Messages do
+    defstruct [
+      # params
+      socket_id: nil,
+      # pids
+      supervisor: nil,
+      exit_monitor: nil,
+
+      # state
+      messages: [],
+      disconnected: true
+    ]
+  end
 
   def start_link(init_data) do
     IO.puts("Supervisor PID is #{inspect(self())}")

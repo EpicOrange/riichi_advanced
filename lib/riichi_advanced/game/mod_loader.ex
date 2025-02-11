@@ -21,7 +21,9 @@ defmodule RiichiAdvanced.ModLoader do
     |> then(&".enabled_mods += #{mod_names_to_array(mod_names)}"<>&1)
     # IO.puts(mod_contents)
 
-    IO.puts("Applying mods [#{Enum.join(mod_names, ", ")}]")
+    if Debug.print_mods() do
+      IO.puts("Applying mods [#{Enum.join(mod_names, ", ")}]")
+    end
     JQ.query_string_with_string!(ruleset_json, mod_contents)
   end
 
@@ -35,7 +37,7 @@ defmodule RiichiAdvanced.ModLoader do
         # modded_json = Enum.reduce(mod_names, ruleset_json, &apply_mod/2)
         modded_json = apply_multiple_mods(ruleset_json, mod_names)
 
-        if Process.get(:ignore_type_error, not Debug.skip_ruleset_caching()) do
+        if not Debug.skip_ruleset_caching() do
           RiichiAdvanced.ETSCache.put({ruleset, mod_names}, modded_json, :cache_mods)
         end
 
@@ -60,6 +62,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",
+      tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
       ruleset: "riichi",
       mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
       default_mods: ["show_waits"],
@@ -80,6 +83,7 @@ defmodule RiichiAdvanced.ModLoader do
     },
     "chinitsu" => %{
       display_name: "Chinitsu Challenge",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: ["chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
@@ -101,7 +105,7 @@ defmodule RiichiAdvanced.ModLoader do
   }
 
   defp read_ruleset_json(ruleset) do
-    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset <> ".json"}")) do
+    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      -> "{}"
     end
@@ -141,7 +145,10 @@ defmodule RiichiAdvanced.ModLoader do
     // "starting_hand": {
     //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
     // },
-    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"],
+    // "starting_dead_wall": ["5m", "4m"], // so the first kan draw is 5m. this goes backwards
+    // "starting_round": 4, // start in south round
+    // "debug_status": true // show statuses, counters, and buttons
   }
   """
 

@@ -22,6 +22,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :aside, [])
     socket = assign(socket, :draw, [])
     socket = assign(socket, :marking, %{})
+    socket = assign(socket, :dead_hand_buttons, false)
     {:ok, socket}
   end
 
@@ -67,7 +68,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
               <%= if removed do %>
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
-                <%= if not @your_turn? || i in @playable_indices do %>
+                <%= if not @your_turn? or i in @playable_indices do %>
                   <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"], true)} data-id={i}></div>
                 <% else %>
                   <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive", highlight && "highlight"], true)} data-id={i}></div>
@@ -77,7 +78,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
           <div class="draws" :if={not Enum.empty?(@draw)}>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
-              <%= if not @your_turn? || i in @playable_indices do %>
+              <%= if not @your_turn? or i in @playable_indices do %>
                 <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [], true)}></div>
               <% else %>
                 <div phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, ["inactive"], true)} data-id={i}></div>
@@ -100,26 +101,28 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <div class="calls">
         <%= if not Enum.empty?(@marking) do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
-            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :call}) do %>
+            <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
+            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) do %>
               <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["markable", sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} :for={tile <- call}></div>
               </div>
             <% else %>
-              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :call}) do %>
+              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) do %>
                 <div class="call">
-                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked", sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} :for={tile <- call}></div>
                 </div>
               <% else %>
                 <div class="call">
-                  <div class={Utils.get_tile_class(tile, i, assigns, [sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
                 </div>
               <% end %>
             <% end %>
           <% end %>
         <% else %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
+            <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
             <div class="call">
-              <div class={Utils.get_tile_class(tile, i, assigns, [sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
             </div>
           <% end %>
         <% end %>
@@ -143,7 +146,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       </div>
       <div class="calls flowers">
         <%= for {{_name, call}, i} <- prepare_flowers(assigns) do %>
-          <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, _sideways} <- call}></div>
+          <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
         <% end %>
       </div>
     </div>
@@ -182,7 +185,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def handle_event("mark_call", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :call})
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :calls})
     {:noreply, socket}
   end
 
@@ -199,14 +202,14 @@ defmodule RiichiAdvancedWeb.HandComponent do
   end
 
   def sort_value_by_visibility({tile, i}, assigns) do
-    visible = assigns.revealed? || Utils.has_attr?(tile, ["revealed"]) && Map.get(assigns, :played_tile_index, nil) != i
+    visible = assigns.revealed? or Utils.has_attr?(tile, ["revealed"]) and Map.get(assigns, :played_tile_index, nil) != i
     if visible do i + 100 else i end
   end
 
   def prepare_hand(assigns) do
     # map tiles to [{index, tile, is_last_discard, is highlighted}]
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
-    highlighted_indices = if assigns.your_hand? && assigns.called_tile != nil do
+    highlighted_indices = if assigns.your_hand? and assigns.called_tile != nil do
       highlighted_tiles = if assigns.your_turn? do
         [assigns.called_tile] ++ (if assigns.call_choice != nil do assigns.call_choice else [] end)
       else assigns.call_choice end
@@ -224,7 +227,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     |> Enum.with_index()
     |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
     |> Enum.map(fn {tile, i} -> {
-      if assigns.played_tile_index != nil && i >= assigns.played_tile_index do i-1 else i end,
+      if assigns.played_tile_index != nil and i >= assigns.played_tile_index do i-1 else i end,
       tile,
       i == assigns.played_tile_index,
       i in highlighted_indices
@@ -269,8 +272,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def update(assigns, socket) do
     # randomize position of played tile (if tedashi)
     no_played_tile_yet? = socket.assigns.played_tile_index == nil
-    assigns = if not socket.assigns.revealed? && Map.has_key?(assigns, :played_tile_index) && assigns.played_tile_index != nil do
-      not_visible = assigns.played_tile_index < length(socket.assigns.hand) && not Utils.has_attr?(Enum.at(socket.assigns.hand, assigns.played_tile_index), ["revealed"])
+    assigns = if not socket.assigns.revealed? and Map.has_key?(assigns, :played_tile_index) and assigns.played_tile_index != nil do
+      not_visible = assigns.played_tile_index < length(socket.assigns.hand) and not Utils.has_attr?(Enum.at(socket.assigns.hand, assigns.played_tile_index), ["revealed"])
       if not_visible do
         if no_played_tile_yet? do
           Map.put(assigns, :played_tile_index, Enum.random(1..length(socket.assigns.hand)) - 1)
@@ -282,7 +285,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
 
     # animate incoming calls
-    socket = if Map.has_key?(assigns, :calls) && length(assigns.calls) > length(socket.assigns.calls) do
+    socket = if Map.has_key?(assigns, :calls) and length(assigns.calls) > length(socket.assigns.calls) do
       {last_call_name, _last_call} = Enum.at(assigns.calls, -1)
       socket = assign(socket, if last_call_name in Riichi.flower_names() do :just_called_flower else :just_called end, true)
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, assigns.seat}])
@@ -290,7 +293,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     else socket end
 
     # animate incoming draws
-    socket = if Map.has_key?(assigns, :draw) && length(assigns.draw) > length(socket.assigns.draw) do
+    socket = if Map.has_key?(assigns, :draw) and length(assigns.draw) > length(socket.assigns.draw) do
       socket = assign(socket, :just_drew, true)
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_draw_anim, assigns.seat}])
       socket

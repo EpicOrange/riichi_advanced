@@ -3,7 +3,9 @@ def make_galaxy:
     .[0] |= make_galaxy
   elif . == "0z" then
     "15z"
-  else "1" + . end;
+  elif IN("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","1z","2z","3z","4z","5z","6z","7z") then
+    "1" + .
+  else . end;
 
 def add_star_suit($enabled; $arr):
   $arr |
@@ -212,7 +214,7 @@ else . end
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
     ["clear_tile_aliases"], # disable jokers
     ["set_counter", "fu", 30]
-  ]],
+  ]]
 ]
 |
 .win_timer = 20

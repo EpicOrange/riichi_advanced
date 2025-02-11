@@ -1,5 +1,7 @@
 # Hong Kong Old Style (HKOS)
 
+This ruleset assumes that you have read [base.md](base.md).
+
 The wall for HKOS consists of the 1-9 character tiles, 1-9 circle tiles, 1-9 bamboo tiles, the four wind tiles, the three dragon tiles, the four flower tiles, and the four season tiles.
 
 To win, you must achieve one of the following:

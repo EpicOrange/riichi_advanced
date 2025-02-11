@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.RoomLive do
+  alias RiichiAdvanced.RoomState.Room, as: Room
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 

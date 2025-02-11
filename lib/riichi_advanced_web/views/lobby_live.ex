@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.LobbyLive do
+  alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 

@@ -13,6 +13,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_conditions true
   @debug_ai false
   @debug_log true
+  @print_mods false
   @print_smt false
   @skip_ruleset_caching false
 
@@ -29,6 +30,22 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_log, do: @debug_log
   def print_smt, do: @print_smt
   def skip_ruleset_caching, do: @skip_ruleset_caching
+  @print_wins false
+  def debug, do: Process.get(:ignore_type_error, @debug)
+  def debug_status, do: Process.get(:ignore_type_error, @debug_status)
+  def debug_fast_ai, do: Process.get(:ignore_type_error, @debug_fast_ai)
+  def debug_saki_card_ours, do: Process.get(:ignore_type_error, @debug_saki_card_ours)
+  def debug_saki_card_opponent, do: Process.get(:ignore_type_error, @debug_saki_card_opponent)
+  def debug_am_match_definitions, do: Process.get(:ignore_type_error, @debug_am_match_definitions)
+  def debug_actions, do: Process.get(:ignore_type_error, @debug_actions)
+  def debug_buttons, do: Process.get(:ignore_type_error, @debug_buttons)
+  def debug_conditions, do: Process.get(:ignore_type_error, @debug_conditions)
+  def debug_ai, do: Process.get(:ignore_type_error, @debug_ai)
+  def debug_log, do: Process.get(:ignore_type_error, @debug_log)
+  def print_mods, do: Process.get(:ignore_type_error, @print_mods)
+  def print_smt, do: Process.get(:ignore_type_error, @print_smt)
+  def print_wins, do: Process.get(:ignore_type_error, @print_wins)
+  def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 
   def set_wall(wall) do
     # wall = List.replace_at(wall, 52, :"2s") # first draw

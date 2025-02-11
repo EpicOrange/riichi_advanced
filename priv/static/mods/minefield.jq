@@ -1,6 +1,6 @@
-.default_mods |= map(select(IN("kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
+.default_mods |= map(select(IN("yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("drawless_riichi") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("yaku/riichi", "drawless_riichi") | not)))
 |
 .starting_tiles = 34
 |
@@ -108,3 +108,5 @@ else . end)
 .persistent_statuses += ["has_1000"]
 |
 .win_timer = 20
+|
+.display_riichi_sticks = true

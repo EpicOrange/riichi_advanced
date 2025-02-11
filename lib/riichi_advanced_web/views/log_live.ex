@@ -1,11 +1,13 @@
 defmodule RiichiAdvancedWeb.LogLive do
+  alias RiichiAdvanced.GameState.Game, as: Game
+  alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
-    |> assign(:log_id, params["room_code"])
+    |> assign(:log_id, params["log_id"])
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -51,12 +53,11 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       socket = socket
       |> assign(:ruleset, ruleset)
-      |> assign(:room_code, "log") # debug
-      # |> assign(:room_code, socket.id)
+      |> assign(:room_code, Ecto.UUID.generate())
       |> assign(:log, log)
       |> assign(:log_json, log_json)
 
-      if ruleset == "custom" && Map.has_key?(log["rules"], "ruleset_json") do
+      if ruleset == "custom" and Map.has_key?(log["rules"], "ruleset_json") do
         # for custom logs, fetch the ruleset from the log and load it into ets before starting log supervisor
         RiichiAdvanced.ETSCache.put(socket.assigns.room_code, log["rules"]["ruleset_json"], :cache_rulesets)
         RiichiAdvanced.ETSCache.put(socket.assigns.room_code <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
@@ -97,8 +98,8 @@ defmodule RiichiAdvancedWeb.LogLive do
       |> assign(:state, state)
       |> assign(:seat, seat)
       |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Map.has_key?(state.rules, "display_riichi_sticks") && state.rules["display_riichi_sticks"])
-      |> assign(:display_honba, Map.has_key?(state.rules, "display_honba") && state.rules["display_honba"])
+      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks"))
+      |> assign(:display_honba, Map.get(state.rules, "display_honba"))
       |> assign(:loading, false)
       |> assign(:marking, false)
 
@@ -112,7 +113,7 @@ defmodule RiichiAdvancedWeb.LogLive do
           %{text: "Viewing log for a"},
           %{bold: true, text: socket.assigns.ruleset},
           %{text: "game"},
-        ] ++ if state.mods != nil && not Enum.empty?(state.mods) do
+        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
           [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
         else [] end})
         socket
@@ -251,7 +252,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         log={@log}
         log_control_state={@log_control_state} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() || Map.get(@state.rules, "debug_status", false) do %>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Map.get(@state.rules, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
@@ -259,10 +260,10 @@ defmodule RiichiAdvancedWeb.LogLive do
         </div>
       <% else %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
-          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) || (seat == @viewer && status in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and status in Map.get(@state.rules, "shown_statuses", [])) do %>
             <div class="status-text"><%= status %></div>
           <% end %>
-          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) || (seat == @viewer && name in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and name in Map.get(@state.rules, "shown_statuses", [])) do %>
             <div class="status-text"><%= "#{name}: #{value}" %></div>
           <% end %>
         </div>
@@ -317,13 +318,13 @@ defmodule RiichiAdvancedWeb.LogLive do
 
   def handle_event("call_button_clicked", %{"tile" => called_tile, "name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: Utils.to_tile(called_tile)}})
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, choice: %Choice{ name: call_name, chosen_call_choice: call_choice, chosen_called_tile: Utils.to_tile(called_tile) }}})
     {:noreply, socket}
   end
 
   def handle_event("call_button_clicked", %{"name" => call_name, "choice" => choice}, socket) do
     call_choice = Enum.map(String.split(choice, ","), &Utils.to_tile/1)
-    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, call_name: call_name, call_choice: call_choice, called_tile: nil}})
+    GenServer.cast(socket.assigns.game_state, {:run_deferred_actions, %{seat: socket.assigns.seat, choice: %Choice{ name: call_name, chosen_call_choice: call_choice, chosen_called_tile: nil }}})
     {:noreply, socket}
   end
 
@@ -388,7 +389,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_info(%{topic: topic, event: "play_sound", payload: %{"seat" => seat, "path" => path}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) && (seat == nil || seat == socket.assigns.viewer) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and (seat == nil or seat == socket.assigns.viewer) do
       socket = push_event(socket, "play-sound", %{path: path})
       {:noreply, socket}
     else

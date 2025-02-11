@@ -4,16 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · Riichi Advanced">
-      <%= assigns[:page_title] || "Main" %>
-    </.live_title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script>window.userToken = "<%= assigns[:user_token] %>";</script>
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
-    </script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}></script>
+
+    <title>Riichi Advanced</title>
+    <meta name="description" content="Infinitely extensible mahjong web client -- play Riichi, Hong Kong Old Style, Taiwanese, Sichuan Bloody, Space Mahjong, MCR, and more" />
+    <link rel="canonical" href="https://riichiadvanced.com" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Riichi Advanced" />
+    <meta property="og:image" content="https://riichiadvanced.com/images/title.png" />
+    <meta property="og:site_name" content="Riichi Advanced" />
+    <meta property="og:description" content="Infinitely extensible mahjong web client -- play Riichi, Hong Kong Old Style, Taiwanese, Sichuan Bloody, Space Mahjong, MCR, and more" />
+    <meta property="og:url" content="https://riichiadvanced.com" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Riichi Advanced" />
+    <meta name="twitter:description" content="Infinitely extensible mahjong web client -- play Riichi, Hong Kong Old Style, Taiwanese, Sichuan Bloody, Space Mahjong, MCR, and more" />
+    <meta name="twitter:url" content="https://riichiadvanced.com" />
+    <meta name="twitter:image" content="https://riichiadvanced.com/images/title.png" />
   </head>
   <body class="bg-black">
     <%= @inner_content %>

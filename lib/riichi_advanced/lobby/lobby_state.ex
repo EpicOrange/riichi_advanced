@@ -1,47 +1,43 @@
-defmodule LobbyPlayer do
-  defstruct [
-    nickname: nil,
-    id: ""
-  ]
-  use Accessible
-end
-
-defmodule LobbyRoom do
-  defstruct [
-    # seat => %RoomPlayer{}
-    players: %{},
-    mods: [],
-    private: true,
-    started: false
-  ]
-  use Accessible
-end
-
-defmodule Lobby do
-  defstruct [
-    # params
-    ruleset: nil,
-    ruleset_json: nil,
-    # pids
-    supervisor: nil,
-    exit_monitor: nil,
-
-    # control variables
-    error: nil,
-
-    # state
-    players: %{},
-    rooms: %{},
-    display_name: ""
-  ]
-  use Accessible
-end
-
-
 defmodule RiichiAdvanced.LobbyState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+
+  defmodule LobbyPlayer do
+    defstruct [
+      nickname: nil,
+      id: ""
+    ]
+  end
+
+  defmodule LobbyRoom do
+    defstruct [
+      # seat => %RoomPlayer{}
+      players: %{},
+      mods: [],
+      private: true,
+      started: false
+    ]
+  end
+
+  defmodule Lobby do
+    defstruct [
+      # params
+      ruleset: nil,
+      ruleset_json: nil,
+      # pids
+      supervisor: nil,
+      exit_monitor: nil,
+
+      # control variables
+      error: nil,
+
+      # state
+      players: %{},
+      rooms: %{},
+      display_name: ""
+    ]
+  end
 
   def start_link(init_data) do
     IO.puts("Lobby supervisor PID is #{inspect(self())}")

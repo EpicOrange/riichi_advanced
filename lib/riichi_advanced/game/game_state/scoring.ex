@@ -2,6 +2,10 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -25,7 +29,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       |> Enum.map(fn name -> {name, yaku_map[name]} end)
     eligible_yaku = if Map.has_key?(state.rules, "yaku_precedence") do
       excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(state.rules["yaku_precedence"], name, []) end)
-      Enum.reject(eligible_yaku, fn {name, value} -> name in excluded_yaku || value in excluded_yaku end)
+      Enum.reject(eligible_yaku, fn {name, value} -> name in excluded_yaku or value in excluded_yaku end)
     else eligible_yaku end
     eligible_yaku
   end
@@ -33,10 +37,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
   defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
     yaku_names = Enum.map(yaku_list, & &1["display_name"])
     existing_yaku_names = Enum.map(existing_yaku, fn {name, _value} -> name end)
-    case RiichiAdvanced.ETSCache.get({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, state.players[seat].tile_aliases, winning_tile, win_source, yaku_names, existing_yaku_names}) do
+    case RiichiAdvanced.ETSCache.get({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, TileBehavior.hash(state.players[seat].tile_behavior), winning_tile, win_source, yaku_names, existing_yaku_names}) do
       [] -> 
         result = _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
-        RiichiAdvanced.ETSCache.put({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, state.players[seat].tile_aliases, winning_tile, win_source, yaku_names, existing_yaku_names}, result)
+        RiichiAdvanced.ETSCache.put({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, TileBehavior.hash(state.players[seat].tile_behavior), winning_tile, win_source, yaku_names, existing_yaku_names}, result)
         result
       [result] -> result
     end
@@ -71,13 +75,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else
       score_rules = state.rules["score_calculation"]
       enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
-      Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, get_yakuhai(state, seat), state.players[seat].tile_ordering, state.players[seat].tile_ordering_r, state.players[seat].tile_aliases, enable_kontsu_fu)
+      Riichi.calculate_fu(state.players[seat].hand, state.players[seat].calls, winning_tile, win_source, get_yakuhai(state, seat), state.players[seat].tile_behavior, enable_kontsu_fu)
     end
   end
 
   def get_yaku_advanced(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
     # returns a map %{winning_tile => {minipoints, yakus}}
-    if winning_tiles == nil || winning_tiles == [nil] || Enum.empty?(winning_tiles) do
+    if winning_tiles == nil or winning_tiles == [nil] or Enum.empty?(winning_tiles) do
       # try every possible winning tile from hand
       for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil, into: %{} do
         state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["draw"])] })
@@ -129,13 +133,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
-    |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {{tile, sideways}, ix} -> {Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile), sideways} end)} end)
+    |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile) end)} end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment
     assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
-    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Riichi.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
-    state = update_player(state, seat, fn player -> %Player{ player | hand: assigned_hand, calls: assigned_calls, winning_hand: assigned_winning_hand } end)
+    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
+    state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %PlayerCache{ &1.cache | winning_hand: assigned_winning_hand } })
     {state, assigned_winning_tile}
   end
 
@@ -143,14 +147,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # t = System.system_time(:millisecond)
     score_rules = state.rules["score_calculation"]
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior)
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
 
-    IO.puts("Joker assignments (seat_scores_points): #{inspect(joker_assignments)}")
+    if Debug.print_wins() do
+      IO.puts("Joker assignments (seat_scores_points): #{inspect(joker_assignments)}")
+    end
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
@@ -168,7 +174,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def score_yaku(state, seat, yaku, yaku2, is_dealer, is_self_draw, minipoints \\ 0) do
     score_rules = state.rules["score_calculation"]
-    yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
+    yaku_2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
 
     scoring_method = score_rules["scoring_method"]
     {yaku, scoring_method} = if is_list(scoring_method) do
@@ -182,9 +188,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {score, points, points2, name} = case scoring_method do
       "multiplier" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        score = points * Map.get(score_rules, "score_multiplier", 1)
+        points2 = Enum.reduce(yaku2, 1, fn {_name, value}, acc -> acc * value end)
+        score_multiplier = case Map.get(score_rules, "score_multiplier", 1) do
+          "points2"        -> points2
+          score_multiplier -> score_multiplier
+        end
+        score = points * score_multiplier
         score_name = Map.get(score_rules, "score_name", "")
-        {score, points, 0, score_name}
+        {score, points, points2, score_name}
       "score_table" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         score = Map.get(score_rules["score_table"], Integer.to_string(points), score_rules["score_table"]["max"])
@@ -215,7 +226,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         limit_thresholds = Map.get(score_rules, "limit_thresholds", []) |> Enum.reverse()
         limit_scores = Map.get(score_rules, "limit_scores", []) |> Enum.reverse()
         limit_names = Map.get(score_rules, "limit_names", []) |> Enum.reverse()
-        limit_index = Enum.find_index(limit_thresholds, fn [han, fu] -> points >= han && minipoints >= fu end)
+        limit_index = Enum.find_index(limit_thresholds, fn [han, fu] -> points >= han and minipoints >= fu end)
         {score, name} = if limit_index != nil do
           # handle ryuumonbuchi touka's scoring quirk
           limit_index = if "score_limit_one_tier_higher" in state.players[seat].status do
@@ -244,14 +255,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score = score * if is_dealer do dealer_multiplier else 1 end |> Utils.try_integer()
     score = score + if is_self_draw do self_draw_bonus else 0 end
 
-    # apply tsumo loss
+    # apply tsumo loss (sanma only)
     tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
-    score = if is_self_draw && tsumo_loss do
-      # assumes 3-player
-      han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-      {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
-      if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
-    else score end
+    score = cond do
+      length(state.available_seats) != 3 -> score
+      (is_self_draw and tsumo_loss == true) or tsumo_loss == "ron_loss" ->
+        han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+        {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
+        if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
+      tsumo_loss == "add_1000" -> score + 2000
+      tsumo_loss == "double_collection" -> score * 2
+      true -> score
+    end
 
     max_score = Map.get(score_rules, "max_score", :infinity)
     score = min(score, max_score)
@@ -265,8 +280,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
   def hanada_kirame_score_protection(state, delta_scores) do
     case Enum.find(state.players, fn {_seat, player} -> "hanada-kirame" in player.status end) do
       {hanada_kirame_seat, hanada_kirame} ->
-        if "hanada_kirame_score_protection" in hanada_kirame.status && hanada_kirame.score + delta_scores[hanada_kirame_seat] < 0 do
-          push_message(state, [%{text: "Player #{hanada_kirame_seat} #{hanada_kirame.nickname} stays at zero points, and receives 8000 points from first place (Hanada Kirame)"}])
+        if "hanada_kirame_score_protection" in hanada_kirame.status and hanada_kirame.score + delta_scores[hanada_kirame_seat] < 0 do
+          push_message(state, [%{text: "Player #{player_name(state, hanada_kirame_seat)} stays at zero points, and receives 8000 points from first place (Hanada Kirame)"}])
           scores = Enum.map(state.players, fn {seat, player} -> {seat, player.score + delta_scores[seat]} end)
           {first_seat, _} = Enum.max_by(scores, fn {_seat, score} -> score end)
           state = update_player(state, hanada_kirame_seat, fn player -> %Player{ player | status: player.status ++ ["hanada-kirame_exhausted"] } end)
@@ -286,7 +301,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # determine dealer
     is_dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats) == winner.seat
     # handle ryuumonbuchi touka's scoring quirk
-    is_dealer = is_dealer || "score_as_dealer" in state.players[winner.seat].status
+    is_dealer = is_dealer or "score_as_dealer" in state.players[winner.seat].status
 
     pao_triggered = Map.get(winner, :pao_seat, nil) != nil
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
@@ -295,7 +310,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else
       Enum.split_with(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end)
     end
-    if pao_triggered && length(pao_yaku) > 0 && length(non_pao_yaku) > 0 do
+    if pao_triggered and length(pao_yaku) > 0 and length(non_pao_yaku) > 0 do
       # if we have both pao and non-pao yaku, we need to calculate them separately and add them up
       {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
       {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
@@ -311,7 +326,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       basic_score = winner.score
       
       basic_score = if "wareme" in state.players[winner.seat].status do
-        push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gains double points for wareme"}])
+        push_message(state, [%{text: "Player #{player_name(state, winner.seat)} gains double points for wareme"}])
         basic_score * 2
       else basic_score end
       
@@ -319,10 +334,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {delta_scores, basic_score, payer, direct_hit} =
         # due to the way we handle mixed pao-and-not-pao yaku earlier,
         # we're guaranteed either all of the yaku are pao, or none of them are
-        if pao_triggered && length(pao_yaku) > 0 do
+        if pao_triggered and length(pao_yaku) > 0 do
           # if pao, then payer becomes the pao seat,
           # and a ron payment is split in half
-          if winner.payer != nil && Map.get(score_rules, "split_pao_ron", true) do # ron
+          if winner.payer != nil and Map.get(score_rules, "split_pao_ron", true) do # ron
             # the deal-in player is not responsible for honba payments,
             # so we take care of their share of payment right here
             basic_score = Utils.try_integer(basic_score / 2)
@@ -339,27 +354,27 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
       delta_scores = if direct_hit do # either ron, or tsumo pao, or remaining ron pao payment
         payment = basic_score + honba_payment * (length(state.available_seats) - 1)
-        payment = if "megan_davin_double_payment" in state.players[winner.seat].status && "megan_davin_double_payment" in state.players[payer].status do
-          push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double to their duelist (Megan Davin)"}])
+        payment = if "megan_davin_double_payment" in state.players[winner.seat].status and "megan_davin_double_payment" in state.players[payer].status do
+          push_message(state, [%{text: "Player #{player_name(state, payer)} pays double to their duelist (Megan Davin)"}])
           payment * 2
         else payment end
         payment = if "double_payment" in state.players[payer].status do
-          push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
+          push_message(state, [%{text: "Player #{player_name(state, payer)} pays double (Yae Kobashiri)"}])
           payment * 2
         else payment end
         payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
-          push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
+          push_message(state, [%{text: "Player #{player_name(state, payer)} pays double since the wall ends on their side (Kanbara Satomi)"}])
           payment * 2
         else payment end
         payment = if "tsujigaito_satoha_double_score" in state.players[winner.seat].status do
-          push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
+          push_message(state, [%{text: "Player #{player_name(state, winner.seat)} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
           payment * 2
         else payment end
-        manzu = "yoshitome_miharu_manzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m"]) == 1
-        pinzu = "yoshitome_miharu_pinzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p"]) == 1
-        souzu = "yoshitome_miharu_souzu" in state.players[payer].status && Utils.count_tiles([winner.winning_tile], [:"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s"]) == 1
-        payment = if pao_triggered && (manzu || pinzu || souzu) do
-          push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays half due to dealing in with their voided suit (Yoshitome Miharu)"}])
+        manzu = "yoshitome_miharu_manzu" in state.players[payer].status and Utils.has_matching_tile?([winner.winning_tile], [:"1m",:"2m",:"3m",:"4m",:"5m",:"6m",:"7m",:"8m",:"9m"])
+        pinzu = "yoshitome_miharu_pinzu" in state.players[payer].status and Utils.has_matching_tile?([winner.winning_tile], [:"1p",:"2p",:"3p",:"4p",:"5p",:"6p",:"7p",:"8p",:"9p"])
+        souzu = "yoshitome_miharu_souzu" in state.players[payer].status and Utils.has_matching_tile?([winner.winning_tile], [:"1s",:"2s",:"3s",:"4s",:"5s",:"6s",:"7s",:"8s",:"9s"])
+        payment = if pao_triggered and (manzu or pinzu or souzu) do
+          push_message(state, [%{text: "Player #{player_name(state, payer)} pays half due to dealing in with their voided suit (Yoshitome Miharu)"}])
           Utils.half_score_rounded_up(payment)
         else payment end
 
@@ -379,9 +394,32 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # for riichi, reverse-calculate the ko and oya parts of the total points
         split_oya_ko_payment = Map.get(score_rules, "split_oya_ko_payment", false)
         num_players = length(state.available_seats)
-        {ko_payment, oya_payment} = if split_oya_ko_payment && num_players >= 3 do
+        # calculate ko and oya payment from basic_score
+        # (if dealer tsumo, oya payment is unused)
+        {ko_payment, oya_payment} = if split_oya_ko_payment and num_players >= 3 do
           han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-          Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
+          tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
+          {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
+          cond do
+            num_players == 4 or tsumo_loss in [true, "ron_loss"] -> {ko_payment, oya_payment}
+            tsumo_loss == "add_1000" ->
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score - 2000, is_dealer, 4, han_fu_rounding_factor)
+              {1000 + ko_payment, 1000 + oya_payment}
+            tsumo_loss == "unequal_split" -> {ko_payment, oya_payment}
+            tsumo_loss == "north_to_oya" and not is_dealer ->
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, 4, han_fu_rounding_factor)
+              {ko_payment, oya_payment + ko_payment}
+            tsumo_loss in [false, "north_split", "north_to_oya"] ->
+              {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, 4, han_fu_rounding_factor)
+              half_ko_payment = Utils.try_integer(ko_payment / 2)
+              {ko_payment + half_ko_payment, oya_payment + half_ko_payment}
+            tsumo_loss in ["equal_split", "double_collection"] ->
+              payment = Utils.try_integer(basic_score / 2)
+              {payment, payment}
+            true ->
+              IO.puts("Invalid tsumo_loss value (defaults to true): #{inspect(tsumo_loss)}")
+              {ko_payment, oya_payment}
+          end
         else
           self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
           self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
@@ -391,11 +429,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # handle motouchi naruka's scoring quirk
         motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, max(1, Map.get(score_rules, "riichi_value", 1000)))
         {ko_payment, oya_payment} = if "motouchi_naruka_increase_tsumo_payment" in state.players[winner.seat].status do
-          push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} has tsumo payments increased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
+          push_message(state, [%{text: "Player #{player_name(state, winner.seat)} has tsumo payments increased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
           {ko_payment + motouchi_naruka_delta, oya_payment + motouchi_naruka_delta}
         else {ko_payment, oya_payment} end
         {ko_payment, oya_payment} = if "motouchi_naruka_decrease_tsumo_payment" in state.players[winner.seat].status do
-          push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} has tsumo payments decreased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
+          push_message(state, [%{text: "Player #{player_name(state, winner.seat)} has tsumo payments decreased by 300 per 1000 bet (#{3 * motouchi_naruka_delta}) (Motouchi Naruka)"}])
           {max(0, ko_payment - motouchi_naruka_delta), max(0, oya_payment - motouchi_naruka_delta)}
         else {ko_payment, oya_payment} end
 
@@ -405,31 +443,31 @@ defmodule RiichiAdvanced.GameState.Scoring do
           delta_scores ->
             payment = if payer == dealer_seat do oya_payment else ko_payment end
             payment = if "atago_hiroe_no_tsumo_payment" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} is damaten, and immune to tsumo payments (Atago Hiroe)"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} is damaten, and immune to tsumo payments (Atago Hiroe)"}])
               0
             else payment end
             payment = if "double_tsumo_payment" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double for tsumo (Maya Yukiko)"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} pays double for tsumo (Maya Yukiko)"}])
               payment * 2
             else payment end
             payment = if "double_payment" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double (Yae Kobashiri)"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} pays double (Yae Kobashiri)"}])
               payment * 2
             else payment end
-            payment = if "megan_davin_double_payment" in state.players[winner.seat].status && "megan_davin_double_payment" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double to their duelist (Megan Davin)"}])
+            payment = if "megan_davin_double_payment" in state.players[winner.seat].status and "megan_davin_double_payment" in state.players[payer].status do
+              push_message(state, [%{text: "Player #{player_name(state, payer)} pays double to their duelist (Megan Davin)"}])
               payment * 2
             else payment end
             payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} pays double since the wall ends on their side (Kanbara Satomi)"}])
               payment * 2
             else payment end
             payment = if "tsujigaito_satoha_double_score" in state.players[winner.seat].status do
-              push_message(state, [%{text: "Player #{winner.seat} #{state.players[winner.seat].nickname} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
+              push_message(state, [%{text: "Player #{player_name(state, winner.seat)} gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"}])
               payment * 2
             else payment end
             payment = if "wareme" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} loses double points for wareme"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} loses double points for wareme"}])
               payment * 2
             else payment end
             delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
@@ -454,7 +492,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       delta_scores = if "use_arakawa_kei_scoring" in winner.player.status do
         win_definitions = translate_match_definitions(state, ["win"])
         visible_tiles = get_visible_tiles(state, winner.seat)
-        waits = Riichi.get_waits_and_ukeire(winner.hand, winner.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+        waits = Riichi.get_waits_and_ukeire(winner.player.hand, winner.player.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_behavior)
         if "arakawa-kei" in winner.player.status do
           # everyone pays winner 100 points per live out
           ukeire = waits |> Map.values() |> Enum.sum()
@@ -507,10 +545,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       for {winner_seat, delta_scores} <- delta_scores_map, into: %{} do
         delta_scores = for {seat, player} <- state.players, reduce: delta_scores do
           delta_scores ->
-            if delta_scores[seat] < 0 && "ezaki_hitomi_reflect" in player.status do
+            if delta_scores[seat] < 0 and "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
               win_definitions = translate_match_definitions(state, ["win"])
-              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, state.all_tiles, player.tile_ordering, player.tile_ordering_r, player.tile_aliases) ++ [:"2x"]
+              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, state.all_tiles, player.tile_behavior) ++ [:"2x"]
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
                 winner = calculate_winner_details(state, seat, waits, :discard, true)
@@ -521,9 +559,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
                 if not Enum.empty?(worst_yaku) do
                   push_message(state, [
-                    %{text: "Player #{seat} #{player.nickname} dealt in while tenpai with hand"},
+                    %{text: "Player #{player_name(state, seat)} dealt in while tenpai with hand"},
                   ] ++ Utils.ph(player.hand |> Utils.sort_tiles())
-                    ++ Utils.ph(player.calls |> Enum.flat_map(&Riichi.call_to_tiles/1))
+                    ++ Utils.ph(player.calls |> Enum.flat_map(&Utils.call_to_tiles/1))
                     ++ [
                     %{text: " which, if won on "},
                     Utils.pt(winner.winning_tile),
@@ -538,12 +576,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
                   payment = -delta_scores[seat]
                   if payment < score do
                     # reflect the payment
-                    push_message(state, [%{text: "Player #{seat} #{player.nickname} has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"}])
+                    push_message(state, [%{text: "Player #{player_name(state, seat)} has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"}])
                     delta_scores
                     |> Map.put(seat, payment)
                     |> Map.update!(winner_seat, & &1 - 2 * payment)
                   else
-                    push_message(state, [%{text: "Player #{seat} #{player.nickname} has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"}])
+                    push_message(state, [%{text: "Player #{player_name(state, seat)} has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"}])
                     delta_scores
                   end
                 else delta_scores end
@@ -565,7 +603,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {state, delta_scores} = for {seat, player} <- state.players, reduce: {state, delta_scores} do
       {state, delta_scores} ->
         if "nelly_virsaladze_take_bets" in player.status do
-          push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} takes all bets on the table (#{state.pot}) and is paid 1500 by every player (Nelly Virsaladze)"}])
+          push_message(state, [%{text: "Player #{player_name(state, seat)} takes all bets on the table (#{state.pot}) and is paid 1500 by every player (Nelly Virsaladze)"}])
           delta_scores = Map.update!(delta_scores, seat, & &1 + state.pot + 4500)
           delta_scores = for {dir, _player} <- state.placeyers, dir != seat, reduce: delta_scores do
             delta_scores -> Map.update!(delta_scores, dir, & &1 - 1500)
@@ -582,7 +620,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     state = Map.update!(state, :winners, &Map.new(&1, fn {seat, winner} -> {seat, Map.put(winner, :processed, true)} end))
 
     # check for sanchahou; clear winners in that case
-    sanchahou = Map.get(score_rules, "triple_ron_draw", false) && map_size(winners) == 3
+    sanchahou = Map.get(score_rules, "triple_ron_draw", false) and map_size(winners) == 3
     winners = if sanchahou do %{} else winners end
 
     # calculate the delta scores
@@ -598,7 +636,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
-    is_pao = Enum.any?(winners, fn {_seat, winner} -> Map.get(winner, :pao_seat, nil) != nil && Enum.any?(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end) end)
+    is_pao = Enum.any?(winners, fn {_seat, winner} -> Map.get(winner, :pao_seat, nil) != nil and Enum.any?(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end) end)
 
     # handle ezaki hitomi's scoring quirk
     {state, delta_scores} = if is_tsumo do
@@ -618,7 +656,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             |> Map.put(winner_seat, winner_delta - payment)
 
             # put the payment in the pot
-            push_message(state, [%{text: "Player #{seat} #{player.nickname} bets their tsumo payment instead of paying out (Ezaki Hitomi)"}])
+            push_message(state, [%{text: "Player #{player_name(state, seat)} bets their tsumo payment instead of paying out (Ezaki Hitomi)"}])
             state = Map.put(state, :pot, payment)
 
             {state, delta_scores}
@@ -644,7 +682,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     agarirenchan = Map.get(score_rules, "agarirenchan", false)
     next_dealer_is_first_winner = Map.get(score_rules, "next_dealer_is_first_winner", false)
     next_dealer = cond do
-      next_dealer_is_first_winner && map_size(winners) == map_size(state.winners) ->
+      next_dealer_is_first_winner and map_size(winners) == map_size(state.winners) ->
         {_seat, winner} = Enum.at(winners, 0)
         dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
         new_dealer_seat = cond do
@@ -653,7 +691,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           true                        -> winner.payer # if there are multiple first winners, the payer becomes the next dealer instead
         end
         Utils.get_relative_seat(dealer_seat, new_dealer_seat)
-      agarirenchan && Map.has_key?(state.winners, Riichi.get_east_player_seat(state.kyoku, state.available_seats)) -> :self
+      agarirenchan and Riichi.get_east_player_seat(state.kyoku, state.available_seats) in state.winner_seats -> :self
       true -> :shimocha
     end
 
@@ -672,7 +710,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     {state, delta_scores} = cond do
       # handle sichuan style scoring best hands at draw (if any non-winner is tenpai)
-      Map.get(score_rules, "score_best_hand_at_draw", false) && map_size(state.winners) < 3 && Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? && seat not in state.winner_seats end) ->
+      Map.get(score_rules, "score_best_hand_at_draw", false) and map_size(state.winners) < 3 and Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? and seat not in state.winner_seats end) ->
         # declare tenpai players as winners, as if they won from non-tenpai people (opponents)
         opponents = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
         # for each tenpai player who hasn't won, find the highest point hand they could get
@@ -682,7 +720,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           state ->
             # calculate possible waits
             winner = state.players[seat]
-            waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, state.all_tiles, winner.tile_ordering, winner.tile_ordering_r, winner.tile_aliases)
+            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, state.all_tiles, winner.tile_behavior)
 
             # display nothing if waits are empty
             # shouldn't happen under normal conditions, since tenpai implies nonempty waits
@@ -708,7 +746,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         {state, delta_scores}
       # handle nagashi
-      draw_nagashi_payments != nil && num_nagashi > 0 -> 
+      draw_nagashi_payments && num_nagashi > 0 -> 
         # do nagashi payments
         # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
         # TODO refactor to calculate the delta scores first, then apply it to the state
@@ -722,7 +760,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
             # handle kanbara satomi's scoring quirk
             payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} pays double since the wall ends on their side (Kanbara Satomi)"}])
               payment * 2
             else payment end
 
@@ -760,7 +798,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             delta = delta_scores[payer]
             if delta < 0 do
               payment = -delta
-              push_message(state, [%{text: "Player #{payer} #{state.players[payer].nickname} pays double since the wall ends on their side (Kanbara Satomi)"}])
+              push_message(state, [%{text: "Player #{player_name(state, payer)} pays double since the wall ends on their side (Kanbara Satomi)"}])
               delta_scores = Map.put(delta_scores, payer, delta * 2)
               case num_tenpai do
                 2 -> 
@@ -781,7 +819,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         else delta_scores end
 
         # reveal hand for those players that are tenpai
-        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed || tenpai[seat] } end)
+        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed or tenpai[seat] } end)
 
         {state, delta_scores}
       true -> {state, delta_scores}
@@ -799,8 +837,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     tenpairenchan = Map.get(score_rules, "tenpairenchan", false)
     notenrenchan_south = Map.get(score_rules, "notenrenchan_south", false)
     next_dealer = cond do
-      tenpairenchan && tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] -> :self
-      notenrenchan_south && Riichi.get_round_wind(state.kyoku, length(state.available_seats)) == :south -> :self
+      tenpairenchan and tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] -> :self
+      notenrenchan_south and Riichi.get_round_wind(state.kyoku, length(state.available_seats)) == :south -> :self
       true -> :shimocha
     end
 
@@ -831,13 +869,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {yaku_name, _value} = Enum.at(yaku, 0)
       # look for this yaku in the yaku list, and get arrangement from the match condition
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
-      am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) && condition["name"] == "match" end)
+      am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
       am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-      ordering = state.players[seat].tile_ordering
-      ordering_r = state.players[seat].tile_ordering_r
-      tile_aliases = state.players[seat].tile_aliases
+      tile_behavior = state.players[seat].tile_behavior
       new_winning_tile = Utils.strip_attrs(new_winning_tile)
-      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, ordering, ordering_r, tile_aliases)
+      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, tile_behavior)
       if arranged_hand != nil do
         arranged_hand = arranged_hand
         |> Enum.intersperse([:"3x"])
@@ -862,11 +898,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # push message
     orig_call_tiles = orig_calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.flat_map(fn call -> Enum.take(Riichi.call_to_tiles(call), 3) end) # ignore kans
+    |> Enum.flat_map(fn call -> Enum.take(Utils.call_to_tiles(call), 3) end) # ignore kans
     smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
     joker_assignment = joker_assignment
     |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
-    |> Enum.reject(fn {joker_tile, _tile} -> joker_tile in [:"0m", :"0p", :"0s", :"26z"] end)
+    |> Enum.reject(fn {joker_tile, _tile} -> Riichi.is_aka?(joker_tile) end)
     |> Map.new()
     if not Enum.empty?(joker_assignment) do
       joker_assignment_message = joker_assignment
@@ -884,18 +920,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # add winning hand to the winner player (yaku conditions often check this)
     winning_tile = Enum.at(possible_winning_tiles, 0, nil)
-    call_tiles = Enum.flat_map(state.players[seat].calls, &Riichi.call_to_tiles/1)
+    call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
-    state = update_player(state, seat, fn player -> %Player{ player | winning_hand: winning_hand } end)
+    state = update_player(state, seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | winning_hand: winning_hand } })
 
     # deal with jokers
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt || Enum.empty?(state.players[seat].tile_mappings) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      jokers = Map.keys(state.players[seat].tile_mappings)
-      if Utils.count_tiles(smt_hand ++ call_tiles, jokers) > 0 do
+      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, state.players[seat].tile_behavior)) do
         # run smt, but push a message if it takes more than 0.5 seconds
-        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_ordering, state.players[seat].tile_mappings) end)
+        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior) end)
         notify_task = Task.async(fn ->
           :timer.sleep(500)
           push_message(state, [%{text: "Running joker solver..."}])
@@ -907,7 +942,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         res
       else [%{}] end
     end
-    IO.puts("Joker assignments (calculate_winner_details): #{inspect(joker_assignments)}")
+    if Debug.print_wins() do
+      IO.puts("Joker assignments (calculate_winner_details): #{inspect(joker_assignments)}")
+    end
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
 
     # check if we're dealer
@@ -915,14 +952,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle ryuumonbuchi touka's scoring quirk
     score_as_dealer = "score_as_dealer" in state.players[seat].status
     if score_as_dealer do
-      push_message(state, [%{text: "Player #{seat} #{state.players[seat].nickname} is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"}])
+      push_message(state, [%{text: "Player #{player_name(state, seat)} is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"}])
     end
-    is_dealer = is_dealer || score_as_dealer
+    is_dealer = is_dealer or score_as_dealer
     
     # if we're playing bloody end, record our opponents
     bloody_end = Map.get(state.rules, "bloody_end", false)
     opponents = if bloody_end do
-      Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) || dir == seat end)
+      Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) or dir == seat end)
     else state.available_seats -- [seat] end
 
     # find the maximum score obtainable across all joker assignments
@@ -930,7 +967,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
       Task.async(fn ->
         # replace 5z in joker assignment with 0z if 0z is present in the wall
-        joker_assignment = if Utils.count_tiles(state.all_tiles, [:"0z"]) > 0 do
+        joker_assignment = if Utils.has_matching_tile?(state.all_tiles, [:"0z"]) do
           Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
         else joker_assignment end
 
@@ -943,7 +980,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
-        IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+        if Debug.print_wins() do
+          IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].cache.winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+        end
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
         new_winning_tile = if winning_tile == nil do new_winning_tile else winning_tile end
@@ -951,7 +990,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # score yaku
         yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
         {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
-        IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
+        if Debug.print_wins() do
+          IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
+        end
         {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
       end)
     end
@@ -963,7 +1004,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     %{hand: arranged_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
 
     # return the complete winner object
-    yaku_2_overrides = not Enum.empty?(yaku2) && Map.get(score_rules, "yaku2_overrides_yaku1", false)
+    yaku_2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
     %{
       seat: seat,
       player: %Player{ state.players[seat] | hand: arranged_hand, draw: arranged_draw, calls: arranged_calls },
@@ -1012,7 +1053,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def update_winner_pao(state, winner) do
-    Map.put(winner, :pao_seat, Enum.find(state.available_seats, fn seat -> seat != winner.payer && "pao" in state.players[seat].status end))
+    Map.put(winner, :pao_seat, Enum.find(state.available_seats, fn seat -> seat != winner.payer and "pao" in state.players[seat].status end))
   end
 
 end

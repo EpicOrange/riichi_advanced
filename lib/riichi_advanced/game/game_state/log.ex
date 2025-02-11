@@ -1,11 +1,3 @@
-defmodule GameEvent do
-  defstruct [
-    seat: nil,
-    event_type: nil,
-    params: %{}
-  ]
-  use Accessible
-end
 
 # for encoding tiles with attrs, which are tuples, which Jason doesn't handle unless we do this
 defimpl Jason.Encoder, for: Tuple do
@@ -25,7 +17,14 @@ end
 defmodule RiichiAdvanced.GameState.Log do
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.Utils, as: Utils
-  # import RiichiAdvanced.GameState
+
+  defmodule GameEvent do
+    defstruct [
+      seat: nil,
+      event_type: nil,
+      params: %{}
+    ]
+  end
 
   def init_log(state) do
     state = Map.put(state, :log_state, %{
@@ -57,11 +56,15 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def log(state, seat, event_type, params) do
-    update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
+    if seat != nil do
+      update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
+    else
+      update_in(state.log_state.log, &[%GameEvent{ event_type: event_type, params: params } | &1])
+    end
   end
 
   defp modify_last_draw_discard(state, fun) do
-    ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw || event.event_type == :discard end)
+    ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw or event.event_type == :discard end)
     if ix != nil do
       update_in(state.log_state.log, &List.update_at(&1, ix, fun))
     else
@@ -73,10 +76,10 @@ defmodule RiichiAdvanced.GameState.Log do
   defp modify_last_button_press(state, fun, create_at_seat) do
     state = case Enum.at(state.log_state.log, 0) do
       event when (event != nil and event.event_type == :buttons_pressed) ->
-        if create_at_seat != nil && Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
-          log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
+        if create_at_seat != nil and Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
+          log(state, nil, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
         else state end
-      _ -> log(state, :east, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
+      _ -> log(state, nil, :buttons_pressed, %{buttons: [nil, nil, nil, nil]})
     end
     update_in(state.log_state.log, &List.update_at(&1, 0, fun))
   end
