@@ -9,7 +9,8 @@
 ]
 |
 .functions.do_kan_draw = [
-  ["set_status", "kan"],
+  # variable is to accommodate sanma
+  ["set_status", "$status"],
   ["shift_tile_to_dead_wall", 1],
   ["draw", 1, "opposite_end"]
 ]
@@ -40,7 +41,7 @@ else . end
   "call": [[0, 0, 0]],
   "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
   "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "tile_not_drawn", "opts": [-4]}, "call_available"],
-  "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"], ["run", "do_kan_draw"]],
+  "actions": [["big_text", "Kan"], ["call"], ["change_turn", "self"], ["run", "do_kan_draw", {"status": "kan"}]],
   "precedence_over": ["chii", "pon", "daiminkan"]
 }
 |
@@ -49,7 +50,7 @@ else . end
   "call": [[0, 0, 0]],
   "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
   "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}, "self_call_available"],
-  "actions": [["big_text", "Kan"], ["self_call"], ["run", "do_kan_draw"]]
+  "actions": [["big_text", "Kan"], ["self_call"], ["run", "do_kan_draw", {"status": "kan"}]]
 }
 |
 .buttons.kakan = {
@@ -63,7 +64,7 @@ else . end
   "upgrades": "pon",
   # not sure why we have "not_just_discarded", "not_just_called" instead of "has_draw"
   "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}],
-  "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw"]]
+  "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw", {"status": "kan"}]]
 }
 |
 .buttons.chankan = {
