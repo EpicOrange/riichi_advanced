@@ -415,6 +415,7 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
     opacity: 0.5;
     margin: 0;
     padding: 0;
+    z-index: 1000;
   }
   input.mobile-zoom-checkbox + label::before {
     content: "+";
@@ -449,7 +450,7 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
   /* move buttons up */
   input.mobile-zoom-checkbox:checked ~ div.buttons,
   input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
-    bottom: calc(1.75 * var(--tile-size));
+    bottom: calc(2 * var(--tile-size));
   }
   div#container.minefield input.mobile-zoom-checkbox + label {
     bottom: calc(7 * var(--tile-size));
@@ -3134,6 +3135,11 @@ div.tutorial-focus {
   opacity: 0.5;
   background: black;
   mask-composite: intersect;
+}
+div.tutorial-focus.mobile { display: none; }
+@media (max-aspect-ratio: 1.2/1) {
+  input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
+  input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
 }
 
 /* tutorial menu */

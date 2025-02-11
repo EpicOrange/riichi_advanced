@@ -470,7 +470,9 @@ defmodule RiichiAdvancedWeb.GameLive do
     GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, name})
     socket = assign(socket, :hovered_called_tile, nil)
     socket = assign(socket, :hovered_call_choice, nil)
-    socket = assign(socket, :hide_buttons, true)
+    socket = if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+      assign(socket, :hide_buttons, true)
+    else socket end
     {:noreply, socket}
   end
 
