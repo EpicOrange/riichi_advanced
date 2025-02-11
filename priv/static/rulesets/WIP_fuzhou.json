@@ -1,5 +1,4 @@
 {
-// stealing the code for Taiwanese to do Fuzhou mahjong
   
 // here's Fuzhou mahjong i guess
   //✅ 144 tiles (riichi + 8 flowers)
@@ -7,15 +6,20 @@
   //✅ like hkos, declare flowers at the start before playing
   //✅ like taiwanese, 16 tile hands, 5 sets and a pair
   //✅ dead wall is 16 tiles. reveal the 8th tile from the dead wall, that's the "gold" tile.
-  // the other 3 copies of the "gold" tile are any-tile jokers and are also worth points
+    // double-check what happens if gold tile is a flower/honour
+  //⚠️ the other 3 copies of the "gold" tile are any-tile jokers and are also worth points
   //✅ chi, pon, kan
-  // cannot call with a gold (unless using their original value). doesn't matter when calling hu (ron)
-  // as the dead wall shifts (which it will), the revealed "gold" tile is never drawn, it is always the 9th tile away from the end and marks where the dead wall begins
+    // can't implement this in Riichi Advanced yet
+  //⚠️ cannot call with a gold (unless using their original value). doesn't matter when calling hu (ron)
+    // can't implement this in Riichi Advanced yet
+  //⚠️ as the dead wall shifts (which it will), the revealed "gold" tile is never drawn, it is always the 9th tile away from the end and marks where the dead wall begins
   //✅ agarirenchan in effect
 // win cons
   //✅ 5 sets and a pair only (no seven pairs or kokushi)
-  // or: tenpai at draw (after flower replacements) and having the gold tile as one of your waits means you win immediately (robbing the gold) nondealer closest in turn order to dealer gets priority for this
-  // or: if you have all three golds at any time you win (golden dragon)
+    // half-done?
+  //⚠️ or: tenpai at draw (after flower replacements) and having the gold tile as one of your waits means you win immediately (robbing the gold) nondealer closest in turn order to dealer gets priority for this
+    // double-check that this is right
+  //⚠️ or: if you have all three golds at any time you win (golden dragon)
 // yaku
   // self-draw: no multiplier, but increases score for flowers/golds (see below)
   // Pinhu: all sequences. 10 points
@@ -80,8 +84,8 @@
     "1m": ["1m"],  "2m": ["2m"],  "3m": ["3m"],  "4m": ["4m"],  "5m": ["5m"],  "6m": ["6m"],  "7m": ["7m"],  "8m": ["8m"],  "9m": ["9m"],  "0m": ["5m"],
     "1p": ["1p"],  "2p": ["2p"],  "3p": ["3p"],  "4p": ["4p"],  "5p": ["5p"],  "6p": ["6p"],  "7p": ["7p"],  "8p": ["8p"],  "9p": ["9p"],  "0p": ["5p"],
     "1s": ["1s"],  "2s": ["2s"],  "3s": ["3s"],  "4s": ["4s"],  "5s": ["5s"],  "6s": ["6s"],  "7s": ["7s"],  "8s": ["8s"],  "9s": ["9s"],  "0s": ["5s"],
-      // what happens if the gold tile flipped over is a flower or honour?
-    "1z": ["1z"],  "2z": ["2z"],  "3z": ["3z"],  "4z": ["4z"],  "5z": ["5z"],  "6z": ["6z"],  "7z": ["7z"], "1f": ["1f", "2f", "3f", "4f"], "2f": ["1f", "2f", "3f", "4f"], "3f": ["1f", "2f", "3f", "4f"], "4f": ["1f", "2f", "3f", "4f"], "1g": ["1g", "2g", "3g", "4g"], "2g": ["1g", "2g", "3g", "4g"], "3g": ["1g", "2g", "3g", "4g"], "4g": ["1g", "2g", "3g", "4g"]
+      // what happens if the gold indicator is a flower or honour?
+    // "1z": ["1z"],  "2z": ["2z"],  "3z": ["3z"],  "4z": ["4z"],  "0z": ["0z"],  "6z": ["6z"],  "7z": ["7z"], "1f": ["1f", "2f", "3f", "4f"], "2f": ["1f", "2f", "3f", "4f"], "3f": ["1f", "2f", "3f", "4f"], "4f": ["1f", "2f", "3f", "4f"], "1g": ["1g", "2g", "3g", "4g"], "2g": ["1g", "2g", "3g", "4g"], "3g": ["1g", "2g", "3g", "4g"], "4g": ["1g", "2g", "3g", "4g"]
   },
   "set_definitions": {
     "pair": [0, 0],
@@ -196,11 +200,6 @@
     [ "exhaustive", [["full_straight"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "yaku": [
-    // Dealer
-    { "display_name": "Dealer", "value": 1, "when": [{"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
-    // Flowers
-    { "display_name": "No Flowers", "value": 1, "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
@@ -209,6 +208,23 @@
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}] },
     { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 1]]]]}] },
+    { "display_name": "Flowers", "value": 1, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 1]]]]}] },
+    { "display_name": "Gold", "value": "dora", "when": [{"name": "counter_at_least", "opts": ["dora", 1]}]},
+    { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
+    
+
+
+    
+    // Dealer
+    { "display_name": "Dealer", "value": 1, "when": [{"name": "seat_is", "opts": ["east"]}] },
+    // Flowers
+    { "display_name": "No Flowers", "value": 1, "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] },
     { "display_name": "Seven Flowers Robbing Eighth", "value": 20, "when": ["won_by_call", {"name": "match", "opts": [["flowers", "last_called_tile"], ["8_flowers"]]}] },
     { "display_name": "Eight Flowers", "value": 30, "when": [{"name": "match", "opts": [["hand", "draw", "flowers"], ["8_flowers"]]}] },
     // Winning methods
@@ -417,6 +433,7 @@
   },
   "before_win": {
     "actions": [
+      [["add_counter", "dora", "count_dora", [### INDEX OF GOLD INDICATOR ###], ["hand", "calls", "flowers", "winning_tile"]]],
       ["ite", [{"name": "seat_is", "opts": ["east"]}], [
         ["set_counter", "dealer_continuation", "honba"],
         ["multiply_counter", "dealer_continuation", 2]
@@ -559,6 +576,18 @@
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan", "ron", "chankan"]
+    },
+      // TODO: properly implement Robbing The Gold here
+    "chankin": {
+      "display_name": "Qiangjin",
+      "show_when": [
+        "not_our_turn",
+        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "dora"], ["win"]]}
+      ],
+      "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["win_by_draw"]],
+      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Zimo",
