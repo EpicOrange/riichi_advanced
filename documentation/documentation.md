@@ -430,7 +430,7 @@ Rules:
 - `set_definitions`: List of definitions for sets used in match definitions, described above
 - `shown_statuses`: List of statuses to show (private to the player)
 - `starting_tiles`: Number of tiles every player starts with every round
-- `wall`: The list of tiles used in the game
+- `wall`: The list of tiles used in the game. [Here are all the tiles available in the tileset currently.](tiles.md)
 
 Yaku and scoring:
 
@@ -493,7 +493,6 @@ Other:
 - `["subtract_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but subtracts.
 - `["multiply_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but multiplies.
 - `["divide_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
-- `["set_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
 - `["big_text", text, seat]`: Popup big text for the current player, or the given seat if `seat` is specified. Allowed values of `seat` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`
 - `["pause", ms]`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
 - `["sort_hand"]`: Sort the current player's hand.
@@ -738,6 +737,8 @@ The idea is that you multiply `points` by some number (can be less than 1) to ge
     },
 
 If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
+
+You can also set `"score_multiplier": "points2"` to let `yaku2` act as multipliers. In other words, `yaku` will be summed and then multiplied with the product of `yaku2`. See `ningbo.json`.
 
 ### `"scoring_method": "score_table"`
 

@@ -1,5 +1,7 @@
 defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   
@@ -228,7 +230,7 @@ defmodule RiichiAdvanced.SMT do
 
   def add_missing_suit(sets) do
     # basically if sets has keys 0 and 2 but not 1, add 1
-    if Map.has_key?(sets, 0) && not Map.has_key?(sets, 1) && Map.has_key?(sets, 2) do
+    if Map.has_key?(sets, 0) and not Map.has_key?(sets, 1) and Map.has_key?(sets, 2) do
       Map.put(sets, 1, [])
     else sets end
   end
@@ -248,7 +250,7 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def remove_group_keywords(group) do
-    if is_list(group) do Enum.reject(group, & &1 in Riichi.group_keywords()) |> Enum.sort() else group end
+    if is_list(group) do Enum.reject(group, & &1 in Match.group_keywords()) |> Enum.sort() else group end
   end
 
   def strip_restart(match_definition) do
@@ -276,11 +278,14 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, ordering, tile_mappings \\ %{}) do
+  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+    ordering = tile_behavior.ordering
+    tile_mappings = TileBehavior.tile_mappings(tile_behavior)
+
     calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.with_index()
-    |> Enum.map(fn {call, i} -> {Enum.take(Riichi.call_to_tiles(call), 3), i} end) # ignore kans
+    |> Enum.map(fn {call, i} -> {Enum.take(Utils.call_to_tiles(call), 3), i} end) # ignore kans
 
     # IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
     # IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
@@ -288,7 +293,7 @@ defmodule RiichiAdvanced.SMT do
     # IO.puts("Jokers are #{inspect(jokers)}")
     all_tiles = all_tiles
     |> Enum.uniq()
-    |> Enum.reject(fn tile -> tile in jokers && tile not in tile_mappings[tile] end)
+    |> Enum.reject(fn tile -> tile in jokers and tile not in tile_mappings[tile] end)
     # IO.puts("Non-joker tiles are #{inspect(all_tiles)}")
     {len, encoding, encoding_r, encoding_boilerplate} = determine_encoding(ordering, all_tiles)
     # encoding = %{
@@ -345,7 +350,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.filter(fn [_groups, num] -> num > 0 end)
     |> Enum.flat_map(fn [groups, _num] -> groups end)
     |> Enum.reject(fn group -> is_binary(group) end)
-    |> Enum.reject(fn group -> is_list(group) && Utils.is_tile(Enum.at(group, 0)) end)
+    |> Enum.reject(fn group -> is_list(group) and Utils.is_tile(Enum.at(group, 0)) end)
     |> Enum.map(&remove_group_keywords/1)
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     # IO.inspect(all_sets, charlists: :as_lists, label: "all_sets")
@@ -375,10 +380,10 @@ defmodule RiichiAdvanced.SMT do
     to_set_fun = if Enum.empty?(all_sets) do "" else "(define-fun to_set ((num (_ BitVec 8))) (_ BitVec #{len})" <> Enum.join(to_set_fun) <> " zero)" <> String.duplicate(")", length(all_sets)) <> "\n" end
 
     # first figure out which tiles are jokers based on tile_mappings
-    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end) # calls have already been preprocessed to remove sideways flag
+    call_tiles = Enum.flat_map(calls, fn {call, _i} -> call end)
     {joker_ixs, joker_constraints} = hand ++ call_tiles
     |> Enum.with_index()
-    |> Enum.filter(fn {tile, _ix} -> Utils.count_tiles([tile], jokers) == 1 end)
+    |> Enum.filter(fn {tile, _ix} -> Utils.has_matching_tile?([tile], jokers) end)
     |> Enum.map(fn {tile, ix} ->
       {_joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
       joker_choices = joker_choices
@@ -406,13 +411,13 @@ defmodule RiichiAdvanced.SMT do
         if Enum.empty?(tile_groups) do
           all_tile_groups
         else
-          unique = unique_ix != nil && group_ix > unique_ix
+          unique = unique_ix != nil and group_ix > unique_ix
           new_groups = if unique do
             [{tile_groups, num, true}]
           else
             Enum.flat_map(tile_groups, fn group -> cond do
               is_binary(group) -> [{[group], num, false}]
-              is_list(group) && Utils.is_tile(Enum.at(group, 0)) -> [{group, num, false}]
+              is_list(group) and Utils.is_tile(Enum.at(group, 0)) -> [{group, num, false}]
               true ->
                 IO.puts("Unhandled SMT tile group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
                 []
@@ -558,14 +563,14 @@ defmodule RiichiAdvanced.SMT do
         unique_ix = Enum.find_index(match_definition, & &1 == "unique")
         {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for {[groups, num], group_ix} <- Enum.with_index(match_definition), num > 0, reduce: {[], [], [], [], []} do
           {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} ->
-            unique = unique_ix != nil && group_ix > unique_ix
+            unique = unique_ix != nil and group_ix > unique_ix
             {set_ixs, tiles_ixs} = if unique do
               ix = Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})
               if ix do [{[], [1+ix]}] else [] end
             else
               groups
               |> Enum.map(&remove_group_keywords/1)
-              |> Enum.map(fn group -> {group, Enum.find_index(all_sets, & &1 == group), Enum.find_index(all_tile_groups, & &1 == {group, num, unique} || &1 == {[group], num, unique})} end)
+              |> Enum.map(fn group -> {group, Enum.find_index(all_sets, & &1 == group), Enum.find_index(all_tile_groups, & &1 == {group, num, unique} or &1 == {[group], num, unique})} end)
               |> Enum.flat_map(fn {_group, ix_set, ix_tile_group} -> cond do
                 is_integer(ix_set) -> [{[ix_set+1], []}]
                 is_integer(ix_tile_group) -> [{[], [ix_tile_group+1]}]
@@ -619,7 +624,7 @@ defmodule RiichiAdvanced.SMT do
 
     optimzation_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
       call = {"", Enum.map(call, &{&1, false})} # TODO replace this dumb call format
-      tile = Utils.get_joker_meld_tile(call, jokers)
+      tile = Utils.get_joker_meld_tile(call, jokers, tile_mappings)
       "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
     end |> Enum.join()
 

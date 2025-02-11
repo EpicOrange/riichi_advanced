@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -57,7 +58,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def needs_marking?(state, seat) do
-    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) && length(mark_info.marked) < mark_info.needed end)
+    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) and length(mark_info.marked) < mark_info.needed end)
   end
 
   def get_object(state, seat, index, source) do
@@ -126,28 +127,22 @@ defmodule RiichiAdvanced.GameState.Marking do
             |> Enum.concat()
             |> Enum.all?(fn {tile2, _, _} -> Riichi.same_number?(tile, tile2) end)
           else false end
-        "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_aliases)
+        "match_called_tile" -> Utils.same_tile(tile, get_last_call_action(state).called_tile, state.players[marking_player].tile_behavior)
         "match_hand_to_marked_call" ->
-          jokers = Map.keys(state.players[marking_player].tile_mappings)
           state.marking[marking_player]
           |> Enum.filter(fn {src, _mark_info} -> src == :calls end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
           |> Enum.all?(fn {call, _, _} ->
-            call_tile = Riichi.call_to_tiles(call)
-            |> Enum.reject(& &1 in jokers)
-            |> Enum.at(0)
-            Utils.same_tile(tile, Utils.strip_attrs(call_tile)) end)
+            call_tile = Utils.get_joker_meld_tile(call, [:"1j"], state.players[marking_player].tile_behavior)
+            Utils.same_tile(tile, Utils.strip_attrs(call_tile), state.players[marking_player].tile_behavior) end)
         "match_call_to_marked_hand" ->
-          jokers = Map.keys(state.players[marking_player].tile_mappings)
-          call_tile = Riichi.call_to_tiles(tile)
-          |> Enum.reject(& &1 in jokers)
-          |> Enum.at(0)
+          call_tile = Utils.get_joker_meld_tile(tile, [:"1j"], state.players[marking_player].tile_behavior)
           state.marking[marking_player]
           |> Enum.filter(fn {src, _mark_info} -> src == :hand end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
-          |> Enum.all?(fn {tile, _, _} -> Utils.same_tile(call_tile, Utils.strip_attrs(tile)) end)
+          |> Enum.all?(fn {tile, _, _} -> Utils.same_tile(call_tile, Utils.strip_attrs(tile), state.players[marking_player].tile_behavior) end)
         "self"              -> marking_player == seat
         "others"            -> marking_player != seat
         "shimocha"          -> Utils.get_relative_seat(marking_player, seat) == :shimocha
@@ -162,12 +157,10 @@ defmodule RiichiAdvanced.GameState.Marking do
         "wind"              -> Riichi.is_wind?(tile)
         "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
-        "visible"           -> Utils.count_tiles([tile], [:"1x", :"2x"]) == 0
-        "not_joker"         -> not Map.has_key?(state.players[marking_player].tile_mappings, tile)
-        "call_has_joker"    ->
-          jokers = Map.keys(state.players[marking_player].tile_mappings)
-          Utils.count_tiles(Riichi.call_to_tiles(tile), jokers) > 0
-        "not_riichi"        -> "riichi" not in state.players[marking_player].status || index >= length(state.players[marking_player].hand)
+        "visible"           -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"])
+        "not_joker"         -> not TileBehavior.is_any_joker?(tile, state.players[marking_player].tile_behavior)
+        "call_has_joker"    -> Enum.any?(Utils.call_to_tiles(tile), &TileBehavior.is_any_joker?(&1, state.players[marking_player].tile_behavior))
+        "not_riichi"        -> "riichi" not in state.players[marking_player].status or index >= length(state.players[marking_player].hand)
         "last_discard"      ->
           case source do
             :discard ->
@@ -175,7 +168,7 @@ defmodule RiichiAdvanced.GameState.Marking do
               if last_discard_action != nil do
                 seat_matches = seat == last_discard_action.seat
                 index_matches = index == length(state.players[seat].pond) - 1
-                seat_matches && index_matches
+                seat_matches and index_matches
               else false end
             _        -> false
           end
@@ -193,23 +186,23 @@ defmodule RiichiAdvanced.GameState.Marking do
   def can_mark?(state, marking_player, seat, index, source) do
     mark_infos = get_mark_infos(state.marking[marking_player], source)
     Enum.any?(mark_infos, fn {_src, mark_info} ->
-      marked_enough = mark_info != nil && length(mark_info.marked) >= mark_info.needed
+      marked_enough = mark_info != nil and length(mark_info.marked) >= mark_info.needed
       already_marked = is_marked?(state, marking_player, seat, index, source)
-      mark_info != nil && not marked_enough && not already_marked && _can_mark?(state, marking_player, seat, index, source, mark_info)
+      mark_info != nil and not marked_enough and not already_marked and _can_mark?(state, marking_player, seat, index, source, mark_info)
     end)
   end
 
   def is_marked?(state, marking_player, seat, index, source) do
     get_mark_infos(state.marking[marking_player], source)
     |> Enum.any?(fn {_src, mark_info} -> 
-      Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat2 in [seat, nil] && index == index2 end)
+      Enum.any?(mark_info.marked, fn {_tile, seat2, index2} -> seat2 in [seat, nil] and index == index2 end)
     end)
   end
 
   def mark_tile(state, marking_player, seat, index, source) do
     if not Enum.empty?(state.marking[marking_player]) do
       valid_mark_info_ix = state.marking[marking_player]
-      |> Enum.find_index(fn {src, mark_info} -> src == source && _can_mark?(state, marking_player, seat, index, source, mark_info) end)
+      |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
       update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
         {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
       end))

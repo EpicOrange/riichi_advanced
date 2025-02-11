@@ -253,6 +253,7 @@ div.hand.kamicha {
   left: var(--tile-size);
   transform: rotate(90deg);
   transform-origin: top left;
+  z-index: 10; /* so div.hand.self doesn't block it */
 }
 div.calls:hover { z-index: 100; }
 div.draws::before, div.tiles:hover::before, div.calls:hover::before {
@@ -275,6 +276,43 @@ div.hand.shimocha div.calls:hover::before { z-index: -20; }
 div.hand.shimocha div.tiles:hover ~ div.calls { z-index: -40; }
 div.hand.marking { z-index: 10; }
 div.hand.marking.self { z-index: 11; }
+div.hand.marking:hover { z-index: 20; }
+/* dead hand buttons */
+div.calls > div.dead-hand-button {
+  border-radius: 50%;
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  background: var(--tile-back);
+  opacity: 0.5;
+  font-weight: 800;
+  margin-left: calc(0.25 * var(--tile-size));
+}
+div.calls > div.dead-hand-button::before {
+  content: "☠";
+  font-size: calc(0.8 * var(--tile-size));
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  color: var(--tile-front);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateX(calc(-0.1 * var(--tile-size)));
+}
+div.calls > div.dead-hand-button::after {
+  content: "?";
+  font-size: calc(0.5 * var(--tile-size));
+  width: calc(0.5 * var(--tile-size));
+  height: calc(0.5 * var(--tile-size));
+  color: var(--tile-front);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(calc(0.5 * var(--tile-size)), calc(-0.9 * var(--tile-size)));
+}
+div.calls > div.dead-hand-button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
 
 /* tile attrs */
 div.tile.reversed { transform: scaleX(-100%); }
@@ -664,6 +702,7 @@ div.corner-info {
   padding-top: calc(1.5 * var(--tile-size) - 0.75em);
   box-sizing: border-box;
   user-select: none;
+  z-index: 2;
 }
 div.corner-info:hover { z-index: 5; } /* hovered corner should cover other corners */
 div.corner-info.shimocha { transform: rotate(270deg); }
@@ -684,22 +723,6 @@ div.corner-info > div.round-marker {
 }
 div.corner-info > div.saki-cards {
   display: flex;
-}
-div.corner-info > div.dead-hand-button {
-  position: absolute;
-  border-radius: 50%;
-  font-size: calc(0.8 * var(--tile-size));
-  width: calc(1 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
-  background: var(--tile-back);
-  color: var(--tile-front);
-  opacity: 0.5;
-  bottom: 0;
-  left: calc(50% - 0.5 * var(--tile-size));
-}
-div.corner-info > div.dead-hand-button:hover {
-  cursor: pointer;
-  opacity: 1;
 }
 @keyframes aiThinking {
   25% { content: "."; }
@@ -724,7 +747,7 @@ div.tile {
   --tile-width: calc(0.75 * var(--tile-size));
   --tile-height: calc(1 * var(--tile-size));
   --border-width: 0px;
-  --num-tiles: 142;
+  --num-tiles: 215;
   border: var(--border-width) solid var(--tile-back);
   width: var(--tile-width);
   height: var(--tile-height);
@@ -841,15 +864,15 @@ div.tile.\31 y { background-position-y: calc(-51 * var(--tile-size) - var(--bord
 div.tile.\32 y { background-position-y: calc(-52 * var(--tile-size) - var(--border-width)); }
 div.tile.\38 z { background-position-y: calc(-53 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 j { background-position-y: calc(-54 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 j { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 j { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 j { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 j { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 j { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 j { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 j { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 j { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 j { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 j { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 j { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 j { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 j { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 j { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 k { background-position-y: calc(-64 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 k { background-position-y: calc(-65 * var(--tile-size) - var(--border-width)); }
 div.tile.\33 k { background-position-y: calc(-66 * var(--tile-size) - var(--border-width)); }
@@ -901,14 +924,14 @@ div.tile.\31 \30 s { background-position-y: calc(-111 * var(--tile-size) - var(-
 div.tile.\32 \35 z { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 \36 z { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 \37 z { background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 j { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 j { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 j { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 j { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 j { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 j { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \30 j { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \32 j { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \33 j { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \34 j { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \35 j { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \36 j { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \37 j { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \38 j { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 t { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 t { background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 t { background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
@@ -930,6 +953,82 @@ div.tile.\31 \37 t { background-position-y: calc(-138 * var(--tile-size) - var(-
 div.tile.\31 \38 t { background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \39 t { background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 \31 \30 t { background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 m { background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \32 m { background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \33 m { background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \34 m { background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 m { background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \35 m { background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \36 m { background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \37 m { background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \38 m { background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \39 m { background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 \30 m { background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 p { background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \32 p { background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \33 p { background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \34 p { background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \35 p { background-position-y: calc(-10 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 p { background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \35 p { background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \36 p { background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \37 p { background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \38 p { background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \39 p { background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 \30 p { background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 s { background-position-y: calc(-164 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \32 s { background-position-y: calc(-165 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \33 s { background-position-y: calc(-166 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \34 s { background-position-y: calc(-167 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \35 s { background-position-y: calc(-20 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 s { background-position-y: calc(-168 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \35 s { background-position-y: calc(-169 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \36 s { background-position-y: calc(-170 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \37 s { background-position-y: calc(-171 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \38 s { background-position-y: calc(-172 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \39 s { background-position-y: calc(-173 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 \30 s { background-position-y: calc(-174 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 t { background-position-y: calc(-175 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \32 t { background-position-y: calc(-176 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \33 t { background-position-y: calc(-177 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \34 t { background-position-y: calc(-178 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \35 t { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 t { background-position-y: calc(-179 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \35 t { background-position-y: calc(-180 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \36 t { background-position-y: calc(-181 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \37 t { background-position-y: calc(-182 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \38 t { background-position-y: calc(-183 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \39 t { background-position-y: calc(-184 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 \30 t { background-position-y: calc(-185 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 z { background-position-y: calc(-186 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \32 z { background-position-y: calc(-187 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \33 z { background-position-y: calc(-188 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \34 z { background-position-y: calc(-189 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \30 z { background-position-y: calc(-190 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \35 z { background-position-y: calc(-191 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \36 z { background-position-y: calc(-192 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \37 z { background-position-y: calc(-193 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \39 j { background-position-y: calc(-194 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \37 j { background-position-y: calc(-195 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \36 j { background-position-y: calc(-196 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \34 \37 j { background-position-y: calc(-197 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 \38 j { background-position-y: calc(-198 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \36 \39 j { background-position-y: calc(-199 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \32 \33 j { background-position-y: calc(-200 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \35 \36 j { background-position-y: calc(-201 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 \38 \39 j { background-position-y: calc(-202 * var(--tile-size) - var(--border-width)); }
+div.tile.\39 \31 j { background-position-y: calc(-203 * var(--tile-size) - var(--border-width)); }
+div.tile.\37 \33 j { background-position-y: calc(-204 * var(--tile-size) - var(--border-width)); }
+div.tile.\36 \34 j { background-position-y: calc(-205 * var(--tile-size) - var(--border-width)); }
+div.tile.\38 \35 \32 j { background-position-y: calc(-206 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \30 j { background-position-y: calc(-207 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \31 j { background-position-y: calc(-208 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \32 j { background-position-y: calc(-209 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \30 j { background-position-y: calc(-210 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \31 j { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \32 j { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \33 j { background-position-y: calc(-213 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \34 j { background-position-y: calc(-214 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
@@ -2993,4 +3092,92 @@ div.log-control > button.log-control-button {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* tutorial overlay */
+div.tutorial-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  pointer-events: none;
+}
+div.tutorial-overlay-objects {
+  position: relative;
+  margin-left: calc(-0.5 * var(--tile-size));
+  margin-top: calc(-0.5 * var(--tile-size));
+  width: calc(100% + 1 * var(--tile-size));
+  height: calc(100% + 1 * var(--tile-size));
+}
+div.tutorial-overlay-objects.awaiting-click {
+  pointer-events: initial;
+}
+div.tutorial-text {
+  position: absolute;
+  width: calc(var(--width) * var(--tile-size));
+  left: calc(var(--x) * var(--tile-size));
+  top: calc(var(--y) * var(--tile-size));
+  color: black;
+  background: var(--tile-front);
+  border-radius: calc(0.5 * var(--tile-size));
+  font-size: calc(var(--size) * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 16) 0 var(--tile-back-side));
+  z-index: 1;
+}
+div.tutorial-text > p:first-child { margin-top: 0; }
+div.tutorial-text > p:last-child { margin-bottom: 0; }
+div.tutorial-focus {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  background: black;
+  mask-composite: intersect;
+}
+
+/* tutorial menu */
+header.tutorial-menu-header {
+  position: absolute;
+  color: white;
+  width: 100%;
+  top: calc(-0.5 * var(--tile-size));
+  font-size: calc(0.6 * var(--tile-size));
+}
+header.tutorial-menu-header > h3 {
+  font-size: calc(0.8 * var(--tile-size));
+  font-weight: 400;
+  white-space: nowrap;
+}
+div.tutorial-menu-container, div.tutorial-menu-buttons {
+  font-size: calc(0.6 * var(--tile-size));
+  color: white;
+  width: 100%;
+  height: 100%;
+}
+div.tutorial-menu-container {
+  padding-top: calc(2 * var(--tile-size));
+}
+div.tutorial-menu-buttons {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: auto;
+}
+div.tutorial-menu-buttons > button {
+  height: calc(2 * var(--tile-size));
+  margin: calc(0.5 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  background: var(--tile-front);
+  font-size: calc(0.6 * var(--tile-size));
+  border-width: 0;
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+}
+div.tutorial-menu-buttons > button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
 }

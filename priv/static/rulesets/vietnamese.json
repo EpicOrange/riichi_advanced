@@ -42,8 +42,8 @@
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
            "1g", "2g", "3g", "4g",
-           "2j", "3j", "10j", "5j",
-           "6j", "7j", "8j", "9j",
+           "0j", "2j", "9j", "4j",
+           "5j", "6j", "7j", "8j",
            "1k", "2k", "3k", "4k",
            "1q", "2q", "3q", "4q"],
   "set_definitions": {
@@ -74,7 +74,7 @@
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ "nojoker",
-      [["1f","2f","3f","4f","1g","2g","3g","4g","1k","2k","3k","4k","1q","2q","3q","4q","2j","3j","10j","5j","6j","7j","8j","9j"], -1],
+      [["1f","2f","3f","4f","1g","2g","3g","4g","1k","2k","3k","4k","1q","2q","3q","4q","0j","2j","9j","4j","5j","6j","7j","8j"], -1],
       [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"], 13]
     ]
   ],
@@ -91,7 +91,7 @@
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ],
     [ "nojoker",
-      [["1f","2f","3f","4f","1g","2g","3g","4g","1k","2k","3k","4k","1q","2q","3q","4q","2j","3j","10j","5j","6j","7j","8j","9j"], -1],
+      [["1f","2f","3f","4f","1g","2g","3g","4g","1k","2k","3k","4k","1q","2q","3q","4q","0j","2j","9j","4j","5j","6j","7j","8j"], -1],
       [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"], 14]
     ]
   ],
@@ -105,10 +105,10 @@
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]
   ],
   "any_flower_definition": [
-    [ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1] ]
+    [ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], 1] ]
   ],
   "any_joker_definition": [
-    [ "nojoker", [["2j", "3j", "10j", "5j", "6j", "7j", "8j", "9j"], 1] ]
+    [ "nojoker", [["0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j"], 1] ]
   ],
   "yaku": [
     {
@@ -239,10 +239,26 @@
     {
       "display_name": "Tổng (縂)",
       "value": 2,
-      "when": [{"name": "match", "opts": [["jokers"], [[[["2j"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["jokers"], [[[["0j"], 1]]]]}]
     },
     {
       "display_name": "Tổng (縂)",
+      "value": 1,
+      "when": [
+        {"name": "match", "opts": [["jokers"], [[[["0j"], 1]]]]},
+        [
+          {"name": "seat_is", "opts": ["east"]},
+          {"name": "match", "opts": [["start_jokers"], [[[["0j"], 1]]]]}
+        ]
+      ]
+    },
+    {
+      "display_name": "Hợp (合)",
+      "value": 2,
+      "when": [{"name": "match", "opts": [["jokers"], [[[["2j"], 1]]]]}]
+    },
+    {
+      "display_name": "Hợp (合)",
       "value": 1,
       "when": [
         {"name": "match", "opts": [["jokers"], [[[["2j"], 1]]]]},
@@ -253,75 +269,59 @@
       ]
     },
     {
-      "display_name": "Hợp (合)",
-      "value": 2,
-      "when": [{"name": "match", "opts": [["jokers"], [[[["3j"], 1]]]]}]
-    },
-    {
-      "display_name": "Hợp (合)",
-      "value": 1,
-      "when": [
-        {"name": "match", "opts": [["jokers"], [[[["3j"], 1]]]]},
-        [
-          {"name": "seat_is", "opts": ["east"]},
-          {"name": "match", "opts": [["start_jokers"], [[[["3j"], 1]]]]}
-        ]
-      ]
-    },
-    {
       "display_name": "Hoa (花)",
       "value": 2,
-      "when": [{"name": "match", "opts": [["flowers"], [[[["10j"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[[["9j"], 1]]]]}]
     },
     {
       "display_name": "Nguyên (元)",
+      "value": 1,
+      "when": [{"name": "match", "opts": [["jokers"], [[[["4j"], 1]]]]}]
+    },
+    {
+      "display_name": "Nguyên (元)",
+      "value": 1,
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["jokers"], [[[["4j"], 1]]]]}]
+    },
+    {
+      "display_name": "Hỷ (喜)",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[["5j"], 1]]]]}]
     },
     {
-      "display_name": "Nguyên (元)",
+      "display_name": "Hỷ (喜)",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["jokers"], [[[["5j"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["jokers"], [[[["5j"], 1]]]]}]
     },
     {
-      "display_name": "Hỷ (喜)",
+      "display_name": "Thùng (筒)",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[["6j"], 1]]]]}]
     },
     {
-      "display_name": "Hỷ (喜)",
+      "display_name": "Thùng (筒)",
       "value": 1,
       "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["jokers"], [[[["6j"], 1]]]]}]
     },
     {
-      "display_name": "Thùng (筒)",
+      "display_name": "Soọc (索)",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[["7j"], 1]]]]}]
     },
     {
-      "display_name": "Thùng (筒)",
+      "display_name": "Soọc (索)",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["jokers"], [[[["7j"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["jokers"], [[[["7j"], 1]]]]}]
     },
     {
-      "display_name": "Soọc (索)",
+      "display_name": "Thay (萬)",
       "value": 1,
       "when": [{"name": "match", "opts": [["jokers"], [[[["8j"], 1]]]]}]
     },
     {
-      "display_name": "Soọc (索)",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["jokers"], [[[["8j"], 1]]]]}]
-    },
-    {
       "display_name": "Thay (萬)",
       "value": 1,
-      "when": [{"name": "match", "opts": [["jokers"], [[[["9j"], 1]]]]}]
-    },
-    {
-      "display_name": "Thay (萬)",
-      "value": 1,
-      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["jokers"], [[[["9j"], 1]]]]}]
+      "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["jokers"], [[[["8j"], 1]]]]}]
     }
   ],
   "nfnl": [
@@ -338,7 +338,7 @@
       "value": 2,
       "when": [
         {"name": "status_missing", "opts": ["has_joker"]},
-        {"name": "not_match", "opts": [["pond"], [[[[["2j"]], 1]]]]},
+        {"name": "not_match", "opts": [["pond"], [[[[["0j"]], 1]]]]},
         {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
       ]
     },
@@ -385,7 +385,7 @@
       "display_name": "No Flowers or Honors",
       "value": 1,
       "when": [
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], 1]]]]}
       ]
     },
     {
@@ -393,7 +393,7 @@
       "value": 2,
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], 1]]]]}
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], 1]]]]}
       ]
     },
     {
@@ -422,7 +422,7 @@
     {
       "display_name": "All Honors",
       "value": 1,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"]}]
+      "when": [{"name": "winning_hand_consists_of", "opts": ["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]}]
     },
     {
       "display_name": "Thirteen Orphans",
@@ -565,31 +565,31 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
-      ["set_tile_alias_all", ["2j"], ["any"]],
-      ["set_tile_alias_all", ["3j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["5j"], ["0z","6z","7z"]],
-      ["set_tile_alias_all", ["6j"], ["1z","2z","3z","4z"]],
-      ["set_tile_alias_all", ["7j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
-      ["set_tile_alias_all", ["8j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
-      ["set_tile_alias_all", ["9j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
+      ["set_tile_alias_all", ["0j"], ["any"]],
+      ["set_tile_alias_all", ["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+      ["set_tile_alias_all", ["4j"], ["0z","6z","7z"]],
+      ["set_tile_alias_all", ["5j"], ["1z","2z","3z","4z"]],
+      ["set_tile_alias_all", ["6j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
+      ["set_tile_alias_all", ["7j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+      ["set_tile_alias_all", ["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]
     ]
   },
   "play_effects": [
-    ["flower", [["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "2j"]]],
-    ["joker", [["set_status", "discarded_joker"], ["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "2j"]]]
+    ["flower", [["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "0j"]]],
+    ["joker", [["set_status", "discarded_joker"], ["pause", 500], ["convert_last_discard", "5z"], ["pause", 100], ["convert_last_discard", "0j"]]]
   ],
   "buttons": {
       // Flower replacements are drawn from the back end of the wall. This implementation assumes that kong and joker replacements are also drawn from the back of the wall.
     "start_flower": {
       "display_name": "Reveal flower",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["draw", 1, "opposite_end"]],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], ["draw", 1, "opposite_end"]],
       "unskippable": true
     },
     "start_joker": {
       "display_name": "Reveal joker",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1] ]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw", 1, "opposite_end"]],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["0j", "2j", "4j", "5j", "6j", "7j", "8j"], 1] ]]]}],
+      "actions": [["big_text", "Joker"], ["flower", "0j", "2j", "4j", "5j", "6j", "7j", "8j"], ["draw", 1, "opposite_end"]],
       "unskippable": true
     },
     "start_no_flower": {
@@ -700,12 +700,12 @@
     "flower": {
       "display_name": "Flower",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "10j"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]]
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]]
     },
     "joker": {
       "display_name": "Joker",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["2j", "3j", "5j", "6j", "7j", "8j", "9j"], 1] ]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "2j", "3j", "5j", "6j", "7j", "8j", "9j"], ["draw", 1, "opposite_end"]]
+      "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["0j", "2j", "4j", "5j", "6j", "7j", "8j"], 1] ]]]}],
+      "actions": [["big_text", "Joker"], ["flower", "0j", "2j", "4j", "5j", "6j", "7j", "8j"], ["draw", 1, "opposite_end"]]
     }
   },
   "auto_buttons": {

@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.PondComponent do
   def render(assigns) do
     ~H"""
     <div class={[@four_rows? && "four-rows"]}>
-      <div class={[@id, @highlight? && not @secondary_pond? && "highlight"]}>
+      <div class={[@id, @highlight? and not @secondary_pond? && "highlight"]}>
         <%= if not Enum.empty?(@marking) do %>
           <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.take(24) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
@@ -72,27 +72,27 @@ defmodule RiichiAdvancedWeb.PondComponent do
   def update(assigns, socket) do
     # check if we just declared riichi
     socket = if Map.has_key?(assigns, :riichi) do
-      if socket.assigns.riichi_index == nil && assigns.riichi do
+      if socket.assigns.riichi_index == nil and assigns.riichi do
         assign(socket, :riichi_index, length(socket.assigns.pond))
       else
-        if socket.assigns.riichi_index != nil && not assigns.riichi do
+        if socket.assigns.riichi_index != nil and not assigns.riichi do
           assign(socket, :riichi_index, nil)
         else socket end
       end
     else socket end
 
     # animate incoming discards
-    socket = if Map.has_key?(assigns, :pond) && length(assigns.pond) > length(socket.assigns.pond) do
+    socket = if Map.has_key?(assigns, :pond) and length(assigns.pond) > length(socket.assigns.pond) do
       socket = assign(socket, :just_discarded?, true)
       :timer.apply_after(750, Kernel, :send, [self(), {:reset_discard_anim, assigns.seat}])
       socket
     else socket end
 
     # toggle secondary pond
-    socket = assign(socket, :secondary_pond?, socket.assigns.four_rows? && (socket.assigns.secondary_pond? || length(Map.get(assigns, :pond, [])) > 24))
+    socket = assign(socket, :secondary_pond?, socket.assigns.four_rows? and (socket.assigns.secondary_pond? or length(Map.get(assigns, :pond, [])) > 24))
 
     # toggle highlight
-    socket = assign(socket, :highlight?, socket.assigns.viewer != socket.assigns.seat && socket.assigns.seat_turn? && socket.assigns.viewer_buttons? && socket.assigns.just_discarded?)
+    socket = assign(socket, :highlight?, socket.assigns.viewer != socket.assigns.seat and socket.assigns.seat_turn? and socket.assigns.viewer_buttons? and socket.assigns.just_discarded?)
 
     socket = assigns
     |> Map.drop([:flash])

@@ -58,7 +58,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event != nil && curr_event["type"] not in ["discard", "buttons_pressed", "mark"] do
+      if curr_event != nil and curr_event["type"] not in ["discard", "buttons_pressed", "mark"] do
         advance(socket, false)
       else socket end
     else
@@ -73,7 +73,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event != nil && curr_event["type"] not in ["discard", "buttons_pressed", "mark"] do
+      if curr_event != nil and curr_event["type"] not in ["discard", "buttons_pressed", "mark"] do
         rewind(socket, false)
       else socket end
     else
@@ -185,7 +185,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
   #   |> Map.drop([:flash])
   #   |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
-  #   socket = if prev_log == nil && assigns.log != nil do
+  #   socket = if prev_log == nil and assigns.log != nil do
   #     advance(socket, true)
   #   else socket end
 

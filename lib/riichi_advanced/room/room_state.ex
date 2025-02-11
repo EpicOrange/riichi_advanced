@@ -1,54 +1,51 @@
-defmodule RoomPlayer do
-  defstruct [
-    nickname: nil,
-    id: "",
-    session_id: nil,
-    seat: nil
-  ]
-  use Accessible
-end
-
-defmodule Room do
-  @initial_textarea Delta.Op.insert("{}")
-  def initial_textarea, do: @initial_textarea
-  defstruct [
-    # params
-    ruleset: nil,
-    ruleset_json: nil,
-    room_code: nil,
-    # pids
-    supervisor: nil,
-    exit_monitor: nil,
-
-    # control variables
-    error: nil,
-
-    # state
-    rules: nil,
-    seats: %{},
-    available_seats: [],
-    players: %{},
-    shuffle: false,
-    private: true,
-    starting: false,
-    started: false,
-    display_name: "",
-    mods: %{},
-    categories: [],
-    tutorial_link: nil,
-    textarea: [@initial_textarea],
-    textarea_deltas: [[@initial_textarea]],
-    textarea_delta_uuids: [[]],
-    textarea_version: 0,
-  ]
-  use Accessible
-end
-
-
 defmodule RiichiAdvanced.RoomState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+
+  defmodule RoomPlayer do
+    defstruct [
+      nickname: nil,
+      id: "",
+      session_id: nil,
+      seat: nil
+    ]
+  end
+
+  defmodule Room do
+    @initial_textarea Delta.Op.insert("{}")
+    def initial_textarea, do: @initial_textarea
+    defstruct [
+      # params
+      ruleset: nil,
+      ruleset_json: nil,
+      room_code: nil,
+      # pids
+      supervisor: nil,
+      exit_monitor: nil,
+
+      # control variables
+      error: nil,
+
+      # state
+      rules: nil,
+      seats: %{},
+      available_seats: [],
+      players: %{},
+      shuffle: false,
+      private: true,
+      starting: false,
+      started: false,
+      display_name: "",
+      mods: %{},
+      categories: [],
+      tutorial_link: nil,
+      textarea: [@initial_textarea],
+      textarea_deltas: [[@initial_textarea]],
+      textarea_delta_uuids: [[]],
+      textarea_version: 0,
+    ]
+  end
 
   def start_link(init_data) do
     IO.puts("Room supervisor PID is #{inspect(self())}")
@@ -236,7 +233,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_call({:delete_player, socket_id}, _from, state) do
-    state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
     {_, state} = pop_in(state.players[socket_id])
     IO.puts("Player #{socket_id} exited #{state.room_code} for ruleset #{state.ruleset}")
     state = if Enum.empty?(state.players) do
@@ -318,9 +315,9 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:sit, socket_id, session_id, seat}, state) do
-    state = if state.seats[seat] == nil || state.seats[seat].session_id == session_id do
+    state = if state.seats[seat] == nil or state.seats[seat].session_id == session_id do
       # first, get up
-      state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+      state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
       # then sit
       state = put_in(state.players[socket_id].seat, seat)
       state = put_seat(state, seat, state.players[socket_id])
@@ -362,7 +359,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def handle_cast({:get_up, socket_id}, state) do
-    state = update_seats(state, fn player -> if player == nil || player.id == socket_id do nil else player end end)
+    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
     state = put_in(state.players[socket_id].seat, nil)
     state = broadcast_state_change(state)
     {:noreply, state}

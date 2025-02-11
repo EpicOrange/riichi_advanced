@@ -255,7 +255,8 @@
     "exhaustive_draw_name": "Draw"
   },
   "play_restrictions": [
-    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]]
+    [["any"], [[{"name": "anyone_status", "opts": ["declare_shimocha_dead"]}, {"name": "anyone_status", "opts": ["declare_toimen_dead"]}, {"name": "anyone_status", "opts": ["declare_kamicha_dead"]}]]],
+    [["any"], [{"name": "status", "opts": ["dead_hand"]}]]
   ],
   "functions": {
     "blind_pass_left": [
@@ -299,8 +300,9 @@
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "match_start", "first_charleston", "charleston_right"],
-      ["set_tile_alias_all", ["1j"], ["any"]]
+      ["set_status_all", "match_start", "first_charleston", "charleston_right", "heavenly_available"],
+      ["set_tile_alias_all", ["1j"], ["any"]],
+      ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]]
     ]
   },
   "after_charleston": {
@@ -359,7 +361,7 @@
       "show_when": [{"name": "status", "opts": ["charleston_left"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
-          ["unset_status", "charleston_left"],
+          ["unset_status", "charleston_left", "heavenly_available"],
           ["merge_draw"],
           ["sort_hand"],
           ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [["draw", 3, "1x"]]]
@@ -375,7 +377,7 @@
       "display_name": "Select three tiles to pass across",
       "show_when": [{"name": "status", "opts": ["charleston_across"]}],
       "actions": [
-        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across"], ["merge_draw"], ["sort_hand"]]],
+        ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across", "heavenly_available"], ["merge_draw"], ["sort_hand"]]],
         ["charleston_across"],
         ["when", [{"name": "status", "opts": ["first_charleston"]}], [["set_status", "charleston_left"]]],
         ["when", [{"name": "status", "opts": ["second_charleston"]}], [["set_status", "charleston_right"]]],
@@ -389,7 +391,7 @@
       "show_when": [{"name": "status", "opts": ["charleston_right"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
-          ["unset_status", "charleston_right"],
+          ["unset_status", "charleston_right", "heavenly_available"],
           ["merge_draw"],
           ["sort_hand"],
           ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [["draw", 3, "1x"]]]
@@ -481,7 +483,7 @@
       "actions": [
         ["unset_status", "final_charleston", "charleston_across_0"],
         ["when", [{"name": "not_anyone_status", "opts": ["final_charleston"]}], [["unset_status_all", "match_start"]]],
-		    ["recalculate_buttons"]
+        ["recalculate_buttons"]
       ],
       "unskippable": true,
       "cancellable": false
@@ -529,7 +531,7 @@
       "call_conditions": [
         {"name": "hand_length_at_least", "opts": [3]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
-        {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]}
+        {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
       ],
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
@@ -542,7 +544,7 @@
       "call_conditions": [
         {"name": "hand_length_at_least", "opts": [4]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
-        {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]}
+        {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
       ],
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Kong"], ["call"], ["change_turn", "self"]],
@@ -555,7 +557,7 @@
       "call_conditions": [
         {"name": "hand_length_at_least", "opts": [5]},
         {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
-        {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]}
+        {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
       ],
       "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Quint"], ["call"], ["change_turn", "self"]],
@@ -569,6 +571,16 @@
         ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
         ["swap_out_fly_joker", "1j"]
       ]
+    },
+    "mahjong_heavenly": {
+      "display_name": "Mah Jongg",
+      "show_when": [
+        {"name": "status", "opts": ["heavenly_available", "charleston_left"]}, "our_turn", "is_tenpai_american", {"name": "match", "opts": [["hand", "call_tiles", "draw"], ["win"]]}
+      ],
+      "actions": [
+        ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
+      ],
+      "precedence_over": ["am_pung", "am_kong", "am_quint"]
     },
     "mahjong_draw": {
       "display_name": "Mah Jongg",
@@ -605,60 +617,70 @@
       ],
       "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
     },
+    // TODO: Change push messages to mention player's names instead of just saying the player directions.
     "declare_dead_0_shimocha": {
-      "display_name": "Declare player on right dead",
-      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
+      "display_name": "Declare hand on right dead",
+      "show_when": [{"name": "status", "opts": ["declare_shimocha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}, "our_turn"],
       "actions": [
         ["unset_status", "declare_shimocha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
           ["big_text", "Dead hand", "shimocha"],
-          ["push_message", "declared a player's hand dead"],
-          ["as", "shimocha", [["set_status", "dead_hand"]]],
-          ["when", [{"name": "current_turn_is", "opts": ["shimocha"]}], [["advance_turn"]]]
+          ["push_message", "correctly declared player on left's hand dead"],
+          ["as", "shimocha", [["push_message", "is now disqualified"]]],
+          ["as", "shimocha", [["set_status", "dead_hand"]]]
         ], [
           ["big_text", "Not dead", "shimocha"],
           ["big_text", "Dead hand"],
-          ["push_message", "incorrectly declared a player's hand dead"],
-          ["set_status", "dead_hand"]
-        ]]
+          ["push_message", "incorrectly declared player on left's hand dead"],
+          ["push_message", "is now disqualified"],
+          ["set_status", "dead_hand"],
+          ["advance_turn"]
+        ]],
+        ["when", [{"name": "toimen_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], [["abortive_draw", "three_dead_hands"]]]
       ],
       "unskippable": true
     },
     "declare_dead_0_toimen": {
-      "display_name": "Declare player across dead",
-      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
+      "display_name": "Declare hand across dead",
+      "show_when": [{"name": "status", "opts": ["declare_toimen_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}, "our_turn"],
       "actions": [
         ["unset_status", "declare_toimen_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
           ["big_text", "Dead hand", "toimen"],
-          ["push_message", "declared a player's hand dead"],
-          ["as", "toimen", [["set_status", "dead_hand"]]],
-          ["when", [{"name": "current_turn_is", "opts": ["toimen"]}], [["advance_turn"]]]
+          ["push_message", "correctly declared opposite player's hand dead"],
+          ["as", "toimen", [["push_message", "is now disqualified"]]],
+          ["as", "toimen", [["set_status", "dead_hand"]]]
         ], [
           ["big_text", "Not dead", "toimen"],
           ["big_text", "Dead hand"],
-          ["push_message", "incorrectly declared a player's hand dead"],
-          ["set_status", "dead_hand"]
-        ]]
+          ["push_message", "incorrectly declared opposite player's hand dead"],
+          ["push_message", "is now disqualified"],
+          ["set_status", "dead_hand"],
+          ["advance_turn"]
+        ]],
+        ["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], [["abortive_draw", "three_dead_hands"]]]
       ],
       "unskippable": true
     },
     "declare_dead_0_kamicha": {
-      "display_name": "Declare player on left dead",
-      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}],
+      "display_name": "Declare hand on left dead",
+      "show_when": [{"name": "status", "opts": ["declare_kamicha_dead"]}, {"name": "status_missing", "opts": ["dead_hand"]}, "our_turn"],
       "actions": [
         ["unset_status", "declare_kamicha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
           ["big_text", "Dead hand", "kamicha"],
-          ["push_message", "declared a player's hand dead"],
-          ["as", "kamicha", [["set_status", "dead_hand"]]],
-          ["when", [{"name": "current_turn_is", "opts": ["kamicha"]}], [["advance_turn"]]]
+          ["push_message", "correctly declared player on left's hand dead"],
+          ["as", "kamicha", [["push_message", "is now disqualified"]]],
+          ["as", "kamicha", [["set_status", "dead_hand"]]]
         ], [
           ["big_text", "Not dead", "kamicha"],
           ["big_text", "Dead hand"],
-          ["push_message", "incorrectly declared a player's hand dead"],
-          ["set_status", "dead_hand"]
-        ]]
+          ["push_message", "incorrectly declared player on left's hand dead"],
+          ["push_message", "is now disqualified"],
+          ["set_status", "dead_hand"],
+          ["advance_turn"]
+        ]],
+        ["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "toimen_status", "opts": ["dead_hand"]}], [["abortive_draw", "three_dead_hands"]]]
       ],
       "unskippable": true
     },
@@ -671,7 +693,6 @@
       ],
       "unskippable": true
     }
-    // TODO messages should mention direction of player
   },
   "auto_buttons": {
     "1_auto_sort": {
@@ -685,7 +706,8 @@
       "desc": "Automatically declare Mah Jongg.",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["mahjong_discard"]}], [["press_button", "mahjong_discard"]]],
-        ["when", [{"name": "buttons_include", "opts": ["mahjong_draw"]}], [["press_button", "mahjong_draw"]]]
+        ["when", [{"name": "buttons_include", "opts": ["mahjong_draw"]}], [["press_button", "mahjong_draw"]]],
+        ["when", [{"name": "buttons_include", "opts": ["mahjong_heavenly"]}], [["press_button", "mahjong_heavenly"]]]
       ],
       "enabled_at_start": false
     },
@@ -696,7 +718,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]}
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "mahjong_heavenly", "am_joker_swap"]}
         ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -708,7 +730,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "mahjong_heavenly", "am_joker_swap"]},
           {"name": "not_match", "opts": [["last_discard", "hand_any"], [[ "nojoker", [["pair"], 1] ]]]}
         ], [["press_button", "skip"]]]
       ],
@@ -721,7 +743,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["mahjong_discard", "am_joker_swap"]},
+          {"name": "buttons_exclude", "opts": ["mahjong_discard", "mahjong_heavenly", "am_joker_swap"]},
           "all_calls_deaden_hand"
         ], [["press_button", "skip"]]]
       ],
@@ -730,7 +752,7 @@
     "6_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw", {"name": "buttons_exclude", "opts": ["am_joker_swap"]}], [["discard_draw"]]]],
+      "actions": [["when", ["has_draw", {"name": "buttons_exclude", "opts": ["am_joker_swap", "mahjong_draw", "mahjong_heavenly"]}], [["discard_draw"]]]],
       "enabled_at_start": false
     },
     "7_auto_discard_nonmatching": {
@@ -739,7 +761,7 @@
       "actions": [
         ["when", [
           "has_draw",
-          {"name": "buttons_exclude", "opts": ["am_joker_swap"]},
+          {"name": "buttons_exclude", "opts": ["am_joker_swap", "mahjong_draw", "mahjong_heavenly"]},
           [
             {"name": "not_match", "opts": [["hand"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]},
             {"name": "not_match", "opts": [["draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}

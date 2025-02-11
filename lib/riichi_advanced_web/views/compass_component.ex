@@ -21,11 +21,11 @@ defmodule RiichiAdvancedWeb.CompassComponent do
         <div class={["direction", dir]}>
           <div class={["riichi-tray", @turn == dir && "highlighted", @riichi[dir] && "riichi"]}></div>
           <div class={["wind-marker", @turn == dir && "highlighted", @is_bot[dir] && "bot"]}><%= symbol %></div>
-          <div class={["score-counter", score < 0 && "negative", dir != @seat && @show_relative_scores && "relative", abs(score) >= 1000000 && "scientific"]} :if={dir in @available_seats}>
-            <%= if abs(score) >= 1000000 && @score_e_notation do %>
-              <%= if dir != @seat && @show_relative_scores && score >= 0 do "+" else "" end %><%= mantissa(score) %>e<b><%= exponent(score) %></b>
+          <div class={["score-counter", score < 0 && "negative", dir != @seat and @show_relative_scores && "relative", abs(score) >= 1000000 && "scientific"]} :if={dir in @available_seats}>
+            <%= if abs(score) >= 1000000 and @score_e_notation do %>
+              <%= if dir != @seat and @show_relative_scores and score >= 0 do "+" else "" end %><%= mantissa(score) %>e<b><%= exponent(score) %></b>
             <% else %>
-              <%= if dir != @seat && @show_relative_scores && score >= 0 do "+" else "" end %><%= score %>
+              <%= if dir != @seat and @show_relative_scores and score >= 0 do "+" else "" end %><%= score %>
             <% end %>
           </div>
         </div>
@@ -48,7 +48,7 @@ defmodule RiichiAdvancedWeb.CompassComponent do
     Enum.map([:east, :south, :west, :north], fn seat -> 
       if seat in assigns.available_seats do
         score = assigns.score[seat]
-        score = if seat != assigns.seat && assigns.show_relative_scores do score - assigns.score[assigns.seat] else score end
+        score = if seat != assigns.seat and assigns.show_relative_scores do score - assigns.score[assigns.seat] else score end
         {seat, symbols[Riichi.get_seat_wind(assigns.kyoku, seat, assigns.available_seats)], score}
       else
         {seat, "", 0}

@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Player, as: Player
   import RiichiAdvanced.GameState
 
   @card_names %{
@@ -148,7 +149,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def is_saki_card?(status) do
-    Map.has_key?(@card_names, status) || is_disabled_saki_card?(status)
+    Map.has_key?(@card_names, status) or is_disabled_saki_card?(status)
   end
 
   def is_disabled_saki_card?(status) do

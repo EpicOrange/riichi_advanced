@@ -2331,8 +2331,8 @@
         ["set_status", "suehara_kyouko_set_aside"],
         ["draw_aside", 3],
         ["add_attr", ["aside"], ["revealed"]],
-        // if we just riichied, we interrupted the turn change after our discard, so we need to resume play
-        ["when", ["just_discarded", {"name": "status", "opts": ["ippatsu"]}], [["advance_turn"]]]
+        // if this was triggered by riichi, we interrupted the turn change after discard, so we need to resume play
+        ["when", ["anyone_just_discarded"], [["resume_deferred_actions"]]]
       ]
     },
     "draw_from_suehara_kyouko_self": {

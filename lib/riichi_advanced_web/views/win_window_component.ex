@@ -12,12 +12,12 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
     ~H"""
     <div class={["game-modal-container", @visible_screen != :winner && "inactive"]}>
       <div class="game-modal game-modal-hide">
-        <%= if @winner != nil && Map.has_key?(@winner, :yaku) && @winner.yaku != nil do %>
+        <%= if @winner != nil and Map.has_key?(@winner, :yaku) and @winner.yaku != nil do %>
           <div class="hand winning-hand">
             <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.player.hand)}></div>
             <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
               <div class="call">
-                <div class={Utils.get_tile_class(tile, i, assigns, [sideways && "sideways"])} :for={{tile, sideways} <- call}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
               </div>
             <% end %>
             <div class="winning-tile-container">
@@ -43,7 +43,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             <div class="total-han-display"><%= Utils.try_integer(@winner.points) %> <%= @winner.point_name %></div>
             <div class="total-fu-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= @winner.right_display_name %></div>
             <div class={["total-score-display", String.length("#{@winner.score} #{@winner.score_denomination}") >= 12 && "small"]}><%= @winner.score %> <%= @winner.score_denomination %></div>
-            <div class={["total-score-name-display", String.length("#{@winner.score_name}") >= 12 && "small"]} :if={Map.has_key?(@winner, :score_name) && @winner.score_name != ""}><%= @winner.score_name %></div>
+            <div class={["total-score-name-display", String.length("#{@winner.score_name}") >= 12 && "small"]} :if={Map.has_key?(@winner, :score_name) and @winner.score_name != ""}><%= @winner.score_name %></div>
           </div>
         <% end %>
       </div>
