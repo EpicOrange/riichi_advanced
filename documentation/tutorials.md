@@ -37,7 +37,7 @@ For riichi and ippatsu, we add the `yaku/riichi` and `yaku/ippatsu` mods, as wel
 
 The `"config"` object is rather important because this is how you set up the conditions for the tutorial. You can see that our hero (`"east"`) starts with a iishanten hand, they just need to draw any of `56789s1z` to achieve tenpai. Using `"starting_draws"`, we make sure their first draw is `"6s"`, and then they will win on `"5s"`.
 
-The other players all have the same random looking hand (also iishanten). They will be manned by bots whose behavior is exactly the same as in a game. Currently the only way to control their behavior is to turn them into tsumogiri bots via the `"tsumogiri_bots"` key, which is sufficient for pretty much every tutorial. Note that tsumogiri bots will still riichi (and discard tedashi if required) if possible. If more control is needed, please [open an issue](/issues)!
+The other players all have the same random looking hand (also iishanten). They will be manned by bots whose behavior is exactly the same as in a game. Currently the only way to control their behavior is to turn them into tsumogiri bots via the `"tsumogiri_bots"` key, which is sufficient for pretty much every tutorial. Note that tsumogiri bots will still riichi (and discard tedashi if required) if possible. If more control is needed, please [open an issue](https://github.com/EpicOrange/riichi_advanced/issues)!
 
 Finally, the `"scenes"` key starts us off with the required `"start"` scene. No actions have been assigned to it, so in this tutorial precisely nothing can happen, because tutorial mode blocks every user (and bot) action by default. Let's change that.
 
