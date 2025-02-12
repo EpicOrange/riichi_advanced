@@ -30,7 +30,10 @@ Chips are also exchanged during a match:
 * Yakuman (NON KAZOE) grant 10 ron and 5 tsumo
 * Drawing all 4 Flower Tiles and winning the hand gives bonus of 10 ron and 5 tsumo (as well as 4 Dora!!)
 
-## Basic Rules
+## Tiles Used
+
+### Sanma Tileset
+Zan Sanma is played with the same tiles as normal Riichi Mahjong, with the 2-8 man being removed.
 
 ### Every 5 is RED!
 Every 5 pin and 5 sou is worth 1 dora.  
@@ -43,3 +46,15 @@ Every 5 pin and 5 sou is worth 1 dora.
   
 ### Shiropocchi
 1 Haku tile is replaced with a Shiropocchi, which functions as a Haku normally. However, **if you draw it after you've declared Riichi, you can treat it like any tile you need, even if all the copies of that tile are dead.** You even win bonus chips!
+
+## Basic Rules
+
+* Starting Points: 50,000 
+* 1000 honba
+* Kuitan OK, Atozuke OK, Pinfu Tsumo OK
+* Draw through the deadwall, to the Dora indicator.
+* North (Pei) is Yakuhai (not Nukidora)
+* No abortive hands (A 5th Kan cannot be made)
+* Missed Win
+* Kan after Riichi is optional (as long as it doesn't change your wait)
+* Furitan Riichi is only allowed if you Open Riichi
