@@ -211,16 +211,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {score, phan, mun, score_name}
       "han_fu_formula" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        minipoints = Map.get(score_rules, "fixed_fu", minipoints)
         han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 4)
         han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
         dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
-        fu = Map.get(score_rules, "fixed_fu", minipoints)
-
-        # calculate score using formula
-        base_score = han_fu_multiplier * fu * 2 ** (2 + points)
-        score = base_score * if is_dealer do dealer_multiplier else 1 end
-        # round up (to nearest 100, by default)
-        score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
 
         # handle limit scores
         limit_thresholds = Map.get(score_rules, "limit_thresholds", []) |> Enum.reverse()
@@ -237,7 +231,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
           else limit_index end
           score = Enum.at(limit_scores, limit_index) * if is_dealer do dealer_multiplier else 1 end
           {score, Enum.at(limit_names, limit_index)}
-        else {score, nil} end
+        else
+          # calculate score using formula
+          base_score = han_fu_multiplier * minipoints * 2 ** (2 + points)
+          score = base_score * if is_dealer do dealer_multiplier else 1 end
+          # round up (to nearest 100, by default)
+          score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
+          {score, nil}
+        end
 
         score = score * if "double_score" in state.players[seat].status do 2 else 1 end
 
