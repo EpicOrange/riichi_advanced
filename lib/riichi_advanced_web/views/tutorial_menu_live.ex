@@ -73,6 +73,9 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
               Tutorial <%= i + 1 %>:
               <%= if @clicked_index == Integer.to_string(i) do %> Loading... <% else %> <%= name %> <% end %>
             </button>
+            <button phx-cancellable-click="create_tutorial">
+              Create your own tutorial!
+            </button>
           </div>
         <% end %>
       </div>
@@ -103,6 +106,11 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   def handle_event("goto_tutorial", %{"sequence" => sequence, "seat" => seat, "index" => i}, socket) do
     socket = assign(socket, :clicked_index, i)
     send(self(), {:goto_tutorial, sequence, seat})
+    {:noreply, socket}
+  end
+  
+  def handle_event("create_tutorial", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&from=#{socket.assigns.ruleset}")
     {:noreply, socket}
   end
 

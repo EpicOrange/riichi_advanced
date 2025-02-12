@@ -370,6 +370,7 @@ defmodule RiichiAdvanced.RoomState do
     state = broadcast_state_change(state)
     {mods, config} = if state.ruleset == "custom" do
       ruleset_json = Enum.at(state.textarea, 0)["insert"]
+      # TODO char limit on ruleset_json
       if ruleset_json != nil do
         RiichiAdvanced.ETSCache.put(state.room_code, ruleset_json, :cache_rulesets)
       end

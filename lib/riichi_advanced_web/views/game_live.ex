@@ -34,9 +34,11 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:playable_indices, [])
     |> assign(:preplayed_index, nil)
     |> assign(:hide_buttons, false) # used to hide buttons on the client side after clicking one
-    |> assign(:last_forced_events, nil) # used for tutorials
-    |> assign(:next_tutorial_scenes, nil) # used for tutorials
-    |> assign(:waiting_for_click, false) # used for tutorials
+    # used for tutorials
+    |> assign(:last_forced_events, nil)
+    |> assign(:next_tutorial_scenes, nil)
+    |> assign(:waiting_for_click, false)
+    |> assign(:return_to_editor, false)
 
     socket = if socket.assigns.tutorial_sequence_name != nil do
       assign(socket, :room_code, Ecto.UUID.generate())
@@ -408,10 +410,18 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   defp setup_tutorial(socket) do
     if Map.get(socket.assigns, :tutorial_sequence_name) != nil do
-      sequence_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/tutorials/#{socket.assigns.tutorial_sequence_name}.json")) do
-        {:ok, sequence_json} -> sequence_json
-        {:error, _err}      -> "{}"
-      end
+      {sequence_json, return_to_editor} = 
+        case File.read(Application.app_dir(:riichi_advanced, "/priv/static/tutorials/#{socket.assigns.tutorial_sequence_name}.json")) do
+          {:ok, sequence_json} -> {sequence_json, false}
+          {:error, _err}       ->
+            # try loading custom ruleset from cache
+            case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.tutorial_sequence_name}, [], :cache_sequences) do
+              [sequence_json] -> {sequence_json, true}
+              _ -> {"{}", true}
+            end
+        end
+
+      socket = assign(socket, :return_to_editor, return_to_editor)
 
       # decode the sequence json
       tutorial_sequence = try do
@@ -453,7 +463,11 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   defp navigate_back(socket) do
     if Map.has_key?(socket.assigns, :tutorial_sequence) do
-      push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname || ""}")
+      if socket.assigns.return_to_editor do
+        push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&seat=#{socket.assigns.seat_param}&tutorial_id=#{socket.assigns.tutorial_sequence_name}")
+      else
+        push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname || ""}")
+      end
     else
       push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname || ""}")
     end
