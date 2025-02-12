@@ -67,6 +67,11 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
           Sorry, there are currently no tutorials for this ruleset!
           <br/>
           Hit the back button to return to the main menu.
+          <div class="tutorial-menu-buttons">
+            <button phx-cancellable-click="create_tutorial">
+              Create your own tutorial!
+            </button>
+          </div>
         <% else %>
           <div class="tutorial-menu-buttons">
             <button phx-cancellable-click="goto_tutorial" phx-value-index={i} phx-value-sequence={sequence} phx-value-seat={seat} :for={{{sequence, name, seat}, i} <- Enum.with_index(@available_tutorials)}>
