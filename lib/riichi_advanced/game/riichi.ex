@@ -457,7 +457,8 @@ defmodule RiichiAdvanced.Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior) |> Enum.flat_map(fn base_tile ->
+          Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
+          |> Enum.flat_map(fn base_tile ->
             case Match.try_remove_all_tiles(hand, [base_tile, base_tile, base_tile], tile_behavior) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 8 else 4 end} end)
@@ -471,7 +472,7 @@ defmodule RiichiAdvanced.Riichi do
       for _ <- 1..4, reduce: hands_fu do
         all_hands ->
           Enum.flat_map(all_hands, fn {hand, fu} ->
-            {honors, suited} = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior)
+            {honors, suited} = Match.collect_base_tiles(hand, [], [0, 10, 20, 1, 2], tile_behavior)
             |> Enum.split_with(fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
             # remove suited kontsu
             suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
@@ -496,7 +497,7 @@ defmodule RiichiAdvanced.Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          sequence_tiles = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior)
+          sequence_tiles = Match.collect_base_tiles(hand, [], [0, 1, 2], tile_behavior)
           sequence_tiles = if enable_kontsu_fu do
             # honor sequences are considered mixed triplets, ignore them
             Enum.reject(sequence_tiles, fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
