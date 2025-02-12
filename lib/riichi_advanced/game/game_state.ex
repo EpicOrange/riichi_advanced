@@ -499,8 +499,8 @@ defmodule RiichiAdvanced.GameState do
 
       # roll dice
       state = state
-      |> Map.put(:die1, :rand.uniform(6))
-      |> Map.put(:die2, :rand.uniform(6))
+      |> Map.put(:die1, Map.get(state.rules, "die1", :rand.uniform(6)))
+      |> Map.put(:die2, Map.get(state.rules, "die2", :rand.uniform(6)))
 
       {state, hands, scores}
     else

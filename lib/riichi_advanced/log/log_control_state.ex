@@ -80,6 +80,7 @@ defmodule RiichiAdvanced.LogControlState do
     IO.inspect({"south's call buttons", state.game_state.players.south.call_buttons})
     IO.inspect({"west's call buttons", state.game_state.players.west.call_buttons})
     IO.inspect({"north's call buttons", state.game_state.players.north.call_buttons})
+    IO.inspect({"marking", state.game_state.marking})
   end
 
   def send_discard(state, skip_anim, discard_event) do
