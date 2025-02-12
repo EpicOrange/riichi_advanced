@@ -81,27 +81,38 @@ end
 ]
 |
 # can't call golden chun unless as a chun
-.buttons.chii.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+
+if (.buttons | has("chii")) then
+  .buttons.chii.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["27z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.pon.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("pon")) then
+  .buttons.pon.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["27z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.daiminkan.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("daiminkan")) then
+  .buttons.daiminkan.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["27z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.kakan.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("kakan")) then
+  .buttons.kakan.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["27z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.ankan.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("ankan")) then
+  .buttons.ankan.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["27z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
