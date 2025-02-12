@@ -9,11 +9,11 @@
   // double-check whether dealer continuation is for all players or just the dealer
   // correctly implement Golden Pair and Golden Dragon
   // check what the discarder multiplier is supposed to be
+  // implement the following rule: if you discard gold, no one can call chii/pon/kan on it, but you can't ron for the remainder of the round
   
 // mods/rule-variants
   // reddit post says only red dragon is a flower, not all 3 dragons
   // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
-  // cool new rule: if you discard gold, no one can call chii/pon/kan on it, but you can't ron for the remainder of the round
   // mahjongpros also seem to have a few more yaku
 
 
