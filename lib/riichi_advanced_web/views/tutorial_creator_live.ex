@@ -104,6 +104,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
   
   def handle_event("submit_tutorial", %{"ruleset" => ruleset, "sequence_json" => sequence_json, "seat" => seat}, socket) do
     socket = assign(socket, :loading, true)
+    socket = assign(socket, :sequence_json, sequence_json)
     socket = assign(socket, :ruleset, ruleset)
     socket = assign(socket, :seat, seat)
     send(self(), {:goto_tutorial, ruleset, sequence_json, seat})
