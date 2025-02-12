@@ -72,7 +72,7 @@
     {"id": "its_all_aka", "deps": ["aka"], "order": 3, "name": "It's All Aka?", "desc": "Changes all standard tiles to aka."},
     "Jokers",
     {"id": "jokers/manzu", "conflicts": ["jokers/vietnamese"], "name": "Manzu", "desc": "Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile."},
-    {"id": "jokers/pinzu", "conflicts": ["jokers/vietnamese"], "name": "Souzu", "desc": "Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile."},
+    {"id": "jokers/pinzu", "conflicts": ["jokers/vietnamese"], "name": "Pinzu", "desc": "Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile."},
     {"id": "jokers/souzu", "conflicts": ["jokers/vietnamese"], "name": "Souzu", "desc": "Adds a single souzu joker to the game. The souzu joker looks like 索 and can represent any character tile."},
     {"id": "jokers/vietnamese", "conflicts": ["jokers/manzu", "jokers/pinzu", "jokers/souzu"], "name": "Vietnamese Jokers", "desc": "Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker."},
     {"id": "jokers/19", "name": "19", "desc": "Adds a copy of the 19 joker, which can be used as any 1 or 9."},
