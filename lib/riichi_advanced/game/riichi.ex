@@ -108,9 +108,17 @@ defmodule RiichiAdvanced.Riichi do
     ret = for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
-        target_tiles = Enum.map(call_spec, &Match.offset_tile(Utils.strip_attrs(tile), &1, tile_behavior))
-        possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-        Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+        # before we make calls using the offsets,
+        # we must instantiate the tile in case it's a joker
+        instances = Utils.apply_tile_aliases(tile,  tile_behavior)
+        if :any in instances do hand else instances end
+        |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
+        |> Utils.strip_attrs()
+        |> Enum.flat_map(fn instance ->
+          target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
+          possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+          Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+        end)
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
 

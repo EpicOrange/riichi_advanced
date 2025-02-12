@@ -278,7 +278,7 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+  def _match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
@@ -287,10 +287,12 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.with_index()
     |> Enum.map(fn {call, i} -> {Enum.take(Utils.call_to_tiles(call), 3), i} end) # ignore kans
 
-    # IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
-    # IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
     jokers = Map.keys(tile_mappings)
-    # IO.puts("Jokers are #{inspect(jokers)}")
+    if Debug.print_smt() do
+      IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
+      IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
+      IO.puts("Jokers are #{inspect(jokers)}")
+    end
     all_tiles = all_tiles
     |> Enum.uniq()
     |> Enum.reject(fn tile -> tile in jokers and tile not in tile_mappings[tile] end)
@@ -645,6 +647,16 @@ defmodule RiichiAdvanced.SMT do
     result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
     # IO.inspect(result)
     result
+  end
+
+  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+    case RiichiAdvanced.ETSCache.get({:match_hand_smt_v2, hand, calls, all_tiles, match_definitions, TileBehavior.hash(tile_behavior)}) do
+      [] -> 
+        result = _match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior)
+        RiichiAdvanced.ETSCache.put({:match_hand_smt_v2, hand, calls, all_tiles, match_definitions, TileBehavior.hash(tile_behavior)}, result)
+        result
+      [result] -> result
+    end
   end
 
 end

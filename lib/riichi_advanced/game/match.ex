@@ -113,9 +113,18 @@ defmodule RiichiAdvanced.Match do
   end
 
   defp _try_remove_all_tiles(hand, [], _tile_behavior), do: [hand]
+  defp _try_remove_all_tiles(hand, [tile | tiles], tile_behavior) when tile_behavior.aliases == %{} do
+    [tile]
+    |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior.ignore_suit))
+    |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_behavior))
+    |> Enum.uniq()
+  end
   defp _try_remove_all_tiles(hand, [tile | tiles], tile_behavior) do
     # remove all tiles, with the first result removing non-jokers over jokers or :any
-    [tile | (Utils.apply_tile_aliases(tile, tile_behavior) |> MapSet.delete(tile) |> MapSet.to_list())]
+    tile
+    |> Utils.apply_tile_aliases(tile_behavior)
+    |> MapSet.to_list()
+    |> TileBehavior.sort_by_joker_power(tile_behavior)
     |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior.ignore_suit))
     |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_behavior))
     |> Enum.uniq()
@@ -147,6 +156,7 @@ defmodule RiichiAdvanced.Match do
   @group_keywords ["nojoker", "unique"]
   def group_keywords(), do: @group_keywords
 
+  defp group_to_subgroups([], _base_tile, _tile_behavior), do: []
   defp group_to_subgroups(group, base_tile, tile_behavior) do
     {subgroups, tiles} = group
     |> Enum.reject(& &1 in @group_keywords)
@@ -240,6 +250,8 @@ defmodule RiichiAdvanced.Match do
     |> Enum.uniq()
     # never let :any be a base tile
     |> Enum.reject(&Utils.strip_attrs(&1) in [nil, :any])
+    # no jokers
+    |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
     # if there are no offsets, always return 1m as a base tile
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end

@@ -76,6 +76,15 @@ defmodule RiichiAdvanced.GameState do
     def hash(tile_behavior) do
       :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.ignore_suit})
     end
+    def joker_power(tile, tile_behavior) do
+      aliases = Utils.apply_tile_aliases(tile, tile_behavior)
+      if :any in aliases do 1000000 else MapSet.size(aliases) end
+    end
+    # the idea is to move the most powerful jokers to the back
+    # power is just number of aliases
+    def sort_by_joker_power(tiles, tile_behavior) do
+      Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
+    end
   end
 
   defmodule Player do
@@ -1539,7 +1548,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:cancel_call_buttons, seat}, state) do
     if state.forced_event == nil do
       # go back to button clicking phase
-      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
+      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
       notify_ai(state)
 
       state = broadcast_state_change(state)
