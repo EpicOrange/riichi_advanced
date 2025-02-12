@@ -1,8 +1,7 @@
 {
 
 // TODOs:
-  //⚠️ dead wall is 18 tiles. reveal the last tile from the dead wall, that's the "gold" tile. **place it above the 17th and 18th tiles from the dead wall???**
-  //⚠️ as the dead wall shifts (which it will), the revealed "gold" tile is never drawn, it is always moved above the 9th tile-pair away from the end and marks where the dead wall begins
+  //⚠️ place the gold tile above the 17th and 18th tiles from the dead wall. as the dead wall shifts (which it will), the revealed "gold" tile is never drawn, it is always moved above the 9th tile-pair away from the end and marks where the dead wall begins. (NOTE: this is purely a visual thing if someone clicks on "Show Walls")
   //⚠️ cannot call with a gold (unless using their original value). doesn't matter when calling hu (ron)
   //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
   // check what happens if the gold indicator is a flower or honour
@@ -218,10 +217,11 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
-        //tag gold tiles with "dora"
+        // tag gold tiles with "dora" filler text here
       ["tag_dora", "dora", -1],
         // add the "dora" attribute to tiles tagged with "dora", which should make them shiny
-      ["add_attr_tagged", "dora", "dora"]
+      ["add_attr_tagged", "dora", "dora"],
+      ["set_tile_alias_all", "dora", ["manzu", "pinzu", "souzu"]]
     ]
   },
   "before_win": {
