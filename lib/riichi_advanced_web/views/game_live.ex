@@ -138,6 +138,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         playable_indices={@playable_indices}
         preplayed_index={@preplayed_index}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
+        dead_hand?={"dead_hand" in @state.players[seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
@@ -556,13 +557,15 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("declare_dead_hand", %{"seat" => seat}, socket) do
-    dead_seat = case seat do
-      "east"  -> :east
-      "south" -> :south
-      "west"  -> :west
-      "north" -> :north
+    if socket.assigns.seat == socket.assigns.state.turn do
+      dead_seat = case seat do
+        "east"  -> :east
+        "south" -> :south
+        "west"  -> :west
+        "north" -> :north
+      end
+      GenServer.cast(socket.assigns.game_state, {:declare_dead_hand, socket.assigns.seat, dead_seat})
     end
-    GenServer.cast(socket.assigns.game_state, {:declare_dead_hand, socket.assigns.seat, dead_seat})
     {:noreply, socket}
   end
 
