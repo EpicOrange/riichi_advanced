@@ -528,23 +528,23 @@ defmodule RiichiAdvanced.Riichi do
     # cosmic hand can also have
     # - one pair, one mixed pair remaining
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
-      num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
+      num_pairs = Match.binary_search_count_matches([{hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
       cond do
         length(hand) == 1 and Utils.has_matching_tile?(hand, winning_tiles, tile_behavior) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 2 and num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 4 and num_pairs == 2 ->
-          [tile1, tile2] = Enum.uniq(hand)
-          tile1_fu = fu + calculate_pair_fu(tile2, yakuhai, tile_behavior) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          tile2_fu = fu + calculate_pair_fu(tile1, yakuhai, tile_behavior) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          if Utils.count_tiles([tile1], winning_tiles, tile_behavior) == 1 do [tile1_fu] else [] end
-          ++ if Utils.count_tiles([tile2], winning_tiles, tile_behavior) == 1 do [tile2_fu] else [] end
+          Enum.flat_map(winning_tiles, fn winning_tile ->
+            triplet_fu = (if winning_tile in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+            Match.remove_match_definition([winning_tile | hand], [], [[[[[0, 0, 0]], 1]]], tile_behavior)
+            |> Enum.map(fn {[tile | _], []} -> fu + triplet_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
+          end)
         # cosmic hand
         enable_kontsu_fu and length(hand) == 4 and num_pairs == 1 ->
-          {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
-          [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
-          pair_fu = calculate_pair_fu(pair_tile, yakuhai, tile_behavior)
-          kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
-          [fu + pair_fu + kontsu_fu]
+          Enum.flat_map(winning_tiles, fn winning_tile ->
+            kontsu_fu = (if winning_tile in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
+            Match.remove_match_definition([winning_tile | hand], [], [[[[[0, 10, 20]], 1]]], tile_behavior)
+            |> Enum.map(fn {[tile | _], []} -> fu + kontsu_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
+          end)
         true                                                    -> []
       end
     end)
