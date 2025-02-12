@@ -9,7 +9,6 @@
   // double-check whether dealer continuation is for all players or just the dealer
   // correctly implement Golden Pair and Golden Dragon
   // check what the discarder multiplier is supposed to be
-  // implement the following rule: if you discard gold, no one can call chii/pon/kan on it, but you can't ron for the remainder of the round
   
 // mods/rule-variants
   // reddit post says only red dragon is a flower, not all 3 dragons
@@ -201,7 +200,8 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "double_kan", "just_reached"],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]],
+      ["when", [{"name": "last_discard_matches", "opts": [[["dora"], 1]]}], [["set_status", "tsumo_only"]]]
     ]
   },
   "after_turn_change": {
@@ -283,20 +283,20 @@
     "chii": {
       "display_name": "Chow",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", {"name": "not_called_tile_contains", "opts": [["dora"], 1]}, "call_available"],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pung",
       "call": [[0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "not_called_tile_contains", "opts": [["dora"], 1]}, "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "not_called_tile_contains", "opts": [["dora"], 1]}, "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -354,7 +354,7 @@
       "display_name": "Hu",
       "show_when": [
         "not_our_turn",
-        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "status_missing", "opts": ["match_start", "tsumo_only"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
@@ -369,7 +369,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         [
           [
-            {"name": "status_missing", "opts": ["match_start"]},
+            {"name": "status_missing", "opts": ["match_start", "tsumo_only"]},
             {"name": "last_call_is", "opts": ["kakan", "start_flower", "flower"]},
             [{"name": "caller_status", "opts": ["kan"]}, {"name": "caller_status", "opts": ["flower"]}],
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
