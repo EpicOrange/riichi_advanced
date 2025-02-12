@@ -58,7 +58,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
-          "assigned_hand" -> [{IO.inspect(state.winners[context.seat].assigned_hand, label: "asdf"), calls}] # includes winning tile
+          "assigned_hand" -> [{state.winners[context.seat].assigned_hand, calls}] # includes winning tile
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]

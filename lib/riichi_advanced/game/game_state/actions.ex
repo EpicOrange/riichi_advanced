@@ -1040,21 +1040,15 @@ defmodule RiichiAdvanced.GameState.Actions do
         for seat <- state.available_seats, reduce: state do
           state -> set_tile_alias(state, seat, from_tiles, to_tiles)
         end
-      "save_tile_aliases"     ->
+      "save_tile_behavior"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
-          state ->
-            state = put_in(state.players[seat].cache.saved_tile_aliases[label], state.players[seat].tile_behavior.aliases)
-            state = put_in(state.players[seat].cache.saved_tile_mappings[label], state.players[seat].tile_behavior.mappings)
-            state
+          state -> put_in(state.players[seat].cache.saved_tile_behavior[label], state.players[seat].tile_behavior)
         end
-      "load_tile_aliases"     ->
+      "load_tile_behavior"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
-          state ->
-            state = put_in(state.players[seat].tile_behavior.aliases, Map.get(state.players[seat].cache.saved_tile_aliases, label, state.players[seat].tile_behavior.aliases))
-            state = put_in(state.players[seat].tile_behavior.mappings, Map.get(state.players[seat].cache.saved_tile_mappings, label, state.players[seat].tile_behavior.mappings))
-            state
+          state -> put_in(state.players[seat].tile_behavior, Map.get(state.players[seat].cache.saved_tile_behavior, label, state.players[seat].tile_behavior))
         end
       "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{ &1.tile_behavior | aliases: %{} } })
       "set_tile_ordering"     ->

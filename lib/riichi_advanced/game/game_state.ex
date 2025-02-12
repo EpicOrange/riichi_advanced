@@ -30,8 +30,7 @@ defmodule RiichiAdvanced.GameState do
 
   defmodule PlayerCache do
     defstruct [
-      saved_tile_mappings: %{},
-      saved_tile_aliases: %{},
+      saved_tile_behavior: %{}, # label => TileBehavior
       riichi_discard_indices: nil,
       playable_indices: [],
       closest_american_hands: [],
