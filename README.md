@@ -29,6 +29,41 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __12 Feb 2025__: v1.1.0:
+  + Added [CONTRIBUTING.md](CONTRIBUTING.md)
+  + Added tutorial screen as well as a way to create and share custom tutorials! If you are interested in creating a tutorial just select any ruleset in the main menu and hit Learn -> Create your own tutorial! [Here is the tutorial JSON documentation.](documentation/tutorials.md)
+  + Added some rules documentation for Vietnamese mahjong
+  + Added documentation for all available tiles
+  + Added a lot of test machinery (we can actually simulate test games now)
+  + Added Shiny Dora mod
+  + Added It's All Aka? mod
+  + Added Riichi mod (extracted from Riichi ruleset)
+  + Added Kan mod (extracted from Riichi ruleset)
+  + Added aka versions of every standard tile + blue and gold fives
+  + Added like two dozen new jokers + some riichi mods that add them to the game
+  + Added galaxy shuugi (+1 shuugi when galaxy tile is used as their original value) for galaxy mahjong
+  + Added AI names
+  + Added Heavenly Hand to American mahjong (thanks Sophie)
+  + Added MahjLife card to American mahjong (thanks Sophie)
+  + Added seven strategies for awarding points when tsumo loss is off
+  + Added support for `"points2"` multiplier for `"multiplier"` scoring method
+  + Added `"tag_tiles"` and `"tag_dora"` actions
+  + Added `"add_attr_tagged"` action
+  + Added a new `"name"` argument to `"ryuukyoku"` action
+  + Renamed `"save_tile_aliases"`/`"load_tile_aliases"` to `"save_tile_behavior"`/`"load_tile_behavior"`
+  + Fixed flower yaku emitting errors in MCR
+  + Fixed fully concealed calls from being "visible" to the tile counter
+  + Fixed fully concealed calls from printing its contents to the message log
+  + Fixed sanma going into West round when it shouldn't
+  + Fixed some log crashes (log replays are still very unstable)
+  + Fixed lots of miscellaneous crashes
+  + Fixed kazoe yakuman mod upgrading everyone's limit hand by one tier
+  + Fixed flower not being callable in american mahjong
+  + Fixed dead hand marker in american mahjong
+  + Fixed chiitoitsu not working if you have jokers in hand
+  + Fixed golden chun mod compatibility with other mods
+  + Fixed incorrect fu calculation for shanpon and kontsu waits
+  + Some optimizations
 - __4 Feb 2025__: v1.0.2:
   + Added ability to view running public games in lobby screen
   + Added auto-pei autobutton to Sanma
