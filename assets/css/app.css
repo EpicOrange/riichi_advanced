@@ -1778,7 +1778,11 @@ div.game-modal > div.score-display {
   pointer-events: none;
   user-select: none;
 }
-div.winning-hand { padding-top: calc(0.25 * var(--tile-size)); justify-content: center; }
+div.hand.winning-hand {
+  width: 100%;
+  padding-top: calc(0.25 * var(--tile-size));
+  justify-content: center;
+}
 /* yakus */
 div.yakus {
   display: flex;
