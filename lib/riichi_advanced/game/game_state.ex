@@ -76,6 +76,15 @@ defmodule RiichiAdvanced.GameState do
     def hash(tile_behavior) do
       :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.ignore_suit})
     end
+    def joker_power(tile, tile_behavior) do
+      aliases = Utils.apply_tile_aliases(tile, tile_behavior)
+      if :any in aliases do 1000000 else MapSet.size(aliases) end
+    end
+    # the idea is to move the most powerful jokers to the back
+    # power is just number of aliases
+    def sort_by_joker_power(tiles, tile_behavior) do
+      Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
+    end
   end
 
   defmodule Player do
@@ -170,7 +179,6 @@ defmodule RiichiAdvanced.GameState do
       kyoku: 0,
       honba: 0,
       pot: 0,
-      tags: %{},
       log_state: %{},
       call_stack: [], # call stack limit is 10 for now
       forced_event: nil, # for tutorials
@@ -192,6 +200,7 @@ defmodule RiichiAdvanced.GameState do
       saved_revealed_tiles: [],
       max_revealed_tiles: 0,
       drawn_reserved_tiles: [],
+      tags: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
       processed_bloody_end: false,
     ]
@@ -342,6 +351,7 @@ defmodule RiichiAdvanced.GameState do
     state = Log.init_log(state)
 
     state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
+    state = Map.put(state, :honba, Map.get(state.rules, "starting_honba", 0))
 
     initial_score = Map.get(rules, "initial_score", 0)
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
@@ -489,8 +499,8 @@ defmodule RiichiAdvanced.GameState do
 
       # roll dice
       state = state
-      |> Map.put(:die1, :rand.uniform(6))
-      |> Map.put(:die2, :rand.uniform(6))
+      |> Map.put(:die1, Map.get(state.rules, "die1", :rand.uniform(6)))
+      |> Map.put(:die2, Map.get(state.rules, "die2", :rand.uniform(6)))
 
       {state, hands, scores}
     else
@@ -547,6 +557,7 @@ defmodule RiichiAdvanced.GameState do
     # initialize other constants
     persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
     persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
+    persistent_tags = if Map.has_key?(rules, "persistent_tags") do rules["persistent_tags"] else [] end
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
       {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
@@ -558,7 +569,7 @@ defmodule RiichiAdvanced.GameState do
          hand: hands[&1],
          auto_buttons: initial_auto_buttons,
          status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
-         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
+         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
        })
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -571,6 +582,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:delta_scores, %{})
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
+    |> Map.update!(:tags, &Enum.filter(&1, fn {tag, _tiles} -> tag in persistent_tags end) |> Map.new())
 
     # initialize marking
     state = Marking.initialize_marking(state)
@@ -907,7 +919,7 @@ defmodule RiichiAdvanced.GameState do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
-          nil -> Map.get(state.tags, tile_name, nil) # check tags
+          nil -> Map.get(state.tags, tile_name, []) |> Enum.at(0) # check tags
           ix  -> Enum.at(state.dead_wall, -ix-1)
         end
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
@@ -1462,7 +1474,6 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:play_tile, seat, index}, state) do
     if state.forced_event in [nil, ["play_tile", Atom.to_string(seat), index]] do
-      state = Map.put(state, :forced_event, nil)
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
@@ -1470,6 +1481,7 @@ defmodule RiichiAdvanced.GameState do
         IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
       end
       state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
+        state = Map.put(state, :forced_event, nil)
         state = Actions.temp_disable_play_tile(state, seat)
         # assume we're skipping our button choices
         state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
@@ -1478,7 +1490,10 @@ defmodule RiichiAdvanced.GameState do
         state
       else state end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      # IO.inspect("Blocked #{inspect({:play_tile, seat, index})}; waiting for #{inspect(state.forced_event)}")
+      {:noreply, state}
+    end
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
@@ -1533,7 +1548,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:cancel_call_buttons, seat}, state) do
     if state.forced_event == nil do
       # go back to button clicking phase
-      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
+      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
       notify_ai(state)
 
       state = broadcast_state_change(state)

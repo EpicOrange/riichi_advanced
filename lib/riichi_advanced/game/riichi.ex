@@ -108,9 +108,17 @@ defmodule RiichiAdvanced.Riichi do
     ret = for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
-        target_tiles = Enum.map(call_spec, &Match.offset_tile(Utils.strip_attrs(tile), &1, tile_behavior))
-        possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-        Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+        # before we make calls using the offsets,
+        # we must instantiate the tile in case it's a joker
+        instances = Utils.apply_tile_aliases(tile,  tile_behavior)
+        if :any in instances do hand else instances end
+        |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
+        |> Utils.strip_attrs()
+        |> Enum.flat_map(fn instance ->
+          target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
+          possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+          Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+        end)
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
 
@@ -457,7 +465,8 @@ defmodule RiichiAdvanced.Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior) |> Enum.flat_map(fn base_tile ->
+          Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
+          |> Enum.flat_map(fn base_tile ->
             case Match.try_remove_all_tiles(hand, [base_tile, base_tile, base_tile], tile_behavior) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 8 else 4 end} end)
@@ -471,7 +480,7 @@ defmodule RiichiAdvanced.Riichi do
       for _ <- 1..4, reduce: hands_fu do
         all_hands ->
           Enum.flat_map(all_hands, fn {hand, fu} ->
-            {honors, suited} = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior)
+            {honors, suited} = Match.collect_base_tiles(hand, [], [0, 10, 20, 1, 2], tile_behavior)
             |> Enum.split_with(fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
             # remove suited kontsu
             suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
@@ -496,7 +505,7 @@ defmodule RiichiAdvanced.Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          sequence_tiles = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior)
+          sequence_tiles = Match.collect_base_tiles(hand, [], [0, 1, 2], tile_behavior)
           sequence_tiles = if enable_kontsu_fu do
             # honor sequences are considered mixed triplets, ignore them
             Enum.reject(sequence_tiles, fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
@@ -519,23 +528,23 @@ defmodule RiichiAdvanced.Riichi do
     # cosmic hand can also have
     # - one pair, one mixed pair remaining
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
-      num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
+      num_pairs = Match.binary_search_count_matches([{hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
       cond do
         length(hand) == 1 and Utils.has_matching_tile?(hand, winning_tiles, tile_behavior) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 2 and num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 4 and num_pairs == 2 ->
-          [tile1, tile2] = Enum.uniq(hand)
-          tile1_fu = fu + calculate_pair_fu(tile2, yakuhai, tile_behavior) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          tile2_fu = fu + calculate_pair_fu(tile1, yakuhai, tile_behavior) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          if Utils.count_tiles([tile1], winning_tiles, tile_behavior) == 1 do [tile1_fu] else [] end
-          ++ if Utils.count_tiles([tile2], winning_tiles, tile_behavior) == 1 do [tile2_fu] else [] end
+          Enum.flat_map(winning_tiles, fn winning_tile ->
+            triplet_fu = (if winning_tile in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+            Match.remove_match_definition([winning_tile | hand], [], [[[[[0, 0, 0]], 1]]], tile_behavior)
+            |> Enum.map(fn {[tile | _], []} -> fu + triplet_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
+          end)
         # cosmic hand
         enable_kontsu_fu and length(hand) == 4 and num_pairs == 1 ->
-          {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
-          [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
-          pair_fu = calculate_pair_fu(pair_tile, yakuhai, tile_behavior)
-          kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
-          [fu + pair_fu + kontsu_fu]
+          Enum.flat_map(winning_tiles, fn winning_tile ->
+            kontsu_fu = (if winning_tile in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
+            Match.remove_match_definition([winning_tile | hand], [], [[[[[0, 10, 20]], 1]]], tile_behavior)
+            |> Enum.map(fn {[tile | _], []} -> fu + kontsu_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
+          end)
         true                                                    -> []
       end
     end)

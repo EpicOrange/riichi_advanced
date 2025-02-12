@@ -9,7 +9,8 @@
 .after_start.actions += [
   ["set_tile_alias_all", ["0m"], ["5m"]],
   ["set_tile_alias_all", ["0p"], ["5p"]],
-  ["set_tile_alias_all", ["0s"], ["5s"]]
+  ["set_tile_alias_all", ["0s"], ["5s"]],
+  ["tag_tiles", "dora", ["0m", "0p", "0s"]]
 ]
 |
 # count aka

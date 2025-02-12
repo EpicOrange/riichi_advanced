@@ -433,9 +433,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           _ -> [context.tile]
         end
         tag = Enum.at(opts, 1, "missing_tag")
-        tagged_tile = state.tags[tag]
+        tagged_tiles = state.tags[tag]
         tile_behavior = state.players[context.seat].tile_behavior
-        Enum.any?(targets, fn target -> Utils.same_tile(target, tagged_tile, tile_behavior) end)
+        Enum.any?(targets, fn target -> Utils.has_matching_tile?(target, tagged_tiles, tile_behavior) end)
       "has_attr"              ->
         targets = get_hand_calls_spec(state, context, [Enum.at(opts, 0, "tile")])
         |> Enum.map(fn {hand, _calls} -> hand end)

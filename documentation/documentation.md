@@ -551,10 +551,13 @@ Other:
 - `["set_tile_ordering_all", [tile1, tile2, ...]]`: Same, but applies this assertion to all players.
 - `["add_attr", [target1, ...], [attr1, ...], [tile_spec1...]]`: Add the given attributes to the given targets that match all given tile specs.
 - `["add_attr_first_tile", tile, [attr1, ...]]`: Add the given attributes to the first instance of the given tile in hand.
+- `["add_attr_tagged", tag, [attr1, ...]]`: Add the given attributes to all instances of the tagged tiles. (includes wall)
 - `["remove_attr_hand", attr1, attr2, ...]`: Remove the given attributes from all tiles in the current player's hand.
 - `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
+- `["tag_tiles", tag_name, tiles]`: Globally tag the given tile(s) with the given tag name.
 - `["tag_drawn_tile", tag_name]`: Globally tag the current player's drawn tile with the given tag name.
 - `["tag_last_discard", tag_name]`: Globally tag the current player's last discard with the given tag name.
+- `["tag_dora", tag_name, dora_indicator]`: Globally tag the dora indicated by the given dora_indicator tile, using the toplevel `"dora_indicators"` key as reference.
 - `["untag", tag_name]`: Untag all tiles tagged with the given tag name.
 - `["convert_last_discard", tile]`: Turn the last discard into the given tile.
 - `["flip_all_calls_faceup"]`: Flip all draws faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.

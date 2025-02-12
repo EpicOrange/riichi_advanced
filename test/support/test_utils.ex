@@ -5,6 +5,8 @@ defmodule RiichiAdvanced.TestUtils do
   alias RiichiAdvanced.Utils, as: Utils
   import ExUnit.Assertions
 
+  @suppress_io true
+
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
     game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
@@ -12,8 +14,10 @@ defmodule RiichiAdvanced.TestUtils do
     [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, room_code))
 
     # suppress all IO from game_state
-    {:ok, io} = StringIO.open("")
-    Process.group_leader(game_state, io)
+    if @suppress_io do
+      {:ok, io} = StringIO.open("")
+      Process.group_leader(game_state, io)
+    end
 
     # activate game
     GenServer.call(game_state, {:put_log_loading_mode, true})
@@ -87,8 +91,8 @@ defmodule RiichiAdvanced.TestUtils do
       if Map.has_key?(expected_winner, :yaku2) do
         assert MapSet.new(winner.yaku2) == MapSet.new(expected_winner.yaku2)
       end
-      if Map.has_key?(expected_winner, :minipoints) do
-        assert winner.minipoints == expected_winner.minipoints
+      for {key, value} <- expected_winner, key not in [:yaku, :yaku2] do
+        assert Map.get(winner, key) == value
       end
     end
   end

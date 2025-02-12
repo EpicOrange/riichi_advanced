@@ -53,11 +53,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       # check if we're a tutorial; if so, load its config instead
       socket = setup_tutorial(socket)
+      mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "mods", []) else last_mods end
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
 
       # start a new game process, if it doesn't exist already
-      game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: last_mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.room_code)}}}
+      game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.room_code)}}}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.room_code}")
@@ -137,6 +138,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         playable_indices={@playable_indices}
         preplayed_index={@preplayed_index}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
+        dead_hand?={"dead_hand" in @state.players[seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
@@ -428,7 +430,11 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   defp trigger_next_tutorial_scene(socket) do
-    actions = Map.get(socket.assigns.tutorial_sequence["scenes"], socket.assigns.next_tutorial_scene, [])
+    actions = if socket.assigns.next_tutorial_scene == :resume do
+      :resume
+    else
+      Map.get(socket.assigns.tutorial_sequence["scenes"], socket.assigns.next_tutorial_scene, [])
+    end
     send_update(RiichiAdvancedWeb.TutorialOverlayComponent, id: "tutorial-overlay", actions: actions)
     socket = assign(socket, :next_tutorial_scene, nil)
     socket
@@ -470,13 +476,17 @@ defmodule RiichiAdvancedWeb.GameLive do
     GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, name})
     socket = assign(socket, :hovered_called_tile, nil)
     socket = assign(socket, :hovered_call_choice, nil)
-    socket = assign(socket, :hide_buttons, true)
+    socket = if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+      assign(socket, :hide_buttons, true)
+    else socket end
     {:noreply, socket}
   end
 
   def handle_event("auto_button_toggled", %{"name" => name, "enabled" => enabled}, socket) do
-    enabled = enabled == "true"
-    GenServer.cast(socket.assigns.game_state, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
+    if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+      enabled = enabled == "true"
+      GenServer.cast(socket.assigns.game_state, {:toggle_auto_button, socket.assigns.seat, name, not enabled})
+    end
     {:noreply, socket}
   end
 
@@ -547,13 +557,15 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("declare_dead_hand", %{"seat" => seat}, socket) do
-    dead_seat = case seat do
-      "east"  -> :east
-      "south" -> :south
-      "west"  -> :west
-      "north" -> :north
+    if socket.assigns.seat == socket.assigns.state.turn do
+      dead_seat = case seat do
+        "east"  -> :east
+        "south" -> :south
+        "west"  -> :west
+        "north" -> :north
+      end
+      GenServer.cast(socket.assigns.game_state, {:declare_dead_hand, socket.assigns.seat, dead_seat})
     end
-    GenServer.cast(socket.assigns.game_state, {:declare_dead_hand, socket.assigns.seat, dead_seat})
     {:noreply, socket}
   end
 
@@ -571,7 +583,9 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.assigns.seat == socket.assigns.state.turn do
       socket = assign(socket, :visible_waits, %{})
       socket = assign(socket, :show_waits_index, nil)
-      socket = assign(socket, :preplayed_index, index)
+      socket = if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+        assign(socket, :preplayed_index, index)
+      else socket end
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
       {:noreply, socket}
     else
