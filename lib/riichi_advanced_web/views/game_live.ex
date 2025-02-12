@@ -1,5 +1,6 @@
 defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.Constants, as: Constants
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
@@ -33,6 +34,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:playable_indices, [])
     |> assign(:preplayed_index, nil)
     |> assign(:hide_buttons, false) # used to hide buttons on the client side after clicking one
+    |> assign(:last_forced_events, nil) # used for tutorials
     |> assign(:next_tutorial_scene, nil) # used for tutorials
     |> assign(:waiting_for_click, false) # used for tutorials
 
@@ -74,6 +76,12 @@ defmodule RiichiAdvancedWeb.GameLive do
           [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
           game_state
       end
+
+      # block events if we're a tutorial
+      if Map.has_key?(socket.assigns, :tutorial_sequence) do
+        GenServer.call(game_state, {:force_event, [], true})
+      end
+
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
       # init a new player and get the current state
@@ -346,7 +354,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           ruleset={@ruleset}
           waiting_for_click={@waiting_for_click}
           await_click={&send(self(), {:await_click, &1})}
-          force_event={&send(self(), {:force_event, &1, &2})} />
+          force_event={&send(self(), {:force_event, &1, &2, &3})} />
       </div>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.CenterpieceStatusBarComponent}
@@ -435,6 +443,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     else
       Map.get(socket.assigns.tutorial_sequence["scenes"], socket.assigns.next_tutorial_scene, [])
     end
+    GenServer.call(socket.assigns.game_state, {:force_event, [], true}) # first block events
     send_update(RiichiAdvancedWeb.TutorialOverlayComponent, id: "tutorial-overlay", actions: actions)
     socket = assign(socket, :next_tutorial_scene, nil)
     socket
@@ -570,9 +579,14 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_event("tutorial_overlay_clicked", _assigns, socket) do
-    socket = assign(socket, :waiting_for_click, false)
-    socket = trigger_next_tutorial_scene(socket)
-    {:noreply, socket}
+    if socket.assigns.waiting_for_click do
+      socket = assign(socket, :waiting_for_click, false)
+      if Debug.debug_tutorial() do
+        IO.puts("\nresuming tutorial actions due to click\n")
+      end
+      socket = trigger_next_tutorial_scene(socket)
+      {:noreply, socket}
+    else {:noreply, socket} end
   end
 
   def handle_info(:back, socket) do
@@ -610,8 +624,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:force_event, next_scene, event}, socket) do
-    GenServer.call(socket.assigns.game_state, {:force_event, event})
+  def handle_info({:force_event, next_scene, events, blocking}, socket) do
+    GenServer.call(socket.assigns.game_state, {:force_event, events, blocking})
+    if Debug.debug_tutorial() do
+      IO.puts("#{if blocking do "Forcing" else "Awaiting" end} events #{inspect(events)}")
+    end
+    socket = assign(socket, :last_forced_events, events)
     socket = assign(socket, :next_tutorial_scene, next_scene)
     {:noreply, socket}
   end
@@ -646,7 +664,10 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       # get next tutorial scene
       socket = if Map.has_key?(socket.assigns, :tutorial_sequence) do
-        if socket.assigns.next_tutorial_scene != nil and not socket.assigns.waiting_for_click and state.forced_event == nil do
+        if socket.assigns.next_tutorial_scene != nil and not socket.assigns.waiting_for_click and state.forced_events == [] and state.last_event in socket.assigns.last_forced_events do
+          if Debug.debug_tutorial() do
+            IO.puts("\nresuming tutorial actions due to forced_events == [] and last event == #{inspect(state.last_event)}\n")
+          end
           trigger_next_tutorial_scene(socket)
         else socket end
       else socket end

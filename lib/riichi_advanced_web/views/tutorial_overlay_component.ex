@@ -26,18 +26,20 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         socket
         |> assign(:objects, [])
         |> assign(:focuses, [])
-      "await_event" ->
-        event = Enum.at(opts, 0, %{})
+      "force_event" ->
+        events = Enum.at(opts, 0, %{})
+        events = if not is_list(Enum.at(events, 0)) do [events] else events end
         next_scene = Enum.at(opts, 1, :resume)
-        socket.assigns.force_event.(next_scene, event)
+        socket.assigns.force_event.(next_scene, events, true)
         socket
         |> assign(:deferred_actions, actions)
-      "block_events" ->
-        socket.assigns.force_event.(nil, [])
+      "await_event" ->
+        events = Enum.at(opts, 0, %{})
+        events = if not is_list(Enum.at(events, 0)) do [events] else events end
+        next_scene = Enum.at(opts, 1, :resume)
+        socket.assigns.force_event.(next_scene, events, false)
         socket
-      "unblock_events" ->
-        socket.assigns.force_event.(nil, nil)
-        socket
+        |> assign(:deferred_actions, actions)
       "await_click" ->
         next_scene = Enum.at(opts, 0, :resume)
         socket.assigns.await_click.(next_scene)
@@ -57,7 +59,7 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         send(self(), :back)
         socket
     end
-    if action in ["sleep", "await_click", "await_event"] do
+    if action in ["sleep", "await_click", "await_event", "force_event"] do
       socket
     else 
       run_actions(socket, actions)
