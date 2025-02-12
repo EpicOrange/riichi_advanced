@@ -6,7 +6,6 @@
   //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
   // check what happens if the gold indicator is a flower or honour
   // double-check whether dealer continuation is for all players or just the dealer
-  // correctly implement Golden Pair and Golden Dragon
   // check what the discarder multiplier is supposed to be
   
 // mods/rule-variants
@@ -64,8 +63,10 @@
   },
   "set_definitions": {
     "pair": [0, 0],
+    "dora_pair": ["dora", "dora"],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
+    "dora_koutsu": ["dora", "dora", "dora"],
     "quad": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
@@ -110,6 +111,12 @@
   ],
   "single_wait_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
+  ],
+  "golden_pair_definition": [
+    [ "exhaustive", [["dora_pair"], 1], [["shuntsu", "koutsu"], 5] ]
+  ],
+  "golden_dragon_definition": [
+    [ "exhaustive", [["pair"], 1], [["dora_koutsu"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
   "yaku": [
     { "display_name": "Base Points", "value": 10, "when": [] },
@@ -162,11 +169,9 @@
         {"name": "not_match", "opts": [["flowers"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 2]]]]}
       ]
     },
-      // this is not the correct implementation
-    // { "display_name": "Golden Pair", "value": 20, "when": ["won_by_draw", {"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}, {"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
+    { "display_name": "Golden Pair", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_pair"]]}] },
     { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["dora"], 3]]}] },
-      // this is not the correct implementation
-    // { "display_name": "Golden Dragon", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["dora"], 3]]}] },
+    { "display_name": "Golden Dragon", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_dragon"]]}] },
     { "display_name": "Robbing the Gold", "value": 50, "when": [{"name": "has_status", "opts": ["qiangjin"]}] },
     { "display_name": "Blessing of Heaven", "value": 50, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
     { "display_name": "Blessing of Earth", "value": 40, "when": [{"name": "not_seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] }
