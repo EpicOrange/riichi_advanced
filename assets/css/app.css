@@ -123,7 +123,15 @@ label {
 }
 input + label { background: gray; }
 input:checked + label { background: var(--tile-back); }
-
+/* textareas */
+textarea {
+  width: 100%;
+  height: 100%;
+  background: #3f3f3f;
+  color: white;
+  white-space: pre;
+  box-sizing: border-box;
+}
 
 
 /* hands */
@@ -2174,13 +2182,6 @@ div.ruleset::before {
   top: -1.2em;
   color: white;
 }
-div.ruleset > textarea {
-  width: 100%;
-  height: 100%;
-  background: #3f3f3f;
-  color: white;
-  white-space: pre;
-}
 /* landscape */
 @media (min-aspect-ratio: 1.2/1) {
   div.ruleset {
@@ -2914,13 +2915,10 @@ div.room div.mods > div.mods-inner-container div.reset-to-default-button {
 div.room div.custom-json > textarea {
   position: absolute;
   background: #3f3f3f;
-  color: white;
   width: calc(100% - 0.5 * var(--tile-size));
   height: calc(100% - 0.5 * var(--tile-size));
   top: calc(0.25 * var(--tile-size));
   left: calc(0.25 * var(--tile-size));
-  white-space: pre;
-  box-sizing: border-box;
   font-size: calc(0.25 * var(--tile-size));
 }
 /* tab system for mods/config */
@@ -2941,13 +2939,6 @@ div.config {
   width: 100%;
   height: 100%;
   font-size: calc(0.25 * var(--tile-size));
-}
-div.config > textarea {
-  width: 100%;
-  height: 100%;
-  background: #3f3f3f;
-  color: white;
-  white-space: pre;
 }
 
 
@@ -3152,7 +3143,7 @@ div.tutorial-focus.mobile { display: none; }
   input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
 }
 
-/* tutorial menu */
+/* tutorial select menu */
 header.tutorial-menu-header {
   position: absolute;
   color: white;
@@ -3194,6 +3185,59 @@ div.tutorial-menu-buttons > button {
   cursor: pointer;
 }
 div.tutorial-menu-buttons > button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
+}
+
+/* tutorial creator menu */
+div#container > form.tutorial-menu-container {
+  top: 0;
+  left: 0;
+  width: calc(100% - var(--tile-size));
+  height: calc(100% - var(--tile-size));
+  transition: none;
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.5 * var(--tile-size));
+}
+form.tutorial-menu-container > header {
+  display: flex;
+  flex-flow: row nowrap;
+  height: calc(1.5 * var(--tile-size));
+  align-items: stretch;
+  column-gap: calc(0.25 * var(--tile-size));
+}
+form.tutorial-menu-container > header > select.ruleset-dropdown {
+  font-size: calc(0.6 * var(--tile-size));
+  background-color: var(--tile-front);
+  border: none;
+  border-radius: calc(0.25 * var(--tile-size));
+  flex-grow: 1;
+}
+form.tutorial-menu-container > header > label {
+  font-size: calc(1 * var(--tile-size));
+}
+form.tutorial-menu-container > textarea {
+  font-size: calc(0.25 * var(--tile-size));
+}
+form.tutorial-menu-container > button {
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  font-size: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: center;
+  flex-direction: column;
+}
+form.tutorial-menu-container > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
 }
