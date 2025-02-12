@@ -464,7 +464,7 @@ Other:
 - `["win_by_discard"]`: Declares a win using the last discard as the winning tile.
 - `["win_by_call"]`: Declares a win using the last called tile as the winning tile.
 - `["win_by_draw"]`: Declares a win using the first drawn tile as the winning tile.
-- `["ryuukyoku"]`: Declares an exhaustive draw.
+- `["ryuukyoku", name]`: Declares an exhaustive draw. `name` is optional, but if provided it will override the default name.
 - `["abortive_draw", name]`: Declares an abortive draw by the given `name`.
 - `["set_status", status1, status2, ...]`: Add to the set of statuses for the current player.
 - `["unset_status", status1, status2, ...]`: Remove from the set of statuses for the current player.

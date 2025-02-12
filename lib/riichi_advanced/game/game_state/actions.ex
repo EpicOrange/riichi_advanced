@@ -806,7 +806,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         |> Enum.drop(1)
         |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
         win(state, context.seat, tile, :discard)
-      "ryuukyoku"             -> exhaustive_draw(state)
+      "ryuukyoku"             -> exhaustive_draw(state, Enum.at(opts, 0, "Exhaustive draw"))
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
       "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
       "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
