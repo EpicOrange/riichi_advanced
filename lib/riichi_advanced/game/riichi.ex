@@ -533,16 +533,18 @@ defmodule RiichiAdvanced.Riichi do
         length(hand) == 1 and Utils.has_matching_tile?(hand, winning_tiles, tile_behavior) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 2 and num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 4 and num_pairs == 2 ->
+          base_tiles = Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
           Enum.flat_map(winning_tiles, fn winning_tile ->
             triplet_fu = (if winning_tile in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-            Match.remove_match_definition([winning_tile | hand], [], [[[[[0, 0, 0]], 1]]], tile_behavior)
+            Match.remove_group([winning_tile | hand], [], [0, 0, 0], base_tiles, tile_behavior)
             |> Enum.map(fn {[tile | _], []} -> fu + triplet_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
           end)
         # cosmic hand
         enable_kontsu_fu and length(hand) == 4 and num_pairs == 1 ->
+          base_tiles = Match.collect_base_tiles(hand, [], [0, 10, 20], tile_behavior)
           Enum.flat_map(winning_tiles, fn winning_tile ->
             kontsu_fu = (if winning_tile in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
-            Match.remove_match_definition([winning_tile | hand], [], [[[[[0, 10, 20]], 1]]], tile_behavior)
+            Match.remove_group([winning_tile | hand], [], [0, 10, 20], base_tiles, tile_behavior)
             |> Enum.map(fn {[tile | _], []} -> fu + kontsu_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
           end)
         true                                                    -> []
