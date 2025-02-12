@@ -115,11 +115,13 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
   end
 
   def handle_info({:goto_tutorial, ruleset, sequence_json, seat}, socket) do
-    # TODO char limit on sequence_json
-    uuid = Ecto.UUID.generate()
-    RiichiAdvanced.ETSCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
-    socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}")
-    {:noreply, socket}
+    # 2MB char limit on sequence_json
+    if sequence_json != nil and byte_size(sequence_json) <= 2 * 1024 * 1024 do
+      uuid = Ecto.UUID.generate()
+      RiichiAdvanced.ETSCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
+      socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}")
+      {:noreply, socket}
+    else {:noreply, socket} end
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
