@@ -394,7 +394,7 @@ defmodule RiichiAdvanced.Match do
                         lines = for {hand, calls, remaining_groups} <- new_hand_calls_groups do
                           "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}"
                         end
-                        IO.puts(Enum.join(report ++ [line1 | lines], "\n"))
+                        IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
                       end
                       new_hand_calls_groups
                   end
@@ -426,6 +426,7 @@ defmodule RiichiAdvanced.Match do
                   for {hand, calls} <- result do
                     IO.puts("- #{inspect(hand)} / #{inspect(calls)}")
                   end
+                  IO.puts("")
                 end
                 result
             end
