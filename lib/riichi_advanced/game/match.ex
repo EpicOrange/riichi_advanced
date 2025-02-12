@@ -134,7 +134,7 @@ defmodule RiichiAdvanced.Match do
     if length(hand) >= length(tiles) do _try_remove_all_tiles(hand, tiles, tile_behavior) else [] end
   end
 
-  defp remove_from_hand_calls(hand, calls, tiles, tile_behavior) do
+  def remove_from_hand_calls(hand, calls, tiles, tile_behavior) do
     if Enum.empty?(tiles) do
       [{hand, calls}]
     else
@@ -242,11 +242,12 @@ defmodule RiichiAdvanced.Match do
       end
     end)
     |> Enum.uniq()
-    # also strip attrs
-    base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
     # also add all tile mappings
     base_tiles = base_tiles
     |> Enum.flat_map(&Map.get(TileBehavior.tile_mappings(tile_behavior), &1, [&1]))
+    |> Enum.uniq()
+    # also strip attrs (after applying tile mappings)
+    base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
     |> Enum.uniq()
     # never let :any be a base tile
     |> Enum.reject(&Utils.strip_attrs(&1) in [nil, :any])
