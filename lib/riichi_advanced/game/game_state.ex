@@ -1357,6 +1357,10 @@ defmodule RiichiAdvanced.GameState do
     {:reply, lobby_room, state}
   end
 
+  def handle_call({:force_event, event}, _from, state) do
+    {:reply, :ok, Map.put(state, :forced_event, event)}
+  end
+
   def handle_cast({:initialize_game, log}, state) do
     # run before_new_round actions
     state = if Map.has_key?(state.rules, "before_start") do
@@ -1468,12 +1472,9 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  def handle_cast({:force_event, event}, state) do
-    {:noreply, Map.put(state, :forced_event, event)}
-  end
-
   def handle_cast({:play_tile, seat, index}, state) do
-    if state.forced_event in [nil, ["play_tile", Atom.to_string(seat), index]] do
+    event = ["play_tile", Atom.to_string(seat), index]
+    if state.forced_event in [nil, event] do
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
@@ -1481,35 +1482,55 @@ defmodule RiichiAdvanced.GameState do
         IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
       end
       state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
-        state = Map.put(state, :forced_event, nil)
         state = Actions.temp_disable_play_tile(state, seat)
         # assume we're skipping our button choices
         state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
         actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
         state = Actions.submit_actions(state, seat, "play_tile", actions)
+        state = if state.forced_event == event do
+          state
+          |> Map.put(:forced_event, nil)
+          |> broadcast_state_change()
+        else state end
         state
       else state end
       {:noreply, state}
     else
-      # IO.inspect("Blocked #{inspect({:play_tile, seat, index})}; waiting for #{inspect(state.forced_event)}")
+      IO.inspect("Blocked #{inspect({:play_tile, seat, index})}; waiting for #{inspect(state.forced_event)}")
       {:noreply, state}
     end
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
-    if state.forced_event in [nil, ["press_button", Atom.to_string(seat), button_name]] do
-      state = Map.put(state, :forced_event, nil)
+    event = ["press_button", Atom.to_string(seat), button_name]
+    if state.forced_event in [nil, event] do
       state = Buttons.press_button(state, seat, button_name)
+      state = if state.forced_event == event do
+        state
+        |> Map.put(:forced_event, nil)
+        |> broadcast_state_change()
+      else state end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      IO.inspect("Blocked #{inspect({:press_button, seat, button_name})}; waiting for #{inspect(state.forced_event)}")
+      {:noreply, state}
+    end
   end
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do
-    if state.forced_event in [nil, ["press_call_button", Atom.to_string(seat), Enum.map(call_choice, &Utils.tile_to_string/1), Utils.tile_to_string(called_tile)]] do
-      state = Map.put(state, :forced_event, nil)
+    event = ["press_call_button", Atom.to_string(seat), Enum.map(call_choice, &Utils.tile_to_string/1), Utils.tile_to_string(called_tile)]
+    if state.forced_event in [nil, event] do
       state = Buttons.press_call_button(state, seat, call_choice, called_tile)
+      state = if state.forced_event == event do
+        state
+        |> Map.put(:forced_event, nil)
+        |> broadcast_state_change()
+      else state end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      IO.inspect("Blocked #{inspect({:press_call_button, seat, call_choice, called_tile})}; waiting for #{inspect(state.forced_event)}")
+      {:noreply, state}
+    end
   end
   
   def handle_cast({:press_first_call_button, seat, button_name}, state) do

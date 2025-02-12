@@ -9,6 +9,9 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     ],
     "sanma" => [
       {"sanma_vs_riichi", "Differences from four-player", :south}
+    ],
+    "space" => [
+      {"space_basics", "Intro to space mahjong", :east}
     ]
   }
 

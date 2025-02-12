@@ -611,7 +611,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:force_event, next_scene, event}, socket) do
-    GenServer.cast(socket.assigns.game_state, {:force_event, event})
+    GenServer.call(socket.assigns.game_state, {:force_event, event})
     socket = assign(socket, :next_tutorial_scene, next_scene)
     {:noreply, socket}
   end
