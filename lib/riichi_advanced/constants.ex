@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.Constants do
   alias RiichiAdvanced.Utils, as: Utils
 
-  @version "v1.0.2." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
+  @version "v1.1.0." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
 
   def version, do: @version
 
