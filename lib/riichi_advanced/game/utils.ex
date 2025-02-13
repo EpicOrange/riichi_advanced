@@ -84,6 +84,8 @@ defmodule RiichiAdvanced.Utils do
 
   def tile_color(tile), do: Map.get(Constants.tile_color(), tile, "white")
 
+  def remove_spaces(tiles), do: Enum.reject(tiles, &has_matching_tile?([&1], [:"2x", :"3x", :"4x", :"5x", :"6x", :"7x", :"8x"]))
+
   # print tile, print hand
   # print tile, print hand
   def pt(tile) do

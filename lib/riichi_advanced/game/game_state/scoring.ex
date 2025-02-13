@@ -885,6 +885,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
     arrange_shuntsu = Map.get(score_rules, "arrange_shuntsu", false)
+    arrange_koutsu = Map.get(score_rules, "arrange_koutsu", false)
     arrange_kontsu = Map.get(score_rules, "arrange_kontsu", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
       {yaku_name, _value} = Enum.at(yaku, 0)
@@ -921,9 +922,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
       Riichi.arrange_kontsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
     else arranged_hand end
     arranged_hand = if arrange_shuntsu do
-      # sort shuntsu out of the hand (append shuntsu to the left, after kontsu is sorted out)
+      # sort shuntsu out of the hand (append shuntsu to the left, after kontsu are sorted out)
       Riichi.arrange_shuntsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
     else arranged_hand end
+    arranged_hand = if arrange_koutsu do
+      # sort koutsu out of the hand (append koutsu after shuntsu, after shuntsu and kontsu are sorted out)
+      Riichi.arrange_koutsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
+    else arranged_hand end
+    # result should look like [shuntsu, koutsu, pair, kontsu]
+    # replace the resulting spacing markers with actual spaces
+    arranged_hand = Enum.map(arranged_hand, &if &1 in [:shuntsu, :koutsu, :kontsu] do :"7x" else &1 end)
 
     # push message
     orig_call_tiles = orig_calls

@@ -1048,6 +1048,10 @@ div.tile.\33 \34 j { background-position-y: calc(-214 * var(--tile-size) - var(-
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
+div.tile.\35 x { visibility: hidden; width: calc(0.25 * var(--tile-width)); } /* quarter blank space */
+div.tile.\36 x { visibility: hidden; width: calc(0.125 * var(--tile-width)); } /* eighth blank space */
+div.tile.\37 x { visibility: hidden; width: calc(0.0625 * var(--tile-width)); } /* sixteenth blank space */
+div.tile.\38 x { visibility: hidden; width: calc(0.03125 * var(--tile-width)); } /* 32th blank space */
 /* tile 3d */
 div.tile {
   --tile-brightness: 100%;
