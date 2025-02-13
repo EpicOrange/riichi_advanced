@@ -882,14 +882,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
     orig_hand = state.players[seat].hand
     orig_draw = state.players[seat].draw
     orig_calls = state.players[seat].calls
+    tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
+    arrange_kontsu = Map.get(score_rules, "arrange_kontsu", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
       {yaku_name, _value} = Enum.at(yaku, 0)
       # look for this yaku in the yaku list, and get arrangement from the match condition
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
       am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
       am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-      tile_behavior = state.players[seat].tile_behavior
       new_winning_tile = Utils.strip_attrs(new_winning_tile)
       arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, tile_behavior)
       if arranged_hand != nil do
@@ -912,6 +913,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
       ix = Enum.find_index(arranged_hand, &Utils.same_tile(&1, new_winning_tile))
       {List.delete_at(arranged_hand, ix), [new_winning_tile]}
     else {arranged_hand, orig_draw} end
+
+    # sort kontsu out of the hand
+    arranged_hand = if arrange_kontsu do
+      win_definitions = translate_match_definitions(state, ["win"])
+      Riichi.arrange_kontsu(arranged_hand, orig_calls, arranged_draw, win_definitions, tile_behavior)
+    else arranged_hand end
 
     # push message
     orig_call_tiles = orig_calls

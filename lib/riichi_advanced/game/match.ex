@@ -228,7 +228,25 @@ defmodule RiichiAdvanced.Match do
     }
   end
 
-  def collect_base_tiles(hand, calls, offsets, tile_behavior) do
+
+  def _extract_groups([], acc, _group, _base_tiles, _tile_behavior), do: Enum.uniq_by(acc, fn {hand, _groups} -> hand end)
+  def _extract_groups(hand_groups, acc, group, base_tiles, tile_behavior) do
+    hand_groups
+    |> Enum.uniq_by(fn {hand, _groups} -> hand end)
+    |> Enum.flat_map(fn {hand, groups} ->
+      remove_group(hand, [], group, base_tiles, tile_behavior)
+      |> Enum.map(fn {removed, []} -> {removed, [hand -- removed | groups]} end)
+    end)
+    |> _extract_groups(hand_groups ++ acc, group, base_tiles, tile_behavior)
+  end
+  def extract_groups(hand, group, tile_behavior) do
+    # try to extract group as many times as you can from hand
+    # this should return shortest hands first, so take the first one found
+    base_tiles = collect_base_tiles(hand, [], group, tile_behavior)
+    _extract_groups([{hand, []}], [], group, base_tiles, tile_behavior)
+  end
+
+  def collect_base_tiles(hand, calls, offsets, tile_behavior \\ %TileBehavior{}) do
     # essentially take all the tiles we have
     # then apply every offset from groups in reverse
     tiles = Enum.uniq(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))

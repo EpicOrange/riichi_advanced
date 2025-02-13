@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.Riichi do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
@@ -687,6 +688,43 @@ defmodule RiichiAdvanced.Riichi do
       Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, -6, tile_behavior) in genbutsu do [Match.offset_tile(&1, -3, tile_behavior)] else [] end
       true -> []
     end)
+  end
+
+  def arrange_kontsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
+    # return hand, but reordered so that kontsu are at the end
+    # if no kontsu, return hand unchanged
+    # hand is expected to be tenpai for N sets and a pair
+
+    # first check if there's three ankou. if so, don't rearrange the hand
+    # this is to avoid arranging closed sanshoku doukou as 3 kontsu
+    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
+    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
+    |> Enum.any?(fn {_hand, groups} ->
+      calls = Enum.map(groups, &{"pon", &1}) ++ calls
+      Enum.any?(winning_tiles, fn winning_tile ->
+        IO.inspect({[winning_tile | hand], calls})
+        Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
+      end)
+    end)
+
+    if not has_three_ankou do
+      Match.extract_groups(hand, [0, 10, 20], tile_behavior)
+      |> Enum.find(fn {hand, groups} ->
+        calls = Enum.map(groups, &{"chon", &1}) ++ calls
+        Enum.any?(winning_tiles, fn winning_tile ->
+          IO.inspect({[winning_tile | hand], calls})
+          Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
+        end)
+      end)
+      |> case do
+        nil -> hand
+        {hand, groups} ->
+          groups = groups
+          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+          |> Enum.concat()
+          hand ++ groups
+      end
+    else hand end
   end
 
 end
