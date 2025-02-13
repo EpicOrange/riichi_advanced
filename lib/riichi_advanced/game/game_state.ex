@@ -873,14 +873,12 @@ defmodule RiichiAdvanced.GameState do
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
     agariyame = Map.get(state.rules, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
     tenpaiyame = Map.get(state.rules, "tenpaiyame", false) and state.round_result == :draw and "tenpai" in state.players[dealer].status
-    forced or agariyame or tenpaiyame or if Map.has_key?(state.rules, "sudden_death_goal") do
+    past_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"]
+    forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Map.has_key?(state.rules, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= state.rules["sudden_death_goal"] end)
-      past_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"] + 4
-      above_goal or past_max_rounds
-    else
-      past_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"]
-      past_max_rounds
-    end
+      past_extra_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"] + 4
+      (above_goal and past_max_rounds) or past_extra_max_rounds
+    else past_max_rounds end
   end
 
   def finalize_game(state) do
