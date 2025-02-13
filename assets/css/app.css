@@ -41,7 +41,6 @@ main div#container {
   z-index: -1;
   display: flex;
   flex-flow: column nowrap;
-  row-gap: calc(0.25 * var(--tile-size));
   user-select: none;
 }
 main div.messages-container {
@@ -3167,6 +3166,9 @@ div.tutorial-menu-container, div.tutorial-menu-buttons {
   background: #609060;
   border-radius: calc(0.5 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
+}
+div.tutorial-menu-container {
+  margin: calc(0.5 * var(--tile-size)) 0;
 }
 div.tutorial-menu-buttons {
   display: flex;
