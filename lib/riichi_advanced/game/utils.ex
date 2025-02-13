@@ -109,9 +109,11 @@ defmodule RiichiAdvanced.Utils do
     else
       # every joker is connected to any-tile jokers
       any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
-      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases, same_tile({tile2, attrs2}, tile) do
+      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases, same_tile(tile, {tile2, attrs2}) do
         # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
-        MapSet.new(aliases) |> MapSet.put(add_attr(tile2, attrs2))
+        MapSet.new(aliases)
+        |> MapSet.put(add_attr(tile2, attrs2))
+        |> MapSet.delete(:any) # never return :any
       end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
     end
   end
