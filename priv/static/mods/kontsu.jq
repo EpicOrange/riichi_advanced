@@ -61,4 +61,4 @@ end
 .sanankou_ron_definition |= fix_match_definition
 |
 # this makes the win screen take kontsu out of the hand before displaying
-.arrange_kontsu = true
+.score_calculation.arrange_kontsu = true

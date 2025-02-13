@@ -712,7 +712,6 @@ defmodule RiichiAdvanced.Riichi do
       |> Enum.find(fn {hand, groups} ->
         calls = Enum.map(groups, &{"chon", &1}) ++ calls
         Enum.any?(winning_tiles, fn winning_tile ->
-          IO.inspect({[winning_tile | hand], calls})
           Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
         end)
       end)
