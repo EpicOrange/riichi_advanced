@@ -12,7 +12,7 @@
   "scenes": {
     "start": [
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 10.5,
-        "text": "Welcome to Riichi Advanced!\nYou're the first to play, so let's start by discarding this tile."
+        "text": "Welcome to Riichi Advanced!\nYou're the first to play, so let's start by discarding this tile.\n(Click the tile to discard it.)"
       }],
       ["add_object", "focus", {"width": 0.75, "hand_index": 12}],
       ["force_event", ["play_tile", "east", 12]],
