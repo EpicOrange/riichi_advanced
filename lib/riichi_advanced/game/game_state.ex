@@ -800,8 +800,8 @@ defmodule RiichiAdvanced.GameState do
         tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
         state = if tobi and Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
 
-        # log
-        if not state.log_seeking_mode do
+        # log game, unless we are viewing a log or if this is a tutorial
+        if not (state.log_seeking_mode or state.forced_events != nil) do
           Log.output_to_file(state)
         end
         state = Log.finalize_kyoku(state)
@@ -1173,8 +1173,10 @@ defmodule RiichiAdvanced.GameState do
       GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
 
-      # tell them about the replay UUID
-      GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
+      # tell them about the replay UUID, unless this is a tutorial
+      if state.forced_events == nil do
+        GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
+      end
       state
     else
       messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
