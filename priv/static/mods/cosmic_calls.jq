@@ -9,7 +9,7 @@ def fix_yaku:
     )
   ));
 
-.functions.discard_passed += [["as", "others", [["unset_status", "fuun"]]]]
+.functions.discard_passed |= [["as", "others", [["unset_status", "fuun"]]]] + .
 |
 # all closed hand checks should check the new calls
 .yaku |= fix_yaku
@@ -76,7 +76,7 @@ else . end
     ],
     "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
     "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-    "actions": [["big_text", "Fuun"], ["call"], ["change_turn", "self"], ["draw"], ["set_status", "fuun"]],
+    "actions": [["big_text", "Fuun"], ["set_status", "fuun"], ["call"], ["change_turn", "self"], ["draw"]],
     "precedence_over": ["ton", "chii", "chon", "chon_honors"]
   },
   "anfuun": {
@@ -97,7 +97,7 @@ else . end
         {"name": "not_call_would_change_waits", "opts": ["win"]}
       ]
     ],
-    "actions": [["big_text", "Fuun"], ["self_call"], ["draw"], ["set_status", "fuun"]]
+    "actions": [["big_text", "Fuun"], ["set_status", "fuun"], ["self_call"], ["draw"]]
   },
   "kapon": {
     "display_name": "Pon",
@@ -134,7 +134,7 @@ else . end
     ],
     "upgrades": "chon_honors",
     "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-    "actions": [["big_text", "Fuun"], ["upgrade_call"], ["draw"], ["set_status", "fuun"]]
+    "actions": [["big_text", "Fuun"], ["set_status", "fuun"], ["upgrade_call"], ["draw"]]
   },
   "chanfuun": {
     "display_name": "Ron",
