@@ -49,6 +49,11 @@ Every 5 pin and 5 sou is worth 1 dora.
 
 ## Basic Rules
 
+### Open Riichi
+**A special kind of Riichi**. If you're in Furiten, it's the only way to declare Riichi. You pay 1000 points, and open your hand for the other players. If you Tsumo, or Ron off another player who has declared Riichi themselves, it is 2 Han. 
+
+**If a player openly deals into an Open Riichi, it is a Yakuman, with the 10 chip bonus.**
+
 * Starting Points: 50,000 
 * 1000 honba
 * Kuitan OK, Atozuke OK, Pinfu Tsumo OK
