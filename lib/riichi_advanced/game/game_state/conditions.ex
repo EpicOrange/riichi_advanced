@@ -369,6 +369,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "second_last_visible_discard_exists" ->
         last_discard_action != nil and Enum.any?(Enum.drop(state.players[last_discard_action.seat].pond, -1), &not Utils.has_matching_tile?([&1], [:"1x", :"2x"]))
       "call_would_change_waits" ->
+        # context here is %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades}
         win_definitions = translate_match_definitions(state, opts)
         hand = Utils.add_attr(cxt_player.hand, ["hand"])
         draw = Utils.add_attr(cxt_player.draw, ["hand"])
@@ -377,7 +378,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, cxt_player.tile_behavior, []), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
-            call = {context.choice.name, call_tiles}
+            call = {context.call_name, call_tiles}
             waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, state.all_tiles, cxt_player.tile_behavior)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
@@ -385,7 +386,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
             Enum.sort(waits) != Enum.sort(waits_after_call)
           end)
         end)
-        # %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades, call_wraps: call_wraps})
       "call_changes_waits" ->
         win_definitions = translate_match_definitions(state, opts)
         hand = cxt_player.hand

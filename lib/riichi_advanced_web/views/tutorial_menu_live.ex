@@ -127,7 +127,6 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   
   def handle_event("play_game", _assigns, socket) do
     ruleset = socket.assigns.ruleset
-    nickname = socket.assigns.nickname
     # get all running session ids for this ruleset
     room_codes = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
     |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
