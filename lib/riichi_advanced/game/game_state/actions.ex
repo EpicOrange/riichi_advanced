@@ -1063,10 +1063,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
-          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
-          ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r)
-        } })
+        update_all_players(state, fn seat, player -> %Player{ player | tile_behavior: %TileBehavior{
+          ordering: Map.merge(player.tile_behavior.ordering, ordering),
+          ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r)
+        } } end)
       "add_attr" ->
         targets = Enum.at(opts, 0, [])
         attrs = List.wrap(Enum.at(opts, 1, []))
