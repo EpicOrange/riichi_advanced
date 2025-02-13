@@ -27,6 +27,16 @@ if (.buttons | has("riichi")) then
   ))
 else . end
 |
+# we need this in case kan mod is not enabled
+.functions.do_kan_draw = [
+  ["set_status", "$status"],
+  ["shift_tile_to_dead_wall", 1],
+  ["draw", 1, "opposite_end"]
+]
+|
+# we also need this in case kan mod is not enabled, since are adding kakakan here
+.functions.discard_passed |= [["as", "others", [["unset_status", "kan"]]]] + .
+|
 # the calls:
 .buttons += {
   "ton": {
@@ -109,7 +119,7 @@ else . end
     },
     "upgrades": "kapon",
     "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-    "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw"]]
+    "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw", {"status": "kan"}]]
   },
   "kafuun": {
     "display_name": "Fuun",
