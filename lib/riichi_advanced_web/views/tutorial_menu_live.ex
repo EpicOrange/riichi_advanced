@@ -12,6 +12,9 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     ],
     "space" => [
       {"space_basics", "Intro to space mahjong", :east}
+    ],
+    "cosmic" => [
+      {"cosmic_basics", "Intro to cosmic mahjong", :west}
     ]
   }
 
