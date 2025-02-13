@@ -177,3 +177,6 @@ end
     )
   else . end
 )
+|
+# this makes the win screen take shuntsu out of the hand before displaying
+.score_calculation.arrange_shuntsu = true

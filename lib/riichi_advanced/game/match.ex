@@ -228,14 +228,31 @@ defmodule RiichiAdvanced.Match do
     }
   end
 
+  def arrange_by_base_tile(tiles, base_tile, group, tile_behavior) do
+    # this only handles groups that are a sequence of offsets like [0, 1, 2]
+    if is_list(group) && Enum.all?(group, &is_offset/1) do
+      {pairing, _pairing_r} = group
+      |> Enum.map(&offset_tile(base_tile, &1, tile_behavior))
+      |> Enum.with_index()
+      |> Map.new(fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
+      |> Utils.maximum_bipartite_matching()
+      Enum.map(0..length(group)-1, &Enum.at(tiles, pairing[&1]))
+    else tiles end
+  end
 
   def _extract_groups([], acc, _group, _base_tiles, _tile_behavior), do: Enum.uniq_by(acc, fn {hand, _groups} -> hand end)
   def _extract_groups(hand_groups, acc, group, base_tiles, tile_behavior) do
     hand_groups
     |> Enum.uniq_by(fn {hand, _groups} -> hand end)
     |> Enum.flat_map(fn {hand, groups} ->
-      remove_group(hand, [], group, base_tiles, tile_behavior)
-      |> Enum.map(fn {removed, []} -> {removed, [hand -- removed | groups]} end)
+      base_tiles
+      |> Enum.map(&Task.async(fn ->
+        _remove_group(hand, [], group, &1, tile_behavior)
+        |> Enum.map(fn {hand, []} -> {hand, &1} end)
+      end))
+      |> Task.yield_many(timeout: :infinity)
+      |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+      |> Enum.map(fn {removed, base_tile} -> {removed, [arrange_by_base_tile(hand -- removed, base_tile, group, tile_behavior) | groups]} end)
     end)
     |> _extract_groups(hand_groups ++ acc, group, base_tiles, tile_behavior)
   end

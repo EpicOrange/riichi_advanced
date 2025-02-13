@@ -690,6 +690,45 @@ defmodule RiichiAdvanced.Riichi do
     end)
   end
 
+  def arrange_shuntsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
+    # return hand, but reordered so that shuntsu are at the front
+    # if no shuntsu, return hand unchanged
+    # hand is expected to be tenpai for N sets and a pair
+
+    # first check if there's three ankou. if so, don't rearrange the hand
+    # this is to avoid arranging closed sanshoku doukou as 3 shuntsu
+    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
+    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
+    |> Enum.any?(fn {_hand, groups} ->
+      calls = Enum.map(groups, &{"pon", &1}) ++ calls
+      Enum.any?(winning_tiles, fn winning_tile ->
+        Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
+      end)
+    end)
+
+    if not has_three_ankou do
+      Enum.flat_map(winning_tiles, fn winning_tile ->
+        Match.extract_groups([winning_tile | hand], [0, 1, 2], tile_behavior)
+        |> Enum.find(fn {hand, groups} ->
+          calls = Enum.map(groups, &{"chii", &1}) ++ calls
+          Match.match_hand(hand, calls, win_definitions, tile_behavior)
+        end)
+        |> case do
+          nil            -> []
+          {hand, groups} -> [{winning_tile, hand, groups}]
+        end
+      end)
+      |> case do
+        [] -> hand
+        [{winning_tile, hand, groups} | _] ->
+          groups = groups
+          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+          |> Enum.concat()
+          List.delete(groups ++ hand, winning_tile)
+      end
+    else hand end
+  end
+
   def arrange_kontsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
     # return hand, but reordered so that kontsu are at the end
     # if no kontsu, return hand unchanged
@@ -702,26 +741,29 @@ defmodule RiichiAdvanced.Riichi do
     |> Enum.any?(fn {_hand, groups} ->
       calls = Enum.map(groups, &{"pon", &1}) ++ calls
       Enum.any?(winning_tiles, fn winning_tile ->
-        IO.inspect({[winning_tile | hand], calls})
         Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
       end)
     end)
 
     if not has_three_ankou do
-      Match.extract_groups(hand, [0, 10, 20], tile_behavior)
-      |> Enum.find(fn {hand, groups} ->
-        calls = Enum.map(groups, &{"chon", &1}) ++ calls
-        Enum.any?(winning_tiles, fn winning_tile ->
-          Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
+      Enum.flat_map(winning_tiles, fn winning_tile ->
+        Match.extract_groups([winning_tile | hand], [0, 10, 20], tile_behavior)
+        |> Enum.find(fn {hand, groups} ->
+          calls = Enum.map(groups, &{"chon", &1}) ++ calls
+          Match.match_hand(hand, calls, win_definitions, tile_behavior)
         end)
+        |> case do
+          nil            -> []
+          {hand, groups} -> [{winning_tile, hand, groups}]
+        end
       end)
       |> case do
-        nil -> hand
-        {hand, groups} ->
+        [] -> hand
+        [{winning_tile, hand, groups} | _] ->
           groups = groups
           |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
           |> Enum.concat()
-          hand ++ groups
+          List.delete(hand ++ groups, winning_tile)
       end
     else hand end
   end

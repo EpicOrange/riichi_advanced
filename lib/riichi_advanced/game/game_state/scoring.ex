@@ -884,6 +884,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     orig_calls = state.players[seat].calls
     tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
+    arrange_shuntsu = Map.get(score_rules, "arrange_shuntsu", false)
     arrange_kontsu = Map.get(score_rules, "arrange_kontsu", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
       {yaku_name, _value} = Enum.at(yaku, 0)
@@ -914,10 +915,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {List.delete_at(arranged_hand, ix), [new_winning_tile]}
     else {arranged_hand, orig_draw} end
 
-    # sort kontsu out of the hand
+    win_definitions = translate_match_definitions(state, ["win"])
     arranged_hand = if arrange_kontsu do
-      win_definitions = translate_match_definitions(state, ["win"])
-      Riichi.arrange_kontsu(arranged_hand, orig_calls, arranged_draw, win_definitions, tile_behavior)
+      # sort kontsu out of the hand (append kontsu to the right)
+      Riichi.arrange_kontsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
+    else arranged_hand end
+    arranged_hand = if arrange_shuntsu do
+      # sort shuntsu out of the hand (append shuntsu to the left, after kontsu is sorted out)
+      Riichi.arrange_shuntsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
     else arranged_hand end
 
     # push message
