@@ -141,14 +141,26 @@ else . end
   }
 }
 |
-.buttons.chii.call_conditions += [{"name": "not_match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}]
+if (.buttons | has("chii")) then
+  .buttons.chii.call_conditions += [{"name": "not_match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}]
+else . end
 |
-.buttons.chii.precedence_over += ["ton"]
+if (.buttons | has("chii")) then
+  .buttons.chii.precedence_over += ["ton"]
+else . end
 |
-.buttons.pon.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("pon")) then
+  .buttons.pon.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
 |
-.buttons.daiminkan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("daiminkan")) then
+  .buttons.daiminkan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
 |
-.buttons.ron.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("ron")) then
+  .buttons.ron.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
 |
-.buttons.chankan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("chankan")) then
+  .buttons.chankan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
