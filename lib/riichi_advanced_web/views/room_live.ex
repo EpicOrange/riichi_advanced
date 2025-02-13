@@ -209,7 +209,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def handle_event("back", _assigns, socket) do
     socket = push_event(socket, "left-page", %{})
-    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}")
+    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 

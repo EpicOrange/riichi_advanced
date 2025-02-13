@@ -10,7 +10,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:session_id, session["session_id"])
     |> assign(:room_code, params["room_code"])
     |> assign(:ruleset, params["ruleset"])
-    |> assign(:nickname, params["nickname"])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:seat_param, params["seat"])
     |> assign(:tutorial_sequence_name, params["sequence"])
     |> assign(:game_state, nil)
@@ -464,12 +464,12 @@ defmodule RiichiAdvancedWeb.GameLive do
   defp navigate_back(socket) do
     if Map.has_key?(socket.assigns, :tutorial_sequence) do
       if socket.assigns.return_to_editor do
-        push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&seat=#{socket.assigns.seat_param}&tutorial_id=#{socket.assigns.tutorial_sequence_name}")
+        push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&seat=#{socket.assigns.seat_param}&tutorial_id=#{socket.assigns.tutorial_sequence_name}&nickname=#{socket.assigns.nickname}")
       else
-        push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname || ""}")
+        push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
       end
     else
-      push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname || ""}")
+      push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}")
     end
   end
 

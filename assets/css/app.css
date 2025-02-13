@@ -40,6 +40,8 @@ main div#container {
   position: absolute;
   z-index: -1;
   display: flex;
+  flex-flow: column nowrap;
+  row-gap: calc(0.25 * var(--tile-size));
   user-select: none;
 }
 main div.messages-container {
@@ -3145,7 +3147,6 @@ div.tutorial-focus.mobile { display: none; }
 
 /* tutorial select menu */
 header.tutorial-menu-header {
-  position: absolute;
   color: white;
   width: 100%;
   top: calc(-0.5 * var(--tile-size));
@@ -3155,22 +3156,28 @@ header.tutorial-menu-header > h3 {
   font-size: calc(0.8 * var(--tile-size));
   font-weight: 400;
   white-space: nowrap;
+  margin: 0;
 }
 div.tutorial-menu-container, div.tutorial-menu-buttons {
   font-size: calc(0.6 * var(--tile-size));
   color: white;
-  width: 100%;
-  height: 100%;
-}
-div.tutorial-menu-container {
-  padding-top: calc(2 * var(--tile-size));
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  flex-grow: 1;
+  background: #609060;
+  border-radius: calc(0.5 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
 }
 div.tutorial-menu-buttons {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: center;
-  overflow: auto;
+  margin-top: calc(-0.5 * var(--tile-size));
+}
+div.tutorial-menu-container::-webkit-scrollbar,
+div.tutorial-menu-buttons::-webkit-scrollbar { 
+  display: none; /* Safari/Chrome */
 }
 div.tutorial-menu-buttons > button {
   height: calc(2 * var(--tile-size));
@@ -3185,6 +3192,31 @@ div.tutorial-menu-buttons > button {
   cursor: pointer;
 }
 div.tutorial-menu-buttons > button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(calc(var(--tile-size) / 8));
+}
+footer.tutorial-menu-footer,
+footer.tutorial-menu-footer > button {
+  width: 100%;
+}
+footer.tutorial-menu-footer > button {
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  font-size: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: center;
+  flex-direction: column;
+}
+footer.tutorial-menu-footer > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(calc(var(--tile-size) / 8));
 }

@@ -28,6 +28,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
   def mount(params, _session, socket) do
     socket = socket
     |> assign(:messages, [])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:ruleset, Map.get(params, "ruleset", "riichi"))
     |> assign(:seat, Map.get(params, "seat", "east"))
     |> assign(:tutorial_id, Map.get(params, "tutorial_id", nil))
@@ -88,8 +89,8 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
 
   def handle_event("back", _assigns, socket) do
     socket = case socket.assigns.from do
-      nil     -> push_navigate(socket, to: ~p"/")
-      ruleset -> push_navigate(socket, to: ~p"/tutorial/#{ruleset}")
+      nil     -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+      ruleset -> push_navigate(socket, to: ~p"/tutorial/#{ruleset}?nickname=#{socket.assigns.nickname}")
     end
     {:noreply, socket}
   end
@@ -120,7 +121,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     if sequence_json != nil and byte_size(sequence_json) <= 2 * 1024 * 1024 do
       uuid = Ecto.UUID.generate()
       RiichiAdvanced.ETSCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
-      socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}")
+      socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}&nickname=#{socket.assigns.nickname}")
       {:noreply, socket}
     else {:noreply, socket} end
   end

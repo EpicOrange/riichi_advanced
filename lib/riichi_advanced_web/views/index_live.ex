@@ -5,9 +5,10 @@ defmodule RiichiAdvancedWeb.IndexLive do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
-  def mount(_params, session, socket) do
+  def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:messages, [])
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
@@ -49,7 +50,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
             <label for={ruleset} title={desc}><a href={link} target="_blank"><%= name %></a></label>
           <% end %>
         </div>
-        <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" />
+        <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" value={@nickname || ""} />
         <div class="enter-buttons">
           <button name="play" type="submit">Play</button>
           <button name="learn" type="submit">Learn</button>

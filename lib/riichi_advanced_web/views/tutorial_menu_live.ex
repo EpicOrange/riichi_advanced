@@ -22,7 +22,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     socket = socket
     |> assign(:messages, [])
     |> assign(:ruleset, params["ruleset"])
-    |> assign(:nickname, params["nickname"])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:display_name, params["ruleset"])
     |> assign(:available_tutorials, Map.get(@tutorials, params["ruleset"], []))
     |> assign(:clicked_index, nil)
@@ -99,7 +99,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 
