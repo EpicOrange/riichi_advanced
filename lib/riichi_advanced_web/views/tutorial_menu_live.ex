@@ -1,5 +1,8 @@
 defmodule RiichiAdvancedWeb.TutorialMenuLive do
+  alias RiichiAdvanced.LobbyState, as: LobbyState
+  alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
   @tutorials %{
@@ -87,6 +90,11 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
           </div>
         <% end %>
       </div>
+      <footer class="tutorial-menu-footer">
+        <button phx-cancellable-click="play_game">
+          Play <%= @display_name %>!
+        </button>
+      </footer>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />
       </div>
@@ -117,8 +125,32 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     {:noreply, socket}
   end
   
+  def handle_event("play_game", _assigns, socket) do
+    ruleset = socket.assigns.ruleset
+    nickname = socket.assigns.nickname
+    # get all running session ids for this ruleset
+    room_codes = DynamicSupervisor.which_children(RiichiAdvanced.RoomSessionSupervisor)
+    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+    |> Enum.filter(fn name -> String.starts_with?(name, "room-#{ruleset}-") end)
+    |> Enum.map(fn name -> String.replace_prefix(name, "room-#{ruleset}-", "") end)
+    # check if there are any public rooms of this ruleset
+    # if not, skip the lobby and go directly to making a new table
+    has_public_room = Enum.any?(room_codes, fn room_code -> 
+      [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, room_code))
+      room_state = GenServer.call(room_state_pid, :get_state)
+      not room_state.private
+    end)
+    socket = if has_public_room do
+      push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{socket.assigns.nickname}")
+    else
+      {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
+      push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
+    end
+    {:noreply, socket}
+  end
+  
   def handle_event("create_tutorial", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&from=#{socket.assigns.ruleset}")
+    socket = push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&from=#{socket.assigns.ruleset}&nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 
