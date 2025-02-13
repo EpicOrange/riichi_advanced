@@ -383,6 +383,8 @@ defmodule RiichiAdvanced.Riichi do
       "daiminkan"   -> if relevant_tile in @terminal_honors do 16 else 8 end
       "kakan"       -> if relevant_tile in @terminal_honors do 16 else 8 end
       "chon"        -> if relevant_tile in @terminal_honors do 2 else 1 end
+      "kapon"       -> if relevant_tile in @terminal_honors do 4 else 2 end
+      "kakakan"     -> if relevant_tile in @terminal_honors do 16 else 8 end
       "chon_honors" -> 2
       "anfuun"      -> 16
       "daiminfuun"  -> 8
@@ -451,10 +453,15 @@ defmodule RiichiAdvanced.Riichi do
     end)
 
     # add all hands with winning kontsu removed, associated with fu = fu+1,2,4 (depending on kontsu)
+    # note that this should also award +2 fu for closed waits in event of dragons (which are always closed waits) or opposite winds
     possible_kontsu_removed = if enable_kontsu_fu do
       Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.try_remove_all_tiles(starting_hand, [Match.offset_tile(winning_tile, 10, tile_behavior), Match.offset_tile(winning_tile, 20, tile_behavior)], tile_behavior)
-        |> Enum.map(fn hand -> {hand, fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
+        tiles = [Match.offset_tile(winning_tile, 10, tile_behavior), Match.offset_tile(winning_tile, 20, tile_behavior)]
+        prev_next = [Match.offset_tile(winning_tile, -1, tile_behavior), Match.offset_tile(winning_tile, 1, tile_behavior)]
+        tiles = if nil in tiles do prev_next else tiles end
+        closed_wait_fu = if MapSet.new(prev_next) == MapSet.new(tiles) do 2 else 0 end
+        Match.try_remove_all_tiles(starting_hand, tiles, tile_behavior)
+        |> Enum.map(fn hand -> {hand, fu+closed_wait_fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
       end)
     else [] end
 
