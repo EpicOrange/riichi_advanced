@@ -83,6 +83,8 @@ end
   { "display_name": "Sandoukon", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}, {"name": "has_existing_yaku", "opts": ["Sandoukon"]}] }
 ]
 |
+.yaku_precedence["Sanshoku Doukou"] += ["Sandoukon"]
+|
 .yaku_precedence["Kokushi Musou"] += ["Mixed Winds", "Mini-Sangen"]
 |
 .yaku_precedence["Kokushi Musou Juusan Menmachi"] += ["Mixed Winds", "Mini-Sangen"]
