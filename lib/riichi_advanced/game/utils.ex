@@ -245,6 +245,7 @@ defmodule RiichiAdvanced.Utils do
     inactive = has_attr?(tile, ["inactive"])
     hidden = has_attr?(tile, ["hidden"])
     dora = has_attr?(tile, ["dora"])
+    last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
     id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
@@ -259,6 +260,7 @@ defmodule RiichiAdvanced.Utils do
       inactive && "inactive",
       hidden && "hidden",
       dora && "dora",
+      last_sideways && "last-sideways",
       reversed && "reversed",
       played && "played",
       sideways && "sideways",

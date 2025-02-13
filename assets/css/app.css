@@ -1249,7 +1249,7 @@ div.hand.just-drew > div.draws > div.tile {
   }
   100% {}
 }
-div.hand.just-called > div.calls > div.call:nth-last-child(2),
+div.hand.just-called > div.calls > div.call.just-called,
 div.hand.just-called-flower > div.flowers > div.tile:last-child {
   animation: slideRight 0.4s ease forwards;
 }
@@ -1272,10 +1272,10 @@ div.hand.just-called-flower > div.flowers > div.tile:last-child {
     transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-2 * var(--tile-width)));
   }
 }
-div.hand.just-called div.tile.sideways + div.tile.sideways::before {
+div.hand.just-upgraded > div.calls > div.call.just-upgraded div.tile.sideways + div.tile.last-sideways::before {
   animation: slideDown 0.2s ease forwards;
 }
-div.hand.just-called div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
+div.hand.just-upgraded > div.calls > div.call.just-upgraded div.tile.sideways + div.tile.sideways + div.tile.last-sideways::before {
   animation: slideDown2 0.2s ease forwards;
 }
 

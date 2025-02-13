@@ -734,7 +734,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_info({:reset_call_anim, seat}, socket) do
     relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
-    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", just_called: false, just_called_flower: false)
+    send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", just_called: nil, just_upgraded: nil, just_called_flower: nil)
     {:noreply, socket}
   end
 
