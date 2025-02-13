@@ -672,7 +672,7 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  def exhaustive_draw(state, name) do
+  def exhaustive_draw(state, draw_name) do
     state = Map.put(state, :round_result, :draw)
 
     push_message(state, [%{text: "Game ended by exhaustive draw"}])
@@ -692,7 +692,7 @@ defmodule RiichiAdvanced.GameState do
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
 
     state = Map.put(state, :delta_scores, delta_scores)
-    state = Map.put(state, :delta_scores_reason, if name do name else delta_scores_reason end)
+    state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
     state = Map.put(state, :next_dealer, next_dealer)
     state
   end
@@ -717,7 +717,7 @@ defmodule RiichiAdvanced.GameState do
 
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     state = Map.put(state, :delta_scores, delta_scores)
-    state = Map.put(state, :delta_scores_reason, draw_name)
+    state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else "Abortive Draw" end)
     state = Map.put(state, :next_dealer, :self)
     state
   end
