@@ -60,6 +60,10 @@
   if .display_name == "Chiitoitsu" or .display_name == "Ryanpeikou" then
     .value = 1
   else . end
+  |
+  if .display_name == "Chankan" then
+    .when += [{"name": "last_call_is", "opts": ["kakan", "kakapon"]}]
+  else . end
 )
 |
 .meta_yaku += [
