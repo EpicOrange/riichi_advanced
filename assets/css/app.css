@@ -1204,6 +1204,31 @@ div.tile.\35 x { visibility: hidden; width: calc(0.25 * var(--tile-width)); } /*
 div.tile.\36 x { visibility: hidden; width: calc(0.125 * var(--tile-width)); } /* eighth blank space */
 div.tile.\37 x { visibility: hidden; width: calc(0.0625 * var(--tile-width)); } /* sixteenth blank space */
 div.tile.\38 x { visibility: hidden; width: calc(0.03125 * var(--tile-width)); } /* 32th blank space */
+/* punctuation names for alt tiles */
+/* alternate 1s: 1's */
+div.tile.\31 \27 s { background-position-y: calc(-40 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \31 \27 s { --tile-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \31 \27 s { --tile-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \31 \27 s { background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \31 \27 s { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+/* alternate 0z: 5'z */
+div.tile.\35 \27 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \35 \27 z { --tile-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 \27 z { --tile-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \35 \27 z { background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+/* malaysian 0z: 5`z */
+div.tile.\35 \60 z { background-position-y: calc(-38 * var(--tile-size) - var(--border-width)); }
+div.tile.\30 \35 \60 z { --tile-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
+div.tile.\32 \35 \60 z { --tile-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
+div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
+div.tile.\34 \35 \60 z { background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \35 \60 z { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
+/* shiro pocchi: 5^z */
+div.tile.\35 \5e z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
+
+/* custom coloring */
 div.tile.red { --tile-color: var(--aka-color); }
 div.tile.blue { --tile-color: var(--ao-color); }
 div.tile.cyan { --tile-color: var(--galaxy-color); }
