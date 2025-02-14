@@ -56,6 +56,9 @@ defmodule RiichiAdvanced.Riichi do
                :"9m", :"09m", :"19m", :"29m", :"39m", :"49m",
                :"9p", :"09p", :"19p", :"29p", :"39p", :"49p",
                :"9s", :"09s", :"19s", :"29s", :"39s", :"49s",
+               :"10m", :"010m", :"110m", :"210m", :"310m", :"410m",
+               :"10p", :"010p", :"110p", :"210p", :"310p", :"410p",
+               :"10s", :"010s", :"110s", :"210s", :"310s", :"410s",
                :"1's", :"01's", :"11's", :"21's", :"31's", :"41's"]
   # TODO somehow change these when ten mod is active
   @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q", :"1a", :"2a", :"3a", :"4a", :"1y"]
@@ -701,6 +704,7 @@ defmodule RiichiAdvanced.Riichi do
       is_num?(tile, 7) -> 3
       is_num?(tile, 8) -> 2
       is_num?(tile, 9) -> 1
+      is_num?(tile, 10) -> 1
       true             -> 0
     end
   end
