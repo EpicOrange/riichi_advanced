@@ -243,6 +243,8 @@ defmodule RiichiAdvanced.Utils do
     -Integer.floor_div(-nominal, 2) * 100
   end
 
+  @valid_tile_colors ["red", "blue", "cyan", "gold", "orange", "yellow", "green", "purple", "gray", "grey", "lightgray", "black", "white"]
+
   def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = strip_attrs(tile)
     transparent = has_attr?(tile, ["transparent"])
@@ -257,6 +259,7 @@ defmodule RiichiAdvanced.Utils do
     sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
+    color_classes = Enum.filter(@valid_tile_colors, &has_attr?(tile, [&1]))
     [
       "tile", id,
       facedown && "facedown",
@@ -270,7 +273,7 @@ defmodule RiichiAdvanced.Utils do
       sideways && "sideways",
       just_played && "just-played",
       riichi && "sideways",
-    ] ++ extra_classes
+    ] ++ extra_classes ++ color_classes
   end
 
   def flip_faceup(tile) do

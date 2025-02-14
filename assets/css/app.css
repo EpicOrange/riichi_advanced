@@ -1205,6 +1205,19 @@ div.tile.\35 x { visibility: hidden; width: calc(0.25 * var(--tile-width)); } /*
 div.tile.\36 x { visibility: hidden; width: calc(0.125 * var(--tile-width)); } /* eighth blank space */
 div.tile.\37 x { visibility: hidden; width: calc(0.0625 * var(--tile-width)); } /* sixteenth blank space */
 div.tile.\38 x { visibility: hidden; width: calc(0.03125 * var(--tile-width)); } /* 32th blank space */
+div.tile.red { --tile-color: var(--aka-color); }
+div.tile.blue { --tile-color: var(--ao-color); }
+div.tile.cyan { --tile-color: var(--galaxy-color); }
+div.tile.gold { --tile-color: var(--kin-color); }
+div.tile.orange { --tile-color: orange; }
+div.tile.yellow { --tile-color: yellow; }
+div.tile.green { --tile-color: green; }
+div.tile.purple { --tile-color: purple; }
+div.tile.gray { --tile-color: gray; }
+div.tile.grey { --tile-color: grey; }
+div.tile.lightgray { --tile-color: lightgray; }
+div.tile.black { --tile-color: black; }
+div.tile.white { --tile-color: white; }
 /* tile 3d */
 div.tile {
   --tile-brightness: 100%;
