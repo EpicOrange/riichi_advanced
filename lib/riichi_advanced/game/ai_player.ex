@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.AIPlayer do
     else nil end
   end
 
-  defp choose_discard(state, playables, visible_tiles) do
+  defp choose_discard(state, playables, _visible_tiles) do
     # the basic idea here is that if we're n-shanten,
     # we check what tiles let us get (n-1)-shanten
     # if none, then choose between tiles that let us maintain n-shanten

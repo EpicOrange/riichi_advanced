@@ -122,11 +122,11 @@ defmodule RiichiAdvanced.Utils do
 
   # tile1 must have at least the attributes of tile2 (or any of its aliases)
   def same_tile(tile1, tile2) do
-    l1 = strip_attrs(tile1)
-    {l2, attrs2} = to_attr_tile(tile2)
-    same_id = :any in [l1, l2]
-           or (l2 == :faceup and l1 not in [:"1x", :"2x", :"3x", :"4x"])
-           or l1 == l2
+    t1 = strip_attrs(tile1)
+    {t2, attrs2} = to_attr_tile(tile2)
+    same_id = t1 == t2
+           or (t2 == :faceup and t1 not in [:"1x", :"2x", :"3x", :"4x"])
+           or :any in [t1, t2]
     attrs_match = has_attr?(tile1, attrs2)
     same_id and attrs_match
   end
@@ -134,12 +134,13 @@ defmodule RiichiAdvanced.Utils do
     if Enum.empty?(tile_behavior.aliases) do
       same_tile(tile1, tile2)
     else
+      t1 = strip_attrs(tile1)
+      {t2, attrs2} = to_attr_tile(tile2)
       l1 = strip_attrs(apply_tile_aliases(tile1, tile_behavior))
       l2 = strip_attrs(apply_tile_aliases(tile2, tile_behavior))
-      same_id = :any in l1 or :any in l2
+      same_id = t1 in l2 or t2 in l1
       or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
-      or tile1 in l2 or tile2 in l1
-      {_, attrs2} = to_attr_tile(tile2)
+      or :any in l1 or :any in l2
       attrs_match = has_attr?(tile1, attrs2)
       same_id and attrs_match
     end

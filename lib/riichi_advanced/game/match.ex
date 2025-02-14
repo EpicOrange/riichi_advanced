@@ -231,10 +231,12 @@ defmodule RiichiAdvanced.Match do
   def arrange_by_base_tile(tiles, base_tile, group, tile_behavior) do
     # this only handles groups that are a sequence of offsets like [0, 1, 2]
     if is_list(group) && Enum.all?(group, &is_offset/1) do
+      base_tile = Utils.strip_attrs(base_tile)
+      tiles_i = Enum.with_index(tiles)
       {pairing, _pairing_r} = group
       |> Enum.map(&offset_tile(base_tile, &1, tile_behavior))
       |> Enum.with_index()
-      |> Map.new(fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
+      |> Map.new(fn {tile, i} -> {i, for {tile2, j} <- tiles_i, Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
       |> Utils.maximum_bipartite_matching()
       Enum.map(0..length(group)-1, &Enum.at(tiles, pairing[&1]))
     else tiles end
