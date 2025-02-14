@@ -20,10 +20,10 @@ This document is a reference for all of the tiles currently supported in the til
   + `2x` (tile-width space),
   + `3x` (half-width space),
   + `4x` (zero-width space),
-  + `4x` (quarter-width space),
-  + `5x` (1/8-width space),
-  + `6x` (1/16-width space),
-  + `7x` (1/32-width space)
+  + `5x` (quarter-width space),
+  + `6x` (1/8-width space),
+  + `7x` (1/16-width space),
+  + `8x` (1/32-width space)
 
 ## Flowers
 
