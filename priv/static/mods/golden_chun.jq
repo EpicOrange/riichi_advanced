@@ -1,23 +1,23 @@
 # replace a 6z with red hatsu
-(.wall | index("6z")) as $idx | if $idx then .wall[$idx] = "26z" else . end
+(.wall | index("6z")) as $idx | if $idx then .wall[$idx] = "06z" else . end
 |
 # replace a 7z with golden chun
-(.wall | index("7z")) as $idx | if $idx then .wall[$idx] = "27z" else . end
+(.wall | index("7z")) as $idx | if $idx then .wall[$idx] = "37z" else . end
 |
 # treat red hatsu as 6z
 .after_start.actions += [
-  ["set_tile_alias_all", ["26z"], ["6z"]]
+  ["set_tile_alias_all", ["06z"], ["6z"]]
 ]
 |
 # treat golden chun as 5 wildcard or chun
 # support for star suit mod
 if any(.wall[]; . == "1t") then
   .after_start.actions += [
-    ["set_tile_alias_all", ["27z"], ["5m", "5p", "5s", "5t", "7z"]]
+    ["set_tile_alias_all", ["37z"], ["5m", "5p", "5s", "5t", "7z"]]
   ]
 else
   .after_start.actions += [
-    ["set_tile_alias_all", ["27z"], ["5m", "5p", "5s", "7z"]]
+    ["set_tile_alias_all", ["37z"], ["5m", "5p", "5s", "7z"]]
   ]
 end
 # add golden chun definition for when it's used as a five
@@ -51,11 +51,11 @@ end
 |
 # count aka and add golden chun statuses
 .before_win.actions += [
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["26z"], 1] ]]]}], [["add_counter", "aka", 1]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1] ]]]}], [["set_status", "golden_chun"]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["7z"], 1] ]]]}], [["set_status", "7z"]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["chun_pair"], 1] ]]]}], [["set_status", "77z"]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["27z"], 1], [["chun"], 1] ]]]}], [["set_status", "777z"]]]
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["06z"], 1] ]]]}], [["add_counter", "aka", 1]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1] ]]]}], [["set_status", "golden_chun"]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1], [["7z"], 1] ]]]}], [["set_status", "7z"]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1], [["chun_pair"], 1] ]]]}], [["set_status", "77z"]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1], [["chun"], 1] ]]]}], [["set_status", "777z"]]]
 ]
 |
 .after_win.actions += [
@@ -81,27 +81,38 @@ end
 ]
 |
 # can't call golden chun unless as a chun
-.buttons.chii.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+
+if (.buttons | has("chii")) then
+  .buttons.chii.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["37z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.pon.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("pon")) then
+  .buttons.pon.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["37z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.daiminkan.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("daiminkan")) then
+  .buttons.daiminkan.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["37z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.kakan.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("kakan")) then
+  .buttons.kakan.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["37z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end
 |
-.buttons.ankan.call_conditions += [[
-  {"name": "not_call_contains", "opts": [["27z"], 1]},
-  {"name": "call_contains", "opts": [["7z"], 1]}
-]]
+if (.buttons | has("ankan")) then
+  .buttons.ankan.call_conditions += [[
+    {"name": "not_call_contains", "opts": [["37z"], 1]},
+    {"name": "call_contains", "opts": [["7z"], 1]}
+  ]]
+else . end

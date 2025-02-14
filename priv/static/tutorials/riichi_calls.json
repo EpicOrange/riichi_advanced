@@ -13,12 +13,8 @@
     "start2": [
     ],
     "start": [
-      ["await_event", ["play_tile", "east", 13]],
-      ["await_event", ["play_tile", "south", 13]],
       ["await_event", ["play_tile", "west", 13]],
-      ["block_events"],
       ["sleep", 200],
-      ["unblock_events"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.75, "y": 11.75,
         "text": "The previous player just tossed the 3 of circles, and it's about to be your turn.\n(Click to continue)"
       }],
@@ -36,7 +32,7 @@
         "text": "Because the last discard can complete a sequence, we can call Chii to take the last discard, in lieu of drawing a tile. Do so now."
       }],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
-      ["await_event", ["press_button", "north", "chii"]],
+      ["force_event", ["press_button", "north", "chii"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "In fact, there are three possible sequences that this 3 of circles can complete.\n(Click to continue)"
@@ -48,7 +44,7 @@
         "text": "Since we want to keep the 123 sequence in our hand, it is wisest to use the 45. Let's give that a try."
       }],
       ["add_object", "focus", {"width": 1.5, "x": 11.125, "y": "buttons"}],
-      ["await_event", ["press_call_button", "north", ["4p", "5p"], "3p"]],
+      ["force_event", ["press_call_button", "north", ["4p", "5p"], "3p"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Nice work! When you make a call such as Chii, the resulting set is revealed to the table, with the called tile facing in the direction of the player you called it from.\n(Click to continue)"
@@ -77,13 +73,10 @@
         "text": "So go ahead and discard the white dragon."
       }],
       ["add_object", "focus", {"width": 0.75, "hand_index": 10}],
-      ["await_event", ["play_tile", "north", 10]],
+      ["force_event", ["play_tile", "north", 10]],
       ["clear_objects"],
-      ["await_event", ["play_tile", "east", 13]],
       ["await_event", ["play_tile", "south", 13]],
-      ["block_events"],
       ["sleep", 200],
-      ["unblock_events"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 11.75,
         "text": "The player across from you has just discarded the east wind, which you have two of.\n(Click to continue)"
       }],
@@ -95,7 +88,7 @@
         "text": "Because the last discard can complete a triplet in our hand, we can immediately call Pon to take the last discard. Do so now."
       }],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
-      ["await_event", ["press_button", "north", "pon"]],
+      ["force_event", ["press_button", "north", "pon"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Note that unlike Chii, which can only be called from your left, calling Pon messes with the turn order. The left player's turn got skipped, and now it's your turn to discard.\n(Click to continue)"
@@ -103,10 +96,10 @@
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "We are very close to winning: we just need one more tile. Go ahead and discard this 4 of characters."
+        "text": "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
       }],
-      ["add_object", "focus", {"width": 0.75, "hand_index": 1}],
-      ["await_event", ["play_tile", "north", 1]],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 1.5}],
+      ["force_event", [["play_tile", "north", 1], ["play_tile", "north", 2]]],
       ["clear_objects"],
       ["pause"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
@@ -115,12 +108,8 @@
       ["await_click"],
       ["clear_objects"],
       ["unpause"],
-      ["await_event", ["play_tile", "east", 13]],
-      ["await_event", ["play_tile", "south", 13]],
       ["await_event", ["play_tile", "west", 13]],
-      ["block_events"],
       ["sleep", 200],
-      ["unblock_events"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "...or someone else can discard it!\n(Click to continue)"
       }],
@@ -130,9 +119,9 @@
         "text": "When someone discards the final tile you need in order to win, you can declare a win by calling Ron. Do so now."
       }],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
-      ["await_event", ["press_button", "north", "ron"]],
+      ["force_event", ["press_button", "north", "ron"]],
       ["clear_objects"],
-      ["sleep", 5000],
+      ["sleep", 3000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Click to return to the list of tutorials."

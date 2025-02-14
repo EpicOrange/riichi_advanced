@@ -806,8 +806,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         |> Enum.drop(1)
         |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
         win(state, context.seat, tile, :discard)
-      "ryuukyoku"             -> exhaustive_draw(state)
-      "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, "Abortive draw"))
+      "ryuukyoku"             -> exhaustive_draw(state, Enum.at(opts, 0, nil))
+      "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, nil))
       "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
       "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
       "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
@@ -860,7 +860,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "put_down_riichi_stick" ->
         riichi_discard_indices = Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end)
         state
-        |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * state.rules["score_calculation"]["riichi_value"])
+        |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * Map.get(state.rules["score_calculation"], "riichi_value", 0))
         |> update_player(context.seat, &%Player{ &1 | riichi_stick: true, cache: %PlayerCache{ &1.cache | riichi_discard_indices: riichi_discard_indices } })
       "bet_points"            ->
         amount = interpret_amount(state, context, opts)
@@ -1040,28 +1040,22 @@ defmodule RiichiAdvanced.GameState.Actions do
         for seat <- state.available_seats, reduce: state do
           state -> set_tile_alias(state, seat, from_tiles, to_tiles)
         end
-      "save_tile_aliases"     ->
+      "save_tile_behavior"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
-          state ->
-            state = put_in(state.players[seat].cache.saved_tile_aliases[label], state.players[seat].tile_behavior.aliases)
-            state = put_in(state.players[seat].cache.saved_tile_mappings[label], state.players[seat].tile_behavior.mappings)
-            state
+          state -> put_in(state.players[seat].cache.saved_tile_behavior[label], state.players[seat].tile_behavior)
         end
-      "load_tile_aliases"     ->
+      "load_tile_behavior"     ->
         label = Enum.at(opts, 0, "default")
         for seat <- state.available_seats, reduce: state do
-          state ->
-            state = put_in(state.players[seat].tile_behavior.aliases, Map.get(state.players[seat].cache.saved_tile_aliases, label, state.players[seat].tile_behavior.aliases))
-            state = put_in(state.players[seat].tile_behavior.mappings, Map.get(state.players[seat].cache.saved_tile_mappings, label, state.players[seat].tile_behavior.mappings))
-            state
+          state -> put_in(state.players[seat].tile_behavior, Map.get(state.players[seat].cache.saved_tile_behavior, label, state.players[seat].tile_behavior))
         end
       "clear_tile_aliases"    -> update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{ &1.tile_behavior | aliases: %{} } })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
+        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{ &1.tile_behavior |
           ordering: Map.merge(&1.tile_behavior.ordering, ordering),
           ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r)
         } })
@@ -1069,10 +1063,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        update_player(state, context.seat, &%Player{ &1 | tile_behavior: %TileBehavior{
-          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
-          ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r)
-        } })
+        update_all_players(state, fn _seat, player -> %Player{ player | tile_behavior: %TileBehavior{ player.tile_behavior |
+          ordering: Map.merge(player.tile_behavior.ordering, ordering),
+          ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r)
+        } } end)
       "add_attr" ->
         targets = Enum.at(opts, 0, [])
         attrs = List.wrap(Enum.at(opts, 1, []))

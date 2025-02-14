@@ -196,14 +196,17 @@ defmodule RiichiAdvanced.GameState.American do
   end
   def arrange_american_hand(am_match_definitions, hand, calls, tile_behavior) do
     call_tiles = Enum.map(calls, &Utils.call_to_tiles/1)
-    available_tiles = Enum.reduce(call_tiles, MapSet.new(Utils.strip_attrs(hand)), &MapSet.union(&2, MapSet.new(Utils.strip_attrs(&1)))) |> MapSet.delete(:"1j")
-    possible_base_tiles = available_tiles
-    # this is needed since if there are no suited tiles except suited dragons, there won't be a base tile to reach all possible dragons
-    |> MapSet.put(:"1m")
-    # this is needed since it's not guaranteed that offset 0 exists
-    |> Enum.flat_map(fn tile -> [tile, Match.offset_tile(tile, 10, tile_behavior, true), Match.offset_tile(tile, 20, tile_behavior, true)] end)
-    |> MapSet.new()
-    |> MapSet.delete(nil)
+
+    # old precalculations
+    # available_tiles = Enum.reduce(call_tiles, MapSet.new(Utils.strip_attrs(hand)), &MapSet.union(&2, MapSet.new(Utils.strip_attrs(&1)))) |> MapSet.delete(:"1j")
+    # possible_base_tiles = available_tiles
+    # # this is needed since if there are no suited tiles except suited dragons, there won't be a base tile to reach all possible dragons
+    # |> MapSet.put(:"1m")
+    # # this is needed since it's not guaranteed that offset 0 exists
+    # |> Enum.flat_map(fn tile -> [tile, Match.offset_tile(tile, 10, tile_behavior, true), Match.offset_tile(tile, 20, tile_behavior, true)] end)
+    # |> MapSet.new()
+    # |> MapSet.delete(nil)
+
     # arrange the given hand (which may contain jokers) to match any of the match definitions
     # permutations = [["A", "B", "C"], ["A", "C", "B"], ["B", "A", "C"], ["B", "C", "A"], ["C", "A", "B"], ["C", "B", "A"]]
     permutations = [["A", "B", "C"], ["A", "C", "B"]]
@@ -321,7 +324,7 @@ defmodule RiichiAdvanced.GameState.American do
         end
         # we don't check for empty hand, since this procedure is used with larger hands
         # just to see if such a hand can be arranged with the given tiles (i.e. dead hand checking)
-        case Enum.find(arrangements, fn {hand, calls, ret} -> Enum.empty?(calls) and ret != nil end) do
+        case Enum.find(arrangements, fn {_hand, calls, ret} -> Enum.empty?(calls) and ret != nil end) do
           nil                  -> nil
           {_hand, _calls, ret} -> Enum.reverse(ret)
         end

@@ -26,18 +26,20 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         socket
         |> assign(:objects, [])
         |> assign(:focuses, [])
-      "await_event" ->
-        event = Enum.at(opts, 0, %{})
-        next_scene = Enum.at(opts, 1, :resume)
-        socket.assigns.force_event.(next_scene, event)
+      "force_event" ->
+        events = Enum.at(opts, 0, %{})
+        events = if not is_list(Enum.at(events, 0)) do [events] else events end
+        next_scenes = List.wrap(Enum.at(opts, 1, List.duplicate(:resume, length(events))))
+        socket.assigns.force_event.(next_scenes, events, true)
         socket
         |> assign(:deferred_actions, actions)
-      "block_events" ->
-        socket.assigns.force_event.(nil, [])
+      "await_event" ->
+        events = Enum.at(opts, 0, %{})
+        events = if not is_list(Enum.at(events, 0)) do [events] else events end
+        next_scenes = List.wrap(Enum.at(opts, 1, List.duplicate(:resume, length(events))))
+        socket.assigns.force_event.(next_scenes, events, false)
         socket
-      "unblock_events" ->
-        socket.assigns.force_event.(nil, nil)
-        socket
+        |> assign(:deferred_actions, actions)
       "await_click" ->
         next_scene = Enum.at(opts, 0, :resume)
         socket.assigns.await_click.(next_scene)
@@ -53,11 +55,15 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         duration = Enum.at(opts, 0, 0)
         send_update_after(self(), __MODULE__, [id: "tutorial-overlay", actions: actions], duration)
         socket
+      "play_scene" ->
+        next_scene = Enum.at(opts, 0)
+        socket.assigns.play_scene.(next_scene)
+        socket
       "exit" ->
         send(self(), :back)
         socket
     end
-    if action in ["sleep", "await_click", "await_event"] do
+    if action in ["sleep", "await_click", "await_event", "force_event"] do
       socket
     else 
       run_actions(socket, actions)

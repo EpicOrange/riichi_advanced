@@ -11,3 +11,5 @@
   {"id": "yaku/sanankon", "deps": ["kontsu"], "name": "Sanankon", "desc": "Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair."},
   {"id": "yakuman_13_han", "order": 100, "name": "Yakuman 13 Han", "desc": "This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku."}
 ] + .available_mods
+|
+.win_timer = 20

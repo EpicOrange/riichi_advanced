@@ -39,6 +39,7 @@ defmodule RiichiAdvancedWeb.Router do
       live "/game/:ruleset/:room_code", GameLive
       live "/tutorial/:ruleset", TutorialMenuLive
       live "/tutorial/:ruleset/:sequence", GameLive
+      live "/tutorial_creator", TutorialCreatorLive
       live "/log", LogMenuLive
       live "/log/:log_id", LogLive
       live "/about", AboutLive

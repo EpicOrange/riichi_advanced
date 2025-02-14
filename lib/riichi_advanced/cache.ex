@@ -20,6 +20,9 @@ defmodule RiichiAdvanced.ETSCache do
     # Cache for configs
     :ets.new(:cache_configs, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
 
+    # Cache for tutorial sequences
+    :ets.new(:cache_sequences, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
+
     {:ok, %{}}
   end
 
