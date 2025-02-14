@@ -9,14 +9,21 @@ This document is a reference for all of the tiles currently supported in the til
 - `0m`, `1m`, `2m`, `3m`, `4m`, `5m`, `6m`, `7m`, `8m`, `9m`
 - `0p`, `1p`, `2p`, `3p`, `4p`, `5p`, `6p`, `7p`, `8p`, `9p`
 - `0s`, `1s`, `2s`, `3s`, `4s`, `5s`, `6s`, `7s`, `8s`, `9s`
-- `1z`, `2z`, `3z`, `4z`, `5z`, `6z`, `7z`,
+- `1z`, `2z`, `3z`, `4z`, `5z`, `6z`, `7z`
 
 ## Variant tiles and spacers
 
 ![](reference-alt.png)
 
 - `0z`, `8z`, `9z`, `00s`, `10m`, `10p`, `10s`
-- `1x`, `2x` (tile-width space), `3x` (half-width space), `4x` (zero-width space), `4x` (quarter-width space), `5x` (1/8-width space), `6x` (1/16-width space), `7x` (1/32-width space)
+- `1x`, and a bunch of spaces:
+  + `2x` (tile-width space),
+  + `3x` (half-width space),
+  + `4x` (zero-width space),
+  + `4x` (quarter-width space),
+  + `5x` (1/8-width space),
+  + `6x` (1/16-width space),
+  + `7x` (1/32-width space)
 
 ## Flowers
 
@@ -50,15 +57,15 @@ This document is a reference for all of the tiles currently supported in the til
 - `11p`, `12p`, `13p`, `14p`, `15p`, `16p`, `17p`, `18p`, `19p`, `110p`
 - `11s`, `12s`, `13s`, `14s`, `15s`, `16s`, `17s`, `18s`, `19s`, `110s`
 - `11t`, `12t`, `13t`, `14t`, `15t`, `16t`, `17t`, `18t`, `19t`, `110t`
-- `11z`, `12z`, `13z`, `14z`, `15z`, `16z`, `17z`, `18z`, `100s`
+- (n/a), `11z`, `12z`, `13z`, `14z`, `15z`, `16z`, `17z`, `18z`, `100s`
 
 ## Aka/Ao/Kin/Transparent
 
 ![](reference-aka.png)
 
-- `01m`, `02m`, `03m`, `04m`, `06m`, `07m`, `08m`, `09m`, `010m`
-- `01p`, `02p`, `03p`, `04p`, `06p`, `07p`, `08p`, `09p`, `010p`
-- `01s`, `02s`, `03s`, `04s`, `06s`, `07s`, `08s`, `09s`, `010s`
+- `01m`, `02m`, `03m`, `04m`, (n/a), `06m`, `07m`, `08m`, `09m`, `010m`
+- `01p`, `02p`, `03p`, `04p`, (n/a), `06p`, `07p`, `08p`, `09p`, `010p`
+- `01s`, `02s`, `03s`, `04s`, (n/a), `06s`, `07s`, `08s`, `09s`, `010s`
 - `01t`, `02t`, `03t`, `04t`, `05t`, `06t`, `07t`, `08t`, `09t`, `010t`
 - `01z`, `02z`, `03z`, `04z`, `05z`, `06z`, `07z`, `00z`, `08z`, `000s`
 - `21m`, `22m`, `23m`, `24m`, `25m`, `26m`, `27m`, `28m`, `29m`, `210m`
