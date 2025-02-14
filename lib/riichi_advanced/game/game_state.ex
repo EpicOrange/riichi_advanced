@@ -608,7 +608,7 @@ defmodule RiichiAdvanced.GameState do
     # recalculate buttons at the start of the game
     state = Buttons.recalculate_buttons(state)
 
-    notify_ai(state)
+    notify_ai_new_round(state)
 
     # ensure playable_indices is populated after the after_start actions
     state = broadcast_state_change(state, true)
@@ -935,6 +935,9 @@ defmodule RiichiAdvanced.GameState do
     # IO.puts("Notifying ai")
     # IO.inspect(Process.info(self(), :current_stacktrace))
     GenServer.cast(self(), :notify_ai)
+  end
+  def notify_ai_new_round(_state) do
+    GenServer.cast(self(), :notify_ai_new_round)
   end
   def notify_ai_marking(_state, seat) do
     GenServer.cast(self(), {:notify_ai_marking, seat})
@@ -1638,6 +1641,21 @@ defmodule RiichiAdvanced.GameState do
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
+      end
+    end
+    {:noreply, state}
+  end
+
+  def handle_cast(:notify_ai_new_round, state) do
+    if not state.log_loading_mode do
+      if state.game_active do
+        Enum.each(state.available_seats, fn seat ->
+          if is_pid(Map.get(state, seat)) do
+            send(Map.get(state, seat), :initialize)
+          end
+        end)
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai_new_round])
       end
     end
     {:noreply, state}

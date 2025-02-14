@@ -14,8 +14,6 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def init(state) do
     state = Map.put(state, :initialized, false)
-    state = Map.put(state, :shanten, -1)
-    state = Map.put(state, :preselected_flower, nil)
     if Debug.debug_fast_ai() do
       :timer.apply_after(100, Kernel, :send, [self(), :initialize])
     else
@@ -86,6 +84,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {nil, _} ->
         ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
         |> choose_playable_tile(state, playables, visible_tiles, win_definition)
+        IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
         if Debug.debug_ai() and ret != nil do
           IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
         end
@@ -149,10 +148,12 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info(:initialize, state) do
     state = Map.put(state, :initialized, true)
+    state = Map.put(state, :shanten, :infinity)
+    state = Map.put(state, :preselected_flower, nil)
     GenServer.cast(state.game_state, :notify_ai)
     {:noreply, state}
   end
-
+  
   def handle_info({:your_turn, params}, state) do
     t = System.os_time(:millisecond)
     %{player: player, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
