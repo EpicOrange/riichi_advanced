@@ -37,10 +37,10 @@ This document is a reference for all of the tiles currently supported in the til
 
 ![](reference-jokers.png)
 
-- `1j`, `0j`, `2j`, `3j`, `4j`, `5j`, `6j`, `7j`
-- `8j`, `9j`, `10j`, `12j`, `14j`, `15j`, `17j`, `18j`
-- `19j`, `37j`, `46j`, `147j`, `258j`, `369j`, `123j`, `456j`
-- `789j`, `91j`, `73j`, `64j`, `852j`, `20j`, `11j`, `22j`
+- `1j`, `0j`, `2j`, `9j`, `4j`, `5j`, `6j`, `7j`
+- `8j`, `10j`, `12j`, `3j`, `14j`, `15j`, `17j`, `18j`
+- `19j`, `37j`, `46j`, `147j`, `258j`, `369j`, `789j`, `456j`
+- `123j`, `11j`, `22j`, `20j`, `91j`, `64j`, `73j`, `852j`
 - `30j`, `31j`, `32j`, `33j`, `34j`, `2y`
 
 ## Star tiles
