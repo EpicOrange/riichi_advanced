@@ -122,7 +122,7 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info(:initialize, state) do
     state = Map.put(state, :initialized, true)
-    state = Map.put(state, :shanten, :infinity)
+    state = Map.put(state, :shanten, -1) # make it try all the shanten definitions
     state = Map.put(state, :preselected_flower, nil)
     GenServer.cast(state.game_state, :notify_ai)
     {:noreply, state}
