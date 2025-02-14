@@ -13,16 +13,30 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
     <div class={["game-modal-container", @visible_screen != :winner && "inactive"]}>
       <div class="game-modal game-modal-hide">
         <%= if @winner != nil and Map.has_key?(@winner, :yaku) and @winner.yaku != nil do %>
-          <div class="hand winning-hand">
-            <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.player.hand)}></div>
-            <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
-              <div class="call">
-                <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
+          <div class="winning-hand-container">
+            <div class="hand winning-hand">
+              <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.player.hand)}></div>
+              <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
+                <div class="call">
+                  <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
+                </div>
+              <% end %>
+              <div class="winning-tile-container">
+                <div class={["tile", "winning-tile", Utils.strip_attrs(@winner.winning_tile), Utils.has_attr?(@winner.winning_tile, ["transparent"]) && "transparent"]}></div>
+                <div class="winning-tile-text"><%= @winner.winning_tile_text %></div>
               </div>
-            <% end %>
-            <div class="winning-tile-container">
-              <div class={["tile", "winning-tile", Utils.strip_attrs(@winner.winning_tile), Utils.has_attr?(@winner.winning_tile, ["transparent"]) && "transparent"]}></div>
-              <div class="winning-tile-text"><%= @winner.winning_tile_text %></div>
+            </div>
+            <div class="hand winning-hand separated-hand">
+              <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.separated_hand)}></div>
+              <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
+                <div class="call">
+                  <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
+                </div>
+              <% end %>
+              <div class="winning-tile-container">
+                <div class={["tile", "winning-tile", Utils.strip_attrs(@winner.winning_tile), Utils.has_attr?(@winner.winning_tile, ["transparent"]) && "transparent"]}></div>
+                <div class="winning-tile-text"><%= @winner.winning_tile_text %></div>
+              </div>
             </div>
           </div>
           <div class="yakus">

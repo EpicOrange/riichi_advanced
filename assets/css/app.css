@@ -1981,10 +1981,16 @@ div.game-modal > div.score-display {
   pointer-events: none;
   user-select: none;
 }
-div.hand.winning-hand {
+div.winning-hand-container {
   width: 100%;
   padding-top: calc(0.25 * var(--tile-size));
+}
+div.winning-hand-container:not(:hover) div.hand.winning-hand:not(.separated-hand) { display: flex; }
+div.winning-hand-container:hover div.hand.winning-hand.separated-hand { display: flex; }
+div.hand.winning-hand {
+  width: 100%;
   justify-content: center;
+  display: none;
 }
 /* yakus */
 div.yakus {

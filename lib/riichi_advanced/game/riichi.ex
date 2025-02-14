@@ -775,31 +775,36 @@ defmodule RiichiAdvanced.Riichi do
     end)
   end
 
-  # TODO refactor these three functions to be the same function
-  # (it's mostly duplicate code)
-
-  def arrange_kontsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
-    # return hand, but reordered so that kontsu are at the end
-    # if no kontsu, return hand unchanged
+  def prepend_group(hand, calls, winning_tiles, group, win_definitions, tile_behavior) do
+    # return hand, but reordered so that all `group` are at the front (after existing prepended groups)
+    # if no `group`s exist, return hand unchanged
     # hand is expected to be tenpai for N sets and a pair
 
-    # first check if there's three ankou. if so, don't rearrange the hand
-    # this is to avoid arranging closed sanshoku doukou as 3 kontsu
-    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
-    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
-    |> Enum.any?(fn {hand, groups} ->
-      calls = Enum.map(groups, &{"pon", &1}) ++ calls
-      Enum.any?(winning_tiles, fn winning_tile ->
-        Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
-      end)
-    end)
+    # split at the last :separator in hand
+    # we will only arrange the contents of the hand after that
+    ix = Enum.find_index(Enum.reverse(hand), & &1 == :separator)
+    {prearranged, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
 
-    if not has_three_ankou do
+    skip = if group in [[0, 1, 2], [0, 10, 20]] do
+      # (for shuntsu and kontsu only)
+      # check if there's three ankou. if so, don't rearrange the hand
+      # this is to avoid arranging them as 3 shuntsu/kontsu
+      Match.extract_groups(hand, [0, 0, 0], tile_behavior)
+      |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
+      |> Enum.any?(fn {hand, groups} ->
+        calls = Enum.map(groups, &{"", &1}) ++ calls
+        Enum.any?(winning_tiles, fn winning_tile ->
+          Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
+        end)
+      end)
+    else false end
+
+    if not skip do
       Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.extract_groups([winning_tile | hand], [0, 10, 20], tile_behavior)
+        Match.extract_groups([winning_tile | hand], group, tile_behavior)
         |> Enum.find(fn {hand, groups} ->
-          calls = Enum.map(groups, &{"chon", &1}) ++ calls
-          Match.match_hand(hand, calls, win_definitions, tile_behavior)
+          calls = Enum.map(groups, &{"", &1}) ++ calls
+          Match.match_hand(prearranged ++ hand, calls, win_definitions, tile_behavior)
         end)
         |> case do
           nil            -> []
@@ -811,93 +816,15 @@ defmodule RiichiAdvanced.Riichi do
         [{winning_tile, hand, groups} | _] ->
           groups = groups
           |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-          |> Enum.map(&[:kontsu | &1]) # add a spacing marker before each kontsu
+          |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
           |> Enum.concat()
-          List.delete(hand ++ groups, winning_tile)
+          # delete last instance of winning tile
+          prearranged ++ groups ++ hand
+          |> Enum.reverse()
+          |> List.delete(winning_tile)
+          |> Enum.reverse()
       end
     else hand end
-  end
-
-  def arrange_shuntsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
-    # return hand, but reordered so that shuntsu are at the front
-    # if no shuntsu, return hand unchanged
-    # hand is expected to be tenpai for N sets and a pair
-
-    # first split at the first :kontsu in hand
-    # these are added by kontsu check, we don't want to rearrange those
-    ix = Enum.find_index(hand, & &1 == :kontsu)
-    {hand, kontsu} = if ix == nil do {hand, []} else Enum.split(hand, ix) end
-
-    # then check if there's three ankou. if so, don't rearrange the hand
-    # this is to avoid arranging closed sanshoku doukou as 3 shuntsu
-    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
-    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
-    |> Enum.any?(fn {hand, groups} ->
-      calls = Enum.map(groups, &{"pon", &1}) ++ calls
-      Enum.any?(winning_tiles, fn winning_tile ->
-        Match.match_hand([winning_tile | hand] ++ kontsu, calls, win_definitions, tile_behavior)
-      end)
-    end)
-
-    if not has_three_ankou do
-      Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.extract_groups([winning_tile | hand], [0, 1, 2], tile_behavior)
-        |> Enum.find(fn {hand, groups} ->
-          calls = Enum.map(groups, &{"chii", &1}) ++ calls
-          Match.match_hand(hand ++ kontsu, calls, win_definitions, tile_behavior)
-        end)
-        |> case do
-          nil            -> []
-          {hand, groups} -> [{winning_tile, hand, groups}]
-        end
-      end)
-      |> case do
-        [] -> hand
-        [{winning_tile, hand, groups} | _] ->
-          groups = groups
-          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-          |> Enum.map(& &1 ++ [:shuntsu]) # add a spacing marker after each shuntsu
-          |> Enum.concat()
-          List.delete(groups ++ hand ++ kontsu, winning_tile)
-      end
-    else hand end
-  end
-
-  def arrange_koutsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
-    # return hand, but reordered so that koutsu are at the front
-    # if no koutsu, return hand unchanged
-    # hand is expected to be tenpai for N sets and a pair
-
-    # first split at the first :kontsu in hand
-    # these are added by kontsu check, we don't want to rearrange those
-    ix = Enum.find_index(hand, & &1 == :kontsu)
-    {hand, kontsu} = if ix == nil do {hand, []} else Enum.split(hand, ix) end
-
-    # then split at the last :shuntsu in hand
-    # these are added by shuntsu check, we don't want to rearrange those
-    ix = Enum.find_index(Enum.reverse(hand), & &1 == :shuntsu)
-    {shuntsu, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
-
-    Enum.flat_map(winning_tiles, fn winning_tile ->
-      Match.extract_groups([winning_tile | hand], [0, 0, 0], tile_behavior)
-      |> Enum.find(fn {hand, groups} ->
-        calls = Enum.map(groups, &{"pon", &1}) ++ calls
-        Match.match_hand(shuntsu ++ hand ++ kontsu, calls, win_definitions, tile_behavior)
-      end)
-      |> case do
-        nil            -> []
-        {hand, groups} -> [{winning_tile, hand, groups}]
-      end
-    end)
-    |> case do
-      [] -> hand
-      [{winning_tile, hand, groups} | _] ->
-        groups = groups
-        |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-        |> Enum.map(& &1 ++ [:koutsu]) # add a spacing marker after each koutsu
-        |> Enum.concat()
-        List.delete(shuntsu ++ groups ++ hand ++ kontsu, winning_tile)
-    end
   end
 
 end

@@ -224,12 +224,6 @@ else . end
 ] + .
 |
 .win_timer = 20
-|
-# this makes the win screen take shuntsu and koutsu out of the hand before displaying
-.score_calculation.arrange_shuntsu = true
-|
-.score_calculation.arrange_koutsu = true
-
 
 # there is a rule that you gain shuugi equal to the number of galaxy tiles used as their own value,
 # but our current joker solver does not try to maximize galaxy tiles used as their own value

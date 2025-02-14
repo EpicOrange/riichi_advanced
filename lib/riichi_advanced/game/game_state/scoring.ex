@@ -884,9 +884,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     orig_calls = state.players[seat].calls
     tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
-    arrange_shuntsu = Map.get(score_rules, "arrange_shuntsu", false)
-    arrange_koutsu = Map.get(score_rules, "arrange_koutsu", false)
-    arrange_kontsu = Map.get(score_rules, "arrange_kontsu", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
       {yaku_name, _value} = Enum.at(yaku, 0)
       # look for this yaku in the yaku list, and get arrangement from the match condition
@@ -916,22 +913,39 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {List.delete_at(arranged_hand, ix), [new_winning_tile]}
     else {arranged_hand, orig_draw} end
 
+    # create an alternate separated_hand where sets are separated
     win_definitions = translate_match_definitions(state, ["win"])
-    arranged_hand = if arrange_kontsu do
-      # sort kontsu out of the hand (append kontsu to the right)
-      Riichi.arrange_kontsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
-    else arranged_hand end
-    arranged_hand = if arrange_shuntsu do
-      # sort shuntsu out of the hand (append shuntsu to the left, after kontsu are sorted out)
-      Riichi.arrange_shuntsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
-    else arranged_hand end
-    arranged_hand = if arrange_koutsu do
-      # sort koutsu out of the hand (append koutsu after shuntsu, after shuntsu and kontsu are sorted out)
-      Riichi.arrange_koutsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
-    else arranged_hand end
-    # result should look like [shuntsu, koutsu, pair, kontsu]
-    # replace the resulting spacing markers with actual spaces
-    arranged_hand = Enum.map(arranged_hand, &if &1 in [:shuntsu, :koutsu, :kontsu] do :"7x" else &1 end)
+    separated_hand = arranged_hand
+    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 1, 2], win_definitions, tile_behavior)
+    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0, 0], win_definitions, tile_behavior)
+    # kontsu/knitted
+    separated_hand2 = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 10, 20], win_definitions, tile_behavior)
+    separated_hand2 = Riichi.prepend_group(separated_hand2, orig_calls, [winning_tile || new_winning_tile], [0, 11, 21], win_definitions, tile_behavior)
+    # only split pairs if knitted did not match
+    separated_hand = if separated_hand == separated_hand2 do
+      Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0], win_definitions, tile_behavior)
+    else separated_hand2 end
+    # result should look like [shuntsu, koutsu, kontsu, toitsu, ungrouped] with each set separated by :separator
+    # rearrange those groups to be as close to the original hand as possible
+    groups = Enum.chunk_by(separated_hand, & &1 == :separator)
+    groups = Enum.drop_every([nil | groups], 2)
+    {groups, [ungrouped]} = Enum.split(groups, -1)
+    {separated_hand, _, _} = for _ <- 1..length(groups), reduce: {[], groups, arranged_hand -- ungrouped} do
+      {result, groups, [tile | hand]} ->
+        case Enum.find_index(groups, & Enum.at(&1, 0) == tile) do
+          nil -> {result, groups, hand}
+          ix  ->
+            {group, groups} = List.pop_at(groups, ix)
+            {[group | result], groups, [tile | hand] -- group}
+        end
+      acc -> acc
+    end
+    # append the ungrouped part
+    # then replace the resulting spacing markers with actual spaces
+    separated_hand = [ungrouped | separated_hand]
+    |> Enum.reverse()
+    |> Enum.intersperse([:"7x"])
+    |> Enum.concat()
 
     # push message
     orig_call_tiles = orig_calls
@@ -949,7 +963,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
     end
 
-    %{ hand: arranged_hand, draw: arranged_draw, calls: arranged_calls }
+    %{ hand: arranged_hand, separated_hand: separated_hand, draw: arranged_draw, calls: arranged_calls }
   end
 
   # generate a winner object for a given seat
@@ -1040,7 +1054,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.max_by(fn {_, _, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
     # rearrange their hand
-    %{hand: arranged_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
+    %{hand: arranged_hand, separated_hand: separated_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
 
     # return the complete winner object
     yaku_2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
@@ -1086,6 +1100,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end,
       opponents: opponents,
       winning_hand: winning_hand,
+      separated_hand: separated_hand,
       assigned_hand: assigned_hand,
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,
