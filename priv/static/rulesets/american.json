@@ -637,7 +637,7 @@
           ["set_status", "dead_hand"],
           ["advance_turn"]
         ]],
-        ["when", [{"name": "toimen_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], [["abortive_draw", "three_dead_hands"]]]
+        ["when", [{"name": "toimen_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], [["pause", 1000], ["ryuukyoku", "Three Dead Hands"]]]
       ],
       "unskippable": true
     },
@@ -659,7 +659,7 @@
           ["set_status", "dead_hand"],
           ["advance_turn"]
         ]],
-        ["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], [["abortive_draw", "three_dead_hands"]]]
+        ["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "kamicha_status", "opts": ["dead_hand"]}], [["pause", 1000], ["ryuukyoku", "Three Dead Hands"]]]
       ],
       "unskippable": true
     },
@@ -681,7 +681,7 @@
           ["set_status", "dead_hand"],
           ["advance_turn"]
         ]],
-        ["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "toimen_status", "opts": ["dead_hand"]}], [["abortive_draw", "three_dead_hands"]]]
+        ["when", [{"name": "shimocha_status", "opts": ["dead_hand"]}, {"name": "toimen_status", "opts": ["dead_hand"]}], [["pause", 1000], ["ryuukyoku", "Three Dead Hands"]]]
       ],
       "unskippable": true
     },

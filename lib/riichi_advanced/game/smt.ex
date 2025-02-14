@@ -278,22 +278,28 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+  def _match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
     calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    |> Enum.map(&Utils.call_to_tiles/1)
+    |> Enum.map(&Enum.take(&1, 3)) # ignore kans
     |> Enum.with_index()
-    |> Enum.map(fn {call, i} -> {Enum.take(Utils.call_to_tiles(call), 3), i} end) # ignore kans
 
-    # IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
-    # IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
     jokers = Map.keys(tile_mappings)
-    # IO.puts("Jokers are #{inspect(jokers)}")
-    all_tiles = all_tiles
-    |> Enum.uniq()
-    |> Enum.reject(fn tile -> tile in jokers and tile not in tile_mappings[tile] end)
+    if Debug.print_smt() do
+      IO.puts("Hand to be encoded into SMT is #{inspect(hand)}")
+      IO.puts("Calls to be encoded into SMT is #{inspect(calls)}")
+      IO.puts("Jokers are #{inspect(jokers)}")
+    end
+    all_tiles = tile_mappings
+    |> Map.values()
+    |> Enum.map(&MapSet.new/1)
+    |> Enum.reduce(all_tiles, &MapSet.union/2)
+    |> MapSet.new(&Utils.strip_attrs/1)
+    |> Enum.reject(& &1 in jokers) # we're solving for jokers, so don't include them as assignables
     # IO.puts("Non-joker tiles are #{inspect(all_tiles)}")
     {len, encoding, encoding_r, encoding_boilerplate} = determine_encoding(ordering, all_tiles)
     # encoding = %{
@@ -387,6 +393,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(fn {tile, ix} ->
       {_joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
       joker_choices = joker_choices
+      |> Enum.map(&Utils.strip_attrs/1)
       |> Enum.flat_map(fn tile2 -> if tile2 == :any do all_tiles else [tile2] end end)
       |> Enum.map(fn tile2 -> "(= joker#{ix} #{to_smt_tile(tile2, encoding)})" end)
       |> Enum.join("\n            ")
@@ -622,13 +629,12 @@ defmodule RiichiAdvanced.SMT do
     # max_tiles_used_usages = tiles_used_usages |> Enum.map(fn {_ixs, assertions} -> length(assertions) end) |> Enum.max(&>=/2, fn -> 0 end)
     # optimization4 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most #{max_tiles_used_usages})\n  #{Enum.map(tile_group_indices, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")}))\n"] end
 
-    optimzation_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
-      call = {"", Enum.map(call, &{&1, false})} # TODO replace this dumb call format
-      tile = Utils.get_joker_meld_tile(call, jokers, tile_mappings)
+    optimization_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
+      tile = Utils.get_joker_meld_tile({"", call}, jokers, tile_behavior)
       "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
     end |> Enum.join()
 
-    optimizations = [optimzation_call_jokers] #optimization1 ++ optimization2 #++ optimization3
+    optimizations = [optimization_call_jokers] #optimization1 ++ optimization2 #++ optimization3
 
     match_assertions = "(assert (or#{Enum.reverse(match_assertions)}))\n"
 
@@ -645,6 +651,16 @@ defmodule RiichiAdvanced.SMT do
     result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
     # IO.inspect(result)
     result
+  end
+
+  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+    case RiichiAdvanced.ETSCache.get({:match_hand_smt_v2, hand, calls, all_tiles, match_definitions, TileBehavior.hash(tile_behavior)}) do
+      [] -> 
+        result = _match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior)
+        RiichiAdvanced.ETSCache.put({:match_hand_smt_v2, hand, calls, all_tiles, match_definitions, TileBehavior.hash(tile_behavior)}, result)
+        result
+      [result] -> result
+    end
   end
 
 end

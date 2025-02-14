@@ -8,6 +8,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:log_id, params["log_id"])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -287,7 +288,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 

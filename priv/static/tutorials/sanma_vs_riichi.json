@@ -1,0 +1,84 @@
+{
+  "mods": ["yaku/riichi", "yaku/ippatsu", "show_waits"],
+  "config": {
+    "starting_hand": {
+      "east": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
+      "south": ["1m", "1m", "2p", "3p", "4p", "2s", "2s", "2s", "3s", "4s", "5s", "6s", "9s"],
+      "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"]
+    },
+    "starting_draws": ["3s", "1z", "2z", "3z", "4z", "1s"],
+    "starting_honba": 1,
+    "starting_dead_wall": ["1m"],
+    "tsumogiri_bots": true,
+    "auto_buttons": {
+      "5_auto_pei": {
+        "enabled_at_start": false
+      }
+    }
+  },
+  "scenes": {
+    "start": [
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Welcome to sanma! This is the standard three-player variant of riichi, where the name of the game is forming big hands.\n(Click to continue)"
+      }],
+      ["await_event", ["play_tile", "east", 13]],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "One thing you'll note is that everybody starts with a score of 35000 instead of 25000.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 2, "x": 8.5, "y": 8.25}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "You might also note the distinct lack of character tiles in your hand. This is because most of the character suit has been removed, except for the 1 and 9 of characters.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 6, "hand_index": 6.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "In addition, note that you were not given the option to chii this 3 of bamboo. This is because you cannot call chii in sanma! All other calls are allowed.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 8}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Go ahead and discard this east wind to continue."
+      }],
+      ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
+      ["force_event", ["play_tile", "south", 13]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "east", 13]],
+      ["sleep", 200],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 6.5,
+        "text": "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (\"pei\") is worth one extra han, and is otherwise not counted as part of your hand.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 6.5,
+        "text": "To declare a north wind, press the Pei button."
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 12.375, "y": "buttons"}],
+      ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
+      ["force_event", ["press_button", "south", "pei"]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 6.5,
+        "text": "The replacement tile gives us three sets and a pair, so we're tenpai. Now declare riichi on the 9 of bamboo!"
+      }],
+      ["force_event", ["press_button", "south", "riichi"]],
+      ["force_event", ["play_tile", "south", 12]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "west", 13]],
+      ["force_event", ["press_button", "south", "ron"]],
+      ["sleep", 3000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
+        "text": "Click to return to the list of tutorials."
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}

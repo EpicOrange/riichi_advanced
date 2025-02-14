@@ -11,89 +11,69 @@
   },
   "scenes": {
     "start": [
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 11.5,
-        "text": "Welcome to Riichi Advanced!\nYou're the first to play, so let's start by discarding this tile."
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 10.5,
+        "text": "Welcome to Riichi Advanced!\nYou're the first to play, so let's start by discarding this tile.\n(Click the tile to discard it.)"
       }],
-      ["add_object", "focus", {"width": 0.75, "x": 11.875, "y": 15.875}],
-      ["force_event", "scene1", ["play_tile", "east", 12]]
-    ],
-    "scene1": [
+      ["add_object", "focus", {"width": 0.75, "hand_index": 12}],
+      ["force_event", ["play_tile", "east", 12]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 11.5,
         "text": "Nice play!\n(Click to continue)"
       }],
-      ["sleep", 1500],
-      ["pause"],
-      ["await_click", "scene2"]
-    ],
-    "scene2": [
+      ["await_event", ["play_tile", "north", 13]],
+      ["await_click"],
       ["clear_objects"],
-      ["add_object", "focus", {"width": 6, "x": 7.5, "y": 15.375}],
+      ["add_object", "focus", {"width": 6, "hand_index": 6.5}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "This is your hand. Whenever it's your turn, you will automatically draw a tile and discard a tile.\n(Click to continue)"
       }],
-      ["await_click", "scene3"]
-    ],
-    "scene3": [
+      ["await_click"],
       ["clear_objects"],
-      ["add_object", "focus", {"width": 6, "x": 7.5, "y": 15.375}],
+      ["add_object", "focus", {"width": 6, "hand_index": 6.5}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "The object of the game is to obtain four sets and a pair. A set is a sequence of three, like 123, or a triplet, like 555.\n(Click to continue)"
       }],
-      ["await_click", "scene4"]
-    ],
-    "scene4": [
+      ["await_click"],
       ["clear_objects"],
-      ["add_object", "focus", {"width": 1.25, "x": 3.625, "y": 15.875}],
-      ["add_object", "focus", {"width": 1.25, "x": 5.875, "y": 15.875}],
-      ["add_object", "focus", {"width": 1.25, "x": 8.125, "y": 15.875}],
-      ["add_object", "focus", {"width": 1.25, "x": 11.125, "y": 15.875}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 1}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 4}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 7}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 11}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Looking at your hand, you already have 234,456,777 of circles and 888 of bamboo.\n(Click to continue)"
       }],
-      ["await_click", "scene5"]
-    ],
-    "scene5": [
+      ["await_click"],
       ["clear_objects"],
-      ["add_object", "focus", {"width": 0.75, "x": 9.625, "y": 15.875}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 9}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "So all you need is to draw another 4 bamboo to complete your pair!\n(Click to continue)"
       }],
-      ["await_click", "scene6"]
-    ],
-    "scene6": [
+      ["await_click"],
       ["clear_objects"],
-      ["unpause"],
-      ["add_object", "focus", {"width": 0.75, "x": 13, "y": 15.875}],
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10.25, "y": 13.25,
+      ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10.25, "y": 12.25,
         "text": "Go ahead and discard the 1 of characters."
       }],
-      ["force_event", "scene7", ["play_tile", "east", 13]]
-    ],
-    "scene7": [
+      ["force_event", ["play_tile", "east", 13]],
       ["clear_objects"],
-      ["unpause"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Nice! Let's see what you draw next..."
       }],
-      ["sleep", 1500],
+      ["await_event", ["play_tile", "north", 13]],
+      ["sleep", 200],
       ["clear_objects"],
-      ["add_object", "focus", {"width": 1.5, "x": 11.75, "y": 14.5}],
+      ["add_object", "focus", {"width": 1.5, "x": 11.75, "y": "buttons"}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Now you have four sets and a pair! Click Tsumo to declare a win!"
       }],
-      ["force_event", "scene8", ["press_button", "east", "tsumo"]]
-    ],
-    "scene8": [
+      ["force_event", ["press_button", "east", "tsumo"]],
       ["clear_objects"],
-      ["sleep", 5000],
+      ["sleep", 3000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Click to return to the list of tutorials."
       }],
-      ["await_click", "scene9"]
-    ],
-    "scene9": [
+      ["await_click"],
       ["exit"]
     ]
   }

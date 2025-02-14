@@ -118,7 +118,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 
