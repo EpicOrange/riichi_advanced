@@ -58,6 +58,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
+          "assigned_hand" -> [{state.winners[context.seat].assigned_hand, calls}] # includes winning tile
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
           "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
@@ -368,6 +369,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "second_last_visible_discard_exists" ->
         last_discard_action != nil and Enum.any?(Enum.drop(state.players[last_discard_action.seat].pond, -1), &not Utils.has_matching_tile?([&1], [:"1x", :"2x"]))
       "call_would_change_waits" ->
+        # context here is %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades}
         win_definitions = translate_match_definitions(state, opts)
         hand = Utils.add_attr(cxt_player.hand, ["hand"])
         draw = Utils.add_attr(cxt_player.draw, ["hand"])
@@ -376,7 +378,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, cxt_player.tile_behavior, []), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
-            call = {context.choice.name, call_tiles}
+            call = {context.call_name, call_tiles}
             waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, state.all_tiles, cxt_player.tile_behavior)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
@@ -384,7 +386,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
             Enum.sort(waits) != Enum.sort(waits_after_call)
           end)
         end)
-        # %{seat: seat, calls_spec: calls_spec, upgrade_name: upgrades, call_wraps: call_wraps})
       "call_changes_waits" ->
         win_definitions = translate_match_definitions(state, opts)
         hand = cxt_player.hand
@@ -433,9 +434,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           _ -> [context.tile]
         end
         tag = Enum.at(opts, 1, "missing_tag")
-        tagged_tile = state.tags[tag]
+        tagged_tiles = state.tags[tag]
         tile_behavior = state.players[context.seat].tile_behavior
-        Enum.any?(targets, fn target -> Utils.same_tile(target, tagged_tile, tile_behavior) end)
+        Enum.any?(targets, fn target -> Utils.has_matching_tile?(target, tagged_tiles, tile_behavior) end)
       "has_attr"              ->
         targets = get_hand_calls_spec(state, context, [Enum.at(opts, 0, "tile")])
         |> Enum.map(fn {hand, _calls} -> hand end)

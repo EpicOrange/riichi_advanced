@@ -5,12 +5,12 @@ def insert_after_kan_draw($arr):
 
 # flip next dora after non-ankan kan
 .functions.flip_dora = [
-  ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["reveal_tile", -18]]],
-  ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["reveal_tile", -16]]],
-  ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14]]],
-  ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12]]],
-  ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10]]],
-  ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8]]]
+  ["when", [{"name": "tile_revealed", "opts": [-16]}, {"name": "tile_not_revealed", "opts": [-18]}], [["reveal_tile", -18], ["tag_dora", "dora", -18]]],
+  ["when", [{"name": "tile_revealed", "opts": [-14]}, {"name": "tile_not_revealed", "opts": [-16]}], [["reveal_tile", -16], ["tag_dora", "dora", -16]]],
+  ["when", [{"name": "tile_revealed", "opts": [-12]}, {"name": "tile_not_revealed", "opts": [-14]}], [["reveal_tile", -14], ["tag_dora", "dora", -14]]],
+  ["when", [{"name": "tile_revealed", "opts": [-10]}, {"name": "tile_not_revealed", "opts": [-12]}], [["reveal_tile", -12], ["tag_dora", "dora", -12]]],
+  ["when", [{"name": "tile_revealed", "opts": [-8]}, {"name": "tile_not_revealed", "opts": [-10]}], [["reveal_tile", -10], ["tag_dora", "dora", -10]]],
+  ["when", [{"name": "tile_revealed", "opts": [-6]}, {"name": "tile_not_revealed", "opts": [-8]}], [["reveal_tile", -8], ["tag_dora", "dora", -8]]]
 ]
 |
 [["when", [{"name": "status", "opts": ["kan"]}, {"name": "status_missing", "opts": ["skip_kan_dora_flip"]}], [["run", "flip_dora"]]]] as $flip_after_kan

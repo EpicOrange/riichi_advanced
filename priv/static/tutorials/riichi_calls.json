@@ -13,153 +13,120 @@
     "start2": [
     ],
     "start": [
-      ["sleep", 1000],
+      ["await_event", ["play_tile", "west", 13]],
+      ["sleep", 200],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.75, "y": 11.75,
         "text": "The previous player just tossed the 3 of circles, and it's about to be your turn.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
-      ["await_click", "scene1"]
-    ],
-    "scene1": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.75, "y": 11.75,
         "text": "Usually, on your turn, you get to draw a tile. However, this 3 of circles can complete a sequence in our hand.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
-      ["add_object", "focus", {"width": 0.875, "x": 7.75, "y": 15.875}],
-      ["await_click", "scene2"]
-    ],
-    "scene2": [
+      ["add_object", "focus", {"width": 0.875, "hand_index": 6.5}],
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Because the last discard can complete a sequence, we can call Chii to take the last discard, in lieu of drawing a tile. Do so now."
       }],
-      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": 14.5}],
-      ["force_event", "scene3", ["press_button", "north", "chii"]]
-    ],
-    "scene3": [
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["force_event", ["press_button", "north", "chii"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "In fact, there are three possible sequences that this 3 of circles can complete.\n(Click to continue)"
       }],
-      ["add_object", "focus", {"width": 4.5, "x": 8.25, "y": 14.25}],
-      ["await_click", "scene4"]
-    ],
-    "scene4": [
+      ["add_object", "focus", {"width": 4.5, "x": 8.25, "y": "buttons"}],
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Since we want to keep the 123 sequence in our hand, it is wisest to use the 45. Let's give that a try."
       }],
-      ["add_object", "focus", {"width": 1.5, "x": 11.125, "y": 14.25}],
-      ["force_event", "scene5", ["press_call_button", "north", ["4p", "5p"], "3p"]]
-    ],
-    "scene5": [
+      ["add_object", "focus", {"width": 1.5, "x": 11.125, "y": "buttons"}],
+      ["force_event", ["press_call_button", "north", ["4p", "5p"], "3p"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Nice work! When you make a call such as Chii, the resulting set is revealed to the table, with the called tile facing in the direction of the player you called it from.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 2, "x": 15.375, "y": 16}],
-      ["await_click", "scene6"]
-    ],
-    "scene6": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \"locked in\" for your hand.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 2, "x": 15.375, "y": 16}],
-      ["await_click", "scene7"]
-    ],
-    "scene7": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Now you must discard a tile.\n(Click to continue)"
       }],
-      ["await_click", "scene8"]
-    ],
-    "scene8": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \"kuikae nashi\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles.\n(Click to continue)"
       }],
-      ["add_object", "focus", {"width": 0.75, "x": 6.625, "y": 15.875}],
-      ["await_click", "scene9"]
-    ],
-    "scene9": [
+      ["add_object", "focus", {"width": 0.75, "hand_index": 5}],
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "So go ahead and discard the white dragon."
       }],
-      ["add_object", "focus", {"width": 0.75, "x": 10.375, "y": 15.875}],
-      ["force_event", "scene10", ["play_tile", "north", 10]]
-    ],
-    "scene10": [
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10}],
+      ["force_event", ["play_tile", "north", 10]],
       ["clear_objects"],
-      ["sleep", 1000],
+      ["await_event", ["play_tile", "south", 13]],
+      ["sleep", 200],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 11.75,
         "text": "The player across from you has just discarded the east wind, which you have two of.\n(Click to continue)"
       }],
-      ["add_object", "focus", {"width": 1.25, "x": 9.25, "y": 15.875}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 8.5}],
       ["add_object", "focus", {"width": 0.75, "x": 9.75, "y": 5.375}],
-      ["await_click", "scene11"]
-    ],
-    "scene11": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Because the last discard can complete a triplet in our hand, we can immediately call Pon to take the last discard. Do so now."
       }],
-      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": 14.5}],
-      ["force_event", "scene12", ["press_button", "north", "pon"]]
-    ],
-    "scene12": [
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["force_event", ["press_button", "north", "pon"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Note that unlike Chii, which can only be called from your left, calling Pon messes with the turn order. The left player's turn got skipped, and now it's your turn to discard.\n(Click to continue)"
       }],
-      ["await_click", "scene13"]
-    ],
-    "scene13": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "We are very close to winning: we just need one more tile. Go ahead and discard this 4 of characters."
+        "text": "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
       }],
-      ["add_object", "focus", {"width": 0.75, "x": 3.625, "y": 15.875}],
-      ["force_event", "scene14", ["play_tile", "north", 1]]
-    ],
-    "scene14": [
+      ["add_object", "focus", {"width": 1.25, "hand_index": 1.5}],
+      ["force_event", [["play_tile", "north", 1], ["play_tile", "north", 2]]],
       ["clear_objects"],
       ["pause"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "We are now in \"tenpai\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile...\n(Click to continue)"
       }],
-      ["await_click", "scene15"]
-    ],
-    "scene15": [
+      ["await_click"],
       ["clear_objects"],
       ["unpause"],
-      ["sleep", 2000],
+      ["await_event", ["play_tile", "west", 13]],
+      ["sleep", 200],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "...or someone else can discard it!\n(Click to continue)"
       }],
-      ["await_click", "scene16"]
-    ],
-    "scene16": [
+      ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "When someone discards the final tile you need in order to win, you can declare a win by calling Ron. Do so now."
       }],
-      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": 14.5}],
-      ["force_event", "scene17", ["press_button", "north", "ron"]]
-    ],
-    "scene17": [
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["force_event", ["press_button", "north", "ron"]],
       ["clear_objects"],
-      ["sleep", 5000],
+      ["sleep", 3000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Click to return to the list of tutorials."
       }],
-      ["await_click", "scene18"]
-    ],
-    "scene18": [
+      ["await_click"],
       ["exit"]
     ]
   }

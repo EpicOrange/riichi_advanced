@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
-
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+
   def to_tile(tile_spec) do
     case tile_spec do
       [tile_spec | attrs] -> {Constants.to_tile()[tile_spec], attrs}
@@ -84,6 +84,8 @@ defmodule RiichiAdvanced.Utils do
 
   def tile_color(tile), do: Map.get(Constants.tile_color(), tile, "white")
 
+  def remove_spaces(tiles), do: Enum.reject(tiles, &has_matching_tile?([&1], [:"2x", :"3x", :"4x", :"5x", :"6x", :"7x", :"8x"]))
+
   # print tile, print hand
   # print tile, print hand
   def pt(tile) do
@@ -102,29 +104,44 @@ defmodule RiichiAdvanced.Utils do
 
   # find all jokers that map to the same tile(s) as the given one
   # together with the tile(s) they are connected by
-  def apply_tile_aliases(tile, tile_behavior) do
+  def _apply_tile_aliases(tile, tile_behavior) do
     if is_list(tile) or is_struct(tile, MapSet) do
       Enum.map(tile, &apply_tile_aliases(&1, tile_behavior))
       |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else
-      {tile, attrs} = to_attr_tile(tile)
       # every joker is connected to any-tile jokers
       any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
       for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
-        if (tile == tile2 or tile in aliases) and MapSet.subset?(MapSet.new(attrs2), MapSet.new(attrs)) do
-          MapSet.new(aliases, &add_attr(&1, attrs2)) |> MapSet.put(tile2)
-        else MapSet.new() end
+        t2 = add_attr(tile2, attrs2)
+        cond do
+          has_matching_tile?([tile], aliases) ->
+            # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
+            MapSet.new(aliases)
+            |> MapSet.delete(:any) # never return :any
+            |> MapSet.put(t2)
+          same_tile(tile, t2) -> MapSet.new(aliases)
+          true -> MapSet.new()
+        end
       end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
+    end
+  end
+  def apply_tile_aliases(tile, tile_behavior) do
+    case RiichiAdvanced.ETSCache.get({:apply_tile_aliases, tile, TileBehavior.hash(tile_behavior)}) do
+      [] -> 
+        result = _apply_tile_aliases(tile, tile_behavior)
+        RiichiAdvanced.ETSCache.put({:apply_tile_aliases, tile, TileBehavior.hash(tile_behavior)}, result)
+        result
+      [result] -> result
     end
   end
 
   # tile1 must have at least the attributes of tile2 (or any of its aliases)
   def same_tile(tile1, tile2) do
-    l1 = strip_attrs(tile1)
-    {l2, attrs2} = to_attr_tile(tile2)
-    same_id = :any in [l1, l2]
-           or (l2 == :faceup and l1 not in [:"1x", :"2x", :"3x", :"4x"])
-           or l1 == l2
+    t1 = strip_attrs(tile1)
+    {t2, attrs2} = to_attr_tile(tile2)
+    same_id = t1 == t2
+           or (t2 == :faceup and t1 not in [:"1x", :"2x", :"3x", :"4x"])
+           or :any in [t1, t2]
     attrs_match = has_attr?(tile1, attrs2)
     same_id and attrs_match
   end
@@ -132,12 +149,13 @@ defmodule RiichiAdvanced.Utils do
     if Enum.empty?(tile_behavior.aliases) do
       same_tile(tile1, tile2)
     else
+      t1 = strip_attrs(tile1)
+      {t2, attrs2} = to_attr_tile(tile2)
       l1 = strip_attrs(apply_tile_aliases(tile1, tile_behavior))
       l2 = strip_attrs(apply_tile_aliases(tile2, tile_behavior))
-      same_id = :any in l1 or :any in l2
+      same_id = t1 in l2 or t2 in l1
       or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
-      or tile1 in l2 or tile2 in l1
-      {_, attrs2} = to_attr_tile(tile2)
+      or :any in l1 or :any in l2
       attrs_match = has_attr?(tile1, attrs2)
       same_id and attrs_match
     end
@@ -241,11 +259,15 @@ defmodule RiichiAdvanced.Utils do
     -Integer.floor_div(-nominal, 2) * 100
   end
 
+  @valid_tile_colors ["red", "blue", "cyan", "gold", "orange", "yellow", "green", "purple", "gray", "grey", "lightgray", "black", "white"]
+
   def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = strip_attrs(tile)
     transparent = has_attr?(tile, ["transparent"])
     inactive = has_attr?(tile, ["inactive"])
     hidden = has_attr?(tile, ["hidden"])
+    dora = has_attr?(tile, ["dora"])
+    last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
     id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
@@ -253,18 +275,21 @@ defmodule RiichiAdvanced.Utils do
     sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
+    color_classes = Enum.filter(@valid_tile_colors, &has_attr?(tile, [&1]))
     [
       "tile", id,
       facedown && "facedown",
       transparent && "transparent",
       inactive && "inactive",
       hidden && "hidden",
+      dora && "dora",
+      last_sideways && "last-sideways",
       reversed && "reversed",
       played && "played",
       sideways && "sideways",
       just_played && "just-played",
       riichi && "sideways",
-    ] ++ extra_classes
+    ] ++ extra_classes ++ color_classes
   end
 
   def flip_faceup(tile) do

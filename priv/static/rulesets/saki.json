@@ -353,7 +353,7 @@
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["koutsu"], -1], [["pair"], 6] ],
+    [ [["nojoker", "koutsu"], -1], [["pair"], 6] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -402,7 +402,7 @@
   ],
   "pair_wait_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["koutsu"], -1], [["pair"], 6] ]
+    [ [["nojoker", "koutsu"], -1], [["pair"], 6] ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
@@ -415,7 +415,7 @@
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ [["quad"], -1], [["pair"], 7] ],
+    [ [["nojoker", "quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
@@ -449,7 +449,7 @@
     [ [["quad"], -1], [["koutsu"], -2], [["pair"], -6], [["pair"], 5] ]
   ],
   "kakura_kurumi_win_definition": [
-    [ [["koutsu"], -1], [["pair"], 6] ]
+    [ [["nojoker", "koutsu"], -1], [["pair"], 6] ]
   ],
   "雜龍_definition": [
     [ "exhaustive", [[[[0,1,2],[13,14,15],[26,27,28]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],

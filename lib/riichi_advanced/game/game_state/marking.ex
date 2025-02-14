@@ -239,11 +239,14 @@ defmodule RiichiAdvanced.GameState.Marking do
             # run post-mark actions
             # remember that some other action must have run to set :done
             # in order for this to run at all
-            [{:post_actions, post_actions}] = get_mark_infos(state.marking[seat], :post_actions)
-            if Debug.debug_actions() do
-              IO.puts("Running post-mark actions for #{seat}: #{inspect(post_actions)}")
+            state = case get_mark_infos(state.marking[seat], :post_actions) do
+              [{:post_actions, post_actions}] -> 
+                if Debug.debug_actions() do
+                  IO.puts("Running post-mark actions for #{seat}: #{inspect(post_actions)}")
+                end
+                Actions.run_actions(state, post_actions, %{seat: seat})
+              _ -> state
             end
-            state = Actions.run_actions(state, post_actions, %{seat: seat})
 
             state = reset_marking(state, seat)
             state

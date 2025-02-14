@@ -1,9 +1,9 @@
 # replace a 5z with shiro pocchi
-(.wall | index("5z")) as $idx | if $idx then .wall[$idx] = "25z" else . end
+(.wall | index("5z")) as $idx | if $idx then .wall[$idx] = "9z" else . end
 |
 # treat shiro pocchi as 5z
 .after_start.actions += [
-  ["set_tile_alias_all", ["25z"], ["5z"]]
+  ["set_tile_alias_all", ["9z"], ["5z"]]
 ]
 |
 [
@@ -20,8 +20,8 @@
 .after_turn_change.actions += [
   ["when", [
     {"name": "status", "opts": ["riichi"]},
-    {"name": "match", "opts": [["draw"], [[[["25z"], 1]]]]}
-  ], [["set_status", "shiro_pocchi"], ["set_tile_alias", ["25z"], $all_tiles]]]
+    {"name": "match", "opts": [["draw"], [[[["9z"], 1]]]]}
+  ], [["set_status", "shiro_pocchi"], ["set_tile_alias", ["9z"], $all_tiles]]]
 ]
 |
 # remove shiro pocchi status on turn change
