@@ -138,10 +138,11 @@ defmodule RiichiAdvanced.GameState.Log do
     # ]
     for {kw, val} <- marking do
       if kw in Marking.special_keys() do
-        [kw, val]
+        [Atom.to_string(kw), val]
       else
-        val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, s, i] end))
-        [kw, val]
+        val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, Atom.to_string(s), i] end))
+        |> Map.new(fn {k, v} -> {Atom.to_string(k), v} end)
+        [Atom.to_string(kw), val]
       end
     end
   end

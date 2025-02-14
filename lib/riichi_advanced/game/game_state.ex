@@ -30,8 +30,7 @@ defmodule RiichiAdvanced.GameState do
 
   defmodule PlayerCache do
     defstruct [
-      saved_tile_mappings: %{},
-      saved_tile_aliases: %{},
+      saved_tile_behavior: %{}, # label => TileBehavior
       riichi_discard_indices: nil,
       playable_indices: [],
       closest_american_hands: [],
@@ -75,6 +74,15 @@ defmodule RiichiAdvanced.GameState do
     end
     def hash(tile_behavior) do
       :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.ignore_suit})
+    end
+    def joker_power(tile, tile_behavior) do
+      aliases = Utils.apply_tile_aliases(tile, tile_behavior)
+      if :any in aliases do 1000000 else MapSet.size(aliases) end
+    end
+    # the idea is to move the most powerful jokers to the back
+    # power is just number of aliases
+    def sort_by_joker_power(tiles, tile_behavior) do
+      Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
     end
   end
 
@@ -170,10 +178,11 @@ defmodule RiichiAdvanced.GameState do
       kyoku: 0,
       honba: 0,
       pot: 0,
-      tags: %{},
       log_state: %{},
       call_stack: [], # call stack limit is 10 for now
-      forced_event: nil, # for tutorials
+      block_events: false, # for tutorials
+      forced_events: nil, # for tutorials
+      last_event: nil, # for tutorials
 
       # working game state (reset on new round)
       # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
@@ -192,6 +201,7 @@ defmodule RiichiAdvanced.GameState do
       saved_revealed_tiles: [],
       max_revealed_tiles: 0,
       drawn_reserved_tiles: [],
+      tags: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
       processed_bloody_end: false,
     ]
@@ -342,6 +352,7 @@ defmodule RiichiAdvanced.GameState do
     state = Log.init_log(state)
 
     state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
+    state = Map.put(state, :honba, Map.get(state.rules, "starting_honba", 0))
 
     initial_score = Map.get(rules, "initial_score", 0)
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
@@ -489,8 +500,8 @@ defmodule RiichiAdvanced.GameState do
 
       # roll dice
       state = state
-      |> Map.put(:die1, :rand.uniform(6))
-      |> Map.put(:die2, :rand.uniform(6))
+      |> Map.put(:die1, Map.get(state.rules, "die1", :rand.uniform(6)))
+      |> Map.put(:die2, Map.get(state.rules, "die2", :rand.uniform(6)))
 
       {state, hands, scores}
     else
@@ -547,6 +558,7 @@ defmodule RiichiAdvanced.GameState do
     # initialize other constants
     persistent_statuses = if Map.has_key?(rules, "persistent_statuses") do rules["persistent_statuses"] else [] end
     persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
+    persistent_tags = if Map.has_key?(rules, "persistent_tags") do rules["persistent_tags"] else [] end
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
       {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
@@ -558,7 +570,7 @@ defmodule RiichiAdvanced.GameState do
          hand: hands[&1],
          auto_buttons: initial_auto_buttons,
          status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
-         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new()
+         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
        })
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -571,6 +583,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:delta_scores, %{})
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
+    |> Map.update!(:tags, &Enum.filter(&1, fn {tag, _tiles} -> tag in persistent_tags end) |> Map.new())
 
     # initialize marking
     state = Marking.initialize_marking(state)
@@ -595,7 +608,7 @@ defmodule RiichiAdvanced.GameState do
     # recalculate buttons at the start of the game
     state = Buttons.recalculate_buttons(state)
 
-    notify_ai(state)
+    notify_ai_new_round(state)
 
     # ensure playable_indices is populated after the after_start actions
     state = broadcast_state_change(state, true)
@@ -659,7 +672,7 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  def exhaustive_draw(state) do
+  def exhaustive_draw(state, draw_name) do
     state = Map.put(state, :round_result, :draw)
 
     push_message(state, [%{text: "Game ended by exhaustive draw"}])
@@ -679,7 +692,7 @@ defmodule RiichiAdvanced.GameState do
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
 
     state = Map.put(state, :delta_scores, delta_scores)
-    state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+    state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
     state = Map.put(state, :next_dealer, next_dealer)
     state
   end
@@ -704,7 +717,7 @@ defmodule RiichiAdvanced.GameState do
 
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     state = Map.put(state, :delta_scores, delta_scores)
-    state = Map.put(state, :delta_scores_reason, draw_name)
+    state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else "Abortive Draw" end)
     state = Map.put(state, :next_dealer, :self)
     state
   end
@@ -787,8 +800,8 @@ defmodule RiichiAdvanced.GameState do
         tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
         state = if tobi and Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
 
-        # log
-        if not state.log_seeking_mode do
+        # log game, unless we are viewing a log or if this is a tutorial
+        if not (state.log_seeking_mode or state.forced_events != nil) do
           Log.output_to_file(state)
         end
         state = Log.finalize_kyoku(state)
@@ -860,14 +873,12 @@ defmodule RiichiAdvanced.GameState do
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
     agariyame = Map.get(state.rules, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
     tenpaiyame = Map.get(state.rules, "tenpaiyame", false) and state.round_result == :draw and "tenpai" in state.players[dealer].status
-    forced or agariyame or tenpaiyame or if Map.has_key?(state.rules, "sudden_death_goal") do
+    past_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"]
+    forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Map.has_key?(state.rules, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= state.rules["sudden_death_goal"] end)
-      past_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"] + 4
-      above_goal or past_max_rounds
-    else
-      past_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"]
-      past_max_rounds
-    end
+      past_extra_max_rounds = Map.has_key?(state.rules, "max_rounds") and state.kyoku >= state.rules["max_rounds"] + 4
+      (above_goal and past_max_rounds) or past_extra_max_rounds
+    else past_max_rounds end
   end
 
   def finalize_game(state) do
@@ -907,7 +918,7 @@ defmodule RiichiAdvanced.GameState do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
-          nil -> Map.get(state.tags, tile_name, nil) # check tags
+          nil -> Map.get(state.tags, tile_name, []) |> Enum.at(0) # check tags
           ix  -> Enum.at(state.dead_wall, -ix-1)
         end
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
@@ -924,6 +935,9 @@ defmodule RiichiAdvanced.GameState do
     # IO.puts("Notifying ai")
     # IO.inspect(Process.info(self(), :current_stacktrace))
     GenServer.cast(self(), :notify_ai)
+  end
+  def notify_ai_new_round(_state) do
+    GenServer.cast(self(), :notify_ai_new_round)
   end
   def notify_ai_marking(_state, seat) do
     GenServer.cast(self(), {:notify_ai_marking, seat})
@@ -1160,8 +1174,10 @@ defmodule RiichiAdvanced.GameState do
       GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
       IO.puts("Player #{socket.id} joined as #{seat}")
 
-      # tell them about the replay UUID
-      GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
+      # tell them about the replay UUID, unless this is a tutorial
+      if state.forced_events == nil do
+        GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
+      end
       state
     else
       messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
@@ -1345,6 +1361,13 @@ defmodule RiichiAdvanced.GameState do
     {:reply, lobby_room, state}
   end
 
+  def handle_call({:force_event, events, blocking}, _from, state) do
+    state = Map.put(state, :forced_events, events)
+    state = Map.put(state, :block_events, blocking)
+    notify_ai(state)
+    {:reply, :ok, state}
+  end
+
   def handle_cast({:initialize_game, log}, state) do
     # run before_new_round actions
     state = if Map.has_key?(state.rules, "before_start") do
@@ -1456,13 +1479,9 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  def handle_cast({:force_event, event}, state) do
-    {:noreply, Map.put(state, :forced_event, event)}
-  end
-
   def handle_cast({:play_tile, seat, index}, state) do
-    if state.forced_event in [nil, ["play_tile", Atom.to_string(seat), index]] do
-      state = Map.put(state, :forced_event, nil)
+    event = ["play_tile", Atom.to_string(seat), index]
+    if not state.block_events or state.forced_events == nil or event in state.forced_events do
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
@@ -1475,26 +1494,77 @@ defmodule RiichiAdvanced.GameState do
         state = update_player(state, seat, &%Player{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
         actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
         state = Actions.submit_actions(state, seat, "play_tile", actions)
+        state = if state.forced_events != nil and event in state.forced_events do
+          state
+          |> Map.put(:block_events, true)
+          |> Map.put(:forced_events, [])
+          |> Map.put(:last_event, event)
+          |> broadcast_state_change()
+        else
+          if Debug.debug_tutorial() do
+            IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+          end
+          state
+        end
         state
       else state end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      if Debug.debug_tutorial() do
+        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+      end
+      {:noreply, state}
+    end
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
-    if state.forced_event in [nil, ["press_button", Atom.to_string(seat), button_name]] do
-      state = Map.put(state, :forced_event, nil)
+    event = ["press_button", Atom.to_string(seat), button_name]
+    if not state.block_events or state.forced_events == nil or event in state.forced_events do
       state = Buttons.press_button(state, seat, button_name)
+      state = if state.forced_events != nil and event in state.forced_events do
+        state
+        |> Map.put(:block_events, true)
+        |> Map.put(:forced_events, [])
+        |> Map.put(:last_event, event)
+        |> broadcast_state_change()
+      else
+        if Debug.debug_tutorial() do
+          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+        end
+        state
+      end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      if Debug.debug_tutorial() do
+        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+      end
+      {:noreply, state}
+    end
   end
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do
-    if state.forced_event in [nil, ["press_call_button", Atom.to_string(seat), Enum.map(call_choice, &Utils.tile_to_string/1), Utils.tile_to_string(called_tile)]] do
-      state = Map.put(state, :forced_event, nil)
+    event = ["press_call_button", Atom.to_string(seat), Enum.map(call_choice, &Utils.tile_to_string/1), Utils.tile_to_string(called_tile)]
+    if not state.block_events or state.forced_events == nil or event in state.forced_events do
       state = Buttons.press_call_button(state, seat, call_choice, called_tile)
+      state = if state.forced_events != nil and event in state.forced_events do
+        state
+        |> Map.put(:block_events, true)
+        |> Map.put(:forced_events, [])
+        |> Map.put(:last_event, event)
+        |> broadcast_state_change()
+      else
+        if Debug.debug_tutorial() do
+          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+        end
+        state
+      end
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      if Debug.debug_tutorial() do
+        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+      end
+      {:noreply, state}
+    end
   end
   
   def handle_cast({:press_first_call_button, seat, button_name}, state) do
@@ -1531,9 +1601,9 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:cancel_call_buttons, seat}, state) do
-    if state.forced_event == nil do
+    if state.forced_events == nil do
       # go back to button clicking phase
-      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{} } end)
+      state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
       notify_ai(state)
 
       state = broadcast_state_change(state)
@@ -1571,6 +1641,21 @@ defmodule RiichiAdvanced.GameState do
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
+      end
+    end
+    {:noreply, state}
+  end
+
+  def handle_cast(:notify_ai_new_round, state) do
+    if not state.log_loading_mode do
+      if state.game_active do
+        Enum.each(state.available_seats, fn seat ->
+          if is_pid(Map.get(state, seat)) do
+            send(Map.get(state, seat), :initialize)
+          end
+        end)
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai_new_round])
       end
     end
     {:noreply, state}

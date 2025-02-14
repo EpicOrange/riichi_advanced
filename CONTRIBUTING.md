@@ -18,6 +18,12 @@ Riichi Advanced does not have good test coverage, and more importantly, we're no
 
 One way Riichi Advanced facilitates testing is letting you rig the wall in all variants: when in a room, hit Room Settings and then Config, and uncomment the lines in the textbox. You can also add `"debug_status": true` to show statuses, counters, and buttons for all players. Also, the Open Hands mod could be helpful.
 
+## Ruleset tutorials
+
+Riichi Advanced supports custom tutorials, and the documentation for that is available [here](documentation/tutorials.md). To start, navigate to the [main menu](https://riichiadvanced.com), select a variant, press Learn, press Create your own ruleset, and start writing! To share your tutorials, simply copy the URL when playing said tutorial.
+
+Note that these shared tutorials are only stored temporarily. If you end up creating a custom tutorial that you want to add to the game, drop it in [Discord](https://discord.gg/5QQHmZQavP) or submit a pull request! All in-game tutorials are stored in the directory [`priv/static/tutorials/`](priv/static/tutorials/).
+
 ## Ruleset documentation
 
 In order to implement mahjong variants we need a good source of rules (preferably in English). You can contribute by sending us rulesets for your favorite mahjong from any source, including yourself! Just drop it in [Discord](https://discord.gg/5QQHmZQavP) or post an issue or open a PR adding it to the toplevel `documentation/` directory.

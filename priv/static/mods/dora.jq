@@ -68,3 +68,8 @@ else . end
 .extra_yaku += [
   {"display_name": "Dora", "value": "dora", "when": [{"name": "counter_at_least", "opts": ["dora", 1]}]}
 ]
+|
+# tag dora with dora tag
+.after_start.actions += [
+  ["tag_dora", "dora", -6]
+]

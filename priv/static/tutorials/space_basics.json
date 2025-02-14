@@ -1,0 +1,82 @@
+{
+  "mods": ["yaku/riichi", "yaku/ippatsu", "space", "show_waits"],
+  "config": {
+    "starting_hand": {
+      "east": ["5z", "2m", "9m", "1p", "3p", "9p", "1s", "2s", "3s", "5s", "1z", "2z", "4z"],
+      "south": ["1m", "1m", "2p", "3p", "4p", "2s", "2s", "2s", "3s", "4s", "5s", "6s", "7p"],
+      "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"]
+    },
+    "starting_draws": ["1m", "2p", "7s", "4m", "9p", "9s", "7z", "6z", "3s"],
+    "tsumogiri_bots": true
+  },
+  "scenes": {
+    "start": [
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Welcome to space mahjong! Let's get started by discarding this white dragon -- you'll soon see why."
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 12}],
+      ["force_event", ["play_tile", "east", 12]],
+      ["clear_objects"],
+      ["force_event", ["play_tile", "south", 13]],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4, "y": 8.5,
+        "text": "The player to your right just played the 2 of circles. In space mahjong, you can chii from any direction, not just from your left. Try it now!"
+      }],
+      ["force_event", ["press_button", "east", "chii"]],
+      ["clear_objects"],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Hey, looks like you have options!\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "The distinguishing factor of space mahjong is that sequences can wrap. In other words, 891 and 912 are valid sequences.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Winds and dragons can also form sequences! So this is a valid sequence.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.5, "hand_index": 11}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "This means that your 91 in circles is actually a double-sided wait for 8 and 2. Pretty silly, right? Let's try going for sanshoku on 912."
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 9, "y": "buttons"}],
+      ["force_event", ["press_call_button", "east", ["1p", "9p"], "2p"]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Discard the 5 of bamboo. Some might argue that ones and nines are better than fives in space mahjong, because they can form chanta!"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 7}],
+      ["force_event", ["play_tile", "east", 7]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "north", 13]],
+      ["sleep", 1500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku."
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 3}],
+      ["force_event", ["play_tile", "east", 3]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "north", 13]],
+      ["await_event", ["press_button", "west", "skip"]],
+      ["force_event", ["press_button", "east", "ron"]],
+      ["sleep", 3000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
+        "text": "Space mahjong is implemented as a riichi mod, so you're actually just playing a modified riichi right now. This also means that here on Riichi Advanced, you can combine space mahjong with any riichi variant!\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
+        "text": "Click to return to the list of tutorials."
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}

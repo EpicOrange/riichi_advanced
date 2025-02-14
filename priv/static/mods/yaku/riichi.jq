@@ -7,7 +7,7 @@
 .tenpai_14_definition = [
   [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
   [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-  [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
+  [ [["nojoker", "quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
   [ "unique",
     [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
     [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]

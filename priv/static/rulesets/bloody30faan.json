@@ -139,7 +139,7 @@
   ],
   "win_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
-    [ [["quad"], -1], [["pair"], 7] ],
+    [ [["nojoker", "quad"], -1], [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]

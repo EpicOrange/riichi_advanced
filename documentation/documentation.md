@@ -464,7 +464,7 @@ Other:
 - `["win_by_discard"]`: Declares a win using the last discard as the winning tile.
 - `["win_by_call"]`: Declares a win using the last called tile as the winning tile.
 - `["win_by_draw"]`: Declares a win using the first drawn tile as the winning tile.
-- `["ryuukyoku"]`: Declares an exhaustive draw.
+- `["ryuukyoku", name]`: Declares an exhaustive draw. `name` is optional, but if provided it will override the default name.
 - `["abortive_draw", name]`: Declares an abortive draw by the given `name`.
 - `["set_status", status1, status2, ...]`: Add to the set of statuses for the current player.
 - `["unset_status", status1, status2, ...]`: Remove from the set of statuses for the current player.
@@ -545,16 +545,19 @@ Other:
 - `["set_tile_alias", from, to]`: Assigns all tiles in `from` to tiles in `to` for the current player. Basically if `from` is a single tile, then that tile becomes a joker whose possible values are the tiles in `to`, and this only applies to the current player.
 - `["set_tile_alias_all", from, to]`: Same, but applies this assignment to all players.
 - `["clear_tile_aliases"]`: Clears all joker assignments for the current player.
-- `["save_tile_aliases", label]`: Saves all joker assignments under the name `label` for the current player, which defaults to `"default"` when not supplied.
-- `["load_tile_aliases", label]`: Loads all joker assignments under the name `label` for the current player, which defaults to `"default"` when not supplied.
 - `["set_tile_ordering", [tile1, tile2, ...]]`: Asserts that `tile1` comes after `tile2` and so on. Applies only to the current player.
 - `["set_tile_ordering_all", [tile1, tile2, ...]]`: Same, but applies this assertion to all players.
+- `["save_tile_behavior", label]`: Saves all joker assignments and tile orderings under the name `label` for the current player, which defaults to `"default"` when not supplied.
+- `["load_tile_behavior", label]`: Loads all joker assignments and tile orderings under the name `label` for the current player, which defaults to `"default"` when not supplied.
 - `["add_attr", [target1, ...], [attr1, ...], [tile_spec1...]]`: Add the given attributes to the given targets that match all given tile specs.
 - `["add_attr_first_tile", tile, [attr1, ...]]`: Add the given attributes to the first instance of the given tile in hand.
+- `["add_attr_tagged", tag, [attr1, ...]]`: Add the given attributes to all instances of the tagged tiles. (includes wall)
 - `["remove_attr_hand", attr1, attr2, ...]`: Remove the given attributes from all tiles in the current player's hand.
 - `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
+- `["tag_tiles", tag_name, tiles]`: Globally tag the given tile(s) with the given tag name.
 - `["tag_drawn_tile", tag_name]`: Globally tag the current player's drawn tile with the given tag name.
 - `["tag_last_discard", tag_name]`: Globally tag the current player's last discard with the given tag name.
+- `["tag_dora", tag_name, dora_indicator]`: Globally tag the dora indicated by the given dora_indicator tile, using the toplevel `"dora_indicators"` key as reference.
 - `["untag", tag_name]`: Untag all tiles tagged with the given tag name.
 - `["convert_last_discard", tile]`: Turn the last discard into the given tile.
 - `["flip_all_calls_faceup"]`: Flip all draws faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.
