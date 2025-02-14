@@ -1,5 +1,5 @@
 { 
-    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement "Baida Reuse" yaku. implement closed-kong-of-baida exception.
+    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated.
   "default_mods": [],
   "available_mods": [],
   "display_name": "Ningbo mahjong",
@@ -130,7 +130,7 @@
     { "display_name": "After A Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Last Tile", "value": 1, "when": ["no_tiles_remaining", "won_by_draw"] },
     { "display_name": "Self Draw", "value": 1, "when": ["won_by_draw"] },
-    // { "display_name": "Baida Reuse", "value": 1, "when": [] },
+    { "display_name": "Baida Reuse", "value": "baida_reuse", "when": [{"name": "counter_at_least", "opts": ["baida_reuse", 1]}] },
     { "display_name": "Baida Pair Win", "value": 1, "when": ["won_by_draw", {"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}, {"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
     { "display_name": "White Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
     { "display_name": "Green Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
@@ -224,10 +224,61 @@
         ]
     ]
   },
+  "before_win": {
+    "actions": [
+      ["add_counter", "baida_reuse", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
+    ]
+  },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "match_start"]
-      ["set_tile_alias_all", ["dora"], ["any"]]
+      ["set_status_all", "first_turn", "match_start"],
+        // tag 'baida' tiles with baida filler text here
+      ["tag_dora", "baida", -1],
+        // add the 'dora' attribute to tiles tagged with 'baida', which should make them shiny
+      ["add_attr_tagged", "baida", ["dora", "baida"]],
+        // sets any tile with attribute 'baida' to be an any-joker with attribute 'baida', or its original value with attribute 'original'
+      ["set_tile_alias_all", [["1m", "baida"]], [["any", "baida"], ["1m", "original"]],
+      ["set_tile_alias_all", [["2m", "baida"]], [["any", "baida"], ["2m", "original"]],
+      ["set_tile_alias_all", [["3m", "baida"]], [["any", "baida"], ["3m", "original"]],
+      ["set_tile_alias_all", [["4m", "baida"]], [["any", "baida"], ["4m", "original"]],
+      ["set_tile_alias_all", [["5m", "baida"]], [["any", "baida"], ["5m", "original"]],
+      ["set_tile_alias_all", [["6m", "baida"]], [["any", "baida"], ["6m", "original"]],
+      ["set_tile_alias_all", [["7m", "baida"]], [["any", "baida"], ["7m", "original"]],
+      ["set_tile_alias_all", [["8m", "baida"]], [["any", "baida"], ["8m", "original"]],
+      ["set_tile_alias_all", [["9m", "baida"]], [["any", "baida"], ["9m", "original"]],
+      ["set_tile_alias_all", [["1p", "baida"]], [["any", "baida"], ["1p", "original"]],
+      ["set_tile_alias_all", [["2p", "baida"]], [["any", "baida"], ["2p", "original"]],
+      ["set_tile_alias_all", [["3p", "baida"]], [["any", "baida"], ["3p", "original"]],
+      ["set_tile_alias_all", [["4p", "baida"]], [["any", "baida"], ["4p", "original"]],
+      ["set_tile_alias_all", [["5p", "baida"]], [["any", "baida"], ["5p", "original"]],
+      ["set_tile_alias_all", [["6p", "baida"]], [["any", "baida"], ["6p", "original"]],
+      ["set_tile_alias_all", [["7p", "baida"]], [["any", "baida"], ["7p", "original"]],
+      ["set_tile_alias_all", [["8p", "baida"]], [["any", "baida"], ["8p", "original"]],
+      ["set_tile_alias_all", [["9p", "baida"]], [["any", "baida"], ["9p", "original"]],
+      ["set_tile_alias_all", [["1s", "baida"]], [["any", "baida"], ["1s", "original"]],
+      ["set_tile_alias_all", [["2s", "baida"]], [["any", "baida"], ["2s", "original"]],
+      ["set_tile_alias_all", [["3s", "baida"]], [["any", "baida"], ["3s", "original"]],
+      ["set_tile_alias_all", [["4s", "baida"]], [["any", "baida"], ["4s", "original"]],
+      ["set_tile_alias_all", [["5s", "baida"]], [["any", "baida"], ["5s", "original"]],
+      ["set_tile_alias_all", [["6s", "baida"]], [["any", "baida"], ["6s", "original"]],
+      ["set_tile_alias_all", [["7s", "baida"]], [["any", "baida"], ["7s", "original"]],
+      ["set_tile_alias_all", [["8s", "baida"]], [["any", "baida"], ["8s", "original"]],
+      ["set_tile_alias_all", [["9s", "baida"]], [["any", "baida"], ["9s", "original"]],
+      ["set_tile_alias_all", [["1z", "baida"]], [["any", "baida"], ["1z", "original"]],
+      ["set_tile_alias_all", [["2z", "baida"]], [["any", "baida"], ["2z", "original"]],
+      ["set_tile_alias_all", [["3z", "baida"]], [["any", "baida"], ["3z", "original"]],
+      ["set_tile_alias_all", [["4z", "baida"]], [["any", "baida"], ["4z", "original"]],
+      ["set_tile_alias_all", [["5z", "baida"]], [["any", "baida"], ["5z", "original"]],
+      ["set_tile_alias_all", [["6z", "baida"]], [["any", "baida"], ["6z", "original"]],
+      ["set_tile_alias_all", [["7z", "baida"]], [["any", "baida"], ["7z", "original"]],
+      ["set_tile_alias_all", [["1f", "baida"]], [["any", "baida"], ["1f", "original"]],
+      ["set_tile_alias_all", [["2f", "baida"]], [["any", "baida"], ["2f", "original"]],
+      ["set_tile_alias_all", [["3f", "baida"]], [["any", "baida"], ["3f", "original"]],
+      ["set_tile_alias_all", [["4f", "baida"]], [["any", "baida"], ["4f", "original"]],
+      ["set_tile_alias_all", [["1g", "baida"]], [["any", "baida"], ["1g", "original"]],
+      ["set_tile_alias_all", [["2g", "baida"]], [["any", "baida"], ["2g", "original"]],
+      ["set_tile_alias_all", [["3g", "baida"]], [["any", "baida"], ["3g", "original"]],
+      ["set_tile_alias_all", [["4g", "baida"]], [["any", "baida"], ["4g", "original"]]
     ]
   },
   "buttons": {
@@ -284,9 +335,12 @@
       "call_style": {"self": [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]},
       "call_hidden": true,
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
-          // TODO: implement exception for closed-kong-ing the jokers
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [["joker"], 1]}
+        [
+          {"name": "not_call_contains", "opts": [["joker"], 1]},
+          {"name": "call_contains", "opts": ["nojoker", [["baida"], 4]]}
+        ],
+        {"name": "not_call_contains", "opts": ["nojoker", [["flower"], 4]]}
       ],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
@@ -411,6 +465,6 @@
   "initial_dead_wall_length": 14,
   "starting_tiles": 13,
   "max_rounds": 16,
-    // change this to be dependent on the second die roll-- dammit, we have to implement rerolling the dice. For now, I'll assume the second die roll is always 7.
+    // TODO: change this to be dependent on the second die roll, when the die-roll update comes out. For now, I'll assume the second die roll is always 7.
   "revealed_tiles": [-14]
 }
