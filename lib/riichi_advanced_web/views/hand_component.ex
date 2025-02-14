@@ -10,8 +10,9 @@ defmodule RiichiAdvancedWeb.HandComponent do
     socket = assign(socket, :played_tile, nil)
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
-    socket = assign(socket, :just_called, false)
-    socket = assign(socket, :just_called_flower, false)
+    socket = assign(socket, :just_called, nil)
+    socket = assign(socket, :just_upgraded, nil)
+    socket = assign(socket, :just_called_flower, nil)
     socket = assign(socket, :just_drew, false)
     socket = assign(socket, :called_tile, nil)
     socket = assign(socket, :call_choice, nil)
@@ -28,7 +29,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={[@id, @just_called && "just-called", @just_called_flower && "just-called-flower", @just_drew && "just-drew", not Enum.empty?(@marking) && "marking"]}>
+    <div class={[@id, @just_called != nil && "just-called", @just_upgraded != nil && "just-upgraded", @just_called_flower != nil && "just-called-flower", @just_drew && "just-drew", not Enum.empty?(@marking) && "marking"]}>
       <%= if @your_hand? do %>
         <%= if not Enum.empty?(@marking) do %>
           <div class="tiles">
@@ -101,7 +102,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       <div class="calls">
         <%= if not Enum.empty?(@marking) do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
-            <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
+            <div class="dead-hand-button inactive" :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) do %>
               <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
                 <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} :for={tile <- call}></div>
@@ -120,8 +121,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         <% else %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
-            <div class="dead-hand-button" phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
-            <div class="call">
+            <div class={["dead-hand-button", (not @your_turn? || @dead_hand?) && "inactive"]} phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
+            <div class={["call", @just_called == i && "just-called", @just_upgraded == i && "just-upgraded"]}>
               <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
             </div>
           <% end %>
@@ -244,12 +245,24 @@ defmodule RiichiAdvancedWeb.HandComponent do
     |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
   end
 
+  def mark_last_sideways(call) do
+    {call, _} = for tile <- Enum.reverse(call), reduce: {[], false} do
+      {acc, true}  -> {[tile | acc], true}
+      {acc, false} ->
+        if Utils.has_attr?(tile, ["sideways"]) do
+          {[Utils.add_attr(tile, ["last_sideways"]) | acc], true}
+        else {[tile | acc], false} end
+    end
+    call
+  end
+
   def prepare_calls(assigns) do
     # map calls to [{call, index}], omitting flowers
     # even if we didn't use assigns, we need to pass in assigns so that marking changes will update these tiles
     assigns.calls
     |> Enum.with_index()
     |> Enum.reject(fn {{name, _call}, _i} -> name in Riichi.flower_names() end)
+    |> Enum.map(fn {{name, call}, i} -> {{name, mark_last_sideways(call)}, i} end)
   end
 
   def prepare_flowers(assigns) do
@@ -283,13 +296,25 @@ defmodule RiichiAdvancedWeb.HandComponent do
       else assigns end
     else assigns end
 
-
     # animate incoming calls
-    socket = if Map.has_key?(assigns, :calls) and length(assigns.calls) > length(socket.assigns.calls) do
-      {last_call_name, _last_call} = Enum.at(assigns.calls, -1)
-      socket = assign(socket, if last_call_name in Riichi.flower_names() do :just_called_flower else :just_called end, true)
-      :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, assigns.seat}])
-      socket
+    socket = if Map.has_key?(assigns, :calls) do
+      changed_call_index = if length(socket.assigns.calls) < length(assigns.calls) do
+        length(assigns.calls) - 1
+      else
+        Enum.zip(socket.assigns.calls, assigns.calls)
+        |> Enum.find_index(fn {old, new} -> old != new end)
+      end
+      if changed_call_index != nil do
+        {last_call_name, _last_call} = Enum.at(assigns.calls, -1)
+        key = cond do
+          last_call_name in Riichi.flower_names() -> :just_called_flower
+          length(socket.assigns.calls) == length(assigns.calls) -> :just_upgraded
+          true -> :just_called
+        end
+        socket = assign(socket, key, changed_call_index)
+        :timer.apply_after(750, Kernel, :send, [self(), {:reset_call_anim, assigns.seat}])
+        socket
+      else socket end
     else socket end
 
     # animate incoming draws

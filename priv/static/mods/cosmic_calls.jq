@@ -9,7 +9,7 @@ def fix_yaku:
     )
   ));
 
-.functions.discard_passed += [["as", "others", [["unset_status", "fuun"]]]]
+.functions.discard_passed |= [["as", "others", [["unset_status", "fuun"]]]] + .
 |
 # all closed hand checks should check the new calls
 .yaku |= fix_yaku
@@ -26,6 +26,16 @@ if (.buttons | has("riichi")) then
     {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}
   ))
 else . end
+|
+# we need this in case kan mod is not enabled
+.functions.do_kan_draw = [
+  ["set_status", "$status"],
+  ["shift_tile_to_dead_wall", 1],
+  ["draw", 1, "opposite_end"]
+]
+|
+# we also need this in case kan mod is not enabled, since are adding kakakan here
+.functions.discard_passed |= [["as", "others", [["unset_status", "kan"]]]] + .
 |
 # the calls:
 .buttons += {
@@ -66,7 +76,7 @@ else . end
     ],
     "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
     "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", {"name": "status_missing", "opts": ["riichi"]}, "call_available"],
-    "actions": [["big_text", "Fuun"], ["call"], ["change_turn", "self"], ["draw"], ["set_status", "fuun"]],
+    "actions": [["big_text", "Fuun"], ["set_status", "fuun"], ["call"], ["change_turn", "self"], ["draw"]],
     "precedence_over": ["ton", "chii", "chon", "chon_honors"]
   },
   "anfuun": {
@@ -87,7 +97,7 @@ else . end
         {"name": "not_call_would_change_waits", "opts": ["win"]}
       ]
     ],
-    "actions": [["big_text", "Fuun"], ["self_call"], ["draw"], ["set_status", "fuun"]]
+    "actions": [["big_text", "Fuun"], ["set_status", "fuun"], ["self_call"], ["draw"]]
   },
   "kapon": {
     "display_name": "Pon",
@@ -109,7 +119,7 @@ else . end
     },
     "upgrades": "kapon",
     "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-    "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw"]]
+    "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw", {"status": "kan"}]]
   },
   "kafuun": {
     "display_name": "Fuun",
@@ -124,7 +134,7 @@ else . end
     ],
     "upgrades": "chon_honors",
     "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
-    "actions": [["big_text", "Fuun"], ["upgrade_call"], ["draw"], ["set_status", "fuun"]]
+    "actions": [["big_text", "Fuun"], ["set_status", "fuun"], ["upgrade_call"], ["draw"]]
   },
   "chanfuun": {
     "display_name": "Ron",
@@ -141,14 +151,26 @@ else . end
   }
 }
 |
-.buttons.chii.call_conditions += [{"name": "not_match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}]
+if (.buttons | has("chii")) then
+  .buttons.chii.call_conditions += [{"name": "not_match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","5z","6z","7z"], 1]]]]}]
+else . end
 |
-.buttons.chii.precedence_over += ["ton"]
+if (.buttons | has("chii")) then
+  .buttons.chii.precedence_over += ["ton"]
+else . end
 |
-.buttons.pon.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("pon")) then
+  .buttons.pon.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
 |
-.buttons.daiminkan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("daiminkan")) then
+  .buttons.daiminkan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
 |
-.buttons.ron.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("ron")) then
+  .buttons.ron.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end
 |
-.buttons.chankan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+if (.buttons | has("chankan")) then
+  .buttons.chankan.precedence_over += ["ton", "chon", "chon_honors", "daiminfuun"]
+else . end

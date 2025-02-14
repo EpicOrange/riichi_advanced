@@ -209,7 +209,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def handle_event("back", _assigns, socket) do
     socket = push_event(socket, "left-page", %{})
-    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}")
+    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 
@@ -275,10 +275,10 @@ defmodule RiichiAdvancedWeb.RoomLive do
       socket = assign(socket, :state, state)
       socket = if state.started do
         seat = cond do
-          get_in(state.seats.east.id)  == socket.id -> :east
-          get_in(state.seats.south.id) == socket.id -> :south
-          get_in(state.seats.west.id)  == socket.id -> :west
-          get_in(state.seats.north.id) == socket.id -> :north
+          :east  in state.available_seats and get_in(state.seats.east.id)  == socket.id -> :east
+          :south in state.available_seats and get_in(state.seats.south.id) == socket.id -> :south
+          :west  in state.available_seats and get_in(state.seats.west.id)  == socket.id -> :west
+          :north in state.available_seats and get_in(state.seats.north.id) == socket.id -> :north
           true                                      -> :spectator
         end
         socket = push_event(socket, "left-page", %{})

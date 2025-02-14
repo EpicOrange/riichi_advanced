@@ -30,9 +30,10 @@ defmodule RiichiAdvancedWeb.AboutLive do
     "JustKidding",
   ]
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     socket = socket
     |> assign(:messages, [])
+    |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:beta_testers, @beta_testers)
     |> assign(:version, Constants.version())
     messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
@@ -85,12 +86,12 @@ defmodule RiichiAdvancedWeb.AboutLive do
   end
 
   def handle_event("goto_index", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
   
   def handle_event("goto_logs", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/log")
+    socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}")
     {:noreply, socket}
   end
 

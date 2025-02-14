@@ -14,8 +14,6 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def init(state) do
     state = Map.put(state, :initialized, false)
-    state = Map.put(state, :shanten, -1)
-    state = Map.put(state, :preselected_flower, nil)
     if Debug.debug_fast_ai() do
       :timer.apply_after(100, Kernel, :send, [self(), :initialize])
     else
@@ -24,40 +22,11 @@ defmodule RiichiAdvanced.AIPlayer do
     {:ok, state}
   end
 
-  defp choose_playable_tile(_tiles, _state, playables, _visible_tiles, _win_definition) do
+  defp choose_playable_tile(tiles, playables) do
     if not Enum.empty?(playables) do
-      # rank each playable tile by the ukeire it gives for the next shanten step
-      # TODO as well as heuristics provided by the ruleset
-      # hand = state.player.hand ++ state.player.draw
-      # calls = state.player.calls
-      # tile_behavior = state.player.tile_behavior
-      best_playables = playables
-
-      # TODO ukeire counting is really slow
-      # because we need "exhaustive" to check for waits in Riichi.get_waits_and_ukeire
-      # disable it for now
-
-      # use_ukeire = Enum.empty?(tile_behavior.aliases)
-      # best_playables = if use_ukeire do
-      #   playable_waits = playables
-      #   |> Enum.filter(fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
-      #   |> Enum.map(fn {tile, ix} ->
-      #     if win_definition != nil do
-      #       {tile, ix, Riichi.get_waits_and_ukeire(hand -- [tile], calls, win_definition, state.wall, visible_tiles, tile_behavior, true)}
-      #     else {tile, ix, %{}} end
-      #   end)
-
-      #   # prefer highest ukeire
-      #   ukeires = Enum.map(playable_waits, fn {tile, ix, waits} -> {tile, ix, Map.values(waits) |> Enum.sum()} end)
-      #   max_ukeire = ukeires
-      #   |> Enum.map(fn {_tile, _ix, outs} -> outs end)
-      #   |> Enum.max(&>=/2, fn -> 0 end)
-      #   best_playables_by_ukeire = for {tile, ix, outs} <- ukeires, outs == max_ukeire do {tile, ix} end
-      #   best_playables_by_ukeire
-      # else playables end
-
+      playables = Enum.filter(playables, fn {tile, _ix} -> Enum.any?(tiles, &Utils.same_tile(tile, &1)) end)
       # prefer outer discards
-      {yaochuuhai, rest} = Enum.split_with(best_playables, fn {tile, _ix} -> Riichi.is_yaochuuhai?(tile) end)
+      {yaochuuhai, rest} = Enum.split_with(playables, fn {tile, _ix} -> Riichi.is_yaochuuhai?(tile) end)
       {tiles28, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 2) or Riichi.is_num?(tile, 8) end) 
       {tiles37, rest} = Enum.split_with(rest, fn {tile, _ix} -> Riichi.is_num?(tile, 3) or Riichi.is_num?(tile, 7) end) 
       for playable_tiles <- [yaochuuhai, tiles28, tiles37, rest], reduce: nil do
@@ -67,7 +36,10 @@ defmodule RiichiAdvanced.AIPlayer do
     else nil end
   end
 
-  defp choose_discard(state, playables, visible_tiles) do
+  defp choose_discard(state, playables, _visible_tiles) do
+    # the basic idea here is that if we're n-shanten,
+    # we check what tiles let us get (n-1)-shanten
+    # if none, then choose between tiles that let us maintain n-shanten
     hand = state.player.hand ++ state.player.draw
     calls = state.player.calls
     tile_behavior = state.player.tile_behavior
@@ -81,11 +53,12 @@ defmodule RiichiAdvanced.AIPlayer do
       {5,  state.shanten_definitions.uushanten},
       {6,  state.shanten_definitions.roushanten}
     ]
-    shanten_definitions = Enum.drop(shanten_definitions, max(0, min(state.shanten, length(shanten_definitions) - 1) - 1))
-    {ret, shanten} = for {{i, shanten_definition}, {_j, win_definition}} <- Enum.zip(Enum.drop(shanten_definitions, 1), Enum.drop(shanten_definitions, -1)), reduce: {nil, 6} do
+    shanten = min(state.shanten, 6)
+    shanten_definitions = Enum.drop(shanten_definitions, max(0, shanten))
+    {ret, shanten} = for {i, shanten_definition} <- shanten_definitions, reduce: {nil, shanten} do
       {nil, _} ->
         ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
-        |> choose_playable_tile(state, playables, visible_tiles, win_definition)
+        |> choose_playable_tile(playables)
         if Debug.debug_ai() and ret != nil do
           IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
         end
@@ -95,7 +68,7 @@ defmodule RiichiAdvanced.AIPlayer do
 
     if ret == nil do # shanten > 6?
       ret = Riichi.get_disconnected_tiles(hand, tile_behavior)
-      |> choose_playable_tile(state, playables, visible_tiles, nil)
+      |> choose_playable_tile(playables)
       {ret, :infinity}
     else {ret, shanten} end
   end
@@ -149,10 +122,12 @@ defmodule RiichiAdvanced.AIPlayer do
 
   def handle_info(:initialize, state) do
     state = Map.put(state, :initialized, true)
+    state = Map.put(state, :shanten, -1) # make it try all the shanten definitions
+    state = Map.put(state, :preselected_flower, nil)
     GenServer.cast(state.game_state, :notify_ai)
     {:noreply, state}
   end
-
+  
   def handle_info({:your_turn, params}, state) do
     t = System.os_time(:millisecond)
     %{player: player, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params

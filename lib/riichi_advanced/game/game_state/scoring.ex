@@ -128,16 +128,33 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
+    tile_aliases = state.players[seat].tile_behavior.aliases
+    # the joker assignment only maps base tiles (no attrs)
+    # look at the actual aliases that match, and add the appropriate attrs
+    replace_joker = fn joker, i ->
+      for {tile, attrs_aliases} <- tile_aliases,
+          tile == joker_assignment[i],
+          {attrs, aliases} <- attrs_aliases,
+          Utils.has_matching_tile?([joker], aliases) do
+        Utils.add_attr(tile, attrs)
+      end
+      |> Enum.at(0, joker)
+    end
     orig_hand = state.players[seat].hand
     {flower_calls, non_flower_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do joker_assignment[ix] else tile end end)
+    assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do replace_joker.(tile, ix) else tile end end)
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
-    |> Enum.map(fn {{call_name, call}, i} -> {call_name, call |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile) end)} end)
+    |> Enum.map(fn {{call_name, call}, i} ->
+      call = call
+      |> Enum.with_index()
+      |> Enum.map(fn {tile, ix} -> replace_joker.(tile, length(orig_hand) + 1 + 3*i + ix) end)
+      {call_name, call}
+    end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment
-    assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
+    assigned_winning_tile = replace_joker.(winning_tile, length(orig_hand))
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %PlayerCache{ &1.cache | winning_hand: assigned_winning_hand } })
     {state, assigned_winning_tile}
@@ -211,16 +228,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {score, phan, mun, score_name}
       "han_fu_formula" ->
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        minipoints = Map.get(score_rules, "fixed_fu", minipoints)
         han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 4)
         han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
         dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
-        fu = Map.get(score_rules, "fixed_fu", minipoints)
-
-        # calculate score using formula
-        base_score = han_fu_multiplier * fu * 2 ** (2 + points)
-        score = base_score * if is_dealer do dealer_multiplier else 1 end
-        # round up (to nearest 100, by default)
-        score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
 
         # handle limit scores
         limit_thresholds = Map.get(score_rules, "limit_thresholds", []) |> Enum.reverse()
@@ -237,7 +248,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
           else limit_index end
           score = Enum.at(limit_scores, limit_index) * if is_dealer do dealer_multiplier else 1 end
           {score, Enum.at(limit_names, limit_index)}
-        else {score, nil} end
+        else
+          # calculate score using formula
+          base_score = han_fu_multiplier * minipoints * 2 ** (2 + points)
+          score = base_score * if is_dealer do dealer_multiplier else 1 end
+          # round up (to nearest 100, by default)
+          score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
+          {score, nil}
+        end
 
         score = score * if "double_score" in state.players[seat].status do 2 else 1 end
 
@@ -864,14 +882,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
     orig_hand = state.players[seat].hand
     orig_draw = state.players[seat].draw
     orig_calls = state.players[seat].calls
+    tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
+    arrange_shuntsu = Map.get(score_rules, "arrange_shuntsu", false)
+    arrange_koutsu = Map.get(score_rules, "arrange_koutsu", false)
+    arrange_kontsu = Map.get(score_rules, "arrange_kontsu", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
       {yaku_name, _value} = Enum.at(yaku, 0)
       # look for this yaku in the yaku list, and get arrangement from the match condition
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
       am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
       am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-      tile_behavior = state.players[seat].tile_behavior
       new_winning_tile = Utils.strip_attrs(new_winning_tile)
       arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, tile_behavior)
       if arranged_hand != nil do
@@ -894,6 +915,23 @@ defmodule RiichiAdvanced.GameState.Scoring do
       ix = Enum.find_index(arranged_hand, &Utils.same_tile(&1, new_winning_tile))
       {List.delete_at(arranged_hand, ix), [new_winning_tile]}
     else {arranged_hand, orig_draw} end
+
+    win_definitions = translate_match_definitions(state, ["win"])
+    arranged_hand = if arrange_kontsu do
+      # sort kontsu out of the hand (append kontsu to the right)
+      Riichi.arrange_kontsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
+    else arranged_hand end
+    arranged_hand = if arrange_shuntsu do
+      # sort shuntsu out of the hand (append shuntsu to the left, after kontsu are sorted out)
+      Riichi.arrange_shuntsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
+    else arranged_hand end
+    arranged_hand = if arrange_koutsu do
+      # sort koutsu out of the hand (append koutsu after shuntsu, after shuntsu and kontsu are sorted out)
+      Riichi.arrange_koutsu(arranged_hand, orig_calls, [winning_tile || new_winning_tile], win_definitions, tile_behavior)
+    else arranged_hand end
+    # result should look like [shuntsu, koutsu, pair, kontsu]
+    # replace the resulting spacing markers with actual spaces
+    arranged_hand = Enum.map(arranged_hand, &if &1 in [:shuntsu, :koutsu, :kontsu] do :"7x" else &1 end)
 
     # push message
     orig_call_tiles = orig_calls
@@ -964,7 +1002,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # find the maximum score obtainable across all joker assignments
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
-    {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
+    {joker_assignment, assigned_hand, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
       Task.async(fn ->
         # replace 5z in joker assignment with 0z if 0z is present in the wall
         joker_assignment = if Utils.has_matching_tile?(state.all_tiles, [:"0z"]) do
@@ -973,6 +1011,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # replace winner's hand with joker assignment to determine yaku
         {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+        assigned_hand = state.players[seat].cache.winning_hand
 
         # obtain yaku and minipoints
         winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
@@ -981,7 +1020,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
         if Debug.print_wins() do
-          IO.puts("won by #{win_source}; hand: #{inspect(state.players[seat].cache.winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+          IO.puts("won by #{win_source}; hand: #{inspect(assigned_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
         end
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
@@ -993,12 +1032,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
         if Debug.print_wins() do
           IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
         end
-        {joker_assignment, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
+        {joker_assignment, assigned_hand, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
       end)
     end
     |> Task.yield_many(timeout: :infinity)
     |> Enum.map(fn {_task, {:ok, res}} -> res end)
-    |> Enum.max_by(fn {_, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+    |> Enum.max_by(fn {_, _, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
     # rearrange their hand
     %{hand: arranged_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
@@ -1047,6 +1086,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end,
       opponents: opponents,
       winning_hand: winning_hand,
+      assigned_hand: assigned_hand,
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,
     }

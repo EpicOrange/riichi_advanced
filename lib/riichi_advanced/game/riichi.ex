@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.Riichi do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
@@ -9,38 +10,64 @@ defmodule RiichiAdvanced.Riichi do
   @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
   def flower_names(), do: @flower_names
 
-  @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"0m", :"10m",
-               :"11m", :"12m", :"13m", :"14m", :"15m", :"16m", :"17m", :"18m", :"19m",
-               :"01m", :"02m", :"03m", :"04m", :"05m", :"06m", :"07m", :"08m", :"09m", :"010m"]
-  @pinzu      [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"0p", :"10p",
-               :"11p", :"12p", :"13p", :"14p", :"15p", :"16p", :"17p", :"18p", :"19p",
-               :"01p", :"02p", :"03p", :"04p", :"05p", :"06p", :"07p", :"08p", :"09p", :"010p"]
-  @souzu      [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"0s", :"10s",
-               :"11s", :"12s", :"13s", :"14s", :"15s", :"16s", :"17s", :"18s", :"19s",
-               :"01s", :"02s", :"03s", :"04s", :"05s", :"06s", :"07s", :"08s", :"09s", :"010s"]
-  @jihai      [:"1z", :"2z", :"3z", :"4z", :"5z", :"0z", :"8z", :"6z", :"7z",
-               :"11z", :"12z", :"13z", :"14z", :"15z", :"10z", :"16z", :"17z", :"25z", :"26z", :"27z"]
-  @wind       [:"1z", :"2z", :"3z", :"4z", :"11z", :"12z", :"13z", :"14z", :"01z", :"02z", :"03z", :"04z"]
-  @dragon     [:"5z", :"0z", :"8z", :"6z", :"7z", :"15z", :"10z", :"16z", :"17z", :"25z", :"26z", :"27z", :"05z", :"00z", :"06z", :"07z"]
-  @terminal   [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s",
-               :"11m", :"19m", :"11p", :"19p", :"11s", :"19s",
-               :"01m", :"09m", :"01p", :"09p", :"01s", :"09s"]
+  @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"10m", :"0m",
+               :"01m", :"02m", :"03m", :"04m", :"05m", :"06m", :"07m", :"08m", :"09m", :"010m",
+               :"11m", :"12m", :"13m", :"14m", :"15m", :"16m", :"17m", :"18m", :"19m", :"110m",
+               :"21m", :"22m", :"23m", :"24m", :"25m", :"26m", :"27m", :"28m", :"29m", :"210m",
+               :"31m", :"32m", :"33m", :"34m", :"35m", :"36m", :"37m", :"38m", :"39m", :"310m",
+               :"41m", :"42m", :"44m", :"44m", :"45m", :"46m", :"47m", :"48m", :"49m", :"410m"]
+  @pinzu      [:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"10p", :"0p",
+               :"01p", :"02p", :"03p", :"04p", :"05p", :"06p", :"07p", :"08p", :"09p", :"010p",
+               :"11p", :"12p", :"13p", :"14p", :"15p", :"16p", :"17p", :"18p", :"19p", :"110p",
+               :"21p", :"22p", :"23p", :"24p", :"25p", :"26p", :"27p", :"28p", :"29p", :"210p",
+               :"31p", :"32p", :"33p", :"34p", :"35p", :"36p", :"37p", :"38p", :"39p", :"310p",
+               :"41p", :"42p", :"44p", :"44p", :"45p", :"46p", :"47p", :"48p", :"49p", :"410p"]
+  @souzu      [:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"9s", :"10s", :"0s", :"00s",
+               :"01s", :"02s", :"03s", :"04s", :"05s", :"06s", :"07s", :"08s", :"09s", :"010s", :"000s",
+               :"11s", :"12s", :"13s", :"14s", :"15s", :"16s", :"17s", :"18s", :"19s", :"110s", :"100s",
+               :"21s", :"22s", :"23s", :"24s", :"25s", :"26s", :"27s", :"28s", :"29s", :"210s", :"200s",
+               :"31s", :"32s", :"33s", :"34s", :"35s", :"36s", :"37s", :"38s", :"39s", :"310s", :"300s",
+               :"41s", :"42s", :"44s", :"44s", :"45s", :"46s", :"47s", :"48s", :"49s", :"410s", :"400s",
+               :"1's", :"01's", :"11's", :"21's", :"31's", :"41's"]
+  @jihai      [:"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z", :"8z", :"0z",
+               :"01z", :"02z", :"03z", :"04z", :"05z", :"06z", :"07z", :"08z", :"00z",
+               :"11z", :"12z", :"13z", :"14z", :"15z", :"16z", :"17z", :"18z",
+               :"21z", :"22z", :"23z", :"24z", :"25z", :"26z", :"27z", :"28z", :"20z",
+               :"31z", :"32z", :"33z", :"34z", :"35z", :"36z", :"37z", :"38z", :"30z",
+               :"41z", :"42z", :"44z", :"44z", :"45z", :"46z", :"47z", :"48z", :"40z",
+               :"5j", :"15j", :"4j", :"14j", :"3j"]
+  @wind       [:"1z", :"2z", :"3z", :"4z",
+               :"01z", :"02z", :"03z", :"04z",
+               :"11z", :"12z", :"13z", :"14z",
+               :"21z", :"22z", :"23z", :"24z",
+               :"31z", :"32z", :"33z", :"34z",
+               :"5j", :"15j"]
+  @dragon     [:"5z", :"0z", :"8z", :"6z", :"7z",
+               :"05z", :"00z", :"08z", :"06z", :"07z",
+               :"15z", :"10z", :"18z", :"16z", :"17z",
+               :"25z", :"20z", :"28z", :"26z", :"27z",
+               :"35z", :"30z", :"38z", :"36z", :"37z",
+               :"45z", :"40z", :"48z", :"46z", :"47z",
+               :"4j", :"14j",
+               :"9z", :"5'z", :"05'z", :"25'z", :"35'z", :"45'z", :"5`z", :"05`z", :"15`z", :"25`z", :"35`z", :"45`z"]
+  @terminal   [:"1m", :"01m", :"11m", :"21m", :"31m", :"41m",
+               :"1p", :"01p", :"11p", :"21p", :"31p", :"41p",
+               :"1s", :"01s", :"11s", :"21s", :"31s", :"41s",
+               :"9m", :"09m", :"19m", :"29m", :"39m", :"49m",
+               :"9p", :"09p", :"19p", :"29p", :"39p", :"49p",
+               :"9s", :"09s", :"19s", :"29s", :"39s", :"49s",
+               :"10m", :"010m", :"110m", :"210m", :"310m", :"410m",
+               :"10p", :"010p", :"110p", :"210p", :"310p", :"410p",
+               :"10s", :"010s", :"110s", :"210s", :"310s", :"410s",
+               :"1's", :"01's", :"11's", :"21's", :"31's", :"41's"]
   # TODO somehow change these when ten mod is active
-  @tanyaohai  [:"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m",
-               :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p",
-               :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s",
-               :"02m", :"03m", :"04m", :"05m", :"25m", :"35m", :"06m", :"07m", :"08m",
-               :"02p", :"03p", :"04p", :"05p", :"25p", :"35p", :"06p", :"07p", :"08p",
-               :"02s", :"03s", :"04s", :"05s", :"25s", :"35s", :"06s", :"07s", :"08s"]
-  @yaochuuhai [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"0z", :"8z", :"6z", :"7z", 
-               :"11m", :"19m", :"11p", :"19p", :"11s", :"19s", :"11z", :"12z", :"13z", :"14z", :"15z", :"16z", :"17z",
-               :"01m", :"09m", :"01p", :"09p", :"01s", :"09s", :"01z", :"02z", :"03z", :"04z", :"05z", :"00z", :"06z", :"07z"]
   @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q", :"1a", :"2a", :"3a", :"4a", :"1y"]
   @joker      [:"0j", :"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j", :"10j", :"12j", :"13j", :"14j", :"15j", :"16j", :"17j", :"18j", :"19j", :"37j", :"46j", :"147j", :"258j", :"369j", :"123j", :"456j", :"789j", :"91j", :"73j", :"64j", :"852j", :"20j", :"11j", :"22j", :"30j", :"31j", :"32j", :"33j", :"34j", :"2y"]
-  @aka        [:"0m", :"0p", :"0s", :"26z",
+  @aka        [:"0m", :"0p", :"0s",
                :"01m", :"02m", :"03m", :"04m", :"05m", :"25m", :"35m", :"06m", :"07m", :"08m", :"09m", :"010m",
                :"01p", :"02p", :"03p", :"04p", :"05p", :"25p", :"35p", :"06p", :"07p", :"08p", :"09p", :"010p",
-               :"01s", :"02s", :"03s", :"04s", :"05s", :"25s", :"35s", :"06s", :"07s", :"08s", :"09s", :"010s"]
+               :"01s", :"02s", :"03s", :"04s", :"05s", :"25s", :"35s", :"06s", :"07s", :"08s", :"09s", :"010s",
+               :"01's", :"05's", :"05`s"]
 
   def is_manzu?(tile), do: Enum.any?(@manzu, &Utils.same_tile(tile, &1))
   def is_pinzu?(tile), do: Enum.any?(@pinzu, &Utils.same_tile(tile, &1))
@@ -50,23 +77,24 @@ defmodule RiichiAdvanced.Riichi do
   def is_wind?(tile), do: Enum.any?(@wind, &Utils.same_tile(tile, &1))
   def is_dragon?(tile), do: Enum.any?(@dragon, &Utils.same_tile(tile, &1))
   def is_terminal?(tile), do: Enum.any?(@terminal, &Utils.same_tile(tile, &1))
-  def is_yaochuuhai?(tile), do: Enum.any?(@yaochuuhai, &Utils.same_tile(tile, &1))
-  def is_tanyaohai?(tile), do: Enum.any?(@tanyaohai, &Utils.same_tile(tile, &1))
+  def is_yaochuuhai?(tile), do: is_terminal?(tile) or is_wind?(tile) or is_dragon?(tile)
+  def is_tanyaohai?(tile), do: is_suited?(tile) and not is_terminal?(tile)
   def is_flower?(tile), do: Enum.any?(@flower, &Utils.same_tile(tile, &1))
   def is_joker?(tile), do: Enum.any?(@joker, &Utils.same_tile(tile, &1))
   def is_aka?(tile), do: Enum.any?(@aka, &Utils.same_tile(tile, &1))
 
   def is_num?(tile, num) do
     Enum.any?(case num do
-      1 -> [:"1m", :"1p", :"1s", :"11m", :"11p", :"11s"]
-      2 -> [:"2m", :"2p", :"2s", :"12m", :"12p", :"12s"]
-      3 -> [:"3m", :"3p", :"3s", :"13m", :"13p", :"13s"]
-      4 -> [:"4m", :"4p", :"4s", :"14m", :"14p", :"14s"]
-      5 -> [:"5m", :"5p", :"5s", :"15m", :"15p", :"15s", :"0m", :"0p", :"0s"]
-      6 -> [:"6m", :"6p", :"6s", :"16m", :"16p", :"16s"]
-      7 -> [:"7m", :"7p", :"7s", :"17m", :"17p", :"17s"]
-      8 -> [:"8m", :"8p", :"8s", :"18m", :"18p", :"18s"]
-      9 -> [:"9m", :"9p", :"9s", :"19m", :"19p", :"19s"]
+      1 -> [:"1m", :"1p", :"1s", :"11m", :"11p", :"11s", :"21m", :"21p", :"21s", :"31m", :"31p", :"31s", :"41m", :"41p", :"41s"]
+      2 -> [:"2m", :"2p", :"2s", :"12m", :"12p", :"12s", :"22m", :"22p", :"22s", :"32m", :"32p", :"32s", :"42m", :"42p", :"42s"]
+      3 -> [:"3m", :"3p", :"3s", :"13m", :"13p", :"13s", :"23m", :"23p", :"23s", :"33m", :"33p", :"33s", :"43m", :"43p", :"43s"]
+      4 -> [:"4m", :"4p", :"4s", :"14m", :"14p", :"14s", :"24m", :"24p", :"24s", :"34m", :"34p", :"34s", :"44m", :"44p", :"44s"]
+      5 -> [:"0m", :"0p", :"0s", :"5m", :"5p", :"5s", :"15m", :"15p", :"15s", :"25m", :"25p", :"25s", :"35m", :"35p", :"35s", :"45m", :"45p", :"45s"]
+      6 -> [:"6m", :"6p", :"6s", :"16m", :"16p", :"16s", :"26m", :"26p", :"26s", :"36m", :"36p", :"36s", :"46m", :"46p", :"46s"]
+      7 -> [:"7m", :"7p", :"7s", :"17m", :"17p", :"17s", :"27m", :"27p", :"27s", :"37m", :"37p", :"37s", :"47m", :"47p", :"47s"]
+      8 -> [:"8m", :"8p", :"8s", :"18m", :"18p", :"18s", :"28m", :"28p", :"28s", :"38m", :"38p", :"38s", :"48m", :"48p", :"48s"]
+      9 -> [:"9m", :"9p", :"9s", :"19m", :"19p", :"19s", :"29m", :"29p", :"29s", :"39m", :"39p", :"39s", :"49m", :"49p", :"49s"]
+      10 -> [:"10m", :"10p", :"10s", :"110m", :"110p", :"110s", :"210m", :"210p", :"210s", :"310m", :"310p", :"310s", :"410m", :"410p", :"410s"]
     end, &Utils.same_tile(tile, &1))
   end
   def same_suit?(tile, tile2) do
@@ -108,9 +136,17 @@ defmodule RiichiAdvanced.Riichi do
     ret = for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
         hand = if from_hand do List.delete(hand, tile) else hand end
-        target_tiles = Enum.map(call_spec, &Match.offset_tile(Utils.strip_attrs(tile), &1, tile_behavior))
-        possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-        Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+        # before we make calls using the offsets,
+        # we must instantiate the tile in case it's a joker
+        instances = Utils.apply_tile_aliases(tile,  tile_behavior)
+        if :any in instances do hand else instances end
+        |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
+        |> Utils.strip_attrs()
+        |> Enum.flat_map(fn instance ->
+          target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
+          possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+          Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+        end)
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
 
@@ -276,30 +312,87 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
-  # return all the (unique) tiles that are not needed for all match definitions
-  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
+  # return all the (unique) tiles that are not needed to match the definitions
+  def _get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
-    match_definitions = for match_definition <- match_definitions do
+    {match_definitions, hand_calls} = for match_definition <- match_definitions do
+      # initial guess comes from just removing the match definition
+      hand_calls = Match.remove_match_definition(hand, calls, match_definition, tile_behavior)
       # filter out lookaheads from match definition
       match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) or with [_groups, num] <- match_definition_elem do num > 0 end end)
       # add exhaustive unless unique
-      if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+      match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+      {match_definition, hand_calls}
     end
+    # filter out match definitions that don't match at all
+    |> Enum.reject(fn {_match_definition, hand_calls} -> Enum.empty?(hand_calls) end)
+    |> Enum.unzip()
 
-    {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
-      Match.remove_match_definition(hand, calls, match_definition, tile_behavior)
-    end) |> Enum.unzip()
-    ret = leftover_tiles
+    # get union of unneeded tiles found this way
+    unneeded = hand_calls
     |> Enum.concat()
+    |> Enum.flat_map(fn {hand, _calls} -> hand end)
     |> Enum.uniq()
+
+    ret = if not Enum.empty?(match_definitions) do
+      # # method 1: keep tiles in hand that are not needed to match the given match definitions
+      # ret = hand
+      # |> Enum.uniq()
+      # |> Enum.filter(&Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+
+      # # method 2: remove each match definition individually and take union of all leftover tiles
+      # note: doesn't work if you have 2+ extra tiles
+      # {leftover_tiles, _} = Enum.map(match_definitions, fn match_definition ->
+      #   Task.async(fn -> Match.remove_match_definition(hand, calls, match_definition, tile_behavior) end)
+      # end)
+      # |> Task.yield_many(timeout: :infinity)
+      # |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+      # |> Enum.unzip()
+      # ret = leftover_tiles
+      # |> Enum.concat()
+      # |> Enum.uniq()
+      # |> IO.inspect()
+
+      # # method 3: method 2, but make each match definition non-exhaustive to get an initial set,
+      # #           then use method 1 on the remaining tiles
+      # {leftover_tiles, _} = Enum.map(match_definitions, fn match_definition ->
+      #   match_definition = Enum.reject(match_definition, & &1 == "exhaustive")
+      #   Task.async(fn -> Match.remove_match_definition(hand, calls, match_definition, tile_behavior) end)
+      # end)
+      # |> Task.yield_many(timeout: :infinity)
+      # |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+      # |> Enum.unzip()
+      # leftover_tiles = Enum.concat(leftover_tiles) |> IO.inspect(label: "a")
+      # remaining = Enum.uniq(hand -- leftover_tiles)
+      # ret = Enum.filter(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior)) |> IO.inspect(label: "b")
+      # ret = Enum.uniq(ret ++ leftover_tiles)
+      # ret |> IO.inspect(label: "c")
+
+      # method 4: same as method 3 but we already have an initial set from above
+      remaining = Enum.uniq(hand) -- unneeded
+      ret = Enum.filter(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+      ret = Enum.uniq(ret ++ unneeded)
+      ret
+    else [] end
+
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
     #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
     # end
     ret
   end
+  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
+    case RiichiAdvanced.ETSCache.get({:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}) do
+      [] -> 
+        result = _get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
+        RiichiAdvanced.ETSCache.put({:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, result)
+        result
+      [result] -> result
+    end
+  end
+
 
   def needed_for_hand(hand, calls, tile, match_definitions, tile_behavior) do
     tile not in get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
@@ -375,6 +468,8 @@ defmodule RiichiAdvanced.Riichi do
       "daiminkan"   -> if relevant_tile in @terminal_honors do 16 else 8 end
       "kakan"       -> if relevant_tile in @terminal_honors do 16 else 8 end
       "chon"        -> if relevant_tile in @terminal_honors do 2 else 1 end
+      "kapon"       -> if relevant_tile in @terminal_honors do 4 else 2 end
+      "kakakan"     -> if relevant_tile in @terminal_honors do 16 else 8 end
       "chon_honors" -> 2
       "anfuun"      -> 16
       "daiminfuun"  -> 8
@@ -443,10 +538,15 @@ defmodule RiichiAdvanced.Riichi do
     end)
 
     # add all hands with winning kontsu removed, associated with fu = fu+1,2,4 (depending on kontsu)
+    # note that this should also award +2 fu for closed waits in event of dragons (which are always closed waits) or opposite winds
     possible_kontsu_removed = if enable_kontsu_fu do
       Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.try_remove_all_tiles(starting_hand, [Match.offset_tile(winning_tile, 10, tile_behavior), Match.offset_tile(winning_tile, 20, tile_behavior)], tile_behavior)
-        |> Enum.map(fn hand -> {hand, fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
+        tiles = [Match.offset_tile(winning_tile, 10, tile_behavior), Match.offset_tile(winning_tile, 20, tile_behavior)]
+        prev_next = [Match.offset_tile(winning_tile, -1, tile_behavior), Match.offset_tile(winning_tile, 1, tile_behavior)]
+        tiles = if nil in tiles do prev_next else tiles end
+        closed_wait_fu = if MapSet.new(prev_next) == MapSet.new(tiles) do 2 else 0 end
+        Match.try_remove_all_tiles(starting_hand, tiles, tile_behavior)
+        |> Enum.map(fn hand -> {hand, fu+closed_wait_fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
       end)
     else [] end
 
@@ -457,7 +557,8 @@ defmodule RiichiAdvanced.Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior) |> Enum.flat_map(fn base_tile ->
+          Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
+          |> Enum.flat_map(fn base_tile ->
             case Match.try_remove_all_tiles(hand, [base_tile, base_tile, base_tile], tile_behavior) do
               [] -> [{hand, fu}]
               removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 8 else 4 end} end)
@@ -471,7 +572,7 @@ defmodule RiichiAdvanced.Riichi do
       for _ <- 1..4, reduce: hands_fu do
         all_hands ->
           Enum.flat_map(all_hands, fn {hand, fu} ->
-            {honors, suited} = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior)
+            {honors, suited} = Match.collect_base_tiles(hand, [], [0, 10, 20, 1, 2], tile_behavior)
             |> Enum.split_with(fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
             # remove suited kontsu
             suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
@@ -496,7 +597,7 @@ defmodule RiichiAdvanced.Riichi do
     hands_fu = for _ <- 1..4, reduce: hands_fu do
       all_hands ->
         Enum.flat_map(all_hands, fn {hand, fu} ->
-          sequence_tiles = hand |> Enum.uniq() |> Utils.apply_tile_aliases(tile_behavior)
+          sequence_tiles = Match.collect_base_tiles(hand, [], [0, 1, 2], tile_behavior)
           sequence_tiles = if enable_kontsu_fu do
             # honor sequences are considered mixed triplets, ignore them
             Enum.reject(sequence_tiles, fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
@@ -519,23 +620,25 @@ defmodule RiichiAdvanced.Riichi do
     # cosmic hand can also have
     # - one pair, one mixed pair remaining
     fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
-      num_pairs = Enum.frequencies(hand) |> Map.values() |> Enum.count(& &1 == 2)
+      num_pairs = Match.binary_search_count_matches([{hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
       cond do
         length(hand) == 1 and Utils.has_matching_tile?(hand, winning_tiles, tile_behavior) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 2 and num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
         length(hand) == 4 and num_pairs == 2 ->
-          [tile1, tile2] = Enum.uniq(hand)
-          tile1_fu = fu + calculate_pair_fu(tile2, yakuhai, tile_behavior) + (if tile1 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          tile2_fu = fu + calculate_pair_fu(tile1, yakuhai, tile_behavior) + (if tile2 in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-          if Utils.count_tiles([tile1], winning_tiles, tile_behavior) == 1 do [tile1_fu] else [] end
-          ++ if Utils.count_tiles([tile2], winning_tiles, tile_behavior) == 1 do [tile2_fu] else [] end
+          base_tiles = Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
+          Enum.flat_map(winning_tiles, fn winning_tile ->
+            triplet_fu = (if winning_tile in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
+            Match.remove_group([winning_tile | hand], [], [0, 0, 0], base_tiles, tile_behavior)
+            |> Enum.map(fn {[tile | _], []} -> fu + triplet_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
+          end)
         # cosmic hand
         enable_kontsu_fu and length(hand) == 4 and num_pairs == 1 ->
-          {pair_tile, _freq} = Enum.frequencies(hand) |> Enum.find(fn {_tile, freq} -> freq == 2 end)
-          [mixed1, _mixed2] = hand -- [pair_tile, pair_tile]
-          pair_fu = calculate_pair_fu(pair_tile, yakuhai, tile_behavior)
-          kontsu_fu = (if mixed1 in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
-          [fu + pair_fu + kontsu_fu]
+          base_tiles = Match.collect_base_tiles(hand, [], [0, 10, 20], tile_behavior)
+          Enum.flat_map(winning_tiles, fn winning_tile ->
+            kontsu_fu = (if winning_tile in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
+            Match.remove_group([winning_tile | hand], [], [0, 10, 20], base_tiles, tile_behavior)
+            |> Enum.map(fn {[tile | _], []} -> fu + kontsu_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
+          end)
         true                                                    -> []
       end
     end)
@@ -658,6 +761,7 @@ defmodule RiichiAdvanced.Riichi do
       is_num?(tile, 7) -> 3
       is_num?(tile, 8) -> 2
       is_num?(tile, 9) -> 1
+      is_num?(tile, 10) -> 1
       true             -> 0
     end
   end
@@ -669,6 +773,131 @@ defmodule RiichiAdvanced.Riichi do
       Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, -6, tile_behavior) in genbutsu do [Match.offset_tile(&1, -3, tile_behavior)] else [] end
       true -> []
     end)
+  end
+
+  # TODO refactor these three functions to be the same function
+  # (it's mostly duplicate code)
+
+  def arrange_kontsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
+    # return hand, but reordered so that kontsu are at the end
+    # if no kontsu, return hand unchanged
+    # hand is expected to be tenpai for N sets and a pair
+
+    # first check if there's three ankou. if so, don't rearrange the hand
+    # this is to avoid arranging closed sanshoku doukou as 3 kontsu
+    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
+    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
+    |> Enum.any?(fn {hand, groups} ->
+      calls = Enum.map(groups, &{"pon", &1}) ++ calls
+      Enum.any?(winning_tiles, fn winning_tile ->
+        Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
+      end)
+    end)
+
+    if not has_three_ankou do
+      Enum.flat_map(winning_tiles, fn winning_tile ->
+        Match.extract_groups([winning_tile | hand], [0, 10, 20], tile_behavior)
+        |> Enum.find(fn {hand, groups} ->
+          calls = Enum.map(groups, &{"chon", &1}) ++ calls
+          Match.match_hand(hand, calls, win_definitions, tile_behavior)
+        end)
+        |> case do
+          nil            -> []
+          {hand, groups} -> [{winning_tile, hand, groups}]
+        end
+      end)
+      |> case do
+        [] -> hand
+        [{winning_tile, hand, groups} | _] ->
+          groups = groups
+          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+          |> Enum.map(&[:kontsu | &1]) # add a spacing marker before each kontsu
+          |> Enum.concat()
+          List.delete(hand ++ groups, winning_tile)
+      end
+    else hand end
+  end
+
+  def arrange_shuntsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
+    # return hand, but reordered so that shuntsu are at the front
+    # if no shuntsu, return hand unchanged
+    # hand is expected to be tenpai for N sets and a pair
+
+    # first split at the first :kontsu in hand
+    # these are added by kontsu check, we don't want to rearrange those
+    ix = Enum.find_index(hand, & &1 == :kontsu)
+    {hand, kontsu} = if ix == nil do {hand, []} else Enum.split(hand, ix) end
+
+    # then check if there's three ankou. if so, don't rearrange the hand
+    # this is to avoid arranging closed sanshoku doukou as 3 shuntsu
+    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
+    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
+    |> Enum.any?(fn {hand, groups} ->
+      calls = Enum.map(groups, &{"pon", &1}) ++ calls
+      Enum.any?(winning_tiles, fn winning_tile ->
+        Match.match_hand([winning_tile | hand] ++ kontsu, calls, win_definitions, tile_behavior)
+      end)
+    end)
+
+    if not has_three_ankou do
+      Enum.flat_map(winning_tiles, fn winning_tile ->
+        Match.extract_groups([winning_tile | hand], [0, 1, 2], tile_behavior)
+        |> Enum.find(fn {hand, groups} ->
+          calls = Enum.map(groups, &{"chii", &1}) ++ calls
+          Match.match_hand(hand ++ kontsu, calls, win_definitions, tile_behavior)
+        end)
+        |> case do
+          nil            -> []
+          {hand, groups} -> [{winning_tile, hand, groups}]
+        end
+      end)
+      |> case do
+        [] -> hand
+        [{winning_tile, hand, groups} | _] ->
+          groups = groups
+          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+          |> Enum.map(& &1 ++ [:shuntsu]) # add a spacing marker after each shuntsu
+          |> Enum.concat()
+          List.delete(groups ++ hand ++ kontsu, winning_tile)
+      end
+    else hand end
+  end
+
+  def arrange_koutsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
+    # return hand, but reordered so that koutsu are at the front
+    # if no koutsu, return hand unchanged
+    # hand is expected to be tenpai for N sets and a pair
+
+    # first split at the first :kontsu in hand
+    # these are added by kontsu check, we don't want to rearrange those
+    ix = Enum.find_index(hand, & &1 == :kontsu)
+    {hand, kontsu} = if ix == nil do {hand, []} else Enum.split(hand, ix) end
+
+    # then split at the last :shuntsu in hand
+    # these are added by shuntsu check, we don't want to rearrange those
+    ix = Enum.find_index(Enum.reverse(hand), & &1 == :shuntsu)
+    {shuntsu, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
+
+    Enum.flat_map(winning_tiles, fn winning_tile ->
+      Match.extract_groups([winning_tile | hand], [0, 0, 0], tile_behavior)
+      |> Enum.find(fn {hand, groups} ->
+        calls = Enum.map(groups, &{"pon", &1}) ++ calls
+        Match.match_hand(shuntsu ++ hand ++ kontsu, calls, win_definitions, tile_behavior)
+      end)
+      |> case do
+        nil            -> []
+        {hand, groups} -> [{winning_tile, hand, groups}]
+      end
+    end)
+    |> case do
+      [] -> hand
+      [{winning_tile, hand, groups} | _] ->
+        groups = groups
+        |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+        |> Enum.map(& &1 ++ [:koutsu]) # add a spacing marker after each koutsu
+        |> Enum.concat()
+        List.delete(shuntsu ++ groups ++ hand ++ kontsu, winning_tile)
+    end
   end
 
 end
