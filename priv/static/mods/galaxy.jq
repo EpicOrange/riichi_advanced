@@ -98,7 +98,7 @@ any(.wall[]; . == "1t") as $star
   ["set_tile_alias_all", ["12z"], ["1z",["2z","original"],"3z","4z"]],
   ["set_tile_alias_all", ["13z"], ["1z","2z",["3z","original"],"4z"]],
   ["set_tile_alias_all", ["14z"], ["1z","2z","3z",["4z","original"]]],
-  ["set_tile_alias_all", ["15z"], [["5z","original"],"6z","7z","0z"]],
+  ["set_tile_alias_all", ["15z"], [["5z","original"],"6z","7z",["0z","original"]]],
   ["set_tile_alias_all", ["16z"], ["5z",["6z","original"],"7z","0z"]],
   ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","original"],"0z"]]
 ]

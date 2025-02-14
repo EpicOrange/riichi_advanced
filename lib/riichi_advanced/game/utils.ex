@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
-
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+
   def to_tile(tile_spec) do
     case tile_spec do
       [tile_spec | attrs] -> {Constants.to_tile()[tile_spec], attrs}
@@ -104,19 +104,34 @@ defmodule RiichiAdvanced.Utils do
 
   # find all jokers that map to the same tile(s) as the given one
   # together with the tile(s) they are connected by
-  def apply_tile_aliases(tile, tile_behavior) do
+  def _apply_tile_aliases(tile, tile_behavior) do
     if is_list(tile) or is_struct(tile, MapSet) do
       Enum.map(tile, &apply_tile_aliases(&1, tile_behavior))
       |> Enum.reduce(MapSet.new(), &MapSet.union/2)
     else
       # every joker is connected to any-tile jokers
       any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
-      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases, same_tile(tile, {tile2, attrs2}) do
-        # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
-        MapSet.new(aliases)
-        |> MapSet.put(add_attr(tile2, attrs2))
-        |> MapSet.delete(:any) # never return :any
+      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
+        t2 = add_attr(tile2, attrs2)
+        cond do
+          has_matching_tile?([tile], aliases) ->
+            # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
+            MapSet.new(aliases)
+            |> MapSet.delete(:any) # never return :any
+            |> MapSet.put(t2)
+          same_tile(tile, t2) -> MapSet.new(aliases)
+          true -> MapSet.new()
+        end
       end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
+    end
+  end
+  def apply_tile_aliases(tile, tile_behavior) do
+    case RiichiAdvanced.ETSCache.get({:apply_tile_aliases, tile, TileBehavior.hash(tile_behavior)}) do
+      [] -> 
+        result = _apply_tile_aliases(tile, tile_behavior)
+        RiichiAdvanced.ETSCache.put({:apply_tile_aliases, tile, TileBehavior.hash(tile_behavior)}, result)
+        result
+      [result] -> result
     end
   end
 
