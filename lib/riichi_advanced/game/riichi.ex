@@ -312,7 +312,7 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
-  # return all the (unique) tiles that are not needed for all match definitions
+  # return all the (unique) tiles that are not needed to match the definitions
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
@@ -324,12 +324,39 @@ defmodule RiichiAdvanced.Riichi do
       if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
     end
 
-    {leftover_tiles, _} = Enum.flat_map(match_definitions, fn match_definition ->
-      Match.remove_match_definition(hand, calls, match_definition, tile_behavior)
-    end) |> Enum.unzip()
-    ret = leftover_tiles
-    |> Enum.concat()
-    |> Enum.uniq()
+    # first remove match definitions that don't match hand
+    match_definitions = Enum.filter(match_definitions, &Match.match_hand(hand, calls, [&1], tile_behavior))
+
+    # # method 1: keep tiles in hand that are not needed to match the given match definitions
+    # ret = hand
+    # |> Enum.uniq()
+    # |> Enum.reject(&Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+
+    # # method 2: remove each match definition individually and take union of all leftover tiles
+    # {leftover_tiles, _} = Enum.map(match_definitions, fn match_definition ->
+    #   Task.async(fn -> Match.remove_match_definition(hand, calls, match_definition, tile_behavior) end)
+    # end)
+    # |> Task.yield_many(timeout: :infinity)
+    # |> Enum.flat_map(fn {_task, {:ok, res}} -> IO.inspect(res) end)
+    # |> Enum.unzip()
+    # ret = leftover_tiles
+    # |> Enum.concat()
+    # |> Enum.uniq()
+
+    # method 3: method 2, but make each match definition non-exhaustive to get an initial set,
+    #           then use method 1 on the remaining tiles
+    {leftover_tiles, _} = Enum.map(match_definitions, fn match_definition ->
+      match_definition = Enum.reject(match_definition, & &1 == "exhaustive")
+      Task.async(fn -> Match.remove_match_definition(hand, calls, match_definition, tile_behavior) end)
+    end)
+    |> Task.yield_many(timeout: :infinity)
+    |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+    |> Enum.unzip()
+    leftover_tiles = Enum.concat(leftover_tiles)
+    remaining = Enum.uniq(hand -- leftover_tiles)
+    ret = Enum.reject(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+    ret = Enum.uniq(ret ++ leftover_tiles)
+
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
     #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
