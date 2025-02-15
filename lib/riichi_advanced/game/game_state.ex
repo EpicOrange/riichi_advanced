@@ -95,11 +95,15 @@ defmodule RiichiAdvanced.GameState do
       relevant_tiles = Map.values(joker_assignment)
       new_aliases = for {tile1, attrs_aliases} <- tile_behavior.aliases, tile1 in relevant_tiles, into: %{} do
         attrs_aliases = for {attrs, aliases} <- attrs_aliases, into: %{} do
-          full_tile1 = Utils.add_attr(tile1, attrs)
           any_aliases = tile_behavior.aliases
           |> Map.get(:any, %{})
           |> Map.get(attrs, MapSet.new())
-          aliases = for tile2 <- MapSet.union(aliases, any_aliases), Utils.has_matching_tile?(Map.get(mapping, tile2, []), [full_tile1]), into: MapSet.new() do
+          aliases = for tile2 <- MapSet.union(aliases, any_aliases),
+                    Utils.has_matching_tile?(
+                      mapping
+                      |> Enum.filter(fn {x, _ys} -> Utils.same_tile(x, tile2) end)
+                      |> Enum.flat_map(fn {_x, ys} -> ys end), [tile1]),
+                    into: MapSet.new() do
             tile2
           end
           {attrs, aliases}
