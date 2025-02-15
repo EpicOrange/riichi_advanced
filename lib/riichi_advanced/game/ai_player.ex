@@ -37,40 +37,42 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   defp choose_discard(state, playables, _visible_tiles) do
-    # the basic idea here is that if we're n-shanten,
-    # we check what tiles let us get (n-1)-shanten
-    # if none, then choose between tiles that let us maintain n-shanten
-    hand = state.player.hand ++ state.player.draw
-    calls = state.player.calls
-    tile_behavior = state.player.tile_behavior
-    shanten_definitions = [
-      {-1, state.shanten_definitions.win},
-      {0,  state.shanten_definitions.tenpai},
-      {1,  state.shanten_definitions.iishanten},
-      {2,  state.shanten_definitions.ryanshanten},
-      {3,  state.shanten_definitions.sanshanten},
-      {4,  state.shanten_definitions.suushanten},
-      {5,  state.shanten_definitions.uushanten},
-      {6,  state.shanten_definitions.roushanten}
-    ]
-    shanten = min(state.shanten, 6)
-    shanten_definitions = Enum.drop(shanten_definitions, max(0, shanten))
-    {ret, shanten} = for {i, shanten_definition} <- shanten_definitions, reduce: {nil, shanten} do
-      {nil, _} ->
-        ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
-        |> choose_playable_tile(playables)
-        if Debug.debug_ai() and ret != nil do
-          IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
-        end
-        {ret, i}
-      ret -> ret
-    end
+    if length(playables) > 1 do
+      # the basic idea here is that if we're n-shanten,
+      # we check what tiles let us get (n-1)-shanten
+      # if none, then choose between tiles that let us maintain n-shanten
+      hand = state.player.hand ++ state.player.draw
+      calls = state.player.calls
+      tile_behavior = state.player.tile_behavior
+      shanten_definitions = [
+        {-1, state.shanten_definitions.win},
+        {0,  state.shanten_definitions.tenpai},
+        {1,  state.shanten_definitions.iishanten},
+        {2,  state.shanten_definitions.ryanshanten},
+        {3,  state.shanten_definitions.sanshanten},
+        {4,  state.shanten_definitions.suushanten},
+        {5,  state.shanten_definitions.uushanten},
+        {6,  state.shanten_definitions.roushanten}
+      ]
+      shanten = min(state.shanten, 6)
+      shanten_definitions = Enum.drop(shanten_definitions, max(0, shanten))
+      {ret, shanten} = for {i, shanten_definition} <- shanten_definitions, reduce: {nil, shanten} do
+        {nil, _} ->
+          ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
+          |> choose_playable_tile(playables)
+          if Debug.debug_ai() and ret != nil do
+            IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
+          end
+          {ret, i}
+        ret -> ret
+      end
 
-    if ret == nil do # shanten > 6?
-      ret = Riichi.get_disconnected_tiles(hand, tile_behavior)
-      |> choose_playable_tile(playables)
-      {ret, :infinity}
-    else {ret, shanten} end
+      if ret == nil do # shanten > 6?
+        ret = Riichi.get_disconnected_tiles(hand, tile_behavior)
+        |> choose_playable_tile(playables)
+        {ret, :infinity}
+      else {ret, shanten} end
+    else {Enum.at(playables, 0), state.shanten} end
   end
 
   defp choose_american_discard(state, playables, closest_american_hands) do
