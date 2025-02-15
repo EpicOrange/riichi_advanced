@@ -927,8 +927,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else separated_hand2 end
     # result should look like [shuntsu, koutsu, kontsu, toitsu, ungrouped] with each set separated by :separator
     # rearrange those groups to be as close to the original hand as possible
-    groups = Enum.chunk_by(separated_hand, & &1 == :separator)
-    groups = Enum.drop_every([nil | groups], 2)
+    groups = Utils.split_on(separated_hand, :separator)
     {groups, [ungrouped]} = Enum.split(groups, -1)
     {separated_hand, _, _} = for _ <- groups, reduce: {[], groups, arranged_hand -- ungrouped} do
       {result, groups, [tile | hand]} ->

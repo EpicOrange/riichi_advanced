@@ -424,4 +424,10 @@ defmodule RiichiAdvanced.Utils do
     |> Enum.filter(fn {_tile, freq} -> freq > 0 end)
     |> Map.new()
   end
+
+  # why is this not builtin
+  def _split_on([], _delim, acc, ret), do: [acc | ret]
+  def _split_on([x | xs], delim, acc, ret) when x == delim, do: _split_on(xs, delim, [], [acc | ret])
+  def _split_on([x | xs], delim, acc, ret), do: _split_on(xs, delim, [x | acc], ret)
+  def split_on(xs, delim), do: _split_on(Enum.reverse(xs), delim, [], [])
 end
