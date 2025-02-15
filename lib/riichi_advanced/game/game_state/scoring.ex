@@ -923,6 +923,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     win_definitions = translate_match_definitions(state, ["win"])
     assigned_tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand, joker_assignment)
     separated_hand = arranged_hand
+    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, assigned_tile_behavior)
+    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0, 1, 1, 2, 2], win_definitions, assigned_tile_behavior)
     separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 1, 2], win_definitions, assigned_tile_behavior)
     separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0, 0], win_definitions, assigned_tile_behavior)
     # kontsu/knitted

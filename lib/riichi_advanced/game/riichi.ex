@@ -774,46 +774,30 @@ defmodule RiichiAdvanced.Riichi do
     ix = Enum.find_index(Enum.reverse(hand), & &1 == :separator)
     {prearranged, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
 
-    skip = if group in [[0, 1, 2], [0, 10, 20]] do
-      # (for shuntsu and kontsu only)
-      # check if there's three ankou. if so, don't rearrange the hand
-      # this is to avoid arranging them as 3 shuntsu/kontsu
-      Match.extract_groups(hand, [0, 0, 0], tile_behavior)
-      |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
-      |> Enum.any?(fn {hand, groups} ->
+    Enum.flat_map(winning_tiles, fn winning_tile ->
+      Match.extract_groups([winning_tile | hand], group, tile_behavior)
+      |> Enum.find(fn {hand, groups} ->
         calls = Enum.map(groups, &{"", &1}) ++ calls
-        Enum.any?(winning_tiles, fn winning_tile ->
-          Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
-        end)
-      end)
-    else false end
-
-    if not skip do
-      Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.extract_groups([winning_tile | hand], group, tile_behavior)
-        |> Enum.find(fn {hand, groups} ->
-          calls = Enum.map(groups, &{"", &1}) ++ calls
-          Match.match_hand(prearranged ++ hand, calls, win_definitions, tile_behavior)
-        end)
-        |> case do
-          nil            -> []
-          {hand, groups} -> [{winning_tile, hand, groups}]
-        end
+        Match.match_hand(prearranged ++ hand, calls, win_definitions, tile_behavior)
       end)
       |> case do
-        [] -> hand
-        [{winning_tile, hand, groups} | _] ->
-          groups = groups
-          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-          |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
-          |> Enum.concat()
-          # delete last instance of winning tile
-          prearranged ++ groups ++ hand
-          |> Enum.reverse()
-          |> List.delete(winning_tile)
-          |> Enum.reverse()
+        nil            -> []
+        {hand, groups} -> [{winning_tile, hand, groups}]
       end
-    else hand end
+    end)
+    |> case do
+      [] -> hand
+      [{winning_tile, hand, groups} | _] ->
+        groups = groups
+        |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+        |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
+        |> Enum.concat()
+        # delete last instance of winning tile
+        prearranged ++ groups ++ hand
+        |> Enum.reverse()
+        |> List.delete(winning_tile)
+        |> Enum.reverse()
+    end
   end
 
 end
