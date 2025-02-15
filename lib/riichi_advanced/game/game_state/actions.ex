@@ -64,7 +64,8 @@ defmodule RiichiAdvanced.GameState.Actions do
     if can_discard(state, seat) and is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
-      tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
+      facedown = "discard_facedown" in state.players[seat].status or Utils.has_attr?(tile, ["facedown"])
+      tile = if facedown do {:"1x", Utils.tile_to_attrs(Utils.remove_attr(tile, ["facedown"]))} else tile end
       tile = Utils.add_attr(tile, ["discard"])
 
       state = update_player(state, seat, &%Player{ &1 |

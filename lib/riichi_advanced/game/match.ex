@@ -389,7 +389,7 @@ defmodule RiichiAdvanced.Match do
                       report = if debug do
                         line1 = "Acc (before removal): (base tiles #{inspect(base_tiles)})"
                         lines = for {hand, calls, remaining_groups} <- hand_calls_groups do
-                          "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
+                          "- #{inspect(hand)} / #{inspect(calls)} \\\\ #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
                         end
                         [line1 | lines]
                       else "" end
@@ -429,7 +429,7 @@ defmodule RiichiAdvanced.Match do
                       if debug do
                         line1 = "Acc (after removal):"
                         lines = for {hand, calls, remaining_groups} <- new_hand_calls_groups do
-                          "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}"
+                          "- #{inspect(hand)} / #{inspect(calls)}"
                         end
                         IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
                       end

@@ -868,7 +868,7 @@ div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size) - var(--bord
 div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size) - var(--border-width)); }
 div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size) - var(--border-width)); }
 div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 z { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 z, div.tile.\31 x.transparent { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
 div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size) - var(--border-width)); }
 div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
@@ -1228,6 +1228,9 @@ div.tile.\31 \35 \60 z { background-position-y: calc(-211 * var(--tile-size) - v
 /* shiro pocchi: 5^z */
 div.tile.\35 \5e z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
 
+/* facedown tiles should match 1x */
+div.tile.facedown { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
+
 /* custom coloring */
 div.tile.red { --tile-color: var(--aka-color); }
 div.tile.blue { --tile-color: var(--ao-color); }
@@ -1353,34 +1356,38 @@ div.self div.tile:nth-child(29) { z-index: 28; }
 div.self div.tile:nth-child(30) { z-index: 29; }
 
 /* all 3d effects should have reversed color for upside down tiles */
-div.tile.\31 x:not(.flat) {
+div.tile.\31 x:not(.flat),
+div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.tile.\31 x.sideways:not(.flat) {
+div.tile.\31 x.sideways:not(.flat),
+div.tile.facedown.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.pond.self div.tile.\31 x:not(.flat) {
+div.pond.self div.tile.\31 x:not(.flat),
+div.pond.self div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.shimocha div.tile.\31 x:not(.flat) {
+div.shimocha div.tile.\31 x:not(.flat),
+div.shimocha div.tile.facedown:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.kamicha div.tile.\31 x:not(.flat) {
+div.kamicha div.tile.\31 x:not(.flat),
+div.kamicha div.tile.facedown:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
 /* facedown tiles should look facedown */
-div.tile.facedown {
-  background-position-y: calc(-37 * var(--tile-size) - var(--border-width));
+div.hand div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));

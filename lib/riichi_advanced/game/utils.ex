@@ -262,7 +262,7 @@ defmodule RiichiAdvanced.Utils do
     -Integer.floor_div(-nominal, 2) * 100
   end
 
-  @valid_tile_colors ["red", "blue", "cyan", "gold", "orange", "yellow", "green", "purple", "gray", "grey", "lightgray", "black", "white"]
+  @valid_tile_colors ["red", "blue", "cyan", "gold", "orange", "yellow", "green", "purple", "gray", "grey", "lightgray", "lightgrey", "brown", "black", "white"]
 
   def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = strip_attrs(tile)
