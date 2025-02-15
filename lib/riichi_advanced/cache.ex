@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.ETSCache do
   use GenServer
 
-  @max_size 4000
+  @max_size 400
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
