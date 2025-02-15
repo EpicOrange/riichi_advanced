@@ -65,8 +65,11 @@ defmodule RiichiAdvanced.Utils do
   end
 
   def has_attr?(tile, attrs) do
+    attrs = Enum.map(attrs, &String.replace_prefix(&1, "_", ""))
     case tile do
-      {_tile, existing_attrs} -> Enum.all?(attrs, & &1 in existing_attrs)
+      {_tile, existing_attrs} ->
+        existing_attrs = Enum.map(existing_attrs, &String.replace_prefix(&1, "_", ""))
+        Enum.all?(attrs, & &1 in existing_attrs)
       _ when is_list(tile) -> Enum.any?(tile, &has_attr?(&1, attrs))
       _ when is_struct(tile, MapSet) -> MapSet.new(tile, &has_attr?(&1, attrs))
       _ -> Enum.empty?(attrs)
@@ -142,7 +145,7 @@ defmodule RiichiAdvanced.Utils do
     same_id = t1 == t2
            or (t2 == :faceup and t1 not in [:"1x", :"2x", :"3x", :"4x"])
            or :any in [t1, t2]
-    attrs_match = has_attr?(tile1, attrs2)
+    attrs_match = has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
     same_id and attrs_match
   end
   def same_tile(tile1, tile2, tile_behavior) do
