@@ -930,7 +930,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     groups = Enum.chunk_by(separated_hand, & &1 == :separator)
     groups = Enum.drop_every([nil | groups], 2)
     {groups, [ungrouped]} = Enum.split(groups, -1)
-    {separated_hand, _, _} = for _ <- 1..length(groups), reduce: {[], groups, arranged_hand -- ungrouped} do
+    {separated_hand, _, _} = for _ <- 0..length(groups)-1, reduce: {[], groups, arranged_hand -- ungrouped} do
       {result, groups, [tile | hand]} ->
         case Enum.find_index(groups, & Enum.at(&1, 0) == tile) do
           nil -> {result, groups, hand}

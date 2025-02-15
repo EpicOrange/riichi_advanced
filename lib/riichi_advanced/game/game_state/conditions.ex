@@ -451,7 +451,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
         visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
         ukeire = Riichi.count_ukeire(waits, hand, visible_ponds, visible_calls, Map.get(context, :winning_tile, nil), cxt_player.tile_behavior)
         # IO.puts("Waits: #{inspect(waits)}, ukeire: #{inspect(ukeire)}")
-        ukeire == 1
+        # usually we want == 1, but if someone just dropped the last one and you won on it, then at that point it's == 0
+        ukeire <= 1
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
