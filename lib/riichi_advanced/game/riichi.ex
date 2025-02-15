@@ -1,8 +1,10 @@
 defmodule RiichiAdvanced.Riichi do
+  alias RiichiAdvanced.Cache, as: Cache
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
+  use Nebulex.Caching
 
   # for fu calculation only
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
@@ -310,8 +312,9 @@ defmodule RiichiAdvanced.Riichi do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  def _get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
-    # t = System.os_time(:millisecond)
+  @decorate cacheable(cache: Cache, key: {hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
+    t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
     {match_definitions, hand_calls} = for match_definition <- match_definitions do
@@ -374,22 +377,12 @@ defmodule RiichiAdvanced.Riichi do
       ret
     else [] end
 
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if elapsed_time > 10 do
-    #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
-    # end
+    elapsed_time = System.os_time(:millisecond) - t
+    if elapsed_time > 10 do
+      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
+    end
     ret
   end
-  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
-    case RiichiAdvanced.ETSCache.get({:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
-        RiichiAdvanced.ETSCache.put({:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, result)
-        result
-      [result] -> result
-    end
-  end
-
 
   def needed_for_hand(hand, calls, tile, match_definitions, tile_behavior) do
     tile not in get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)

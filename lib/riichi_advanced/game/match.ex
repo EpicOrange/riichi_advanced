@@ -428,7 +428,7 @@ defmodule RiichiAdvanced.Match do
                       end
                       if debug do
                         line1 = "Acc (after removal):"
-                        lines = for {hand, calls, remaining_groups} <- new_hand_calls_groups do
+                        lines = for {hand, calls, _remaining_groups} <- new_hand_calls_groups do
                           "- #{inspect(hand)} / #{inspect(calls)}"
                         end
                         IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
