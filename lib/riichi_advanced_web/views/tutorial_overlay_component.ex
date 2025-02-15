@@ -101,6 +101,8 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         %{"width" => width, "hand_index" => i}                       -> {width, 2.875 + 0.75 * i, 15.875}
         %{"width" => width, "draw_index" => i} when mobile?          -> {1.5 * width, 1.5 + 1.5 * 0.75 * i, 15.625}
         %{"width" => width, "draw_index" => i}                       -> {width, 3.25 + 0.75 * i, 15.875}
+        # %{"width" => width, "winning_hand_index" => i}               -> {width, 3.375 + 0.75 * i, 2.75}
+        _                                                            -> {0, 0, 0}
       end
       "radial-gradient(circle at calc(#{x} * var(--tile-size)) calc(#{y} * var(--tile-size)), transparent calc(#{width} * var(--tile-size)), black calc(#{width} * var(--tile-size)))"
     end |> Enum.join(",")

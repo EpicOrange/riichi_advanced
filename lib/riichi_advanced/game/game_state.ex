@@ -434,16 +434,16 @@ defmodule RiichiAdvanced.GameState do
     rules = state.rules
     {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
-      wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
+      wall_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
 
       # check that there are no nil tiles
-      state = wall
+      state = wall_tiles
       |> Enum.zip(Map.get(rules, "wall", []))
       |> Enum.filter(fn {result, _orig} -> result == nil end)
       |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
 
       # shuffle wall
-      wall = Enum.shuffle(wall)
+      wall = Enum.shuffle(wall_tiles)
       starting_tiles = Map.get(rules, "starting_tiles", 0)
       # wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
       wall_index = starting_tiles * length(state.available_seats)
@@ -503,6 +503,11 @@ defmodule RiichiAdvanced.GameState do
       else wall end
 
       # wall is now built
+      if Enum.frequencies(wall) != Enum.frequencies(wall_tiles) do
+        missing = wall_tiles -- wall
+        extra = wall -- wall_tiles
+        IO.puts("Warning: rigged wall:\n- is missing these tiles: #{inspect(missing)}\n- is extra these tiles: #{inspect(extra)}")
+      end
 
       # distribute haipai
       hands = Map.new([:east, :south, :west, :north], &{&1, []})
@@ -1664,14 +1669,33 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:cancel_call_buttons, seat}, state) do
-    if state.forced_events == nil do
+    event = ["press_call_button", Atom.to_string(seat), "cancel"]
+    if state.forced_events == nil or event in state.forced_events do
       # go back to button clicking phase
       state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
-      notify_ai(state)
 
+      # tutorial stuff
+      state = if state.forced_events != nil and event in state.forced_events do
+        state
+        |> Map.put(:block_events, true)
+        |> Map.put(:forced_events, [])
+        |> Map.put(:last_event, event)
+      else
+        if Debug.debug_tutorial() do
+          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+        end
+        state
+      end
+
+      notify_ai(state)
       state = broadcast_state_change(state)
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      if Debug.debug_tutorial() do
+        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+      end
+      {:noreply, state}
+    end
   end
 
   def handle_cast(:notify_ai, state) do

@@ -18,6 +18,10 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     ],
     "cosmic" => [
       {"cosmic_basics", "Intro to cosmic mahjong", :west}
+    ],
+    "galaxy" => [
+      {"galaxy_basics", "Intro to galaxy mahjong", :west},
+      {"galaxy_milky_way", "Milky Way", :south}
     ]
   }
 

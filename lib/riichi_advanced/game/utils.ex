@@ -411,9 +411,24 @@ defmodule RiichiAdvanced.Utils do
     end)
   end
 
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:inverse_frequencies, visible_tiles, TileBehavior.hash(tile_behavior)})
   def inverse_frequencies(visible_tiles, tile_behavior) do
-    freqs = if is_map(visible_tiles) do visible_tiles else Enum.frequencies(visible_tiles) end
-    Map.merge(tile_behavior.tile_freqs, freqs, fn _k, l, r -> max(l - r, 0) end)
+    freqs = if is_map(visible_tiles) do visible_tiles else
+      # keep only attrs that appear in the original wall before taking frequencies
+      valid_attrs = Map.keys(tile_behavior.tile_freqs)
+      |> Enum.map(fn tile ->
+        {_, attrs} = to_attr_tile(tile)
+        MapSet.new(attrs)
+      end)
+      |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+      visible_tiles
+      |> Enum.map(fn tile -> 
+        {tile, attrs} = to_attr_tile(tile)
+        add_attr(tile, Enum.filter(attrs, & &1 in valid_attrs))
+      end)
+      |> Enum.frequencies()
+    end
+    Map.merge(tile_behavior.tile_freqs, freqs, fn _k, l, r -> l - r end)
     |> Enum.filter(fn {_tile, freq} -> freq > 0 end)
     |> Map.new()
   end
