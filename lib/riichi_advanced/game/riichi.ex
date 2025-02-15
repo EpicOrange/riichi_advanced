@@ -1,5 +1,4 @@
 defmodule RiichiAdvanced.Riichi do
-  alias RiichiAdvanced.Cache, as: Cache
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
@@ -236,20 +235,11 @@ defmodule RiichiAdvanced.Riichi do
     else MapSet.new() end
   end
 
-  defp _get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
+  def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
     waits = get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check)
     freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
     Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
-  end
-
-  def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
-    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check)
-        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)}, result)
-        result
-      [result] -> result
-    end
   end
 
   def get_safe_tiles_against(seat, players, turn \\ nil) do
@@ -312,9 +302,9 @@ defmodule RiichiAdvanced.Riichi do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  @decorate cacheable(cache: Cache, key: {hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
-    t = System.os_time(:millisecond)
+    # t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
     {match_definitions, hand_calls} = for match_definition <- match_definitions do
@@ -377,10 +367,10 @@ defmodule RiichiAdvanced.Riichi do
       ret
     else [] end
 
-    elapsed_time = System.os_time(:millisecond) - t
-    if elapsed_time > 10 do
-      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
-    end
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 10 do
+    #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
+    # end
     ret
   end
 
@@ -472,7 +462,8 @@ defmodule RiichiAdvanced.Riichi do
     2 * Utils.count_tiles(yakuhai, [Utils.strip_attrs(tile)], tile_behavior)
   end
 
-  defp _calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu})
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu) do
     # t = System.os_time(:millisecond)
 
     # IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
@@ -672,16 +663,6 @@ defmodule RiichiAdvanced.Riichi do
     # end
 
     ret
-  end
-
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu \\ false) do
-    case RiichiAdvanced.ETSCache.get({:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu}) do
-      [] -> 
-        result = _calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu)
-        RiichiAdvanced.ETSCache.put({:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu}, result)
-        result
-      [result] -> result
-    end
   end
 
   def calc_ko_oya_points(score, is_dealer, num_players, han_fu_rounding_factor) do

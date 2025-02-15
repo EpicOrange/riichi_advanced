@@ -4,6 +4,7 @@ defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
+  use Nebulex.Caching
   
   @boilerplate """
                (set-logic QF_FD)
@@ -278,7 +279,8 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def _match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
@@ -651,16 +653,6 @@ defmodule RiichiAdvanced.SMT do
     result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
     # IO.inspect(result)
     result
-  end
-
-  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
-    case RiichiAdvanced.ETSCache.get({:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior)
-        RiichiAdvanced.ETSCache.put({:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, result)
-        result
-      [result] -> result
-    end
   end
 
 end

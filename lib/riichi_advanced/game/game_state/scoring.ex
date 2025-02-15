@@ -10,7 +10,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
-  defp _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
+  def get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
     context = %{
       seat: seat,
       winning_tile: winning_tile,
@@ -32,18 +32,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       Enum.reject(eligible_yaku, fn {name, value} -> name in excluded_yaku or value in excluded_yaku end)
     else eligible_yaku end
     eligible_yaku
-  end
-
-  defp get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku) do
-    yaku_names = Enum.map(yaku_list, & &1["display_name"])
-    existing_yaku_names = Enum.map(existing_yaku, fn {name, _value} -> name end)
-    case RiichiAdvanced.ETSCache.get({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, TileBehavior.hash(state.players[seat].tile_behavior), winning_tile, win_source, yaku_names, existing_yaku_names}) do
-      [] -> 
-        result = _get_yaku(state, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
-        RiichiAdvanced.ETSCache.put({:get_yaku, state, state.players[seat].hand, state.players[seat].calls, TileBehavior.hash(state.players[seat].tile_behavior), winning_tile, win_source, yaku_names, existing_yaku_names}, result)
-        result
-      [result] -> result
-    end
   end
 
   def get_yakuhai(state, seat) do
