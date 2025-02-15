@@ -411,10 +411,67 @@ defmodule RiichiAdvanced.GameState do
 
       # shuffle wall
       wall = Enum.shuffle(wall)
+      starting_tiles = Map.get(rules, "starting_tiles", 0)
+      # wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
+      wall_index = starting_tiles * length(state.available_seats)
+
+      # rig the wall as the gods command
       wall = if Debug.debug() do Debug.set_wall(wall) else wall end
 
+      # "starting_hand" debug key
+      rig_starting_hand = if Map.has_key?(state.rules, "starting_hand") do
+        for {seat, starting_hand} <- state.rules["starting_hand"], reduce: [] do
+          rig_starting_hand ->
+            start_index = case seat do
+              "east"  -> 0
+              "south" -> starting_tiles
+              "west"  -> if length(state.available_seats) == 2 do starting_tiles else starting_tiles * 2 end
+              "north" -> starting_tiles * 3
+              _       -> nil
+            end
+            rig = if seat != nil do
+              starting_hand
+              |> Enum.map(&Utils.to_tile/1)
+              |> Enum.with_index()
+              |> Enum.map(fn {tile, i} -> {start_index + i, tile} end)
+            else [] end
+            rig ++ rig_starting_hand
+        end
+      else [] end
+
+      # "starting_draws" debug key
+      rig_starting_draws = if Map.has_key?(state.rules, "starting_draws") do
+        state.rules["starting_draws"]
+        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.with_index()
+        |> Enum.map(fn {tile, i} -> {wall_index + i, tile} end)
+      else [] end
+
+      # "starting_dead_wall" debug key
+      rig_dead_wall = if Map.has_key?(state.rules, "starting_dead_wall") do
+        state.rules["starting_dead_wall"]
+        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.with_index()
+        |> Enum.map(fn {tile, i} -> {length(wall) - i - 1, tile} end)
+      else [] end
+
+      # swap tiles so that the specified tiles are at the specified indices
+      rig_spec = rig_starting_hand ++ rig_starting_draws ++ rig_dead_wall
+      wall = if not Enum.empty?(rig_spec) do
+        rig_spec = Map.new(rig_spec)
+        {wall, _tiles} =  for i <- length(wall)-1..0//-1, reduce: {[], Enum.shuffle(wall -- Map.values(rig_spec))} do
+          {wall, tiles} -> cond do
+            Map.has_key?(rig_spec, i) -> {[rig_spec[i] | wall], tiles}
+            not Enum.empty?(tiles) -> with [tile | tiles] <- tiles, do: {[tile | wall], tiles}
+            true -> {wall, []}
+          end
+        end
+        wall
+      else wall end
+
+      # wall is now built
+
       # distribute haipai
-      starting_tiles = Map.get(rules, "starting_tiles", 0)
       hands = Map.new([:east, :south, :west, :north], &{&1, []})
       hands = if Debug.debug() do Debug.set_starting_hand(wall) else
         if starting_tiles > 0 do
@@ -427,42 +484,6 @@ defmodule RiichiAdvanced.GameState do
           Map.merge(hands, Enum.zip(state.available_seats, tiles) |> Map.new())
         else hands end
       end
-
-      # "starting_hand" debug key
-      hands = if Map.has_key?(state.rules, "starting_hand") do
-        for {seat, starting_hand} <- state.rules["starting_hand"], reduce: hands do
-          hands ->
-            seat = case seat do
-              "east" -> :east
-              "south" -> :south
-              "west" -> :west
-              "north" -> :north
-              _ -> nil
-            end
-            starting_hand = Enum.map(starting_hand, &Utils.to_tile/1)
-            if seat != nil do Map.put(hands, seat, starting_hand) else hands end
-        end
-      else hands end
-      wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
-      # "starting_draws" debug key
-      wall = if Map.has_key?(state.rules, "starting_draws") do
-        replacements = state.rules["starting_draws"]
-        |> Enum.map(&Utils.to_tile/1)
-        |> Enum.with_index()
-        for {tile, i} <- replacements, reduce: wall do
-          wall -> List.replace_at(wall, wall_index + i, tile)
-        end
-      else wall end
-      # "starting_dead_wall" debug key
-      wall = if Map.has_key?(state.rules, "starting_dead_wall") do
-        replacements = state.rules["starting_dead_wall"]
-        |> Enum.map(&Utils.to_tile/1)
-        |> Enum.with_index()
-        |> Enum.reverse()
-        for {tile, i} <- replacements, reduce: wall do
-          wall -> List.replace_at(wall, -i-1, tile)
-        end
-      else wall end
 
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
       {wall, dead_wall} = if dead_wall_length > 0 do
@@ -1444,7 +1465,9 @@ defmodule RiichiAdvanced.GameState do
   end
   def handle_cast({:unpause, context}, state) do
     actions = state.players[context.seat].deferred_actions
-    IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
+    if Debug.debug_actions() do
+      IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
+    end
     state = Map.put(state, :game_active, true)
     state = Actions.run_deferred_actions(state, context)
     state = broadcast_state_change(state)
