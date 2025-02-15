@@ -143,7 +143,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
       push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{socket.assigns.nickname}")
     else
       {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
-      push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
+      push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&from=learn")
     end
     {:noreply, socket}
   end
