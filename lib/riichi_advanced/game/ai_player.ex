@@ -92,7 +92,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {ret, shanten}
   end
 
-  defp get_mark_choices(state, source, players, revealed_tiles, num_scryed_tiles) do
+  defp get_mark_choices(source, players, revealed_tiles, scryed_tiles) do
     if source in Marking.special_keys() do
       []
     else
@@ -102,7 +102,7 @@ defmodule RiichiAdvanced.AIPlayer do
         :discard       -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.pond, &{seat, source, &1}) |> Enum.with_index() end)
         :aside         -> Enum.flat_map(players, fn {seat, p} -> Enum.map(p.aside, &{seat, source, &1}) |> Enum.with_index() end)
         :revealed_tile -> revealed_tiles |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
-        :scry          -> state.wall |> Enum.take(num_scryed_tiles) |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
+        :scry          -> scryed_tiles |> Enum.map(&{nil, source, &1}) |> Enum.with_index()
         _              ->
           IO.puts("AI does not recognize the mark source #{inspect(source)}")
           {nil, nil, nil}
@@ -110,11 +110,12 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  defp get_minefield_discard_danger(minefield_tiles, waits, wall, doras, visible_tiles, tile, tile_behavior) do
+  defp get_minefield_discard_danger(minefield_tiles, waits, doras, visible_tiles, tile, tile_behavior) do
     # really dumb heuristic for now
     genbutsu = Utils.strip_attrs(visible_tiles -- minefield_tiles)
     suji = Riichi.genbutsu_to_suji(genbutsu, tile_behavior)
-    hidden_count = Enum.count(wall -- visible_tiles, & &1 == tile)
+    hidden_count = Utils.inverse_frequencies(visible_tiles, tile_behavior)
+    |> Map.get(tile, 0)
     centralness = Riichi.get_centralness(tile)
     # true & higher numbers = don't discard
     {tile not in genbutsu, tile in waits, tile not in suji, tile in doras, hidden_count, centralness}
@@ -352,7 +353,7 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info({:set_best_minefield_hand, minefield_tiles, minefield_hand}, state) do
-    minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win, state.wall, state.player.tile_behavior, true)
+    minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win,state.player.tile_behavior, true)
     state = state
     |> Map.put(:minefield_tiles, minefield_tiles)
     |> Map.put(:minefield_hand, minefield_hand)
@@ -360,7 +361,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {:noreply, state}
   end
 
-  def handle_info({:mark_tiles, %{player: player, players: players, visible_tiles: visible_tiles, revealed_tiles: revealed_tiles, doras: doras, marked_objects: marked_objects, closest_american_hands: closest_american_hands}}, state) do
+  def handle_info({:mark_tiles, %{player: player, players: players, visible_tiles: visible_tiles, revealed_tiles: revealed_tiles, scryed_tiles: scryed_tiles, doras: doras, marked_objects: marked_objects, closest_american_hands: closest_american_hands}}, state) do
     if state.initialized do
       state = Map.put(state, :player, player)
       if Debug.debug_ai() do
@@ -370,7 +371,7 @@ defmodule RiichiAdvanced.AIPlayer do
       Process.sleep(trunc(500 / @ai_speed)) 
       choices = marked_objects
       |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() or (mark_info != nil and length(mark_info.marked) >= mark_info.needed) end)
-      |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(state, source, players, revealed_tiles, player.num_scryed_tiles) end)
+      |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(source, players, revealed_tiles, scryed_tiles) end)
       |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
       |> Enum.shuffle()
 
@@ -392,7 +393,7 @@ defmodule RiichiAdvanced.AIPlayer do
               end
             Marking.is_marking?(marked_objects, :aside) and length(player.hand) == 13 ->
               # discard stage
-              choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, state.wall, doras, visible_tiles, tile, player.tile_behavior) end, &<=/2, fn -> nil end)
+              choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, doras, visible_tiles, tile, player.tile_behavior) end, &<=/2, fn -> nil end)
               {state, if choice == nil do [] else [choice] end}
             true -> {state, []}
           end

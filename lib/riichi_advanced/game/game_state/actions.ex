@@ -1209,10 +1209,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
       "scry_all"        ->
         num = Enum.at(opts, 0, 1)
+        state = update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
         push_message(state, [
           %{text: "Player #{player_name(state, context.seat)} revealed "}
-        ] ++ Utils.ph(state.wall |> Enum.drop(state.wall_index) |> Enum.take(num)))
-        update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
+        ] ++ Utils.ph(get_scryed_tiles(state, context.seat)))
+        state
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
       "choose_yaku"     -> declare_yaku(state, context.seat)
       "disable_saki_card" ->

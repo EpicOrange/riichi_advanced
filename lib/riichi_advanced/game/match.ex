@@ -212,12 +212,12 @@ defmodule RiichiAdvanced.Match do
   # @match_keywords ["almost", "exhaustive", "ignore_suit", "restart", "unique", "nojoker", "debug"]
   # def match_keywords(), do: @match_keywords
 
-  def filter_irrelevant_tile_aliases(tile_behavior, all_tiles) do
+  def filter_irrelevant_tile_aliases(tile_behavior, relevant_tiles) do
     # filter out irrelevant tile aliases
     %TileBehavior{ tile_behavior | aliases:
       for {tile, attrs_aliases} <- tile_behavior.aliases do
         new_attrs_aliases = for {attrs, aliases} <- attrs_aliases do
-          {attrs, Enum.filter(aliases, fn t -> Enum.any?(all_tiles, &Utils.same_tile(&1, t)) end)}
+          {attrs, Enum.filter(aliases, fn t -> Enum.any?(relevant_tiles, &Utils.same_tile(&1, t)) end)}
         end
         |> Enum.reject(fn {_attrs, aliases} -> Enum.empty?(aliases) end)
         |> Map.new()

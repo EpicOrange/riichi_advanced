@@ -417,4 +417,11 @@ defmodule RiichiAdvanced.Utils do
       end
     end)
   end
+
+  def inverse_frequencies(visible_tiles, tile_behavior) do
+    freqs = if is_map(visible_tiles) do visible_tiles else Enum.frequencies(visible_tiles) end
+    Map.merge(tile_behavior.tile_freqs, freqs, fn _k, l, r -> max(l - r, 0) end)
+    |> Enum.filter(fn {_tile, freq} -> freq > 0 end)
+    |> Map.new()
+  end
 end

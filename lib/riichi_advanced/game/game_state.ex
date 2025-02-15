@@ -49,6 +49,7 @@ defmodule RiichiAdvanced.GameState do
       ordering_r: %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m",
                     :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
                     :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
+      tile_freqs: %{},
       ignore_suit: false
     ]
     def tile_mappings(tile_behavior) do
@@ -73,7 +74,7 @@ defmodule RiichiAdvanced.GameState do
       end)
     end
     def hash(tile_behavior) do
-      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.ignore_suit})
+      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.ignore_suit})
     end
     def joker_power(tile, tile_behavior) do
       aliases = Utils.apply_tile_aliases(tile, tile_behavior)
@@ -173,7 +174,6 @@ defmodule RiichiAdvanced.GameState do
       players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       rules: %{},
       interruptible_actions: %{},
-      all_tiles: MapSet.new(),
       wall: [],
       kyoku: 0,
       honba: 0,
@@ -354,6 +354,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
     state = Map.put(state, :honba, Map.get(state.rules, "starting_honba", 0))
 
+    # initialize player state
     initial_score = Map.get(rules, "initial_score", 0)
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
 
@@ -401,7 +402,6 @@ defmodule RiichiAdvanced.GameState do
     {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
       wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
-      all_tiles = MapSet.new(wall)
 
       # check that there are no nil tiles
       state = wall
@@ -485,14 +485,15 @@ defmodule RiichiAdvanced.GameState do
         else hands end
       end
 
+      # build dead wall
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
       {wall, dead_wall} = if dead_wall_length > 0 do
         Enum.split(wall, -dead_wall_length)
       else {wall, []} end
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+
       state = state
-      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
@@ -517,12 +518,12 @@ defmodule RiichiAdvanced.GameState do
         else state end
       end
 
-      scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
-
       # roll dice
       state = state
       |> Map.put(:die1, Map.get(state.rules, "die1", :rand.uniform(6)))
       |> Map.put(:die2, Map.get(state.rules, "die2", :rand.uniform(6)))
+
+      scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
 
       {state, hands, scores}
     else
@@ -542,13 +543,11 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.reverse()
       dead_wall = dead_wall ++ kyoku_log["kan_tiles"]
       |> Enum.map(&Utils.to_tile/1)
-      all_tiles = MapSet.new(wall ++ dead_wall)
       reserved_tiles = Map.get(rules, "reserved_tiles", [])
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
 
       state = state
-      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
@@ -583,6 +582,9 @@ defmodule RiichiAdvanced.GameState do
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
       {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
+
+    # reset player state
+    tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
     state = state
     |> update_all_players(&%Player{
          score: scores[&1],
@@ -592,6 +594,7 @@ defmodule RiichiAdvanced.GameState do
          auto_buttons: initial_auto_buttons,
          status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
          counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
+         tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
        })
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -1066,6 +1069,10 @@ defmodule RiichiAdvanced.GameState do
     end |> Enum.reverse()
   end
 
+  def get_scryed_tiles(state, seat) do
+    Enum.slice(state.wall, state.wall_index, state.players[seat].num_scryed_tiles)
+  end
+
   def replace_revealed_tile(state, index, tile) do
     tile_spec = Enum.at(state.revealed_tiles, index)
     cond do
@@ -1094,7 +1101,7 @@ defmodule RiichiAdvanced.GameState do
     win_definitions = translate_match_definitions(state, Map.get(state.rules["show_waits"], "win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
-    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, tile_behavior)
+    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
   end
 
   def get_doras(state) do
@@ -1417,7 +1424,7 @@ defmodule RiichiAdvanced.GameState do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions, tsumogiri_bot: tsumogiri_bot}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: state.shanten_definitions, tsumogiri_bot: tsumogiri_bot}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -1696,10 +1703,10 @@ defmodule RiichiAdvanced.GameState do
             players: state.players,
             visible_tiles: get_visible_tiles(state, seat),
             revealed_tiles: get_revealed_tiles(state),
+            scryed_tiles: get_scryed_tiles(state, seat),
             doras: get_doras(state),
-            wall: Enum.drop(state.wall, state.wall_index),
             marked_objects: state.marking[seat],
-            closest_american_hands: state.players[state.turn].cache.closest_american_hands,
+            closest_american_hands: state.players[seat].cache.closest_american_hands,
           }
           send(Map.get(state, seat), {:mark_tiles, params})
         end

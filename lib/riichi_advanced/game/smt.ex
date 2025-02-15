@@ -278,7 +278,7 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def _match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
+  def _match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
@@ -297,7 +297,7 @@ defmodule RiichiAdvanced.SMT do
     all_tiles = tile_mappings
     |> Map.values()
     |> Enum.map(&MapSet.new/1)
-    |> Enum.reduce(all_tiles, &MapSet.union/2)
+    |> Enum.reduce(MapSet.new(Map.keys(tile_behavior.tile_freqs)), &MapSet.union/2)
     |> MapSet.new(&Utils.strip_attrs/1)
     |> Enum.reject(& &1 in jokers) # we're solving for jokers, so don't include them as assignables
     # IO.puts("Non-joker tiles are #{inspect(all_tiles)}")
@@ -653,11 +653,11 @@ defmodule RiichiAdvanced.SMT do
     result
   end
 
-  def match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior) do
-    case RiichiAdvanced.ETSCache.get({:match_hand_smt_v2, hand, calls, all_tiles, match_definitions, TileBehavior.hash(tile_behavior)}) do
+  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
+    case RiichiAdvanced.ETSCache.get({:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}) do
       [] -> 
-        result = _match_hand_smt_v2(solver_pid, hand, calls, all_tiles, match_definitions, tile_behavior)
-        RiichiAdvanced.ETSCache.put({:match_hand_smt_v2, hand, calls, all_tiles, match_definitions, TileBehavior.hash(tile_behavior)}, result)
+        result = _match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior)
+        RiichiAdvanced.ETSCache.put({:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, result)
         result
       [result] -> result
     end

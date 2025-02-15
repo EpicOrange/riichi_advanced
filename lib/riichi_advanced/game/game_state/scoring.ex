@@ -166,7 +166,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     use_smt = Map.get(score_rules, "use_smt", true)
     joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior)
+      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior)
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -566,7 +566,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if delta_scores[seat] < 0 and "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
               win_definitions = translate_match_definitions(state, ["win"])
-              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, state.all_tiles, player.tile_behavior) ++ [:"2x"]
+              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_behavior) ++ [:"2x"]
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
                 winner = calculate_winner_details(state, seat, waits, :discard, true)
@@ -738,7 +738,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           state ->
             # calculate possible waits
             winner = state.players[seat]
-            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, state.all_tiles, winner.tile_behavior)
+            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, winner.tile_behavior)
 
             # display nothing if waits are empty
             # shouldn't happen under normal conditions, since tenpai implies nonempty waits
@@ -930,7 +930,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     groups = Enum.chunk_by(separated_hand, & &1 == :separator)
     groups = Enum.drop_every([nil | groups], 2)
     {groups, [ungrouped]} = Enum.split(groups, -1)
-    {separated_hand, _, _} = for _ <- 0..length(groups)-1, reduce: {[], groups, arranged_hand -- ungrouped} do
+    {separated_hand, _, _} = for _ <- groups, reduce: {[], groups, arranged_hand -- ungrouped} do
       {result, groups, [tile | hand]} ->
         case Enum.find_index(groups, & Enum.at(&1, 0) == tile) do
           nil -> {result, groups, hand}
@@ -982,7 +982,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, state.players[seat].tile_behavior)) do
         # run smt, but push a message if it takes more than 0.5 seconds
-        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, state.all_tiles, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior) end)
+        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior) end)
         notify_task = Task.async(fn ->
           :timer.sleep(500)
           push_message(state, [%{text: "Running joker solver..."}])
@@ -1018,8 +1018,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     {joker_assignment, assigned_hand, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
       Task.async(fn ->
-        # replace 5z in joker assignment with 0z if 0z is present in the wall
-        joker_assignment = if Utils.has_matching_tile?(state.all_tiles, [:"0z"]) do
+        # replace 5z in joker assignment with 0z if 0z is present in the game
+        joker_assignment = if Map.has_key?(state.players[seat].tile_behavior.tile_freqs, :"0z") do
           Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
         else joker_assignment end
 

@@ -161,7 +161,7 @@ defmodule RiichiAdvanced.Riichi do
 
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
-  def get_waits(hand, calls, match_definitions, all_tiles, tile_behavior, skip_tenpai_check \\ false) do
+  def get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check \\ false) do
     # only check for waits if we're tenpai
     if skip_tenpai_check or Match.match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), tile_behavior) do
       # go through each match definition and see what tiles can be added for it to match
@@ -171,8 +171,7 @@ defmodule RiichiAdvanced.Riichi do
         # make it exhaustive, unless it's unique
         match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
-        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], all_tiles} do
-          {keywords, []}               -> {keywords, []}
+        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs} do
           {keywords, waits_complement} -> case last_match_definition_elem do
             keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement}
             [_groups, num] when num <= 0 -> {keywords, waits_complement} # ignore lookaheads
@@ -212,19 +211,20 @@ defmodule RiichiAdvanced.Riichi do
               # waits_complement = all waits that don't help
               # remove waits that do help
               waits_complement = if Enum.empty?(hand_calls_success) do
-                Enum.reject(waits_complement, fn wait ->
+                Enum.reject(waits_complement, fn {wait, _freq} ->
                   Enum.any?(hand_calls_failure, fn {hand, calls} ->
                     Match.match_hand([wait | hand], calls, [final_match_definition], tile_behavior)
                   end)
-                end)
-              else all_tiles end
+                end) |> Map.new()
+              else tile_behavior.tile_freqs end
 
               {keywords, waits_complement}
             _ -> {keywords, waits_complement}
           end
         end
-        # TODO maybe instead of taking union of differences, take the difference of intersection
-        waits = MapSet.difference(MapSet.new(all_tiles), MapSet.new(waits_complement))
+        waits = Utils.inverse_frequencies(waits_complement, tile_behavior)
+        |> Map.keys()
+        |> MapSet.new()
         # IO.inspect(hand, label: "===\nhand")
         # IO.inspect(match_definition, label: "match_definition")
         # IO.inspect(waits, label: "waits")
@@ -234,20 +234,17 @@ defmodule RiichiAdvanced.Riichi do
     else MapSet.new() end
   end
 
-  defp _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, tile_behavior, skip_tenpai_check) do
-    waits = get_waits(hand, calls, match_definitions, MapSet.new(wall), tile_behavior, skip_tenpai_check)
-    # remove irrelevant statuses
-    |> Utils.remove_attr(["draw", "discard"])
-    visible_tiles = Utils.remove_attr(visible_tiles, ["draw", "discard"])
-    freqs = Enum.frequencies(wall -- visible_tiles)
-    Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
+  defp _get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check) do
+    waits = get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check)
+    freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
+    Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
   end
 
-  def get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
-    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, hand, calls, match_definitions, wall, visible_tiles, TileBehavior.hash(tile_behavior)}) do
+  def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
+    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)}) do
       [] -> 
-        result = _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, tile_behavior, skip_tenpai_check)
-        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, hand, calls, match_definitions, wall, visible_tiles, TileBehavior.hash(tile_behavior)}, result)
+        result = _get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check)
+        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)}, result)
         result
       [result] -> result
     end
@@ -705,14 +702,6 @@ defmodule RiichiAdvanced.Riichi do
     # oya_payment is only relevant if is_dealer is false
     # (it is just double ko payment if is_dealer is true, which is useless)
     {ko_payment, oya_payment}
-  end
-
-  # TODO take in wall
-  def count_ukeire(waits, hand, visible_ponds, visible_calls, winning_tile, tile_behavior) do
-    all_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &Utils.call_to_tiles/1) -- [winning_tile]
-    waits
-    |> Enum.map(fn wait -> 4 - Utils.count_tiles(all_tiles, [wait], tile_behavior) end)
-    |> Enum.sum()
   end
 
   def test_tiles(hand, tiles, tile_behavior) do
