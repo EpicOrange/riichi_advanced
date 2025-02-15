@@ -311,7 +311,13 @@ defmodule RiichiAdvanced.GameState do
 
     # apply config
     ruleset_json = if state.config != nil do
-      JQ.merge_jsons!(RiichiAdvanced.ModLoader.strip_comments(ruleset_json), RiichiAdvanced.ModLoader.strip_comments(state.config))
+      try do
+        JQ.merge_jsons!(RiichiAdvanced.ModLoader.strip_comments(ruleset_json), RiichiAdvanced.ModLoader.strip_comments(state.config))
+      rescue
+        _ ->
+          IO.puts("Failed to load config:\n#{state.config}")
+          ruleset_json
+      end
     else ruleset_json end
 
     # put params, debouncers, and process ids into state
