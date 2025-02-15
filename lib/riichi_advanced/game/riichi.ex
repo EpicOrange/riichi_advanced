@@ -776,10 +776,7 @@ defmodule RiichiAdvanced.Riichi do
 
     Enum.flat_map(winning_tiles, fn winning_tile ->
       Match.extract_groups([winning_tile | hand], group, tile_behavior)
-      |> Enum.find(fn {hand, groups} ->
-        calls = Enum.map(groups, &{"", &1}) ++ calls
-        Match.match_hand(prearranged ++ hand, calls, win_definitions, tile_behavior)
-      end)
+      |> Enum.find(fn {hand, groups} -> Match.match_hand(prearranged ++ hand ++ Enum.concat(groups), calls, win_definitions, tile_behavior) end)
       |> case do
         nil            -> []
         {hand, groups} -> [{winning_tile, hand, groups}]
