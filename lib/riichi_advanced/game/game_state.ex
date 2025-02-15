@@ -85,6 +85,29 @@ defmodule RiichiAdvanced.GameState do
     def sort_by_joker_power(tiles, tile_behavior) do
       Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
     end
+    # restrict current aliases to the assignment given by the joker solver
+    def from_joker_assignment(tile_behavior, smt_hand, joker_assignment) do
+      # first get a map from joker to a list of tiles it got assigned to
+      mapping = joker_assignment
+      |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
+      |> Enum.group_by(fn {joker, _tile} -> joker end)
+      |> Map.new(fn {joker, tiles} -> {joker, Enum.map(tiles, fn {_joker, tile} -> tile end)} end)
+      relevant_tiles = Map.values(joker_assignment)
+      new_aliases = for {tile1, attrs_aliases} <- tile_behavior.aliases, tile1 in relevant_tiles, into: %{} do
+        attrs_aliases = for {attrs, aliases} <- attrs_aliases, into: %{} do
+          full_tile1 = Utils.add_attr(tile1, attrs)
+          any_aliases = tile_behavior.aliases
+          |> Map.get(:any, %{})
+          |> Map.get(attrs, MapSet.new())
+          aliases = for tile2 <- MapSet.union(aliases, any_aliases), Utils.has_matching_tile?(Map.get(mapping, tile2, []), [full_tile1]), into: MapSet.new() do
+            tile2
+          end
+          {attrs, aliases}
+        end
+        {tile1, attrs_aliases}
+      end
+      %TileBehavior{ tile_behavior | aliases: new_aliases }
+    end
   end
 
   defmodule Player do

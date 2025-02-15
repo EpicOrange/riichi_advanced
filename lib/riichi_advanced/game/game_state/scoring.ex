@@ -913,17 +913,24 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {List.delete_at(arranged_hand, ix), [new_winning_tile]}
     else {arranged_hand, orig_draw} end
 
+    # get smt hand for the next steps
+    orig_call_tiles = orig_calls
+    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    |> Enum.flat_map(fn call -> Enum.take(Utils.call_to_tiles(call), 3) end) # ignore kans
+    smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
+
     # create an alternate separated_hand where sets are separated
     win_definitions = translate_match_definitions(state, ["win"])
+    assigned_tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand, joker_assignment)
     separated_hand = arranged_hand
-    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 1, 2], win_definitions, tile_behavior)
-    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0, 0], win_definitions, tile_behavior)
+    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 1, 2], win_definitions, assigned_tile_behavior)
+    separated_hand = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0, 0], win_definitions, assigned_tile_behavior)
     # kontsu/knitted
-    separated_hand2 = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 10, 20], win_definitions, tile_behavior)
-    separated_hand2 = Riichi.prepend_group(separated_hand2, orig_calls, [winning_tile || new_winning_tile], [0, 11, 21], win_definitions, tile_behavior)
+    separated_hand2 = Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 10, 20], win_definitions, assigned_tile_behavior)
+    separated_hand2 = Riichi.prepend_group(separated_hand2, orig_calls, [winning_tile || new_winning_tile], [0, 11, 21], win_definitions, assigned_tile_behavior)
     # only split pairs if knitted did not match
     separated_hand = if separated_hand == separated_hand2 do
-      Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0], win_definitions, tile_behavior)
+      Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0], win_definitions, assigned_tile_behavior)
     else separated_hand2 end
     # result should look like [shuntsu, koutsu, kontsu, toitsu, ungrouped] with each set separated by :separator
     # rearrange those groups to be as close to the original hand as possible
@@ -946,11 +953,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.intersperse([:"7x"])
     |> Enum.concat()
 
-    # push message
-    orig_call_tiles = orig_calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.flat_map(fn call -> Enum.take(Utils.call_to_tiles(call), 3) end) # ignore kans
-    smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
+    # push message saying which joker maps to what
     joker_assignment = joker_assignment
     |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
     |> Enum.reject(fn {joker_tile, _tile} -> Riichi.is_aka?(joker_tile) end)
