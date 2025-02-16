@@ -484,6 +484,7 @@ Here are all the toplevel keys. Every key is optional.
 - `before_conclusion`: Triggers at the end of a game (right before the end scores are shown).
 - `before_continue`: Triggers before the game continues, after someone wins in a bloody end game.
 - `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
+- `before_scoring`: Triggers right before a win is called, before yaku is calculated. Same as `before_win`, but happens after the joker solver is run (if applicable).
 - `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
 - `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.

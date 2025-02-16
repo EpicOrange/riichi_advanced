@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
@@ -121,10 +122,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # look at the actual aliases that match, and add the appropriate attrs
     replace_joker = fn joker, i ->
       for {tile, attrs_aliases} <- tile_aliases,
-          tile == joker_assignment[i],
+          Utils.same_tile(tile, joker_assignment[i]), # allow for :any to match
           {attrs, aliases} <- attrs_aliases,
-          Utils.has_matching_tile?([joker], aliases) do
-        Utils.add_attr(tile, attrs)
+          Utils.has_matching_tile?(aliases, [joker]) do
+        Utils.add_attr(joker_assignment[i], attrs)
       end
       |> Enum.at(0, joker)
     end
@@ -1009,7 +1010,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # find the maximum score obtainable across all joker assignments
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
-    {joker_assignment, assigned_hand, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name} = for joker_assignment <- joker_assignments do
+    %{
+      joker_assignment: joker_assignment,
+      assigned_hand: assigned_hand,
+      assigned_calls: assigned_calls,
+      assigned_winning_hand: assigned_winning_hand,
+      new_winning_tile: new_winning_tile
+    } = for joker_assignment <- joker_assignments do
       Task.async(fn ->
         # replace 5z in joker assignment with 0z if 0z is present in the game
         joker_assignment = if Map.has_key?(state.players[seat].tile_behavior.tile_freqs, :"0z") do
@@ -1018,7 +1025,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # replace winner's hand with joker assignment to determine yaku
         {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-        assigned_hand = state.players[seat].cache.winning_hand
+        assigned_hand = state.players[seat].hand
+        assigned_calls = state.players[seat].calls
+        assigned_winning_hand = state.players[seat].cache.winning_hand
 
         # obtain yaku and minipoints
         winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
@@ -1027,7 +1036,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
         if Debug.print_wins() do
-          IO.puts("won by #{win_source}; hand: #{inspect(assigned_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
         end
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
@@ -1039,14 +1048,47 @@ defmodule RiichiAdvanced.GameState.Scoring do
         if Debug.print_wins() do
           IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
         end
-        {joker_assignment, assigned_hand, yaku, yaku2, minipoints, new_winning_tile, score, points, points2, score_name}
+        %{
+          joker_assignment: joker_assignment,
+          assigned_hand: assigned_hand,
+          assigned_calls: assigned_calls,
+          assigned_winning_hand: assigned_winning_hand,
+          new_winning_tile: new_winning_tile,
+          score: score,
+          points: points,
+          points2: points2,
+          score_name: score_name
+        }
       end)
     end
     |> Task.yield_many(timeout: :infinity)
     |> Enum.map(fn {_task, {:ok, res}} -> res end)
-    |> Enum.max_by(fn {_, _, _, _, _, _, score, points, points2, _} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+    |> Enum.max_by(fn %{score: score, points: points, points2: points2} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
-    # rearrange their hand
+    # run before_scoring actions based on this joker assignment
+    # this might change the yaku, so we will have to recalculate yaku
+    orig_hand = state.players[seat].hand
+    orig_calls = state.players[seat].calls
+    state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls })
+    IO.inspect(joker_assignment)
+    IO.inspect(assigned_hand)
+    state = if Map.has_key?(state.rules, "before_scoring") do
+      Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: new_winning_tile, win_source: win_source})
+    else state end
+    # now calculate the actual yaku
+    {yaku, minipoints, _new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, [new_winning_tile], win_source)
+    {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
+      get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, [new_winning_tile], win_source)
+    else {[], minipoints, new_winning_tile} end
+    yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
+    {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
+    if Debug.print_wins() do
+      IO.puts("won by #{win_source}; hand: #{inspect(assigned_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+    end
+    # restore original hand and calls
+    state = update_player(state, seat, &%Player{ &1 | hand: orig_hand, calls: orig_calls })
+
+    # rearrange their hand for display purposes
     %{hand: arranged_hand, separated_hand: separated_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)
 
     # return the complete winner object
@@ -1093,8 +1135,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end,
       opponents: opponents,
       winning_hand: winning_hand,
+      assigned_hand: assigned_winning_hand,
       separated_hand: separated_hand,
-      assigned_hand: assigned_hand,
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,
     }

@@ -495,8 +495,11 @@ defmodule RiichiAdvanced.Match do
 
   defp multiply_match_definitions(match_definitions, mult) do
     for match_definition <- match_definitions do
-      for [groups, num] <- match_definition do
-        [groups, if num < 0 do num else num * mult end]
+      for match_definition_elem <- match_definition do
+        case match_definition_elem do
+          [groups, num] -> [groups, if num < 0 do num else num * mult end]
+          _             -> match_definition_elem
+        end
       end
     end
   end
