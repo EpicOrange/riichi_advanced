@@ -133,7 +133,24 @@ textarea {
   white-space: pre;
   box-sizing: border-box;
 }
-
+/* buttons */
+button {
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  text-decoration: none;
+  font-size: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  text-align: center;
+  transform: translateY(calc(var(--tile-size) / -8));
+}
+button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(0);
+}
 
 /* hands */
 div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
@@ -1519,11 +1536,9 @@ div.call-buttons > div.call-button-separator {
 div.buttons > button,
 div.call-buttons > button {
   font-size: calc(0.75 * var(--tile-size));
-  padding: 0 calc(0.1 * var(--tile-size));
-  border: calc(0.0625 * var(--tile-size)) solid var(--tile-back);
-  border-radius: calc(0.2 * var(--tile-size));
+  padding: 0 calc(0.1625 * var(--tile-size));
   background: var(--tile-back);
-  cursor: pointer;
+  filter: none;
 }
 div.buttons > button.small-text {
   font-size: calc(0.33 * var(--tile-size));
@@ -1989,6 +2004,12 @@ div.game-modal > div.score-display {
   pointer-events: none;
   user-select: none;
 }
+div.game-modal.error-window > button.dismiss-error,
+div.game-modal-container > button.end-back-button {
+  position: absolute;
+  width: 100%;
+  height: calc(1 * var(--tile-size));
+}
 div.winning-hand-container {
   width: 100%;
   padding-top: calc(0.25 * var(--tile-size));
@@ -2265,24 +2286,6 @@ div.game-modal.error-window > textarea.error {
   left: 0;
   white-space: pre;
 }
-div.game-modal.error-window > button.dismiss-error {
-  position: absolute;
-  width: 100%;
-  height: calc(1 * var(--tile-size));
-  bottom: calc(0.25 * var(--tile-size));
-  background: var(--tile-front);
-  text-decoration: none;
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.game-modal.error-window > button.dismiss-error:active {
-  bottom: 0;
-  filter: none;
-}
 div.game-modal.error-window::before {
   background: red;
 }
@@ -2353,26 +2356,7 @@ div.placement > div.placement-place::before {
 div.placement span.placement-score {
   margin-left: calc(0.5 * var(--tile-size));
 }
-div.game-modal-container > button.end-back-button {
-  position: absolute;
-  width: 100%;
-  height: calc(1 * var(--tile-size));
-  bottom: calc(0.25 * var(--tile-size));
-  background: var(--tile-front);
-  font-size: calc(0.75 * var(--tile-size));
-  text-align: center;
-  text-decoration: none;
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.game-modal-container > button.end-back-button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
-}
+
 
 
 /* ruleset textbox */
@@ -2758,27 +2742,12 @@ div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translate
 div.enter-buttons {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-flow: row nowrap;
+  justify-content: stretch;
   margin-top: calc(0.5 * var(--tile-size));
 }
 div.enter-buttons > button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  font-size: calc(0.75 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
   flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-}
-div.enter-buttons > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 /* room code modal */
@@ -2810,13 +2779,6 @@ div.room-code-modal > div.room-code-buttons > button {
   border: none;
   padding: 0;
   margin: 0;
-  cursor: pointer;
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-}
-div.room-code-modal > div.room-code-buttons > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 
@@ -2869,24 +2831,11 @@ div.lobby > div.rooms > div.lobby-room {
 }
 div.lobby > div.rooms > div.lobby-room > button.join-room {
   background: var(--tile-front-side);
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
-div.lobby > div.rooms > div.lobby-room > button.join-room {
   padding-top: calc(0.25 * var(--tile-size));
-}
-div.lobby > div.rooms > div.lobby-room > button.join-room:active,
-div.lobby > button.create-room:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
-  z-index: 1;
 }
 div.lobby > div.rooms > div.lobby-room > div.room-mods {
   display: flex;
@@ -2898,16 +2847,6 @@ div.lobby > div.rooms > div.lobby-room > div.room-mods {
 }
 div.lobby > div.rooms > div.lobby-room > div.room-players {
   font-size: calc(0.75 * var(--tile-size));
-}
-div.lobby > button.create-room {
-  display: flex;
-  align-items: space-around;
-  position: absolute;
-  width: 100%;
-  font-size: calc(0.8 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
-  bottom: calc(0 * var(--tile-size));
-  left: calc(0 * var(--tile-size));
 }
 div.lobby > div.rooms > div.lobby-room > div.room-players > div.room-player-count {
   font-size: calc(1 * var(--tile-size));
@@ -3011,20 +2950,6 @@ div.room > div.seats > div.player-slot {
   position: relative;
   height: calc(1.5 * var(--tile-size));
 }
-div.room button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.room button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
-  z-index: 1;
-}
 div.room > div.room-settings button {
   transform: translateY(calc(-0.25 * var(--tile-size)));
 }
@@ -3052,23 +2977,14 @@ div.room > div.seats > div.player-slot > div.player-slot-name {
 div.room > div.seats > div.player-slot > div.player-slot-name.empty {
   opacity: 0.5;
 }
-div.room > div.seats > div.player-slot > button {
+div.room > div.seats > div.player-slot > button,
+div.room > div.seats > label.shuffle-seats,
+div.room > div.seats > button.start-game-button {
   font-size: calc(1 * var(--tile-size));
+}
+div.room > div.seats > div.player-slot > button {
   width: calc(1.2 * var(--tile-size));
   height: calc(1.2 * var(--tile-size));
-}
-div.room > div.seats > label.shuffle-seats {
-  font-size: calc(1 * var(--tile-size));
-}
-div.room > div.seats > button.start-game-button {
-  display: flex;
-  width: 100%;
-  text-align: center;
-  bottom: 0;
-  font-size: calc(1 * var(--tile-size));
-  justify-content: center;
-  align-items: center;
-  column-gap: calc(0.25 * var(--tile-size));
 }
 div.room div.mods,
 div.room div.custom-json {
@@ -3230,18 +3146,8 @@ div.menu-buttons {
 }
 /* menu buttons */
 div.menu-buttons > button {
-  height: calc(0.6 * var(--tile-size));
-  background: var(--tile-front);
+  height: calc(0.8 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.menu-buttons-container > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 /* centerpiece status component */
 /* landscape */
@@ -3293,13 +3199,8 @@ div.log-control {
 div.log-control > button.log-control-button {
   height: calc(0.8 * var(--tile-size));
   background: transparent;
-  border-width: 0;
-  margin: 0;
   padding: 0;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  filter: none;
 }
 
 /* tutorial overlay */
@@ -3390,40 +3291,11 @@ div.tutorial-menu-buttons > button {
   height: calc(2 * var(--tile-size));
   margin: calc(0.5 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
-  background: var(--tile-front);
   font-size: calc(0.6 * var(--tile-size));
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.tutorial-menu-buttons > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 footer.tutorial-menu-footer,
 footer.tutorial-menu-footer > button {
   width: 100%;
-}
-footer.tutorial-menu-footer > button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  font-size: calc(0.75 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-}
-footer.tutorial-menu-footer > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 /* tutorial creator menu */
@@ -3456,23 +3328,4 @@ form.tutorial-menu-container > header > label {
 }
 form.tutorial-menu-container > textarea {
   font-size: calc(0.25 * var(--tile-size));
-}
-form.tutorial-menu-container > button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  font-size: calc(0.75 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-}
-form.tutorial-menu-container > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
