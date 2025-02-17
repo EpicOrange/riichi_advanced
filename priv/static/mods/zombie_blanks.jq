@@ -45,7 +45,7 @@
             "our_turn",
             "not_just_discarded",
             {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]},
-            {"name": "match", "opts": [["discard"], [["not_joker"], 1]]}
+            {"name": "match", "opts": [["all_ponds"], [["not_joker"], 1]]}
       ],
       "actions": [
         ["big_text", "Swap"],
