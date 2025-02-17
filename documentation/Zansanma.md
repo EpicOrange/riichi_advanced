@@ -52,16 +52,16 @@ Every 5 pin and 5 sou is worth 1 dora.
 ### Open Riichi
 **A special kind of Riichi**. If you're in Furiten, it's the only way to declare Riichi. You pay 1000 points, and open your hand for the other players. If you Tsumo, or Ron off another player who has declared Riichi themselves, it is 2 Han. 
 
-**If a player openly deals into an Open Riichi, it is a Yakuman, with the 10 chip bonus.**
+**If a player not in Riichi openly deals into an Open Riichi, it is a Yakuman, with the 10 chip bonus.**
 
 * Starting Points: 50,000 
 * Kuitan OK, Atozuke OK, Pinfu Tsumo OK
 * Draw through the deadwall, to the Dora indicator.
 * North (Pei) is Yakuhai (not Nukidora)
 * No abortive hands (A 5th Kan cannot be made)
-* Missed Win
+* Missed Win (If you are in riichi and you do not win off the first valid discard, you cannot win with Ron for the rest of the hand)
 * Kan after Riichi is optional (as long as it doesn't change your wait)
-* Furitan Riichi is only allowed if you Open Riichi
+* Furiten Riichi is only allowed if you Open Riichi
 * You can choose to Riichi even if you do not have another tile to draw
 * Noten payment is 2000 Points.
 * Renchan payment is 1000 x honba per Ron, 1000 x honba ALL per Tsumo
@@ -73,6 +73,42 @@ Every 5 pin and 5 sou is worth 1 dora.
 *  There is no Return Score, there is no extension into West Round.
 * Tenpai-yame 1st place only.
 
-## Scoring Charts
+## Scoring Chart
+No fu is used in Zan Sanma. Score calculation only factors the amount of han.
+### DEALER
+|Han| Ron | Tsumo|
+|---|---|---|
+|1 han| 2000 | 1000 all|
+|2 han| 3000 | 2000 all |
+|3 han| 6000 | 3000 all |
+|4-5 han (Mangan)| 12000 | 6000 all |
+| 6-7 han (Haneman) |18000|9000 all|
+|8-10 han (Baiman) | 24000 | 12000 all |
+|11-12 han (Sanbaiman) | 36000 | 18000 all |
+|13+ han (Kazoe Yakuman) | 48000 | 24000 all |
 
-|
+### NON DEALER
+|Han| Ron| Tsumo|
+|---|---|---|
+|1 han| 1000 | 1000 all |
+|2 han| 2000 | 1000 all |
+|3 han| 4000 | 1000/3000 |
+|4-5 han (Mangan) | 8000 | 3000/5000 |
+|6-7 han (Haneman) | 12000 | 4000/8000 |
+| 8-10 han (Baiman) | 16000 | 6000/10000 |
+|11-12 han (Sanbaiman) | 24000 | 8000/16000 |
+|13+ han (Kazoe Yakuman) | 32000 | 12000/20000 |
+
+## Additional Yaku
+
+* Chiitoitsu can be formed with all 4 copies of a tile
+* Sanrenkou (3 consecutive triplets): 2 han
+* 3 Winds (Pon of 3 out of 4 winds): 2 han
+* Shosharin (7 pairs in one suit,with winds or dragons): 6 han
+* Nagashi: Yakuman
+* Renhou: Yakuman
+* Suurenkou (4 consecutive triplets): Yakuman
+* Daisharin (7 pairs in one suit, no winds or dragons): Yakuman
+* Manzu Honiisou: Yakuman
+
+
