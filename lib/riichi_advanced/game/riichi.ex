@@ -276,13 +276,13 @@ defmodule RiichiAdvanced.Riichi do
       "7" -> is_num?(context.tile, 7)
       "8" -> is_num?(context.tile, 8)
       "9" -> is_num?(context.tile, 9)
-      "tedashi" -> not Utils.has_attr?(context.tile, ["draw"])
-      "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
+      "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
+      "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
       "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
       "kuikae" ->
         player = context.players[context.seat]
         base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
-        potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["hand"])
+        potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
         triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
         sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
         not Enum.empty?(triplet ++ sequence)

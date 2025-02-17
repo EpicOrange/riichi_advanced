@@ -8,8 +8,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
       "starting_hand": {
         "east": ["3m", "3m", "3m", "7p", "7p", "7p", "2s", "2s", "2s", "4p", "6z", "5m", "5m"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "west": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["2m", "4m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["2p", "3p", "3p", "3p", "2p", "3p"]
     }
