@@ -206,8 +206,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "just_discarded"              -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == context.seat
       "just_called"                 -> last_action != nil and last_action.action == :call and last_action.seat == state.turn
       "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn
-      "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]), cxt_player.tile_behavior, [last_action.tile])
-      "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["hand"]) ++ Utils.add_attr(cxt_player.draw, ["hand"]), cxt_player.tile_behavior, [])
+      "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]), cxt_player.tile_behavior, [last_action.tile])
+      "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]) ++ Utils.add_attr(cxt_player.draw, ["_hand"]), cxt_player.tile_behavior, [])
       "can_upgrade_call"            -> cxt_player.calls
         |> Enum.filter(fn {name, _call} -> name == context.upgrade_name end)
         |> Enum.map(&Utils.call_to_tiles/1)
@@ -235,7 +235,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "last_discard_matches"     -> last_discard_action != nil and Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: Map.get(context, :tile, nil), players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action != nil and last_action.action == :call and Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: Map.get(context, :tile, nil), call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_behavior)
-      "is_drawn_tile"            -> Utils.has_attr?(context.tile, ["draw"])
+      "is_drawn_tile"            -> Utils.has_attr?(context.tile, ["_draw"])
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
       "discarder_status"         -> last_action != nil and last_action.action == :discard and Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)
@@ -371,8 +371,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "call_would_change_waits" ->
         # context here is %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades}
         win_definitions = translate_match_definitions(state, opts)
-        hand = Utils.add_attr(cxt_player.hand, ["hand"])
-        draw = Utils.add_attr(cxt_player.draw, ["hand"])
+        hand = Utils.add_attr(cxt_player.hand, ["_hand"])
+        draw = Utils.add_attr(cxt_player.draw, ["_hand"])
         calls = cxt_player.calls
         waits = Riichi.get_waits(hand, calls, win_definitions, cxt_player.tile_behavior)
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, cxt_player.tile_behavior, []), fn {called_tile, call_choices} ->

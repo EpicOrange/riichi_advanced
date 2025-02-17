@@ -249,8 +249,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
     {call, _} = for tile <- Enum.reverse(call), reduce: {[], false} do
       {acc, true}  -> {[tile | acc], true}
       {acc, false} ->
-        if Utils.has_attr?(tile, ["sideways"]) do
-          {[Utils.add_attr(tile, ["last_sideways"]) | acc], true}
+        if Utils.has_attr?(tile, ["_sideways"]) do
+          {[Utils.add_attr(tile, ["_last_sideways"]) | acc], true}
         else {[tile | acc], false} end
     end
     call

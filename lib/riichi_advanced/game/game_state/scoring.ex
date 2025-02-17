@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     if winning_tiles == nil or winning_tiles == [nil] or Enum.empty?(winning_tiles) do
       # try every possible winning tile from hand
       for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil, into: %{} do
-        state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["draw"])] })
+        state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["_draw"])] })
         minipoints = get_minipoints(state2, seat, winning_tile, win_source)
         yakus = get_yaku(state2, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
         {winning_tile, {minipoints, yakus}}
@@ -117,11 +117,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
-    tile_aliases = state.players[seat].tile_behavior.aliases
     # the joker assignment only maps base tiles (no attrs)
     # look at the actual aliases that match, and add the appropriate attrs
     replace_joker = fn joker, i ->
-      for {tile, attrs_aliases} <- tile_aliases,
+      for {tile, attrs_aliases} <- state.players[seat].tile_behavior.aliases,
           Utils.same_tile(tile, joker_assignment[i]), # allow for :any to match
           {attrs, aliases} <- attrs_aliases,
           Utils.has_matching_tile?(aliases, [joker]) do
@@ -1033,6 +1032,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         assigned_winning_hand = state.players[seat].cache.winning_hand
 
         # run before_scoring actions
+        IO.inspect(assigned_winning_tile)
         state = if Map.has_key?(state.rules, "before_scoring") do
           Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: assigned_winning_tile, win_source: win_source})
         else state end
