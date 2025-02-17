@@ -476,7 +476,7 @@ Here are all the toplevel keys. Every key is optional.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
-- `after_start`: Triggers at the start of each round. Context: `seat` is the current seat (so, east).
+- `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east).
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
 - `after_win`: Triggers at the end of a win, after yaku is calculated.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
