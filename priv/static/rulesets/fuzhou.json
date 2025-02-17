@@ -218,15 +218,15 @@
         // tag gold tiles with "dora" filler text here
       ["tag_dora", "gold", -1],
         // add the "dora" attribute to tiles tagged with "gold", which should make them shiny
-      ["add_attr_tagged", "gold", ["dora", "gold"]],
+      ["add_attr_tagged", "gold", ["dora", "_gold"]],
         // sets any tile with attribute "gold" to be an any-joker with attribute "gold"
-      ["set_tile_alias_all", [["any", "gold"]], [["any", "gold"]]]
+      ["set_tile_alias_all", [["any", "_gold"]], [["any", "_gold"]]]
     ]
   },
   "before_win": {
     "actions": [
       ["when", [{"name": "seat_is", "opts": ["east"]}], ["set_counter", "dealer_continuation", "honba"]],
-      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [["any", "gold"]]]
+      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [["any", "_gold"]]]
     ]
   },
   "before_exhaustive_draw": {
