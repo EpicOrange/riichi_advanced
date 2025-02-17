@@ -49,6 +49,7 @@ defmodule RiichiAdvanced.GameState do
       ordering_r: %{:"2m"=>:"1m", :"3m"=>:"2m", :"4m"=>:"3m", :"5m"=>:"4m", :"6m"=>:"5m", :"7m"=>:"6m", :"8m"=>:"7m", :"9m"=>:"8m",
                     :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
                     :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
+      tile_freqs: %{},
       ignore_suit: false
     ]
     def tile_mappings(tile_behavior) do
@@ -73,7 +74,7 @@ defmodule RiichiAdvanced.GameState do
       end)
     end
     def hash(tile_behavior) do
-      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.ignore_suit})
+      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.ignore_suit})
     end
     def joker_power(tile, tile_behavior) do
       aliases = Utils.apply_tile_aliases(tile, tile_behavior)
@@ -83,6 +84,33 @@ defmodule RiichiAdvanced.GameState do
     # power is just number of aliases
     def sort_by_joker_power(tiles, tile_behavior) do
       Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
+    end
+    # restrict current aliases to the assignment given by the joker solver
+    def from_joker_assignment(tile_behavior, smt_hand, joker_assignment) do
+      # first get a map from joker to a list of tiles it got assigned to
+      mapping = joker_assignment
+      |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
+      |> Enum.group_by(fn {joker, _tile} -> joker end)
+      |> Map.new(fn {joker, tiles} -> {joker, Enum.map(tiles, fn {_joker, tile} -> tile end)} end)
+      relevant_tiles = Map.values(joker_assignment)
+      new_aliases = for {tile1, attrs_aliases} <- tile_behavior.aliases, tile1 in relevant_tiles, into: %{} do
+        attrs_aliases = for {attrs, aliases} <- attrs_aliases, into: %{} do
+          any_aliases = tile_behavior.aliases
+          |> Map.get(:any, %{})
+          |> Map.get(attrs, MapSet.new())
+          aliases = for tile2 <- MapSet.union(aliases, any_aliases),
+                    Utils.has_matching_tile?(
+                      mapping
+                      |> Enum.filter(fn {x, _ys} -> Utils.same_tile(x, tile2) end)
+                      |> Enum.flat_map(fn {_x, ys} -> ys end), [tile1]),
+                    into: MapSet.new() do
+            tile2
+          end
+          {attrs, aliases}
+        end
+        {tile1, attrs_aliases}
+      end
+      %TileBehavior{ tile_behavior | aliases: new_aliases }
     end
   end
 
@@ -173,7 +201,6 @@ defmodule RiichiAdvanced.GameState do
       players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       rules: %{},
       interruptible_actions: %{},
-      all_tiles: MapSet.new(),
       wall: [],
       kyoku: 0,
       honba: 0,
@@ -284,7 +311,13 @@ defmodule RiichiAdvanced.GameState do
 
     # apply config
     ruleset_json = if state.config != nil do
-      JQ.merge_jsons!(RiichiAdvanced.ModLoader.strip_comments(ruleset_json), RiichiAdvanced.ModLoader.strip_comments(state.config))
+      try do
+        JQ.merge_jsons!(RiichiAdvanced.ModLoader.strip_comments(ruleset_json), RiichiAdvanced.ModLoader.strip_comments(state.config))
+      rescue
+        _ ->
+          IO.puts("Failed to load config:\n#{state.config}")
+          ruleset_json
+      end
     else ruleset_json end
 
     # put params, debouncers, and process ids into state
@@ -354,6 +387,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :kyoku, Map.get(state.rules, "starting_round", 0))
     state = Map.put(state, :honba, Map.get(state.rules, "starting_honba", 0))
 
+    # initialize player state
     initial_score = Map.get(rules, "initial_score", 0)
     state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
 
@@ -400,21 +434,82 @@ defmodule RiichiAdvanced.GameState do
     rules = state.rules
     {state, hands, scores} = if kyoku_log == nil do
       # initialize wall
-      wall = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
-      all_tiles = MapSet.new(wall)
+      wall_tiles = Enum.map(Map.get(rules, "wall", []), &Utils.to_tile(&1))
 
       # check that there are no nil tiles
-      state = wall
+      state = wall_tiles
       |> Enum.zip(Map.get(rules, "wall", []))
       |> Enum.filter(fn {result, _orig} -> result == nil end)
       |> Enum.reduce(state, fn {_result, orig}, state -> show_error(state, "#{inspect(orig)} is not a valid wall tile!") end)
 
       # shuffle wall
-      wall = Enum.shuffle(wall)
+      wall = Enum.shuffle(wall_tiles)
+      starting_tiles = Map.get(rules, "starting_tiles", 0)
+      # wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
+      wall_index = starting_tiles * length(state.available_seats)
+
+      # rig the wall as the gods command
       wall = if Debug.debug() do Debug.set_wall(wall) else wall end
 
+      # "starting_hand" debug key
+      rig_starting_hand = if Map.has_key?(state.rules, "starting_hand") do
+        for {seat, starting_hand} <- state.rules["starting_hand"], reduce: [] do
+          rig_starting_hand ->
+            start_index = case seat do
+              "east"  -> 0
+              "south" -> starting_tiles
+              "west"  -> if length(state.available_seats) == 2 do starting_tiles else starting_tiles * 2 end
+              "north" -> starting_tiles * 3
+              _       -> nil
+            end
+            rig = if seat != nil do
+              starting_hand
+              |> Enum.map(&Utils.to_tile/1)
+              |> Enum.with_index()
+              |> Enum.map(fn {tile, i} -> {start_index + i, tile} end)
+            else [] end
+            rig ++ rig_starting_hand
+        end
+      else [] end
+
+      # "starting_draws" debug key
+      rig_starting_draws = if Map.has_key?(state.rules, "starting_draws") do
+        state.rules["starting_draws"]
+        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.with_index()
+        |> Enum.map(fn {tile, i} -> {wall_index + i, tile} end)
+      else [] end
+
+      # "starting_dead_wall" debug key
+      rig_dead_wall = if Map.has_key?(state.rules, "starting_dead_wall") do
+        state.rules["starting_dead_wall"]
+        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.with_index()
+        |> Enum.map(fn {tile, i} -> {length(wall) - i - 1, tile} end)
+      else [] end
+
+      # swap tiles so that the specified tiles are at the specified indices
+      rig_spec = rig_starting_hand ++ rig_starting_draws ++ rig_dead_wall
+      wall = if not Enum.empty?(rig_spec) do
+        rig_spec = Map.new(rig_spec)
+        {wall, _tiles} =  for i <- length(wall)-1..0//-1, reduce: {[], Enum.shuffle(wall -- Map.values(rig_spec))} do
+          {wall, tiles} -> cond do
+            Map.has_key?(rig_spec, i) -> {[rig_spec[i] | wall], tiles}
+            not Enum.empty?(tiles) -> with [tile | tiles] <- tiles, do: {[tile | wall], tiles}
+            true -> {wall, []}
+          end
+        end
+        wall
+      else wall end
+
+      # wall is now built
+      if Enum.frequencies(wall) != Enum.frequencies(wall_tiles) do
+        missing = wall_tiles -- wall
+        extra = wall -- wall_tiles
+        IO.puts("Warning: rigged wall:\n- is missing these tiles: #{inspect(missing)}\n- is extra these tiles: #{inspect(extra)}")
+      end
+
       # distribute haipai
-      starting_tiles = Map.get(rules, "starting_tiles", 0)
       hands = Map.new([:east, :south, :west, :north], &{&1, []})
       hands = if Debug.debug() do Debug.set_starting_hand(wall) else
         if starting_tiles > 0 do
@@ -428,50 +523,15 @@ defmodule RiichiAdvanced.GameState do
         else hands end
       end
 
-      # "starting_hand" debug key
-      hands = if Map.has_key?(state.rules, "starting_hand") do
-        for {seat, starting_hand} <- state.rules["starting_hand"], reduce: hands do
-          hands ->
-            seat = case seat do
-              "east" -> :east
-              "south" -> :south
-              "west" -> :west
-              "north" -> :north
-              _ -> nil
-            end
-            starting_hand = Enum.map(starting_hand, &Utils.to_tile/1)
-            if seat != nil do Map.put(hands, seat, starting_hand) else hands end
-        end
-      else hands end
-      wall_index = Map.values(hands) |> Enum.map(&Kernel.length/1) |> Enum.sum()
-      # "starting_draws" debug key
-      wall = if Map.has_key?(state.rules, "starting_draws") do
-        replacements = state.rules["starting_draws"]
-        |> Enum.map(&Utils.to_tile/1)
-        |> Enum.with_index()
-        for {tile, i} <- replacements, reduce: wall do
-          wall -> List.replace_at(wall, wall_index + i, tile)
-        end
-      else wall end
-      # "starting_dead_wall" debug key
-      wall = if Map.has_key?(state.rules, "starting_dead_wall") do
-        replacements = state.rules["starting_dead_wall"]
-        |> Enum.map(&Utils.to_tile/1)
-        |> Enum.with_index()
-        |> Enum.reverse()
-        for {tile, i} <- replacements, reduce: wall do
-          wall -> List.replace_at(wall, -i-1, tile)
-        end
-      else wall end
-
+      # build dead wall
       dead_wall_length = Map.get(rules, "initial_dead_wall_length", 0)
       {wall, dead_wall} = if dead_wall_length > 0 do
         Enum.split(wall, -dead_wall_length)
       else {wall, []} end
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
+
       state = state
-      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
@@ -496,12 +556,12 @@ defmodule RiichiAdvanced.GameState do
         else state end
       end
 
-      scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
-
       # roll dice
       state = state
       |> Map.put(:die1, Map.get(state.rules, "die1", :rand.uniform(6)))
       |> Map.put(:die2, Map.get(state.rules, "die2", :rand.uniform(6)))
+
+      scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
 
       {state, hands, scores}
     else
@@ -521,13 +581,11 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.reverse()
       dead_wall = dead_wall ++ kyoku_log["kan_tiles"]
       |> Enum.map(&Utils.to_tile/1)
-      all_tiles = MapSet.new(wall ++ dead_wall)
       reserved_tiles = Map.get(rules, "reserved_tiles", [])
       revealed_tiles = Map.get(rules, "revealed_tiles", [])
       max_revealed_tiles = Map.get(rules, "max_revealed_tiles", 0)
 
       state = state
-      |> Map.put(:all_tiles, all_tiles)
       |> Map.put(:wall, wall)
       |> Map.put(:haipai, hands)
       |> Map.put(:dead_wall, dead_wall)
@@ -562,6 +620,9 @@ defmodule RiichiAdvanced.GameState do
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
       {name, auto_button["desc"], auto_button["enabled_at_start"]}
     end
+
+    # reset player state
+    tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
     state = state
     |> update_all_players(&%Player{
          score: scores[&1],
@@ -571,6 +632,7 @@ defmodule RiichiAdvanced.GameState do
          auto_buttons: initial_auto_buttons,
          status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
          counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
+         tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
        })
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -1045,6 +1107,10 @@ defmodule RiichiAdvanced.GameState do
     end |> Enum.reverse()
   end
 
+  def get_scryed_tiles(state, seat) do
+    Enum.slice(state.wall, state.wall_index, state.players[seat].num_scryed_tiles)
+  end
+
   def replace_revealed_tile(state, index, tile) do
     tile_spec = Enum.at(state.revealed_tiles, index)
     cond do
@@ -1073,7 +1139,7 @@ defmodule RiichiAdvanced.GameState do
     win_definitions = translate_match_definitions(state, Map.get(state.rules["show_waits"], "win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
-    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, tile_behavior)
+    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
   end
 
   def get_doras(state) do
@@ -1396,7 +1462,7 @@ defmodule RiichiAdvanced.GameState do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], wall: Utils.sort_tiles(state.wall ++ state.dead_wall), shanten_definitions: state.shanten_definitions, tsumogiri_bot: tsumogiri_bot}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: state.shanten_definitions, tsumogiri_bot: tsumogiri_bot}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
@@ -1444,7 +1510,9 @@ defmodule RiichiAdvanced.GameState do
   end
   def handle_cast({:unpause, context}, state) do
     actions = state.players[context.seat].deferred_actions
-    IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
+    if Debug.debug_actions() do
+      IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
+    end
     state = Map.put(state, :game_active, true)
     state = Actions.run_deferred_actions(state, context)
     state = broadcast_state_change(state)
@@ -1601,14 +1669,33 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:cancel_call_buttons, seat}, state) do
-    if state.forced_events == nil do
+    event = ["press_call_button", Atom.to_string(seat), "cancel"]
+    if state.forced_events == nil or event in state.forced_events do
       # go back to button clicking phase
       state = update_player(state, seat, fn player -> %Player{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
-      notify_ai(state)
 
+      # tutorial stuff
+      state = if state.forced_events != nil and event in state.forced_events do
+        state
+        |> Map.put(:block_events, true)
+        |> Map.put(:forced_events, [])
+        |> Map.put(:last_event, event)
+      else
+        if Debug.debug_tutorial() do
+          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+        end
+        state
+      end
+
+      notify_ai(state)
       state = broadcast_state_change(state)
       {:noreply, state}
-    else {:noreply, state} end
+    else
+      if Debug.debug_tutorial() do
+        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+      end
+      {:noreply, state}
+    end
   end
 
   def handle_cast(:notify_ai, state) do
@@ -1673,10 +1760,10 @@ defmodule RiichiAdvanced.GameState do
             players: state.players,
             visible_tiles: get_visible_tiles(state, seat),
             revealed_tiles: get_revealed_tiles(state),
+            scryed_tiles: get_scryed_tiles(state, seat),
             doras: get_doras(state),
-            wall: Enum.drop(state.wall, state.wall_index),
             marked_objects: state.marking[seat],
-            closest_american_hands: state.players[state.turn].cache.closest_american_hands,
+            closest_american_hands: state.players[seat].cache.closest_american_hands,
           }
           send(Map.get(state, seat), {:mark_tiles, params})
         end

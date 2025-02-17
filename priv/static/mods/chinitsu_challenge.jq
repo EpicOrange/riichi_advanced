@@ -44,8 +44,3 @@
 .available_mods |= map(select(type != "object" or (.id | IN("kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))
 |
 .win_timer = 20
-|
-# this makes the win screen take shuntsu and koutsu out of the hand before displaying
-.score_calculation.arrange_shuntsu = true
-|
-.score_calculation.arrange_koutsu = true

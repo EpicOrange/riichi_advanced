@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.Match do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
+  use Nebulex.Caching
 
   @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"10p",
                 :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"10s",
@@ -212,12 +213,12 @@ defmodule RiichiAdvanced.Match do
   # @match_keywords ["almost", "exhaustive", "ignore_suit", "restart", "unique", "nojoker", "debug"]
   # def match_keywords(), do: @match_keywords
 
-  def filter_irrelevant_tile_aliases(tile_behavior, all_tiles) do
+  def filter_irrelevant_tile_aliases(tile_behavior, relevant_tiles) do
     # filter out irrelevant tile aliases
     %TileBehavior{ tile_behavior | aliases:
       for {tile, attrs_aliases} <- tile_behavior.aliases do
         new_attrs_aliases = for {attrs, aliases} <- attrs_aliases do
-          {attrs, Enum.filter(aliases, fn t -> Enum.any?(all_tiles, &Utils.same_tile(&1, t)) end)}
+          {attrs, Enum.filter(aliases, fn t -> Enum.any?(relevant_tiles, &Utils.same_tile(&1, t)) end)}
         end
         |> Enum.reject(fn {_attrs, aliases} -> Enum.empty?(aliases) end)
         |> Map.new()
@@ -294,7 +295,8 @@ defmodule RiichiAdvanced.Match do
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
 
-  defp _remove_match_definition(hand, calls, match_definition, tile_behavior) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:remove_match_definition, hand, calls, match_definition, TileBehavior.hash(tile_behavior)})
+  def remove_match_definition(hand, calls, match_definition, tile_behavior) do
     # t = System.os_time(:millisecond)
     almost = "almost" in match_definition
     exhaustive = "exhaustive" in match_definition
@@ -389,7 +391,7 @@ defmodule RiichiAdvanced.Match do
                       report = if debug do
                         line1 = "Acc (before removal): (base tiles #{inspect(base_tiles)})"
                         lines = for {hand, calls, remaining_groups} <- hand_calls_groups do
-                          "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
+                          "- #{inspect(hand)} / #{inspect(calls)} \\\\ #{inspect(remaining_groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end} #{if base_tile != nil do inspect(base_tile) else "" end}"
                         end
                         [line1 | lines]
                       else "" end
@@ -428,8 +430,8 @@ defmodule RiichiAdvanced.Match do
                       end
                       if debug do
                         line1 = "Acc (after removal):"
-                        lines = for {hand, calls, remaining_groups} <- new_hand_calls_groups do
-                          "- #{inspect(hand)} / #{inspect(calls)} / #{inspect(remaining_groups, charlists: :as_lists)}"
+                        lines = for {hand, calls, _remaining_groups} <- new_hand_calls_groups do
+                          "- #{inspect(hand)} / #{inspect(calls)}"
                         end
                         IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
                       end
@@ -478,33 +480,12 @@ defmodule RiichiAdvanced.Match do
     ret
   end
 
-  def remove_match_definition(hand, calls, match_definition, tile_behavior) do
-    case RiichiAdvanced.ETSCache.get({:remove_match_definition, hand, calls, match_definition, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _remove_match_definition(hand, calls, match_definition, tile_behavior)
-        RiichiAdvanced.ETSCache.put({:remove_match_definition, hand, calls, match_definition, TileBehavior.hash(tile_behavior)}, result)
-        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  result: #{inspect(result)}")
-        result
-      [result] -> result
-    end
-  end
-
   # check if hand contains all groups in each definition in match_definitions
-  defp _match_hand(hand, calls, match_definitions, tile_behavior) do
-    tile_behavior = filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
-    Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
-  end
-
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def match_hand(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
-    ret = case RiichiAdvanced.ETSCache.get({:match_hand, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _match_hand(hand, calls, match_definitions, tile_behavior)
-        RiichiAdvanced.ETSCache.put({:match_hand, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, result)
-        # IO.puts("Results:\n  hand: #{inspect(hand)}\n  match_definitions: #{inspect(match_definitions)}\n  result: #{inspect(result)}")
-        result
-      [result] -> result
-    end
+    tile_behavior = filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    ret = Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
     #   IO.puts("match_hand: #{inspect(elapsed_time)} ms")
@@ -514,8 +495,11 @@ defmodule RiichiAdvanced.Match do
 
   defp multiply_match_definitions(match_definitions, mult) do
     for match_definition <- match_definitions do
-      for [groups, num] <- match_definition do
-        [groups, if num < 0 do num else num * mult end]
+      for match_definition_elem <- match_definition do
+        case match_definition_elem do
+          [groups, num] -> [groups, if num < 0 do num else num * mult end]
+          _             -> match_definition_elem
+        end
       end
     end
   end

@@ -95,6 +95,7 @@
     {"id": "yaku/kanburi", "deps": ["kan"], "name": "Kanburi", "desc": "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."},
     {"id": "yaku/honors_chiitoitsu", "name": "Honors Chiitoitsu", "desc": "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."},
     {"id": "yaku/uushin_tsuukan", "name": "Uushin Tsuukan", "desc": "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."},
+    {"id": "yaku/ketsupaihou", "name": "Ketsupaihou", "desc": "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."},
     // 2 han
     {"id": "yaku/open_riichi", "name": "Open Riichi", "deps": ["yaku/riichi"], "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."},
     {"id": "yaku/sanrenkou", "name": "Sanrenkou", "desc": "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."},
@@ -113,6 +114,8 @@
     {"id": "yaku/ittsu_chanta", "name": "Ittsu Chanta", "desc": "Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu."},
     {"id": "yaku/tanfonhou", "name": "Tanfonhou", "desc": "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."},
     {"id": "yaku/chinpeikou", "name": "Chinpeikou", "desc": "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."},
+    // 4 han
+    {"id": "yaku/chinchii_toushii", "deps": ["kan", "yaku/ketsupaihou"], "name": "Chinchii Toushii", "desc": "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."},
     "Mangan",
     {"id": "yaku/renhou_mangan", "conflicts": ["yaku/renhou_yakuman"], "name": "Renhou Mangan", "desc": "Local yaku. Instant mangan if you win off the first tile someone dropped before your first draw. Calls invalidate."},
     {"id": "yaku/kinkei_dokuritsu", "name": "Kinkei Dokuritsu", "desc": "Local yaku. \"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."},
@@ -124,6 +127,8 @@
     {"id": "yaku/shanron_chonchu", "name": "Shanron Chonchu", "desc": "Local yaku. \"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap."},
     {"id": "yaku/chiishin_uushii", "name": "Chiishin Uushii", "desc": "Local yaku. \"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."},
     {"id": "yaku/maneman", "name": "Maneshi Mangan", "desc": "Local yaku. \"Imitation Mangan\". If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate."},
+    {"id": "yaku/rentsuu_honitsu", "name": "Rentsuu Honitsu", "desc": "Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."},
+    {"id": "yaku/dorahairi_chinroutou_chiitoitsu", "deps": ["dora"], "name": "Dorahairi Chinroutou Chiitoitsu", "desc": "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile plus the dora."},
     "Yakuman",
     {"id": "yaku/renhou_yakuman", "conflicts": ["yaku/renhou_mangan"], "name": "Renhou Yakuman", "desc": "Local yaku. Instant yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."},
     {"id": "yaku/paarenchan", "conflicts": ["yakuman_only"], "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
