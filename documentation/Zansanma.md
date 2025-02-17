@@ -55,7 +55,6 @@ Every 5 pin and 5 sou is worth 1 dora.
 **If a player openly deals into an Open Riichi, it is a Yakuman, with the 10 chip bonus.**
 
 * Starting Points: 50,000 
-* 1000 honba
 * Kuitan OK, Atozuke OK, Pinfu Tsumo OK
 * Draw through the deadwall, to the Dora indicator.
 * North (Pei) is Yakuhai (not Nukidora)
@@ -63,3 +62,17 @@ Every 5 pin and 5 sou is worth 1 dora.
 * Missed Win
 * Kan after Riichi is optional (as long as it doesn't change your wait)
 * Furitan Riichi is only allowed if you Open Riichi
+* You can choose to Riichi even if you do not have another tile to draw
+* Noten payment is 2000 Points.
+* Renchan payment is 1000 x honba per Ron, 1000 x honba ALL per Tsumo
+* Busting Out is at 0 Points, not negative.
+* Double Ron OK (Riichi payments, Honba payments etc. goes to whoever the next Dealer will be)
+* Concealed Kans are NOT SAFE from Kokushi Musou Tenpai
+* Double Yakuman OK, No Pao 
+* In case of a tie for First, the next Dealer wins
+*  There is no Return Score, there is no extension into West Round.
+* Tenpai-yame 1st place only.
+
+## Scoring Charts
+
+|
