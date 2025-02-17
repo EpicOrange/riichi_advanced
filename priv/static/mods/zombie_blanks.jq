@@ -11,11 +11,11 @@
 .play_restrictions += [ [["5z"], []] ]
 |
 
-# keep track of when discards exist (blanks can't be used if there are no discards)
-.after_turn_change.actions += [ ["unset_status_all", "discards_empty"] ]
-|
-.after_start.actions[0] += ["discards_empty"]
-|
+# # keep track of when discards exist (blanks can't be used if there are no discards)
+# .after_turn_change.actions += [ ["unset_status_all", "discards_empty"] ]
+# |
+# .after_start.actions[0] += ["discards_empty"]
+# |
 
 # make the blank a joker so that it can't be passed, or marked in discards
 .after_start.actions += [ ["set_tile_alias_all", ["5z"], ["5z"]] ]
@@ -41,7 +41,7 @@
       "show_when": [
             # TODO: figure out how to only show the blank swap button if there exists at least one non-blank-non-joker in the discards
                   # hopefully that worked
-            {"name": "status_missing", "opts": ["match_start", "dead_hand", "discards_empty"]},
+            {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
             "our_turn",
             "not_just_discarded",
             {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]},
