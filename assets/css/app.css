@@ -76,7 +76,7 @@ main div.messages-container > div.messages {
   justify-content: flex-end;
 }
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   main::before {
     left: calc(-20% + -0.5 * var(--tile-size));
   }
@@ -88,7 +88,7 @@ main div.messages-container > div.messages {
   }
 }
 /* portrait (mobile) */
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   main {
     max-height: 60vh;
     --tile-size: min(calc(90vw / 16), calc(60vh / 16));
@@ -414,11 +414,11 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
 
 /* mobile zoom button for hand */
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   input.mobile-zoom-checkbox + label { display: none; }
 }
 /* portrait (mobile) */
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   main {
     --mobile-scale-factor: 1.5;
   }
@@ -2392,12 +2392,11 @@ div.ruleset::before {
   color: white;
 }
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   div.ruleset {
     width: calc(min(90vw, 80vh) + 0.5 * var(--tile-size) + min(50%, calc(40vw - 20% - 0.5 * var(--tile-size))));
   }
 }
-
 
 
 
@@ -2776,8 +2775,6 @@ div.enter-buttons > button {
   justify-content: center;
   align-content: center;
   text-align: center;
-  vertical-align: center;
-  flex-direction: column;
 }
 div.enter-buttons > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
@@ -3218,14 +3215,14 @@ div.menu-buttons {
   column-gap: calc(0.25 * var(--tile-size));
 }
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   div.top-right-container {
     width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
     left: calc(100% + var(--tile-size));
   }
 }
 /* portrait (mobile) */
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   div.top-right-container {
     width: calc(100% + var(--tile-size));
     right: calc(-0.5 * var(--tile-size));
@@ -3248,7 +3245,7 @@ div.menu-buttons-container > button:active {
 }
 /* centerpiece status component */
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   div.centerpiece-status-bar {
     display: none;
   }
@@ -3347,7 +3344,7 @@ div.tutorial-focus {
   mask-composite: intersect;
 }
 div.tutorial-focus.mobile { display: none; }
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
   input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
 }
@@ -3423,8 +3420,6 @@ footer.tutorial-menu-footer > button {
   justify-content: center;
   align-content: center;
   text-align: center;
-  vertical-align: center;
-  flex-direction: column;
 }
 footer.tutorial-menu-footer > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
@@ -3476,8 +3471,6 @@ form.tutorial-menu-container > button {
   justify-content: center;
   align-content: center;
   text-align: center;
-  vertical-align: center;
-  flex-direction: column;
 }
 form.tutorial-menu-container > button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
