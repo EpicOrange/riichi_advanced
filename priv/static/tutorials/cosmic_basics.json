@@ -61,8 +61,6 @@
       ["add_object", "focus", {"width": 0.75, "hand_index": 3}],
       ["add_object", "focus", {"width": 1.5, "x": 12, "y": "buttons"}],
       ["force_event", ["press_button", "west", "chon"]],
-      ["force_event", ["press_button", "south", "skip"]],
-      ["force_event", ["press_button", "north", "skip"]],
       ["clear_objects"],
       ["sleep", 200],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
