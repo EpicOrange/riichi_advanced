@@ -12,6 +12,7 @@ defmodule RiichiAdvanced.Application do
       # RiichiAdvanced.Repo,
       {Registry, keys: :unique, name: :game_registry},
       RiichiAdvanced.ETSCache,
+      {RiichiAdvanced.Cache, []},
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.GameSessionSupervisor}, id: :game_session_supervisor),
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.LobbySessionSupervisor}, id: :lobby_session_supervisor),
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.RoomSessionSupervisor}, id: :room_session_supervisor),

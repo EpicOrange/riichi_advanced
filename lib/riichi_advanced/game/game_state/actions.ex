@@ -64,7 +64,8 @@ defmodule RiichiAdvanced.GameState.Actions do
     if can_discard(state, seat) and is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
-      tile = if "discard_facedown" in state.players[seat].status do {:"1x", Utils.tile_to_attrs(tile)} else tile end
+      facedown = "discard_facedown" in state.players[seat].status or Utils.has_attr?(tile, ["facedown"])
+      tile = if facedown do {:"1x", Utils.tile_to_attrs(Utils.remove_attr(tile, ["facedown"]))} else tile end
       tile = Utils.add_attr(tile, ["discard"])
 
       state = update_player(state, seat, &%Player{ &1 |
@@ -1209,10 +1210,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       "scry"            -> update_player(state, context.seat, &%Player{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
       "scry_all"        ->
         num = Enum.at(opts, 0, 1)
+        state = update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
         push_message(state, [
           %{text: "Player #{player_name(state, context.seat)} revealed "}
-        ] ++ Utils.ph(state.wall |> Enum.drop(state.wall_index) |> Enum.take(num)))
-        update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
+        ] ++ Utils.ph(get_scryed_tiles(state, context.seat)))
+        state
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
       "choose_yaku"     -> declare_yaku(state, context.seat)
       "disable_saki_card" ->
@@ -1506,12 +1508,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice.name) do
             Map.get(state.rules["buttons"][choice.name], "precedence_over", [])
           else [] end
-          # replace with "skip" every choice that is superceded by our choice
 
+          # replace with "skip" every button and choice that is superceded by our choice
           update_all_players(state, fn dir, player ->
             not_us = seat != dir
             choice_superceded = player.choice != nil and player.choice.name in superceded_choices
-            all_choices_superceded = player.choice != nil and player.choice.name == nil and Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
+            all_choices_superceded = Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
             if not_us and (choice_superceded or all_choices_superceded) do
               if Debug.debug_actions() do
                 IO.puts("Superceding choice for #{dir} due to existing #{inspect(choice)}")

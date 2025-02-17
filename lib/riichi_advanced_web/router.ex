@@ -1,6 +1,10 @@
 defmodule RiichiAdvancedWeb.Router do
   use RiichiAdvancedWeb, :router
 
+  def generate_room_code(conn, _opts) do
+    put_session(conn, :room_code, get_session(conn, :room_code) || Ecto.UUID.generate())
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -44,6 +48,8 @@ defmodule RiichiAdvancedWeb.Router do
       live "/log/:log_id", LogLive
       live "/about", AboutLive
     end
+    import Phoenix.LiveDashboard.Router
+    live_dashboard "/dev/dashboard", metrics: RiichiAdvancedWeb.Telemetry
     get "/*_", RedirectController, :home
   end
 
@@ -69,7 +75,4 @@ defmodule RiichiAdvancedWeb.Router do
   #   end
   # end
   
-  def generate_room_code(conn, _opts) do
-    put_session(conn, :room_code, get_session(conn, :room_code) || Ecto.UUID.generate())
-  end
 end

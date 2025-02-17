@@ -1,0 +1,59 @@
+{
+  "mods": ["yaku/riichi", "yaku/ippatsu", "dora", "ura", "aka", "show_waits", "galaxy"],
+  "config": {
+    "starting_hand": {
+      "east": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"],
+      "south": ["13m", "14m", "18m", "19m", "12p", "15p", "16p", "17p", "11s", "18s", "14s", "15z", "16z"],
+      "west": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"],
+      "north": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"]
+    },
+    "starting_draws": ["2z", "4s", "13z"],
+    "starting_dead_wall": ["5m", "6m", "7m", "8m", "9m", "17z"],
+    "tsumogiri_bots": true,
+    "win_timer": 300
+  },
+  "scenes": {
+    "start": [
+      ["await_event", ["play_tile", "east", 13]],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Look at that hand! Can you guess what tiles it is waiting on?\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 6, "hand_index": 6.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Declare Riichi to find out!"
+      }],
+      ["add_object", "focus", {"width": 2, "x": 12, "y": "buttons"}],
+      ["force_event", ["press_button", "south", "riichi"]],
+      ["clear_objects"],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 4, "x": 12, "y": 4.5,
+        "text": "Sorry for the trick question! Galaxy mahjong adds a new win condition: having an entire hand of galaxy tiles. So if you discard the 4 of bamboo, you will wait on any galaxy tile. Let's see what that looks like!"
+      }],
+      ["force_event", ["play_tile", "south", 13]],
+      ["clear_objects"],
+      ["sleep", 1500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Press Ron."
+      }],
+      ["await_event", ["play_tile", "west", 13]],
+      ["force_event", ["press_button", "south", "ron"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 5.5,
+        "text": "Winning this way awards the Milky Way yakuman! That's the only yaku galaxy mahjong adds.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
+        "text": "Click to return to the list of tutorials."
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}

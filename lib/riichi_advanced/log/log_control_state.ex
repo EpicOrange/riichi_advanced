@@ -80,6 +80,10 @@ defmodule RiichiAdvanced.LogControlState do
     IO.inspect({"south's call buttons", state.game_state.players.south.call_buttons})
     IO.inspect({"west's call buttons", state.game_state.players.west.call_buttons})
     IO.inspect({"north's call buttons", state.game_state.players.north.call_buttons})
+    IO.inspect({"east's statuses", state.game_state.players.east.status})
+    IO.inspect({"south's statuses", state.game_state.players.south.status})
+    IO.inspect({"west's statuses", state.game_state.players.west.status})
+    IO.inspect({"north's statuses", state.game_state.players.north.status})
     IO.inspect({"marking", state.game_state.marking})
   end
 

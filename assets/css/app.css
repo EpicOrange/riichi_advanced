@@ -76,7 +76,7 @@ main div.messages-container > div.messages {
   justify-content: flex-end;
 }
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   main::before {
     left: calc(-20% + -0.5 * var(--tile-size));
   }
@@ -88,7 +88,7 @@ main div.messages-container > div.messages {
   }
 }
 /* portrait (mobile) */
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   main {
     max-height: 60vh;
     --tile-size: min(calc(90vw / 16), calc(60vh / 16));
@@ -133,7 +133,24 @@ textarea {
   white-space: pre;
   box-sizing: border-box;
 }
-
+/* buttons */
+button {
+  background: var(--tile-front);
+  color: black;
+  border-width: 0;
+  text-decoration: none;
+  font-size: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
+  cursor: pointer;
+  text-align: center;
+  transform: translateY(calc(var(--tile-size) / -8));
+}
+button:active {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  transform: translateY(0);
+}
 
 /* hands */
 div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
@@ -414,11 +431,11 @@ div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-siz
 
 /* mobile zoom button for hand */
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   input.mobile-zoom-checkbox + label { display: none; }
 }
 /* portrait (mobile) */
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   main {
     --mobile-scale-factor: 1.5;
   }
@@ -868,7 +885,7 @@ div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size) - var(--bord
 div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size) - var(--border-width)); }
 div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size) - var(--border-width)); }
 div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 z { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 z, div.tile.\31 x.transparent { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
 div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size) - var(--border-width)); }
 div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
@@ -1228,6 +1245,9 @@ div.tile.\31 \35 \60 z { background-position-y: calc(-211 * var(--tile-size) - v
 /* shiro pocchi: 5^z */
 div.tile.\35 \5e z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
 
+/* facedown tiles should match 1x */
+div.tile.facedown { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
+
 /* custom coloring */
 div.tile.red { --tile-color: var(--aka-color); }
 div.tile.blue { --tile-color: var(--ao-color); }
@@ -1240,6 +1260,7 @@ div.tile.purple { --tile-color: purple; }
 div.tile.gray { --tile-color: gray; }
 div.tile.grey { --tile-color: grey; }
 div.tile.lightgray { --tile-color: lightgray; }
+div.tile.lightgrey { --tile-color: lightgrey; }
 div.tile.black { --tile-color: black; }
 div.tile.white { --tile-color: white; }
 /* tile 3d */
@@ -1353,34 +1374,38 @@ div.self div.tile:nth-child(29) { z-index: 28; }
 div.self div.tile:nth-child(30) { z-index: 29; }
 
 /* all 3d effects should have reversed color for upside down tiles */
-div.tile.\31 x:not(.flat) {
+div.tile.\31 x:not(.flat),
+div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.tile.\31 x.sideways:not(.flat) {
+div.tile.\31 x.sideways:not(.flat),
+div.tile.facedown.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.pond.self div.tile.\31 x:not(.flat) {
+div.pond.self div.tile.\31 x:not(.flat),
+div.pond.self div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.shimocha div.tile.\31 x:not(.flat) {
+div.shimocha div.tile.\31 x:not(.flat),
+div.shimocha div.tile.facedown:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.kamicha div.tile.\31 x:not(.flat) {
+div.kamicha div.tile.\31 x:not(.flat),
+div.kamicha div.tile.facedown:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
 /* facedown tiles should look facedown */
-div.tile.facedown {
-  background-position-y: calc(-37 * var(--tile-size) - var(--border-width));
+div.hand div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
@@ -1511,11 +1536,9 @@ div.call-buttons > div.call-button-separator {
 div.buttons > button,
 div.call-buttons > button {
   font-size: calc(0.75 * var(--tile-size));
-  padding: 0 calc(0.1 * var(--tile-size));
-  border: calc(0.0625 * var(--tile-size)) solid var(--tile-back);
-  border-radius: calc(0.2 * var(--tile-size));
+  padding: 0 calc(0.1625 * var(--tile-size));
   background: var(--tile-back);
-  cursor: pointer;
+  filter: none;
 }
 div.buttons > button.small-text {
   font-size: calc(0.33 * var(--tile-size));
@@ -1981,10 +2004,22 @@ div.game-modal > div.score-display {
   pointer-events: none;
   user-select: none;
 }
-div.hand.winning-hand {
+div.game-modal.error-window > button.dismiss-error,
+div.game-modal-container > button.end-back-button {
+  position: absolute;
+  width: 100%;
+  height: calc(1 * var(--tile-size));
+}
+div.winning-hand-container {
   width: 100%;
   padding-top: calc(0.25 * var(--tile-size));
+}
+div.winning-hand-container:not(:hover) div.hand.winning-hand:not(.separated-hand) { display: flex; }
+div.winning-hand-container:hover div.hand.winning-hand.separated-hand { display: flex; }
+div.hand.winning-hand {
+  width: 100%;
   justify-content: center;
+  display: none;
 }
 /* yakus */
 div.yakus {
@@ -2251,24 +2286,6 @@ div.game-modal.error-window > textarea.error {
   left: 0;
   white-space: pre;
 }
-div.game-modal.error-window > button.dismiss-error {
-  position: absolute;
-  width: 100%;
-  height: calc(1 * var(--tile-size));
-  bottom: calc(0.25 * var(--tile-size));
-  background: var(--tile-front);
-  text-decoration: none;
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.game-modal.error-window > button.dismiss-error:active {
-  bottom: 0;
-  filter: none;
-}
 div.game-modal.error-window::before {
   background: red;
 }
@@ -2339,26 +2356,7 @@ div.placement > div.placement-place::before {
 div.placement span.placement-score {
   margin-left: calc(0.5 * var(--tile-size));
 }
-div.game-modal-container > button.end-back-button {
-  position: absolute;
-  width: 100%;
-  height: calc(1 * var(--tile-size));
-  bottom: calc(0.25 * var(--tile-size));
-  background: var(--tile-front);
-  font-size: calc(0.75 * var(--tile-size));
-  text-align: center;
-  text-decoration: none;
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.game-modal-container > button.end-back-button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
-}
+
 
 
 /* ruleset textbox */
@@ -2378,12 +2376,11 @@ div.ruleset::before {
   color: white;
 }
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   div.ruleset {
     width: calc(min(90vw, 80vh) + 0.5 * var(--tile-size) + min(50%, calc(40vw - 20% - 0.5 * var(--tile-size))));
   }
 }
-
 
 
 
@@ -2745,29 +2742,12 @@ div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translate
 div.enter-buttons {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-flow: row nowrap;
+  justify-content: stretch;
   margin-top: calc(0.5 * var(--tile-size));
 }
 div.enter-buttons > button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  font-size: calc(0.75 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
   flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-  vertical-align: center;
-  flex-direction: column;
-}
-div.enter-buttons > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 /* room code modal */
@@ -2799,13 +2779,6 @@ div.room-code-modal > div.room-code-buttons > button {
   border: none;
   padding: 0;
   margin: 0;
-  cursor: pointer;
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-}
-div.room-code-modal > div.room-code-buttons > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 
@@ -2858,24 +2831,11 @@ div.lobby > div.rooms > div.lobby-room {
 }
 div.lobby > div.rooms > div.lobby-room > button.join-room {
   background: var(--tile-front-side);
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
-div.lobby > div.rooms > div.lobby-room > button.join-room {
   padding-top: calc(0.25 * var(--tile-size));
-}
-div.lobby > div.rooms > div.lobby-room > button.join-room:active,
-div.lobby > button.create-room:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
-  z-index: 1;
 }
 div.lobby > div.rooms > div.lobby-room > div.room-mods {
   display: flex;
@@ -2887,16 +2847,6 @@ div.lobby > div.rooms > div.lobby-room > div.room-mods {
 }
 div.lobby > div.rooms > div.lobby-room > div.room-players {
   font-size: calc(0.75 * var(--tile-size));
-}
-div.lobby > button.create-room {
-  display: flex;
-  align-items: space-around;
-  position: absolute;
-  width: 100%;
-  font-size: calc(0.8 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
-  bottom: calc(0 * var(--tile-size));
-  left: calc(0 * var(--tile-size));
 }
 div.lobby > div.rooms > div.lobby-room > div.room-players > div.room-player-count {
   font-size: calc(1 * var(--tile-size));
@@ -3000,20 +2950,6 @@ div.room > div.seats > div.player-slot {
   position: relative;
   height: calc(1.5 * var(--tile-size));
 }
-div.room button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.room button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
-  z-index: 1;
-}
 div.room > div.room-settings button {
   transform: translateY(calc(-0.25 * var(--tile-size)));
 }
@@ -3041,23 +2977,14 @@ div.room > div.seats > div.player-slot > div.player-slot-name {
 div.room > div.seats > div.player-slot > div.player-slot-name.empty {
   opacity: 0.5;
 }
-div.room > div.seats > div.player-slot > button {
+div.room > div.seats > div.player-slot > button,
+div.room > div.seats > label.shuffle-seats,
+div.room > div.seats > button.start-game-button {
   font-size: calc(1 * var(--tile-size));
+}
+div.room > div.seats > div.player-slot > button {
   width: calc(1.2 * var(--tile-size));
   height: calc(1.2 * var(--tile-size));
-}
-div.room > div.seats > label.shuffle-seats {
-  font-size: calc(1 * var(--tile-size));
-}
-div.room > div.seats > button.start-game-button {
-  display: flex;
-  width: 100%;
-  text-align: center;
-  bottom: 0;
-  font-size: calc(1 * var(--tile-size));
-  justify-content: center;
-  align-items: center;
-  column-gap: calc(0.25 * var(--tile-size));
 }
 div.room div.mods,
 div.room div.custom-json {
@@ -3204,14 +3131,14 @@ div.menu-buttons {
   column-gap: calc(0.25 * var(--tile-size));
 }
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   div.top-right-container {
     width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
     left: calc(100% + var(--tile-size));
   }
 }
 /* portrait (mobile) */
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   div.top-right-container {
     width: calc(100% + var(--tile-size));
     right: calc(-0.5 * var(--tile-size));
@@ -3219,22 +3146,12 @@ div.menu-buttons {
 }
 /* menu buttons */
 div.menu-buttons > button {
-  height: calc(0.6 * var(--tile-size));
-  background: var(--tile-front);
+  height: calc(0.8 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.menu-buttons-container > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 /* centerpiece status component */
 /* landscape */
-@media (min-aspect-ratio: 1.2/1) {
+@media (min-aspect-ratio: 6/5) {
   div.centerpiece-status-bar {
     display: none;
   }
@@ -3282,13 +3199,8 @@ div.log-control {
 div.log-control > button.log-control-button {
   height: calc(0.8 * var(--tile-size));
   background: transparent;
-  border-width: 0;
-  margin: 0;
   padding: 0;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  filter: none;
 }
 
 /* tutorial overlay */
@@ -3333,7 +3245,7 @@ div.tutorial-focus {
   mask-composite: intersect;
 }
 div.tutorial-focus.mobile { display: none; }
-@media (max-aspect-ratio: 1.2/1) {
+@media (max-aspect-ratio: 6/5) {
   input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
   input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
 }
@@ -3379,42 +3291,11 @@ div.tutorial-menu-buttons > button {
   height: calc(2 * var(--tile-size));
   margin: calc(0.5 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
-  background: var(--tile-front);
   font-size: calc(0.6 * var(--tile-size));
-  border-width: 0;
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-}
-div.tutorial-menu-buttons > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 footer.tutorial-menu-footer,
 footer.tutorial-menu-footer > button {
   width: 100%;
-}
-footer.tutorial-menu-footer > button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  font-size: calc(0.75 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-  vertical-align: center;
-  flex-direction: column;
-}
-footer.tutorial-menu-footer > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }
 
 /* tutorial creator menu */
@@ -3447,25 +3328,4 @@ form.tutorial-menu-container > header > label {
 }
 form.tutorial-menu-container > textarea {
   font-size: calc(0.25 * var(--tile-size));
-}
-form.tutorial-menu-container > button {
-  background: var(--tile-front);
-  color: black;
-  border-width: 0;
-  font-size: calc(0.75 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side));
-  cursor: pointer;
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
-  vertical-align: center;
-  flex-direction: column;
-}
-form.tutorial-menu-container > button:active {
-  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  transform: translateY(calc(var(--tile-size) / 8));
 }

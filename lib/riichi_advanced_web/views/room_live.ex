@@ -10,6 +10,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:ruleset, params["ruleset"])
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
+    |> assign(:from, Map.get(params, "from", nil))
     |> assign(:id, socket.id)
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:room_state, nil)
@@ -209,7 +210,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def handle_event("back", _assigns, socket) do
     socket = push_event(socket, "left-page", %{})
-    socket = push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
+    socket = case socket.assigns.from do
+      "lobby" -> push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
+      "learn" -> push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
+      _       -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+    end
     {:noreply, socket}
   end
 

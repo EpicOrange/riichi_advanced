@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.Riichi do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
+  use Nebulex.Caching
 
   # for fu calculation only
   @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
@@ -161,7 +162,7 @@ defmodule RiichiAdvanced.Riichi do
 
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
-  def get_waits(hand, calls, match_definitions, all_tiles, tile_behavior, skip_tenpai_check \\ false) do
+  def get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check \\ false) do
     # only check for waits if we're tenpai
     if skip_tenpai_check or Match.match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), tile_behavior) do
       # go through each match definition and see what tiles can be added for it to match
@@ -171,8 +172,7 @@ defmodule RiichiAdvanced.Riichi do
         # make it exhaustive, unless it's unique
         match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
-        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], all_tiles} do
-          {keywords, []}               -> {keywords, []}
+        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs} do
           {keywords, waits_complement} -> case last_match_definition_elem do
             keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement}
             [_groups, num] when num <= 0 -> {keywords, waits_complement} # ignore lookaheads
@@ -212,19 +212,20 @@ defmodule RiichiAdvanced.Riichi do
               # waits_complement = all waits that don't help
               # remove waits that do help
               waits_complement = if Enum.empty?(hand_calls_success) do
-                Enum.reject(waits_complement, fn wait ->
+                Enum.reject(waits_complement, fn {wait, _freq} ->
                   Enum.any?(hand_calls_failure, fn {hand, calls} ->
                     Match.match_hand([wait | hand], calls, [final_match_definition], tile_behavior)
                   end)
-                end)
-              else all_tiles end
+                end) |> Map.new()
+              else tile_behavior.tile_freqs end
 
               {keywords, waits_complement}
             _ -> {keywords, waits_complement}
           end
         end
-        # TODO maybe instead of taking union of differences, take the difference of intersection
-        waits = MapSet.difference(MapSet.new(all_tiles), MapSet.new(waits_complement))
+        waits = Utils.inverse_frequencies(waits_complement, tile_behavior)
+        |> Map.keys()
+        |> MapSet.new()
         # IO.inspect(hand, label: "===\nhand")
         # IO.inspect(match_definition, label: "match_definition")
         # IO.inspect(waits, label: "waits")
@@ -234,23 +235,11 @@ defmodule RiichiAdvanced.Riichi do
     else MapSet.new() end
   end
 
-  defp _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, tile_behavior, skip_tenpai_check) do
-    waits = get_waits(hand, calls, match_definitions, MapSet.new(wall), tile_behavior, skip_tenpai_check)
-    # remove irrelevant statuses
-    |> Utils.remove_attr(["draw", "discard"])
-    visible_tiles = Utils.remove_attr(visible_tiles, ["draw", "discard"])
-    freqs = Enum.frequencies(wall -- visible_tiles)
-    Map.new(waits, fn wait -> {wait, freqs[wait] || 0} end)
-  end
-
-  def get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
-    case RiichiAdvanced.ETSCache.get({:get_waits_and_ukeire, hand, calls, match_definitions, wall, visible_tiles, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _get_waits_and_ukeire(hand, calls, match_definitions, wall, visible_tiles, tile_behavior, skip_tenpai_check)
-        RiichiAdvanced.ETSCache.put({:get_waits_and_ukeire, hand, calls, match_definitions, wall, visible_tiles, TileBehavior.hash(tile_behavior)}, result)
-        result
-      [result] -> result
-    end
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
+  def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
+    waits = get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check)
+    freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
+    Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
   end
 
   def get_safe_tiles_against(seat, players, turn \\ nil) do
@@ -313,7 +302,8 @@ defmodule RiichiAdvanced.Riichi do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  def _get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
@@ -383,16 +373,6 @@ defmodule RiichiAdvanced.Riichi do
     # end
     ret
   end
-  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
-    case RiichiAdvanced.ETSCache.get({:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}) do
-      [] -> 
-        result = _get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
-        RiichiAdvanced.ETSCache.put({:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, result)
-        result
-      [result] -> result
-    end
-  end
-
 
   def needed_for_hand(hand, calls, tile, match_definitions, tile_behavior) do
     tile not in get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
@@ -482,7 +462,8 @@ defmodule RiichiAdvanced.Riichi do
     2 * Utils.count_tiles(yakuhai, [Utils.strip_attrs(tile)], tile_behavior)
   end
 
-  defp _calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu})
+  def calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu) do
     # t = System.os_time(:millisecond)
 
     # IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
@@ -684,16 +665,6 @@ defmodule RiichiAdvanced.Riichi do
     ret
   end
 
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu \\ false) do
-    case RiichiAdvanced.ETSCache.get({:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu}) do
-      [] -> 
-        result = _calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu)
-        RiichiAdvanced.ETSCache.put({:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu}, result)
-        result
-      [result] -> result
-    end
-  end
-
   def calc_ko_oya_points(score, is_dealer, num_players, han_fu_rounding_factor) do
     divisor = if num_players == 4 do
       if is_dealer do 3 else 4 end
@@ -705,14 +676,6 @@ defmodule RiichiAdvanced.Riichi do
     # oya_payment is only relevant if is_dealer is false
     # (it is just double ko payment if is_dealer is true, which is useless)
     {ko_payment, oya_payment}
-  end
-
-  # TODO take in wall
-  def count_ukeire(waits, hand, visible_ponds, visible_calls, winning_tile, tile_behavior) do
-    all_tiles = hand ++ visible_ponds ++ Enum.flat_map(visible_calls, &Utils.call_to_tiles/1) -- [winning_tile]
-    waits
-    |> Enum.map(fn wait -> 4 - Utils.count_tiles(all_tiles, [wait], tile_behavior) end)
-    |> Enum.sum()
   end
 
   def test_tiles(hand, tiles, tile_behavior) do
@@ -775,115 +738,19 @@ defmodule RiichiAdvanced.Riichi do
     end)
   end
 
-  # TODO refactor these three functions to be the same function
-  # (it's mostly duplicate code)
-
-  def arrange_kontsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
-    # return hand, but reordered so that kontsu are at the end
-    # if no kontsu, return hand unchanged
+  def prepend_group(hand, calls, winning_tiles, group, win_definitions, tile_behavior) do
+    # return hand, but reordered so that all `group` are at the front (after existing prepended groups)
+    # if no `group`s exist, return hand unchanged
     # hand is expected to be tenpai for N sets and a pair
 
-    # first check if there's three ankou. if so, don't rearrange the hand
-    # this is to avoid arranging closed sanshoku doukou as 3 kontsu
-    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
-    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
-    |> Enum.any?(fn {hand, groups} ->
-      calls = Enum.map(groups, &{"pon", &1}) ++ calls
-      Enum.any?(winning_tiles, fn winning_tile ->
-        Match.match_hand([winning_tile | hand], calls, win_definitions, tile_behavior)
-      end)
-    end)
-
-    if not has_three_ankou do
-      Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.extract_groups([winning_tile | hand], [0, 10, 20], tile_behavior)
-        |> Enum.find(fn {hand, groups} ->
-          calls = Enum.map(groups, &{"chon", &1}) ++ calls
-          Match.match_hand(hand, calls, win_definitions, tile_behavior)
-        end)
-        |> case do
-          nil            -> []
-          {hand, groups} -> [{winning_tile, hand, groups}]
-        end
-      end)
-      |> case do
-        [] -> hand
-        [{winning_tile, hand, groups} | _] ->
-          groups = groups
-          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-          |> Enum.map(&[:kontsu | &1]) # add a spacing marker before each kontsu
-          |> Enum.concat()
-          List.delete(hand ++ groups, winning_tile)
-      end
-    else hand end
-  end
-
-  def arrange_shuntsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
-    # return hand, but reordered so that shuntsu are at the front
-    # if no shuntsu, return hand unchanged
-    # hand is expected to be tenpai for N sets and a pair
-
-    # first split at the first :kontsu in hand
-    # these are added by kontsu check, we don't want to rearrange those
-    ix = Enum.find_index(hand, & &1 == :kontsu)
-    {hand, kontsu} = if ix == nil do {hand, []} else Enum.split(hand, ix) end
-
-    # then check if there's three ankou. if so, don't rearrange the hand
-    # this is to avoid arranging closed sanshoku doukou as 3 shuntsu
-    has_three_ankou = Match.extract_groups(hand, [0, 0, 0], tile_behavior)
-    |> Enum.filter(fn {_hand, groups} -> length(groups) >= 3 end)
-    |> Enum.any?(fn {hand, groups} ->
-      calls = Enum.map(groups, &{"pon", &1}) ++ calls
-      Enum.any?(winning_tiles, fn winning_tile ->
-        Match.match_hand([winning_tile | hand] ++ kontsu, calls, win_definitions, tile_behavior)
-      end)
-    end)
-
-    if not has_three_ankou do
-      Enum.flat_map(winning_tiles, fn winning_tile ->
-        Match.extract_groups([winning_tile | hand], [0, 1, 2], tile_behavior)
-        |> Enum.find(fn {hand, groups} ->
-          calls = Enum.map(groups, &{"chii", &1}) ++ calls
-          Match.match_hand(hand ++ kontsu, calls, win_definitions, tile_behavior)
-        end)
-        |> case do
-          nil            -> []
-          {hand, groups} -> [{winning_tile, hand, groups}]
-        end
-      end)
-      |> case do
-        [] -> hand
-        [{winning_tile, hand, groups} | _] ->
-          groups = groups
-          |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-          |> Enum.map(& &1 ++ [:shuntsu]) # add a spacing marker after each shuntsu
-          |> Enum.concat()
-          List.delete(groups ++ hand ++ kontsu, winning_tile)
-      end
-    else hand end
-  end
-
-  def arrange_koutsu(hand, calls, winning_tiles, win_definitions, tile_behavior) do
-    # return hand, but reordered so that koutsu are at the front
-    # if no koutsu, return hand unchanged
-    # hand is expected to be tenpai for N sets and a pair
-
-    # first split at the first :kontsu in hand
-    # these are added by kontsu check, we don't want to rearrange those
-    ix = Enum.find_index(hand, & &1 == :kontsu)
-    {hand, kontsu} = if ix == nil do {hand, []} else Enum.split(hand, ix) end
-
-    # then split at the last :shuntsu in hand
-    # these are added by shuntsu check, we don't want to rearrange those
-    ix = Enum.find_index(Enum.reverse(hand), & &1 == :shuntsu)
-    {shuntsu, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
+    # split at the last :separator in hand
+    # we will only arrange the contents of the hand after that
+    ix = Enum.find_index(Enum.reverse(hand), & &1 == :separator)
+    {prearranged, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
 
     Enum.flat_map(winning_tiles, fn winning_tile ->
-      Match.extract_groups([winning_tile | hand], [0, 0, 0], tile_behavior)
-      |> Enum.find(fn {hand, groups} ->
-        calls = Enum.map(groups, &{"pon", &1}) ++ calls
-        Match.match_hand(shuntsu ++ hand ++ kontsu, calls, win_definitions, tile_behavior)
-      end)
+      Match.extract_groups([winning_tile | hand], group, tile_behavior)
+      |> Enum.find(fn {hand, groups} -> Match.match_hand(prearranged ++ hand ++ Enum.concat(groups), calls, win_definitions, tile_behavior) end)
       |> case do
         nil            -> []
         {hand, groups} -> [{winning_tile, hand, groups}]
@@ -894,9 +761,13 @@ defmodule RiichiAdvanced.Riichi do
       [{winning_tile, hand, groups} | _] ->
         groups = groups
         |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-        |> Enum.map(& &1 ++ [:koutsu]) # add a spacing marker after each koutsu
+        |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
         |> Enum.concat()
-        List.delete(shuntsu ++ groups ++ hand ++ kontsu, winning_tile)
+        # delete last instance of winning tile
+        prearranged ++ groups ++ hand
+        |> Enum.reverse()
+        |> List.delete(winning_tile)
+        |> Enum.reverse()
     end
   end
 
