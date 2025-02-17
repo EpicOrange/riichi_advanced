@@ -6,6 +6,10 @@ html, body {
   overflow-x: hidden;
   overflow-y: visible;
   height: 100%;
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar { 
+  display: none; /* Safari/Chrome */
 }
 
 main {
@@ -130,8 +134,13 @@ textarea {
   height: 100%;
   background: #3f3f3f;
   color: white;
+  font-family: monospace;
   white-space: pre;
   box-sizing: border-box;
+  scrollbar-width: none; /* Firefox */
+}
+textarea::-webkit-scrollbar { 
+  display: none; /* Safari/Chrome */
 }
 /* buttons */
 button {
@@ -2278,13 +2287,9 @@ div.game-modal.error-window > h1 {
 }
 div.game-modal.error-window > textarea.error {
   position: absolute;
-  background: #3f3f3f;
-  color: white;
-  width: 100%;
   height: calc(100% - 4 * var(--tile-size));
   top: calc(2 * var(--tile-size));
   left: 0;
-  white-space: pre;
 }
 div.game-modal.error-window::before {
   background: red;
