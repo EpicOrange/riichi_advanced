@@ -1508,12 +1508,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice.name) do
             Map.get(state.rules["buttons"][choice.name], "precedence_over", [])
           else [] end
-          # replace with "skip" every choice that is superceded by our choice
 
+          # replace with "skip" every button and choice that is superceded by our choice
           update_all_players(state, fn dir, player ->
             not_us = seat != dir
             choice_superceded = player.choice != nil and player.choice.name in superceded_choices
-            all_choices_superceded = player.choice != nil and player.choice.name == nil and Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
+            all_choices_superceded = Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
             if not_us and (choice_superceded or all_choices_superceded) do
               if Debug.debug_actions() do
                 IO.puts("Superceding choice for #{dir} due to existing #{inspect(choice)}")
