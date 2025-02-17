@@ -136,7 +136,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_event("join_room", %{"name" => room_code}, socket) do
-    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&from=lobby")
     {:noreply, socket}
   end
 
@@ -145,7 +145,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       socket = if length(socket.assigns.room_code) == 3 do
         # enter private room, or create a new room
         room_code = Enum.join(socket.assigns.room_code, ",")
-        push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
+        push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&from=lobby")
       else socket end
       {:noreply, socket}
     else

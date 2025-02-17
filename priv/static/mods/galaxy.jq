@@ -67,40 +67,40 @@ any(.wall[]; . == "1t") as $star
 |
 # add joker rules
 .after_start.actions += [
-  ["set_tile_alias_all", ["11m"], add_star_suit($star; [["1m","original"],"1p","1s"])],
-  ["set_tile_alias_all", ["12m"], add_star_suit($star; [["2m","original"],"2p","2s"])],
-  ["set_tile_alias_all", ["13m"], add_star_suit($star; [["3m","original"],"3p","3s"])],
-  ["set_tile_alias_all", ["14m"], add_star_suit($star; [["4m","original"],"4p","4s"])],
-  ["set_tile_alias_all", ["15m"], add_star_suit($star; [["5m","original"],"5p","5s"])],
-  ["set_tile_alias_all", ["16m"], add_star_suit($star; [["6m","original"],"6p","6s"])],
-  ["set_tile_alias_all", ["17m"], add_star_suit($star; [["7m","original"],"7p","7s"])],
-  ["set_tile_alias_all", ["18m"], add_star_suit($star; [["8m","original"],"8p","8s"])],
-  ["set_tile_alias_all", ["19m"], add_star_suit($star; [["9m","original"],"9p","9s"])],
-  ["set_tile_alias_all", ["11p"], add_star_suit($star; ["1m",["1p","original"],"1s"])],
-  ["set_tile_alias_all", ["12p"], add_star_suit($star; ["2m",["2p","original"],"2s"])],
-  ["set_tile_alias_all", ["13p"], add_star_suit($star; ["3m",["3p","original"],"3s"])],
-  ["set_tile_alias_all", ["14p"], add_star_suit($star; ["4m",["4p","original"],"4s"])],
-  ["set_tile_alias_all", ["15p"], add_star_suit($star; ["5m",["5p","original"],"5s"])],
-  ["set_tile_alias_all", ["16p"], add_star_suit($star; ["6m",["6p","original"],"6s"])],
-  ["set_tile_alias_all", ["17p"], add_star_suit($star; ["7m",["7p","original"],"7s"])],
-  ["set_tile_alias_all", ["18p"], add_star_suit($star; ["8m",["8p","original"],"8s"])],
-  ["set_tile_alias_all", ["19p"], add_star_suit($star; ["9m",["9p","original"],"9s"])],
-  ["set_tile_alias_all", ["11s"], add_star_suit($star; ["1m","1p",["1s","original"]])],
-  ["set_tile_alias_all", ["12s"], add_star_suit($star; ["2m","2p",["2s","original"]])],
-  ["set_tile_alias_all", ["13s"], add_star_suit($star; ["3m","3p",["3s","original"]])],
-  ["set_tile_alias_all", ["14s"], add_star_suit($star; ["4m","4p",["4s","original"]])],
-  ["set_tile_alias_all", ["15s"], add_star_suit($star; ["5m","5p",["5s","original"]])],
-  ["set_tile_alias_all", ["16s"], add_star_suit($star; ["6m","6p",["6s","original"]])],
-  ["set_tile_alias_all", ["17s"], add_star_suit($star; ["7m","7p",["7s","original"]])],
-  ["set_tile_alias_all", ["18s"], add_star_suit($star; ["8m","8p",["8s","original"]])],
-  ["set_tile_alias_all", ["19s"], add_star_suit($star; ["9m","9p",["9s","original"]])],
-  ["set_tile_alias_all", ["11z"], [["1z","original"],"2z","3z","4z"]],
-  ["set_tile_alias_all", ["12z"], ["1z",["2z","original"],"3z","4z"]],
-  ["set_tile_alias_all", ["13z"], ["1z","2z",["3z","original"],"4z"]],
-  ["set_tile_alias_all", ["14z"], ["1z","2z","3z",["4z","original"]]],
-  ["set_tile_alias_all", ["15z"], [["5z","original"],"6z","7z",["0z","original"]]],
-  ["set_tile_alias_all", ["16z"], ["5z",["6z","original"],"7z","0z"]],
-  ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","original"],"0z"]]
+  ["set_tile_alias_all", ["11m"], add_star_suit($star; [["1m","_original"],"1p","1s"])],
+  ["set_tile_alias_all", ["12m"], add_star_suit($star; [["2m","_original"],"2p","2s"])],
+  ["set_tile_alias_all", ["13m"], add_star_suit($star; [["3m","_original"],"3p","3s"])],
+  ["set_tile_alias_all", ["14m"], add_star_suit($star; [["4m","_original"],"4p","4s"])],
+  ["set_tile_alias_all", ["15m"], add_star_suit($star; [["5m","_original"],"5p","5s"])],
+  ["set_tile_alias_all", ["16m"], add_star_suit($star; [["6m","_original"],"6p","6s"])],
+  ["set_tile_alias_all", ["17m"], add_star_suit($star; [["7m","_original"],"7p","7s"])],
+  ["set_tile_alias_all", ["18m"], add_star_suit($star; [["8m","_original"],"8p","8s"])],
+  ["set_tile_alias_all", ["19m"], add_star_suit($star; [["9m","_original"],"9p","9s"])],
+  ["set_tile_alias_all", ["11p"], add_star_suit($star; ["1m",["1p","_original"],"1s"])],
+  ["set_tile_alias_all", ["12p"], add_star_suit($star; ["2m",["2p","_original"],"2s"])],
+  ["set_tile_alias_all", ["13p"], add_star_suit($star; ["3m",["3p","_original"],"3s"])],
+  ["set_tile_alias_all", ["14p"], add_star_suit($star; ["4m",["4p","_original"],"4s"])],
+  ["set_tile_alias_all", ["15p"], add_star_suit($star; ["5m",["5p","_original"],"5s"])],
+  ["set_tile_alias_all", ["16p"], add_star_suit($star; ["6m",["6p","_original"],"6s"])],
+  ["set_tile_alias_all", ["17p"], add_star_suit($star; ["7m",["7p","_original"],"7s"])],
+  ["set_tile_alias_all", ["18p"], add_star_suit($star; ["8m",["8p","_original"],"8s"])],
+  ["set_tile_alias_all", ["19p"], add_star_suit($star; ["9m",["9p","_original"],"9s"])],
+  ["set_tile_alias_all", ["11s"], add_star_suit($star; ["1m","1p",["1s","_original"]])],
+  ["set_tile_alias_all", ["12s"], add_star_suit($star; ["2m","2p",["2s","_original"]])],
+  ["set_tile_alias_all", ["13s"], add_star_suit($star; ["3m","3p",["3s","_original"]])],
+  ["set_tile_alias_all", ["14s"], add_star_suit($star; ["4m","4p",["4s","_original"]])],
+  ["set_tile_alias_all", ["15s"], add_star_suit($star; ["5m","5p",["5s","_original"]])],
+  ["set_tile_alias_all", ["16s"], add_star_suit($star; ["6m","6p",["6s","_original"]])],
+  ["set_tile_alias_all", ["17s"], add_star_suit($star; ["7m","7p",["7s","_original"]])],
+  ["set_tile_alias_all", ["18s"], add_star_suit($star; ["8m","8p",["8s","_original"]])],
+  ["set_tile_alias_all", ["19s"], add_star_suit($star; ["9m","9p",["9s","_original"]])],
+  ["set_tile_alias_all", ["11z"], [["1z","_original"],"2z","3z","4z"]],
+  ["set_tile_alias_all", ["12z"], ["1z",["2z","_original"],"3z","4z"]],
+  ["set_tile_alias_all", ["13z"], ["1z","2z",["3z","_original"],"4z"]],
+  ["set_tile_alias_all", ["14z"], ["1z","2z","3z",["4z","_original"]]],
+  ["set_tile_alias_all", ["15z"], [["5z","_original"],"6z","7z",["0z","_original"]]],
+  ["set_tile_alias_all", ["16z"], ["5z",["6z","_original"],"7z","0z"]],
+  ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","_original"],"0z"]]
 ]
 |
 if $star then
@@ -220,16 +220,10 @@ else . end
 ]
 |
 .after_win.actions |= [
-  ["add_counter", "galaxy_shuugi", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
+  ["add_counter", "galaxy_shuugi", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]
 ] + .
 |
 .win_timer = 20
-|
-# this makes the win screen take shuntsu and koutsu out of the hand before displaying
-.score_calculation.arrange_shuntsu = true
-|
-.score_calculation.arrange_koutsu = true
-
 
 # there is a rule that you gain shuugi equal to the number of galaxy tiles used as their own value,
 # but our current joker solver does not try to maximize galaxy tiles used as their own value

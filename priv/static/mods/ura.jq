@@ -45,6 +45,16 @@
   ["when", [{"name": "tile_revealed", "opts": [-17]}], [["add_counter", "ura", "count_dora", -17, ["hand", "calls", "flowers", "winning_tile"]]]]
 ]
 |
+.before_scoring.actions |= [["set_counter", "ura", 0]] + . + [
+  ["when", [{"name": "tile_revealed", "opts": [-5]}], [["add_counter", "ura", "count_dora", -5, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-7]}], [["add_counter", "ura", "count_dora", -7, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-9]}], [["add_counter", "ura", "count_dora", -9, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-11]}], [["add_counter", "ura", "count_dora", -11, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-13]}], [["add_counter", "ura", "count_dora", -13, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-15]}], [["add_counter", "ura", "count_dora", -15, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-17]}], [["add_counter", "ura", "count_dora", -17, ["hand", "calls", "flowers", "winning_tile"]]]]
+]
+|
 # add ura yaku
 .extra_yaku += [
   {"display_name": "Ura", "value": "ura", "when": [{"name": "counter_at_least", "opts": ["ura", 1]}]}

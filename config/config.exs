@@ -69,3 +69,8 @@ config :logger, :error_log,
   path: "log/error.log",
   level: :error,
   truncate: :infinity # don't set this in prod
+
+# cache
+config :riichi_advanced, RiichiAdvanced.Cache,
+  limit: 1_000_000,
+  stats: true

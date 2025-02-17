@@ -98,7 +98,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         socket = if length(socket.assigns.room_code) == 3 do
           # enter private room, or create a new room
           room_code = Enum.join(socket.assigns.room_code, ",")
-          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
+          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home")
         else socket end
         {:noreply, socket}
       else
@@ -118,7 +118,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
           push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
         else
           {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
-          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}")
+          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home")
         end
         {:noreply, socket}
       end

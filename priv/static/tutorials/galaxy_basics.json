@@ -1,0 +1,132 @@
+{
+  "mods": ["yaku/riichi", "yaku/ippatsu", "dora", "ura", "aka", "show_waits", "galaxy"],
+  "config": {
+    "starting_hand": {
+      "east": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"],
+      "south": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"],
+      "west": ["12m", "2p", "2p", "3s", "0s", "7s", "8s", "9s", "9s", "1z", "1z", "5z", "5z"],
+      "north": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"]
+    },
+    "starting_draws": ["2z", "4s", "14z", "14s"],
+    "starting_dead_wall": ["7z", "11p", "12p", "13p", "18p", "15z"],
+    "tsumogiri_bots": true,
+    "win_timer": 300
+  },
+  "scenes": {
+    "start": [
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Welcome to galaxy mahjong, a riichi variant that replaces 1 of each kind of tile with a light blue 'galaxy' tile. What do these mysterious tiles do? Let's find out!\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Our initial hand is looking like it's going to be a half flush, but let's see.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "south", 13]],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "South just played a bamboo tile! If we're going for half flush, we'll probably want to take it. Call chii!"
+      }],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 3.5}],
+      ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "chii"]],
+      ["clear_objects"],
+      ["sleep", 750],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Oh strange, why do we have options?\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 3, "x": 10, "y": "buttons"}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "This is because galaxy tiles are suitless! A galaxy 2 can be used as any 2 tile, including 2 of bamboo. So we could chii 234, if we wished.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 0}],
+      ["add_object", "focus", {"width": 3, "x": 10, "y": "buttons"}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "In fact, that means you have a triplet of 2 circles here! So in fact our hand is not honitsu, it's toitoi.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 1}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Because it won't get us any closer to winning, let's not call chii. Press Cancel."
+      }],
+      ["add_object", "focus", {"width": 2, "x": 13.75, "y": "buttons"}],
+      ["force_event", ["press_call_button", "west", "cancel"]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Press Skip."
+      }],
+      ["add_object", "focus", {"width": 2, "x": 14, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "skip"]],
+      ["clear_objects"],
+      ["sleep", 750],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "We drew a galaxy north wind! But what's the riichi button doing there?\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Just like how galaxy twos are two wildcards, galaxy winds are wind wildcards -- they can be any wind! So we have yakuhai east already, and are tenpai!\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 9.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Unfortunately our tenpai is kind of garbage (waits on 4 bamboo) but declare Riichi anyway, you'll soon see why."
+      }],
+      ["add_object", "focus", {"width": 2, "x": 12, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "riichi"]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "If you hover over your 9 bamboos, you can see that your wait is not only the 4 bamboo, but also any galaxy four! Let's discard a 9 bamboo."
+      }],
+      ["force_event", [["play_tile", "west", 7], ["play_tile", "west", 8]]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "north", 13]],
+      ["sleep", 200],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 5.5,
+        "text": "This is a tutorial, so of course you get the tile you want immediately. Press Ron."
+      }],
+      ["force_event", ["press_button", "west", "ron"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Let's talk about dora! As you can see, both the dora and ura indicators up top are galaxy tiles.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "The dora indicator is a galaxy white dragon. Since galaxy dragons are dragon wildcards, they indicate all other dragons as dora, including your two actual white dragons.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1, "x": 12, "y": 2.75}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "The ura indicator is a galaxy eight circles, which similarly indicates all nines as dora, including your nine of bamboo.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "x": 8.625, "y": 2.75}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "That's about all there is to galaxy mahjong!\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
+        "text": "Click to return to the list of tutorials."
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}
