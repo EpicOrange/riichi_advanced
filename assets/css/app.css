@@ -1243,6 +1243,7 @@ div.tile.purple { --tile-color: purple; }
 div.tile.gray { --tile-color: gray; }
 div.tile.grey { --tile-color: grey; }
 div.tile.lightgray { --tile-color: lightgray; }
+div.tile.lightgrey { --tile-color: lightgrey; }
 div.tile.black { --tile-color: black; }
 div.tile.white { --tile-color: white; }
 /* tile 3d */
