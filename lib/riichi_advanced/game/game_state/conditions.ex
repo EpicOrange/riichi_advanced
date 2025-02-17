@@ -22,16 +22,21 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
           "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
           "pond" -> [{hand ++ state.players[context.seat].pond, calls}]
+          "pond_faceup" -> [{hand ++ Enum.map(state.players[context.seat].pond, &Utils.flip_faceup/1), calls}]
+          "discards" -> [{hand ++ state.players[context.seat].discards, calls}]
+          "discards_faceup" -> [{hand ++ Enum.map(state.players[context.seat].discards, &Utils.flip_faceup/1), calls}]
           "aside" -> [{hand ++ state.players[context.seat].aside, calls}]
-          "aside_unique" -> [{hand ++ Enum.uniq(state.players[context.seat].aside), calls}]
           "calls" -> [{hand, calls ++ Enum.reject(state.players[context.seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
           "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "pei"] end)}]
           "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
-          "arranged_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
-          "arranged_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
+          "assigned_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
+          "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
+          "winning_tile" ->
+            winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
+            [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
@@ -51,27 +56,26 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "shimocha_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :shimocha)].calls}]
           "toimen_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :toimen)].calls}]
           "kamicha_calls" -> [{hand, calls ++ state.players[Utils.get_seat(context.seat, :kamicha)].calls}]
-          "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
-          "tile" -> [{hand ++ [context.tile], calls}]
           "called_tile" -> [{hand ++ [context.choice.chosen_called_tile], calls}]
           "call_choice" -> [{hand ++ context.choice.chosen_call_choice, calls}]
-          "winning_tile" ->
-            winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
-            [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
-          "assigned_hand" -> [{state.winners[context.seat].assigned_hand, calls}] # includes winning tile
+          "tile" -> [{hand ++ [context.tile], calls}]
+          "all_ponds" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
+          "others_ponds" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
+
+          # multi-select
+          "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
+          "aside_unique" -> [{hand ++ Enum.uniq(state.players[context.seat].aside), calls}]
+          "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
-          "all_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
-          "others_discards" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
           "all_calls" -> [{hand, calls ++ Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)}]
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Utils.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
           "visible_tiles" -> [{hand ++ get_visible_tiles(state), calls}]
           "any_visible_tile" -> Enum.map(get_visible_tiles(state), fn tile -> {hand ++ [tile], calls} end)
-          "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
           "hand_draw_nonjoker_any" ->
             player = state.players[context.seat]
             Enum.flat_map(player.hand ++ player.draw, fn tile ->
-              [{hand ++ if TileBehavior.is_any_joker?(tile, player.tile_behavior) do [] else [tile] end, calls}]
+              if TileBehavior.is_any_joker?(tile, player.tile_behavior) do [] else [{hand ++ [tile], calls}] end
             end)
           "scry" -> [{hand ++ get_scryed_tiles(state, context.seat), calls}]
           "self_joker_meld_tiles" ->

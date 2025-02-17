@@ -1011,7 +1011,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     %{
       joker_assignment: joker_assignment,
-      assigned_winning_hand: assigned_winning_hand,
       new_winning_tile: new_winning_tile,
       yaku: yaku,
       yaku2: yaku2,
@@ -1029,10 +1028,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # replace winner's hand with joker assignment to determine yaku
         {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-        assigned_winning_hand = state.players[seat].cache.winning_hand
 
         # run before_scoring actions
-        IO.inspect(assigned_winning_tile)
         state = if Map.has_key?(state.rules, "before_scoring") do
           Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: assigned_winning_tile, win_source: win_source})
         else state end
@@ -1044,7 +1041,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
         if Debug.print_wins() do
-          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+          assigned_winning_hand = state.players[seat].cache.winning_hand
+          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(assigned_winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
         end
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
@@ -1058,7 +1056,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
         %{
           joker_assignment: joker_assignment,
-          assigned_winning_hand: assigned_winning_hand,
           new_winning_tile: new_winning_tile,
           yaku: yaku,
           yaku2: yaku2,
@@ -1121,7 +1118,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end,
       opponents: opponents,
       winning_hand: winning_hand,
-      assigned_hand: assigned_winning_hand,
       separated_hand: separated_hand,
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,

@@ -1015,7 +1015,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         call = style_call(style, call_choice, discard_tile)
         call = {"pon", call}
         state = update_player(state, context.seat, &%Player{ &1 | calls: &1.calls ++ [call] })
-        state = update_action(state, context.seat, :call,  %{from: discard_seat, called_tile: discard_tile, other_tiles: call_choice, call_name: "pon"})
+        state = update_action(state, context.seat, :call, %{from: discard_seat, called_tile: discard_tile, other_tiles: call_choice, call_name: "pon"})
         state = if Map.has_key?(state.rules, "after_call") do
           run_actions(state, state.rules["after_call"]["actions"], %{seat: context.seat, callee: discard_seat, caller: context.seat, call: call})
         else state end
