@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             Enum.flat_map(player.hand ++ player.draw, fn tile ->
               [{hand ++ if TileBehavior.is_any_joker?(tile, player.tile_behavior) do [] else [tile] end, calls}]
             end)
-          "scry" -> [{hand ++ (state.wall |> Enum.drop(state.wall_index) |> Enum.take(state.players[context.seat].num_scryed_tiles)), calls}]
+          "scry" -> [{hand ++ get_scryed_tiles(state, context.seat), calls}]
           "self_joker_meld_tiles" ->
             # used in malaysian, this selects one nonjoker tile from own exposed calls containing a joker
             state.players[context.seat].calls
@@ -374,12 +374,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
         hand = Utils.add_attr(cxt_player.hand, ["hand"])
         draw = Utils.add_attr(cxt_player.draw, ["hand"])
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, cxt_player.tile_behavior)
+        waits = Riichi.get_waits(hand, calls, win_definitions, cxt_player.tile_behavior)
         Enum.all?(Riichi.make_calls(context.calls_spec, hand ++ draw, cxt_player.tile_behavior, []), fn {called_tile, call_choices} ->
           Enum.all?(call_choices, fn call_choice ->
             call_tiles = [called_tile | call_choice]
             call = {context.call_name, call_tiles}
-            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, state.all_tiles, cxt_player.tile_behavior)
+            waits_after_call = Riichi.get_waits((hand ++ draw) -- call_tiles, calls ++ [call], win_definitions, cxt_player.tile_behavior)
             # IO.puts("call: #{inspect(call)}")
             # IO.puts("waits: #{inspect(waits)}")
             # IO.puts("waits after call: #{inspect(waits_after_call)}")
@@ -393,9 +393,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
         calls = cxt_player.calls
         call_tiles = [context.choice.chosen_called_tile | context.choice.chosen_call_choice]
         call = {context.choice.name, call_tiles}
-        waits_before = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, cxt_player.tile_behavior, true)
+        waits_before = Riichi.get_waits(hand, calls, win_definitions, cxt_player.tile_behavior, true)
         [call_removed | _] = Match.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles))
-        waits_after = Riichi.get_waits(call_removed, calls ++ [call], win_definitions, state.all_tiles, cxt_player.tile_behavior, true)
+        waits_after = Riichi.get_waits(call_removed, calls ++ [call], win_definitions, cxt_player.tile_behavior, true)
         waits_before != waits_after
       "wait_count_at_least" ->
         number = Enum.at(opts, 0, 1)
@@ -403,7 +403,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_behavior = cxt_player.tile_behavior
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, tile_behavior)
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_behavior)
         MapSet.size(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
@@ -411,7 +411,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_behavior = cxt_player.tile_behavior
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Riichi.get_waits(hand, calls, win_definitions, state.all_tiles, tile_behavior)
+        waits = Riichi.get_waits(hand, calls, win_definitions, tile_behavior)
         MapSet.size(waits) <= number
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
@@ -442,15 +442,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
         |> Enum.map(fn {hand, _calls} -> hand end)
         Utils.has_attr?(targets, Enum.drop(opts, 1))
       "has_hell_wait" ->
-        hand = cxt_player.hand
-        calls = cxt_player.calls
         wait_definitions = translate_match_definitions(state, opts)
-        waits = Enum.flat_map(wait_definitions, fn definition -> Match.remove_match_definition(hand, calls, definition, cxt_player.tile_behavior) end)
-        |> Enum.flat_map(fn {hand, _calls} -> hand end)
-        visible_ponds = Enum.flat_map(state.players, fn {_seat, player} -> player.pond end)
-        visible_calls = Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)
-        ukeire = Riichi.count_ukeire(waits, hand, visible_ponds, visible_calls, Map.get(context, :winning_tile, nil), cxt_player.tile_behavior)
-        # IO.puts("Waits: #{inspect(waits)}, ukeire: #{inspect(ukeire)}")
+        ukeire = Riichi.get_waits_and_ukeire(cxt_player.hand, cxt_player.calls, wait_definitions, get_visible_tiles(state), cxt_player.tile_behavior)
+        |> Map.values()
+        |> Enum.sum()
+        # IO.puts("Ukeire: #{inspect(ukeire)}")
         ukeire == 1
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)

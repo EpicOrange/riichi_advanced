@@ -1,8 +1,6 @@
-defmodule RiichiAdvanced.YakuTest.Riichi do
+defmodule RiichiAdvanced.YakuTest.RiichiYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
-
-  # TODO local yaku lol
 
   test "riichi - double riichi ippatsu" do
     TestUtils.test_yaku_advanced("riichi", ["yaku/riichi", "yaku/ippatsu"], """

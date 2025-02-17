@@ -72,7 +72,7 @@
       ["clear_objects"],
       ["await_event", ["play_tile", "west", 13]],
       ["force_event", ["press_button", "south", "ron"]],
-      ["sleep", 3000],
+      ["sleep", 2000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Click to return to the list of tutorials."

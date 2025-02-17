@@ -80,7 +80,7 @@ until you realize that this is how you must proceed to get to our hero's next tu
       }
     }
 
-Forcing every action requires you to micromanage the AI's events, which are predetermined anyway since they are tsumogiri bots. If buttons pop up for the AI ("Chii" for example) you will have to force them to press "Skip", too, by forcing `"press_button"` events. Instead of forcing every event, what we really want is to stop blocking events until after the north player plays a tile. For this, we use `"await_event"`:
+Forcing every action requires you to micromanage the AI's events, which are predetermined anyway since they are tsumogiri bots. If buttons pop up for the AI ("Chii" for example) you will have to force them to press "Skip", too, by forcing `"press_button"` events for the button `"skip"`. Instead of forcing every event, what we really want is to stop blocking events until after the north player plays a tile. For this, we use `"await_event"`:
 
     {
       ...
@@ -295,6 +295,43 @@ Our tutorial is basically done. Here's the whole thing:
         ]
       }
     }
+
+## Call buttons
+
+Earlier we described the kinds of events you can force and await:
+
+- `["play_tile", seat, index]`
+- `["press_button", seat, button_name]`
+- `["press_call_button", seat, call_choice, called_tile]`: explained later
+
+Now is the 'later' where we explain `"press_call_button"`.
+
+Normally, pressing Chii immediately executes the call. But if you have choices, you get an additional set of buttons that describe your call choices. These are call buttons, and pressing them are events we often need to force via `"force_event"`.
+
+Here are some usage examples:
+
+- `["force_event", ["press_call_button", "east", ["1p", "3p"], "2p"]]`
+- `["force_event", ["press_call_button", "north", ["4p", "5p"], "3p"]]`
+- `["force_event", ["press_call_button", "west", "cancel"]]`
+
+Basically the syntax is very similar to `"press_button"` but you must pass two additional arguments beyond the seat of the player pressing the call button. The first one is the call choice: which tiles are you using to call? The second one is the called tile, which is often obvious (the last discard) but we'll explain why this needs to be specified soon.
+
+The third example shows you can also specify `"cancel"` to press the Cancel button instead, returning us to our original button menu. This is just like how with `"press_button"` we can specify `"skip"` to press the Skip button.
+
+To summarize, you want one of these:
+
+- `["force_event", ["press_call_button", seat, call choice, called tile]]`
+- `["force_event", ["press_call_button", seat, "cancel"]]`
+
+### Purpose of the called tile argument
+
+Call buttons also pop up if you are calling flowers, and have multiple flowers in hand. It will ask you which flower you want to call (since that is important in some variants). In this case you would specify something like the following:
+
+- `["force_event", ["press_call_button", "north", [], "1f"]]`
+
+i.e. for flowers there is no call choice, there is just the called tile, and that is the purpose of the last argument. The reason for this distinction is internal and mostly because the called tile is what's checked for things like chankan.
+
+Another example where you have multiple choices for called tile is when you draw the fourth ![](tiles/3s.svg) and you also have a bamboo joker in hand -- if you want to call an added kan, you would have to specify which of the two tiles you want to add using the called tile argument.
 
 ## Multiple scenes
 

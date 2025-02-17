@@ -37,9 +37,7 @@ defmodule RiichiAdvancedWeb.ScryedTilesComponent do
 
   def prepare_scryed_tiles(assigns) do
     # need to pass in assigns, so that this updates when marking updates
-    assigns.wall
-    |> Enum.drop(assigns.wall_index)
-    |> Enum.take(assigns.num_scryed_tiles)
+    Enum.slice(assigns.wall, assigns.wall_index, assigns.num_scryed_tiles)
     |> Enum.with_index()
   end
 

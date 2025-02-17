@@ -374,6 +374,96 @@ One final note: the `mark` action also takes two optional action lists to be run
 
 These are just extra hooks to run actions (for example, maybe you want to draw tiles immediately before marking) but are basically not necessary unless you are marking after a delay or something.
 
+## Tile attributes
+
+Tile attributes are basically statuses for individual tiles. Here's how you add the `"revealed"` attribute to all manzu tiles in a player's hand, draw, and tiles set aside:
+
+- `["add_attr", ["hand", "draw", "aside"], ["revealed"], ["manzu"]]`
+
+In general, you can write:
+
+- `["add_attr", [target1, ...], [attr1, ...], [tile_spec1...]]`
+
+This adds all of the given `attr`s to all the given `target`s. You can further filter the targets with the optional third argument, an array of `tile_spec`s. There are only four supported `target`s right now:
+
+- `"hand"`: the current player's hand.
+- `"draw"`: the current player's draw.
+- `"aside"`: the current player's tiles set aside.
+- `"last_discard"`: the last discard.
+
+As for available `tile_spec`s, [see the relevant section](#tilespecs).
+
+There are a couple more actions that add and remove attributes in a specific way, but the goal is to eventually turn them all into `"add_attr"` and `"remove_attr"` targets. (`"remove_attr"` does not yet exist, but for now there is `"remove_attr_hand"` and `"remove_attr_all"`.)
+
+You can add any string as an attribute.
+
+Anywhere in the JSON where you specify tiles (e.g. wall or match definition), you have a couple ways to specify tiles with attributes:
+
+- `"1m"`: tile without attributes.
+- `["1m", ["myattr"]]`: tile with attributes (does not work in match definitions, since arrays have meaning)
+- `{"tile": "1m", "attrs": ["myattr"]}`: tile with attributes (works in match definitions)
+- `{"tile": "any", "attrs": ["myattr"]}`: any tile with the given attribute (only for match definitions)
+
+If you make `match` try to look for a tile with a given attributes, it will only match tiles that 1) match in base tile and 2) have at least the given attributes. So `{"tile": "any", "attrs": ["myattr"]}` can be used to match any tile with the `"myattr"` attribute.
+
+### Visual effects via attributes
+
+There are a couple of visual effects you can give to a tile by giving it attributes:
+
+- `"dora"`: Use an alternate 'shiny' graphic for the tile. Works for any tile.
+- `"facedown"`: Flips the tile facedown. Once this tile is discarded, it will not be visible to other players. If a facedown tile is in hand, the player who owns the tile can hover over it to see the faceup version.
+- `"hidden"`: Removes the tile from sight completely -- no gap is left in place.
+- `"inactive"`: Darkens the tile, e.g. tiles you can't discard after declaring riichi.
+- `"revealed"`: Makes the tile visible to other players and in ukeire calculations.
+- `"sideways"`: Flips the tile sideways.
+- `"transparent"`: Makes the tile look transparent. This transparency is visible to other players, but the identity of the tile is still hidden (it will just look like a transparent blank tile). Combine this with `"revealed"` to get Washizu tiles.
+
+For custom akadora (transparent tiles whose names are prefixed with `4`, see [tiles.md](tiles.md#akaaokintransparent)) the following attributes define the color of the tile:
+
+- `"_red"`: same as akadora
+- `"_blue"`: same as aodora
+- `"_cyan"`: same as galaxy tiles
+- `"_gold"`: same as kindora
+- `"_orange"`
+- `"_yellow"`
+- `"_green"`
+- `"_purple"`
+- `"_gray"` or `"_grey"`
+- `"_lightgray"` or `"_lightgrey"`
+- `"_brown"`
+- `"_black"`
+- `"_white"`
+
+## Tile aliasing, i.e. defining jokers
+
+To make `"3s"` an almighty joker tile that can represent any tile, simply run the following action:
+
+- `["set_tile_alias_all", ["3s"], ["any"]]`
+
+In general, `["set_tile_alias_all", [from], [to]]` essentially means to the matching engine "whenever you look for the tile `to`, you can take the 'joker' `from` instead". So it is a unidirectional alias -- it doesn't go the other way (can't remove `to` when looking for the 'joker' `from`.
+
+Note that the two arguments are arrays, which means
+
+- `["set_tile_alias_all", ["3m", "3p", "3s"], ["7m", "7p", "7s"]]`
+
+tells the matching engine "whenever you look for a seven, you may take any three instead".
+
+There is also `"set_tile_alias"`, which only sets the aliasing/joker relationship for the current player, meaning only the current player can use the specified `from` tiles as the specified jokers.
+
+### Attributes and tile aliasing
+
+You may also use tiles with attributes in either `from` or `to` when setting tile aliases. Here's an example from the galaxy ruleset.
+
+- `["set_tile_alias_all", ["11z"], [["1z","original"],"2z","3z","4z"]]`
+
+A galaxy east wind `"11z"` can be used as any wind `"1z","2z","3z","4z"`, but there are scoring implications for when the galaxy tile is used as its original tile (here, the east wind `"1z"`). Thus whenever `"11z"` maps to `"1z"`, we want to give it an attribute `"original"`, so we can later score based on how many `"original"` tiles exist in hand.
+
+The problem with adding an attribute merely for scoring purposes is that attributes are tied to the match engine, and so we have the unfortunate situation where `"11z"` doesn't map to `"1z"`, making `["1z", "11z"]` not a valid pair to the matching engine. You can avoid this by prefixing your attribute with `"_"`, which renders the attribute invisible to tile comparisons. Note that `"_original"` and `"original"` are considered the same attribute otherwise.
+
+That's why the actual definition in the galaxy ruleset looks like:
+
+- `["set_tile_alias_all", ["11z"], [["1z","_original"],"2z","3z","4z"]]`
+
 ---
 
 # `ruleset.json` full documentation
@@ -394,6 +484,7 @@ Here are all the toplevel keys. Every key is optional.
 - `before_conclusion`: Triggers at the end of a game (right before the end scores are shown).
 - `before_continue`: Triggers before the game continues, after someone wins in a bloody end game.
 - `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
+- `before_scoring`: Triggers right before a win is called, before yaku is calculated. Same as `before_win`, but happens after the joker solver is run (if applicable).
 - `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
 - `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.

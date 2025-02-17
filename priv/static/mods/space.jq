@@ -177,8 +177,3 @@ end
     )
   else . end
 )
-|
-# this makes the win screen take shuntsu and koutsu out of the hand before displaying
-.score_calculation.arrange_shuntsu = true
-|
-.score_calculation.arrange_koutsu = true

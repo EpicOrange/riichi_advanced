@@ -6,6 +6,7 @@ defmodule RiichiAdvanced.GameState.American do
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
+  use Nebulex.Caching
 
   # each american match definition is a string, like
   # "FF 3333a 6666b 9999c"
@@ -137,7 +138,8 @@ defmodule RiichiAdvanced.GameState.American do
       ["debug"] ++ ret
     else ret end
   end
-  defp _translate_american_match_definitions(am_match_definitions) do
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:translate_american_match_definitions, am_match_definitions})
+  def translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
       # e.g. "FF 2024a 2222b 2222c" becomes
       # %{
@@ -165,16 +167,6 @@ defmodule RiichiAdvanced.GameState.American do
     end
     |> Enum.concat()
     |> Enum.map(&translate_american_match_definitions_postprocess/1)
-  end
-  def translate_american_match_definitions(am_match_definitions) do
-    case RiichiAdvanced.ETSCache.get({:translate_american_match_definitions, am_match_definitions}) do
-      [] -> 
-        result = _translate_american_match_definitions(am_match_definitions)
-        # IO.inspect(result, charlists: :as_lists, label: "def")
-        RiichiAdvanced.ETSCache.put({:translate_american_match_definitions, am_match_definitions}, result)
-        result
-      [result] -> result
-    end
   end
   defp translate_letter_to_tile_spec(letter, suit) do
     offsets = %{"A" => 0, "B" => 10, "C" => 20}
