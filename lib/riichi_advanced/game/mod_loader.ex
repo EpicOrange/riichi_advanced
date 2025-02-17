@@ -28,6 +28,11 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   def apply_mods(ruleset_json, mod_names, ruleset) do
+    orig_mods = mod_names
+    mod_names = Enum.uniq(mod_names)
+    if length(mod_names) < length(orig_mods) do
+      IO.puts("Warning, the following mods were included twice: #{inspect(orig_mods -- mod_names)}")
+    end
     case RiichiAdvanced.ETSCache.get({ruleset, mod_names}, [], :cache_mods) do
       [modded_json] ->
         IO.puts("Using cached mods for ruleset #{ruleset}: #{inspect(mod_names)}")
@@ -99,7 +104,7 @@ defmodule RiichiAdvanced.ModLoader do
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "dora", "aka", "nagashi", "kansai"],
+      mods: ["sanma", "kansai"],
       default_mods: ["tobi"],
     }
   }
