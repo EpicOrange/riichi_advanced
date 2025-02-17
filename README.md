@@ -29,6 +29,34 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __17 Feb 2025__: v1.1.1:
+  + Added tutorial for cosmic riichi and galaxy mahjong
+  + Added rules and strategy document for MCR
+  + Added shiny dora mod
+  + Added ability to hover over a winning hand to break it into sets
+  + Added lots of tests
+  + Added like a million jokers (with corresponding Riichi mods)
+  + Added custom aka
+  + Added four local yaku: ketsupaihou, chinchii toushii, rentsuu honitsu, and dorahairi chinroutou chiitoitsu
+  + Added the ability to have attributes be transparent to the tile checker by prefixing with `_` 
+  + Added play button to tutorial menu
+  + Fixed dora/aka/ura awarding
+  + Fixed any-tile jokers in hand turning every tile in hand into an any-tile joker
+  + Fixed chankan and anfuun for cosmic mahjong
+  + Fixed cosmic mod support with kan mod
+  + Fixed animation for calls (specifically added kan and added-added kan in cosmic)
+  + Fixed `"set_tile_ordering_all"` only setting the current player's tile ordering
+  + Fixed `"set_tile_ordering_all"` also removing all tile aliases
+  + Fixed `"has_hell_wait"` condition never being true
+  + Fixed 0.5-han yaku not letting you ron even if they combine to 1+ han
+  + Fixed fu calculation for added pon and added-added-kan in cosmic
+  + Fixed weird navigation where you go home -> room -> lobby -> home (now it's home -> room -> home)
+  + Fixed agariyame and tenpaiyame ending the game prematurely
+  + Fixed bamboo tiles being hard to read (hopefully)
+  + Fixed AI thinking they're tenpai when they're very much not
+  + Fixed cache stuff (things run faster now, especially AI)
+  + Fixed rigging the wall using `"starting_hands"` leading to incorrect distribution of tiles in the wall
+  + Fixed layout errors when using Safari
 - __12 Feb 2025__: v1.1.0:
   + Added [CONTRIBUTING.md](CONTRIBUTING.md)
   + Added tutorial screen as well as a way to create and share custom tutorials! If you are interested in creating a tutorial just select any ruleset in the main menu and hit Learn -> Create your own tutorial! [Here is the tutorial JSON documentation.](documentation/tutorials.md)
