@@ -50,6 +50,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Discarded tiles may be called for Pungs, Kongs, Quints, and for Mah Jongg. They may not be called to form singles, pairs, or sets of singles.
 - When two players call the same discard, Mah Jongg takes precedence over an exposure. Remaining ties are broken in favour of whoever is next in turn order.
 - Unlike in many other Asian variants, you cannot upgrade a Pung to a Kong. Once a Pung/Kong/Quint is made, it must stay as a Pung/Kong/Quint respectively for the rest of the game.
+- Unlike in many other Asian variants, you can only declare exposures off of discarded tiles. Concealed Kongs are not a thing.
 - **Note that Riichi Advanced's implementation requires you to name what kind of exposure you're calling for, while the rules in *MJME* do not. Riichi Advanced will also not let you edit the tiles in your exposure, even if you have not yet discarded or performed a joker exchange, while the rules in *MJME* allow you to do so.**
 
 ## Jokers
