@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.YakuTest.RiichiYaku do
+defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -100,6 +100,34 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     ], %{
       east: %{
         yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Aka", 2}, {"Ura", 2}],
+        yaku2: [],
+        minipoints: 40
+      }
+    })
+  end
+
+  test "galaxy - no dora" do
+    TestUtils.test_yaku_advanced("riichi", ["galaxy", "dora"], """
+    {
+      "starting_hand": {
+        "east": ["3p", "4p", "4p", "4p", "5p", "16p", "6s", "17p", "7s", "8s", "13p", "11z", "2z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1p", "2p", "5p", "7p", "13z"],
+      "starting_dead_wall": ["1z", "2z", "3z", "4z", "5z", "4z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "skip"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Tsumo", 1}],
         yaku2: [],
         minipoints: 40
       }

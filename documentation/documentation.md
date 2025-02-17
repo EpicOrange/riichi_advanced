@@ -243,7 +243,7 @@ This concludes the overview of basic concepts in Riichi Advanced rulesets. Note 
 
     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}
 
-`match` is a condition with two arguments. The first is an array of objects to match against, here `["hand", "calls", "draw"]`. The second is an array of **match specifications**, here `["tenpai_14", "kokushi_tenpai"]`. The idea is, if your hand, calls, and drawn tile matches `tenpai_14` or `kokushi_tenpai`, then you get to riichi.
+`match` is a condition with two arguments. The first is an array of **targets** to match against, here `["hand", "calls", "draw"]`. A list of all match targets can be found in [its own section below](#matchtargets). The second is an array of **match specifications**, here `["tenpai_14", "kokushi_tenpai"]`. The idea is, if your hand, calls, and drawn tile matches `tenpai_14` or `kokushi_tenpai`, then you get to riichi.
 
 `tenpai_14` or `kokushi_tenpai` are **named match specifications**. This is how they are specified in the default riichi ruleset:
 
@@ -476,7 +476,7 @@ Here are all the toplevel keys. Every key is optional.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
-- `after_start`: Triggers at the start of each round. Context: `seat` is the current seat (so, east).
+- `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east).
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
 - `after_win`: Triggers at the end of a win, after yaku is calculated.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
@@ -783,6 +783,59 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"joker"`: Matches a joker tile (hardcoded).
 - `"1"` to `"9"`: Matches that number tile (hardcoded).
 - `"kuikae"`: Matches a tile that is kuikae to the last call. Only used in `play_restrictions`.
+
+# Match targets
+
+There's quite a few possible match targets that can be passed as the first argument to `"match"`, and here they are.
+
+- `"hand"`: selects the player's hand (not draw).
+- `"draw"`: selects the player's draw.
+- `"pond"`: selects the player's visible pond (not called tiles).
+- `"pond_faceup"`: selects the player's visible pond, flipping facedown tiles faceup.
+- `"discards"`: selects the player's discards, including called discards.
+- `"discards_faceup"`: selects the player's discards, flipping facedown tiles faceup.
+- `"aside"`: selects the player's tiles set aside.
+- `"calls"`: selects the player's calls (not flowers). Calls are treated as a single unit that can only be matched against once.
+- `"flowers"`: selects the player's flowers (including starting flowers and pei).
+- `"start_flowers"`: selects the player's starting flowers only.
+- `"jokers"`: selects the player's jokers set aside (including starting jokers). 
+- `"start_jokers"`: selects the player's starting jokers set aside only.
+- `"call_tiles"`: selects the player's calls as if their tiles were part of the hand (therefore their tiles can be combined with tiles in hand).
+- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after the `before_scoring` event. Does not include the winning tile.
+- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after the `before_scoring` event. 
+- `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"` is run, including yaku checks. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `before_win`, but will be replaced by its actual value during `before_scoring` and after.
+- `"last_call"`: selects the last call made by any player.
+- `"last_called_tile"`: selects the called tile for the last call made by any player.
+- `"last_discard"`: selects the last discard made by any player.
+- `"second_last_visible_discard"`: selects the second last visible discard made by any player. This exists because of the Sakicard Hirose Sumire's ability to ron the second last visible discard.
+- `"self_last_discard"`: selects the last discard made by the current player.
+- `"shimocha_last_discard"`: selects the last discard made by the player right of the current player.
+- `"toimen_last_discard"`: selects the last discard made by the player across the current player.
+- `"kamicha_last_discard"`: selects the last discard made by the player left of the current player.
+- `"shimocha_calls"`: selects selects the calls made by the player right of the current player.
+- `"toimen_calls"`: selects selects the calls made by the player across the current player.
+- `"kamicha_calls"`: selects selects the calls made by the player left of the current player.
+- `"called_tile"`: selects the tiles called (only valid if the context contains `"called_tile"`, like in call button actions). For flower calls, this is the flower.
+- `"call_choice"`: selects the tiles called with (only valid if the context contains `"call_choice"`, like in call button actions). For flower calls, this is always empty.
+- `"tile"`: selects the current tile (only valid if the context contains `"tile"`, like in `"play_effects"`).
+- `"all_ponds"`: selects every player's pond. (basically treats this as a big hand to match on)
+- `"all_calls"`: selects every player's calls.
+- `"all_call_tiles"`: selects every player's call's tiles. (basically treats this as a big hand to match on)
+- `"revealed_tiles"`: selects revealed tiles, i.e. the tiles that appear on top of the game (like dora indicators)
+- `"visible_tiles"`: selects all tiles visible to the current player. (basically treats this as a big hand to match on) This includes visible tiles in other players' hands (e.g. when Open Hands is on).
+- `"scry"`: selects scryed tiles visible to the current player. See the `"scry"` action for more info.
+
+In addition, a couple selectors allow you to select _multiple_ targets. For example, selecting `["hand_any", "last discard"]` and matching on pairs will check if any individual hand tile matches the last discard, and will not match a pair that exists purely in hand. Note that using two or more of these leads to the cartesian product of the targets, which can be expensive to match against.
+
+- `"aside_unique"`: selects each player's aside tile individually.
+- `"all_last_discards"`: selects the last discard for each player.
+- `"any_discard"`: selects each player's discarded tile individually (includes called discards).
+- `"others_discards"`: selects each player's discarded tile individually (includes called discards), excluding the current player's pond.
+- `"any_visible_tile"`: selects each tile visible to the current player individually.
+- `"hand_any"`: selects each tile in hand individually. Does not include the draw.
+- `"hand_draw_nonjoker_any"`: selects each tile in hand and draw individually, excluding jokers.
+- `"self_joker_meld_tiles"`: selects one nonjoker tile from own exposed calls containing a joker. (Used in malaysian mahjong)
+- `"anyone_joker_meld_tiles"`: selects one nonjoker tile from each exposed call containing a joker. (Used in american mahjong)
 
 # Scoring methods
 

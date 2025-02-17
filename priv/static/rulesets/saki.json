@@ -1134,7 +1134,7 @@
         ["unset_status", "funakubo-hiroko_exhausted"],
         ["when", [
           {"name": "status", "opts": ["iwadate-yuan"]},
-          {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+          {"name": "match", "opts": [["hand", "draw", "all_ponds", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
         ], [
           ["remove_attr_all", "golden"],
           ["add_attr_first_tile", "7z", ["golden"]],
@@ -1455,7 +1455,7 @@
       ["when", [{"name": "status", "opts": ["iwadate-yuan"]}], [["add_counter", "iwadate_yuan_payment", 0]]],
       ["when", [
         {"name": "status", "opts": ["iwadate-yuan"]},
-        {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+        {"name": "match", "opts": [["hand", "draw", "all_ponds", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
       ], [
         ["add_attr_first_tile", "7z", ["golden"]],
         ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
@@ -2558,7 +2558,7 @@
         "just_called",
         {"name": "status", "opts": ["usuzumi-hatsumi", "ready"]},
         {"name": "status_missing", "opts": ["match_start", "just_swapped", "just_reached", "about_to_swap"]},
-        {"name": "match", "opts": [["all_discards"], [[[["1z","2z","3z","4z"], 1]]]]},
+        {"name": "match", "opts": [["all_ponds"], [[[["1z","2z","3z","4z"], 1]]]]},
         {"name": "match", "opts": [["hand"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]]]}
       ],
       "actions": [
@@ -3811,7 +3811,7 @@
     },
     "matsumi_yuu_pon": {
       "display_name": "Pon red dragon with priority",
-      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_ponds"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
       "actions": [
         ["big_text", "Matsumi Yuu: pon!"],
         ["mark", [["discard", 1, ["current_turn", "7z"]]]],

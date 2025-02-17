@@ -524,8 +524,8 @@ defmodule RiichiAdvanced.GameState.American do
     |> Enum.map(fn {am_match_definition, pairing_r, missing_tiles} ->
       # replace unmatched tiles in hand with missing tiles
       kept_tiles = Enum.map(Map.keys(pairing_r), fn i -> Enum.at(hand, i) end)
-      missing_tiles = Enum.reject(missing_tiles, &Utils.has_attr?(&1, ["call"]))
-      fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["inactive"])
+      missing_tiles = Enum.reject(missing_tiles, &Utils.has_attr?(&1, ["_call"]))
+      fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["_inactive"])
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do
         if seat == :east do

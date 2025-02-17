@@ -30,14 +30,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
         is_upgrade = Enum.any?(choice_actions, fn [action | _opts] -> action == "upgrade_call" end)
         is_flower = Enum.any?(choice_actions, fn [action | _opts] -> action == "flower" end)
         is_saki_card = Enum.any?(choice_actions, fn [action | _opts] -> action == "draft_saki_card" end)
-        hand = Utils.add_attr(state.players[seat].hand, ["hand"])
-        draw = Utils.add_attr(state.players[seat].draw, ["hand"])
+        hand = Utils.add_attr(state.players[seat].hand, ["_hand"])
+        draw = Utils.add_attr(state.players[seat].draw, ["_hand"])
         tile_behavior = state.players[seat].tile_behavior
         {state, call_choices} = cond do
           is_upgrade ->
             call_choices = state.players[seat].calls
             |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
-            |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["hand", "called"])) end)
+            |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["_hand", "_called"])) end)
             |> Enum.map(fn call_tiles ->
                  Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
