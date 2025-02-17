@@ -124,7 +124,7 @@ defmodule RiichiAdvanced.RoomState do
         name: mod["name"],
         desc: mod["desc"],
         category: mod["category"],
-        order: Map.get(mod, "order", 0),
+        order: Map.get(mod, "order", 0), # TODO replace this with "after" array, and do toposort on the result
         class: mod["class"],
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])

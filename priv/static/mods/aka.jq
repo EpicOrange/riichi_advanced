@@ -13,6 +13,16 @@
   ["tag_tiles", "dora", ["0m", "0p", "0s"]]
 ]
 |
+# star suit mod
+if any(.wall[]; . == "1t") then
+  (.wall | index("5s")) as $idx | if $idx then .wall[$idx] = "0s" else . end
+  |
+  .after_start.actions += [
+    ["set_tile_alias_all", ["0t"], ["5t"]],
+    ["tag_tiles", "dora", ["0t"]]
+  ]
+else . end
+|
 # count aka
 .before_win.actions += [
   ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["0m","0p","0s"], 1] ]]]

@@ -436,7 +436,6 @@ div.pond.kamicha {
   left: calc(50% - (2.125 * var(--tile-size)));
   top: calc(50% + (2.375 * var(--tile-size)));
 }
-div.pond > div.tile.sideways { transform: translateY(calc(-0.25 * var(--tile-size))); }
 
 /* mobile zoom button for hand */
 /* landscape */
@@ -858,7 +857,7 @@ div.tile.markable:hover, div.tile.marked {
   --border-color: var(--tile-back);
 }
 div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }
-div.tile.sideways { width: var(--tile-height); background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
+div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
 div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
 div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) - var(--border-width)); }
