@@ -448,10 +448,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_hell_wait" ->
         wait_definitions = translate_match_definitions(state, opts)
         ukeire = Riichi.get_waits_and_ukeire(cxt_player.hand, cxt_player.calls, wait_definitions, get_visible_tiles(state), cxt_player.tile_behavior)
-        |> Map.values()
-        |> Enum.sum()
+        ukeire = if Map.has_key?(context, :winning_tile) do
+          Map.update(ukeire, :winning_tile, 1, & &1 + 1)
+        else ukeire end
         # IO.puts("Ukeire: #{inspect(ukeire)}")
-        ukeire == 1
+        Enum.sum(Map.values(ukeire)) == 1
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
