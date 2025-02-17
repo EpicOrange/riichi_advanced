@@ -106,7 +106,7 @@
     [ "exhaustive", "almost", [["pair"], 1], [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2"], 1] ],
-    [ [["nojoker", "koutsu"], -1], [["pair"], 6] ],
+    [ [["pair"], 6] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
@@ -118,56 +118,6 @@
     [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 13] ],
     [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 13] ]
   ],
-  "iishanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ [["quad"], -1], [["koutsu"], -2], [["pair"], 5] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 11],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
-    ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 12] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 12] ]
-  ],
-  "ryanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
-    [ [["pair"], 4] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 10],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
-    ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 11] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 11] ]
-  ],
-  "sanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 1] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 3] ],
-    [ [["pair"], 3] ],
-    [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 9],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
-    ],
-    [ "unique", [["1m","4m","7m","2p","5p","8p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
-    [ "unique", [["1m","4m","7m","3p","6p","9p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
-    [ "unique", [["2m","5m","8m","1p","4p","7p","3s","6s","9s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
-    [ "unique", [["2m","5m","8m","3p","6p","9p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
-    [ "unique", [["3m","6m","9m","1p","4p","7p","2s","5s","8s","1z","2z","3z","4z","0z","6z","7z"], 10] ],
-    [ "unique", [["3m","6m","9m","2p","5p","8p","1s","4s","7s","1z","2z","3z","4z","0z","6z","7z"], 10] ]
-  ],
   "kokushi_tenpai_definition": [
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
@@ -177,7 +127,7 @@
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 1], [["knit_straight1", "knit_straight2"], 1] ],
-    [ [["nojoker", "quad"], -1], [["pair"], 7] ],
+    [ [["pair"], 7] ],
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
@@ -471,7 +421,7 @@
       ]
     },
     { "display_name": "Melded Hand", "value": 6, "when": [["won_by_discard", "won_by_call"], {"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "kakan"], 4]]]]}] },
-    { "display_name": "Two Dragons Pungs", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["two_dragons"]]}] },
+    { "display_name": "Two Dragon Pungs", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["two_dragons"]]}] },
     { "display_name": "Two Kongs", "value": 6, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1], [["daiminkan", "kakan"], 1]]]]}] },
     // 4
     {
@@ -573,19 +523,19 @@
       // ==========
     // 88
     "Big Four Winds": ["Little Four Winds", "All Pungs", "Half Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
-    "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragons Pungs"],
+    "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragon Pungs"],
     "All Green": ["One Voided Suit"],
-    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit", "No Honors"],
+    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit"],
     "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
-    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "No Honors", "Single Wait"],
+    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "Single Wait"],
     "Thirteen Orphans": ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"],
     // 64
     "All Terminals": ["All Terminals and Honors", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
     "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
-    "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
+    "Little Three Dragons": ["Two Dragon Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
     "All Honors": ["All Terminals and Honors", "Half Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
     "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
-    "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
+    "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit"],
     // 48
     "Quadruple Chow": ["Pure Triple Chow", "Pure Double Chow", "Tile Hog"],
     "Four Pure Shifted Pungs": ["Pure Shifted Pungs", "All Pungs"],
@@ -598,7 +548,7 @@
     "Seven Pairs": ["Concealed Hand", "Single Wait"],
     "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles", "All Types", "Concealed Hand"],
     "All Even Pungs": ["All Pungs", "No Honors", "All Simples"],
-    "Full Flush": ["Half Flush", "One Voided Suit"],
+    "Full Flush": ["Half Flush", "One Voided Suit", "No Honors"],
     "Pure Triple Chow": ["Pure Double Chow"],
     "Pure Shifted Pungs": [],
     "Upper Tiles": ["Upper Four", "No Honors"],
@@ -634,7 +584,7 @@
     "Mixed Shifted Chows": [],
     "All Types": [],
     "Melded Hand": ["Single Wait"],
-    "Two Dragons Pungs": ["White Dragon", "Green Dragon", "Red Dragon"],
+    "Two Dragon Pungs": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Two Kongs": ["Melded Kong", "Concealed Kong"],
     // 4
     "Outside Hand": [],
@@ -678,7 +628,7 @@
     "self_draw_penalty": 8,
     "yaku_lists": ["yaku", "meta_yaku", "extra_yaku"],
     "extra_yaku_lists": ["extra_yaku"],
-    "point_name": "Pts",
+    "point_name": "Fan",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",
@@ -700,7 +650,11 @@
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start", "won"]}, "not_no_tiles_remaining"], [["draw"]]],
       ["when", [{"name": "status", "opts": ["won"]}], [["advance_turn"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [
+        ["unset_status_all", "no_flowers", "match_start"],
+        ["change_turn", "east"],
+        ["as", "others", [["merge_draw"]]]
+      ]]
     ]
   },
   "after_call": {
@@ -811,7 +765,7 @@
         ["reveal_hand"],
         ["set_status", "won"],
         ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "kan", "ron", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
       "display_name": "Hu",
@@ -839,7 +793,7 @@
         ["set_status", "won"],
         ["win_by_call"]
       ],
-      "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+      "precedence_over": ["chii", "pon", "kan", "chankan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
       "display_name": "Hu",
@@ -875,7 +829,7 @@
       "enabled_at_start": true
     },
     "2_auto_ron": {
-      "display_name": "R",
+      "display_name": "H",
       "desc": "Automatically declare wins.",
       "actions": [
         ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
@@ -916,5 +870,5 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "four_rows_discards": true,
-  "max_rounds": 16
+  "max_rounds": 4
 }
