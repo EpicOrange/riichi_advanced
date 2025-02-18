@@ -39,29 +39,34 @@ def add_n_tiles($tile; $num):
 |
 
 # add blank swap button. i'm reasonably confident this works...?
-.buttons += {"am_blank_swap": {
-      "display_name": "Swap blank for discard",
-      "show_when": [
-            # TODO: figure out how to only show the blank swap button if there exists at least one non-blank-non-joker in the discards
-                  # hopefully that worked
-            {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
-            "our_turn",
-            "not_just_discarded",
-            {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]},
-            {"name": "match", "opts": [["all_ponds"], [["not_joker"], 1]]}
-      ],
-      "actions": [
-        ["big_text", "Swap"],
-        ["mark", [["discard", 1, ["not_joker"]], ["hand", 1, ["5z"]] ]],
-        ["push_message", "swapped a discard with a blank from hand"],
-        ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
-        ["clear_marking"],
-        ["recalculate_buttons"] #allow Mah-Jongg/joker swap to pop up
-      ]
-    }}
+.buttons.am_blank_swap = {
+  "display_name": "Swap blank for discard",
+  "show_when": [
+    # TODO: figure out how to only show the blank swap button if there exists at least one non-blank-non-joker in the discards
+    # hopefully that worked
+    {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
+    "our_turn",
+    "not_just_discarded",
+    {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]},
+    {"name": "match", "opts": [["all_ponds"], [["nojoker", [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]]]]}
+  ],
+  "actions": [
+    ["big_text", "Swap"],
+    ["mark", [["discard", 1, ["not_joker", "not_5z"]], ["hand", 1, ["5z"]] ]],
+    ["push_message", "swapped a discard with a blank from hand"],
+    ["swap_tiles", {"hand": ["marked"]}, {"discard": ["marked"]}],
+    ["clear_marking"],
+    ["recalculate_buttons"] #allow Mah-Jongg/joker swap to pop up
+  ]
+}
 |
 
 # can't win when you have a blank in hand
-.buttons.mahjong_draw.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
+.buttons.mahjong_draw.show_when += [ {"name": "not_match", "opts": [["hand"], [[ "nojoker", [["5z"], 1]] ]]} ]
 |
-.buttons.mahjong_discard.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
+.buttons.mahjong_discard.show_when += [ {"name": "not_match", "opts": [["hand"], [[ "nojoker", [["5z"], 1]] ]]} ]
+|
+
+# turn ["mark", [["hand", 3, ["self", "not_joker"]]], ...]
+# into ["mark", [["hand", 3, ["self", "not_joker", "not_5z"]]], ...]
+.buttons |= walk(if type == "array" and .[0] == "mark" and .[1][0][2]? == ["self", "not_joker"] then .[1][0][2] += ["not_5z"] else . end)

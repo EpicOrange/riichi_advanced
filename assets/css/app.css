@@ -2015,6 +2015,7 @@ div.game-modal-container > button.end-back-button {
   position: absolute;
   width: 100%;
   height: calc(1 * var(--tile-size));
+  bottom: 0;
 }
 div.winning-hand-container {
   width: 100%;
