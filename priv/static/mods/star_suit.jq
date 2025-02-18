@@ -33,25 +33,6 @@ if .dora_indicators then
   }
 else . end
 |
-# aka support
-if any(.wall[]; . == "0m") then
-  (.wall | index("5t")) as $idx | if $idx then .wall[$idx] = "0t" else . end
-  |
-  .after_start.actions += [
-    ["set_tile_alias_all", ["0t"], ["5t"]]
-  ]
-  |
-  .extra_yaku += [
-    {"display_name": "Aka", "value": 1, "when": [{"name": "status", "opts": ["aka_t"]}]}
-  ]
-  |
-  .buttons.ron.actions |= add_aka_status(.; "last_discard")
-  |
-  .buttons.chankan.actions |= add_aka_status(.; "last_called_tile")
-  |
-  .buttons.tsumo.actions |= add_aka_status(.; "draw")
-else . end
-|
 # ten support
 if any(.wall[]; . == "10m") then
   .wall += ["10t", "10t", "10t", "10t"]

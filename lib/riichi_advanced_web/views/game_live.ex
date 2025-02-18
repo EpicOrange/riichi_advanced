@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Game, as: Game
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
@@ -60,7 +61,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "mods", []) else last_mods end
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
-
+      IO.inspect(mods)
       # start a new game process, if it doesn't exist already
       game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.room_code)}}}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
@@ -110,7 +111,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           %{text: "game, room code"},
           %{bold: true, text: socket.assigns.room_code}
         ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
+          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
         else [] end})
         socket
       else socket end

@@ -272,7 +272,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     else call_choice end
   end
 
-  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source) do
+  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, silent \\ false) do
     # get the actual called tile (with attrs)
     called_tile = case call_source do
       :discards -> Enum.at(state.players[state.turn].pond, -1)
@@ -304,7 +304,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     {state, to_remove} = case call_source do
       :discards -> {update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) }), call_choice}
       :hand     -> {state, if called_tile != nil do [called_tile | call_choice] else call_choice end}
-      _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
+      _         ->
+        IO.puts("Unhandled call_source #{inspect(call_source)}")
+        {state, call_choice}
     end
     hand = Utils.add_attr(state.players[seat].hand, ["_hand"])
     draw = Utils.add_attr(state.players[seat].draw, ["_hand"])
@@ -345,14 +347,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         ] ++ Utils.ph(call_choice))
     end
     state = Log.add_call(state, seat, call_name, call_choice, called_tile)
-    click_sounds = [
-      "/audio/call1.mp3",
-      "/audio/call2.mp3",
-      "/audio/call3.mp3",
-      "/audio/call4.mp3",
-      "/audio/call5.mp3",
-    ]
-    play_sound(state, Enum.random(click_sounds))
+    if not silent do
+      click_sounds = [
+        "/audio/call1.mp3",
+        "/audio/call2.mp3",
+        "/audio/call3.mp3",
+        "/audio/call4.mp3",
+        "/audio/call5.mp3",
+      ]
+      play_sound(state, Enum.random(click_sounds))
+    end
 
     # run after_call actions
     state = if Map.has_key?(state.rules, "after_call") do
@@ -1100,7 +1104,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         tag = Enum.at(opts, 0, "missing_tag")
         tagged = Map.get(state.tags, tag, MapSet.new())
         attrs = List.wrap(Enum.at(opts, 1, []))
-        tile_specs = Enum.at(opts, 2, [])
         # update every zone i guess
         state = update_in(state.wall, &add_attr_tagged(&1, attrs, tagged))
         state = update_in(state.dead_wall, &add_attr_tagged(&1, attrs, tagged))
@@ -1110,7 +1113,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = update_in(state.players[seat].draw, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].aside, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].pond, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs)} end))
+            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_tagged(call, attrs, tagged)} end))
             state
         end
         state
