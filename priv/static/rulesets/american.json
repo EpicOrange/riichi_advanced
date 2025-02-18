@@ -4,7 +4,7 @@
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
-    {"id": "zombie_blanks", "name": "Zombie Blanks", "desc": "Adds four \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
+    {"id": "zombie_blanks", "name": "Zombie Blanks", "config": [{"type": "dropdown", "name": "count", "values": [2,4,6,8,10]}], "desc": "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
     {"id": "am_card_ILoveMahj", "conflicts": ["am_card_ATeacherFirst", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
     {"id": "am_card_ATeacherFirst", "conflicts": ["am_card_ILoveMahj", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
     {"id": "am_card_MahjLife", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "BETA_am_card_AMJForEveryone"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
