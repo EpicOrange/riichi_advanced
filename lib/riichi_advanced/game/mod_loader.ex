@@ -121,7 +121,7 @@ defmodule RiichiAdvanced.ModLoader do
     "speed" => %{
       display_name: "Speed Mahjong",
       ruleset: "riichi",
-      mods: ["kan", "speed"]
+      mods: ["kan", "yaku/riichi", "speed"]
     }
   }
 
