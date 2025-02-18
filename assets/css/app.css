@@ -13,7 +13,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 main {
-  max-width: 90vw;
   max-height: 80vh;
   aspect-ratio: 1/1;
   margin: calc(2 * var(--tile-size)) auto;
