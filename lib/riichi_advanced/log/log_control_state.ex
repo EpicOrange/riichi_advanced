@@ -60,30 +60,32 @@ defmodule RiichiAdvanced.LogControlState do
   end
 
   def print_game_state(state) do
+    south = :south in state.game_state.available_seats
+    north = :north in state.game_state.available_seats
     IO.inspect({"east's hand", state.game_state.players.east.hand, state.game_state.players.east.draw})
-    IO.inspect({"south's hand", state.game_state.players.south.hand, state.game_state.players.south.draw})
+    if south, do: IO.inspect({"south's hand", state.game_state.players.south.hand, state.game_state.players.south.draw})
     IO.inspect({"west's hand", state.game_state.players.west.hand, state.game_state.players.west.draw})
-    IO.inspect({"north's hand", state.game_state.players.north.hand, state.game_state.players.north.draw})
+    if north, do: IO.inspect({"north's hand", state.game_state.players.north.hand, state.game_state.players.north.draw})
     IO.inspect({"east's calls", state.game_state.players.east.calls})
-    IO.inspect({"south's calls", state.game_state.players.south.calls})
+    if south, do: IO.inspect({"south's calls", state.game_state.players.south.calls})
     IO.inspect({"west's calls", state.game_state.players.west.calls})
-    IO.inspect({"north's calls", state.game_state.players.north.calls})
+    if north, do: IO.inspect({"north's calls", state.game_state.players.north.calls})
     IO.inspect({"east's pond", state.game_state.players.east.pond})
-    IO.inspect({"south's pond", state.game_state.players.south.pond})
+    if south, do: IO.inspect({"south's pond", state.game_state.players.south.pond})
     IO.inspect({"west's pond", state.game_state.players.west.pond})
-    IO.inspect({"north's pond", state.game_state.players.north.pond})
+    if north, do: IO.inspect({"north's pond", state.game_state.players.north.pond})
     IO.inspect({"east's buttons", state.game_state.players.east.buttons})
-    IO.inspect({"south's buttons", state.game_state.players.south.buttons})
+    if south, do: IO.inspect({"south's buttons", state.game_state.players.south.buttons})
     IO.inspect({"west's buttons", state.game_state.players.west.buttons})
-    IO.inspect({"north's buttons", state.game_state.players.north.buttons})
+    if north, do: IO.inspect({"north's buttons", state.game_state.players.north.buttons})
     IO.inspect({"east's call buttons", state.game_state.players.east.call_buttons})
-    IO.inspect({"south's call buttons", state.game_state.players.south.call_buttons})
+    if south, do: IO.inspect({"south's call buttons", state.game_state.players.south.call_buttons})
     IO.inspect({"west's call buttons", state.game_state.players.west.call_buttons})
-    IO.inspect({"north's call buttons", state.game_state.players.north.call_buttons})
+    if north, do: IO.inspect({"north's call buttons", state.game_state.players.north.call_buttons})
     IO.inspect({"east's statuses", state.game_state.players.east.status})
-    IO.inspect({"south's statuses", state.game_state.players.south.status})
+    if south, do: IO.inspect({"south's statuses", state.game_state.players.south.status})
     IO.inspect({"west's statuses", state.game_state.players.west.status})
-    IO.inspect({"north's statuses", state.game_state.players.north.status})
+    if north, do: IO.inspect({"north's statuses", state.game_state.players.north.status})
     IO.inspect({"marking", state.game_state.marking})
   end
 
@@ -93,24 +95,43 @@ defmodule RiichiAdvanced.LogControlState do
     hand = state.game_state.players[seat].hand
     draw = state.game_state.players[seat].draw
     tile = discard_event["tile"] |> Utils.to_tile()
-    # figure out what index was discarded
-    ix = if not discard_event["tsumogiri"] do
-      if Debug.debug_log() and Enum.find_index(hand, &Utils.same_tile(&1, tile)) == nil do
-        # debug
-        IO.puts("At event index = #{discard_event["index"]}; couldn't find tile #{inspect(tile)} in #{seat}'s hand!")
-        IO.inspect({discard_event})
-        print_game_state(state)
+    get_discard_index = fn hand, draw ->
+        if not discard_event["tsumogiri"] do
+        Enum.find_index(hand, &Utils.same_tile(&1, tile))
+      else
+        ix = Enum.find_index(draw, &Utils.same_tile(&1, tile))
+        if ix != nil do length(hand) + Enum.find_index(draw, &Utils.same_tile(&1, tile)) else nil end
       end
-      Enum.find_index(hand, &Utils.same_tile(&1, tile))
-    else
-      if Debug.debug_log() and Enum.find_index(draw, &Utils.same_tile(&1, tile)) == nil do
-        # debug
-        IO.puts("At event index = #{discard_event["index"]}; couldn't find tile #{inspect(tile)} in #{seat}'s draw!")
-        IO.inspect({discard_event})
-        print_game_state(state)
-      end
-      length(hand) + Enum.find_index(draw, &Utils.same_tile(&1, tile))
     end
+    # figure out what index was discarded
+    ix = get_discard_index.(hand, draw)
+
+    # ensure the tile at this index matches the tile
+    # if not, send button press skip events to all players with buttons and try again
+    hand_or_draw = if discard_event["tsumogiri"] do draw else hand end
+    matches = ix != nil and Utils.same_tile(Enum.at(hand_or_draw, ix), tile)
+    ix = if not matches do
+      state = for _ <- 1..10, {seat, player} <- state.game_state.players, not Enum.empty?(player.buttons), reduce: state do
+        state -> 
+          if "skip" in player.buttons do
+            GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
+          else
+            GenServer.cast(state.game_state_pid, {:press_button, seat, Enum.at(player.buttons, 0)})
+          end
+          Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
+      end
+      hand = state.game_state.players[seat].hand
+      draw = state.game_state.players[seat].draw
+      get_discard_index.(hand, draw)
+    else ix end
+
+    if Debug.debug_log() and ix == nil do
+      # debug
+      IO.puts("At event index = #{discard_event["index"]}; couldn't find tile #{inspect(tile)} in #{seat}'s #{if discard_event["tsumogiri"] do "draw" else "hand" end}!")
+      IO.inspect({discard_event})
+      print_game_state(state)
+    end
+
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
 
     GenServer.cast(state.game_state_pid, {:play_tile, seat, ix})

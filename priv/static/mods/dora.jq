@@ -1,7 +1,6 @@
 .max_revealed_tiles = 5
 |
 # initial dora flip
-
 if .num_players == 3 then
   .revealed_tiles += [-10]
 else

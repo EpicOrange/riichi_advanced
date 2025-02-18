@@ -815,8 +815,8 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"shimocha_calls"`: selects selects the calls made by the player right of the current player.
 - `"toimen_calls"`: selects selects the calls made by the player across the current player.
 - `"kamicha_calls"`: selects selects the calls made by the player left of the current player.
-- `"called_tile"`: selects the tiles called (only valid if the context contains `"called_tile"`, like in call button actions). For flower calls, this is the flower.
-- `"call_choice"`: selects the tiles called with (only valid if the context contains `"call_choice"`, like in call button actions). For flower calls, this is always empty.
+- `"called_tile"`: selects the tiles called (only valid if the context contains `"called_tile"`, like in call button actions). For flower calls, this is empty.
+- `"call_choice"`: selects the tiles called with (only valid if the context contains `"call_choice"`, like in call button actions). For flower calls, this is the flower.
 - `"tile"`: selects the current tile (only valid if the context contains `"tile"`, like in `"play_effects"`).
 - `"all_ponds"`: selects every player's pond. (basically treats this as a big hand to match on)
 - `"all_calls"`: selects every player's calls.

@@ -1100,7 +1100,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         tag = Enum.at(opts, 0, "missing_tag")
         tagged = Map.get(state.tags, tag, MapSet.new())
         attrs = List.wrap(Enum.at(opts, 1, []))
-        tile_specs = Enum.at(opts, 2, [])
         # update every zone i guess
         state = update_in(state.wall, &add_attr_tagged(&1, attrs, tagged))
         state = update_in(state.dead_wall, &add_attr_tagged(&1, attrs, tagged))
@@ -1110,7 +1109,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = update_in(state.players[seat].draw, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].aside, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].pond, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs)} end))
+            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_tagged(call, attrs, tagged)} end))
             state
         end
         state
