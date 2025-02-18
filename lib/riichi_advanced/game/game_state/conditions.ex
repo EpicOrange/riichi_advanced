@@ -208,7 +208,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn
       "someone_else_just_discarded" -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn != context.seat
       "just_discarded"              -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == context.seat
-      "just_called"                 -> last_action != nil and last_action.action == :call and last_action.seat == state.turn
+      "just_called"                 -> last_action != nil and last_action.action == :call and state.turn in [last_action.seat, last_action.from]
       "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn
       "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]), cxt_player.tile_behavior, [last_action.tile])
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]) ++ Utils.add_attr(cxt_player.draw, ["_hand"]), cxt_player.tile_behavior, [])
@@ -532,6 +532,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "is_tenpai_american"  ->
         player = state.players[context.seat]
         Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
+      "can_discard_after_call" ->
+        # simulate the call
+        state2 = Actions.trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, context.call_source, true)
+        hand2 = state2.players[context.seat].hand ++ state2.players[context.seat].draw
+        Enum.any?(hand2, &is_playable?(state2, context.seat, &1))
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

@@ -69,8 +69,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
         # filter call_choices
         call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
           conditions = state.rules["buttons"][button_name]["call_conditions"]
+          call_source = if is_call do :discards else :draw end # TODO better way to check call_source
           for {called_tile, choices} <- call_choices do
-            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
+            # TODO maybe put call_source in choice? we need to define what call_source really is
+            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_source: call_source, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
           end
         else call_choices end
         |> Map.new()

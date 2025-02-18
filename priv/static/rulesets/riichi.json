@@ -575,6 +575,7 @@
       "display_name": "Chii",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": ["can_discard_after_call"],
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chii"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
@@ -583,6 +584,7 @@
       "display_name": "Pon",
       "call": [[0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": ["can_discard_after_call"],
       "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pon"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii", "pon"]

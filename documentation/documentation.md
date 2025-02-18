@@ -767,6 +767,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"genbutsu_kamicha"`: The last discard was genbutsu against kamicha.
 - `"genbutsu_toimen"`: The last discard was genbutsu against toimen.
 - `"genbutsu_shimocha"`: The last discard was genbutsu against shimocha.
+- `"can_discard_after_call"`: Used in `"call_conditions"`, checks if you are able to discard a tile immediately after calling. Right now this only works for regular calls (i.e. not upgrade calls).
 
 # Tile specs
 
