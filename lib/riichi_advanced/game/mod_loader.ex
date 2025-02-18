@@ -117,6 +117,11 @@ defmodule RiichiAdvanced.ModLoader do
       ruleset: "riichi",
       mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
       default_mods: ["tobi"],
+    },
+    "speed" => %{
+      display_name: "Speed Mahjong",
+      ruleset: "riichi",
+      mods: ["kan", "speed"]
     }
   }
 
