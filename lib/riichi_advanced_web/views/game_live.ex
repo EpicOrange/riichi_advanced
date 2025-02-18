@@ -58,7 +58,13 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.root_pid != nil do
       # check if we're a tutorial; if so, load its config instead
       socket = setup_tutorial(socket)
-      mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "mods", []) else last_mods end
+      mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do
+        Map.get(socket.assigns.tutorial_sequence, "mods", [])
+        |> Enum.map(&case &1 do
+          %{"name" => name, "config" => config} -> %{name: name, config: config}
+          mod -> mod
+        end)
+      else last_mods end
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
       # start a new game process, if it doesn't exist already
