@@ -61,7 +61,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "mods", []) else last_mods end
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
-
+      IO.inspect(mods)
       # start a new game process, if it doesn't exist already
       game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.room_code)}}}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do

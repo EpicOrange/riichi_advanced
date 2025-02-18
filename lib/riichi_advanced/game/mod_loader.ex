@@ -115,7 +115,7 @@ defmodule RiichiAdvanced.ModLoader do
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", %{"name" => "aka", "config" => %{"num_p" => 1}}],
+      mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
       default_mods: ["tobi"],
     }
   }
