@@ -1302,13 +1302,33 @@ div.tile.gold { --tile-color: var(--kin-color); }
 div.tile.orange { --tile-color: orange; }
 div.tile.yellow { --tile-color: yellow; }
 div.tile.green { --tile-color: green; }
+div.tile.lightblue { --tile-color: lightblue; }
 div.tile.purple { --tile-color: purple; }
 div.tile.gray { --tile-color: gray; }
 div.tile.grey { --tile-color: grey; }
 div.tile.lightgray { --tile-color: lightgray; }
 div.tile.lightgrey { --tile-color: lightgrey; }
+div.tile.brown { --tile-color: brown; }
+div.tile.pink { --tile-color: pink; }
+div.tile.pink { --tile-color: pink; }
 div.tile.black { --tile-color: black; }
 div.tile.white { --tile-color: white; }
+div.tile.rainbow {
+  background-image: url("/images/tiles.png"), repeating-linear-gradient(
+    180deg,
+    rgba(255, 0, 0, 1) 0%,
+    rgba(255, 154, 0, 1) calc(0.1 * var(--tile-size)),
+    rgba(208, 222, 33, 1) calc(0.2 * var(--tile-size)),
+    rgba(79, 220, 74, 1) calc(0.3 * var(--tile-size)),
+    rgba(63, 218, 216, 1) calc(0.4 * var(--tile-size)),
+    rgba(47, 201, 226, 1) calc(0.5 * var(--tile-size)),
+    rgba(28, 127, 238, 1) calc(0.6 * var(--tile-size)),
+    rgba(95, 21, 242, 1) calc(0.7 * var(--tile-size)),
+    rgba(186, 12, 248, 1) calc(0.8 * var(--tile-size)),
+    rgba(251, 7, 217, 1) calc(0.9 * var(--tile-size)),
+    rgba(255, 0, 0, 1) calc(1 * var(--tile-size))
+  );
+}
 /* tile 3d */
 div.tile {
   --tile-brightness: 100%;
