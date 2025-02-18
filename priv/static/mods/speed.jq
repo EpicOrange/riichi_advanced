@@ -1,3 +1,17 @@
+def fix_calls:
+  .show_when += [
+    "not_game_start",
+    {"name": "counter_equals", "as": "last_discarder", "opts": ["discards", 0]}
+  ];
+
+def fix_wins:
+  .show_when += [
+    "not_game_start",
+    {"name": "counter_equals", "opts": ["discards", 1]}
+  ]
+  |
+  .show_when |= map(select(IN("has_draw") | not));
+
 .yaku |= walk(if type == "array" and .[0] == "exhaustive" then ["nojoker"] + . else . end)
 |
 .after_start.actions += [
@@ -17,26 +31,43 @@
 else . end)
 |
 .before_turn_change.actions += [
-  ["ite", [{"name": "counter_at_least", "opts": ["discards", 2]}], [
-    ["subtract_counter", "discards", 1], ["change_turn", "self"]
+  ["subtract_counter", "discards", 1],
+  ["ite", [{"name": "counter_at_least", "opts": ["discards", 1]}], [
+    ["change_turn", "self"]
   ], [
-    ["recalculate_buttons"],
     ["as", "shimocha", [["set_counter", "discards", 4]]],
     ["change_turn", "shimocha"]
   ]]
 ]
 |
-.buttons.riichi.show_when += [
-  "not_game_start",
-  {"name": "counter_at_most", "opts": ["discards", 1]}
-]
+.buttons |= if has("riichi") then
+  .riichi |= fix_wins
+else . end
+|
+.buttons |= if has("tsumo") then
+  .tsumo |= fix_wins
+else . end
+|
+.buttons |= if has("chii") then
+  .chii |= fix_calls
+else . end
+|
+.buttons |= if has("pon") then
+  .pon |= fix_calls
+else . end
+|
+.buttons |= if has("daiminkan") then
+  .daiminkan |= fix_calls
+else . end
 |
 .functions.kan_draw += [
   ["add_counter", "discards", 1]
 ]
 |
-.default_mods |= map(select(IN("kan", "dora", "ura", "kandora") | not))
+if (.buttons | has("ankan")) then
+  .buttons.ankan.call_style = {"self": [0, 1, 2, 3]}
+else . end
 |
-.available_mods |= map(select(type != "object" or (.id | IN("kan") | not)))
+.default_mods |= map(select(IN("yaku/riichi", "kan", "dora", "ura", "kandora") | not))
 |
-.interruptible_actions |= map(select(IN("play_tile", "advance_turn") | not))
+.available_mods |= map(select(type != "object" or (.id | IN("yaku/riichi", "kan") | not)))
