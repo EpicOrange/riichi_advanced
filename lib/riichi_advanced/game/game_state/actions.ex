@@ -780,6 +780,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "print"                 ->
         IO.inspect(opts)
         state
+      "print_status"          ->
+        IO.inspect({context.seat, state.players[context.seat].status})
+        state
       "print_counter"         ->
         IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
         state

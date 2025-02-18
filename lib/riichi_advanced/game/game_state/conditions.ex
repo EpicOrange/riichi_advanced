@@ -191,6 +191,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "print"                       ->
         IO.inspect(opts)
         true
+      "print_status"                ->
+        IO.inspect({context.seat, state.players[context.seat].status})
+        state
+      "print_counter"               ->
+        IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
+        state
       "print_context"               ->
         IO.inspect(context)
         true
@@ -454,7 +460,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         # IO.puts("Ukeire: #{inspect(ukeire)}")
         Enum.sum(Map.values(ukeire)) == 1
       "third_row_discard"   -> length(cxt_player.pond) >= 12
-      "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) == Enum.at(opts, 0, 0)
+      "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
       "dice_equals"         -> (state.die1 + state.die2) in opts
       "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) in Enum.drop(opts, 1)
@@ -560,7 +566,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     cond do
       is_binary(cond_spec) -> check_condition(state, cond_spec, context)
       is_map(cond_spec)    ->
-        context = if Map.has_key?(cond_spec, "as") do %{context | orig_seat: context.seat, seat: from_seat_spec(state, context, cond_spec["as"])} else context end
+        context = if Map.has_key?(cond_spec, "as") do Map.merge(context, %{orig_seat: context.seat, seat: from_seat_spec(state, context, cond_spec["as"])}) else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
       is_list(cond_spec)   ->
         case cond_spec do
