@@ -48,7 +48,7 @@ def add_n_tiles($tile; $num):
     "our_turn",
     "not_just_discarded",
     {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]},
-    {"name": "match", "opts": [["all_ponds"], [["nojoker", [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]]]]}
+    {"name": "match", "opts": [["all_ponds"], [["nojoker", [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1]]]]}
   ],
   "actions": [
     ["big_text", "Swap"],
