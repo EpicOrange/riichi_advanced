@@ -673,6 +673,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
 
+    # multiply by delta_score_multiplier counter, if it exists
+    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta * Map.get(state.players[seat].counters, "delta_score_multiplier", 1)} end)
+
+    # add delta_score counter, if it exists
+    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
+
     # get delta scores reason
     delta_scores_reason = cond do
       state.round_result == :draw  -> Map.get(score_rules, "exhaustive_draw_name", "Draw")

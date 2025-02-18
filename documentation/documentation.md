@@ -310,6 +310,7 @@ This is the kokushi check and introduces the `unique` flag. `unique` is useful w
 Here is the full list of allowed items in a group:
 
 - keywords
+  + `"ignore_suit"` specifies that every item after it ignores the suit of tiles it checks for
   + `"nojoker"` specifies that every item after it cannot use jokers
   + `"unique"` specifies that every item in this group is taken at most once (if the group is to be taken >1 times)
 - Tiles like `"1m"` and `"9p"`
@@ -782,6 +783,9 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"flower"`: Matches a flower tile (hardcoded).
 - `"joker"`: Matches a joker tile (hardcoded).
 - `"1"` to `"9"`: Matches that number tile (hardcoded).
+- `"tedashi"`: Matches a discard that was tedashi (discarded from hand).
+- `"tsumogiri"`: Matches a discard that was tsumogiri (discarded from draw).
+- `"dora"`: Matches dora (as indicated by visible dora indicators and the `"dora_indicators"` map).
 - `"kuikae"`: Matches a tile that is kuikae to the last call. Only used in `play_restrictions`.
 
 # Match targets
@@ -978,3 +982,20 @@ There are typically no payments at exhaustive draw, but you can enable riichi-st
     },
 
 These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
+
+Alternatively, you can enable sichuan-style tenpai payments via:
+
+    "score_calculation": {
+      "score_best_hand_at_draw": true
+    },
+
+This scores every tenpai player's hand (where players with the `"tenpai"` status are considered tenpai) and awards them the highest possible hand they could have won, so payments proceed as if they won.
+
+This option takes precedence over tenpai and nagashi payments (and nagashi takes precedence over tenpai payments).
+
+### Payment-related statuses
+
+There are a number of statuses you can set on players that can modify their scoring, and most of them are due to Sakicard abilities. The eventual goal is to replace most of them with the following two counters:
+
+- `"delta_score"`: if set, adds to this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments).
+- `"delta_score_multiplier"`: if set, multiplies this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments). This happens before `"delta_score"`.
