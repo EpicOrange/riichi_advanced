@@ -1,46 +1,20 @@
 {
 
 // tianjin mahjong
-
-//✅ tiles are the same as riichi
-//✅ dead wall is determined by die roll. if you roll 5, then 10 tile dead wall, for example. flip the last tile in the dead wall over to get the joker indicator
-//⚠️ there are 7 jokers: the 3 other joker indicators and the 4 copies of the next tile (same rule as dora, except dragon order is reversed: chun hatsu haku).
-    // actually, MahjongPros has the dragon order the same as Riichi. need confirmation here
-//⚠️ jokers are any-tile jokers, and you cannot discard them. not clear if you can call with them, but i assume so
-    //✅ MahjongPros says that jokers can be discarded, but can't be called with.
-
-// win con
-
-//✅ 4 sets and a pair plus a yaku
-//✅ no chiitoi or kokushi
-
-// yaku
-
-// joker tanki: your final wait was tanki on joker. 2x points
-// no jokers: you had no jokers, ever. 2x points
-// 46m wait: you won with a 46m wait. i believe waiting on 4446m and drawing joker still counts. 3x points
-// dragon: ittsu. 4x points
-// joker dragon: ittsu but same suit as one (or both? idk) of the jokers. 2x points
-// rinshan: 2x points
-// tenhou (+chiihou?): 8x points
-
 // scoring
 
 //✅ everyone starts with 50 points
-// on a win, it's 1 point times all yaku multipliers, won from all players (no dealer modifier)
 // actually the beginning of the round the dealer may optionally choose to "step up", the effect is essentially wareme on dealer
-// minkan is 1 from all players (i believe this is paid immediately)
-// ankan is 2 from all players
-// joker kan is instead 8 from all players
 // additionally if you do suufonrenda (but with any tile) the dealer immediately pays 1 to every player
 
 
     
-    //TODO: make the dora indicator and dora a joker. add yaku, yaku precedence, and scoring. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile).
+    //TODO: add scoring. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile).
   "default_mods": [],
   "available_mods": [],
   "display_name": "Tianjin Mahjong",
-  "tutorial_link": "https://michaelxing.com/mahjong/instr.php",
+  // "tutorial_link": "https://michaelxing.com/mahjong/instr.php",
+  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-tianjin-mahjong",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -79,7 +53,6 @@
     "1m": ["1m", "2m"],  "2m": ["2m", "3m"],  "3m": ["3m", "4m"],  "4m": ["4m", "5m"],  "5m": ["5m", "6m"],  "6m": ["6m", "7m"],  "7m": ["7m", "8m"],  "8m": ["8m", "9m"],  "9m": ["9m", "1m"],  "0m": ["5m", "6m"],
     "1p": ["1p", "2p"],  "2p": ["2p", "3p"],  "3p": ["3p", "4p"],  "4p": ["4p", "5p"],  "5p": ["5p", "6p"],  "6p": ["6p", "7p"],  "7p": ["7p", "8p"],  "8p": ["8p", "9p"],  "9p": ["9p", "1p"],  "0p": ["5p", "6p"],
     "1s": ["1s", "2s"],  "2s": ["2s", "3s"],  "3s": ["3s", "4s"],  "4s": ["4s", "5s"],  "5s": ["5s", "6s"],  "6s": ["6s", "7s"],  "7s": ["7s", "8s"],  "8s": ["8s", "9s"],  "9s": ["9s", "1s"],  "0s": ["5s", "6s"],
-      // double-check that the order of dragons is correct here
     "1z": ["1z", "2z"],  "2z": ["2z", "3z"],  "3z": ["3z", "4z"],  "4z": ["4z", "1z"],  "0z": ["0z", "6z"],  "6z": ["6z", "7z"],  "7z": ["7z", "0z"]
   },
   "set_definitions": {
@@ -90,6 +63,8 @@
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
     "iipeikou": [0, 0, 1, 1, 2, 2],
+    "ittsu": [[0,1,2],[3,4,5],[6,7,8]],
+    "middle_kanchan_manzu": ["4m", "6m"],
     "ton": ["1z", "1z", "1z"],
     "nan": ["2z", "2z", "2z"],
     "shaa": ["3z", "3z", "3z"],
@@ -114,70 +89,44 @@
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
-  "suuankou_tsumo_definition": [
-    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
-  ],
-  "suuankou_ron_definition": [
-    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
-  ],
-  "little_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]],
-  "big_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 3] ]],
-  "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
-  "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "yaku": [
-      // TODO: replace yaku list
-    // Winning methods
-    { "display_name": "Self Draw", "value": 1, "when": ["won_by_draw"] },
-    { "display_name": "Concealed Hand", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
-    { "display_name": "Final Tile", "value": 1, "when": ["no_tiles_remaining"] },
-    { "display_name": "After a Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
-    { "display_name": "After Multiple Kongs", "value": 8, "when": [{"name": "status", "opts": ["double_kan"]}] },
-    { "display_name": "Robbing a Kong", "value": 1, "when": ["won_by_call"] },
-    // Triplet hands
-    { "display_name": "All Triplets", "value": 3, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
-    {
-      "display_name": "Four Concealed Triplets",
-      "value": 8,
-      "when": [[
-        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
-        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
-      ]]
-    },
-    { "display_name": "Mixed Terminals", "value": 4, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
-    { "display_name": "All Terminals", "value": 13, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}] },
-    { "display_name": "Four Kongs", "value": 13, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}] },
-    // Sequence hands
-    { "display_name": "All Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}] },
-    // Others
-    { "display_name": "Thirteen Orphans", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}] },
-    { "display_name": "Nine Gates", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}] }
+    { "display_name": "Pure Hand", "value": 3, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [["joker"], 1]]}] },
+    { "display_name": "Wild Card Single Wait", "value": 3, "when": [
+      [
+        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["joker"], 1] ] ]]},
+        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["any"], 1] ] ]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
+      ]
+    ] },
+    { "display_name": "Double Wild Card Set Wait", "value": 3, "when": [
+      [
+        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["joker"], 2] ] ]]},
+        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["any"], 1], [["joker"], 1] ] ]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
+      ]
+    ] },
+    { "display_name": "Capturing the Five", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
+    { "display_name": "Dragon", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Kong Blossom", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Heavenly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
+  ],
+  "bonus_yaku": [
+    { "display_name": "Kong Blossom Bonus", "value": 1, "when": [{"name": "not_has_existing_yaku", "opts": ["Pure Hand", "Wild Card Single Wait", "Double Wild Card Single Wait", "Capturing the Five", "Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Concealed Kong Blossom Bonus", "value": 1, "when": [{"name": "status", "opts": ["kan", "ankan"]}] },
   ],
   "yaku_multiplier": [
-    { "display_name": "Kong Blossom", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
-    { "display_name": "Heavenly Hand", "value": 6, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Earthly Hand", "value": 4, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Kong Blossom Multiplier", "value": 2, "when": [{"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Heavenly Hand Multiplier", "value": 6, "when": [{"name": "has_existing_yaku", "opts": ["Heavenly Hand"]}] },
+    { "display_name": "Earthly Hand Multiplier", "value": 4, "when": [{"name": "has_existing_yaku", "opts": ["Earthly Hand"]}] }
   ],
-  "yaku_precedence": {
-      // TODO: fix up yaku precedence list once you've implemented yaku
-    "All Flowers": ["Seat Flower"],
-    "All Seasons": ["Seat Season"],
-    "Seven Flowers": ["All Flowers", "All Seasons"],
-    "Eight Flowers": ["Seven Flowers"],
-    "After Multiple Kongs": ["After a Kong"],
-    "Full Flush": ["Half Flush"],
-    "Big Four Winds": ["Small Four Winds"],
-    "Big Three Dragons": ["Small Three Dragons"],
-    "Four Concealed Triplets": ["All Triplets"],
-    "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
-    
+  "yaku_precedence": {    
     "Heavenly Hand": ["Earthly Hand", "Kong Blossom"],
-    "Earthly Hand": ["Kong Blossom"],
+    "Earthly Hand": ["Kong Blossom"]
   },
   "score_calculation": {
       // TODO: fix up scoring. scoring looks complicated :(
     "scoring_method": "multiplier",
     "score_multiplier": "points2",
-    "yaku_lists": ["yaku"],
+    "yaku_lists": ["yaku", "bonus_yaku"],
     "yaku2_lists": ["yaku_multiplier"],
     "point_name": "Fan",
     "point2_name": "x",
@@ -195,7 +144,7 @@
   "play_restrictions": [],
   "before_turn_change": {
     "actions": [
-      ["unset_status", "kan", "double_kan"],
+      ["unset_status", "kan", "ankan"],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
@@ -203,19 +152,28 @@
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]],
-      ["when_anyone", [{"name": "counter_missing", "opts": ["challenge_tokens"]}], [["set_counter", "challenge_tokens", 2]]]
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
     ]
   },
   "after_call": {
-    "actions": []
+    "actions": [["unset_status_all", "first_turn"]]
   },
   "after_start": {
-    "actions": [["set_status_all", "first_turn", "match_start"]]
+    "actions": [
+      ["set_status_all", "first_turn", "match_start"],
+        // tag wild tiles with 'wild'
+      ["tag_dora", "wild", -1],
+        // add the 'dora' attribute to tiles tagged with 'wild', which should make them shiny
+      ["add_attr_tagged", "wild", ["_dora", "_wild"]],
+      ["set_tile_alias_all", [["any", "_wild"]], [["any", "_wild"]]],
+        // give everyone two challenge tokens at the start of the game
+      ["when_anyone", [{"name": "counter_missing", "opts": ["challenge_tokens"]}], [["set_counter_all", "challenge_tokens", 2]]]
+    ]
   },
   "buttons": {
       // Doubling down and challenging the dealer are supposed to be done BEFORE the tiles are dealt. But I don't know how to make that happen, so for now it happens after the tiles are dealt.
       // Can players challenge the dealer if the dealer already doubles down? How do payments work in that case?
+        // yes, and payments are x4
     "start_double_down": {
       "display_name": "Double Down",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "seat_is", "opts": ["east"]}],
@@ -234,13 +192,6 @@
       "actions": [["big_text", "Pass"], ["unset_status", "match_start"]],
       "unskippable": true
     },
-      // going to assume that Chow is not allowed in Tianjin mahjong
-//    "chii": {
-//      "display_name": "Chow",
-//      "call": [[-2, -1], [-1, 1], [1, 2]],
-//      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
-//      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
-//    },
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
@@ -267,20 +218,31 @@
       ],
       "precedence_over": ["pon"]
     },
-      //implement Golden Kong score exception (it's 8 from all players for a concealed kong of jokers)
     "ankan": {
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
       "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
-      "call_conditions": [
-        {"name": "not_call_contains", "opts": [["joker"], 1]}
-      ],
+      "call_conditions": [{"name": "not_call_contains", "opts": [["joker"], 1]}],
       "actions": [
-        ["big_text", "Kong"], ["self_call"], ["set_status", "kan"],
+        ["big_text", "Kong"], ["self_call"], ["set_status", "kan", "ankan"],
         ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
         ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
         ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+        ["draw"]
+      ]
+    },
+    "ankan_wild": {
+      "display_name": "Concealed Kong",
+      "call": [[0, 0, 0]],
+      "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
+      "call_conditions": [{"name": "call_contains", "opts": ["nojoker", [["_wild"], 4]]}],
+      "actions": [
+        ["big_text", "Golden Kong"], ["self_call"], ["set_status", "kan", "ankan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 8], ["subtract_score", 8, "shimocha"], ["big_text", "  -8  ", "shimocha"]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 8], ["subtract_score", 8, "toimen"], ["big_text", "  -8  ", "toimen"]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 8], ["subtract_score", 8, "kamicha"], ["big_text", "  -8  ", "kamicha"]]],
         ["draw"]
       ]
     },
@@ -300,7 +262,6 @@
         ["draw"]
       ]
     },
-      //check if chankan is allowed.
     "chankan": {
       "display_name": "Hu",
       "show_when": [
