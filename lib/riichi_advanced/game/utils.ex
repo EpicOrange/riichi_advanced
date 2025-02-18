@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Riichi, as: Riichi
   use Nebulex.Caching
 
   def to_tile(tile_spec) do
@@ -269,6 +270,21 @@ defmodule RiichiAdvanced.Utils do
     sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
+    number_class = case Riichi.to_num(tile) do
+      1 -> ["one"]
+      2 -> ["two"]
+      3 -> ["three"]
+      4 -> ["four"]
+      5 -> ["five"]
+      6 -> ["six"]
+      7 -> ["seven"]
+      8 -> ["eight"]
+      9 -> ["nine"]
+      10 -> ["ten"]
+      _  ->
+        letter = Riichi.to_letter(tile)
+        if letter != nil do [letter] else [] end
+    end
     color_classes = Enum.filter(@valid_tile_colors, &has_attr?(tile, [&1]))
     [
       "tile", id,
@@ -283,7 +299,7 @@ defmodule RiichiAdvanced.Utils do
       sideways && "sideways",
       just_played && "just-played",
       riichi && "sideways",
-    ] ++ extra_classes ++ color_classes
+    ] ++ extra_classes ++ number_class ++ color_classes
   end
 
   def flip_faceup(tile) do

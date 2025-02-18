@@ -373,6 +373,46 @@ div.pond.highlight div.tile.transparent:last-child { --tile-brightness: 48%; }
 div.tile.transparent.inactive { opacity: 0.35; --tile-brightness: 60%; --tile-saturate: 100%; }
 div.tile.hidden { display: none; }
 
+/* tile numbers */
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.one::after { content: "1"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.two::after { content: "2"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.three::after { content: "3"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.four::after { content: "4"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.five::after { content: "5"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.six::after { content: "6"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.seven::after { content: "7"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.eight::after { content: "8"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.nine::after { content: "9"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.ten::after { content: "10"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.E::after { content: "E"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.S::after { content: "S"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.W::after { content: "W"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.N::after { content: "N"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.Wh::after { content: "Wh"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.G::after { content: "G"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.R::after { content: "R"; }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile::after {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: black;
+  text-shadow:
+    0.15em 0 0 var(--tile-front),
+    -0.15em 0 0 var(--tile-front),
+    0 0.15em 0 var(--tile-front),
+    0 -0.15em 0 var(--tile-front);
+  border-radius: 50%;
+  font-size: calc(0.25 * var(--tile-size));
+  font-weight: 600;
+  vertical-align: top;
+  position: absolute;
+  top: calc(0.04 * var(--tile-size));
+  left: calc(0.04 * var(--tile-size));
+  width: calc(0.25 * var(--tile-size));
+  height: calc(0.25 * var(--tile-size));
+  z-index: 1;
+}
+
 /* ponds */
 div.pond, div.secondary-pond {
   display: flex;
@@ -1790,6 +1830,22 @@ div.declare-yaku button.declare-yaku-button:active {
   transform: translateY(calc(var(--tile-size) / 8));
 }
 
+
+/* display wall */
+input.tile-numbers-checkbox + label {
+  position: absolute;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
+  width: calc(0.75 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  right: calc(-0.5 * var(--tile-size));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* display wall */
 div.display-wall-hover::before {
   content: "Show wall";
@@ -1799,7 +1855,7 @@ div.display-wall-hover::before {
   border-radius: calc(0.125 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
   bottom: calc(-1.5 * var(--tile-size));
-  right: 0;
+  right: calc(0.75 * var(--tile-size));
 }
 div.display-wall-container {
   position: absolute;

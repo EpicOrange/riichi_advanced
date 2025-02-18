@@ -128,6 +128,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       <% end %>
       <input id="mobile-zoom-checkbox" type="checkbox" class="mobile-zoom-checkbox" phx-update="ignore">
       <label for="mobile-zoom-checkbox"></label>
+      <input id="tile-numbers-checkbox" type="checkbox" class="tile-numbers-checkbox" phx-update="ignore">
+      <label for="tile-numbers-checkbox">123</label>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
