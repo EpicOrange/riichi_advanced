@@ -96,8 +96,12 @@ defmodule RiichiAdvanced.RoomState do
       [mods] -> mods
       []     -> Map.get(rules, "default_mods", [])
     end
-    |> Enum.filter(& &1 in available_mods)
-    |> Enum.uniq()
+    |> Enum.map(&case &1 do
+      %{name: mod_name, config: config} -> {mod_name, config}
+      mod_name when is_binary(mod_name) -> {mod_name, nil}
+    end)
+    |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
+    |> Map.new()
 
     # calculate available_seats
     available_seats = case Map.get(rules, "num_players", 4) do
@@ -119,12 +123,25 @@ defmodule RiichiAdvanced.RoomState do
       exit_monitor: exit_monitor,
       display_name: Map.get(rules, "display_name", state.ruleset),
       mods: mods |> Map.new(fn mod -> {mod["id"], %{
-        enabled: mod["id"] in starting_mods,
+        enabled: Map.has_key?(starting_mods, mod["id"]),
         index: mod["index"],
         name: mod["name"],
         desc: mod["desc"],
         category: mod["category"],
-        order: Map.get(mod, "order", 0), # TODO replace this with "after" array, and do toposort on the result
+        config: Map.get(mod, "config", [])
+             |> Map.new(&Map.pop(&1, "name"))
+             |> Map.new(fn {config_name, config} ->
+                  default = if starting_mods[mod["id"]] != nil do
+                    # load the previous config's value as the default
+                    old_config = starting_mods[mod["id"]]
+                    old_config[config_name]
+                  else
+                    Map.get(config, "default", Enum.at(config["values"], 0))
+                  end
+                  config = Map.put(config, :value, default)
+                  {config_name, config}
+                end),
+        order: Map.get(mod, "order", 0), # TODO replace this with "load_after" array, and do toposort on the result
         class: mod["class"],
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
@@ -173,7 +190,9 @@ defmodule RiichiAdvanced.RoomState do
     Map.get(state, :mods, %{})
     |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
     |> Enum.sort_by(fn {_mod, opts} -> {opts.order, opts.index} end)
-    |> Enum.map(fn {mod, _opts} -> mod end)
+    |> Enum.map(fn {mod, opts} -> if Enum.empty?(opts.config) do mod else
+        %{name: mod, config: Map.new(opts.config, fn {name, config} -> {name, config.value} end)}
+      end end)
   end
 
   def toggle_mod(state, mod_name, enabled) do
@@ -192,6 +211,14 @@ defmodule RiichiAdvanced.RoomState do
         state -> put_in(state.mods[dep].enabled, false)
       end
     end
+  end
+
+  def change_mod_config(state, mod_name, name, ix) do
+    values = state.mods[mod_name].config[name]["values"]
+    # verify input
+    if is_integer(ix) and ix >= 0 and ix < length(values) do
+      put_in(state.mods[mod_name].config[name].value, Enum.at(values, ix, state.mods[mod_name].config[name]["default"]))
+    else state end
   end
 
   def toggle_category(state, category_name) do
@@ -342,6 +369,12 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_cast({:toggle_mod, mod_name, enabled}, state) do
     state = toggle_mod(state, mod_name, enabled)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:change_mod_config, mod_name, name, ix}, state) do
+    state = change_mod_config(state, mod_name, name, ix)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

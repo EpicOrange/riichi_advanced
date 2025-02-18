@@ -508,7 +508,7 @@ defmodule RiichiAdvanced.Utils do
       \"\"\", [
         #{events}
       ], %{
-        east: %{
+        #{winner_seat}: %{
           yaku: [#{yaku}],
           yaku2: [#{yaku2}],
           minipoints: #{minipoints}

@@ -1,9 +1,22 @@
-# replace first 5m,5p,5s in wall with 0m,0p,0s
-(.wall | index("5m")) as $idx | if $idx then .wall[$idx] = "0m" else . end
+def replace_n_tiles($tile; $aka; $num):
+  if $num > 0 then
+    index($tile) as $ix
+    |
+    if $ix then
+      .[$ix] = $aka
+      |
+      replace_n_tiles($tile; $aka; $num - 1)
+    else . end
+  else . end;
+
+# replace 5m,5p,5s in wall with 0m,0p,0s
+.wall |= replace_n_tiles("5m"; "0m"; $man)
 |
-(.wall | index("5p")) as $idx | if $idx then .wall[$idx] = "0p" else . end
+.wall |= replace_n_tiles("5p"; "0p"; $pin)
 |
-(.wall | index("5s")) as $idx | if $idx then .wall[$idx] = "0s" else . end
+.wall |= replace_n_tiles("5s"; "0s"; $sou)
+|
+.wall |= replace_n_tiles("5t"; "0t"; $man) # just reuse $man, keep it simple
 |
 # set each aka dora as 5m/p/s-valued jokers
 .after_start.actions += [

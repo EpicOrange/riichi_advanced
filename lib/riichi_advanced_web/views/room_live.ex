@@ -139,9 +139,39 @@ defmodule RiichiAdvancedWeb.RoomLive do
                   <%= category %>
                   <button class="mod-menu-button" phx-cancellable-click="toggle_category" phx-value-category={category}>Toggle all</button>
                 </div>
-                <%= for {mod, mod_details} <- Enum.sort_by(mods, fn {_name, mod} -> mod.index end) do %>
-                  <input id={mod} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod} phx-value-enabled={if @state.mods[mod].enabled do "true" else "false" end} checked={@state.mods[mod].enabled}>
-                  <label for={mod} title={mod_details.desc} class={["mod", mod_details.class]}><%= mod_details.name %></label>
+                <%= for {mod_name, mod} <- Enum.sort_by(mods, fn {_mod_name, mod} -> mod.index end) do %>
+                  <input id={mod_name} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod_name} phx-value-enabled={if @state.mods[mod_name].enabled do "true" else "false" end} checked={@state.mods[mod_name].enabled}>
+                  <label for={mod_name} title={mod.desc} class={["mod", mod.class]}>
+                    <%= mod.name %>
+                    <%= if mod.enabled and not Enum.empty?(mod.config) do %>
+                      |
+                      <%= for {config_name, config} <- mod.config do %>
+                        <span class="mod-config-name"><%= config_name %>:</span>
+                        <%= case config["type"] do %>
+                          <% "dropdown" -> %>
+                            <form class="mod-config-dropdown" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
+                              <select name={config_name}>
+                                <%= for {value, i} <- Enum.with_index(config["values"]) do %>
+                                  <%= if value == config.value do %>
+                                    <option value={i} selected><%= value %></option>
+                                  <% else %>
+                                    <option value={i}><%= value %></option>
+                                  <% end %>
+                                <% end %>
+                              </select>
+                            </form>
+                          <% "slider" -> %>
+                            <form class="mod-config-slider" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
+                              <input type="range" name={config_name} list={"#{mod_name}-#{config_name}-list"} min="0" max={length(config["values"])-1}>
+                              <datalist id={"#{mod_name}-#{config_name}-list"}>
+                                <option value={i} :for={{value, i} <- Enum.with_index(config["values"])}><%= value %></option>
+                              </datalist>
+                            </form>
+                          <% _ -> %>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </label>
                 <% end %>
                 <div class="mod-category-spacer"></div>
               <% end %>
@@ -257,6 +287,13 @@ defmodule RiichiAdvancedWeb.RoomLive do
   def handle_event("toggle_mod", %{"mod" => mod, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
     GenServer.cast(socket.assigns.room_state, {:toggle_mod, mod, not enabled})
+    {:noreply, socket}
+  end
+
+  def handle_event("change_mod_config", assigns, socket) do
+    %{"mod" => mod, "name" => name} = assigns
+    ix = String.to_integer(assigns[name])
+    GenServer.cast(socket.assigns.room_state, {:change_mod_config, mod, name, ix})
     {:noreply, socket}
   end
 
