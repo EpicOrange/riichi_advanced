@@ -2,20 +2,23 @@
 
 # TODO: Figure out how to make this mod work with "Show Nearest Hands".
 # UPDATE: I have no clue how to do that, the "Show Nearest Hands" mod just toggles on the option called `.show_nearest_american_hand`, and I don't know where this option is defined. This is a job for Dani lol
+# UPDATE: Apparently the `.show_nearest_american_hand` just breaks in the Custom variant loader. So, probably not a problem with this mod.
 
-# add four blanks to wall
-.wall += ["5z", "5z", "5z", "5z"]
+# define function for adding n copies of a tile to the wall
+def add_n_tiles($tile; $num):
+  if $num > 0 then
+      . += [$tile]
+      |
+      add_n_tiles($tile; $num - 1)
+  else . end;
+
+# add $count number of blanks to the wall
+.wall |= add_n_tiles("5z"; $count)
 |
 
 # make blanks undiscardable
 .play_restrictions += [ [["5z"], []] ]
 |
-
-# # keep track of when discards exist (blanks can't be used if there are no discards)
-# .after_turn_change.actions += [ ["unset_status_all", "discards_empty"] ]
-# |
-# .after_start.actions[0] += ["discards_empty"]
-# |
 
 # make the blank a joker so that it can't be passed, or marked in discards
 .after_start.actions += [ ["set_tile_alias_all", ["5z"], ["5z"]] ]
@@ -35,7 +38,7 @@
 .buttons."3_am_quint".call_conditions += [ {"name": "not_call_contains", "opts": [["5z"], 1]} ]
 |
 
-# WIP SECTION: Add blank swap button
+# add blank swap button. i'm reasonably confident this works...?
 .buttons += {"am_blank_swap": {
       "display_name": "Swap blank for discard",
       "show_when": [
@@ -57,6 +60,8 @@
       ]
     }}
 |
+
+# can't win when you have a blank in hand
 .buttons.mahjong_draw.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
 |
 .buttons.mahjong_discard.show_when += [ {"name": "not_match", "opts": [["hand"], [[[["5z"], 1]]]]} ]
