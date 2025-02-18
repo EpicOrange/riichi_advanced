@@ -1310,10 +1310,10 @@ div.tile.lightgray { --tile-color: lightgray; }
 div.tile.lightgrey { --tile-color: lightgrey; }
 div.tile.brown { --tile-color: brown; }
 div.tile.pink { --tile-color: pink; }
-div.tile.pink { --tile-color: pink; }
 div.tile.black { --tile-color: black; }
 div.tile.white { --tile-color: white; }
 div.tile.rainbow {
+  /* from https://stackoverflow.com/questions/56418763/ */
   background-image: url("/images/tiles.png"), repeating-linear-gradient(
     180deg,
     rgba(255, 0, 0, 1) 0%,

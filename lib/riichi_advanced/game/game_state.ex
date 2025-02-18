@@ -238,7 +238,7 @@ defmodule RiichiAdvanced.GameState do
     # IO.puts("Game supervisor PID is #{inspect(self())}")
     GenServer.start_link(
       __MODULE__,
-      %{
+      %Game{
         room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset),
         mods: Keyword.get(init_data, :mods, []),

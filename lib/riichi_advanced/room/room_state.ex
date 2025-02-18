@@ -415,15 +415,17 @@ defmodule RiichiAdvanced.RoomState do
       end
       {get_enabled_mods(state), config}
     end
-    reserved_seats = Map.new(state.players, fn {_id, player} -> {player.seat, player.session_id} end)
+    # shuffle seats
+    seat_map = if state.shuffle do Enum.shuffle(state.available_seats) else state.available_seats end
+    |> Enum.zip(state.available_seats)
+    |> Map.new()
+    reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
     game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code)}}}
     state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
       {:ok, _pid} ->
         IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
-        # shuffle seats
-        state = if state.shuffle do
-          Map.update!(state, :seats, fn seats -> Map.keys(seats) |> Enum.zip(Map.values(seats) |> Enum.shuffle()) |> Map.new() end)
-        else state end
+        # set seats
+        state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
         state = Map.put(state, :started, true)
         [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code))
         GenServer.cast(game_state, {:initialize_game, nil})
