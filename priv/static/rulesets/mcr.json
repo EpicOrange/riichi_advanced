@@ -522,22 +522,22 @@
       // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
       // ==========
     // 88
-    "Big Four Winds": ["Little Four Winds", "All Pungs", "Half Flush", "Pung of Terminals", "Pung of Honors", "Prevalent Wind", "Seat Wind"],
-    "Big Three Dragons": ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon", "Two Dragon Pungs"],
+    "Big Four Winds": ["Little Four Winds", "Half Flush", "Prevalent Wind", "Seat Wind"],
+    "Big Three Dragons": ["Little Three Dragons"],
     "All Green": ["One Voided Suit"],
-    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals", "One Voided Suit"],
+    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals"],
     "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
-    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush", "Concealed Hand", "One Voided Suit", "Single Wait"],
+    "Seven Shifted Pairs": ["Seven Pairs", "Full Flush"],
     "Thirteen Orphans": ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"],
     // 64
     "All Terminals": ["All Terminals and Honors", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
     "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
     "Little Three Dragons": ["Two Dragon Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
-    "All Honors": ["All Terminals and Honors", "Half Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
+    "All Honors": ["All Terminals and Honors", "Half Flush", "Pung of Terminals", "Pung of Honors", "All Pungs"],
     "Four Concealed Pungs": ["Three Concealed Pungs", "All Pungs", "Concealed Hand"],
-    "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit"],
+    "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush"],
     // 48
-    "Quadruple Chow": ["Pure Triple Chow", "Pure Double Chow", "Tile Hog"],
+    "Quadruple Chow": ["Pure Triple Chow", "Tile Hog"],
     "Four Pure Shifted Pungs": ["Pure Shifted Pungs", "All Pungs"],
     // 32
     "Four Pure Shifted Chows": ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows"],
@@ -546,9 +546,9 @@
     "All Terminals and Honors": ["Pung of Terminals", "Pung of Honors", "Outside Hand", "All Pungs"],
     // 24
     "Seven Pairs": ["Concealed Hand", "Single Wait"],
-    "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles", "All Types", "Concealed Hand"],
+    "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles"],
     "All Even Pungs": ["All Pungs", "No Honors", "All Simples"],
-    "Full Flush": ["Half Flush", "One Voided Suit", "No Honors"],
+    "Full Flush": ["Half Flush", "No Honors"],
     "Pure Triple Chow": ["Pure Double Chow"],
     "Pure Shifted Pungs": [],
     "Upper Tiles": ["Upper Four", "No Honors"],

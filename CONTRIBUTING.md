@@ -8,13 +8,13 @@ Right now Riichi Advanced has a couple avenues for contribution:
 
 ## Issues
 
-You could check out the [issues](/issues) and specifically look for issues labeled `tanyao level issue`. These are issues that should be relatively easy to complete. (Tanyao is the common name for the "All Simples" win condition in Riichi Mahjong.)
+You could check out the [issues](https://github.com/EpicOrange/riichi_advanced/issues) and specifically look for issues labeled `tanyao level issue`. These are issues that should be relatively easy to complete. (Tanyao is the common name for the "All Simples" win condition in Riichi Mahjong.)
 
 There's no requirement for pull requests. I guess you should probably at least mention what issue you're addressing, but since we don't have great test coverage or CI or anything at the moment, you can just go ahead and submit PRs as you like.
 
 ## Quality assurance
 
-Riichi Advanced does not have good test coverage, and more importantly, we're not 100% sure about certain rules. If you know a mahjong variant quite well, definitely try it out on Riichi Advanced and see if it matches your expectations! If not, open an [issue](/issues) or drop us a message on the [Discord](https://discord.gg/5QQHmZQavP), preferably with a screenshot.
+Riichi Advanced does not have good test coverage, and more importantly, we're not 100% sure about certain rules. If you know a mahjong variant quite well, definitely try it out on Riichi Advanced and see if it matches your expectations! If not, open an [issue](https://github.com/EpicOrange/riichi_advanced/issues) or drop us a message on the [Discord](https://discord.gg/5QQHmZQavP), preferably with a screenshot.
 
 One way Riichi Advanced facilitates testing is letting you rig the wall in all variants: when in a room, hit Room Settings and then Config, and uncomment the lines in the textbox. You can also add `"debug_status": true` to show statuses, counters, and buttons for all players. Also, the Open Hands mod could be helpful.
 
