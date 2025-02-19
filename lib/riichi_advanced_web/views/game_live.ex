@@ -690,7 +690,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       num_calls_before = Map.new(socket.assigns.state.players, fn {seat, player} -> {seat, length(player.calls)} end)
       num_calls_after = Map.new(state.players, fn {seat, player} -> {seat, length(player.calls)} end)
       Enum.each(Map.keys(num_calls_before), fn seat ->
-        if num_calls_after[seat] > num_calls_before[seat] do
+        if num_calls_after[seat] != nil and num_calls_after[seat] > num_calls_before[seat] do
           relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
           send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", num_new_calls: num_calls_after[seat] - num_calls_before[seat])
         end
