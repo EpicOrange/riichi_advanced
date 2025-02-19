@@ -732,7 +732,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           state ->
             # calculate possible waits
             winner = state.players[seat]
-            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, winner.tile_behavior)
+            waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_behavior)
 
             # display nothing if waits are empty
             # shouldn't happen under normal conditions, since tenpai implies nonempty waits

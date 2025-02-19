@@ -312,6 +312,10 @@ defmodule RiichiAdvancedWeb.RoomLive do
     {:noreply, socket}
   end
 
+  def handle_event(_event, _assigns, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
       socket = assign(socket, :state, state)

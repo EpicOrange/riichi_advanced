@@ -176,7 +176,7 @@ defmodule RiichiAdvanced.GameState.Log do
       } end),
       kyoku: state.kyoku,
       honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else 0 end,
-      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, state.rules["score_calculation"]["riichi_value"]) else 0 end,
+      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(state.rules["score_calculation"], "riichi_value", 1)) else 0 end,
       doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       kan_tiles: Enum.take(state.dead_wall, -4),

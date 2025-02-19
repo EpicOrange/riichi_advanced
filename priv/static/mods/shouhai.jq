@@ -9,13 +9,13 @@ if .starting_tiles == 34 and (.buttons | has("build")) then
   |
   .buttons.build.actions |= map(if .[0] == "mark" then .[1] = [["hand", 12, ["self"]]] else . end)
   |
-  .buttons.build.actions += [["uninterruptible_draw", 1, ["4x", ["hidden"]]], ["merge_draw"]]
+  .buttons.build.actions += [["uninterruptible_draw", 1, ["4x", "hidden"]], ["merge_draw"]]
 else
   .starting_tiles = 12
   |
   .after_start.actions += [
     ["as", "east", [["move_tiles", "draw", "aside"]]],
-    ["as", "everyone", [["uninterruptible_draw", 1, ["4x", ["hidden"]]], ["merge_draw"]]],
+    ["as", "everyone", [["uninterruptible_draw", 1, ["4x", "hidden"]], ["merge_draw"]]],
     ["as", "east", [["draw_from_aside"]]]
   ]
 end
