@@ -67,59 +67,35 @@ defmodule RiichiAdvancedWeb.GameLive do
       else last_mods end
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
-      # start a new game process, if it doesn't exist already
-      game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)}
-      game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-        {:ok, _pid} ->
-          IO.puts("Starting game session #{socket.assigns.room_code}")
-          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
-          GenServer.cast(game_state, {:initialize_game, nil})
-          game_state
-        {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting game session #{socket.assigns.room_code}")
-          IO.inspect(error)
-          nil
-        {:error, {:already_started, _pid}} ->
-          IO.puts("Already started game session #{socket.assigns.room_code}")
-          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
-          game_state
-      end
 
-      # block events if we're a tutorial
-      if Map.has_key?(socket.assigns, :tutorial_sequence) do
-        GenServer.call(game_state, {:force_event, [], true})
+      # start a new game process, if it doesn't exist already
+      case Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code) do
+        [{game_state, _}] -> GenServer.cast(game_state, {:new_player, socket.assigns.session_id, socket.assigns.seat_param})
+        [] ->
+          init_actions = [["initialize_game"], ["new_player", socket.assigns.session_id, socket.assigns.seat_param]]
+
+          # block events if we're a tutorial
+          init_actions = if Map.has_key?(socket.assigns, :tutorial_sequence) do
+            ["initialize_tutorial" | init_actions]
+          else init_actions end
+
+          args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)]
+          game_spec = %{
+            id: {RiichiAdvanced.GameSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
+            start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
+          }
+          case Pogo.DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+            :ok ->
+              IO.puts("Starting game session #{socket.assigns.room_code}")
+            {:error, {:shutdown, error}} ->
+              IO.puts("Error when starting game session #{socket.assigns.room_code}")
+              IO.inspect(error)
+          end
       end
 
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
-      # init a new player and get the current state
-      {state, seat, spectator} = GenServer.call(game_state, {:new_player, socket})
-      socket = socket
-      |> assign(:game_state, game_state)
-      |> assign(:state, state)
-      |> assign(:seat, seat)
-      |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks", false))
-      |> assign(:display_honba, Map.get(state.rules, "display_honba", false))
-      |> assign(:loading, false)
-      |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, seat))
 
-      # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
-      socket = if Map.has_key?(messages_init, :messages_state) do
-        socket = assign(socket, :messages_state, messages_init.messages_state)
-        # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
-        GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered a "},
-          %{bold: true, text: socket.assigns.ruleset},
-          %{text: "game, room code"},
-          %{bold: true, text: socket.assigns.room_code}
-        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
-        else [] end})
-        socket
-      else socket end
       {:ok, socket}
     else
       {:ok, socket}
@@ -669,6 +645,45 @@ defmodule RiichiAdvancedWeb.GameLive do
     socket = assign(socket, :visible_waits, %{})
     socket = assign(socket, :show_waits_index, nil)
     {:noreply, socket}
+  end
+
+  def handle_info(%{topic: topic, event: "initialize_player", payload: %{"session_id" => session_id, "game_state" => game_state, "state" => state, "seat" => seat, "spectator" => spectator}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and socket.assigns.session_id == session_id do
+
+      # subscribe to this game state's exit monitor and init messages
+      GenServer.call(game_state, {:link_player_socket, socket.id, seat, spectator, socket.assigns.nickname})
+
+      socket = socket
+      |> assign(:game_state, game_state)
+      |> assign(:state, state)
+      |> assign(:seat, seat)
+      |> assign(:viewer, if spectator do :spectator else seat end)
+      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks", false))
+      |> assign(:display_honba, Map.get(state.rules, "display_honba", false))
+      |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, seat))
+      |> assign(:loading, false)
+
+      # fetch messages
+      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      socket = if Map.has_key?(messages_init, :messages_state) do
+        socket = assign(socket, :messages_state, messages_init.messages_state)
+        # subscribe to message updates
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        GenServer.cast(messages_init.messages_state, {:add_message, [
+          %{text: "Entered a "},
+          %{bold: true, text: socket.assigns.ruleset},
+          %{text: "game, room code"},
+          %{bold: true, text: socket.assigns.room_code}
+        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
+          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
+        else [] end})
+        socket
+      else socket end
+
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do

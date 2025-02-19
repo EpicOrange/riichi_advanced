@@ -160,6 +160,7 @@ defmodule RiichiAdvanced.GameState do
       config: nil,
       private: true,
       reserved_seats: nil,
+      init_actions: nil,
       # pids
       supervisor: nil,
       mutex: nil,
@@ -246,6 +247,7 @@ defmodule RiichiAdvanced.GameState do
         config: Keyword.get(init_data, :config, nil),
         private: Keyword.get(init_data, :private, true),
         reserved_seats: Keyword.get(init_data, :reserved_seats, %{}),
+        init_actions: Keyword.get(init_data, :init_actions, []),
       },
       name: Keyword.get(init_data, :name))
   end
@@ -325,6 +327,7 @@ defmodule RiichiAdvanced.GameState do
       config: state.config,
       private: state.private,
       reserved_seats: state.reserved_seats,
+      init_actions: state.init_actions,
       ruleset_json: ruleset_json,
       supervisor: state.supervisor,
       mutex: mutex,
@@ -395,10 +398,47 @@ defmodule RiichiAdvanced.GameState do
     # generate a UUID
     state = Map.put(state, :ref, Ecto.UUID.generate())
 
+    # run init actions
+    state = run_init_actions(state)
+
     # terminate game if no one joins
     :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
 
     {:ok, state}
+  end
+
+  def run_init_actions(state) do
+    IO.inspect(state.init_actions, label: "asdf")
+    for action <- state.init_actions, reduce: state do
+      state -> case action do
+        ["vacate_room" | _opts] ->
+          IO.puts("attempting to vacate room")
+          RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "vacate_room", nil)
+          state
+        ["initialize_tutorial" | _opts] ->
+          IO.puts("attempting to init tutorial")
+          state = Map.put(state, :forced_events, [])
+          state = Map.put(state, :block_events, true)
+          state
+        ["initialize_game" | opts] ->
+          log = Enum.at(opts, 0, nil)
+
+          # run before_new_round actions
+          state = if Map.has_key?(state.rules, "before_start") do
+            Actions.run_actions(state, state.rules["before_start"]["actions"], %{seat: state.turn})
+          else state end
+
+          initialize_new_round(state, log)
+        ["new_player" | opts] ->
+          session_id = Enum.at(opts, 0, nil)
+          seat = Enum.at(opts, 1, "east")
+          GenServer.cast(self(), {:new_player, session_id, seat})
+          state
+        _ ->
+          IO.puts("Unknown init action #{inspect(action)}")
+          state
+      end
+    end
   end
 
   def update_player(state, seat, fun), do: Map.update!(state, :players, &Map.update!(&1, seat, fun))
@@ -1217,7 +1257,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def add_player(state, socket, seat, spectator) do
+  def add_player(state, seat, spectator) do
     state = if not spectator do
       # if we're replacing an ai, shutdown the ai
       state = if is_pid(Map.get(state, seat)) do
@@ -1225,36 +1265,15 @@ defmodule RiichiAdvanced.GameState do
         DynamicSupervisor.terminate_child(state.ai_supervisor, Map.get(state, seat))
         Map.put(state, seat, nil)
       else state end
-
-      # tell everyone else
-      push_message(state, %{text: "Player #{socket.assigns.nickname} joined as #{seat}"})
-
-      # initialize the player
-      state = Map.put(state, seat, socket.id)
-      messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
-      state = put_in(state.messages_states[seat], messages_state)
-      state = update_player(state, seat, &%Player{ &1 | nickname: socket.assigns.nickname })
-      GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, seat})
-      IO.puts("Player #{socket.id} joined as #{seat}")
-
-      # tell them about the replay UUID, unless this is a tutorial
-      if state.forced_events == nil do
-        GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
-      end
+      # for players with no seats, initialize an ai
+      GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
       state
-    else
-      messages_state = Map.get(RiichiAdvanced.MessagesState.init_socket(socket), :messages_state, nil)
-      state = put_in(state.messages_states[socket.id], messages_state)
-      GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
-      state
-    end
+    else state end
 
-    # for players with no seats, initialize an ai
-    GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
     state = broadcast_state_change(state)
     state
   end
-  
+
   defp start_timer(state) do
     state = Map.put(state, :timer, Map.get(state.rules, "win_timer", 10))
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
@@ -1267,63 +1286,34 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  def handle_call({:new_player, socket}, _from, state) do
-    {seat, spectator} = cond do
-      :east in state.available_seats  and Map.get(socket.assigns, :seat_param) == "east"  and (Map.get(state, :east)  == nil or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, socket.assigns.session_id] -> {:east, false}
-      :south in state.available_seats and Map.get(socket.assigns, :seat_param) == "south" and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, socket.assigns.session_id] -> {:south, false}
-      :west in state.available_seats  and Map.get(socket.assigns, :seat_param) == "west"  and (Map.get(state, :west)  == nil or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, socket.assigns.session_id] -> {:west, false}
-      :north in state.available_seats and Map.get(socket.assigns, :seat_param) == "north" and (Map.get(state, :north) == nil or is_pid(Map.get(state, :north))) and Map.get(state.reserved_seats, :north, nil) in [nil, socket.assigns.session_id] -> {:north, false}
-      Map.get(socket.assigns, :seat_param) == "spectator" -> {:east, true}
-      :east in state.available_seats  and (Map.get(state, :east) == nil  or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, socket.assigns.session_id] -> {:east, false}
-      :south in state.available_seats and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, socket.assigns.session_id] -> {:south, false}
-      :west in state.available_seats  and (Map.get(state, :west) == nil  or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, socket.assigns.session_id] -> {:west, false}
-      :north in state.available_seats and (Map.get(state, :north) == nil or is_pid(Map.get(state, :north))) and Map.get(state.reserved_seats, :north, nil) in [nil, socket.assigns.session_id] -> {:north, false}
-      true                                          -> {:east, true}
-    end
-    state = add_player(state, socket, seat, spectator)
-    state = if not spectator and Map.get(state.reserved_seats, seat, nil) == nil do
-      put_in(state.reserved_seats[seat], socket.assigns.session_id)
-    else state end
-    {:reply, {state, seat, spectator}, state}
-  end
-  
-  def handle_call({:spectate, socket}, _from, state) do
-    seat = :east
-    spectator = true
-    state = add_player(state, socket, seat, spectator)
-    {:reply, {state, seat, spectator}, state}
-  end
+  # identifier is either seat or socket.id
+  def handle_call({:link_player_socket, id, seat, spectator, nickname}, {from_pid, _}, state) do
+    # make it call :delete_player if the pid goes down
+    identifier = if spectator do id else seat end
+    GenServer.call(state.exit_monitor, {:new_player, from_pid, identifier})
 
-  def handle_call({:delete_player, seat}, _from, state) do
-    state = put_in(state.messages_states[seat], nil)
+    # initialize message state
+    messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, id), :messages_state, nil)
+    state = put_in(state.messages_states[identifier], messages_state)
 
-    state = if seat in [:east, :south, :west, :north] do
-      IO.puts("Player #{player_name(state, seat)} exited")
-      state = Map.put(state, seat, nil)
-      state = update_player(state, seat, &%Player{ &1 | nickname: nil })
-
+    if not spectator do
       # tell everyone else
-      push_message(state, %{text: "Player #{player_name(state, seat)} exited"})
-      state
-    else state end
+      push_message(state, %{text: "Player #{nickname} joined as #{seat}"})
 
-    state = if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
-      # all players and spectators have left, schedule a shutdown
-      if map_size(state.reserved_seats) <= 1 do
-        # immediately stop solo games
-        GenServer.cast(self(), :terminate_game_if_empty)
-      else
-        IO.puts("Stopping game #{state.room_code} in 60 seconds")
-        :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
+      # initialize the player
+      state = Map.put(state, seat, id)
+      state = put_in(state.messages_states[seat], messages_state)
+      state = update_player(state, seat, &%Player{ &1 | nickname: nickname })
+      IO.puts("#{inspect(from_pid)} Player #{id} joined as #{seat}")
+
+      # tell them about the replay UUID, unless this is a tutorial
+      if state.forced_events == nil do
+        GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
       end
-      state
+      {:reply, :ok, state}
     else
-      # schedule replacing empty seats with AI after 5 seconds
-      :timer.apply_after(5000, GenServer, :cast, [self(), {:fill_empty_seats_with_ai, true}])
-      state = broadcast_state_change(state)
-      state
+      {:reply, :ok, state}
     end
-    {:reply, :ok, state}
   end
 
   def handle_call(:get_room_players, _from, state) do
@@ -1409,6 +1399,39 @@ defmodule RiichiAdvanced.GameState do
     {:reply, new_state, new_state}
   end
 
+  # called by exit monitor
+  def handle_call({:delete_player, seat}, _from, state) do
+    state = put_in(state.messages_states[seat], nil)
+
+    state = if seat in [:east, :south, :west, :north] do
+      IO.puts("Player #{player_name(state, seat)} exited")
+      state = Map.put(state, seat, nil)
+      state = update_player(state, seat, &%Player{ &1 | nickname: nil })
+
+      # tell everyone else
+      push_message(state, %{text: "Player #{player_name(state, seat)} exited"})
+      state
+    else state end
+
+    state = if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
+      # all players and spectators have left, schedule a shutdown
+      if map_size(state.reserved_seats) <= 1 do
+        # immediately stop solo games
+        GenServer.cast(self(), :terminate_game_if_empty)
+      else
+        IO.puts("Stopping game #{state.room_code} in 60 seconds")
+        :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
+      end
+      state
+    else
+      # schedule replacing empty seats with AI after 5 seconds
+      :timer.apply_after(5000, GenServer, :cast, [self(), {:fill_empty_seats_with_ai, true}])
+      state = broadcast_state_change(state)
+      state
+    end
+    {:reply, :ok, state}
+  end
+
   # used by lobby to get a room state from this game
   def handle_call(:get_lobby_room, _from, state) do
     lobby_room = %LobbyRoom{
@@ -1445,7 +1468,7 @@ defmodule RiichiAdvanced.GameState do
     if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code}")
-      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      Pogo.DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
     else
       IO.puts("Not stopping game #{state.room_code}")
     end
@@ -1476,6 +1499,47 @@ defmodule RiichiAdvanced.GameState do
       state = broadcast_state_change(state)
       state
     else state end
+    {:noreply, state}
+  end
+
+  def handle_cast({:new_player, session_id, seat}, state) do
+    {seat, spectator} = cond do
+      :east in state.available_seats  and seat == "east"  and (Map.get(state, :east)  == nil or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, session_id] -> {:east, false}
+      :south in state.available_seats and seat == "south" and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
+      :west in state.available_seats  and seat == "west"  and (Map.get(state, :west)  == nil or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}
+      :north in state.available_seats and seat == "north" and (Map.get(state, :north) == nil or is_pid(Map.get(state, :north))) and Map.get(state.reserved_seats, :north, nil) in [nil, session_id] -> {:north, false}
+      seat == "spectator" -> {:east, true}
+      :east in state.available_seats  and (Map.get(state, :east) == nil  or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, session_id] -> {:east, false}
+      :south in state.available_seats and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
+      :west in state.available_seats  and (Map.get(state, :west) == nil  or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}
+      :north in state.available_seats and (Map.get(state, :north) == nil or is_pid(Map.get(state, :north))) and Map.get(state.reserved_seats, :north, nil) in [nil, session_id] -> {:north, false}
+      true                                          -> {:east, true}
+    end
+    state = add_player(state, seat, spectator)
+    state = if not spectator and Map.get(state.reserved_seats, seat, nil) == nil do
+      put_in(state.reserved_seats[seat], session_id)
+    else state end
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "initialize_player", %{
+      "session_id" => session_id,
+      "game_state" => self(),
+      "state" => state,
+      "seat" => seat,
+      "spectator" => spectator
+    })
+    {:noreply, state}
+  end
+  
+  def handle_cast({:spectate, session_id}, state) do
+    seat = :east
+    spectator = true
+    state = add_player(state, seat, spectator)
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "initialize_player", %{
+      "session_id" => session_id,
+      "game_state" => self(),
+      "state" => state,
+      "seat" => seat,
+      "spectator" => spectator
+    })
     {:noreply, state}
   end
 

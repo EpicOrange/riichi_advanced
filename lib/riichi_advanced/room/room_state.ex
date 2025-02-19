@@ -419,26 +419,35 @@ defmodule RiichiAdvanced.RoomState do
     seat_map = if state.shuffle do Enum.shuffle(state.available_seats) else state.available_seats end
     |> Enum.zip(state.available_seats)
     |> Map.new()
+    state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
+
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, name: Utils.via_registry("game", state.ruleset, state.room_code)}
-    state = case Pogo.DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-      :ok ->
-        IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
-        # set seats
-        state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
-        state = Map.put(state, :started, true)
-        [{game_state, _}] = Utils.registry_lookup("game_state", state.ruleset, state.room_code)
-        GenServer.cast(game_state, {:initialize_game, nil})
-        state
-      {:error, {:shutdown, error}} ->
-        IO.puts("Error when starting game session #{state.room_code}")
-        IO.inspect(error)
-        state = Map.put(state, :starting, false)
-        state
-      {:error, {:already_started, _pid}} ->
-        IO.puts("Already started game session #{state.room_code}")
+    init_actions = [["vacate_room"], ["initialize_game"]] ++ Enum.map(state.players, fn {_id, player} -> ["new_player", player.session_id, Atom.to_string(player.seat)] end)
+    args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
+    game_spec = %{
+      id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
+      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
+    }
+
+    # start a new game process, if it doesn't exist already
+    state = case Utils.registry_lookup("game_state", state.ruleset, state.room_code) do
+      [{_game_state, _}] ->
         state = Map.put(state, :started, true)
         state
+      [] -> case Pogo.DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+        :ok ->
+          IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
+          state
+        {:error, {:shutdown, error}} ->
+          IO.puts("Error when starting game session #{state.room_code}")
+          IO.inspect(error)
+          state = Map.put(state, :starting, false)
+          state
+        {:error, {:already_started, _pid}} ->
+          IO.puts("Already started game session #{state.room_code}")
+          state = Map.put(state, :started, true)
+          state
+      end
     end
     state = broadcast_state_change(state)
     {:noreply, state}

@@ -312,21 +312,31 @@ defmodule RiichiAdvancedWeb.RoomLive do
     {:noreply, socket}
   end
 
+  def vacate_room(socket) do
+    seat = cond do
+      :east  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.east.id)  == socket.id -> :east
+      :south in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.south.id) == socket.id -> :south
+      :west  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.west.id)  == socket.id -> :west
+      :north in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.north.id) == socket.id -> :north
+      true                                      -> :spectator
+    end
+    socket = push_event(socket, "left-page", %{})
+    push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
+  end
+
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
       socket = assign(socket, :state, state)
-      socket = if state.started do
-        seat = cond do
-          :east  in state.available_seats and get_in(state.seats.east.id)  == socket.id -> :east
-          :south in state.available_seats and get_in(state.seats.south.id) == socket.id -> :south
-          :west  in state.available_seats and get_in(state.seats.west.id)  == socket.id -> :west
-          :north in state.available_seats and get_in(state.seats.north.id) == socket.id -> :north
-          true                                      -> :spectator
-        end
-        socket = push_event(socket, "left-page", %{})
-        push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
-      else socket end
+      socket = if state.started do vacate_room(socket) else socket end
       {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "vacate_room", payload: _}, socket) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
+      {:noreply, vacate_room(socket)}
     else
       {:noreply, socket}
     end

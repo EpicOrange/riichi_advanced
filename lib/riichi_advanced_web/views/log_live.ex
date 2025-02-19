@@ -92,7 +92,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
 
       # init a new player and get the current state
-      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket})
+      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket.assigns.session_id})
 
       socket = socket
       |> assign(:game_state, game_state)
