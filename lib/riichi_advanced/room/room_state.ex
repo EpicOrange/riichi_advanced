@@ -421,8 +421,8 @@ defmodule RiichiAdvanced.RoomState do
     |> Map.new()
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
     game_spec = {RiichiAdvanced.GameSupervisor, room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, name: Utils.via_registry("game", state.ruleset, state.room_code)}
-    state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-      {:ok, _pid} ->
+    state = case Pogo.DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+      :ok ->
         IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
         # set seats
         state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
