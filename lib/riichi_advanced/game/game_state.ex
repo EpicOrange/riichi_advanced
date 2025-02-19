@@ -437,6 +437,9 @@ defmodule RiichiAdvanced.GameState do
           GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
 
           state
+        ["put_state", new_state] ->
+          IO.puts("Restoring state for " <> Utils.to_registry_name("game_state", state.ruleset, state.room_code))
+          merge_state(state, new_state)
         _ ->
           IO.puts("Unknown init action #{inspect(action)}")
           state
@@ -1363,37 +1366,8 @@ defmodule RiichiAdvanced.GameState do
     {:reply, state, state}
   end
   def handle_call({:put_state, new_state}, _from, state) do
-    new_state = Map.drop(new_state, [
-      :ruleset,
-      :room_code,
-      :ruleset_json,
-      :mods,
-      :supervisor,
-      :mutex,
-      :smt_solver,
-      :ai_supervisor,
-      :exit_monitor,
-      :play_tile_debounce,
-      :play_tile_debouncers,
-      :big_text_debouncers,
-      :timer_debouncer,
-      :east,
-      :south,
-      :west,
-      :north,
-      :messages_states,
-      :log_loading_mode,
-      :log_seeking_mode,
-    ])
-    new_state = Map.merge(new_state, %{
-      game_active: true,
-      visible_screen: nil,
-      error: nil,
-      timer: 0,
-    })
-    new_state = Map.merge(state, new_state)
-    new_state = broadcast_state_change(new_state, true)
-    {:reply, new_state, new_state}
+    state = broadcast_state_change(merge_state(state, new_state), true)
+    {:reply, state, state}
   end
 
   # called by exit monitor
@@ -2097,5 +2071,55 @@ defmodule RiichiAdvanced.GameState do
     end
     state = Map.put(state, :get_best_minefield_hand_pid, nil)
     {:noreply, state}
+  end
+
+  def handle_cast({:respawn_on, node_sname}, state) do
+    # spawn a game state with an init_action that pulls state from this pid
+    sanitized_state = sanitize_state(state)
+    init_actions = [["put_state", sanitized_state]]
+    args = [room_code: state.room_code, ruleset: state.ruleset, mods: state.mods, config: state.config, private: state.private, reserved_seats: state.reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
+    game_spec = %{
+      id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
+      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
+    }
+    :rpc.call(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
+    state = Map.put(state, :game_active, false)
+    {:noreply, state}
+  end
+
+
+  def sanitize_state(state) do
+    Map.drop(state, [
+      :ruleset,
+      :room_code,
+      :ruleset_json,
+      :mods,
+      :supervisor,
+      :mutex,
+      :smt_solver,
+      :ai_supervisor,
+      :exit_monitor,
+      :play_tile_debounce,
+      :play_tile_debouncers,
+      :big_text_debouncers,
+      :timer_debouncer,
+      :east,
+      :south,
+      :west,
+      :north,
+      :messages_states,
+      :log_loading_mode,
+      :log_seeking_mode,
+    ])
+    |> Map.merge(%{
+      game_active: true,
+      visible_screen: nil,
+      error: nil,
+      timer: 0,
+    })
+  end
+
+  def merge_state(state, new_state) do
+    Map.merge(state, sanitize_state(new_state))
   end
 end
