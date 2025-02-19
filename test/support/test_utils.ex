@@ -9,9 +9,9 @@ defmodule RiichiAdvanced.TestUtils do
 
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)}
     {:ok, game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, room_code))
+    [{game_state, _}] = Utils.registry_lookup("game_state", ruleset, room_code)
 
     # suppress all IO from game_state
     if @suppress_io do

@@ -19,11 +19,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:state, %Room{})
     if socket.root_pid != nil do
       # start a new room process, if it doesn't exist already
-      room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("room", socket.assigns.ruleset, socket.assigns.room_code)}}}
+      room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: Utils.via_registry("room", socket.assigns.ruleset, socket.assigns.room_code)}
       room_state = case DynamicSupervisor.start_child(RiichiAdvanced.RoomSessionSupervisor, room_spec) do
         {:ok, _pid} ->
           IO.puts("Starting room session #{socket.assigns.room_code}")
-          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{room_state, _}] = Utils.registry_lookup("room_state", socket.assigns.ruleset, socket.assigns.room_code)
           room_state
         {:error, {:shutdown, error}} ->
           IO.puts("Error when starting room session #{socket.assigns.room_code}")
@@ -31,7 +31,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           nil
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started room session #{socket.assigns.room_code}")
-          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{room_state, _}] = Utils.registry_lookup("room_state", socket.assigns.ruleset, socket.assigns.room_code)
           room_state
       end
       # subscribe to state updates

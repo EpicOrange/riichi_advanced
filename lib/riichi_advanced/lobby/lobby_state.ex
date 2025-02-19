@@ -53,8 +53,8 @@ defmodule RiichiAdvanced.LobbyState do
     IO.puts("Lobby state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby", state.ruleset, ""))
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor_lobby", state.ruleset, ""))
+    [{supervisor, _}] = Utils.registry_lookup("lobby", state.ruleset, "")
+    [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_lobby", state.ruleset, "")
 
     # read in the ruleset
 
@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.LobbyState do
     state = for room_code <- room_codes, reduce: state do
       state ->
         state = broadcast_new_room(state, room_code)
-        [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", state.ruleset, room_code))
+        [{room_state_pid, _}] = Utils.registry_lookup("room_state", state.ruleset, room_code)
         room_state = GenServer.call(room_state_pid, :get_state)
         put_in(state.rooms[room_code], %LobbyRoom{
           players: room_state.seats,
@@ -112,7 +112,7 @@ defmodule RiichiAdvanced.LobbyState do
     state = for game_code <- game_codes, reduce: state do
       state ->
         state = broadcast_new_room(state, game_code)
-        case Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, game_code)) do
+        case Utils.registry_lookup("game_state", state.ruleset, game_code) do
           [{game_state_pid, _}] ->
             put_in(state.rooms[game_code], GenServer.call(game_state_pid, :get_lobby_room))
           _ -> state

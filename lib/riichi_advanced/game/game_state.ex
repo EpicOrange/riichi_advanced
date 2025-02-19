@@ -239,6 +239,7 @@ defmodule RiichiAdvanced.GameState do
     GenServer.start_link(
       __MODULE__,
       %Game{
+        supervisor: Keyword.get(init_data, :supervisor),
         room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset),
         mods: Keyword.get(init_data, :mods, []),
@@ -263,15 +264,11 @@ defmodule RiichiAdvanced.GameState do
     # IO.puts("Game state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{debouncers, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("debouncers", state.ruleset, state.room_code))
-    [{supervisor, _}] = case Registry.lookup(:game_registry, Utils.to_registry_name("log", state.ruleset, state.room_code)) do
-      [{supervisor, _}] -> [{supervisor, nil}]
-      _ -> Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code))
-    end
-    [{mutex, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("mutex", state.ruleset, state.room_code))
-    [{ai_supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("ai_supervisor", state.ruleset, state.room_code))
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("exit_monitor", state.ruleset, state.room_code))
-    [{smt_solver, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("smt_solver", state.ruleset, state.room_code))
+    [{debouncers, _}] = Utils.registry_lookup("debouncers", state.ruleset, state.room_code)
+    [{mutex, _}] = Utils.registry_lookup("mutex", state.ruleset, state.room_code)
+    [{ai_supervisor, _}] = Utils.registry_lookup("ai_supervisor", state.ruleset, state.room_code)
+    [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor", state.ruleset, state.room_code)
+    [{smt_solver, _}] = Utils.registry_lookup("smt_solver", state.ruleset, state.room_code)
 
     # initialize all debouncers
     {:ok, play_tile_debouncer_east} = debounce_worker(debouncers, 100, :play_tile_debouncer_east, :reset_play_tile_debounce, :east)
@@ -329,7 +326,7 @@ defmodule RiichiAdvanced.GameState do
       private: state.private,
       reserved_seats: state.reserved_seats,
       ruleset_json: ruleset_json,
-      supervisor: supervisor,
+      supervisor: state.supervisor,
       mutex: mutex,
       smt_solver: smt_solver,
       ai_supervisor: ai_supervisor,
@@ -904,7 +901,7 @@ defmodule RiichiAdvanced.GameState do
             else
               if not state.log_loading_mode do
                 # seek to the next round
-                [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", state.ruleset, state.room_code))
+                [{log_control_state, _}] = Utils.registry_lookup("log_control_state", state.ruleset, state.room_code)
                 GenServer.cast(log_control_state, {:seek, state.kyoku + 1, -1})
                 state
               else state end

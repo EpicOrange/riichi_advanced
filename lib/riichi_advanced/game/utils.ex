@@ -239,8 +239,24 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+
+  def to_registry_name(name, id) do
+    name <> "-" <> id
+  end
   def to_registry_name(name, ruleset, room_code) do
     name <> "-" <> ruleset <> "-" <> room_code
+  end
+  def via_registry(name, ruleset) do
+    {:via, Registry, {:game_registry, to_registry_name(name, ruleset)}}
+  end
+  def via_registry(name, ruleset, room_code) do
+    {:via, Registry, {:game_registry, to_registry_name(name, ruleset, room_code)}}
+  end
+  def registry_lookup(name, ruleset) do
+    Registry.lookup(:game_registry, to_registry_name(name, ruleset))
+  end
+  def registry_lookup(name, ruleset, room_code) do
+    Registry.lookup(:game_registry, to_registry_name(name, ruleset, room_code))
   end
 
   def try_integer(value) do

@@ -66,14 +66,14 @@ defmodule RiichiAdvancedWeb.LogLive do
       end
 
       # start a new game process
-      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.room_code)}}}
+      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)}
       {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
         {:ok, _pid} ->
           IO.puts("Starting log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
           GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
           GenServer.call(game_state, {:put_log_seeking_mode, true})
-          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
           GenServer.cast(log_control_state, {:put_log, log})
           GenServer.cast(log_control_state, {:start_walk, 0, 100})
           {game_state, log_control_state}
@@ -83,8 +83,8 @@ defmodule RiichiAdvancedWeb.LogLive do
           {nil, nil}
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
-          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
+          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
           {game_state, log_control_state}
       end
       # subscribe to state updates

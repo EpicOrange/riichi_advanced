@@ -68,11 +68,11 @@ defmodule RiichiAdvancedWeb.GameLive do
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
       # start a new game process, if it doesn't exist already
-      game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", socket.assigns.ruleset, socket.assigns.room_code)}}}
+      game_spec = {RiichiAdvanced.GameSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)}
       game_state = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.room_code}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
           GenServer.cast(game_state, {:initialize_game, nil})
           game_state
         {:error, {:shutdown, error}} ->
@@ -81,7 +81,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           nil
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started game session #{socket.assigns.room_code}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
           game_state
       end
 

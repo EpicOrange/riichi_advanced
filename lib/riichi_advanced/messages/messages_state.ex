@@ -25,8 +25,8 @@ defmodule RiichiAdvanced.MessagesState do
 
   def init(state) do
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, "messages-" <> state.socket_id)
-    [{exit_monitor, _}] = Registry.lookup(:game_registry, "exit_monitor_messages-" <> state.socket_id)
+    [{supervisor, _}] = RiichiAdvanced.Utils.registry_lookup("messages", state.socket_id)
+    [{exit_monitor, _}] = RiichiAdvanced.Utils.registry_lookup("exit_monitor_messages", state.socket_id)
 
     state = Map.merge(state, %Messages{
       socket_id: state.socket_id,
@@ -91,11 +91,11 @@ defmodule RiichiAdvanced.MessagesState do
     # try to initialize a messages state for this socket if it doesn't exist already
     if socket.root_pid != nil do
       # start a new messages process, if it doesn't exist already
-      messages_spec = {RiichiAdvanced.MessagesSupervisor, socket_id: socket.id, name: {:via, Registry, {:game_registry, "messages-" <> socket.id}}}
+      messages_spec = {RiichiAdvanced.MessagesSupervisor, socket_id: socket.id, name: RiichiAdvanced.Utils.via_registry("messages", socket.id)}
       messages_state = case DynamicSupervisor.start_child(RiichiAdvanced.MessagesSessionSupervisor, messages_spec) do
         {:ok, _pid} ->
           IO.puts("Starting messages for socket #{socket.id}")
-          [{messages_state, _}] = Registry.lookup(:game_registry, "messages_state-" <> socket.id)
+          [{messages_state, _}] = RiichiAdvanced.Utils.registry_lookup("messages_state", socket.id)
           messages_state
         {:error, {:shutdown, error}} ->
           IO.puts("Error when starting messages for socket #{socket.id}")
@@ -103,7 +103,7 @@ defmodule RiichiAdvanced.MessagesState do
           nil
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started messages for socket #{socket.id}")
-          [{messages_state, _}] = Registry.lookup(:game_registry, "messages_state-" <> socket.id)
+          [{messages_state, _}] = RiichiAdvanced.Utils.registry_lookup("messages_state", socket.id)
           messages_state
       end
       # init a new player and get the current state
