@@ -422,7 +422,7 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
 
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
-    init_actions = [["vacate_room"], ["initialize_game"]] ++ Enum.map(state.players, fn {_id, player} -> ["new_player", player.session_id, Atom.to_string(player.seat)] end)
+    init_actions = [["vacate_room"]] ++ Enum.map(state.players, fn {_id, player} -> ["init_player", player.session_id, Atom.to_string(player.seat)] end) ++ [["initialize_game"]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
     game_spec = %{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},

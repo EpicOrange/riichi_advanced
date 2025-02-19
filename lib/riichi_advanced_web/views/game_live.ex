@@ -68,33 +68,31 @@ defmodule RiichiAdvancedWeb.GameLive do
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
 
-      # start a new game process, if it doesn't exist already
-      case Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code) do
-        [{game_state, _}] -> GenServer.cast(game_state, {:new_player, socket.assigns.session_id, socket.assigns.seat_param})
-        [] ->
-          init_actions = [["initialize_game"], ["new_player", socket.assigns.session_id, socket.assigns.seat_param]]
-
-          # block events if we're a tutorial
-          init_actions = if Map.has_key?(socket.assigns, :tutorial_sequence) do
-            ["initialize_tutorial" | init_actions]
-          else init_actions end
-
-          args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)]
-          game_spec = %{
-            id: {RiichiAdvanced.GameSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
-            start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-          }
-          case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-            {:ok, _pid} ->
-              IO.puts("Starting game session #{socket.assigns.room_code}")
-            {:error, {:shutdown, error}} ->
-              IO.puts("Error when starting game session #{socket.assigns.room_code}")
-              IO.inspect(error)
-          end
-      end
-
       # subscribe to state updates
+      # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
+
+      # start a new game process, if it doesn't exist already
+      init_actions = [["init_player", socket.assigns.session_id, socket.assigns.seat_param], ["initialize_game"]]
+      init_actions = if Map.has_key?(socket.assigns, :tutorial_sequence) do
+        ["initialize_tutorial" | init_actions] # block events if we're a tutorial
+      else init_actions end
+      args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)]
+      game_spec = %{
+        id: {RiichiAdvanced.GameSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
+        start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
+      }
+      case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+        {:ok, _pid} ->
+          IO.puts("Starting game session #{socket.assigns.room_code}")
+        {:error, {:shutdown, error}} ->
+          IO.puts("Error when starting game session #{socket.assigns.room_code}")
+          IO.inspect(error)
+        {:error, {:already_started, _pid}} ->
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
+          IO.puts("Already started game session #{socket.assigns.room_code} #{inspect(game_state)}")
+          GenServer.cast(game_state, {:init_player, socket.assigns.session_id, socket.assigns.seat_param})
+      end
 
       {:ok, socket}
     else
