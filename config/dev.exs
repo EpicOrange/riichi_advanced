@@ -11,7 +11,7 @@ config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   # http: [ip: {127, 0, 0, 1}, port: 4000],
   https: [
-    port: 4000,
+    port: System.get_env("PORT") || 4000,
     cipher_suite: :strong,
     certfile: "priv/cert/selfsigned.pem",
     keyfile: "priv/cert/selfsigned_key.pem"

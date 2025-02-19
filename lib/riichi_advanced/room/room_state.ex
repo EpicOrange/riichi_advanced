@@ -434,8 +434,8 @@ defmodule RiichiAdvanced.RoomState do
       [{_game_state, _}] ->
         state = Map.put(state, :started, true)
         state
-      [] -> case Pogo.DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-        :ok ->
+      [] -> case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+        {:ok, _pid} ->
           IO.puts("Starting #{if state.private do "private" else "public" end} game session #{state.room_code}")
           state
         {:error, {:shutdown, error}} ->

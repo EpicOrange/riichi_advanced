@@ -408,7 +408,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def run_init_actions(state) do
-    IO.inspect(state.init_actions, label: "asdf")
     for action <- state.init_actions, reduce: state do
       state -> case action do
         ["vacate_room" | _opts] ->
@@ -1468,7 +1467,7 @@ defmodule RiichiAdvanced.GameState do
     if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code}")
-      Pogo.DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
     else
       IO.puts("Not stopping game #{state.room_code}")
     end

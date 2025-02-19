@@ -355,7 +355,7 @@ defmodule RiichiAdvanced.GameState.American do
 
   def check_dead_hand(state, seat, am_match_definitions) do
     viable_am_match_definitions = get_viable_am_match_definitions(state, seat, am_match_definitions)
-    IO.inspect(viable_am_match_definitions, label: "viable_am_match_definitions")
+    # IO.inspect(viable_am_match_definitions, label: "viable_am_match_definitions")
 
     # at least one win definition must match the hand (entire wall - visible tiles)
     # since our matching mechanism is inefficient for big hands with jokers,
@@ -366,8 +366,8 @@ defmodule RiichiAdvanced.GameState.American do
     call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     |> Utils.strip_attrs()
     hand = (Enum.shuffle(state.wall) ++ call_tiles) -- visible_tiles
-    IO.inspect(Enum.frequencies(visible_tiles), label: "visible")
-    IO.inspect(Enum.frequencies(hand))
+    # IO.inspect(Enum.frequencies(visible_tiles), label: "visible")
+    # IO.inspect(Enum.frequencies(hand))
 
     # # debug
     # ret = viable_am_match_definitions

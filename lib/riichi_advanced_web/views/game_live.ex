@@ -84,8 +84,8 @@ defmodule RiichiAdvancedWeb.GameLive do
             id: {RiichiAdvanced.GameSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
             start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
           }
-          case Pogo.DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
-            :ok ->
+          case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
+            {:ok, _pid} ->
               IO.puts("Starting game session #{socket.assigns.room_code}")
             {:error, {:shutdown, error}} ->
               IO.puts("Error when starting game session #{socket.assigns.room_code}")
