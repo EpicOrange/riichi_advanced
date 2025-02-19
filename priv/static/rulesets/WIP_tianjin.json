@@ -172,34 +172,41 @@
   },
   "buttons": {
       // Doubling down and challenging the dealer are supposed to be done BEFORE the tiles are dealt. But I don't know how to make that happen, so for now it happens after the tiles are dealt.
+        // ok, i think i managed to make it work. might be buggy though
       // Can players challenge the dealer if the dealer already doubles down? How do payments work in that case?
-        // yes, and payments are x4
+        // yes, and payments are x4 (or x8 if players double-challenge and the dealer doubles down)
     "start_double_down": {
       "display_name": "Double Down",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "seat_is", "opts": ["east"]}],
-      "actions": [["big_text", "Double Down"], ["set_status", "double_down"], ["unset_status", "match_start"]],
+      "actions": [["big_text", "Double Down"], ["set_status", "double_down"], ["unset_status", "match_start"], ["draw", 13]],
+      "unskippable": true
+    },
+    "start_challenge_dealer_times_two": {
+      "display_name": "Challenge Dealer x2",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 2]}],
+      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer_times_two"], ["unset_status", "match_start"], ["subtract_counter", "challenge_tokens", 2], ["draw", 13]],
       "unskippable": true
     },
     "start_challenge_dealer": {
       "display_name": "Challenge Dealer",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 1]}],
-      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer"], ["unset_status", "match_start"], ["subtract_counter", "challenge_tokens", 1]],
+      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer"], ["unset_status", "match_start"], ["subtract_counter", "challenge_tokens", 1], ["draw", 13]],
       "unskippable": true
     },
     "start_pass": {
       "display_name": "Pass",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
-      "actions": [["big_text", "Pass"], ["unset_status", "match_start"]],
+      "actions": [["big_text", "Pass"], ["unset_status", "match_start"], ["draw", 13]],
       "unskippable": true
     },
     "pon": {
-      "display_name": "Pong",
+      "display_name": "Pung",
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "call_conditions": [
         {"name": "not_call_contains", "opts": [["joker"], 1]}
       ],
-      "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
@@ -330,7 +337,7 @@
   },
   "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
   "initial_score": 50,
-  "starting_tiles": 13,
+  "starting_tiles": 0,
   "max_rounds": 16,
     // change this to be dependent on the second die roll-- dammit, we have to implement rerolling the dice. For now, I'll assume the second die roll is always 7.
   "initial_dead_wall_length": 14,
