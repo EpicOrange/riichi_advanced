@@ -571,4 +571,22 @@ defmodule RiichiAdvanced.Utils do
     |> IO.puts()
   end
 
+  def setup_migrate(to_blue \\ false) do
+    dest = String.to_atom(System.get_env(if to_blue do "BLUE_SNAME" else "GREEN_SNAME" end))
+    Node.start(dest)
+  end
+  def do_migrate(to_blue \\ false) do
+    src = String.to_atom(System.get_env(if to_blue do "GREEN_SNAME" else "BLUE_SNAME" end))
+    dest = String.to_atom(System.get_env(if to_blue do "BLUE_SNAME" else "GREEN_SNAME" end))
+    Node.start(src)
+    Node.connect(dest)
+    game_states = DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor) 
+    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+    |> Enum.map(&String.replace(&1, "game", "game_state"))
+    |> Enum.map(&Registry.lookup(:game_registry, &1))
+    |> Enum.map(fn [{pid, _}] -> pid end)
+    for game_state <- game_states do
+      GenServer.cast(game_state, {:respawn_on, dest})
+    end
+  end
 end

@@ -2087,7 +2087,6 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-
   def sanitize_state(state) do
     Map.drop(state, [
       :ruleset,
