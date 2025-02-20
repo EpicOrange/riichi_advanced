@@ -646,8 +646,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "initialize_player", payload: %{"session_id" => session_id, "game_state" => game_state, "state" => state, "seat" => seat, "spectator" => spectator}}, socket) do
-    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and socket.assigns.session_id == session_id do
-
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # subscribe to this game state's exit monitor and init messages
       GenServer.call(game_state, {:link_player_socket, socket.id, seat, spectator, socket.assigns.nickname})
 

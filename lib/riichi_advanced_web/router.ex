@@ -1,14 +1,14 @@
 defmodule RiichiAdvancedWeb.Router do
   use RiichiAdvancedWeb, :router
 
-  def generate_room_code(conn, _opts) do
-    put_session(conn, :room_code, get_session(conn, :room_code) || Ecto.UUID.generate())
+  def generate_session_id(conn, _opts) do
+    put_session(conn, :session_id, get_session(conn, :session_id) || Ecto.UUID.generate())
   end
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :generate_room_code
+    plug :generate_session_id
     plug :fetch_live_flash
     plug :put_root_layout, html: {RiichiAdvancedWeb.Layouts, :root}
     plug :protect_from_forgery

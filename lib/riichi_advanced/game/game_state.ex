@@ -1225,7 +1225,7 @@ defmodule RiichiAdvanced.GameState do
 
   def push_message(state, message) do
     if not state.log_loading_mode do
-      for {_seat, messages_state} <- state.messages_states, messages_state != nil do
+      for {_seat, messages_states} <- state.messages_states, messages_states != nil, {_id, messages_state} <- messages_states do
         # IO.puts("Sending to #{inspect(messages_state)} the message #{inspect(message)}")
         GenServer.cast(messages_state, {:add_message, message})
       end
@@ -1234,7 +1234,7 @@ defmodule RiichiAdvanced.GameState do
 
   def push_messages(state, messages) do
     if not state.log_loading_mode do
-      for {_seat, messages_state} <- state.messages_states, messages_state != nil do
+      for {_seat, messages_states} <- state.messages_states, messages_states != nil, {_id, messages_state} <- messages_states do
         # IO.puts("Sending to #{inspect(messages_state)} the messages #{inspect(messages)}")
         GenServer.cast(messages_state, {:add_messages, messages})
       end
@@ -1294,15 +1294,23 @@ defmodule RiichiAdvanced.GameState do
 
     # initialize message state
     messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, id), :messages_state, nil)
-    state = put_in(state.messages_states[identifier], messages_state)
+    state = update_in(state.messages_states[identifier], &case &1 do
+      nil -> %{id => messages_state}
+      mss -> Map.put(mss, id, messages_state)
+    end)
 
     if not spectator do
-      # tell everyone else
-      push_message(state, %{text: "Player #{nickname} joined as #{seat}"})
+      # tell everyone else if it's a new player
+      if Map.get(state, seat, nil) == nil do
+        push_message(state, %{text: "Player #{nickname} joined as #{seat}"})
+      end
 
       # initialize the player
-      state = Map.put(state, seat, id)
-      state = put_in(state.messages_states[seat], messages_state)
+      state = Map.update!(state, seat, &case &1 do
+        nil -> [id]
+        ids -> if id in ids do ids else [id | ids] end
+      end)
+      IO.inspect(nickname)
       state = update_player(state, seat, &%Player{ &1 | nickname: nickname })
       IO.puts("#{inspect(from_pid)} Player #{id} joined as #{seat}")
 
@@ -1310,6 +1318,7 @@ defmodule RiichiAdvanced.GameState do
       if state.forced_events == nil do
         GenServer.cast(messages_state, {:add_message, [%{text: "Log ID:"}, %{bold: true, text: state.ref}]})
       end
+      state = broadcast_state_change(state, false)
       {:reply, :ok, state}
     else
       {:reply, :ok, state}
@@ -1323,7 +1332,7 @@ defmodule RiichiAdvanced.GameState do
       nickname: if state.players[seat].nickname == "" do
           "player" <> String.slice(Map.get(state, seat), 10, 4)
         else state.players[seat].nickname end,
-      id: Map.get(state, seat),
+      id: Map.get(state, seat) |> Enum.at(0),
       session_id: session_id,
       seat: seat
     }} end)
@@ -1372,16 +1381,23 @@ defmodule RiichiAdvanced.GameState do
 
   # called by exit monitor
   def handle_call({:delete_player, seat}, _from, state) do
-    state = put_in(state.messages_states[seat], nil)
-
     state = if seat in [:east, :south, :west, :north] do
-      IO.puts("Player #{player_name(state, seat)} exited")
-      state = Map.put(state, seat, nil)
-      state = update_player(state, seat, &%Player{ &1 | nickname: nil })
-
-      # tell everyone else
-      push_message(state, %{text: "Player #{player_name(state, seat)} exited"})
-      state
+      case Map.get(state, seat) do
+        nil  ->
+          IO.puts("Player #{seat} somehow exists, and exited")
+          state
+        [_id] ->
+          IO.puts("Player #{player_name(state, seat)} exited")
+          state = update_player(state, seat, &%Player{ &1 | nickname: nil })
+          state = Map.put(state, seat, nil)
+          state = put_in(state.messages_states[seat], nil)
+          # tell everyone else
+          push_message(state, %{text: "Player #{player_name(state, seat)} exited"})
+          state
+        [_id | ids]  ->
+          state = Map.put(state, seat, ids)
+          state
+      end
     else state end
 
     state = if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
@@ -1408,7 +1424,7 @@ defmodule RiichiAdvanced.GameState do
   def handle_call(:get_lobby_room, _from, state) do
     lobby_room = %LobbyRoom{
       players: Map.new(state.players, fn {seat, player} -> {seat,
-          if is_pid(Map.get(state, seat)) do
+          if is_list(Map.get(state, seat)) do
             %RoomPlayer{ nickname: player.nickname, seat: seat }
           else nil end
         } end),
@@ -1476,6 +1492,10 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:init_player, session_id, seat}, state) do
     {seat, spectator} = cond do
+      :east in state.available_seats  and Map.get(state, :east)  != nil and Map.get(state.reserved_seats, :east, nil) == session_id -> {:east, false}
+      :south in state.available_seats and Map.get(state, :south) != nil and Map.get(state.reserved_seats, :south, nil) == session_id -> {:south, false}
+      :west in state.available_seats  and Map.get(state, :west)  != nil and Map.get(state.reserved_seats, :west, nil) == session_id -> {:west, false}
+      :north in state.available_seats and Map.get(state, :north) != nil and Map.get(state.reserved_seats, :north, nil) == session_id -> {:north, false}
       :east in state.available_seats  and seat == "east"  and (Map.get(state, :east)  == nil or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, session_id] -> {:east, false}
       :south in state.available_seats and seat == "south" and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
       :west in state.available_seats  and seat == "west"  and (Map.get(state, :west)  == nil or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}
