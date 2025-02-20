@@ -439,6 +439,7 @@ defmodule RiichiAdvanced.GameState do
           state
         ["put_state", new_state] ->
           IO.puts("Restoring state for " <> Utils.to_registry_name("game_state", state.ruleset, state.room_code))
+          GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
           merge_state(state, new_state)
         _ ->
           IO.puts("Unknown init action #{inspect(action)}")
@@ -2103,8 +2104,10 @@ defmodule RiichiAdvanced.GameState do
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
     }
     :rpc.call(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
-    # kill this game instance so the liveview sockets can refresh
+    # kill this game instance
     DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+    # this won't immediately make connections shift over,
+    # but the idea is to terminate the server after respawning everything
     {:noreply, state}
   end
 
