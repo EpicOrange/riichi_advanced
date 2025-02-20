@@ -1318,7 +1318,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_call(:get_room_players, _from, state) do
     reserved_seats = state.reserved_seats
-    |> Enum.filter(fn {seat, _session_id} -> seat != nil end)
+    |> Enum.filter(fn {seat, _session_id} -> seat != nil and not is_pid(state[seat]) end)
     |> Map.new(fn {seat, session_id} -> {seat, %RoomPlayer{
       nickname: if state.players[seat].nickname == "" do
           "player" <> String.slice(Map.get(state, seat), 10, 4)

@@ -58,6 +58,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         socket
       else socket end
 
+      # sit in first available seat
       case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
         nil  -> :ok
         seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, socket.assigns.session_id, seat})
