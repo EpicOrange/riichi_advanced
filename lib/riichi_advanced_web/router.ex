@@ -32,6 +32,10 @@ defmodule RiichiAdvancedWeb.Router do
     plug :accepts, ["json"]
   end
 
+  def health_check(conn, _opts) do
+    send_resp(conn, 200, "OK")
+  end
+
   scope "/", RiichiAdvancedWeb do
     pipe_through [:browser, :auth]
     get "/room/:ruleset", RedirectController, :lobby
@@ -50,6 +54,7 @@ defmodule RiichiAdvancedWeb.Router do
     end
     import Phoenix.LiveDashboard.Router
     live_dashboard "/dev/dashboard", metrics: RiichiAdvancedWeb.Telemetry
+    get "/health", HealthCheckController, :index
     get "/*_", RedirectController, :home
   end
 

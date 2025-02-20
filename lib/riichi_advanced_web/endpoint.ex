@@ -42,7 +42,11 @@ defmodule RiichiAdvancedWeb.Endpoint do
     cookie_key: "request_logger"
 
   plug Plug.RequestId
-  plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
+  plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint], log: {__MODULE__, :no_health_log, []}
+  # Disables log for / and /health routes
+  def no_health_log(%{path_info: []}), do: false
+  def no_health_log(%{path_info: ["health" | _]}), do: false
+  def no_health_log(_), do: :info
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
