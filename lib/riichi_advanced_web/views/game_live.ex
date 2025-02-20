@@ -129,8 +129,8 @@ defmodule RiichiAdvancedWeb.GameLive do
   def render(assigns) do
     ~H"""
     <div id="container" class={[@ruleset == "minefield" && "minefield"]} phx-hook="ClickListener">
-      <%= if Map.has_key?(@state.rules, "tile_images") do %>
-        <.live_component module={RiichiAdvancedWeb.CustomTilesComponent} id="custom-tiles" tiles={@state.rules["tile_images"]}/>
+      <%= if Map.has_key?(@state.rules, "custom_style") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={@state.rules["custom_style"]}/>
       <% end %>
       <input id="mobile-zoom-checkbox" type="checkbox" class="mobile-zoom-checkbox" phx-update="ignore">
       <label for="mobile-zoom-checkbox"></label>

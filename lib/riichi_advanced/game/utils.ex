@@ -555,4 +555,7 @@ defmodule RiichiAdvanced.Utils do
     |> IO.puts()
   end
 
+  @css_color_regex ~r/^#[a-fA-F0-9]{6}$|^#[a-fA-F0-9]{3}$|^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$|^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*[\d.]+\)$|^[a-zA-Z]+$/
+  def css_color_regex, do: @css_color_regex
+
 end

@@ -130,8 +130,8 @@ defmodule RiichiAdvancedWeb.LogLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
-      <%= if Map.has_key?(@state.rules, "tile_images") do %>
-        <.live_component module={RiichiAdvancedWeb.CustomTilesComponent} id="custom-tiles" tiles={@state.rules["tile_images"]}/>
+      <%= if Map.has_key?(@state.rules, "custom_style") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={@state.rules["custom_style"]}/>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}

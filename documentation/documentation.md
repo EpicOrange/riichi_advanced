@@ -536,7 +536,20 @@ Saki:
 
 Other:
 
-- `tile_images`: Mapping of tiles to replacement image urls.
+- `custom_style`: an object containing any or all of the following keys:
+  + `tile_indices`: Small number or letter displayed for a given tile when tile indices are enabled (123 button at bottom).
+  + `tile_back_color`: Color of tile back.
+  + `tile_side_back_color`: Color of tile back on the side of tiles.
+  + `tablecloth_color`: Color of the tablecloth.
+
+Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Example `custom_style`:
+
+    "custom_style": {
+      "tile_indices": {"5z": ""},
+      "tile_back_color": "#aaa",
+      "tile_side_back_color": "#777",
+      "tablecloth_color": "#e8b"
+    }
 
 # Actions
 
