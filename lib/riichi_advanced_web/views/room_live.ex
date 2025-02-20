@@ -19,11 +19,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:state, %Room{})
     if socket.root_pid != nil do
       # start a new room process, if it doesn't exist already
-      room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("room", socket.assigns.ruleset, socket.assigns.room_code)}}}
+      room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: Utils.via_registry("room", socket.assigns.ruleset, socket.assigns.room_code)}
       room_state = case DynamicSupervisor.start_child(RiichiAdvanced.RoomSessionSupervisor, room_spec) do
         {:ok, _pid} ->
           IO.puts("Starting room session #{socket.assigns.room_code}")
-          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{room_state, _}] = Utils.registry_lookup("room_state", socket.assigns.ruleset, socket.assigns.room_code)
           room_state
         {:error, {:shutdown, error}} ->
           IO.puts("Error when starting room session #{socket.assigns.room_code}")
@@ -31,7 +31,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           nil
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started room session #{socket.assigns.room_code}")
-          [{room_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{room_state, _}] = Utils.registry_lookup("room_state", socket.assigns.ruleset, socket.assigns.room_code)
           room_state
       end
       # subscribe to state updates
@@ -58,6 +58,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         socket
       else socket end
 
+      # sit in first available seat
       case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
         nil  -> :ok
         seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, socket.assigns.session_id, seat})
@@ -316,21 +317,31 @@ defmodule RiichiAdvancedWeb.RoomLive do
     {:noreply, socket}
   end
 
+  def vacate_room(socket) do
+    seat = cond do
+      :east  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.east.id)  == socket.id -> :east
+      :south in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.south.id) == socket.id -> :south
+      :west  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.west.id)  == socket.id -> :west
+      :north in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.north.id) == socket.id -> :north
+      true                                      -> :spectator
+    end
+    socket = push_event(socket, "left-page", %{})
+    push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
+  end
+
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
       socket = assign(socket, :state, state)
-      socket = if state.started do
-        seat = cond do
-          :east  in state.available_seats and get_in(state.seats.east.id)  == socket.id -> :east
-          :south in state.available_seats and get_in(state.seats.south.id) == socket.id -> :south
-          :west  in state.available_seats and get_in(state.seats.west.id)  == socket.id -> :west
-          :north in state.available_seats and get_in(state.seats.north.id) == socket.id -> :north
-          true                                      -> :spectator
-        end
-        socket = push_event(socket, "left-page", %{})
-        push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
-      else socket end
+      socket = if state.started do vacate_room(socket) else socket end
       {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "vacate_room", payload: _}, socket) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
+      {:noreply, vacate_room(socket)}
     else
       {:noreply, socket}
     end

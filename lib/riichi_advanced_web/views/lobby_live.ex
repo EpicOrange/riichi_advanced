@@ -20,11 +20,11 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "lobby:" <> socket.assigns.ruleset)
 
       # start a new lobby process, if it doesn't exist already
-      lobby_spec = {RiichiAdvanced.LobbySupervisor, ruleset: socket.assigns.ruleset, name: {:via, Registry, {:game_registry, Utils.to_registry_name("lobby", socket.assigns.ruleset, "")}}}
+      lobby_spec = {RiichiAdvanced.LobbySupervisor, ruleset: socket.assigns.ruleset, name: Utils.via_registry("lobby", socket.assigns.ruleset, "")}
       lobby_state = case DynamicSupervisor.start_child(RiichiAdvanced.LobbySessionSupervisor, lobby_spec) do
         {:ok, _pid} ->
           IO.puts("Starting lobby for ruleset #{socket.assigns.ruleset}")
-          [{lobby_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", socket.assigns.ruleset, ""))
+          [{lobby_state, _}] = Utils.registry_lookup("lobby_state", socket.assigns.ruleset, "")
           lobby_state
         {:error, {:shutdown, error}} ->
           IO.puts("Error when starting lobby for ruleset #{socket.assigns.ruleset}")
@@ -32,7 +32,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           nil
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started lobby for ruleset #{socket.assigns.ruleset}")
-          [{lobby_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("lobby_state", socket.assigns.ruleset, ""))
+          [{lobby_state, _}] = Utils.registry_lookup("lobby_state", socket.assigns.ruleset, "")
           lobby_state
       end
 

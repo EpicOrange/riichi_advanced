@@ -24,7 +24,8 @@ defmodule RiichiAdvanced.Application do
       # Start a worker by calling: RiichiAdvanced.Worker.start_link(arg)
       # {RiichiAdvanced.Worker, arg},
       # Start to serve requests, typically the last entry
-      RiichiAdvancedWeb.Endpoint
+      RiichiAdvancedWeb.Endpoint,
+      RiichiAdvanced.Admin
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

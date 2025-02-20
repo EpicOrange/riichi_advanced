@@ -139,7 +139,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     # check if there are any public rooms of this ruleset
     # if not, skip the lobby and go directly to making a new table
     has_public_room = Enum.any?(room_codes, fn room_code -> 
-      [{room_state_pid, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("room_state", ruleset, room_code))
+      [{room_state_pid, _}] = Utils.registry_lookup("room_state", ruleset, room_code)
       room_state = GenServer.call(room_state_pid, :get_state)
       not room_state.private
     end)
