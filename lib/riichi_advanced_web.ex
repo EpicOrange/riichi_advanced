@@ -43,7 +43,7 @@ defmodule RiichiAdvancedWeb do
         layouts: [html: RiichiAdvancedWeb.Layouts]
 
       import Plug.Conn
-      import RiichiAdvancedWeb.Gettext
+      use Gettext, backend: RiichiAdvancedWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -85,7 +85,7 @@ defmodule RiichiAdvancedWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import RiichiAdvancedWeb.CoreComponents
-      import RiichiAdvancedWeb.Gettext
+      use Gettext, backend: RiichiAdvancedWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

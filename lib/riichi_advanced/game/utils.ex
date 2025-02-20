@@ -1,6 +1,5 @@
 defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
-  alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   use Nebulex.Caching
