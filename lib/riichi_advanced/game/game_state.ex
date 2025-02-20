@@ -2083,7 +2083,8 @@ defmodule RiichiAdvanced.GameState do
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
     }
     :rpc.call(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
-    state = Map.put(state, :game_active, false)
+    # kill this game instance so the liveview sockets can refresh
+    DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
     {:noreply, state}
   end
 

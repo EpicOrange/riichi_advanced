@@ -575,12 +575,15 @@ defmodule RiichiAdvanced.Utils do
     blue = String.to_atom(System.get_env("BLUE_SNAME"))
     green = String.to_atom(System.get_env("GREEN_SNAME"))
     [dst] = [blue, green] -- [node()] # world class discovery mechanism right here
-    Node.connect(dst)
-    DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor) 
-    |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
-    |> Enum.map(&String.replace(&1, "game", "game_state"))
-    |> Enum.map(&Registry.lookup(:game_registry, &1))
-    |> Enum.map(fn [{pid, _}] -> pid end)
-    |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
+    if Node.connect(dst) == true do
+      DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor) 
+      |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+      |> Enum.map(&String.replace(&1, "game", "game_state"))
+      |> Enum.map(&Registry.lookup(:game_registry, &1))
+      |> Enum.map(fn [{pid, _}] -> pid end)
+      |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
+    else
+      IO.puts("Failed to connect to #{inspect(dst)}!")
+    end
   end
 end
