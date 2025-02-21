@@ -7,6 +7,8 @@ defmodule RiichiAdvanced.Admin do
   end
 
   def init(:ok) do
+    # migrate on startup
+    GenServer.cast(self(), :migrate)
     {:ok, %{}}
   end
 
@@ -104,24 +106,29 @@ defmodule RiichiAdvanced.Admin do
     |> IO.puts()
   end
 
-  # do like GenServer.call(RiichiAdvanced.Admin, :migrate)
-  def handle_call(:migrate, _from, state) do
-    blue = String.to_atom(System.get_env("BLUE_SNAME"))
-    green = String.to_atom(System.get_env("GREEN_SNAME"))
-    [dst] = [blue, green] -- [node()] # world class discovery mechanism right here
-    if Node.connect(dst) == true do
-      DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
-      |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
-      |> Enum.map(&String.replace(&1, "game", "game_state"))
-      |> Enum.map(&Registry.lookup(:game_registry, &1))
-      |> Enum.map(fn [{pid, _}] -> pid end)
-      |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
-      DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
-      GenServer.cast(self(), :close_server)
-    else
-      IO.puts("Failed to connect to #{inspect(dst)}!")
+  def handle_cast(:migrate, state) do
+    try do
+      blue = String.to_atom(System.get_env("BLUE_SNAME"))
+      green = String.to_atom(System.get_env("GREEN_SNAME"))
+      [dst] = [blue, green] -- [node()] # world class discovery mechanism right here
+      if Node.connect(dst) == true do
+        DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
+        |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
+        |> Enum.map(&String.replace(&1, "game", "game_state"))
+        |> Enum.map(&Registry.lookup(:game_registry, &1))
+        |> Enum.map(fn [{pid, _}] -> pid end)
+        |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
+        DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
+        GenServer.cast(self(), :close_server)
+      else
+        IO.puts("Failed to connect to #{inspect(dst)}!")
+      end
+    rescue
+      _ ->
+        IO.puts("Not migrating")
+        :ok
     end
-    {:reply, :ok, state}
+    {:noreply, state}
   end
 
   def handle_cast(:close_server, state) do
