@@ -6,6 +6,7 @@ defmodule RiichiAdvancedWeb.Router do
   end
 
   pipeline :browser do
+    plug RiichiAdvancedWeb.PlugAttack
     plug :accepts, ["html"]
     plug :fetch_session
     plug :generate_session_id
