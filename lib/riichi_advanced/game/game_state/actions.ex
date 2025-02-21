@@ -1461,7 +1461,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     Enum.any?(state.available_seats, fn seat -> performing_intermediate_action?(state, seat) end)
   end
 
-  # TODO after refactoring choices, this function should become very simple
   def performing_intermediate_action?(state, seat) do
     no_call_buttons = Enum.empty?(state.players[seat].call_buttons)
     made_choice = state.players[seat].choice != nil and state.players[seat].choice.name != "skip"
@@ -1577,7 +1576,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil } end)
-          state = broadcast_state_change(state, true) # need to newly calculate playable indices
+          GenServer.cast(self(), :calculate_playable_indices) # need to newly calculate playable indices
+          state = broadcast_state_change(state, false)
           state
         else state end
       else
