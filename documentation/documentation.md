@@ -1,3 +1,34 @@
+# Table of contents
+
+- [`ruleset.json` basic concepts](#rulesetjson-basic-concepts)
+  + [Defining keys in the ruleset](#defining-keys-in-the-ruleset)
+  + [Events, contexts, and actions](#events-contexts-and-actions)
+  + [Conditions](#conditions)
+  + [Auto buttons](#auto-buttons)
+  + [Call buttons and interruptible actions](#call-buttons-and-interruptible-actions)
+  + [Conditions with arguments and complex conditions](#conditions-with-arguments-and-complex-conditions)
+  + [The `match` condition and match specifications](#the-match-condition-and-match-specifications)
+  + [American hand match specifications](#american-hand-match-specifications)
+  + [Marking](#marking)
+  + [Tile attributes](#tile-attributes)
+    * [Visual effects via attributes](#visual-effects-via-attributes)
+  + [Tile aliasing, i.e. defining jokers](#tile-aliasing-ie-defining-jokers)
+    * [Attributes and tile aliasing](#attributes-and-tile-aliasing)
+  + [Interrupt levels](#interrupt-levels)
+- [`ruleset.json` full documentation](#rulesetjson-full-documentation)
+  + [Actions](#actions)
+  + [Conditions](#conditions)
+  + [Tile specs](#tile-specs)
+  + [Match targets](#match-targets)
+  + [Scoring methods](#scoring-methods)
+    * [`"scoring_method": "multiplier"`](#scoring_method-multiplier)
+    * [`"scoring_method": "score_table"`](#scoring_method-score_table)
+    * [`"scoring_method": "vietnamese"`](#scoring_method-vietnamese)
+    * [`"scoring_method": "han_fu_formula"`](#scoring_method-han_fu_formula)
+    * [`"scoring_method": ["han_fu_formula", "multiplier"]`](#scoring_method-han_fu_formula-multiplier)
+  + [Payments](#payments)
+    * [Payment-related statuses](#payment-related-statuses)
+
 # `ruleset.json` basic concepts
 
 A ruleset is a JSON file consisting of a single object. We'll introduce the possible keys of this object one by one.
@@ -87,7 +118,7 @@ https://github.com/user-attachments/assets/523253a2-ca78-40f0-b677-f4ad54530aa8
 
 Because every player has drawn 13 tiles, that leaves 56 tiles in the wall. Note that there is no drawing from the wall quite yet.
 
-Unless otherwise stated, every key like `wall` and `starting_tiles` are top-level keys. These define the main moving parts of Riichi Advanced rulesets. A full documentation of the keys is below this concepts guide.
+Unless otherwise stated, every key like `wall` and `starting_tiles` are top-level keys. These define the main moving parts of Riichi Advanced rulesets. A [full documentation](#rulesetjson-full-documentation) of the keys is below this concepts guide.
 
 ## Events, contexts, and actions
 
@@ -237,13 +268,13 @@ and if you wanted ("a" OR ("b" AND "c")) you would write
 
 So the first level of array joins all its elements with AND, the second level of array joins with OR, and the third level of array joins with AND, and so on. Because complex conditions are defined by the nesting level of arrays, conditions with arguments cannot be defined using arrays, which is why conditions with arguments look like `{"name": <name>, "opts": [<args>]}` instead.
 
-This concludes the overview of basic concepts in Riichi Advanced rulesets. Note that for the riichi button, the last condition in `show_when` is a `match` condition, and it is used extensively in Riichi Advanced to check for tenpai, to check for yaku, and to check for anything involving the hand. It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the full documentation.
+This concludes the overview of basic concepts in Riichi Advanced rulesets. Note that for the riichi button, the last condition in `show_when` is a `match` condition, and it is used extensively in Riichi Advanced to check for tenpai, to check for yaku, and to check for anything involving the hand. It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the [full documentation](#rulesetjson-full-documentation).
 
 ## The `match` condition and match specifications
 
     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}
 
-`match` is a condition with two arguments. The first is an array of **targets** to match against, here `["hand", "calls", "draw"]`. A list of all match targets can be found in [its own section below](#matchtargets). The second is an array of **match specifications**, here `["tenpai_14", "kokushi_tenpai"]`. The idea is, if your hand, calls, and drawn tile matches `tenpai_14` or `kokushi_tenpai`, then you get to riichi.
+`match` is a condition with two arguments. The first is an array of **targets** to match against, here `["hand", "calls", "draw"]`. A list of all match targets can be found in [its own section below](#match-targets). The second is an array of **match specifications**, here `["tenpai_14", "kokushi_tenpai"]`. The idea is, if your hand, calls, and drawn tile matches `tenpai_14` or `kokushi_tenpai`, then you get to riichi.
 
 `tenpai_14` or `kokushi_tenpai` are **named match specifications**. This is how they are specified in the default riichi ruleset:
 
@@ -465,6 +496,63 @@ That's why the actual definition in the galaxy ruleset looks like:
 
 - `["set_tile_alias_all", ["11z"], [["1z","_original"],"2z","3z","4z"]]`
 
+## Interrupt levels
+
+The purpose of the following feature is purely to optimize performance for buttons whose `show_when` are slow to calculate.
+
+(note: no rulesets currently use this feature, but it has been in the engine for months, so might as well document it)
+
+Every time an action is interruptible (as defined in `interruptible_actions`), buttons are recalculated -- each `show_when` condition is checked for all buttons for all players. This makes buttons pop up for each player (if they have any). You may also trigger this recalculation manually via the `["recalculate_buttons"]` action.
+
+However, you may wish (for performance reasons) to only check a subset of buttons upon an interrupt.
+
+By default, each button has an **interrupt level** of `100`, and each button calculation calculates all buttons with **interrupt level** at least `100`. You may set a button's interrupt level by simply defining a `interrupt_level` key, like so:
+
+    "buttons": {
+      "riichi": {
+        "display_name": "Riichi",
+        "interrupt_level": 50,
+        "show_when": [...],
+        "actions": [...]
+      }
+    }
+
+Interrupt levels can be any number (integers, decimal, negative), the point is that they can be compared and that the baseline is `100`. Setting an interrupt level below 100 without doing anything else ensures that the button (`riichi` in this example) will never be shown, since default button calculations only calculate buttons with interrupt level at least `100`.
+
+There are two ways to trigger a button calculation for lower (or higher) interrupt levels. The first option is to simply specify it as an argument to `recalculate_buttons`:
+
+    ["recalculate_buttons", 50]
+
+The second option is via the new top-level key `interrupt_levels`. Actually, the following `interruptible_actions`:
+
+    "interruptible_actions": ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call"]
+
+is shorthand for:
+
+    "interrupt_levels": {
+      "play_tile": 100,
+      "draw": 100,
+      "advance_turn": 100,
+      "self_call": 100,
+      "upgrade_call": 100
+    }
+
+Note that `interruptible_actions` and `interrupt_levels` can both be defined, but `interrupt_levels` has priority over `interruptible_actions`.
+
+The idea is that the given actions will trigger a button recalculation at the interrupt level *for that action*. For instance, if you have the following:
+
+    "interrupt_levels": {
+      "play_tile": 100,
+      "draw": 50,
+      "advance_turn": 100,
+      "self_call": 100,
+      "upgrade_call": 100
+    }
+
+then our above `riichi` button will only be checked after every `draw` action.
+
+A way to think about interrupt levels is that the number defines a priority -- buttons with higher interrupt levels have higher priority to check, and interruptible actions with higher interrupt levels only check buttons with at least that priority.
+
 ---
 
 # `ruleset.json` full documentation
@@ -512,6 +600,7 @@ Rules:
 - `enable_saki_cards`: Set to `true` to enable saki power stuff (may remove this key in the future)
 - `initial_score`: Starting score
 - `interruptible_actions`: List of actions that can be interrupted by buttons
+- `interrupt_levels`: Interrupt levels for each action. See the [interrupt levels section](#interrupt-levels).
 - `max_revealed_tiles`: Number of tiles to show at the top at all times
 - `max_rounds`: Number of rounds before the game ends
 - `persistent_statuses`: Names of statuses that should persist between rounds.
@@ -526,7 +615,7 @@ Rules:
 
 Yaku and scoring:
 
-- `score_calculation`: Scoring method. See the scoring method section.
+- `score_calculation`: Scoring method. See the [scoring method section](#scoring-methods).
 - `yaku_precedence`: An object specifying which yaku gets overridden by other yaku.
 
 Saki:
@@ -551,7 +640,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
       "tablecloth_color": "#e8b"
     }
 
-# Actions
+## Actions
 
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
 - `["push_message", message]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`
@@ -577,7 +666,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["unset_status_all", status1, status2, ...]`: Remove from the set of statuses for all players.
 - `["set_counter", counter_name, amount or spec, ...opts]`: Set the current player's counter `counter_name` to the given `amount`, which is either a number or one of the following strings followed by some options:
   + the name of an existing counter
-  + `"count_matches", to_match, [match_spec1, match_spec2, ...]`: Counts the number of times the given `match_spec`s matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the match condition section.
+  + `"count_matches", to_match, [match_spec1, match_spec2, ...]`: Counts the number of times the given `match_spec`s matches `to_match`, and adds that to the counter. The syntax for these options is the same as the options for the `match` condition, which is described in the [match condition section](#the-match-condition-and-match-specifications).
   + `"count_matching_ways", to_match, [match_spec1, match_spec2, ...]`: When `to_match` describes multiple sets of tiles (e.g. `hand_any` describes multiple single-tile hands, one for each tile in hand) then `"count_matching_ways"` counts how many of these hands match at least one of the given match specs. Used in Sakicards for Ueshige Suzu's ability, in order to count how many hand tiles match aside tiles.
   + `"tiles_in_wall"`: Gives the number of tiles remaining in the wall.
   + `"num_discards"`: Gives the number of discards made by the current player (includes called tiles).
@@ -688,7 +777,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 
 Every unrecognized action is a no-op.
 
-# Conditions
+## Conditions
 
 Prepend `"not_"` to any of the condition names to negate it.
 
@@ -723,8 +812,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "has_yaku2_with_hand", "opts": [han]}`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_hand", "opts": [1]}`
 - `{"name": "has_yaku2_with_discard", "opts": [han]}`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_discard", "opts": [1]}`
 - `{"name": "has_yaku2_with_call", "opts": [han]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_call", "opts": [1]}`
-- `{"name": "last_discard_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last discard matches one of the given tile specs. See the tile specs section for details.
-- `{"name": "last_called_tile_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last called tile matches one of the given tile specs. See the tile specs section for details.
+- `{"name": "last_discard_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last discard matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
+- `{"name": "last_called_tile_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last called tile matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "needed_for_hand", "opts": [match_spec1, match_spec2, ...]}`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is needed for the current player's hand to match one of the given match specifications.
 - `"is_drawn_tile`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is a drawn tile.
 - `{"name": "status", "opts": [status1, status2, ...]}`: The current player has all of the specified statuses.
@@ -750,7 +839,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "round_wind_is", "opts": [direction]}`: The current round wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
 - `{"name": "seat_is", "opts": [direction]}`: The current player's seat wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
 - `{"name": "winning_dora_count", "opts": [dora_indicator, num]}`: The current player has `num` dora tiles of the given dora indicator.
-- `{"name": "match", "opts": [to_match, [match_spec1, match_spec2, ...]]}`: See the section on match specifications to see how this condition works.
+- `{"name": "match", "opts": [to_match, [match_spec1, match_spec2, ...]]}`: See the [section on match specifications](#the-match-condition-and-match-specifications) to see how this condition works.
 - `{"name": "winning_hand_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (excluding winning tile) contains only the given tiles (jokers allowed).
 - `{"name": "winning_hand_and_tile_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (including winning tile) contains only the given tiles (jokers allowed).
 - `"all_saki_cards_drafted"`: Everyone has at least one saki card.
@@ -782,7 +871,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"genbutsu_shimocha"`: The last discard was genbutsu against shimocha.
 - `"can_discard_after_call"`: Used in `"call_conditions"`, checks if you are able to discard a tile immediately after calling. Right now this only works for regular calls (i.e. not upgrade calls).
 
-# Tile specs
+## Tile specs
 
 - `"any"`: Matches any tile.
 - `"1z"`, `"3m"`, etc: Matches that exact tile.
@@ -802,7 +891,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"dora"`: Matches dora (as indicated by visible dora indicators and the `"dora_indicators"` map).
 - `"kuikae"`: Matches a tile that is kuikae to the last call. Only used in `play_restrictions`.
 
-# Match targets
+## Match targets
 
 There's quite a few possible match targets that can be passed as the first argument to `"match"`, and here they are.
 
@@ -855,7 +944,7 @@ In addition, a couple selectors allow you to select _multiple_ targets. For exam
 - `"self_joker_meld_tiles"`: selects one nonjoker tile from own exposed calls containing a joker. (Used in malaysian mahjong)
 - `"anyone_joker_meld_tiles"`: selects one nonjoker tile from each exposed call containing a joker. (Used in american mahjong)
 
-# Scoring methods
+## Scoring methods
 
 Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and must contain an array under a `"yaku_lists"` key:
   

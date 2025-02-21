@@ -707,8 +707,8 @@ defmodule RiichiAdvanced.GameState do
 
     # initialize interruptible actions
     # we only do this after running change_turn and after_start, so that their actions can't be interrupted
-    interruptible_actions = Map.get(rules, "interrupt_levels", %{})
-    |> Map.merge(Map.new(Map.get(rules, "interruptible_actions", []), fn action -> {action, 100} end))
+    interruptible_actions = Map.new(Map.get(rules, "interruptible_actions", []), fn action -> {action, 100} end)
+    |> Map.merge(Map.get(rules, "interrupt_levels", %{}))
     state = Map.put(state, :interruptible_actions, interruptible_actions)
 
     # recalculate buttons at the start of the game
