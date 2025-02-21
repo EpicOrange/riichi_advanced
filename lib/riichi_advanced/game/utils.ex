@@ -383,7 +383,7 @@ defmodule RiichiAdvanced.Utils do
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
   def replace_jokers_in_calls(calls, joker_tiles, tile_behavior) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles, tile_behavior)) do
+      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
         meld_tile = get_joker_meld_tile({name, call}, joker_tiles, tile_behavior)
         {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
