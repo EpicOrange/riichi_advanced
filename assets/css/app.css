@@ -1716,7 +1716,7 @@ div.display-am-hand-hover::before {
   border-radius: calc(0.125 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
   bottom: calc(-1.5 * var(--tile-size));
-  right: 0;
+  right: calc(0.75 * var(--tile-size));
 }
 div.display-am-hand-container {
   position: absolute;
