@@ -2024,10 +2024,6 @@ defmodule RiichiAdvanced.GameState do
         closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
         GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
       end
-      # some conditions (namely "is_tenpai_american") might have changed based on closest american hands, so recalculate buttons
-      GenServer.cast(self, :recalculate_buttons)
-      # note that this races the AI: the AI might act before closest_american_hands is calculated, so they may miss buttons that should be there
-      # TODO maybe fix this by pausing the game at the start of this particular async calculation, and unpausing after
     end)
     state = state
     |> Map.put(:calculate_closest_american_hands_pid, pid)
@@ -2047,6 +2043,11 @@ defmodule RiichiAdvanced.GameState do
     state = state
     |> update_player(seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | closest_american_hands: closest_american_hands } })
     |> Map.put(:calculate_closest_american_hands_pid, nil)
+
+    # some conditions (namely "is_tenpai_american") might have changed based on closest american hands, so recalculate buttons
+    state = Buttons.recalculate_buttons(state)
+    # note that this races the AI: the AI might act before closest_american_hands is calculated, so they may miss buttons that should be there
+    # TODO maybe fix this by pausing the game at the start of this particular async calculation, and unpausing after
     state = broadcast_state_change(state, false)
     {:noreply, state}
   end

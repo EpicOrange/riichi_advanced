@@ -529,6 +529,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           true  ->
             call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
             call = {call_name, Utils.strip_attrs([called_tile | call_choice])}
+            # since get_viable_am_match_definitions only uses length of hand,
+            # we can just drop the first length(call_choice) tiles instead of removing those from hand
             update_player(state, context.seat, &%Player{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
             |> American.get_viable_am_match_definitions(context.seat, am_match_definitions)
             |> Enum.empty?()
@@ -536,8 +538,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "is_ai"               -> is_pid(Map.get(state, context.seat))
       "num_players"         -> length(state.available_seats) == Enum.at(opts, 0, 4)
       "is_tenpai_american"  ->
+        done_calculating = state.calculate_closest_american_hands_pid == nil
         player = state.players[context.seat]
-        Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
+        done_calculating and Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
       "can_discard_after_call" ->
         # simulate the call
         state2 = Actions.trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, context.call_source, true)

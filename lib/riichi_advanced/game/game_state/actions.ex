@@ -1434,9 +1434,6 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # done with all choices
       state = if not performing_intermediate_action?(state) do
-        # state = if Buttons.no_buttons_remaining?(state) do
-        #   Buttons.recalculate_buttons(state, 0)
-        # else state end
         notify_ai(state)
         state
       else state end
@@ -1495,16 +1492,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             IO.puts("Player #{seat} must skip due to having no buttons")
           end
           update_player(state, seat, &%Player{ &1 | choice: %Choice{ name: "skip" } })
-        seat != state.turn and player.choice != nil and player.choice.name in get_all_superceded_buttons(state, seat) and player.choice not in get_superceded_buttons(state, player.choice.name) ->
-          if Debug.debug_actions() do
-            IO.puts("Player #{seat} must skip due to having buttons superceded")
-          end
-          update_player(state, seat, &%Player{ &1 | choice: %Choice{ name: "skip" } })
-        true ->
-          if Debug.debug_actions() do
-            IO.puts("Player #{seat} still has a choice to make")
-          end
-          state
+        true -> state
       end
     end
 
@@ -1527,7 +1515,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             all_choices_superceded = Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
             if not_us and (choice_superceded or all_choices_superceded) do
               if Debug.debug_actions() do
-                IO.puts("Superceding choice for #{dir} due to existing #{inspect(choice)}")
+                cond do
+                  all_choices_superceded -> IO.puts("Player #{dir} must skip due to having choices superceded by #{seat}, original choice was: #{inspect(choice)}")
+                  choice_superceded -> IO.puts("Player #{dir} must skip due to having choices superceded, original choice was: #{inspect(choice)}")
+                  true -> :ok
+                end
               end
               %Player{ player | choice: %Choice{ name: "skip" }, buttons: [] }
             else player end
@@ -1573,7 +1565,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # otherwise, adjudicate actions as normal
       if Enum.all?(state.players, fn {_seat, player} -> player.choice.name == "skip" end) do
         if state.game_active and not from_deferred_actions do
-          # IO.puts("All choices are no-ops, running deferred actions")
+          IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil } end)
           GenServer.cast(self(), :calculate_playable_indices) # need to newly calculate playable indices
@@ -1584,6 +1576,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         adjudicate_actions(state)
       end
     else
+      if Debug.debug_actions() do
+        for {seat, player} <- state.players, player.choice != nil do
+          IO.puts("Player #{seat} still has a choice to make")
+        end
+      end
       # when we interrupt the current turn AI with our button choice, they fail to make a choice
       # this rectifies that
       notify_ai(state)
