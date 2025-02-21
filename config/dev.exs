@@ -1,5 +1,12 @@
 import Config
 
+so_reuseport =
+  case :os.type() do
+    {:unix, :linux} -> {:raw, 1, 15, <<1::32-native>>}
+    {:unix, :darwin} -> {:raw, 0xffff, 0x0200, <<1::32-native>>}
+  end
+thousand_island_options = [transport_options: [reuseport: true]]
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -9,9 +16,14 @@ import Config
 config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  # http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [
+    ip: {0, 0, 0, 0},
+    port: System.get_env("HTTP_PORT") || 80,
+    thousand_island_options: thousand_island_options,
+  ],
   https: [
-    port: System.get_env("PORT") || 4000,
+    port: System.get_env("HTTPS_PORT") || 443,
+    thousand_island_options: thousand_island_options,
     cipher_suite: :strong,
     certfile: "priv/cert/selfsigned.pem",
     keyfile: "priv/cert/selfsigned_key.pem"

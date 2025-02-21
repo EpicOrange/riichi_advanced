@@ -226,7 +226,7 @@ Then run:
     (cd assets; npm i)
 
     # Start the server
-    iex -S mix phx.server
+    HTTPS_PORT=4000 iex -S mix phx.server
 
 This should start the server up at `https://localhost:4000`. (Make sure to use `https`! `http` doesn't work locally for some reason.) Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
 
