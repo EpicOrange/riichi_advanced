@@ -8,7 +8,15 @@ defmodule RiichiAdvanced.Admin do
 
   def init(:ok) do
     # migrate on startup
-    GenServer.cast(self(), :migrate)
+    blue = String.to_atom(System.get_env("BLUE_SNAME", "nil"))
+    green = String.to_atom(System.get_env("GREEN_SNAME", "nil"))
+    # world class discovery mechanism right here
+    case [blue, green] -- [node()] do
+      [dst] ->
+        IO.puts("Pulling running games from #{inspect(dst)}")
+        GenServer.cast({RiichiAdvanced.Admin, dst}, {:migrate, node()})
+      _     -> :ok
+    end
     {:ok, %{}}
   end
 
@@ -106,11 +114,8 @@ defmodule RiichiAdvanced.Admin do
     |> IO.puts()
   end
 
-  def handle_cast(:migrate, state) do
+  def handle_cast({:migrate, dst}, state) do
     try do
-      blue = String.to_atom(System.get_env("BLUE_SNAME"))
-      green = String.to_atom(System.get_env("GREEN_SNAME"))
-      [dst] = [blue, green] -- [node()] # world class discovery mechanism right here
       if Node.connect(dst) == true do
         DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
