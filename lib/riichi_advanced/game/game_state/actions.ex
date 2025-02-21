@@ -176,6 +176,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         run_actions(state, state.rules["after_draw"]["actions"], %{seat: seat})
       else state end
 
+      # update playable_indices
+      GenServer.cast(self(), :calculate_playable_indices)
+
       state
     end
   end
@@ -844,8 +847,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             {key, update_in(val.marked, fn marked -> Enum.map(marked, fn {tile, seat, ix} -> {tile, seat, Map.get(ix_map, ix, ix)} end) end)}
           else {key, val} end
         end))
-        state = update_player(state, context.seat, fn player -> %Player{ player | hand: hand } end)
-        state
+        # map playable_indices
+        playable_indices = state.players[context.seat].cache.playable_indices
+        playable_indices = if is_list(playable_indices) do Enum.map(playable_indices, &Map.get(ix_map, &1, &1)) else playable_indices end
+        # set hand and playable_indices
+        update_player(state, context.seat, fn player -> %Player{ player | hand: hand, cache: %PlayerCache{ player.cache | playable_indices: playable_indices } } end)
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
         state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)

@@ -1311,7 +1311,6 @@ defmodule RiichiAdvanced.GameState do
         nil -> [id]
         ids -> if id in ids do ids else [id | ids] end
       end)
-      IO.inspect(nickname)
       state = update_player(state, seat, &%Player{ &1 | nickname: nickname })
       IO.puts("#{inspect(from_pid)} Player #{id} joined as #{seat}")
 
