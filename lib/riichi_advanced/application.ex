@@ -23,6 +23,8 @@ defmodule RiichiAdvanced.Application do
       # {Finch, name: RiichiAdvanced.Finch},
       # Start a worker by calling: RiichiAdvanced.Worker.start_link(arg)
       # {RiichiAdvanced.Worker, arg},
+      # storage for plug-attack
+      {PlugAttack.Storage.Ets, name: RiichiAdvancedWeb.PlugAttack.Storage, clean_period: 60_000},
       # Start to serve requests, typically the last entry
       RiichiAdvancedWeb.Endpoint,
       RiichiAdvanced.Admin
