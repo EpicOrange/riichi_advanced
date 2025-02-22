@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.ModLoader do
     |> then(&".enabled_mods += #{Jason.encode!(mods)}"<>&1)
 
     if Debug.print_mods() do
-      IO.puts("Applying mods [#{Enum.join(mods, ", ")}]")
+      IO.puts("Applying mods [#{Enum.map_join(mods, ", ", &inspect/1)}]")
     end
     JQ.query_string_with_string!(ruleset_json, mod_contents)
   end

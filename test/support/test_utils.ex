@@ -13,13 +13,14 @@ defmodule RiichiAdvanced.TestUtils do
     %{name: "nagashi", config: %{"is" => "Mangan"}},
     %{name: "tobi", config: %{"below" => 0}},
     %{
-      name: "uma",
-      config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
+     name: "uma",
+     config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
     },
     "agarirenchan",
     "tenpairenchan",
     "double_wind_4_fu",
     "pao",
+    "kokushi_chankan",
     "suufon_renda",
     "suucha_riichi",
     "suukaikan",
@@ -30,6 +31,7 @@ defmodule RiichiAdvanced.TestUtils do
     "yaku/ippatsu",
     %{name: "yaku/renhou", config: %{"is" => "Yakuman"}},
     "show_waits",
+    %{name: "min_han", config: %{"min" => 1}},
     %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
   ]
 
