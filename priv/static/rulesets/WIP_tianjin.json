@@ -2,9 +2,9 @@
     // scoring
 //✅ everyone starts with 50 points
 // actually the beginning of the round the dealer may optionally choose to "step up", the effect is essentially wareme on dealer
-// additionally if you do suufonrenda (but with any tile) the dealer immediately pays 1 to every player
+//✅ additionally if you do suufonrenda (but with any tile) the dealer immediately pays 1 to every player
     
-    //TODO: implement double-down and dealer-challenge for kong payments. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile): check if declaring ankan stops this.
+    //TODO: implement double-down and dealer-challenge for kong payments and discard chase. implement die rolls and reading the dice so that the dora indicator is correctly calculated.
   "default_mods": [],
   "available_mods": [],
   "display_name": "Tianjin Mahjong",
@@ -88,14 +88,14 @@
     { "display_name": "Pure Hand", "value": 3, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [["joker"], 1]]}] },
     { "display_name": "Wild Card Single Wait", "value": 3, "when": [
       [
-        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["joker"], 1] ] ]]},
-        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["any"], 1] ] ]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
+        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["joker"], 1] ] ]]]},
+        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["any"], 1] ] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
       ]
     ] },
     { "display_name": "Double Wild Card Set Wait", "value": 3, "when": [
       [
-        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["joker"], 2] ] ]]},
-        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["any"], 1], [["joker"], 1] ] ]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
+        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["joker"], 2] ] ]]]},
+        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["any"], 1], [["joker"], 1] ] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
       ]
     ] },
     { "display_name": "Capturing the Five", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
@@ -106,7 +106,7 @@
   ],
   "bonus_yaku": [
     { "display_name": "Kong Blossom Bonus", "value": 1, "when": [{"name": "not_has_existing_yaku", "opts": ["Pure Hand", "Wild Card Single Wait", "Double Wild Card Single Wait", "Capturing the Five", "Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Concealed Kong Blossom Bonus", "value": 1, "when": [{"name": "status", "opts": ["kan", "ankan"]}] },
+    { "display_name": "Concealed Kong Blossom Bonus", "value": 1, "when": [{"name": "status", "opts": ["kan", "ankan"]}] }
   ],
   "yaku_multiplier": [
     { "display_name": "Kong Blossom Multiplier", "value": 2, "when": [{"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
@@ -140,6 +140,12 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "ankan"],
+      ["when", [{"name": "status_missing", "as": "others", "opts": ["first_turn"]}, {"name": "status", "opts": ["first_turn"]}, {"name": "match", "opts": ["all_ponds", [[["quad"], 1], [["any"], -1]]]}],
+        [
+          ["big_text", "Discard Chase"], ["pause", 500]
+          ["subtract_score", 3, "shimocha"], ["add_score", 1, ["self", "toimen", "kamicha"]], ["big_text", "  -3  ", "shimocha"], ["big_text", "  +1  ", ["self", "toimen", "kamicha"]]
+        ]
+      ]
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
@@ -168,7 +174,7 @@
       ["set_counter_all", "delta_score_multiplier_against_dealer", 1]
     ]
   },
-  "shown_statuses_public": ["double_down", "challenge_dealer", "challenge_dealer_twice"]
+  "shown_statuses_public": ["double_down", "challenge_dealer", "challenge_dealer_twice"],
   "before_win": {
     "actions": [
         //if East is the winner, then everyone gets their score doubled/quadrupled/whatever
@@ -180,17 +186,19 @@
         ]
       ],
         //else, if East is not the winner, then East gets their score doubled/quadrupled/whatever
-      ["when", [{"name": "status_missing", "as": "east", "opts": ["win_by_draw"]}, {"name": "status_missing", "as": "east", "opts": ["win_by_call"]}], [
-        ["as", "east",
-          [
-            ["when", [{"name": "status", "opts": ["double_down"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
-            ["when", [{"name": "status", "opts": ["challenge_dealer"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
-            ["when", [{"name": "status", "opts": ["challenge_dealer_twice"]}], [["multiply_counter", "delta_score_multiplier", 4]]]
+      ["when", [{"name": "status_missing", "as": "east", "opts": ["win_by_draw"]}, {"name": "status_missing", "as": "east", "opts": ["win_by_call"]}],
+        [
+          ["as", "east",
+            [
+              ["when", [{"name": "status", "opts": ["double_down"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
+              ["when", [{"name": "status", "opts": ["challenge_dealer"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
+              ["when", [{"name": "status", "opts": ["challenge_dealer_twice"]}], [["multiply_counter", "delta_score_multiplier", 4]]]
+            ]
           ]
         ]
       ]
     ]
-  }
+  },
   "buttons": {
       // Doubling down and challenging the dealer are supposed to be done BEFORE the tiles are dealt. But I don't know how to make that happen, so for now it happens after the tiles are dealt.
         // ok, i think i managed to make it work. might be buggy though
@@ -230,6 +238,7 @@
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
+      // TODO: make kong payments follow the double-down/dealer-challenge multipliers too. uggghgghghghghghgggghhhhh
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
