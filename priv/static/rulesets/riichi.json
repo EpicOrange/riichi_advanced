@@ -13,6 +13,7 @@
     "yaku/ippatsu",
     "nagashi",
     "tobi",
+    "uma",
     "suufon_renda",
     "suucha_riichi",
     "suukaikan",
@@ -28,6 +29,12 @@
     {"id": "honba", "order": -1, "name": "Honba", "config": [{"type": "dropdown", "name": "value", "values": [100, 500, 1000]}], "desc": "Enables honba."},
     {"id": "nagashi", "name": "Nagashi", "desc": "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."},
     {"id": "tobi", "name": "Tobi", "config": [{"type": "dropdown", "name": "below", "values": [0, 1, 1000, 1001]}], "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
+    {"id": "uma", "name": "Uma", "config": [
+      {"type": "dropdown", "name": "_1st", "values": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], "default": 10},
+      {"type": "dropdown", "name": "_2nd", "values": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], "default": 5},
+      {"type": "dropdown", "name": "_3rd", "values": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], "default": -5},
+      {"type": "dropdown", "name": "_4th", "values": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], "default": -10}
+    ], "desc": "Enable uma. At the end of the game, points are awarded or deducted based on placement."},
     {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
     {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
     {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},

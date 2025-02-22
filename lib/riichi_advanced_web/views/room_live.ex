@@ -147,7 +147,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
                     <%= if mod.enabled and not Enum.empty?(mod.config) do %>
                       |
                       <%= for {config_name, config} <- mod.config do %>
-                        <span class="mod-config-name"><%= config_name %>:</span>
+                        <span class="mod-config-name"><%= String.replace_prefix(config_name, "_", "") %>:</span>
                         <%= case config["type"] do %>
                           <% "dropdown" -> %>
                             <form class="mod-config-dropdown" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
