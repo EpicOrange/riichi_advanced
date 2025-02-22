@@ -311,17 +311,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     pao_triggered = Map.get(winner, :pao_seat, nil) != nil
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
-    {pao_yaku, non_pao_yaku} = if Map.get(score_rules, "pao_pays_all", false) do
-      {winner.yaku ++ winner.yaku2, []}
-    else
-      Enum.split_with(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end)
-    end
-    if pao_triggered and length(pao_yaku) > 0 and length(non_pao_yaku) > 0 do
+    is_pao = fn {name, _value} -> name in pao_eligible_yaku end
+    {pao_yaku, non_pao_yaku} = if Map.get(score_rules, "pao_pays_all_yaku", false) do {winner.yaku, []} else Enum.split_with(winner.yaku, is_pao) end
+    {pao_yaku2, non_pao_yaku2} = if Map.get(score_rules, "pao_pays_all_yaku2", false) do {winner.yaku2, []} else Enum.split_with(winner.yaku2, is_pao) end
+    if pao_triggered and length(pao_yaku) + length(pao_yaku2) > 0 and length(non_pao_yaku) + length(non_pao_yaku2) > 0 do
       # if we have both pao and non-pao yaku, we need to calculate them separately and add them up
-      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
-      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
-      delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku: pao_yaku, yaku2: [] }, collect_sticks)
-      delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku: non_pao_yaku, yaku2: [] }, collect_sticks)
+      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, pao_yaku, pao_yaku2, is_dealer, winner.win_source == :draw, winner.minipoints)
+      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, non_pao_yaku, non_pao_yaku2, is_dealer, winner.win_source == :draw, winner.minipoints)
+      delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku: pao_yaku, yaku2: pao_yaku2 }, collect_sticks)
+      delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku: non_pao_yaku, yaku2: non_pao_yaku2 }, false)
       delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
       delta_scores
     else
@@ -340,7 +338,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {delta_scores, basic_score, payer, direct_hit} =
         # due to the way we handle mixed pao-and-not-pao yaku earlier,
         # we're guaranteed either all of the yaku are pao, or none of them are
-        if pao_triggered and length(pao_yaku) > 0 do
+        if pao_triggered and length(pao_yaku) + length(pao_yaku2) > 0 do
           # if pao, then payer becomes the pao seat,
           # and a ron payment is split in half
           if winner.payer != nil and Map.get(score_rules, "split_pao_ron", true) do # ron

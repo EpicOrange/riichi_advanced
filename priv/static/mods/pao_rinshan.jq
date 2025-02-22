@@ -2,25 +2,33 @@
   ["when", 
     [
       {"name": "status", "opts": ["rinshan_pao_possible"]},
-      {"name": "match", "opts": [["last_call"], [[[["daiminkan"], 1]]]]}
+      {"name": "last_call_is", "opts": ["daiminkan"]}
     ],
-    [["as", "callee", [["set_status", "pao_possible"]]]]],
+    [["as", "callee", [["set_status", "rinshan_pao_eligible"]]]]],
   ["unset_status_all", "rinshan_pao_possible"]
 ]
 |
-# If anyone has pao_possible and anyone has just kan'd into a win, the player with pao_possible gets pao'd.
+# If anyone has rinshan_pao_eligible and winner has just kan'd into a win, the player with rinshan_pao_eligible gets pao'd.
 .before_win.actions += [
-  ["when_anyone", [{"name": "status", "opts": ["pao_possible"]}, {"name": "anyone_status", "opts": ["kan"]}], ["set_status", "pao"]]
+  ["when", [{"name": "status", "opts": ["kan"]}], [
+    ["when_anyone", [{"name": "status", "opts": ["rinshan_pao_eligible"]}], [
+      ["set_status", "pao"]
+    ]]
+  ]]
 ]
 |
-# Otherwise, remove pao_possible and kan stati from everyone.
+# Otherwise, remove rinshan_pao_eligible status from everyone.
 .functions.turn_cleanup += [
-  ["unset_status_all", "kan", "pao_possible"]
+  ["unset_status_all", "rinshan_pao_eligible"]
 ]
 |
 # Prepend this "rinshan_pao_possible" at the start of the daiminkan action, so that when the call happens, this is already set.
-.buttons.daiminkan.actions |= [["set_status", "rinshan_pao_possible"]] + .
+if (.buttons | has("daiminkan")) then
+  .buttons.daiminkan.actions |= [["set_status", "rinshan_pao_possible"]] + .
+else . end
 |
 .score_calculation.pao_eligible_yaku += ["Rinshan"]
+|
+.score_calculation.pao_pays_all_yaku = true
 |
 .score_calculation.win_with_pao_name = "Sekinin Barai"
