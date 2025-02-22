@@ -897,10 +897,16 @@ defmodule RiichiAdvanced.GameState do
 
         # run before_new_round actions
         # we need to run it here instead of in initialize_new_round
-        # so that it can impact e.g. tobi calculations
-        state = if Map.has_key?(state.rules, "before_start") do
+        # so that it can impact e.g. tobi calculations and log
+        state = if state.round_result != :continue and Map.has_key?(state.rules, "before_start") do
           Actions.run_actions(state, state.rules["before_start"]["actions"], %{seat: state.turn})
         else state end
+
+        # log game, unless we are viewing a log or if this is a tutorial
+        if not (state.log_seeking_mode or state.forced_events != nil) do
+          Log.output_to_file(state)
+        end
+        state = Log.finalize_kyoku(state)
 
         # check for tobi
         state = if Map.has_key?(state.rules, "score_calculation") and Map.has_key?(state.rules["score_calculation"], "tobi") do
@@ -910,44 +916,40 @@ defmodule RiichiAdvanced.GameState do
           else state end
         else state end
 
-        # log game, unless we are viewing a log or if this is a tutorial
-        if not (state.log_seeking_mode or state.forced_events != nil) do
-          Log.output_to_file(state)
-        end
-        state = Log.finalize_kyoku(state)
-        state = update_all_players(state, fn _seat, player -> %Player{ player | start_score: player.score } end)
-        state = Map.put(state, :delta_scores, %{})
-
-        # update kyoku and honba
-        state = case state.round_result do
-          :win when state.next_dealer == :self ->
-            state
-              |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:visible_screen, nil)
-          :win ->
-            state
-              |> Map.update!(:kyoku, & &1 + 1)
-              |> Map.put(:honba, 0)
-              |> Map.put(:visible_screen, nil)
-          :draw when state.next_dealer == :self ->
-            state
-              |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:visible_screen, nil)
-          :draw ->
-            state
-              |> Map.update!(:kyoku, & &1 + 1)
-              |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:visible_screen, nil)
-          :continue -> state
-          :end_game -> state
-        end
-
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
+
           if should_end_game(state) do
             finalize_game(state)
           else
             if not state.log_seeking_mode do
+              # update starting score for the round
+              state = update_all_players(state, fn _seat, player -> %Player{ player | start_score: player.score } end)
+              # clear delta scores (TODO is :delta_scores really a control variable then?)
+              state = Map.put(state, :delta_scores, %{})
+              # update kyoku and honba
+              state = case state.round_result do
+                :win when state.next_dealer == :self ->
+                  state
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :win ->
+                  state
+                    |> Map.update!(:kyoku, & &1 + 1)
+                    |> Map.put(:honba, 0)
+                    |> Map.put(:visible_screen, nil)
+                :draw when state.next_dealer == :self ->
+                  state
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :draw ->
+                  state
+                    |> Map.update!(:kyoku, & &1 + 1)
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :continue -> state
+                :end_game -> state
+              end
               initialize_new_round(state)
             else
               if not state.log_loading_mode do

@@ -124,7 +124,7 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
-  def test_yaku_advanced(ruleset, mods, config, events, expected_winners) do
+  def test_yaku_advanced(ruleset, mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
     test_state = initialize_test_state(ruleset, mods, config)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
 
@@ -151,6 +151,13 @@ defmodule RiichiAdvanced.TestUtils do
       for {key, value} <- expected_winner, key not in [:yaku, :yaku2] do
         assert Map.get(winner, key) == value
       end
+    end
+
+    if Map.has_key?(expected_state, :delta_scores) do
+      delta_scores = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+        Map.get(state.delta_scores, seat, 0)
+      end
+      assert delta_scores == expected_state.delta_scores
     end
   end
 
