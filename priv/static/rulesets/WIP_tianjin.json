@@ -263,9 +263,9 @@
       "call_conditions": [{"name": "not_call_contains", "opts": [["joker"], 1]}],
       "actions": [
         ["big_text", "Kong"], ["self_call"], ["set_status", "kan", "ankan"],
-        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
-        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+        ["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"],
+        ["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"],
+        ["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"],
         ["draw"]
       ]
     },
@@ -277,9 +277,9 @@
       "call_conditions": [{"name": "call_contains", "opts": ["nojoker", [["_wild"], 4]]}],
       "actions": [
         ["big_text", "Golden Kong"], ["self_call"], ["set_status", "kan", "ankan"],
-        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 8], ["subtract_score", 8, "shimocha"], ["big_text", "  -8  ", "shimocha"]]],
-        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 8], ["subtract_score", 8, "toimen"], ["big_text", "  -8  ", "toimen"]]],
-        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 8], ["subtract_score", 8, "kamicha"], ["big_text", "  -8  ", "kamicha"]]],
+        ["add_score", 8], ["subtract_score", 8, "shimocha"], ["big_text", "  -8  ", "shimocha"],
+        ["add_score", 8], ["subtract_score", 8, "toimen"], ["big_text", "  -8  ", "toimen"],
+        ["add_score", 8], ["subtract_score", 8, "kamicha"], ["big_text", "  -8  ", "kamicha"],
         ["draw"]
       ]
     },
@@ -293,9 +293,9 @@
       ],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
-        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["big_text", "  -1  ", "shimocha"]]],
-        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["big_text", "  -1  ", "toimen"]]],
-        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["big_text", "  -1  ", "kamicha"]]],
+        ["add_score", 1], ["subtract_score", 1, "shimocha"], ["big_text", "  -1  ", "shimocha"],
+        ["add_score", 1], ["subtract_score", 1, "toimen"], ["big_text", "  -1  ", "toimen"],
+        ["add_score", 1], ["subtract_score", 1, "kamicha"], ["big_text", "  -1  ", "kamicha"],
         ["draw"]
       ]
     },
