@@ -13,7 +13,6 @@ defmodule RiichiAdvanced.Admin do
     # world class discovery mechanism right here
     case [blue, green] -- [node()] do
       [dst] ->
-        IO.puts("Pulling running games from #{inspect(dst)}")
         GenServer.cast({RiichiAdvanced.Admin, dst}, {:migrate, node()})
       _     -> :ok
     end
@@ -117,6 +116,7 @@ defmodule RiichiAdvanced.Admin do
   def handle_cast({:migrate, dst}, state) do
     try do
       if Node.connect(dst) == true do
+        IO.puts("Pulling running games from #{inspect(dst)}")
         DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
         |> Enum.map(&String.replace(&1, "game", "game_state"))
