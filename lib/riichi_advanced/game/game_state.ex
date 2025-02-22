@@ -2084,7 +2084,7 @@ defmodule RiichiAdvanced.GameState do
         # IO.inspect({yakuman, han, minipoints, hand})
         GenServer.cast(self, {:set_best_minefield_hand, seat, tiles, hand})
       end)
-      state = Map.put(state, :get_best_minefield_hand_pid, pid)
+      Map.put(state, :get_best_minefield_hand_pid, pid)
     else state end
     {:noreply, state}
   end
