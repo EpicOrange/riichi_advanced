@@ -19,7 +19,7 @@
     "agarirenchan", "tenpairenchan",
     "kyuushu_kyuuhai",
     "double_wind_4_fu",
-    "yaku/renhou_yakuman", "pao",
+    "yaku/renhou", "pao",
     "show_waits"
   ],
   "available_mods": [
@@ -113,7 +113,7 @@
     // 4 han
     {"id": "yaku/chinchii_toushii", "deps": ["kan", "yaku/ketsupaihou"], "name": "Chinchii Toushii", "desc": "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."},
     "Mangan",
-    {"id": "yaku/renhou_mangan", "conflicts": ["yaku/renhou_yakuman"], "name": "Renhou Mangan", "desc": "Local yaku. Instant mangan if you win off the first tile someone dropped before your first draw. Calls invalidate."},
+    {"id": "yaku/renhou", "name": "Renhou", "config": [{"type": "dropdown", "name": "is", "values": ["Mangan", "Yakuman"], "default": "Yakuman"}], "desc": "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."},
     {"id": "yaku/kinkei_dokuritsu", "name": "Kinkei Dokuritsu", "desc": "Local yaku. \"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."},
     {"id": "yaku/touchao_hanchanshue", "name": "Touchao Hanchanshue", "desc": "Local yaku. \"Fishing Alone in the Cold River Snow\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."},
     {"id": "yaku/uupin_kaihou", "deps": ["kan"], "name": "Uupin Kaihou", "desc": "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."},
@@ -126,7 +126,6 @@
     {"id": "yaku/rentsuu_honitsu", "name": "Rentsuu Honitsu", "desc": "Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."},
     {"id": "yaku/dorahairi_chinroutou_chiitoitsu", "deps": ["dora"], "name": "Dorahairi Chinroutou Chiitoitsu", "desc": "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile plus the dora."},
     "Yakuman",
-    {"id": "yaku/renhou_yakuman", "conflicts": ["yaku/renhou_mangan"], "name": "Renhou Yakuman", "desc": "Local yaku. Instant yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."},
     {"id": "yaku/paarenchan", "conflicts": ["yakuman_only"], "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
     {"id": "yaku/ishino_uenimo_sannen", "name": "Ishino Uenimo Sannen", "deps": ["yaku/riichi"], "desc": "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."},
     {"id": "yaku/toukanhou", "deps": ["kan"], "name": "Toukanhou", "desc": "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."},
