@@ -46,6 +46,10 @@ defmodule RiichiAdvanced.ModLoader do
         # modded_json = Enum.reduce(mods, ruleset_json, &apply_mod/2)
         modded_json = apply_multiple_mods(ruleset_json, mods)
 
+        if Debug.print_mods() do
+          IO.inspect({ruleset, mods}, label: "Loading")
+        end
+        
         if not Debug.skip_ruleset_caching() do
           RiichiAdvanced.ETSCache.put({ruleset, mods}, modded_json, :cache_mods)
         end

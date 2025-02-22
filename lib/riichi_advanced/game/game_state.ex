@@ -908,7 +908,7 @@ defmodule RiichiAdvanced.GameState do
           if Enum.any?(state.players, fn {_seat, player} -> player.score < tobi end) do
             Map.put(state, :round_result, :end_game)
           else state end
-        end
+        else state end
 
         # log game, unless we are viewing a log or if this is a tutorial
         if not (state.log_seeking_mode or state.forced_events != nil) do
