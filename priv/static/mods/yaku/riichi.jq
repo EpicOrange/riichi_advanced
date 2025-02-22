@@ -37,6 +37,10 @@
   ]
 }
 |
+if $drawless then
+  .buttons.riichi.show_when |= map(select(. != "next_draw_possible"))
+else . end
+|
 if (.buttons | has("chii")) then
   .buttons.chii.show_when += [{"name": "status_missing", "opts": ["riichi"]}]
 else . end
