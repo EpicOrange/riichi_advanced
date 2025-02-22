@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.ModLoader do
       display_name: "Chinitsu Challenge",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
-      mods: ["chinitsu_challenge"],
+      mods: ["yaku/riichi", "chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
