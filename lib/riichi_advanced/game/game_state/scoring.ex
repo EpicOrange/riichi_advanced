@@ -561,7 +561,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 worst_yaku = if Enum.empty?(winner.yaku2) do winner.yaku else winner.yaku2 end
 
                 # add honba
-                score = winner.score + (score_rules["honba_value"] * state.honba)
+                score = winner.score + (Map.get(score_rules, "honba_value", 0) * state.honba)
 
                 if not Enum.empty?(worst_yaku) do
                   push_message(state, [

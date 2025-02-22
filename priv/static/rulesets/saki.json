@@ -69,7 +69,7 @@
     {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
     {"id": "drawless_riichi", "name": "Drawless Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
-    {"id": "open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
+    {"id": "yaku/open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
     {"id": "no_kazoe_yakuman", "name": "No Kazoe Yakuman", "desc": "Disable kazoe yakuman. 13+ han is worth sanbaiman."},
