@@ -2,9 +2,9 @@
 |
 # initial dora flip
 if .num_players == 3 then
-  .revealed_tiles += [-10]
+  .revealed_tiles += [-10, -12, -14, -16, -18][:$start_indicators]
 else
-  .revealed_tiles += [-6]
+  .revealed_tiles += [-6, -8, -10, -12, -14][:$start_indicators]
 end
 |
 # dora indicator map
@@ -75,9 +75,4 @@ else . end
 ]
 |
 # tag dora with dora tag
-if .num_players == 3 then
-  .after_start.actions += [["tag_dora", "dora", -10]]
-else
-  .after_start.actions += [["tag_dora", "dora", -6]]
-end
-
+.after_start.actions += (.revealed_tiles | map(["tag_dora", "dora", .]))
