@@ -1565,7 +1565,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # otherwise, adjudicate actions as normal
       if Enum.all?(state.players, fn {_seat, player} -> player.choice.name == "skip" end) do
         if state.game_active and not from_deferred_actions do
-          IO.puts("All choices are no-ops, running deferred actions")
+          # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil } end)
           GenServer.cast(self(), :calculate_playable_indices) # need to newly calculate playable indices
