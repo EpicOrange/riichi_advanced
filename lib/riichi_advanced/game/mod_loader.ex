@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.ModLoader do
     case mod do
       %{name: name, config: config} -> 
         mod_contents = File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name <> ".jq"}"))
-        config_queries = for {key, val} <- config, is_integer(val), do: "#{val} as $#{key}\n|\n"
+        config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "#{inspect(val)} as $#{key}\n|\n"
         Enum.join(config_queries) <> mod_contents
       name -> File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name <> ".jq"}"))
     end
