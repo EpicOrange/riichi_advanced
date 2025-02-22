@@ -903,8 +903,12 @@ defmodule RiichiAdvanced.GameState do
         else state end
 
         # check for tobi
-        tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
-        state = if tobi and Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
+        state = if Map.has_key?(state.rules, "score_calculation") and Map.has_key?(state.rules["score_calculation"], "tobi") do
+          tobi = Map.get(state.rules["score_calculation"], "tobi", 0)
+          if Enum.any?(state.players, fn {_seat, player} -> player.score < tobi end) do
+            Map.put(state, :round_result, :end_game)
+          else state end
+        end
 
         # log game, unless we are viewing a log or if this is a tutorial
         if not (state.log_seeking_mode or state.forced_events != nil) do

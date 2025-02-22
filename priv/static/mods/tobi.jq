@@ -1,2 +1,2 @@
-.score_calculation.tobi = true
+.score_calculation.tobi = $below
 

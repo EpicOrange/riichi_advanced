@@ -58,7 +58,7 @@
   ],
   "available_mods": [
     "Rules",
-    {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
+    {"id": "tobi", "name": "Tobi", "config": [{"type": "dropdown", "name": "below", "values": [0, 1, 1000, 1001]}], "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
     {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
     {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
     {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
