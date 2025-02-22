@@ -5,7 +5,7 @@
     "our_turn",
     "has_draw",
     {"name": "status_missing", "opts": ["riichi"]},
-    {"name": "has_score", "opts": [1000]},
+    {"name": "has_score", "opts": ["riichi_value"]},
     "next_draw_possible",
     {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}

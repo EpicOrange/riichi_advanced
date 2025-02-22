@@ -16,7 +16,7 @@
 |
 .display_riichi_sticks = true
 |
-.score_calculation.riichi_value = 1000
+.score_calculation.riichi_value = $bet
 |
 .buttons.riichi = {
   "display_name": "Riichi",

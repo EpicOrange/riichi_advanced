@@ -39,7 +39,6 @@
     {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
     {"id": "drawless_riichi", "name": "Drawless Riichi", "deps": ["yaku/riichi"], "desc": "You may riichi even if you have no draws remaining in the wall."},
-    {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "deps": ["yaku/riichi"], "desc": "Makes riichi bet 5000 instead of 1000. Winning with riichi is still 1 han."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
     {"id": "double_wind_4_fu", "name": "Double Wind 4 Fu", "desc": "A pair of round+seat winds is worth 4 fu instead of 2 fu."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
@@ -85,7 +84,7 @@
     {"id": "jokers/even", "name": "Even", "desc": "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."},
     "Yaku",
     // 1 han
-    {"id": "yaku/riichi", "order": -1, "name": "Riichi", "desc": "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."},
+    {"id": "yaku/riichi", "order": -1, "name": "Riichi", "config": [{"type": "dropdown", "name": "bet", "values": [1000,2000,3000,4000,5000]}], "desc": "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."},
     {"id": "yaku/ippatsu", "name": "Ippatsu", "deps": ["yaku/riichi"], "desc": "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."},
     {"id": "yaku/tsubame_gaeshi", "name": "Tsubame Gaeshi", "deps": ["yaku/riichi"], "desc": "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."},
     {"id": "yaku/shiiaru_raotai", "name": "Shiiaru Raotai", "desc": "Local yaku. \"Twelve Tiles Down\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."},
