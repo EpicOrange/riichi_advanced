@@ -133,7 +133,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - __Sakicards v1.3__: Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator.
 - [__Hong Kong__](documentation/hk.md): Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers.
 - [__Sichuan Bloody__](documentation/sichuan.md): Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules).
-- __MCR__: Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi.
+- [__MCR__](documentation/mcr.md): Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi.
 - __Taiwanese__: 16-tile mahjong with riichi mechanics.
 - [__Bloody 30-Faan Jokers__](documentation/bloody30faan.md): Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR.
 - [__American (2024 NMJL)__](documentation/american.md): American mahjong. Assemble hands with jokers, and declare other players' hands dead.
