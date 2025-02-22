@@ -1,15 +1,10 @@
 {
-
-// tianjin mahjong
-// scoring
-
+    // scoring
 //✅ everyone starts with 50 points
 // actually the beginning of the round the dealer may optionally choose to "step up", the effect is essentially wareme on dealer
 // additionally if you do suufonrenda (but with any tile) the dealer immediately pays 1 to every player
-
-
     
-    //TODO: add scoring. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile).
+    //TODO: implement double-down and dealer-challenge for kong payments. implement die rolls and reading the dice so that the dora indicator is correctly calculated. implement suufonrenda (but for any tile): check if declaring ankan stops this.
   "default_mods": [],
   "available_mods": [],
   "display_name": "Tianjin Mahjong",
@@ -167,9 +162,35 @@
       ["add_attr_tagged", "wild", ["_dora", "_wild"]],
       ["set_tile_alias_all", [["any", "_wild"]], [["any", "_wild"]]],
         // give everyone two challenge tokens at the start of the game
-      ["when_anyone", [{"name": "counter_missing", "opts": ["challenge_tokens"]}], [["set_counter_all", "challenge_tokens", 2]]]
+      ["when_anyone", [{"name": "counter_missing", "opts": ["challenge_tokens"]}], [["set_counter_all", "challenge_tokens", 2]]],
+        // initialise delta_score_multiplier so that we can manipulate this value later
+      ["set_counter_all", "delta_score_multiplier", 1],
+      ["set_counter_all", "delta_score_multiplier_against_dealer", 1]
     ]
   },
+  "shown_statuses_public": ["double_down", "challenge_dealer", "challenge_dealer_twice"]
+  "before_win": {
+    "actions": [
+        //if East is the winner, then everyone gets their score doubled/quadrupled/whatever
+      ["when", [[{"name": "status", "as": "east", "opts": ["win_by_draw"]}, {"name": "status", "as": "east", "opts": ["win_by_call"]}]],
+        [
+          ["when_anyone", [{"name": "status", "opts": ["double_down"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
+          ["when_anyone", [{"name": "status", "opts": ["challenge_dealer"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
+          ["when_anyone", [{"name": "status", "opts": ["challenge_dealer_twice"]}], [["multiply_counter", "delta_score_multiplier", 4]]]
+        ]
+      ],
+        //else, if East is not the winner, then East gets their score doubled/quadrupled/whatever
+      ["when", [{"name": "status_missing", "as": "east", "opts": ["win_by_draw"]}, {"name": "status_missing", "as": "east", "opts": ["win_by_call"]}], [
+        ["as", "east",
+          [
+            ["when", [{"name": "status", "opts": ["double_down"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
+            ["when", [{"name": "status", "opts": ["challenge_dealer"]}], [["multiply_counter", "delta_score_multiplier", 2]]],
+            ["when", [{"name": "status", "opts": ["challenge_dealer_twice"]}], [["multiply_counter", "delta_score_multiplier", 4]]]
+          ]
+        ]
+      ]
+    ]
+  }
   "buttons": {
       // Doubling down and challenging the dealer are supposed to be done BEFORE the tiles are dealt. But I don't know how to make that happen, so for now it happens after the tiles are dealt.
         // ok, i think i managed to make it work. might be buggy though
@@ -178,13 +199,13 @@
     "start_double_down": {
       "display_name": "Double Down",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "seat_is", "opts": ["east"]}],
-      "actions": [["big_text", "Double Down"], ["set_status", "double_down"], ["unset_status", "match_start"], ["draw", 13]],
+      "actions": [["big_text", "Double Down"], ["set_status_all", "double_down"], ["unset_status", "match_start"], ["draw", 13]],
       "unskippable": true
     },
     "start_challenge_dealer_times_two": {
       "display_name": "Challenge Dealer x2",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 2]}],
-      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer_times_two"], ["unset_status", "match_start"], ["subtract_counter", "challenge_tokens", 2], ["draw", 13]],
+      "actions": [["big_text", "Challenge Dealer"], ["set_status", "challenge_dealer_twice"], ["unset_status", "match_start"], ["subtract_counter", "challenge_tokens", 2], ["draw", 13]],
       "unskippable": true
     },
     "start_challenge_dealer": {
