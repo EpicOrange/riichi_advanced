@@ -1,7 +1,7 @@
 {
   "custom_style": {
     "tile_indices": {"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
-  }
+  },
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
