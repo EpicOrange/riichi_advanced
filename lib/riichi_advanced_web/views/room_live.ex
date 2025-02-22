@@ -129,10 +129,22 @@ defmodule RiichiAdvancedWeb.RoomLive do
             <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} room_code={@room_code} room_state={@room_state} />
           </div>
         <% else %>
-          <input type="radio" id="mods-tab" name="room-settings-tab" checked phx-update="ignore">
-          <label for="mods-tab" class="mods-title">Mods</label>
+          <input type="radio" id="presets-tab" name="room-settings-tab" checked phx-update="ignore">
+          <label for="presets-tab" class="room-tab-title">Rulesets</label>
+          <input type="radio" id="mods-tab" name="room-settings-tab" phx-update="ignore">
+          <label for="mods-tab" class="room-tab-title">Mods</label>
           <input type="radio" id="config-tab" name="room-settings-tab" phx-update="ignore">
-          <label for="config-tab" class="mods-title">Config</label>
+          <label for="config-tab" class="room-tab-title">Config</label>
+          <div class="presets">
+            <%= for {preset, i} <- Enum.with_index(@state.presets) do %>
+              <%= if i == @state.selected_preset_ix do %>
+                <input type="radio" id={"preset-#{i}"} name="presets" checked phx-click="set_preset" phx-value-index={i}>
+              <% else %>
+                <input type="radio" id={"preset-#{i}"} name="presets" phx-click="set_preset" phx-value-index={i}>
+              <% end %>
+              <label for={"preset-#{i}"} class="presets-title"><%= preset["display_name"] %></label>
+            <% end %>
+          </div>
           <div class={["mods", "mods-#{@state.ruleset}"]}>
             <div class="mods-inner-container">
               <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
@@ -282,6 +294,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
   def handle_event("shuffle_seats_toggled", %{"enabled" => enabled}, socket) do
     enabled = enabled == "true"
     GenServer.cast(socket.assigns.room_state, {:toggle_shuffle_seats, not enabled})
+    {:noreply, socket}
+  end
+
+  def handle_event("set_preset", %{"index" => ix}, socket) do
+    ix = String.to_integer(ix)
+    GenServer.cast(socket.assigns.room_state, {:set_preset, ix})
     {:noreply, socket}
   end
 
