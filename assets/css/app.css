@@ -3093,6 +3093,7 @@ div.room div.mods {
 }
 div.room div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
+  width: 100%;
   padding-right: 100%;
 }
 div.room div.mods > div.mods-inner-container > div.mod-category,
