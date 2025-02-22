@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "riichi - double riichi ippatsu" do
-    TestUtils.test_yaku_advanced("riichi", ["yaku/riichi", "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],

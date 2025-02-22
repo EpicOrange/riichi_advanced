@@ -88,7 +88,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
   end
 
   test "riichi - dorahairi chinroutou chiitoitsu" do
-    TestUtils.test_yaku_advanced("riichi", ["dora", "yaku/dorahairi_chinroutou_chiitoitsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, "yaku/dorahairi_chinroutou_chiitoitsu"], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "9m", "9m", "1p", "1p", "7m", "7m", "9p", "9p", "1s", "1s", "9s"],

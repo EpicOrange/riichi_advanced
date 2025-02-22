@@ -6,6 +6,34 @@ defmodule RiichiAdvanced.TestUtils do
   import ExUnit.Assertions
 
   @suppress_io true
+  @default_riichi_mods [
+    "kan",
+    %{name: "honba", config: %{"value" => 100}},
+    %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
+    %{name: "nagashi", config: %{"is" => "Mangan"}},
+    %{name: "tobi", config: %{"below" => 0}},
+    %{
+      name: "uma",
+      config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
+    },
+    "agarirenchan",
+    "tenpairenchan",
+    "double_wind_4_fu",
+    "pao",
+    "suufon_renda",
+    "suucha_riichi",
+    "suukaikan",
+    "kyuushu_kyuuhai",
+    %{name: "dora", config: %{"start_indicators" => 1}},
+    "ura",
+    "kandora",
+    "yaku/ippatsu",
+    %{name: "yaku/renhou", config: %{"is" => "Yakuman"}},
+    "show_waits",
+    %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
+  ]
+
+  def default_riichi_mods, do: @default_riichi_mods
 
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
