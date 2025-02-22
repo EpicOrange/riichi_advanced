@@ -55,20 +55,14 @@
       ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
       ["as", "toimen", [["run", "calculate_dora", {"last_tile": "last_discard"}]]],
-      ["noop"], # interrupt and allow for ron to pop up
       ["unset_status", "just_reached"],
+      ["recalculate_buttons"], # allow for ron to pop up
       ["advance_turn"]
     ],
     "unskippable": true,
     "cancellable": false
   }
 }
-|
-.interruptible_actions += ["noop"]
-|
-.buttons.ron.show_when |= map(if . == [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}] then
-  [{"name": "has_yaku_with_discard", "opts": [3, 60]}, {"name": "has_yaku_with_discard", "opts": [4, 30]}, {"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
-else . end)
 |
 .buttons.ron.show_when |= [{"name": "status", "opts": ["match_start"]}] + .
 |
@@ -94,7 +88,16 @@ else . end)
 # dora counts towards mangan
 .score_calculation.extra_yaku_lists = []
 |
-# handle tobi: if we're under 1000 we lose as we can't riichi
+.available_mods |= map(if type == "object" then
+  if .id == "tobi" then
+    # set tobi default to <1000; we lose as we can't riichi
+    .config[0].default = 1000
+  elif .id == "min_han" then
+    # default min han mod to mangan
+    .config[0].default = "Mangan"
+  else . end
+else . end)
+|
 # note: doesn't handle washizu mod's 0.1x score multiplier
 .available_mods |= map(if type == "object" and .id == "tobi" then .config[0].default = 1000 else . end)
 |
