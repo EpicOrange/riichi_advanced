@@ -74,17 +74,8 @@ else . end
     {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
     {"name": "status_missing", "opts": ["furiten"]},
     {"name": "status_missing", "opts": ["just_reached"]},
-    [
-      [
-        {"name": "last_call_is", "opts": ["kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-      ],
-      [
-        {"name": "last_call_is", "opts": ["ankan"]},
-        {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
-        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-      ]
-    ]
+    {"name": "last_call_is", "opts": ["kakan"]},
+    {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
   ],
   "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
   "precedence_over": ["chii", "pon", "daiminkan"]

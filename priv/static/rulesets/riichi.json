@@ -21,7 +21,7 @@
     "agarirenchan", "tenpairenchan",
     "kyuushu_kyuuhai",
     "double_wind_4_fu",
-    "yaku/renhou", "pao",
+    "yaku/renhou", "pao", "kokushi_chankan",
     "show_waits"
   ],
   "available_mods": [
@@ -61,6 +61,7 @@
     {"id": "kansai_chiitoitsu", "name": "Kansai Chiitoitsu", "desc": "Chiitoitsu now allows repeated pairs."},
     {"id": "min_han", "order": 1, "name": "Minimum Han", "config": [{"type": "dropdown", "name": "min", "values": [1, 2, 3, 4, "Mangan", "Yakuman"], "default": 1}], "desc": "Minimum han required to win."},
     {"id": "no_riichi_ankan", "deps": ["kan", "yaku/riichi"], "name": "No Riichi Ankan", "desc": "Disallow any concealed kan while in riichi, not just ones that change your waits."},
+    {"id": "kokushi_chankan", "deps": ["kan"], "name": "Kokushi Chankan", "desc": "Allow robbing ankans if in tenpai for kokushi musou."},
     "Abortive Draws",
     {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
     {"id": "suucha_riichi", "name": "Suucha Riichi", "deps": ["yaku/riichi"], "desc": "Enable 4 riichi abortive draw."},
