@@ -1,6 +1,6 @@
-.default_mods |= map(select(IN("yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
+.default_mods |= map(select(IN("kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("yaku/riichi", "drawless_riichi") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("kan", "yaku/riichi", "drawless_riichi") | not)))
 |
 .starting_tiles = 34
 |
@@ -54,7 +54,9 @@
       ["register_last_discard"],
       ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
+      ["as", "toimen", [["run", "calculate_dora", {"last_tile": "last_discard"}]]],
       ["noop"], # interrupt and allow for ron to pop up
+      ["unset_status", "just_reached"],
       ["advance_turn"]
     ],
     "unskippable": true,
@@ -94,18 +96,7 @@ else . end)
 |
 # handle tobi: if we're under 1000 we lose as we can't riichi
 # note: doesn't handle washizu mod's 0.1x score multiplier
-.before_start.actions += [
-  ["as", "everyone", [
-    ["subtract_score", 1000],
-    ["set_status", "has_1000"]
-  ]]
-]
-|
-.after_start.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
-|
-.before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
-|
-.persistent_statuses += ["has_1000"]
+.available_mods |= map(if type == "object" and .id == "tobi" then .config[0].default = 1000 else . end)
 |
 .win_timer = 20
 |
