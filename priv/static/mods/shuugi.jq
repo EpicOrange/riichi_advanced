@@ -2,7 +2,7 @@
 |
 .after_win.actions += [
   ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["add_counter", "shuugi_payment", 1]]],
-  ["add_counter", "shuugi_payment", "aka"],
+  ["when", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_counter", "shuugi_payment", "aka"]]],
   ["add_counter", "shuugi_payment", "ura"],
   ["when", [{"name": "status", "opts": ["riichi", "shiro_pocchi"]}], [["add_counter", "shuugi_payment", 1]]],
   ["when", [{"name": "status", "opts": ["kindora"]}], [["add_counter", "shuugi_payment", 2]]],
@@ -11,7 +11,7 @@
   ["add_counter", "shuugi_payment", "galaxy_shuugi"],
   ["set_counter_all", "shuugi_payment", "shuugi_payment"],
   ["when", ["won_by_discard"], [
-    ["when", [{"name": "counter_at_least", "opts": ["aka", 1]}], [["push_system_message", "Discarder pays 1 chip per aka dora (shuugi)"]]],
+    ["when", [{"name": "counter_at_least", "opts": ["aka", 1]}], [["push_system_message", "Discarder pays 1 chip per aka dora in a closed hand (shuugi)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["ura", 1]}], [["push_system_message", "Discarder pays 1 chip per ura dora (shuugi)"]]],
     ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["push_system_message", "Discarder pays 1 chip for ippatsu (shuugi)"]]],
     ["when", [{"name": "status", "opts": ["yakuman"]}], [["push_system_message", "Discarder pays 5 chips for a yakuman win (shuugi)"]]],
@@ -22,7 +22,7 @@
     ["add_counter", "shuugi", "shuugi_payment"]
   ]],
   ["when", ["won_by_draw"], [
-    ["when", [{"name": "counter_at_least", "opts": ["aka", 1]}], [["push_system_message", "Everyone pays 1 chip per aka dora (shuugi)"]]],
+    ["when", [{"name": "counter_at_least", "opts": ["aka", 1]}], [["push_system_message", "Everyone pays 1 chip per aka dora in a closed hand (shuugi)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["ura", 1]}], [["push_system_message", "Everyone pays 1 chip per ura dora (shuugi)"]]],
     ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["push_system_message", "Everyone pays 1 chip for ippatsu (shuugi)"]]],
     ["when", [{"name": "status", "opts": ["yakuman"]}], [["push_system_message", "Everyone pays 5 chips for a yakuman win (shuugi)"]]],

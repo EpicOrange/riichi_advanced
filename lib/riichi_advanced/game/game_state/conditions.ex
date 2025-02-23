@@ -441,7 +441,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
           "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
-          _ -> [context.tile]
+          tile -> if Utils.is_tile(tile) do
+              [Utils.to_tile(tile)]
+            else
+              [context.tile]
+            end
         end
         tag = Enum.at(opts, 1, "missing_tag")
         tagged_tiles = state.tags[tag]

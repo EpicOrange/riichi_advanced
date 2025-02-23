@@ -36,7 +36,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def get_yakuhai(state, seat) do
-    dragons = [:"5z", :"6z", :"7z"]
+    # TODO support aka, ao, kin, versions
+    dragons = [:"0z", :"5z", :"6z", :"7z", :"8z", :"9z"]
     seat_wind = case Riichi.get_seat_wind(state.kyoku, seat, state.available_seats) do
       :east -> :"1z"
       :south -> :"2z"

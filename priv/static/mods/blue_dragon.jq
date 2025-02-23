@@ -1,3 +1,12 @@
+.after_initialization.actions += [
+  ["add_rule", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall."],
+  ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) A triplet of blue dragons is yakuhai."],
+  ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons)."],
+  ["add_rule", "Local Yaku (2 Han)", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons)."],
+  ["add_rule", "Local Yaku (Yakuman)", "(Blue Dragon) Having three dragon triplets and a dragon pair awards the Shousuugen yakuman."],
+  ["add_rule", "Local Yaku (Double Yakuman)", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman."]
+]
+|
 .wall += ["0z", "0z", "0z", "0z"]
 |
 .set_definitions.baiban = ["0z", "0z", "0z"]

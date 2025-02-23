@@ -13,6 +13,13 @@ def add_star_suit($enabled; $arr):
       . + map(select(type == "string" and endswith("m")) | sub("m$"; "t"))
     else . end;
 
+.after_initialization.actions += [
+  ["add_rule", "Wall", "(Galaxy Mahjong) One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.", -99],
+  ["add_rule", "Win Condition", "- (Galaxy Mahjong) You have 14 galaxy tiles.", -100],
+  ["add_rule", "Local Yaku (Yakuman)", "(Galaxy Mahjong) Having 14 galaxy tiles awards the Milky Way yakuman."],
+  ["update_rule", "Shuugi", "(Galaxy Mahjong) Every galaxy tile used as its original tile awards one shuugi."]
+]
+|
 any(.wall[]; . == "1t") as $star
 |
 .wall |= (to_entries | map(if (.key % 4 == 3) then .value |= make_galaxy else . end) | map(.value))

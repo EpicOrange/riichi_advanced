@@ -10,6 +10,8 @@ def nine_to_ten:
     .
   end;
 
+.after_initialization.actions += [["add_rule", "Wall", "(Ten) Every suit runs from 1 to 10.", -99]]
+|
 .wall |= nine_to_ten
 |
 # re-add the same number of nine tiles as there are two tiles

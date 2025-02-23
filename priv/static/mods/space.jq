@@ -5,6 +5,12 @@ def fix_chanta_match_definition($new_groups):
     )
   else . end);
 
+.after_initialization.actions += [
+  ["add_rule", "Space Mahjong", "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."],
+  ["add_rule", "Win Condition", "- (Space Mahjong) Seven Pairs is no longer a winning hand.", -100],
+  ["add_rule", "Local Yaku (3 Han)", "(Space Mahjong) Open kokushi musou is 3 han."]
+]
+|
 # add open kokushi
 .kokushi_tenpai_definition += [
   [ "unique",
@@ -105,6 +111,10 @@ def fix_chanta_match_definition($new_groups):
 |
 # remove chiitoitsu
 .yaku |= map(select(.display_name != "Chiitoitsu"))
+|
+.tenpai_definition |= map(select(type != "array" or all(.[]; . != [["pair"], 6])))
+|
+.win_definition |= map(select(type != "array" or all(.[]; . != [["pair"], 7])))
 |
 # sequences wrap (supports ten mod)
 if any(.wall[]; . == "10m") then

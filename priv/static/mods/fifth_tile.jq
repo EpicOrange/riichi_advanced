@@ -18,4 +18,6 @@ def extend_four:
     end
   ) | .result + .group + (if .group | length == 4 then [.group[0]] else [] end);  # Handle last group
 
+.after_initialization.actions += [["add_rule", "Wall", "(Fifth Tile) There is a fifth copy of every standard tile.", -99]]
+|
 .wall |= extend_four
