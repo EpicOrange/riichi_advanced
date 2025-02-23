@@ -7,17 +7,18 @@ html, body {
   overflow-y: visible;
   height: 100%;
   scrollbar-width: none; /* Firefox */
+  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
 }
 html::-webkit-scrollbar, body::-webkit-scrollbar { 
   display: none; /* Safari/Chrome */
 }
-
+body > div {
+  padding: 0 calc(1 * var(--tile-size));
+}
 main {
   max-height: 80vh;
   aspect-ratio: 1/1;
   margin: calc(2 * var(--tile-size)) auto;
-
-  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
   --tile-front-side: #eee4d8;
   --tile-back: #f0974c;
