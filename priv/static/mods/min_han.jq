@@ -7,7 +7,7 @@ else
 end
 +
 if has("dora_indicators") then
-  if any(.score_calculation.extra_yaku_lists; . == "extra_yaku") then
+  if (.score_calculation.extra_yaku_lists | index("extra_yaku")) then
     " (dora does not count)."
   else
     " (dora counts)."
