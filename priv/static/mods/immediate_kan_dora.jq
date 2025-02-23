@@ -3,6 +3,11 @@ def insert_after_kan_draw($arr):
   |
   if $ix then (.[:$ix+1] + $arr + .[$ix+1:]) else . end;
 
+.after_initialization.actions += [
+  ["delete_rule", "Kandora"],
+  ["add_rule", "Kandora", "Every kan reveals another dora indicator immediately."]
+]
+|
 # dora flips immediately after daiminkan
 # set status to prevent dora flip after turn change
 if (.buttons | has("daiminkan")) then

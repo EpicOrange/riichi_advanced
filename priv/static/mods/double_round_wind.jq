@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Double Round Wind", "Opposing winds are also round winds. So in East round, West is also a round wind."]]
+|
 .yaku += [{
   "display_name": "Round Wind",
   "value": 1,

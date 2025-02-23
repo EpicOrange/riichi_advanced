@@ -1,3 +1,5 @@
+.after_initialization.actions += [["update_rule", "Riichi", "(Ippatsu:) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu."]]
+|
 # add ippatsu yaku after riichi
 (.yaku | map(.display_name == "Riichi") | index(true)) as $ix
 |

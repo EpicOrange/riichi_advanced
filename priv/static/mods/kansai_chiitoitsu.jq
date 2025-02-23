@@ -1,6 +1,8 @@
 def replace($from; $to):
   if . == $from then $to else . end;
 
+.after_initialization.actions += [["add_rule", "Kansai Chiitoitsu", "Chiitoitsu allows repeated pairs."]]
+|
 .tenpai_definition |= map(replace([ [["nojoker", "koutsu"], -1], [["pair"], 6] ]; [ [["pair"], 6] ]))
 |
 .tenpai_14_definition |= map(replace([ [["nojoker", "quad"], -1], [["koutsu"], -2], [["pair"], 6] ]; [ [["pair"], 6] ]))

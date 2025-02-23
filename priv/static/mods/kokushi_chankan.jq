@@ -1,3 +1,5 @@
+.after_initialization.actions += [["update_rule", "Chankan", "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou."]]
+|
 [
   {"name": "last_call_is", "opts": ["kakan"]},
   {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}

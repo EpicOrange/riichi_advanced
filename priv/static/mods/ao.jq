@@ -9,6 +9,8 @@ def replace_n_tiles($tile; $aka; $num):
     else . end
   else . end;
 
+.after_initialization.actions += [["add_rule", "Ao", "\($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with blue \"ao dora\" fives that are worth two extra han each."]]
+|
 # replace 5m,5p,5s in wall with 25m,25p,25s
 .wall |= replace_n_tiles("5m"; "25m"; $man)
 |

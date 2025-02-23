@@ -18,6 +18,7 @@ defmodule RiichiAdvanced.TestUtils do
     },
     "agarirenchan",
     "tenpairenchan",
+    "kuikae_nashi",
     "double_wind_4_fu",
     "pao",
     "kokushi_chankan",

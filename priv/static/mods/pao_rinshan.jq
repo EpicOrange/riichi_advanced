@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Rinshan Pao", "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."]]
+|
 .after_call.actions += [
   ["when", 
     [

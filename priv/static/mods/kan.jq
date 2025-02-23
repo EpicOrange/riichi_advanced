@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["add_rule", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."],
+  ["add_rule", "Chankan", "If someone calls kan to upgrade a triplet (added kan), you may call ron on the added tile. Doing so awards chankan (1 han)."]
+]
+|
 .yaku += [
   { "display_name": "Chankan", "value": 1, "when": ["won_by_call"] },
   { "display_name": "Rinshan", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },

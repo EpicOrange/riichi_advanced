@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Wareme", "The player whose wall is broken is wareme: if they win, they win 2x points, but if they pay, they pay 2x points."]]
+|
 if .num_players == 2 then
   .after_start.actions += [
     ["when", [{"name": "dice_equals", "opts": [3, 5, 7, 9, 11]}], [["as", "east", [["set_status", "wareme"]]]]],

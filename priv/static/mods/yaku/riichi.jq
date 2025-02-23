@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Riichi", "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win you are awarded Riichi (1 han)."]]
+.after_initialization.actions += [["add_rule", "Riichi", "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win you are awarded riichi (1 han)."]]
 |
 .yaku |= [
   { "display_name": "Riichi", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}] },

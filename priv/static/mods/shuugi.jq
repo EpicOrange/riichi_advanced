@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth \($worth) each, which are gained and lost separately from points."]]
+|
 .after_win.actions += [
   ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["add_counter", "shuugi_payment", 1]]],
   ["add_counter", "shuugi_payment", "aka"],
@@ -38,10 +40,10 @@
 .after_start.actions += [["when_anyone", [], [["add_counter", "shuugi", 0]]]]
 |
 .before_conclusion.actions += [
-  ["push_system_message", "Converted each shuugi to 2000 points."],
+  ["push_system_message", "Converted each shuugi to \($worth) points."],
   ["as", "everyone", [
     ["set_counter", "shuugi_payout", "shuugi"],
-    ["multiply_counter", "shuugi_payout", 2000],
+    ["multiply_counter", "shuugi_payout", $worth],
     ["add_score", "shuugi_payout"]
   ]]
 ]

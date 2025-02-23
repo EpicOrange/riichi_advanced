@@ -9,6 +9,8 @@ def replace_n_tiles($tile; $aka; $num):
     else . end
   else . end;
 
+.after_initialization.actions += [["add_rule", "Kin", "\($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with gold \"kin dora\" fives that are worth three extra han each."]]
+|
 # replace 5m,5p,5s in wall with 35m,35p,35s
 .wall |= replace_n_tiles("5m"; "35m"; $man)
 |
@@ -28,7 +30,7 @@ def replace_n_tiles($tile; $aka; $num):
 |
 # count kin
 .before_win.actions += [
-  ["add_counter", "kin", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["35m","35p","35s"], 2] ]]]
+  ["add_counter", "kin", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["35m","35p","35s"], 3] ]]]
 ]
 |
 # add kin yaku

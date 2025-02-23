@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Sekinin Barai (Pao)", "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."]]
+|
 # sanma calls it pei_triplet
 (if .set_definitions | has("pei_triplet") then "pei_triplet" else "pei" end) as $pei
 |
