@@ -798,8 +798,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       "add_rule"             ->
         id = Enum.at(opts, 0, "")
         text = Enum.at(opts, 1, "")
-        priority = Enum.at(opts, 2, 0)
-        update_in(state.rules_text, &Map.put(&1, id, {text, priority}))
+        priority = Enum.at(opts, 2, nil)
+        update_in(state.rules_text, &Map.update(&1, id, {text, if priority == nil do 0 else priority end}, fn {orig_text, orig_priority} -> {orig_text <> text, if priority == nil do orig_priority else priority end} end))
       "delete_rule"             ->
         id = Enum.at(opts, 0, "")
         update_in(state.rules_text, &Map.delete(&1, id))

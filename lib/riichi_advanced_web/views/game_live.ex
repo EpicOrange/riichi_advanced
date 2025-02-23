@@ -351,11 +351,16 @@ defmodule RiichiAdvancedWeb.GameLive do
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
       </div>
+      <input id="rules-popover-checkbox" type="checkbox" class="rules-popover-checkbox" phx-update="ignore">
+      <label for="rules-popover-checkbox">Rules</label>
       <div class="rules-popover-container" :if={not Enum.empty?(@state.rules_text)}>
-        <input id="rules-popover-checkbox" type="checkbox" class="rules-popover-checkbox" phx-update="ignore">
-        <label for="rules-popover-checkbox">Rules</label>
         <div class="rules-popover">
-          <textarea readonly><%= @state.rules_text |> Enum.sort_by(fn {id, {_text, priority}} -> {priority, id} end) |> Enum.map_join("\n\n", fn {_id, {text, _priority}} -> text end) %></textarea>
+          <%= for {title, {text, _priority}} <- Enum.sort_by(@state.rules_text, fn {title, {_text, priority}} -> {priority, title} end) do %>
+            <div class="rules-popover-rule">
+              <div class="rules-popover-title"><%= title %></div>
+              <div class="rules-popover-text"><%= text %></div>
+            </div>
+          <% end %>
         </div>
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
