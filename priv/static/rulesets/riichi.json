@@ -118,7 +118,7 @@
     {"id": "yaku/uumensai", "name": "Uumensai", "desc": "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."},
     {"id": "yaku/sanpuukou", "name": "Sanpuukou", "desc": "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."},
     {"id": "yaku/renkaihou", "deps": ["kan"], "name": "Renkaihou", "desc": "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."},
-    {"id": "yaku/mondeikou", "deps": ["aka", "aka_4"], "name": "Mondeikou", "desc": "Local yaku. If you have all 4 aka, 2 han on top of aka. This counts as a yaku."},
+    {"id": "yaku/mondeikou", "deps": ["aka"], "name": "Mondeikou", "desc": "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."},
     // 3 han
     {"id": "yaku/isshoku_sanjun", "name": "Isshoku Sanjun", "desc": "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."},
     {"id": "yaku/ittsu_chanta", "name": "Ittsu Chanta", "desc": "Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu."},
@@ -138,9 +138,9 @@
     {"id": "yaku/chiishin_uushii", "name": "Chiishin Uushii", "desc": "Local yaku. \"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."},
     {"id": "yaku/maneman", "name": "Maneshi Mangan", "desc": "Local yaku. \"Imitation Mangan\". If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate."},
     {"id": "yaku/rentsuu_honitsu", "name": "Rentsuu Honitsu", "desc": "Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."},
-    {"id": "yaku/dorahairi_chinroutou_chiitoitsu", "deps": ["dora"], "name": "Dorahairi Chinroutou Chiitoitsu", "desc": "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile plus the dora."},
+    {"id": "yaku/dorahairi_chinroutou_chiitoitsu", "deps": ["dora"], "name": "Dorahairi Chinroutou Chiitoitsu", "desc": "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora."},
     "Yakuman",
-    {"id": "yaku/paarenchan", "conflicts": ["yakuman_only"], "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth Yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
+    {"id": "yaku/paarenchan", "name": "Paarenchan", "desc": "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."},
     {"id": "yaku/ishino_uenimo_sannen", "name": "Ishino Uenimo Sannen", "deps": ["yaku/riichi"], "desc": "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."},
     {"id": "yaku/toukanhou", "deps": ["kan"], "name": "Toukanhou", "desc": "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."},
     {"id": "yaku/shiisanpuutaa", "name": "Shiisanpuutaa", "desc": "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."},
@@ -582,7 +582,11 @@
   },
   "after_initialization": {
     "actions": [
-      ["add_rule", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."]
+      ["add_rule", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."],
+      ["add_rule", "Win Condition", "You may win with one of the following:", -100],
+      ["add_rule", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100],
+      ["add_rule", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100],
+      ["add_rule", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100]
     ]
   },
   "before_turn_change": {

@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (2 Han)", "(Ittsu Chanta) Ittsu becomes 2 han if the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed.", 102]]
+|
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"] else ["chii", "pon", "daiminkan", "kakan"] end) as $open_calls

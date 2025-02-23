@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["add_rule", "Local Yaku (2 Han)", "(Tanfonhou) \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 3 han if closed.", 102],
+  ["add_rule", "Local Yaku (5 Han)", "(Chintanfon) \"Purely Without Red\". 5 han if your hand contains no red or honor tiles. This means you can have only 248p (2,4,8 circles) and 23468s (2,3,4,6,8 bamboo). 6 han if closed.", 105]
+]
+|
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"] else ["chii", "pon", "daiminkan", "kakan"] end) as $open_calls
 |
 .yaku += [

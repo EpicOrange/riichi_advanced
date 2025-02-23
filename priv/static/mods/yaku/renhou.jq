@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (\($is))", "(Renhou) \($is) if you win off the first tile someone dropped before your first draw. Calls invalidate."]]
+|
 if $is == "Mangan" then
   .yaku_renhou += [
     {

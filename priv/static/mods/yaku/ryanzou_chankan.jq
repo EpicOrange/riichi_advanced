@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Ryanzou Chankan) \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo).", 105]]
+|
 .ryanzou_chankan += [
   {
     "display_name": "Ryanzou Chankan",

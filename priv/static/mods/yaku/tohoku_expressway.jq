@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Tohoku Expressway) Your hand consists of only 246p (2,4,6 circles) and east/north winds.", 113]]
+|
 .yakuman += [
   {
     "display_name": "Tohoku Expressway",
