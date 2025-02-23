@@ -1855,8 +1855,64 @@ div.declare-yaku button.declare-yaku-button:active {
   transform: translateY(calc(var(--tile-size) / 8));
 }
 
+/* rules */
+input.rules-popover-checkbox + label {
+  position: absolute;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
+  width: calc(0.75 * var(--tile-size));
+  height: calc(2 * var(--tile-size));
+  left: calc(-1.5 * var(--tile-size));
+  top: calc(-0.5 * var(--tile-size));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  writing-mode: sideways-lr;
+}
+div.rules-popover-container {
+  z-index: 10000;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+div.rules-popover {
+  width: 0;
+  height: 100%;
+  transition: width 0.5s ease;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+}
+input.rules-popover-checkbox:checked ~ div.rules-popover {
+  width: 100%;
+  user-select: text;
+}
+div.rules-popover::before {
+  content: "";
+  background: var(--bg-color);
+  border: calc(0.125 * var(--tile-size)) solid var(--tile-front);
+  border-radius: calc(0.25 * var(--tile-size));
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  z-index: -1;
+}
+div.rules-popover > textarea {
+  position: absolute;
+  width: calc(100% - 0.5 * var(--tile-size));
+  height: calc(100% - 0.5 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  top: calc(0.25 * var(--tile-size));
+  left: calc(0.25 * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size));
+  border: none;
+  white-space: pre-wrap;
+}
 
-/* display wall */
+/* tile numbers */
 input.tile-numbers-checkbox + label {
   position: absolute;
   padding: 0 calc(0.125 * var(--tile-size));

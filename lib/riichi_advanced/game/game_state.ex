@@ -201,6 +201,7 @@ defmodule RiichiAdvanced.GameState do
       ref: "",
       players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       rules: %{},
+      rules_text: %{},
       interruptible_actions: %{},
       wall: [],
       kyoku: 0,
@@ -400,6 +401,11 @@ defmodule RiichiAdvanced.GameState do
 
     # run init actions
     state = run_init_actions(state)
+
+    # run after_initialization actions
+    state = if Map.has_key?(state.rules, "after_initialization") do
+      Actions.run_actions(state, state.rules["after_initialization"]["actions"], %{seat: state.turn})
+    else state end
 
     # terminate game if no one joins
     :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])

@@ -564,6 +564,7 @@ Here are all the toplevel keys. Every key is optional.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
+- `after_initialization`: Triggers at setup after the game begins (after `before_start`). Useful for writing rules text via `"add_rule"`.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
 - `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east).
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
@@ -645,6 +646,8 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
 - `["push_message", message]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`
 - `["push_system_message", message]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
+- `["add_rule", identifier, text, priority]`: Adds the string `text` to the rules tab on the left. Keep it brief! `identifier` is a required string identifier used for deleting this rule later -- you can also specify an existing identifier to overwrite that rule. `priority` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from highest priority to lowest.
+- `["delete_rule", identifier]`: Deletes the rule text identified by `identifier`.
 - `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
 - `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.

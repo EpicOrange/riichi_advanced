@@ -795,6 +795,14 @@ defmodule RiichiAdvanced.GameState.Actions do
       "push_system_message"   ->
         push_message(state, Enum.map(opts, fn msg -> %{text: msg} end))
         state
+      "add_rule"             ->
+        id = Enum.at(opts, 0, "")
+        text = Enum.at(opts, 1, "")
+        priority = Enum.at(opts, 2, 0)
+        update_in(state.rules_text, &Map.put(&1, id, {text, priority}))
+      "delete_rule"             ->
+        id = Enum.at(opts, 0, "")
+        update_in(state.rules_text, &Map.delete(&1, id))
       "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
