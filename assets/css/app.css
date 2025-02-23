@@ -3071,9 +3071,10 @@ div.room > div.seats > div.player-slot > button {
 }
 div.room div.presets,
 div.room div.mods,
+div.room div.config,
 div.room div.custom-json {
   top: calc(3 * var(--tile-size));
-  height: calc(9 * var(--tile-size));
+  height: calc(10 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
 }
 div.room label.room-tab-title {
@@ -3114,14 +3115,16 @@ div.room div.mods > div.mods-inner-container div.reset-to-default-button {
   width: 100%;
   text-align: center;
 }
+div.room div.config > textarea,
+div.room div.custom-json > textarea {
+  font-size: calc(0.25 * var(--tile-size));
+}
 div.room div.custom-json > textarea {
   position: absolute;
-  background: #3f3f3f;
   width: calc(100% - 0.5 * var(--tile-size));
   height: calc(100% - 0.5 * var(--tile-size));
   top: calc(0.25 * var(--tile-size));
   left: calc(0.25 * var(--tile-size));
-  font-size: calc(0.25 * var(--tile-size));
 }
 /* tab system for mods/config */
 div.room-settings > input[type="radio"] {

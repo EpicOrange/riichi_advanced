@@ -6,7 +6,7 @@
 |
 .default_mods -= ["suufon_renda", "suucha_riichi"]
 |
-# add no tsumo loss mod to the list
+# add no tsumo loss mod to the list, right before abortive draws category
 (.available_mods | index("Abortive Draws")) as $ix | .available_mods |= .[:$ix] + [
   {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Mangan tsumo gives you 8000 total instead of 4000+2000.)"}
 ] + .[$ix:]
@@ -77,3 +77,14 @@ walk(if . == "pei" then "pei_triplet" else . end)
 |
 # don't let auto discard button skip pei
 .auto_buttons["4_auto_discard"].actions[0][1] |= map(if type == "object" and .name == "buttons_exclude" then .opts += ["pei"] else . end)
+|
+# presets
+.available_presets |= map(if .display_name == "Mahjong Soul" then
+  .enabled_mods |= map(if type == "object" and .name == "aka" then
+    .config.man = 0
+  elif type == "object" and .name == "uma" then
+    .config = {"_1st": 15, "_2nd": 0, "_3rd": -15, "_4th": 0}
+  elif type == "object" and .name == "sudden_death" then
+    .config.goal = 40000
+  else . end)
+else . end)

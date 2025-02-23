@@ -270,7 +270,10 @@ defmodule RiichiAdvanced.RoomState do
   def reset_mods_to_default(state) do
     default_mods = Map.get(state.rules, "default_mods", [])
     for {mod_name, _mod} <- state.mods, reduce: state do
-      state -> put_in(state.mods[mod_name].enabled, mod_name in default_mods)
+      state ->
+        state = put_in(state.mods[mod_name].enabled, mod_name in default_mods)
+        state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, config["default"])} end))
+        state
     end
   end
 
