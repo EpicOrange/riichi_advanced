@@ -19,7 +19,11 @@ config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
   check_origin: true,
   debug_errors: true,
   # doesn't really matter what this is if you're running this locally
-  secret_key_base: System.get_env("SECRET_KEY") || "250424b3a560dca9e9700e4adc1d166ca6bffb9b9910cbef270293751f0250a2"
+  secret_key_base: System.get_env("SECRET_KEY") || "250424b3a560dca9e9700e4adc1d166ca6bffb9b9910cbef270293751f0250a2",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:riichi_advanced, ~w(--sourcemap=inline --watch)]},
+  ]
+
 
 # Note we also include the path to a cache manifest
 # containing the digested version of static files. This

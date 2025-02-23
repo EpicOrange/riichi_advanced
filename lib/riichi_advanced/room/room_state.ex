@@ -212,7 +212,7 @@ defmodule RiichiAdvanced.RoomState do
     enabled_mods = preset["enabled_mods"]
     |> Enum.flat_map(&case &1 do
       %{"name" => _mod_name, "config" => _mod_config} -> [&1]
-      mod_name -> [%{"name" => mod_name, "config" => %{}}]
+      mod_name when is_binary(mod_name) -> [%{"name" => mod_name, "config" => %{}}]
       _ ->
         IO.puts("Invalid mod config #{inspect(&1)}")
         []
