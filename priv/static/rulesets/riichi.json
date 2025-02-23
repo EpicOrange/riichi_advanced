@@ -14,6 +14,7 @@
     "nagashi",
     "tobi",
     "uma",
+    "kuikae_nashi",
     "min_han",
     "suufon_renda",
     "suucha_riichi",
@@ -43,7 +44,7 @@
     {"id": "sudden_death", "name": "Sudden Death", "config": [{"type": "dropdown", "name": "goal", "values": [25000,30000,35000], "default": 30000}], "desc": "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."},
     {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
     {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},
-    {"id": "kuikae_ari", "name": "Kuikae Ari", "desc": "Allow swap-calling."},
+    {"id": "kuikae_nashi", "name": "Kuikae Nashi", "desc": "Disallow swap-calling."},
     {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
     {"id": "double_wind_4_fu", "name": "Double Wind 4 Fu", "desc": "A pair of round+seat winds is worth 4 fu instead of 2 fu."},
@@ -204,6 +205,7 @@
         "agariyame",
         "tenpaiyame",
         {"name": "sudden_death", "config": {"goal": 30000}},
+        "kuikae_nashi",
         "double_wind_4_fu",
         "pao",
         "kokushi_chankan",
@@ -563,9 +565,6 @@
     "triple_win_draw_name": "Sanchahou",
     "exhaustive_draw_name": "Ryuukyoku"
   },
-  "play_restrictions": [
-    [["any"], ["just_called", {"name": "last_called_tile_matches", "opts": ["kuikae"]}]]
-  ],
   "functions": {
     // this is run after every call and discard, before the turn changes
     "turn_cleanup": [
@@ -579,6 +578,11 @@
       ["when_anyone", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
         [["set_status", "furiten"]]
       ]
+    ]
+  },
+  "after_initialization": {
+    "actions": [
+      ["add_rule", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."]
     ]
   },
   "before_turn_change": {
