@@ -63,7 +63,8 @@
     {"id": "min_han", "order": 1, "name": "Minimum Han", "config": [{"type": "dropdown", "name": "min", "values": [1, 2, 3, 4, "Mangan", "Yakuman"], "default": 1}], "desc": "Minimum han required to win."},
     {"id": "no_riichi_ankan", "deps": ["kan", "yaku/riichi"], "name": "No Riichi Ankan", "desc": "Disallow any concealed kan while in riichi, not just ones that change your waits."},
     {"id": "kokushi_chankan", "deps": ["kan"], "name": "Kokushi Chankan", "desc": "Allow robbing ankans if in tenpai for kokushi musou."},
-    {"id": "first_gets_riichi_sticks", "deps": ["riichi"], "name": "First Gets Riichi Sticks", "desc": "At the end of the game, all leftover riichi sticks on the table are given to first place."},
+    {"id": "first_gets_riichi_sticks", "deps": ["riichi"], "name": "First Gets Riichi Sticks", "desc": "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"},
+    {"id": "starting_score", "name": "Starting Points", "config": [{"type": "dropdown", "name": "points", "values": [0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,100000], "default": 25000}], "desc": "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"},
     "Abortive Draws",
     {"id": "suufon_renda", "name": "Suufon Renda", "desc": "Enable 4 wind abortive draw."},
     {"id": "suucha_riichi", "name": "Suucha Riichi", "deps": ["yaku/riichi"], "desc": "Enable 4 riichi abortive draw."},
@@ -217,7 +218,6 @@
         "ura",
         "kandora",
         "yaku/ippatsu",
-        {"name": "yaku/renhou", "config": {"is": "Yakuman"}},
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}},
@@ -292,6 +292,33 @@
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}},
         "shiny_dora",
         "first_gets_riichi_sticks"
+      ]
+    },
+    {
+      "display_name": "WRC 2022",
+      "enabled_mods": [
+        "kan",
+        {"name": "honba", "config": {"value": 100}},
+        {"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}},
+        {"name": "uma", "config": {"_1st": 15, "_2nd": 5, "_3rd": -5, "_4th": -15}},
+        "agarirenchan",
+        "tenpairenchan",
+        "tenpaiyame",
+        "kuikae_nashi",
+        "kiriage_mangan",
+        "head_bump",
+        "pao",
+        "pao_suukantsu",
+        "no_kazoe_yakuman",
+        "no_double_yakuman",
+        {"name": "dora", "config": {"start_indicators": 1}},
+        "ura",
+        "kandora",
+        "yaku/ippatsu",
+        {"name": "yaku/renhou", "config": {"is": "Mangan"}},
+        "show_waits",
+        {"name": "min_han", "config": {"min": 1}},
+        {"name": "starting_score", "config": {"points": 30000}}
       ]
     }
   ],
