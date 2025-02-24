@@ -338,6 +338,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_behavior = cxt_player.tile_behavior
         Enum.any?(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       "winning_hand_consists_of" ->
+        # TODO do we really need tile_mapping here if winning_hand is actually the assigned hand in yaku checks?
         tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)

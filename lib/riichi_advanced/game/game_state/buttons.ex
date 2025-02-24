@@ -110,7 +110,17 @@ defmodule RiichiAdvanced.GameState.Buttons do
               if Debug.debug_buttons() do
                 IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
               end
-              Map.get(button, "interrupt_level", 100) >= interrupt_level and Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+              Map.get(button, "interrupt_level", 100) >= interrupt_level and 
+                if name in Map.get(Debug.debug_specific_buttons(), seat, []) do
+                  case Enum.find(button["show_when"], &not Conditions.check_cnf_condition(state, [&1], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})) do
+                    nil -> true
+                    condition ->
+                      IO.puts("Button #{name} for player #{seat}: failed condition #{inspect(condition)}")
+                      false
+                  end
+                else
+                  Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                end
             end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->

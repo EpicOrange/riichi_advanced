@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_am_match_definitions []
   @debug_actions false
   @debug_buttons false
+  @debug_specific_buttons %{east: []}
   @debug_conditions true
   @debug_ai false
   @debug_log true
@@ -40,6 +41,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_am_match_definitions, do: Process.get(:ignore_type_error, @debug_am_match_definitions)
   def debug_actions, do: Process.get(:ignore_type_error, @debug_actions)
   def debug_buttons, do: Process.get(:ignore_type_error, @debug_buttons)
+  def debug_specific_buttons, do: Process.get(:ignore_type_error, @debug_specific_buttons)
   def debug_conditions, do: Process.get(:ignore_type_error, @debug_conditions)
   def debug_ai, do: Process.get(:ignore_type_error, @debug_ai)
   def debug_log, do: Process.get(:ignore_type_error, @debug_log)
