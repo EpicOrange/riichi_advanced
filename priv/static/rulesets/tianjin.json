@@ -113,7 +113,6 @@
     "Earthly Hand": ["Kong Blossom"]
   },
   "score_calculation": {
-      // TODO: fix up scoring. scoring looks complicated :(
     "scoring_method": "multiplier",
     "score_multiplier": "points2",
     "yaku_lists": ["yaku", "bonus_yaku"],
@@ -122,8 +121,8 @@
     "point2_name": "x",
     "right_display": "points2",
     "score_denomination": "",
-    "discarder_multiplier": 1000,
-    "non_discarder_multiplier": 0,
+    "discarder_multiplier": 1,
+    "non_discarder_multiplier": 1,
     "self_draw_multiplier": 1,
     "agarirenchan": true,
     "win_by_draw_label": "Zimo",
