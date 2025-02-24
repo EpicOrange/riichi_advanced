@@ -33,7 +33,8 @@ def replace_n_tiles($tile; $aka; $num):
 |
 # count ao
 .before_win.actions += [
-  ["add_counter", "ao", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["25m","25p","25s"], 2] ]]]
+  ["add_counter", "ao", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["25m","25p","25s"], 1] ]]],
+  ["multiply_counter", "ao", 2]
 ]
 |
 # add ao yaku
