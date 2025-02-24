@@ -628,12 +628,12 @@
       "actions": [
         ["unset_status", "declare_shimocha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
-          ["big_text", "Dead hand", "shimocha"],
+          ["as", "shimocha", [["big_text", "Dead hand"]]],
           ["push_message", "correctly declared player on left's hand dead"],
           ["as", "shimocha", [["push_message", "is now disqualified"]]],
           ["as", "shimocha", [["set_status", "dead_hand"]]]
         ], [
-          ["big_text", "Not dead", "shimocha"],
+          ["as", "shimocha", [["big_text", "Not dead"]]],
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared player on left's hand dead"],
           ["push_message", "is now disqualified"],
@@ -650,12 +650,12 @@
       "actions": [
         ["unset_status", "declare_toimen_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
-          ["big_text", "Dead hand", "toimen"],
+          ["as", "toimen", [["big_text", "Dead hand"]]],
           ["push_message", "correctly declared opposite player's hand dead"],
           ["as", "toimen", [["push_message", "is now disqualified"]]],
           ["as", "toimen", [["set_status", "dead_hand"]]]
         ], [
-          ["big_text", "Not dead", "toimen"],
+          ["as", "toimen", [["big_text", "Not dead"]]],
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared opposite player's hand dead"],
           ["push_message", "is now disqualified"],
@@ -672,12 +672,12 @@
       "actions": [
         ["unset_status", "declare_kamicha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
-          ["big_text", "Dead hand", "kamicha"],
+          ["as", "kamicha", [["big_text", "Dead hand"]]],
           ["push_message", "correctly declared player on left's hand dead"],
           ["as", "kamicha", [["push_message", "is now disqualified"]]],
           ["as", "kamicha", [["set_status", "dead_hand"]]]
         ], [
-          ["big_text", "Not dead", "kamicha"],
+          ["as", "kamicha", [["big_text", "Not dead"]]],
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared player on left's hand dead"],
           ["push_message", "is now disqualified"],

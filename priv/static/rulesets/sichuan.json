@@ -303,7 +303,7 @@
       ],
       "actions": [
         ["big_text", "Kong"], ["call"],
-        ["add_score", 2], ["subtract_score", 2, "last_discarder"], ["big_text", "  -2  ", "last_discarder"],
+        ["add_score", 2], ["subtract_score", 2, "last_discarder"], ["as", "last_discarder", [["big_text", "  -2  "]]],
         ["change_turn", "self"], ["set_status", "kan"], ["draw"]
       ],
       "precedence_over": ["pon"]
@@ -329,9 +329,9 @@
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
       "actions": [
         ["big_text", "Kong"], ["self_call"], ["set_status", "kan"],
-        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
-        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]]]],
         ["draw"]
       ]
     },
@@ -342,9 +342,9 @@
       "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
-        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["big_text", "  -1  ", "shimocha"]]],
-        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["big_text", "  -1  ", "toimen"]]],
-        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["big_text", "  -1  ", "kamicha"]]],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["as", "kamicha", [["big_text", "  -1  "]]]]],
         ["draw"]
       ]
     },

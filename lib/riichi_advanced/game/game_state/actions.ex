@@ -535,6 +535,12 @@ defmodule RiichiAdvanced.GameState.Actions do
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
+  def interpolate_string(state, context, str, assigns) do
+    for {name, value} <- assigns, reduce: str do
+      str -> String.replace(str, "$" <> name, Integer.to_string(interpret_amount(state, context, List.wrap(value))))
+    end
+  end
+
   defp do_charleston(state, dir, seat, marked_objects) do
     marked = Marking.get_marked(marked_objects, :hand)
     {_, hand_seat, _} = Enum.at(marked, 0)
@@ -781,7 +787,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = case action do
       "noop"                  -> state
       "print"                 ->
-        IO.inspect(opts)
+        IO.puts(interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
         state
       "print_status"          ->
         IO.inspect({context.seat, state.players[context.seat].status})
@@ -790,10 +796,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
         state
       "push_message"          ->
-        push_message(state, Enum.map(["Player #{player_name(state, context.seat)}"] ++ opts, fn msg -> %{text: msg} end))
+        message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
+        push_message(state, Enum.map(["Player #{player_name(state, context.seat)}", message], &%{text: &1}))
         state
       "push_system_message"   ->
-        push_message(state, Enum.map(opts, fn msg -> %{text: msg} end))
+        message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
+        push_message(state, [%{text: message}])
         state
       "add_rule"             ->
         id = Enum.at(opts, 0, "")
@@ -844,9 +852,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "big_text"              ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 1, "self"))
-        temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
+      "big_text"              -> temp_display_big_text(state, context.seat, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "pause"                 ->
         if not state.log_loading_mode do
           Map.put(state, :game_active, false)

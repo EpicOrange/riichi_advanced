@@ -421,9 +421,9 @@
           [{"name": "match", "opts": [["call_choice"], [[ "nojoker", [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 4] ]]]}]
         ]], [
           ["push_message", "is paid 100 from all players for completing a set of flowers before the first turn"],
-          ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]]
+          ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["as", "shimocha", [["big_text", "  -100  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["as", "toimen", [["big_text", "  -100  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["as", "kamicha", [["big_text", "  -100  "]]]]]
         ]],
         ["draw", 1, "opposite_end"]
       ],
@@ -470,7 +470,7 @@
       "actions": [
         ["big_text", "Gong"], ["call"], ["change_turn", "self"],
         ["push_message", "is paid 100 from the discarder for calling gong"],
-        ["add_score", 100], ["subtract_score", 100, "last_discarder"], ["big_text", "  -100  ", "last_discarder"],
+        ["add_score", 100], ["subtract_score", 100, "last_discarder"], ["as", "last_discarder", [["big_text", "  -100  "]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"]
@@ -485,9 +485,9 @@
       "actions": [
         ["big_text", "Gong"], ["self_call"],
         ["push_message", "is paid 100 from all players for making a concealed gong"],
-        ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["big_text", "  -100  ", "shimocha"]]],
-        ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["big_text", "  -100  ", "toimen"]]],
-        ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["big_text", "  -100  ", "kamicha"]]],
+        ["when", ["shimocha_exists"], [["add_score", 100], ["subtract_score", 100, "shimocha"], ["as", "shimocha", [["big_text", "  -100  "]]]]],
+        ["when", ["toimen_exists"], [["add_score", 100], ["subtract_score", 100, "toimen"], ["as", "toimen", [["big_text", "  -100  "]]]]],
+        ["when", ["kamicha_exists"], [["add_score", 100], ["subtract_score", 100, "kamicha"], ["as", "kamicha", [["big_text", "  -100  "]]]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"]
@@ -502,9 +502,9 @@
       "actions": [
         ["big_text", "Gong"], ["upgrade_call"],
         ["push_message", "is paid 50 from all players for upgrading a pong into a gong"],
-        ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
-        ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
-        ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]],
+        ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"], ["as", "shimocha", [["big_text", "  -50  "]]]]],
+        ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"], ["as", "toimen", [["big_text", "  -50  "]]]]],
+        ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["as", "kamicha", [["big_text", "  -50  "]]]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"]
@@ -565,9 +565,9 @@
           [{"name": "match", "opts": [["call_choice"], [[ [["1y"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ [["1y"], 4] ]]]}]
         ]], [
           ["push_message", "is paid 50 from all players for completing a set of flowers"],
-          ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"], ["big_text", "  -50  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"], ["big_text", "  -50  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["big_text", "  -50  ", "kamicha"]]]
+          ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"], ["as", "shimocha", [["big_text", "  -50  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"], ["as", "toimen", [["big_text", "  -50  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["as", "kamicha", [["big_text", "  -50  "]]]]]
         ]],
         ["set_status", "flower"],
         ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]
