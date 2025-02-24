@@ -353,7 +353,8 @@
             {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ]
-        ]
+        ],
+        {"name": "has_yaku_with_call", "opts": [1]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -364,7 +365,8 @@
         "our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+        {"name": "has_yaku_with_hand", "opts": [1]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     }
