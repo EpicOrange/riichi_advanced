@@ -1,10 +1,5 @@
-{
-    // scoring
-//✅ everyone starts with 50 points
-// actually the beginning of the round the dealer may optionally choose to "step up", the effect is essentially wareme on dealer
-//✅ additionally if you do suufonrenda (but with any tile) the dealer immediately pays 1 to every player
-    
-    //TODO: implement double-down and dealer-challenge for kong payments and discard chase. implement die rolls and reading the dice so that the dora indicator is correctly calculated.
+{    
+    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated.
   "default_mods": [],
   "available_mods": [],
   "display_name": "Tianjin Mahjong",
