@@ -1,3 +1,5 @@
+# TODO make this a config option for kandora mod instead
+
 def insert_after_kan_draw($arr):
   (map(. == ["run", "do_kan_draw"]) | index(true)) as $ix
   |

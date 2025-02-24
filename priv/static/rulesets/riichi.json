@@ -37,6 +37,7 @@
       {"type": "dropdown", "name": "_3rd", "values": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], "default": -5},
       {"type": "dropdown", "name": "_4th", "values": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], "default": -10}
     ], "desc": "Enable uma. At the end of the game, points are awarded or deducted based on placement."},
+    {"id": "oka", "name": "Oka", "config": [{"type": "dropdown", "name": "ante", "values": [5,10,15,20,25,30], "default": 5}], "desc": "Enable oka. Everyone antes the given amount, and the total is awarded to first place at the end of the game."},
     {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
     {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
     {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
@@ -319,6 +320,36 @@
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
         {"name": "starting_score", "config": {"points": 30000}}
+      ]
+    },
+    {
+      "display_name": "M.League",
+      "enabled_mods": [
+        "kan",
+        {"name": "honba", "config": {"value": 100}},
+        {"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}},
+        {"name": "nagashi", "config": {"is": "Mangan"}},
+        {"name": "uma", "config": {"_1st": 30, "_2nd": 10, "_3rd": -10, "_4th": -30}},
+        {"name": "oka", "config": {"ante": 5}},
+        "agarirenchan",
+        "tenpairenchan",
+        "agariyame",
+        "tenpaiyame",
+        "kuikae_nashi",
+        "head_bump",
+        "pao",
+        "pao_suukantsu",
+        "no_kazoe_yakuman",
+        "no_double_yakuman",
+        "kokushi_chankan",
+        {"name": "dora", "config": {"start_indicators": 1}},
+        "ura",
+        "kandora",
+        "immediate_kan_dora",
+        "yaku/ippatsu",
+        "show_waits",
+        {"name": "min_han", "config": {"min": 1}},
+        {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}}
       ]
     }
   ],
