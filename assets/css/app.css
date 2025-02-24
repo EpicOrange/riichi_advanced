@@ -1915,6 +1915,9 @@ div.rules-popover::-webkit-scrollbar {
 div.rules-popover-rule {
   flex-basis: 50%;
 }
+div.rules-popover-rule.full-width {
+  flex-basis: 100%;
+}
 div.rules-popover-title {
   white-space: pre-wrap;
   font-size: calc(0.75 * var(--tile-size));

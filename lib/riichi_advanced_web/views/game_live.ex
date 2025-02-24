@@ -356,8 +356,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         <label for="rules-popover-checkbox">Rules</label>
         <div class="rules-popover-container"}>
           <div class="rules-popover">
-            <%= for {title, {text, _priority}} <- Enum.sort_by(@state.rules_text, fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
-              <div class="rules-popover-rule">
+            <%= for {title, {text, priority}} <- Enum.sort_by(@state.rules_text, fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
+              <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                 <div class="rules-popover-title"><%= title %></div>
                 <div class="rules-popover-text"><%= text %></div>
               </div>
