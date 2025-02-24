@@ -795,9 +795,15 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"no_calls_yet"`: No call actions have been performed.
 - `{"name": "last_call_is", "opts": [call_button_id]}`: The last call, if any, was performed by the given call button id.
 - `"kamicha_discarded"`: The last action, if any, was kamicha discarding.
+- `"toimen_discarded"`: The last action, if any, was toimen discarding.
+- `"shimocha_discarded"`: The last action, if any, was shimocha discarding.
+- `"anyone_just_discarded"`: The last action, if any, was a discard.
 - `"someone_else_just_discarded"`: The last action, if any, was someone else discarding.
 - `"just_discarded"`: The last action, if any, was us discarding.
+- `"anyone_just_called"`: The last action, if any, was a call.
+- `"someone_else_just_called"`: The last action, if any, was someone else calling.
 - `"just_called"`: The last action, if any, was us calling.
+- `"just_self_called"`: The last action, if any, was us calling a `self_call`.
 - `"call_available"`: For call buttons only. The specified call is available.
 - `"self_call_available"`: For self call buttons only. The specified self call is available.
 - `"can_upgrade_call"`: For upgrade call buttons only. The specified upgrade call is available.

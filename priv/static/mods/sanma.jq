@@ -62,7 +62,7 @@ walk(if . == "pei" then "pei_triplet" else . end)
 .buttons.pei = {
   "display_name": "Pei",
   "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["4z"], 1]]]]}, {"name": "tile_not_drawn", "opts": [-8]}],
-  "actions": [["big_text", "Pei"], ["flower", "4z"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]]
+  "actions": [["big_text", "Pei"], ["flower", "4z"], ["run", "discard_passed"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]]
 }
 |
 # add auto pei
@@ -88,3 +88,25 @@ walk(if . == "pei" then "pei_triplet" else . end)
     .config.goal = 40000
   else . end)
 else . end)
+|
+# in case kan mod is not on
+if (.buttons | has("chankan") | not) then
+  .buttons.chankan = {
+    "display_name": "Ron",
+    "show_when": [
+      "not_our_turn",
+      {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
+      {"name": "status_missing", "opts": ["furiten"]},
+      {"name": "status_missing", "opts": ["just_reached"]},
+      {"name": "last_call_is", "opts": ["kakan"]},
+      {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+    ],
+    "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+    "precedence_over": ["chii", "pon", "daiminkan"]
+  }
+else . end
+|
+# add pei to chankan
+.buttons.chankan.show_when |= map(if type == "object" and .name == "last_call_is" then .opts += ["pei"] else . end)
+|
+.interruptible_actions += ["flower"]

@@ -69,6 +69,18 @@ if (.buttons | has("ankan")) then
   ]]
 else . end
 |
+if (.buttons | has("ron")) then
+  .buttons.ron.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
+else . end
+|
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
+else . end
+|
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
+else . end
+|
 .functions.turn_cleanup |= [
   # if we just reached then place down a riichi stick
   ["when", [{"name": "status", "opts": ["just_reached"]}], [["as", "last_discarder", [["run", "put_down_riichi_stick"]]]]]

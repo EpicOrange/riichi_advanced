@@ -69,7 +69,7 @@ else . end
   "upgrades": "pon",
   # not sure why we have "not_just_discarded", "not_just_called" instead of "has_draw"
   "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}],
-  "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw", {"status": "kan"}]]
+  "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "discard_passed"], ["run", "do_kan_draw", {"status": "kan"}]]
 }
 |
 .buttons.chankan = {

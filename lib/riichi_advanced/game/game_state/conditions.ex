@@ -211,11 +211,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "kamicha_discarded"           -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat)
       "toimen_discarded"            -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat, 2)
       "shimocha_discarded"          -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat, 3)
-      "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn
+      "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard
       "someone_else_just_discarded" -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn != context.seat
       "just_discarded"              -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == context.seat
-      "just_called"                 -> last_action != nil and last_action.action == :call and state.turn in [last_action.seat, last_action.from]
-      "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn
+      "anyone_just_called"          -> last_action != nil and last_action.action == :call
+      "someone_else_just_called"    -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and state.turn != context.seat
+      "just_called"                 -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and state.turn == context.seat
+      "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn and state.turn == context.seat
       "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]), cxt_player.tile_behavior, [last_action.tile])
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]) ++ Utils.add_attr(cxt_player.draw, ["_hand"]), cxt_player.tile_behavior, [])
       "can_upgrade_call"            -> cxt_player.calls
