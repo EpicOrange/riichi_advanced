@@ -24,7 +24,7 @@
   "honba_value": 10
 }
 |
-.initial_score = 2500
+.initial_score /= 10
 |
 # modify tobi
 .score_calculation.tobi |= if . == 1000 then 100 elif . == 1001 then 101 else . end

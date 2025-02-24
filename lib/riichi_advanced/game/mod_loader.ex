@@ -47,7 +47,7 @@ defmodule RiichiAdvanced.ModLoader do
         modded_json = apply_multiple_mods(ruleset_json, mods)
 
         if Debug.print_mods() do
-          IO.inspect({ruleset, mods}, label: "Loading")
+          IO.puts("Loading #{ruleset}: [\n  #{Enum.map_join(mods, ",\n  ", &Jason.encode!/1)}\n]")
         end
         
         if not Debug.skip_ruleset_caching() do
