@@ -3,8 +3,8 @@
 .after_win.actions += [
   ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["add_counter", "shuugi_payment", 1]]],
   ["when", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_counter", "shuugi_payment", "aka"]]],
-  ["when", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_counter", "shuugi_payment", "ao"], ["add_counter", "shuugi_payment", "ao"]]],
-  ["when", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_counter", "shuugi_payment", "kin"], ["add_counter", "shuugi_payment", "kin"], ["add_counter", "shuugi_payment", "kin"]]],
+  ["when", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_counter", "shuugi_payment", "ao"]]],
+  ["when", [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}], [["add_counter", "shuugi_payment", "kin"]]],
   ["add_counter", "shuugi_payment", "ura"],
   ["when", [{"name": "status", "opts": ["riichi", "shiro_pocchi"]}], [["add_counter", "shuugi_payment", 1]]],
   ["when", [{"name": "status", "opts": ["kindora"]}], [["add_counter", "shuugi_payment", 2]]],
