@@ -564,8 +564,9 @@ Here are all the toplevel keys. Every key is optional.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
+- `after_initialization`: Triggers at setup after the game begins (after `before_start`). Useful for writing rules text via `"add_rule"`. Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
-- `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east).
+- `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east). Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
 - `after_win`: Triggers at the end of a win, after yaku is calculated.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
@@ -643,8 +644,11 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 ## Actions
 
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
-- `["push_message", message]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`
-- `["push_system_message", message]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
+- `["push_message", message, vars]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", {"n": "honba"}]`.
+- `["push_system_message", message, vars]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
+- `["add_rule", title, text, sort_order]`: Adds the string `text` to the rules tab on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest.
+- `["update_rule", title, text, sort_order]`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
+- `["delete_rule", title]`: Deletes the rule text identified by `title`.
 - `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
 - `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.
@@ -687,7 +691,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["subtract_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but subtracts.
 - `["multiply_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but multiplies.
 - `["divide_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
-- `["big_text", text, seat]`: Popup big text for the current player, or the given seat if `seat` is specified. Allowed values of `seat` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`
+- `["big_text", text, vars]`: Popup big text for the current player. The text displayed is `text`. If you want to interpolate numbers into the text you may specify it much like you do for `push_message`: `["big_text", "$ctr/$max", {"ctr": "my_counter", "max": 100}]`
 - `["pause", ms]`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
 - `["sort_hand"]`: Sort the current player's hand.
 - `["reveal_tile", tile]`: Show a given tile above the game for the remainder of the round.
@@ -791,9 +795,15 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"no_calls_yet"`: No call actions have been performed.
 - `{"name": "last_call_is", "opts": [call_button_id]}`: The last call, if any, was performed by the given call button id.
 - `"kamicha_discarded"`: The last action, if any, was kamicha discarding.
+- `"toimen_discarded"`: The last action, if any, was toimen discarding.
+- `"shimocha_discarded"`: The last action, if any, was shimocha discarding.
+- `"anyone_just_discarded"`: The last action, if any, was a discard.
 - `"someone_else_just_discarded"`: The last action, if any, was someone else discarding.
 - `"just_discarded"`: The last action, if any, was us discarding.
+- `"anyone_just_called"`: The last action, if any, was a call.
+- `"someone_else_just_called"`: The last action, if any, was someone else calling.
 - `"just_called"`: The last action, if any, was us calling.
+- `"just_self_called"`: The last action, if any, was us calling a `self_call`.
 - `"call_available"`: For call buttons only. The specified call is available.
 - `"self_call_available"`: For self call buttons only. The specified self call is available.
 - `"can_upgrade_call"`: For upgrade call buttons only. The specified upgrade call is available.

@@ -38,6 +38,8 @@ defmodule RiichiAdvanced.RoomState do
       started: false,
       display_name: "",
       mods: %{},
+      presets: [],
+      selected_preset_ix: nil,
       categories: [],
       tutorial_link: nil,
       textarea: [@initial_textarea],
@@ -82,6 +84,8 @@ defmodule RiichiAdvanced.RoomState do
         state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
         {state, %{}}
     end
+
+    presets = Map.get(rules, "available_presets", [])
 
     {mods, categories} = for {item, i} <- Map.get(rules, "available_mods", []) |> Enum.with_index(), reduce: {[], []} do
       {result, categories} -> cond do
@@ -146,6 +150,8 @@ defmodule RiichiAdvanced.RoomState do
         deps: Map.get(mod, "deps", []),
         conflicts: Map.get(mod, "conflicts", [])
       }} end),
+      presets: presets,
+      selected_preset_ix: nil,
       categories: categories,
       tutorial_link: if state.ruleset == "custom" do
         "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md"
@@ -195,7 +201,38 @@ defmodule RiichiAdvanced.RoomState do
       end end)
   end
 
+  def set_preset(state, ix) do
+    # disable all mods
+    state = for {mod_name, mod} <- state.mods, mod.enabled, reduce: state do
+      state -> toggle_mod(state, mod_name, false)
+    end
+
+    # enable mods in the preset
+    preset = Enum.at(state.presets, ix, Enum.at(state.presets, ix, 0))
+    enabled_mods = preset["enabled_mods"]
+    |> Enum.flat_map(&case &1 do
+      %{"name" => _mod_name, "config" => _mod_config} -> [&1]
+      mod_name when is_binary(mod_name) -> [%{"name" => mod_name, "config" => %{}}]
+      _ ->
+        IO.puts("Invalid mod config #{inspect(&1)}")
+        []
+    end)
+    state = for %{"name" => mod_name, "config" => mod_config} <- enabled_mods, reduce: state do
+      state -> 
+        state = toggle_mod(state, mod_name, true)
+        for {config_name, config} <- state.mods[mod_name].config, reduce: state do
+          state -> change_mod_config(state, mod_name, config_name, Enum.find_index(config["values"], & &1 == Map.get(mod_config, config_name, config["default"])))
+        end
+    end
+
+    # set selected preset index
+    state = Map.put(state, :selected_preset_ix, ix)
+
+    state
+  end
+
   def toggle_mod(state, mod_name, enabled) do
+    state = Map.put(state, :selected_preset_ix, nil)
     state = put_in(state.mods[mod_name].enabled, enabled)
     if enabled do
       # enable dependencies and disable conflicting mods
@@ -214,6 +251,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def change_mod_config(state, mod_name, name, ix) do
+    state = Map.put(state, :selected_preset_ix, nil)
     values = state.mods[mod_name].config[name]["values"]
     # verify input
     if is_integer(ix) and ix >= 0 and ix < length(values) do
@@ -232,7 +270,10 @@ defmodule RiichiAdvanced.RoomState do
   def reset_mods_to_default(state) do
     default_mods = Map.get(state.rules, "default_mods", [])
     for {mod_name, _mod} <- state.mods, reduce: state do
-      state -> put_in(state.mods[mod_name].enabled, mod_name in default_mods)
+      state ->
+        state = put_in(state.mods[mod_name].enabled, mod_name in default_mods)
+        state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "default", Enum.at(config["values"], 0)))} end))
+        state
     end
   end
 
@@ -363,6 +404,12 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_cast({:toggle_shuffle_seats, enabled}, state) do
     state = Map.put(state, :shuffle, enabled)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:set_preset, ix}, state) do
+    state = set_preset(state, ix)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

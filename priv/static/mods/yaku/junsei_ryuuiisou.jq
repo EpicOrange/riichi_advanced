@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Double Yakuman)", "(Junsei Ryuuiisou) You have ryuuiisou without a green dragon.", 126]]
+|
 .yakuman += [
   {
     "display_name": "Junsei Ryuuiisou",

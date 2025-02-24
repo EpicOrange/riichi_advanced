@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["add_rule", "Local Yaku (Yakuman)", "(Suuchoupaikou) \"Four Consecutive Triplets\". You have four triplets of the same suit whose numbers step by 2, like 111 333 555 777.", 113],
+  ["add_rule", "Sekinin Barai (Pao)", "(Suuchoupaikou) If you win with suuchoupaikou (111 333 555 777 of the same suit) and called the fourth triplet or kan from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else."]
+]
+|
 .yakuman += [
   {
     "display_name": "Suuchoupaikou",

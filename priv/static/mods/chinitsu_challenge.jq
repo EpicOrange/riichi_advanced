@@ -12,11 +12,7 @@
 |
 .display_riichi_sticks = false
 |
-.display_honba = false
-|
 .score_calculation.riichi_value = 0
-|
-.score_calculation.honba_value = 0
 |
 .buttons |= del(.chii, .pon, .daiminkan)
 |
@@ -39,8 +35,8 @@
   "_clear_yaku": [1,2,3,4,5,6]
 }
 |
-.default_mods |= map(select(IN("show_waits", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai") | not))
+.default_mods |= map(select(IN("honba", "yaku/riichi", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("honba", "yaku/riichi", "kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))
 |
 .win_timer = 20

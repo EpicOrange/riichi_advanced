@@ -7,17 +7,18 @@ html, body {
   overflow-y: visible;
   height: 100%;
   scrollbar-width: none; /* Firefox */
+  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
 }
 html::-webkit-scrollbar, body::-webkit-scrollbar { 
   display: none; /* Safari/Chrome */
 }
-
+body > div {
+  padding: 0 calc(1 * var(--tile-size));
+}
 main {
   max-height: 80vh;
   aspect-ratio: 1/1;
   margin: calc(2 * var(--tile-size)) auto;
-
-  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
   --tile-front: #f4f0eb;
   --tile-front-side: #eee4d8;
   --tile-back: #f0974c;
@@ -1854,8 +1855,80 @@ div.declare-yaku button.declare-yaku-button:active {
   transform: translateY(calc(var(--tile-size) / 8));
 }
 
+/* rules */
+input.rules-popover-checkbox + label {
+  position: absolute;
+  padding: 0 calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
+  width: calc(0.75 * var(--tile-size));
+  height: calc(2 * var(--tile-size));
+  left: calc(-1.5 * var(--tile-size));
+  top: calc(-0.5 * var(--tile-size));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  writing-mode: sideways-lr;
+}
+div.rules-popover-container {
+  z-index: 10000;
+  position: absolute;
+  width: 0;
+  transition: width 0.1s ease;
+  height: 100%;
+  user-select: none;
+}
+div.rules-popover-container::before {
+  content: "";
+  background: #3f3f3f;
+  border: 0 solid var(--tile-front);
+  border-radius: calc(0.25 * var(--tile-size));
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  z-index: -1;
+  transition: border-width 0.1s cubic-bezier(0, 1, 0, 1);
+}
+input.rules-popover-checkbox:checked ~ div.rules-popover-container {
+  width: 100%;
+  user-select: text;
+}
+input.rules-popover-checkbox:checked ~ div.rules-popover-container::before {
+  border-width: calc(0.125 * var(--tile-size));
+}
+div.rules-popover {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  color: white;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+div.rules-popover::-webkit-scrollbar { 
+  display: none; /* Safari/Chrome */
+}
+div.rules-popover-rule {
+  flex-basis: 50%;
+}
+div.rules-popover-title {
+  white-space: pre-wrap;
+  font-size: calc(0.75 * var(--tile-size));
+  font-weight: 600;
+  border-bottom: calc(0.0625 * var(--tile-size)) solid var(--tile-front);
+  margin: calc(0.25 * var(--tile-size));
+}
+div.rules-popover-text {
+  white-space: pre-wrap;
+  font-size: calc(0.5 * var(--tile-size));
+  margin: calc(0.25 * var(--tile-size));
+}
 
-/* display wall */
+/* tile numbers */
 input.tile-numbers-checkbox + label {
   position: absolute;
   padding: 0 calc(0.125 * var(--tile-size));
@@ -3069,11 +3142,21 @@ div.room > div.seats > div.player-slot > button {
   width: calc(1.2 * var(--tile-size));
   height: calc(1.2 * var(--tile-size));
 }
+div.room div.presets,
 div.room div.mods,
+div.room div.config,
 div.room div.custom-json {
   top: calc(3 * var(--tile-size));
-  height: calc(9 * var(--tile-size));
+  height: calc(10 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
+}
+div.room label.room-tab-title {
+  font-size: calc(1 * var(--tile-size));
+  text-align: center;
+}
+div.room div.presets {
+  margin-top: calc(0.5 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
 }
 div.room div.mods > div.mods-inner-container {
   display: flex;
@@ -3083,16 +3166,13 @@ div.room div.mods > div.mods-inner-container {
   justify-content: flex-start;
   align-items: flex-start;
 }
-div.room div.mods-title {
-  font-size: calc(1 * var(--tile-size));
-  text-align: center;
-}
 div.room div.mods {
   padding-top: calc(0.25 * var(--tile-size));
   padding-bottom: calc(0.25 * var(--tile-size));
 }
 div.room div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
+  width: 100%;
   padding-right: 100%;
 }
 div.room div.mods > div.mods-inner-container > div.mod-category,
@@ -3108,14 +3188,16 @@ div.room div.mods > div.mods-inner-container div.reset-to-default-button {
   width: 100%;
   text-align: center;
 }
+div.room div.config > textarea,
+div.room div.custom-json > textarea {
+  font-size: calc(0.25 * var(--tile-size));
+}
 div.room div.custom-json > textarea {
   position: absolute;
-  background: #3f3f3f;
   width: calc(100% - 0.5 * var(--tile-size));
   height: calc(100% - 0.5 * var(--tile-size));
   top: calc(0.25 * var(--tile-size));
   left: calc(0.25 * var(--tile-size));
-  font-size: calc(0.25 * var(--tile-size));
 }
 /* tab system for mods/config */
 div.room-settings > input[type="radio"] {
@@ -3127,6 +3209,7 @@ div.room-settings > input[type="radio"] + label {
 div.room-settings > input:not(:checked) + label {
   opacity: 0.5;
 }
+div.room-settings > input#presets-tab:not(:checked) ~ div.presets,
 div.room-settings > input#mods-tab:not(:checked) ~ div.mods,
 div.room-settings > input#config-tab:not(:checked) ~ div.config {
   display: none;

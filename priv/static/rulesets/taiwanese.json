@@ -341,7 +341,7 @@
     "pao_eligible_yaku": ["Big Four Winds", "Little Four Winds", "Big Three Dragons", "Little Three Dragons"],
     "agarirenchan": true,
     "tenpairenchan": true,
-    "pao_pays_all": true,
+    "pao_pays_all_yaku": true,
     "split_pao_ron": false,
     "point_name": "Tai",
     "win_by_discard_label": "Hu",

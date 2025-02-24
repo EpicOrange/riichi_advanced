@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (1 Han)", "(Uushin Tsuukan) \"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu.", 101]]
+|
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |
 .yaku += [

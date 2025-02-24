@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Shanron Chonchu) \"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap.", 105]]
+|
 .shanron_chonchu += [
   {
     "display_name": "Shanron Chonchu",

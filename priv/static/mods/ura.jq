@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["update_rule", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared."],
+  ["update_rule", "Shuugi", "(Ura) Each ura dora is worth 1 shuugi."]
+]
+|
 # reveal ura after riichi win and count ura
 .before_win.actions += [
   ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["ura_revealed"]}], [

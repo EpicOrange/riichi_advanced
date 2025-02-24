@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Riichi", "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win you are awarded riichi (1 han). If you declare riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls invalidate double riichi."]]
+|
 .yaku |= [
   { "display_name": "Riichi", "value": 1, "when": [{"name": "status", "opts": ["riichi"]}] },
   { "display_name": "Double Riichi", "value": 2, "when": [{"name": "status", "opts": ["double_riichi"]}] }
@@ -16,7 +18,7 @@
 |
 .display_riichi_sticks = true
 |
-.score_calculation.riichi_value = 1000
+.score_calculation.riichi_value = $bet
 |
 .buttons.riichi = {
   "display_name": "Riichi",
@@ -36,6 +38,10 @@
     ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
   ]
 }
+|
+if $drawless then
+  .buttons.riichi.show_when |= map(select(. != "next_draw_possible"))
+else . end
 |
 if (.buttons | has("chii")) then
   .buttons.chii.show_when += [{"name": "status_missing", "opts": ["riichi"]}]
@@ -61,6 +67,18 @@ if (.buttons | has("ankan")) then
     {"name": "status_missing", "opts": ["riichi"]},
     {"name": "not_call_changes_waits", "opts": ["win"]}
   ]]
+else . end
+|
+if (.buttons | has("ron")) then
+  .buttons.ron.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
+else . end
+|
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
+else . end
+|
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
 else . end
 |
 .functions.turn_cleanup |= [

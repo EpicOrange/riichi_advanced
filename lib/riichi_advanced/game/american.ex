@@ -517,6 +517,7 @@ defmodule RiichiAdvanced.GameState.American do
     end
     |> Task.yield_many(timeout: :infinity)
     |> Enum.map(fn {_task, {:ok, res}} -> res end)
+    |> Enum.reject(fn {_am_match_definition, _pairing_r, missing_tiles} -> Utils.has_matching_tile?(missing_tiles, [nil]) end)
     |> Enum.sort_by(fn {_am_match_definition, pairing_r, _missing_tiles} -> map_size(pairing_r) end, :desc)
     # |> then(fn x -> IO.inspect(Enum.map(x, fn {a, p, _} -> {a, map_size(p)} end)); x end)
     |> Enum.take(num)

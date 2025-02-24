@@ -10,6 +10,10 @@ def make_chombo_button($text; $win_action; $winning_tile; $yaku_check; $yaku2_ch
 def disable_when_dead:
   .show_when = [{"name": "status_missing", "opts": ["dead_hand"]}] + .show_when;
 
+.after_initialization.actions += [
+  ["add_rule", "Chombo", "The tsumo and ron (and riichi) buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."]
+]
+|
 if (.buttons | has("ron")) then
   .buttons.ron |= make_chombo_button("Ron"; "win_by_discard"; "last_discard"; "has_yaku_with_discard"; "has_yaku2_with_discard"; ["not_our_turn", "someone_else_just_discarded"])
 else . end
@@ -46,8 +50,22 @@ else . end
 # disable all buttons when dead
 .buttons |= with_entries(.value |= disable_when_dead)
 |
-# make riichi always available
-.buttons.riichi.show_when |= map(select(. != {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}))
-|
-# you can riichi discard any tile
-.play_restrictions |= map(select(. != [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]]))
+if (.buttons | has("riichi")) then
+  # make riichi always available
+  .buttons.riichi.show_when |= map(select(. != {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14"]]}))
+  |
+  # you can riichi discard any tile
+  .play_restrictions |= map(select(. != [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]]))
+  |
+  # if you noten riichi, pay 8000 to everyone
+  # TODO make this payment configurable
+  # TODO also need to repeat the round without adding honba, somehow
+  .before_exhaustive_draw.actions += [
+    ["when_anyone", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["tenpai"]}] [
+      ["push_message", "must pay 8000 to every player for being noten riichi"],
+      ["subtract_score", 8000], ["add_score", 8000, "shimocha"],
+      ["subtract_score", 8000], ["add_score", 8000, "toimen"],
+      ["subtract_score", 8000], ["add_score", 8000, "kamicha"]
+    ]]
+  ]
+else . end

@@ -535,6 +535,12 @@ defmodule RiichiAdvanced.GameState.Actions do
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
+  def interpolate_string(state, context, str, assigns) do
+    for {name, value} <- assigns, reduce: str do
+      str -> String.replace(str, "$" <> name, Integer.to_string(interpret_amount(state, context, List.wrap(value))))
+    end
+  end
+
   defp do_charleston(state, dir, seat, marked_objects) do
     marked = Marking.get_marked(marked_objects, :hand)
     {_, hand_seat, _} = Enum.at(marked, 0)
@@ -781,7 +787,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = case action do
       "noop"                  -> state
       "print"                 ->
-        IO.inspect(opts)
+        IO.puts(interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
         state
       "print_status"          ->
         IO.inspect({context.seat, state.players[context.seat].status})
@@ -790,11 +796,28 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
         state
       "push_message"          ->
-        push_message(state, Enum.map(["Player #{player_name(state, context.seat)}"] ++ opts, fn msg -> %{text: msg} end))
+        message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
+        push_message(state, Enum.map(["Player #{player_name(state, context.seat)}", message], &%{text: &1}))
         state
       "push_system_message"   ->
-        push_message(state, Enum.map(opts, fn msg -> %{text: msg} end))
+        message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
+        push_message(state, [%{text: message}])
         state
+      "add_rule"             ->
+        id = Enum.at(opts, 0, "")
+        text = Enum.at(opts, 1, "")
+        priority = Enum.at(opts, 2, nil)
+        update_in(state.rules_text, &Map.update(&1, id, {text, if priority == nil do 0 else priority end}, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
+      "update_rule"             ->
+        id = Enum.at(opts, 0, "")
+        if Map.has_key?(state.rules_text, id) do
+          text = Enum.at(opts, 1, "")
+          priority = Enum.at(opts, 2, nil)
+          update_in(state.rules_text, &Map.update!(&1, id, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
+        else state end
+      "delete_rule"             ->
+        id = Enum.at(opts, 0, "")
+        update_in(state.rules_text, &Map.delete(&1, id))
       "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
@@ -829,9 +852,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "big_text"              ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 1, "self"))
-        temp_display_big_text(state, seat, Enum.at(opts, 0, ""))
+      "big_text"              -> temp_display_big_text(state, context.seat, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "pause"                 ->
         if not state.log_loading_mode do
           Map.put(state, :game_active, false)
@@ -1565,7 +1586,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # otherwise, adjudicate actions as normal
       if Enum.all?(state.players, fn {_seat, player} -> player.choice.name == "skip" end) do
         if state.game_active and not from_deferred_actions do
-          IO.puts("All choices are no-ops, running deferred actions")
+          # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
           state = update_all_players(state, fn _seat, player -> %Player{ player | choice: nil } end)
           GenServer.cast(self(), :calculate_playable_indices) # need to newly calculate playable indices
@@ -1676,10 +1697,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["unless", condition, subactions] -> ["unless", condition, map_action_opts(subactions, fun)]
       ["ite", condition, subactions1, subactions2] -> ["ite", condition, map_action_opts(subactions1, fun), map_action_opts(subactions2, fun)]
       ["run", fn_name, args] -> ["run", fn_name, Map.new(args, fn {name, value} -> {name, fun.(value)} end)]
-      _ -> Enum.map(action, fun)
+      # this matches nested list args
+      _ when is_list(action) -> Enum.map(action, &if is_list(&1) do map_action_opts(&1, fun) else fun.(&1) end)
+      # this matches any arg
+      _ -> fun.(action)
     end
     [mapped_action | map_action_opts(actions, fun)]
   end
-  def map_action_opts(_anything_else, _fun), do: []
+  def map_action_opts(anything_else, fun), do: fun.(anything_else)
 
 end

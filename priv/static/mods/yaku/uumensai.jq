@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (2 Han)", "(Uumensai) \"Five Suits Collected\". Your hand includes all five suits (character, circle, bamboo, wind, dragon).", 102]]
+|
 .yaku += [
   {
     "display_name": "Uumensai",

@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["add_rule", "Wall", "(Shiro Pocchi) One of the white dragons is replaced with shiro pocchi, which looks like a compass. Shiro pocchi acts a joker tile when drawn while in riichi.", -99],
+  ["update_rule", "Shuugi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi."]
+]
+|
 # replace a 5z with shiro pocchi
 (.wall | index("5z")) as $idx | if $idx then .wall[$idx] = "9z" else . end
 |

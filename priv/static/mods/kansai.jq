@@ -17,16 +17,5 @@
 # notenrenchan for south round only
 .score_calculation.notenrenchan_south = true
 |
-# also stop if someone is exactly 0 (tobi)
-.before_start.actions += [
-  ["as", "everyone", [
-    ["subtract_score", 1],
-    ["set_status", "minus_1"]
-  ]]
-]
-|
-.after_start.actions += [["when_anyone", [{"name": "status", "opts": ["minus_1"]}], [["add_score", 1], ["unset_status", "minus_1"]]]]
-|
-.before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["minus_1"]}], [["add_score", 1], ["unset_status", "minus_1"]]]]
-|
-.persistent_statuses += ["minus_1"]
+# set default tobi option to below 1
+.available_mods |= map(if type == "object" and .id == "tobi" then .config[0].default = 1 else . end)

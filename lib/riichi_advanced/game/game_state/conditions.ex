@@ -211,11 +211,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "kamicha_discarded"           -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat)
       "toimen_discarded"            -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat, 2)
       "shimocha_discarded"          -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat, 3)
-      "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn
+      "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard
       "someone_else_just_discarded" -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn != context.seat
       "just_discarded"              -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == context.seat
-      "just_called"                 -> last_action != nil and last_action.action == :call and state.turn in [last_action.seat, last_action.from]
-      "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn
+      "anyone_just_called"          -> last_action != nil and last_action.action == :call
+      "someone_else_just_called"    -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and state.turn != context.seat
+      "just_called"                 -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and state.turn == context.seat
+      "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn and state.turn == context.seat
       "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]), cxt_player.tile_behavior, [last_action.tile])
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]) ++ Utils.add_attr(cxt_player.draw, ["_hand"]), cxt_player.tile_behavior, [])
       "can_upgrade_call"            -> cxt_player.calls
@@ -336,6 +338,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_behavior = cxt_player.tile_behavior
         Enum.any?(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       "winning_hand_consists_of" ->
+        # TODO do we really need tile_mapping here if winning_hand is actually the assigned hand in yaku checks?
         tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
@@ -441,7 +444,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
           "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
-          _ -> [context.tile]
+          tile -> if Utils.is_tile(tile) do
+              [Utils.to_tile(tile)]
+            else
+              [context.tile]
+            end
         end
         tag = Enum.at(opts, 1, "missing_tag")
         tagged_tiles = state.tags[tag]

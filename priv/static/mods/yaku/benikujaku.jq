@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Benikujaku) \"Red Peacock\". Like ryuuiisou but red bamboo only: you can only have 1579s and red dragon.", 113]]
+|
 .yakuman += [
   {
     "display_name": "Benikujaku",

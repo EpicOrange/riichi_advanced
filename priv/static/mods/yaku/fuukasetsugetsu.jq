@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Fuukasetsugetsu) \"Flower, Bird, Snow, Moon\". Your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles).", 113]]
+|
 # sanma calls it pei_triplet
 (if .set_definitions | has("pei_triplet") then "pei_triplet" else "pei" end) as $pei
 |

@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Double Yakuman)", "(Chousangen) You have kans of all three dragons.", 126]]
+|
 .yakuman += [
   {
     "display_name": "Chousangen",

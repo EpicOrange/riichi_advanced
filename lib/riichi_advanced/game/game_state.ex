@@ -201,6 +201,7 @@ defmodule RiichiAdvanced.GameState do
       ref: "",
       players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       rules: %{},
+      rules_text: %{},
       interruptible_actions: %{},
       wall: [],
       kyoku: 0,
@@ -400,6 +401,11 @@ defmodule RiichiAdvanced.GameState do
 
     # run init actions
     state = run_init_actions(state)
+
+    # run after_initialization actions
+    state = if Map.has_key?(state.rules, "after_initialization") do
+      Actions.run_actions(state, state.rules["after_initialization"]["actions"], %{seat: state.turn})
+    else state end
 
     # terminate game if no one joins
     :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
@@ -897,53 +903,59 @@ defmodule RiichiAdvanced.GameState do
 
         # run before_new_round actions
         # we need to run it here instead of in initialize_new_round
-        # so that it can impact e.g. tobi calculations
-        state = if Map.has_key?(state.rules, "before_start") do
+        # so that it can impact e.g. tobi calculations and log
+        state = if state.round_result != :continue and Map.has_key?(state.rules, "before_start") do
           Actions.run_actions(state, state.rules["before_start"]["actions"], %{seat: state.turn})
         else state end
-
-        # check for tobi
-        tobi = if Map.has_key?(state.rules, "score_calculation") do Map.get(state.rules["score_calculation"], "tobi", false) else false end
-        state = if tobi and Enum.any?(state.players, fn {_seat, player} -> player.score < 0 end) do Map.put(state, :round_result, :end_game) else state end
 
         # log game, unless we are viewing a log or if this is a tutorial
         if not (state.log_seeking_mode or state.forced_events != nil) do
           Log.output_to_file(state)
         end
         state = Log.finalize_kyoku(state)
-        state = update_all_players(state, fn _seat, player -> %Player{ player | start_score: player.score } end)
-        state = Map.put(state, :delta_scores, %{})
 
-        # update kyoku and honba
-        state = case state.round_result do
-          :win when state.next_dealer == :self ->
-            state
-              |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:visible_screen, nil)
-          :win ->
-            state
-              |> Map.update!(:kyoku, & &1 + 1)
-              |> Map.put(:honba, 0)
-              |> Map.put(:visible_screen, nil)
-          :draw when state.next_dealer == :self ->
-            state
-              |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:visible_screen, nil)
-          :draw ->
-            state
-              |> Map.update!(:kyoku, & &1 + 1)
-              |> Map.update!(:honba, & &1 + 1)
-              |> Map.put(:visible_screen, nil)
-          :continue -> state
-          :end_game -> state
-        end
+        # check for tobi
+        state = if Map.has_key?(state.rules, "score_calculation") and Map.has_key?(state.rules["score_calculation"], "tobi") do
+          tobi = Map.get(state.rules["score_calculation"], "tobi", 0)
+          if Enum.any?(state.players, fn {_seat, player} -> player.score < tobi end) do
+            Map.put(state, :round_result, :end_game)
+          else state end
+        else state end
 
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
+
           if should_end_game(state) do
             finalize_game(state)
           else
             if not state.log_seeking_mode do
+              # update starting score for the round
+              state = update_all_players(state, fn _seat, player -> %Player{ player | start_score: player.score } end)
+              # clear delta scores (TODO is :delta_scores really a control variable then?)
+              state = Map.put(state, :delta_scores, %{})
+              # update kyoku and honba
+              state = case state.round_result do
+                :win when state.next_dealer == :self ->
+                  state
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :win ->
+                  state
+                    |> Map.update!(:kyoku, & &1 + 1)
+                    |> Map.put(:honba, 0)
+                    |> Map.put(:visible_screen, nil)
+                :draw when state.next_dealer == :self ->
+                  state
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :draw ->
+                  state
+                    |> Map.update!(:kyoku, & &1 + 1)
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :continue -> state
+                :end_game -> state
+              end
               initialize_new_round(state)
             else
               if not state.log_loading_mode do
@@ -2054,32 +2066,34 @@ defmodule RiichiAdvanced.GameState do
 
   # for minefield ai
   def handle_cast({:get_best_minefield_hand, seat, win_definitions}, state) do
-    self = self()
-    {:ok, pid} = Task.start(fn ->
-      tiles = Utils.strip_attrs(state.players[seat].hand)
-      # look for certain hands
-      {_yakuman, _han, _minipoints, hand} = Enum.max([
-        # tsuuiisou
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
-        # chinitsu
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
-        # honitsu
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?(&1) or Riichi.is_jihai?(&1)), 10),
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
-        # tanyao
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
-        # chanta
-        get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
-        # any hand
-        get_best_minefield_hand(state, seat, win_definitions, tiles, 10),
-      ])
-      # IO.inspect({yakuman, han, minipoints, hand})
-      GenServer.cast(self, {:set_best_minefield_hand, seat, tiles, hand})
-    end)
-    state = Map.put(state, :get_best_minefield_hand_pid, pid)
+    state = if state.get_best_minefield_hand_pid == nil do
+      self = self()
+      {:ok, pid} = Task.start(fn ->
+        tiles = Utils.strip_attrs(state.players[seat].hand)
+        # look for certain hands
+        {_yakuman, _han, _minipoints, hand} = Enum.max([
+          # tsuuiisou
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
+          # chinitsu
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
+          # honitsu
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          # tanyao
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
+          # chanta
+          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
+          # any hand
+          get_best_minefield_hand(state, seat, win_definitions, tiles, 10),
+        ])
+        # IO.inspect({yakuman, han, minipoints, hand})
+        GenServer.cast(self, {:set_best_minefield_hand, seat, tiles, hand})
+      end)
+      Map.put(state, :get_best_minefield_hand_pid, pid)
+    else state end
     {:noreply, state}
   end
 

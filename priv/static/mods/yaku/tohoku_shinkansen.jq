@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Tohoku Shinkansen) Your closed hand consists of an ittsu and east/north winds.", 113]]
+|
 # sanma calls it pei_triplet
 (if .set_definitions | has("pei_triplet") then "pei_triplet" else "pei" end) as $pei
 |

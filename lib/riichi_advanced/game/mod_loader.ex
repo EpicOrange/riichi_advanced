@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.ModLoader do
     case mod do
       %{name: name, config: config} -> 
         mod_contents = File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name <> ".jq"}"))
-        config_queries = for {key, val} <- config, is_integer(val), do: "#{val} as $#{key}\n|\n"
+        config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "(#{inspect(val)}) as $#{key}\n|\n"
         Enum.join(config_queries) <> mod_contents
       name -> File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name <> ".jq"}"))
     end
@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.ModLoader do
     |> then(&".enabled_mods += #{Jason.encode!(mods)}"<>&1)
 
     if Debug.print_mods() do
-      IO.puts("Applying mods [#{Enum.join(mods, ", ")}]")
+      IO.puts("Applying mods [#{Enum.map_join(mods, ", ", &inspect/1)}]")
     end
     JQ.query_string_with_string!(ruleset_json, mod_contents)
   end
@@ -46,6 +46,10 @@ defmodule RiichiAdvanced.ModLoader do
         # modded_json = Enum.reduce(mods, ruleset_json, &apply_mod/2)
         modded_json = apply_multiple_mods(ruleset_json, mods)
 
+        if Debug.print_mods() do
+          IO.inspect({ruleset, mods}, label: "Loading")
+        end
+        
         if not Debug.skip_ruleset_caching() do
           RiichiAdvanced.ETSCache.put({ruleset, mods}, modded_json, :cache_mods)
         end
@@ -94,7 +98,7 @@ defmodule RiichiAdvanced.ModLoader do
       display_name: "Chinitsu Challenge",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
-      mods: ["chinitsu_challenge"],
+      mods: ["yaku/riichi", "chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
