@@ -10,7 +10,7 @@ def replace_n_tiles($tile; $aka; $num):
   else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Aka", "\($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with red \"aka dora\" fives that are worth one extra han each."],
+  ["add_rule", "Wall", "(Aka) \($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with red \"aka dora\" fives that are worth one extra han each.", -99],
   ["update_rule", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi."]
 ]
 |
@@ -50,3 +50,10 @@ else . end
 .extra_yaku += [
   {"display_name": "Aka", "value": "aka", "when": [{"name": "counter_at_least", "opts": ["aka", 1]}]}
 ]
+|
+# add dora indicators
+.dora_indicators += {
+  "0m": ["6m"],
+  "0p": ["6p"],
+  "0s": ["6s"]
+}

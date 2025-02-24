@@ -1,5 +1,5 @@
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall."],
+  ["add_rule", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall.", -99],
   ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) A triplet of blue dragons is yakuhai."],
   ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons)."],
   ["add_rule", "Local Yaku (2 Han)", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons)."],
