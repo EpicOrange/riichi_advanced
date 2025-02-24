@@ -355,7 +355,7 @@ defmodule RiichiAdvanced.GameState.American do
 
   def check_dead_hand(state, seat, am_match_definitions) do
     viable_am_match_definitions = get_viable_am_match_definitions(state, seat, am_match_definitions)
-    IO.inspect(viable_am_match_definitions, label: "viable_am_match_definitions")
+    # IO.inspect(viable_am_match_definitions, label: "viable_am_match_definitions")
 
     # at least one win definition must match the hand (entire wall - visible tiles)
     # since our matching mechanism is inefficient for big hands with jokers,
@@ -366,8 +366,8 @@ defmodule RiichiAdvanced.GameState.American do
     call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     |> Utils.strip_attrs()
     hand = (Enum.shuffle(state.wall) ++ call_tiles) -- visible_tiles
-    IO.inspect(Enum.frequencies(visible_tiles), label: "visible")
-    IO.inspect(Enum.frequencies(hand))
+    # IO.inspect(Enum.frequencies(visible_tiles), label: "visible")
+    # IO.inspect(Enum.frequencies(hand))
 
     # # debug
     # ret = viable_am_match_definitions
@@ -517,6 +517,7 @@ defmodule RiichiAdvanced.GameState.American do
     end
     |> Task.yield_many(timeout: :infinity)
     |> Enum.map(fn {_task, {:ok, res}} -> res end)
+    |> Enum.reject(fn {_am_match_definition, _pairing_r, missing_tiles} -> Utils.has_matching_tile?(missing_tiles, [nil]) end)
     |> Enum.sort_by(fn {_am_match_definition, pairing_r, _missing_tiles} -> map_size(pairing_r) end, :desc)
     # |> then(fn x -> IO.inspect(Enum.map(x, fn {a, p, _} -> {a, map_size(p)} end)); x end)
     |> Enum.take(num)
@@ -524,8 +525,8 @@ defmodule RiichiAdvanced.GameState.American do
     |> Enum.map(fn {am_match_definition, pairing_r, missing_tiles} ->
       # replace unmatched tiles in hand with missing tiles
       kept_tiles = Enum.map(Map.keys(pairing_r), fn i -> Enum.at(hand, i) end)
-      missing_tiles = Enum.reject(missing_tiles, &Utils.has_attr?(&1, ["call"]))
-      fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["inactive"])
+      missing_tiles = Enum.reject(missing_tiles, &Utils.has_attr?(&1, ["_call"]))
+      fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["_inactive"])
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do
         if seat == :east do

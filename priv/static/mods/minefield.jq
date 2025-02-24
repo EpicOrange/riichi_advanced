@@ -1,6 +1,6 @@
-.default_mods |= map(select(IN("yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
+.default_mods |= map(select(IN("kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("yaku/riichi", "drawless_riichi") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("kan", "yaku/riichi") | not)))
 |
 .starting_tiles = 34
 |
@@ -54,19 +54,15 @@
       ["register_last_discard"],
       ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
-      ["noop"], # interrupt and allow for ron to pop up
+      ["as", "toimen", [["run", "calculate_dora", {"last_tile": "last_discard"}]]],
+      ["unset_status", "just_reached"],
+      ["recalculate_buttons"], # allow for ron to pop up
       ["advance_turn"]
     ],
     "unskippable": true,
     "cancellable": false
   }
 }
-|
-.interruptible_actions += ["noop"]
-|
-.buttons.ron.show_when |= map(if . == [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [1]}] then
-  [{"name": "has_yaku_with_discard", "opts": [3, 60]}, {"name": "has_yaku_with_discard", "opts": [4, 30]}, {"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]
-else . end)
 |
 .buttons.ron.show_when |= [{"name": "status", "opts": ["match_start"]}] + .
 |
@@ -92,20 +88,18 @@ else . end)
 # dora counts towards mangan
 .score_calculation.extra_yaku_lists = []
 |
-# handle tobi: if we're under 1000 we lose as we can't riichi
+.available_mods |= map(if type == "object" then
+  if .id == "tobi" then
+    # set tobi default to <1000; we lose as we can't riichi
+    .config[0].default = 1000
+  elif .id == "min_han" then
+    # default min han mod to mangan
+    .config[0].default = "Mangan"
+  else . end
+else . end)
+|
 # note: doesn't handle washizu mod's 0.1x score multiplier
-.before_start.actions += [
-  ["as", "everyone", [
-    ["subtract_score", 1000],
-    ["set_status", "has_1000"]
-  ]]
-]
-|
-.after_start.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
-|
-.before_conclusion.actions += [["when_anyone", [{"name": "status", "opts": ["has_1000"]}], [["add_score", 1000], ["unset_status", "has_1000"]]]]
-|
-.persistent_statuses += ["has_1000"]
+.available_mods |= map(if type == "object" and .id == "tobi" then .config[0].default = 1000 else . end)
 |
 .win_timer = 20
 |

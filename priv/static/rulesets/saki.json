@@ -52,27 +52,24 @@
     "saki/yae_kobashiri",
     "saki/yoshitome_miharu",
     "saki/yumeno_maho",
-    "tobi",
+    "tobi", "kuikae_nashi",
     "agarirenchan", "tenpairenchan",
     "show_waits"
   ],
   "available_mods": [
     "Rules",
-    {"id": "tobi", "name": "Tobi", "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
+    {"id": "tobi", "name": "Tobi", "config": [{"type": "dropdown", "name": "below", "values": [0, 1, 1000, 1001]}], "desc": "Enable busting. Once anyone's points is reduced below zero, the game ends."},
     {"id": "agarirenchan", "name": "Agarirenchan", "desc": "A round repeats if the dealer wins."},
     {"id": "tenpairenchan", "name": "Tenpairenchan", "desc": "A round repeats if the dealer is tenpai at draw."},
     {"id": "agariyame", "deps": ["agarirenchan"], "name": "Agariyame", "desc": "All Last doesn't repeat if the dealer is first place and wins."},
     {"id": "tenpaiyame", "deps": ["tenpairenchan"], "name": "Tenpaiyame", "desc": "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."},
     {"id": "tonpuu", "name": "Tonpuu", "desc": "Limit the game to the East round only."},
     {"id": "kuitan_nashi", "name": "Kuitan Nashi", "desc": "Disallow open tanyao."},
-    {"id": "kuikae_ari", "name": "Kuikae Ari", "desc": "Allow swap-calling."},
+    {"id": "kuikae_nashi", "name": "Kuikae Nashi", "desc": "Disallow swap-calling."},
     {"id": "kiriage_mangan", "name": "Kiriage Mangan", "desc": "3 han 60 fu and 4 han 30 fu are worth mangan."},
     {"id": "head_bump", "conflicts": ["sanchahou"], "name": "Head Bump", "desc": "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."},
-    {"id": "drawless_riichi", "name": "Drawless Riichi", "desc": "You may riichi even if you have no draws remaining in the wall."},
-    {"id": "open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
-    {"id": "mega_riichi_bet", "name": "Mega Riichi Bet", "desc": "Makes riichi bet 5000 instead of 1000."},
+    {"id": "yaku/open_riichi", "name": "Open Riichi", "desc": "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table."},
     {"id": "big_honba", "name": "Big Honba", "desc": "Makes each honba worth 500 instead of 100."},
-    {"id": "three_dora_start", "name": "Three Dora Start", "desc": "Start with 3 dora instead of 1."},
     {"id": "pao", "name": "Sekinin Barai", "desc": "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."},
     {"id": "no_kazoe_yakuman", "name": "No Kazoe Yakuman", "desc": "Disable kazoe yakuman. 13+ han is worth sanbaiman."},
     {"id": "no_double_yakuman", "name": "No Double Yakuman", "desc": "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."},
@@ -1134,7 +1131,7 @@
         ["unset_status", "funakubo-hiroko_exhausted"],
         ["when", [
           {"name": "status", "opts": ["iwadate-yuan"]},
-          {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+          {"name": "match", "opts": [["hand", "draw", "all_ponds", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
         ], [
           ["remove_attr_all", "golden"],
           ["add_attr_first_tile", "7z", ["golden"]],
@@ -1455,7 +1452,7 @@
       ["when", [{"name": "status", "opts": ["iwadate-yuan"]}], [["add_counter", "iwadate_yuan_payment", 0]]],
       ["when", [
         {"name": "status", "opts": ["iwadate-yuan"]},
-        {"name": "match", "opts": [["hand", "draw", "all_discards", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
+        {"name": "match", "opts": [["hand", "draw", "all_ponds", "all_call_tiles", "revealed_tiles"], [[[[["7z","7z","7z","7z"]], 1]]]]}
       ], [
         ["add_attr_first_tile", "7z", ["golden"]],
         ["set_tile_alias", [["7z", "golden"]], ["5m","5p","5s","7z"]]
@@ -2558,7 +2555,7 @@
         "just_called",
         {"name": "status", "opts": ["usuzumi-hatsumi", "ready"]},
         {"name": "status_missing", "opts": ["match_start", "just_swapped", "just_reached", "about_to_swap"]},
-        {"name": "match", "opts": [["all_discards"], [[[["1z","2z","3z","4z"], 1]]]]},
+        {"name": "match", "opts": [["all_ponds"], [[[["1z","2z","3z","4z"], 1]]]]},
         {"name": "match", "opts": [["hand"], [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]]]}
       ],
       "actions": [
@@ -3289,7 +3286,7 @@
         ["as", "shimocha", [["set_status", "duelist", "megan_davin_double_payment"]]],
         ["disable_saki_card", "shimocha"],
         ["big_text", "Megan Davin: duel!"],
-        ["big_text", "Megan Davin: duel!", "shimocha"],
+        ["as", "shimocha", [["big_text", "Megan Davin: duel!"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with south, disabling their ability (Megan Davin)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with west, disabling their ability (Megan Davin)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with north, disabling their ability (Megan Davin)"]]],
@@ -3311,7 +3308,7 @@
         ["as", "toimen", [["set_status", "duelist", "megan_davin_double_payment"]]],
         ["disable_saki_card", "toimen"],
         ["big_text", "Megan Davin: duel!"],
-        ["big_text", "Megan Davin: duel!", "toimen"],
+        ["as", "toimen", [["big_text", "Megan Davin: duel!"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with west, disabling their ability (Megan Davin)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with north, disabling their ability (Megan Davin)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with east, disabling their ability (Megan Davin)"]]],
@@ -3333,7 +3330,7 @@
         ["as", "kamicha", [["set_status", "duelist", "megan_davin_double_payment"]]],
         ["disable_saki_card", "kamicha"],
         ["big_text", "Megan Davin: duel!"],
-        ["big_text", "Megan Davin: duel!", "kamicha"],
+        ["as", "kamicha", [["big_text", "Megan Davin: duel!"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "initiated a duel with north, disabling their ability (Megan Davin)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "initiated a duel with east, disabling their ability (Megan Davin)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "initiated a duel with south, disabling their ability (Megan Davin)"]]],
@@ -3375,7 +3372,7 @@
         ["set_status", "usuzawa-sae_exhausted"],
         ["disable_saki_card", "others"],
         ["as", "toimen", [["set_status", "usuzawa_sae_opponent"], ["big_text", "Usuzawa Sae: opponent!"]]],
-        ["big_text", "Usuzawa Sae: opponent!", "toimen"],
+        ["as", "toimen", [["big_text", "Usuzawa Sae: opponent!"]]],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["push_message", "disabled everyone else's ability and chose west as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["south"]}], [["push_message", "disabled everyone else's ability and chose north as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
         ["when", [{"name": "seat_is", "opts": ["west"]}], [["push_message", "disabled everyone else's ability and chose east as their opponent, who cannot call or ron unless in riichi (Usuzawa Sae)"]]],
@@ -3811,7 +3808,7 @@
     },
     "matsumi_yuu_pon": {
       "display_name": "Pon red dragon with priority",
-      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_discards"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
+      "show_when": ["all_saki_cards_drafted", "not_our_turn", {"name": "status", "opts": ["matsumi-yuu"]}, {"name": "match", "opts": [["hand", "draw"], [[[["chun_pair"], 1]]]]}, {"name": "match", "opts": [["others_ponds"], [[[[["7z"]], 1]]]]}, "someone_else_just_discarded"],
       "actions": [
         ["big_text", "Matsumi Yuu: pon!"],
         ["mark", [["discard", 1, ["current_turn", "7z"]]]],

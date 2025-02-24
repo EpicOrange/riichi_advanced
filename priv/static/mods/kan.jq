@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["add_rule", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."],
+  ["add_rule", "Chankan", "If someone calls kan to upgrade a triplet (added kan), you may call ron on the added tile. Doing so awards chankan (1 han)."]
+]
+|
 .yaku += [
   { "display_name": "Chankan", "value": 1, "when": ["won_by_call"] },
   { "display_name": "Rinshan", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
@@ -64,7 +69,7 @@ else . end
   "upgrades": "pon",
   # not sure why we have "not_just_discarded", "not_just_called" instead of "has_draw"
   "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "tile_not_drawn", "opts": [-4]}],
-  "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw", {"status": "kan"}]]
+  "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "discard_passed"], ["run", "do_kan_draw", {"status": "kan"}]]
 }
 |
 .buttons.chankan = {
@@ -74,17 +79,8 @@ else . end
     {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
     {"name": "status_missing", "opts": ["furiten"]},
     {"name": "status_missing", "opts": ["just_reached"]},
-    [
-      [
-        {"name": "last_call_is", "opts": ["kakan"]},
-        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-      ],
-      [
-        {"name": "last_call_is", "opts": ["ankan"]},
-        {"name": "match", "opts": [["hand", "calls"], ["kokushi_tenpai"]]},
-        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-      ]
-    ]
+    {"name": "last_call_is", "opts": ["kakan"]},
+    {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
   ],
   "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
   "precedence_over": ["chii", "pon", "daiminkan"]

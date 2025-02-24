@@ -36,7 +36,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def get_yakuhai(state, seat) do
-    dragons = [:"5z", :"6z", :"7z"]
+    # TODO support aka, ao, kin, versions
+    dragons = [:"0z", :"5z", :"6z", :"7z", :"8z", :"9z"]
     seat_wind = case Riichi.get_seat_wind(state.kyoku, seat, state.available_seats) do
       :east -> :"1z"
       :south -> :"2z"
@@ -73,7 +74,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     if winning_tiles == nil or winning_tiles == [nil] or Enum.empty?(winning_tiles) do
       # try every possible winning tile from hand
       for {winning_tile, i} <- Enum.with_index(state.players[seat].hand), winning_tile != nil, into: %{} do
-        state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["draw"])] })
+        state2 = update_player(state, seat, &%Player{ &1 | hand: List.delete_at(&1.hand, i), draw: [Utils.add_attr(winning_tile, ["_draw"])] })
         minipoints = get_minipoints(state2, seat, winning_tile, win_source)
         yakus = get_yaku(state2, yaku_list, seat, winning_tile, win_source, minipoints, existing_yaku)
         {winning_tile, {minipoints, yakus}}
@@ -117,11 +118,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
-    tile_aliases = state.players[seat].tile_behavior.aliases
     # the joker assignment only maps base tiles (no attrs)
     # look at the actual aliases that match, and add the appropriate attrs
     replace_joker = fn joker, i ->
-      for {tile, attrs_aliases} <- tile_aliases,
+      for {tile, attrs_aliases} <- state.players[seat].tile_behavior.aliases,
           Utils.same_tile(tile, joker_assignment[i]), # allow for :any to match
           {attrs, aliases} <- attrs_aliases,
           Utils.has_matching_tile?(aliases, [joker]) do
@@ -312,17 +312,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     pao_triggered = Map.get(winner, :pao_seat, nil) != nil
     pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
-    {pao_yaku, non_pao_yaku} = if Map.get(score_rules, "pao_pays_all", false) do
-      {winner.yaku ++ winner.yaku2, []}
-    else
-      Enum.split_with(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end)
-    end
-    if pao_triggered and length(pao_yaku) > 0 and length(non_pao_yaku) > 0 do
+    is_pao = fn {name, _value} -> name in pao_eligible_yaku end
+    {pao_yaku, non_pao_yaku} = if Map.get(score_rules, "pao_pays_all_yaku", false) do {winner.yaku, []} else Enum.split_with(winner.yaku, is_pao) end
+    {pao_yaku2, non_pao_yaku2} = if Map.get(score_rules, "pao_pays_all_yaku2", false) do {winner.yaku2, []} else Enum.split_with(winner.yaku2, is_pao) end
+    if pao_triggered and length(pao_yaku) + length(pao_yaku2) > 0 and length(non_pao_yaku) + length(non_pao_yaku2) > 0 do
       # if we have both pao and non-pao yaku, we need to calculate them separately and add them up
-      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, [], pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
-      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, [], non_pao_yaku, is_dealer, winner.win_source == :draw, winner.minipoints)
-      delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku: pao_yaku, yaku2: [] }, collect_sticks)
-      delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku: non_pao_yaku, yaku2: [] }, collect_sticks)
+      {basic_score_pao, _, _, _} = score_yaku(state, winner.seat, pao_yaku, pao_yaku2, is_dealer, winner.win_source == :draw, winner.minipoints)
+      {basic_score_non_pao, _, _, _} = score_yaku(state, winner.seat, non_pao_yaku, non_pao_yaku2, is_dealer, winner.win_source == :draw, winner.minipoints)
+      delta_scores_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_pao, yaku: pao_yaku, yaku2: pao_yaku2 }, collect_sticks)
+      delta_scores_non_pao = calculate_delta_scores_for_single_winner(state, %{ winner | score: basic_score_non_pao, yaku: non_pao_yaku, yaku2: non_pao_yaku2 }, false)
       delta_scores = Map.new(delta_scores_pao, fn {seat, delta} -> {seat, delta + delta_scores_non_pao[seat]} end)
       delta_scores
     else
@@ -341,7 +339,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {delta_scores, basic_score, payer, direct_hit} =
         # due to the way we handle mixed pao-and-not-pao yaku earlier,
         # we're guaranteed either all of the yaku are pao, or none of them are
-        if pao_triggered and length(pao_yaku) > 0 do
+        if pao_triggered and length(pao_yaku) + length(pao_yaku2) > 0 do
           # if pao, then payer becomes the pao seat,
           # and a ron payment is split in half
           if winner.payer != nil and Map.get(score_rules, "split_pao_ron", true) do # ron
@@ -562,7 +560,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 worst_yaku = if Enum.empty?(winner.yaku2) do winner.yaku else winner.yaku2 end
 
                 # add honba
-                score = winner.score + (score_rules["honba_value"] * state.honba)
+                score = winner.score + (Map.get(score_rules, "honba_value", 0) * state.honba)
 
                 if not Enum.empty?(worst_yaku) do
                   push_message(state, [
@@ -674,6 +672,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
 
+    # multiply by delta_score_multiplier counter, if it exists
+    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta * Map.get(state.players[seat].counters, "delta_score_multiplier", 1)} end)
+
+    # add delta_score counter, if it exists
+    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
+
     # get delta scores reason
     delta_scores_reason = cond do
       state.round_result == :draw  -> Map.get(score_rules, "exhaustive_draw_name", "Draw")
@@ -727,7 +731,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           state ->
             # calculate possible waits
             winner = state.players[seat]
-            waits = Riichi.get_waits(winner.player.hand, winner.player.calls, win_definitions, winner.tile_behavior)
+            waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_behavior)
 
             # display nothing if waits are empty
             # shouldn't happen under normal conditions, since tenpai implies nonempty waits
@@ -1012,7 +1016,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     %{
       joker_assignment: joker_assignment,
-      assigned_winning_hand: assigned_winning_hand,
       new_winning_tile: new_winning_tile,
       yaku: yaku,
       yaku2: yaku2,
@@ -1030,7 +1033,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # replace winner's hand with joker assignment to determine yaku
         {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
-        assigned_winning_hand = state.players[seat].cache.winning_hand
 
         # run before_scoring actions
         state = if Map.has_key?(state.rules, "before_scoring") do
@@ -1044,7 +1046,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
         if Debug.print_wins() do
-          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+          assigned_winning_hand = state.players[seat].cache.winning_hand
+          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(assigned_winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
         end
 
         # if you win with 14 tiles all in hand (no draw), then take the given winning tile
@@ -1058,7 +1061,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
         %{
           joker_assignment: joker_assignment,
-          assigned_winning_hand: assigned_winning_hand,
           new_winning_tile: new_winning_tile,
           yaku: yaku,
           yaku2: yaku2,
@@ -1121,7 +1123,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end,
       opponents: opponents,
       winning_hand: winning_hand,
-      assigned_hand: assigned_winning_hand,
       separated_hand: separated_hand,
       arranged_hand: arranged_hand ++ arranged_draw,
       arranged_calls: arranged_calls,

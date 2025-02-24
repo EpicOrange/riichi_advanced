@@ -1,3 +1,8 @@
+.after_initialization.actions += [
+  ["add_rule", "Local Yaku (Yakuman)", "(Shiisanuushi) \"Thirteen Independent\". Start with 14 disconnected tiles. Calls invalidate.", 113],
+  ["add_rule", "Win Condition", "- (Shiisanuushi) Start with 14 disconnected tiles.", -100]
+]
+|
 .yakuman += [
   {
     "display_name": "Shiisanuushi",

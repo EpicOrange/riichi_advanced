@@ -15,9 +15,9 @@ defmodule RiichiAdvanced.AIPlayer do
   def init(state) do
     state = Map.put(state, :initialized, false)
     if Debug.debug_fast_ai() do
-      :timer.apply_after(100, Kernel, :send, [self(), :initialize])
+      send(self(), :initialize)
     else
-      :timer.apply_after(2500, Kernel, :send, [self(), :initialize])
+      :timer.apply_after(500, Kernel, :send, [self(), :initialize])
     end
     {:ok, state}
   end
@@ -124,9 +124,13 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info(:initialize, state) do
-    state = Map.put(state, :initialized, true)
-    state = Map.put(state, :shanten, -1) # make it try all the shanten definitions
-    state = Map.put(state, :preselected_flower, nil)
+    state = state
+    |> Map.put(:initialized, true)
+    |> Map.put(:shanten, -1) # make it try all the shanten definitions again
+    |> Map.put(:preselected_flower, nil)
+    |> Map.put(:minefield_tiles, nil)
+    |> Map.put(:minefield_hand, nil)
+    |> Map.put(:minefield_waits, nil)
     GenServer.cast(state.game_state, :notify_ai)
     {:noreply, state}
   end
@@ -378,7 +382,7 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.shuffle()
 
       has_minefield_hand = if length(player.hand) == 34 do
-        Map.get(state, :minefield_tiles, nil) == player.hand
+        Map.get(state, :minefield_tiles, nil) == Utils.strip_attrs(player.hand)
       else Map.has_key?(state, :minefield_hand) end
       {state, choices} = case state.ruleset do
         "minefield" ->
@@ -387,7 +391,7 @@ defmodule RiichiAdvanced.AIPlayer do
               # marking stage
               if has_minefield_hand do
                 remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
-                {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> tile in remaining_tiles end)}
+                {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> Utils.has_matching_tile?([tile], remaining_tiles) end)}
               else
                 GenServer.cast(state.game_state, {:ai_thinking, state.seat})
                 GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})

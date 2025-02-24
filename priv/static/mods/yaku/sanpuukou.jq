@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (2 Han)", "(Sanpuukou) \"Three Wind Triplets\". You have three wind triplets.", 102]]
+|
 # sanma calls it pei_triplet
 (if .set_definitions | has("pei_triplet") then "pei_triplet" else "pei" end) as $pei
 |

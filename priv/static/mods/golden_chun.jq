@@ -1,3 +1,10 @@
+.after_initialization.actions += [
+  ["add_rule", "Wall", "(Golden Chun) One of the green dragons is red and acts as aka dora."],
+  ["add_rule", "Wall", "(Golden Chun) One of the red dragons is the golden chun, which can be used as a five of any suit, and grants 1 extra han when used as a five."],
+  ["add_rule", "Local Yaku (Yakuman)", "(Golden Chun) Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."],
+  ["update_rule", "Shuugi", "(Golden Chun) Each golden chun used as a five is worth 1 shuugi."]
+]
+|
 # replace a 6z with red hatsu
 (.wall | index("6z")) as $idx | if $idx then .wall[$idx] = "06z" else . end
 |
@@ -65,11 +72,11 @@ end
       {"name": "status_missing", "opts": ["7z"]},
       [
         {"name": "status", "opts": ["77z"]},
-        {"name": "match", "opts": [["arranged_hand", "arranged_calls", "winning_tile"], ["golden_chun_77z_win"]]}
+        {"name": "match", "opts": [["assigned_hand", "assigned_calls", "winning_tile"], ["golden_chun_77z_win"]]}
       ],
       [
         {"name": "status", "opts": ["777z"]},
-        {"name": "match", "opts": [["arranged_hand", "arranged_calls", "winning_tile"], ["golden_chun_777z_win"]]}
+        {"name": "match", "opts": [["assigned_hand", "assigned_calls", "winning_tile"], ["golden_chun_777z_win"]]}
       ]
     ]
   ], [["set_status", "kindora"]]]

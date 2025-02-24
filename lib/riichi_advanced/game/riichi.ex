@@ -42,6 +42,7 @@ defmodule RiichiAdvanced.Riichi do
                :"11z", :"12z", :"13z", :"14z",
                :"21z", :"22z", :"23z", :"24z",
                :"31z", :"32z", :"33z", :"34z",
+               :"41z", :"42z", :"43z", :"44z",
                :"5j", :"15j"]
   @dragon     [:"5z", :"0z", :"8z", :"6z", :"7z",
                :"05z", :"00z", :"08z", :"06z", :"07z",
@@ -84,20 +85,67 @@ defmodule RiichiAdvanced.Riichi do
   def is_joker?(tile), do: Enum.any?(@joker, &Utils.same_tile(tile, &1))
   def is_aka?(tile), do: Enum.any?(@aka, &Utils.same_tile(tile, &1))
 
+  @one [:"1m", :"1p", :"1s", :"01m", :"01p", :"01s", :"11m", :"11p", :"11s", :"21m", :"21p", :"21s", :"31m", :"31p", :"31s", :"41m", :"41p", :"41s"]
+  @two [:"2m", :"2p", :"2s", :"02m", :"02p", :"02s", :"12m", :"12p", :"12s", :"22m", :"22p", :"22s", :"32m", :"32p", :"32s", :"42m", :"42p", :"42s"]
+  @three [:"3m", :"3p", :"3s", :"03m", :"03p", :"03s", :"13m", :"13p", :"13s", :"23m", :"23p", :"23s", :"33m", :"33p", :"33s", :"43m", :"43p", :"43s"]
+  @four [:"4m", :"4p", :"4s", :"04m", :"04p", :"04s", :"14m", :"14p", :"14s", :"24m", :"24p", :"24s", :"34m", :"34p", :"34s", :"44m", :"44p", :"44s"]
+  @five [:"0m", :"0p", :"0s", :"5m", :"5p", :"5s", :"05m", :"05p", :"05s", :"15m", :"15p", :"15s", :"25m", :"25p", :"25s", :"35m", :"35p", :"35s", :"45m", :"45p", :"45s"]
+  @six [:"6m", :"6p", :"6s", :"06m", :"06p", :"06s", :"16m", :"16p", :"16s", :"26m", :"26p", :"26s", :"36m", :"36p", :"36s", :"46m", :"46p", :"46s"]
+  @seven [:"7m", :"7p", :"7s", :"07m", :"07p", :"07s", :"17m", :"17p", :"17s", :"27m", :"27p", :"27s", :"37m", :"37p", :"37s", :"47m", :"47p", :"47s"]
+  @eight [:"8m", :"8p", :"8s", :"08m", :"08p", :"08s", :"18m", :"18p", :"18s", :"28m", :"28p", :"28s", :"38m", :"38p", :"38s", :"48m", :"48p", :"48s"]
+  @nine [:"9m", :"9p", :"9s", :"09m", :"09p", :"09s", :"19m", :"19p", :"19s", :"29m", :"29p", :"29s", :"39m", :"39p", :"39s", :"49m", :"49p", :"49s"]
+  @ten [:"10m", :"10p", :"10s", :"010m", :"010p", :"010s", :"110m", :"110p", :"110s", :"210m", :"210p", :"210s", :"310m", :"310p", :"310s", :"410m", :"410p", :"410s"]
   def is_num?(tile, num) do
     Enum.any?(case num do
-      1 -> [:"1m", :"1p", :"1s", :"11m", :"11p", :"11s", :"21m", :"21p", :"21s", :"31m", :"31p", :"31s", :"41m", :"41p", :"41s"]
-      2 -> [:"2m", :"2p", :"2s", :"12m", :"12p", :"12s", :"22m", :"22p", :"22s", :"32m", :"32p", :"32s", :"42m", :"42p", :"42s"]
-      3 -> [:"3m", :"3p", :"3s", :"13m", :"13p", :"13s", :"23m", :"23p", :"23s", :"33m", :"33p", :"33s", :"43m", :"43p", :"43s"]
-      4 -> [:"4m", :"4p", :"4s", :"14m", :"14p", :"14s", :"24m", :"24p", :"24s", :"34m", :"34p", :"34s", :"44m", :"44p", :"44s"]
-      5 -> [:"0m", :"0p", :"0s", :"5m", :"5p", :"5s", :"15m", :"15p", :"15s", :"25m", :"25p", :"25s", :"35m", :"35p", :"35s", :"45m", :"45p", :"45s"]
-      6 -> [:"6m", :"6p", :"6s", :"16m", :"16p", :"16s", :"26m", :"26p", :"26s", :"36m", :"36p", :"36s", :"46m", :"46p", :"46s"]
-      7 -> [:"7m", :"7p", :"7s", :"17m", :"17p", :"17s", :"27m", :"27p", :"27s", :"37m", :"37p", :"37s", :"47m", :"47p", :"47s"]
-      8 -> [:"8m", :"8p", :"8s", :"18m", :"18p", :"18s", :"28m", :"28p", :"28s", :"38m", :"38p", :"38s", :"48m", :"48p", :"48s"]
-      9 -> [:"9m", :"9p", :"9s", :"19m", :"19p", :"19s", :"29m", :"29p", :"29s", :"39m", :"39p", :"39s", :"49m", :"49p", :"49s"]
-      10 -> [:"10m", :"10p", :"10s", :"110m", :"110p", :"110s", :"210m", :"210p", :"210s", :"310m", :"310p", :"310s", :"410m", :"410p", :"410s"]
+      1 -> @one
+      2 -> @two
+      3 -> @three
+      4 -> @four
+      5 -> @five
+      6 -> @six
+      7 -> @seven
+      8 -> @eight
+      9 -> @nine
+      10 -> @ten
     end, &Utils.same_tile(tile, &1))
   end
+  def to_num(tile) do
+    {tile, _attrs} = Utils.to_attr_tile(tile)
+    cond do
+      tile in @one   -> 1
+      tile in @two   -> 2
+      tile in @three -> 3
+      tile in @four  -> 4
+      tile in @five  -> 5
+      tile in @six   -> 6
+      tile in @seven -> 7
+      tile in @eight -> 8
+      tile in @nine  -> 9
+      tile in @ten   -> 10
+      true           -> nil
+    end
+  end
+  @east [:"1z", :"01z", :"11z", :"21z", :"31z", :"41z"]
+  @south [:"2z", :"02z", :"12z", :"22z", :"32z", :"42z"]
+  @west [:"3z", :"03z", :"13z", :"23z", :"33z", :"43z"]
+  @north [:"4z", :"04z", :"14z", :"24z", :"34z", :"44z"]
+  @white [:"5z", :"05z", :"15z", :"25z", :"35z", :"45z", :"9z", :"5'z", :"05'z", :"25'z", :"35'z", :"45'z", :"5`z", :"05`z", :"15`z", :"25`z", :"35`z", :"45`z"]
+  @green [:"6z", :"06z", :"16z", :"26z", :"36z", :"46z"]
+  @red [:"7z", :"07z", :"17z", :"27z", :"37z", :"47z"]
+  def to_letter(tile) do
+    {tile, _attrs} = Utils.to_attr_tile(tile)
+    cond do
+      tile in @east  -> "E"
+      tile in @south -> "S"
+      tile in @west  -> "W"
+      tile in @north -> "N"
+      tile in @white -> "Wh"
+      tile in @green -> "G"
+      tile in @red   -> "R"
+      true           -> nil
+    end
+  end
+
   def same_suit?(tile, tile2) do
     cond do
       is_manzu?(tile) -> is_manzu?(tile2)
@@ -276,13 +324,13 @@ defmodule RiichiAdvanced.Riichi do
       "7" -> is_num?(context.tile, 7)
       "8" -> is_num?(context.tile, 8)
       "9" -> is_num?(context.tile, 9)
-      "tedashi" -> not Utils.has_attr?(context.tile, ["draw"])
-      "tsumogiri" -> Utils.has_attr?(context.tile, ["draw"])
+      "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
+      "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
       "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
       "kuikae" ->
         player = context.players[context.seat]
         base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
-        potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["hand"])
+        potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
         triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
         sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
         not Enum.empty?(triplet ++ sequence)

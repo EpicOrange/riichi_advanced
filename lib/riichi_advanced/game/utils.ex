@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Riichi, as: Riichi
   use Nebulex.Caching
 
   def to_tile(tile_spec) do
@@ -237,8 +238,24 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+
+  def to_registry_name(name, id) do
+    name <> "-" <> id
+  end
   def to_registry_name(name, ruleset, room_code) do
     name <> "-" <> ruleset <> "-" <> room_code
+  end
+  def via_registry(name, ruleset) do
+    {:via, Registry, {:game_registry, to_registry_name(name, ruleset)}}
+  end
+  def via_registry(name, ruleset, room_code) do
+    {:via, Registry, {:game_registry, to_registry_name(name, ruleset, room_code)}}
+  end
+  def registry_lookup(name, ruleset) do
+    Registry.lookup(:game_registry, to_registry_name(name, ruleset))
+  end
+  def registry_lookup(name, ruleset, room_code) do
+    Registry.lookup(:game_registry, to_registry_name(name, ruleset, room_code))
   end
 
   def try_integer(value) do
@@ -252,7 +269,12 @@ defmodule RiichiAdvanced.Utils do
     -Integer.floor_div(-nominal, 2) * 100
   end
 
-  @valid_tile_colors ["red", "blue", "cyan", "gold", "orange", "yellow", "green", "purple", "gray", "grey", "lightgray", "lightgrey", "brown", "black", "white"]
+  @valid_tile_colors [
+    "red", "blue", "cyan", "gold",
+    "orange", "yellow", "green", "lightblue", "purple",
+    "gray", "grey", "lightgray", "lightgrey",
+    "brown", "pink", "black", "white", "rainbow"
+  ]
 
   def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do
     id = strip_attrs(tile)
@@ -268,6 +290,21 @@ defmodule RiichiAdvanced.Utils do
     sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
+    number_class = case Riichi.to_num(tile) do
+      1 -> ["one"]
+      2 -> ["two"]
+      3 -> ["three"]
+      4 -> ["four"]
+      5 -> ["five"]
+      6 -> ["six"]
+      7 -> ["seven"]
+      8 -> ["eight"]
+      9 -> ["nine"]
+      10 -> ["ten"]
+      _  ->
+        letter = Riichi.to_letter(tile)
+        if letter != nil do [letter] else [] end
+    end
     color_classes = Enum.filter(@valid_tile_colors, &has_attr?(tile, [&1]))
     [
       "tile", id,
@@ -282,7 +319,7 @@ defmodule RiichiAdvanced.Utils do
       sideways && "sideways",
       just_played && "just-played",
       riichi && "sideways",
-    ] ++ extra_classes ++ color_classes
+    ] ++ extra_classes ++ number_class ++ color_classes
   end
 
   def flip_faceup(tile) do
@@ -346,7 +383,7 @@ defmodule RiichiAdvanced.Utils do
   @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
   def replace_jokers_in_calls(calls, joker_tiles, tile_behavior) do
     Enum.map(calls, fn {name, call} ->
-      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles, tile_behavior)) do
+      if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
         meld_tile = get_joker_meld_tile({name, call}, joker_tiles, tile_behavior)
         {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
@@ -438,4 +475,7 @@ defmodule RiichiAdvanced.Utils do
   def _split_on([x | xs], delim, acc, ret) when x == delim, do: _split_on(xs, delim, [], [acc | ret])
   def _split_on([x | xs], delim, acc, ret), do: _split_on(xs, delim, [x | acc], ret)
   def split_on(xs, delim), do: _split_on(Enum.reverse(xs), delim, [], [])
+
+  @css_color_regex ~r/^#[a-fA-F0-9]{6}$|^#[a-fA-F0-9]{3}$|^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$|^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*[\d.]+\)$|^[a-zA-Z]+$/
+  def css_color_regex, do: @css_color_regex
 end

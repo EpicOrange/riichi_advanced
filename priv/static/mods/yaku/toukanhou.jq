@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Toukanhou) \"First Kan Win\". Win with rinshan from a kan (concealed or from a player) made before discarding any tile. Any call from an opponent invalidates this.", 113]]
+|
 .yakuman += [
   {
     "display_name": "Toukanhou",

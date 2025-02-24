@@ -509,17 +509,17 @@
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["cat_and_mouse"]]}], [
           ["big_text", "Bitten"],
           ["push_message", "is paid 4 from all players for having both the cat and the mouse at game start"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["chicken_and_centipede"]]}], [
           ["big_text", "Bitten"],
           ["push_message", "is paid 4 from all players for having both the chicken and the centipede at game start"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [[
@@ -530,33 +530,33 @@
         ]], [
           ["big_text", "Flower Bitten"],
           ["push_message", "is paid 4 from all players for having both their seat flower and their seat season at game start"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_flowers"]]}], [
           ["big_text", "All Flowers"],
           ["push_message", "is paid an extra 4 from all players for having all flowers"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_seasons"]]}], [
           ["big_text", "All Seasons"],
           ["push_message", "is paid an extra 4 from all players for having all seasons"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_animals"]]}], [
           ["big_text", "All Animals"],
           ["push_message", "is paid an extra 4 from all players for having all animals"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["draw", 1, "opposite_end"],
@@ -590,7 +590,7 @@
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["push_message", "is paid 1 from the discarder for calling kong"],
-        ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["big_text", "  -1  ", "last_discarder"],
+        ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["as", "last_discarder", [["big_text", "  -1  "]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"],
@@ -606,9 +606,9 @@
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["push_message", "is paid 2 from all players for making a concealed kong"],
-        ["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"],
-        ["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"],
-        ["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"],
+        ["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]],
+        ["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]],
+        ["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"],
@@ -628,9 +628,9 @@
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["push_message", "is paid 1 from all players for upgrading a pong into a kong"],
-        ["add_score", 1], ["subtract_score", 1, "shimocha"], ["big_text", "  -1  ", "shimocha"],
-        ["add_score", 1], ["subtract_score", 1, "toimen"], ["big_text", "  -1  ", "toimen"],
-        ["add_score", 1], ["subtract_score", 1, "kamicha"], ["big_text", "  -1  ", "kamicha"],
+        ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]],
+        ["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]],
+        ["add_score", 1], ["subtract_score", 1, "kamicha"], ["as", "kamicha", [["big_text", "  -1  "]]],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"],
@@ -693,17 +693,17 @@
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["cat_and_mouse"]]}], [
           ["big_text", "Bitten"],
           ["push_message", "is paid 2 from all players for having both the cat and the mouse"],
-          ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], [[ "unique", [["3a","4a"], 2] ]]]}], [
           ["big_text", "Bitten"],
           ["push_message", "is paid 2 from all players for having both the chicken and the centipede"],
-          ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [[
@@ -714,33 +714,33 @@
         ]], [
           ["big_text", "Flower Bitten"],
           ["push_message", "is paid 2 from all players for having both their seat flower and their seat season"],
-          ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["big_text", "  -2  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["big_text", "  -2  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["big_text", "  -2  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1f","2f","3f","4f"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_flowers"]]}], [
           ["big_text", "All Flowers"],
           ["push_message", "is paid an extra 4 from all players for having all flowers"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1g","2g","3g","4g"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_seasons"]]}], [
           ["big_text", "All Seasons"],
           ["push_message", "is paid an extra 4 from all players for having all seasons"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", [{"name": "match", "opts": [["call_choice"], [[ [["1a","2a","3a","4a"], 1] ]]]}, {"name": "match", "opts": [["flowers"], ["all_animals"]]}], [
           ["big_text", "All Animals"],
           ["push_message", "is paid an extra 4 from all players for having all animals"],
-          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["big_text", "  -4  ", "shimocha"]]],
-          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["big_text", "  -4  ", "toimen"]]],
-          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["big_text", "  -4  ", "kamicha"]]],
+          ["when", ["shimocha_exists"], [["add_score", 4], ["subtract_score", 4, "shimocha"], ["as", "shimocha", [["big_text", "  -4  "]]]]],
+          ["when", ["toimen_exists"], [["add_score", 4], ["subtract_score", 4, "toimen"], ["as", "toimen", [["big_text", "  -4  "]]]]],
+          ["when", ["kamicha_exists"], [["add_score", 4], ["subtract_score", 4, "kamicha"], ["as", "kamicha", [["big_text", "  -4  "]]]]],
           ["pause", 1000]
         ]],
         ["when", ["not_no_tiles_remaining"], [

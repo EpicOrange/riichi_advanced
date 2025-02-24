@@ -1,3 +1,5 @@
+.after_initialization.actions += [["update_rule", "Riichi", "(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win."]]
+|
 # add open riichi button
 .buttons.open_riichi = {
   "display_name": "Open Riichi",
@@ -5,7 +7,7 @@
     "our_turn",
     "has_draw",
     {"name": "status_missing", "opts": ["riichi"]},
-    {"name": "has_score", "opts": [1000]},
+    {"name": "has_score", "opts": ["riichi_value"]},
     "next_draw_possible",
     {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
     {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai_14", "kokushi_tenpai"]]}

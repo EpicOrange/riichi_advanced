@@ -77,7 +77,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
   end
 
   def tsumo_loss_yakuman_test(tsumo_loss, seat, expected_score, expected_delta_scores) do
-    mods = ["ura", "kandora", "yaku/ippatsu", "nagashi", "tobi", "suufon_renda", "suucha_riichi", "suukaikan", "agarirenchan", "tenpairenchan", "kyuushu_kyuuhai", "double_wind_4_fu", "yaku/renhou_yakuman", "pao", "show_waits", "kansai_draw", "kansai_flowers", "kansai_aka", "kansai_yaku", "nagashi_yakuman", "kansai_no_furiten_riichi", "kansai_30_fu"]
+    mods = TestUtils.default_riichi_mods()
     test_state = TestUtils.initialize_test_state("kansai", mods, "{\"score_calculation\": {\"tsumo_loss\": #{inspect(tsumo_loss)}}}")
     state = GenServer.call(test_state.game_state_pid, :get_state)
     hand = [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p"]

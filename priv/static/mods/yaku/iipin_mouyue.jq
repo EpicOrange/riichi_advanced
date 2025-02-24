@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Iipin Mouyue) \"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles).", 105]]
+|
 .iipin_mouyue += [
   {
     "display_name": "Iipin Mouyue",

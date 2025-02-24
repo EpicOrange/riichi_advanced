@@ -30,14 +30,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
         is_upgrade = Enum.any?(choice_actions, fn [action | _opts] -> action == "upgrade_call" end)
         is_flower = Enum.any?(choice_actions, fn [action | _opts] -> action == "flower" end)
         is_saki_card = Enum.any?(choice_actions, fn [action | _opts] -> action == "draft_saki_card" end)
-        hand = Utils.add_attr(state.players[seat].hand, ["hand"])
-        draw = Utils.add_attr(state.players[seat].draw, ["hand"])
+        hand = Utils.add_attr(state.players[seat].hand, ["_hand"])
+        draw = Utils.add_attr(state.players[seat].draw, ["_hand"])
         tile_behavior = state.players[seat].tile_behavior
         {state, call_choices} = cond do
           is_upgrade ->
             call_choices = state.players[seat].calls
             |> Enum.filter(fn {name, _call} -> name == state.rules["buttons"][button_name]["upgrades"] end)
-            |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["hand", "called"])) end)
+            |> Enum.map(fn {_name, call} -> Enum.map(call, &Utils.add_attr(&1, ["_hand", "_called"])) end)
             |> Enum.map(fn call_tiles ->
                  Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
@@ -69,8 +69,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
         # filter call_choices
         call_choices = if Map.has_key?(state.rules["buttons"][button_name], "call_conditions") do
           conditions = state.rules["buttons"][button_name]["call_conditions"]
+          call_source = if is_call do :discards else :draw end # TODO better way to check call_source
           for {called_tile, choices} <- call_choices do
-            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
+            # TODO maybe put call_source in choice? we need to define what call_source really is
+            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_source: call_source, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
           end
         else call_choices end
         |> Map.new()
@@ -108,7 +110,17 @@ defmodule RiichiAdvanced.GameState.Buttons do
               if Debug.debug_buttons() do
                 IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
               end
-              Map.get(button, "interrupt_level", 100) >= interrupt_level and Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+              Map.get(button, "interrupt_level", 100) >= interrupt_level and 
+                if name in Map.get(Debug.debug_specific_buttons(), seat, []) do
+                  case Enum.find(button["show_when"], &not Conditions.check_cnf_condition(state, [&1], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})) do
+                    nil -> true
+                    condition ->
+                      IO.puts("Button #{name} for player #{seat}: failed condition #{inspect(condition)}")
+                      false
+                  end
+                else
+                  Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                end
             end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
@@ -136,7 +148,14 @@ defmodule RiichiAdvanced.GameState.Buttons do
         end
       end
       
-      new_button_choices = Map.new(new_button_choices)
+      # keep existing buttons whose interrupt level is strictly above our interrupt level
+      new_button_choices = for {seat, button_choices} <- new_button_choices, into: %{} do
+        button_choices = state.players[seat].button_choices
+        |> Enum.filter(fn {name, _spec} -> (get_in(state.rules["buttons"][name]["interrupt_level"]) || 100) > interrupt_level end)
+        |> Map.new()
+        |> Map.merge(button_choices)
+        {seat, button_choices}
+      end
       
       # IO.puts("Buttons after:")
       # IO.inspect(buttons)

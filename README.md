@@ -29,6 +29,34 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __17 Feb 2025__: v1.1.1:
+  + Added tutorial for cosmic riichi and galaxy mahjong
+  + Added rules and strategy document for MCR
+  + Added shiny dora mod
+  + Added ability to hover over a winning hand to break it into sets
+  + Added lots of tests
+  + Added like a million jokers (with corresponding Riichi mods)
+  + Added custom aka
+  + Added four local yaku: ketsupaihou, chinchii toushii, rentsuu honitsu, and dorahairi chinroutou chiitoitsu
+  + Added the ability to have attributes be transparent to the tile checker by prefixing with `_` 
+  + Added play button to tutorial menu
+  + Fixed dora/aka/ura awarding
+  + Fixed any-tile jokers in hand turning every tile in hand into an any-tile joker
+  + Fixed chankan and anfuun for cosmic mahjong
+  + Fixed cosmic mod support with kan mod
+  + Fixed animation for calls (specifically added kan and added-added kan in cosmic)
+  + Fixed `"set_tile_ordering_all"` only setting the current player's tile ordering
+  + Fixed `"set_tile_ordering_all"` also removing all tile aliases
+  + Fixed `"has_hell_wait"` condition never being true
+  + Fixed 0.5-han yaku not letting you ron even if they combine to 1+ han
+  + Fixed fu calculation for added pon and added-added-kan in cosmic
+  + Fixed weird navigation where you go home -> room -> lobby -> home (now it's home -> room -> home)
+  + Fixed agariyame and tenpaiyame ending the game prematurely
+  + Fixed bamboo tiles being hard to read (hopefully)
+  + Fixed AI thinking they're tenpai when they're very much not
+  + Fixed cache stuff (things run faster now, especially AI)
+  + Fixed rigging the wall using `"starting_hands"` leading to incorrect distribution of tiles in the wall
+  + Fixed layout errors when using Safari
 - __12 Feb 2025__: v1.1.0:
   + Added [CONTRIBUTING.md](CONTRIBUTING.md)
   + Added tutorial screen as well as a way to create and share custom tutorials! If you are interested in creating a tutorial just select any ruleset in the main menu and hit Learn -> Create your own tutorial! [Here is the tutorial JSON documentation.](documentation/tutorials.md)
@@ -105,7 +133,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - __Sakicards v1.3__: Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator.
 - [__Hong Kong__](documentation/hk.md): Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers.
 - [__Sichuan Bloody__](documentation/sichuan.md): Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules).
-- __MCR__: Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi.
+- [__MCR__](documentation/mcr.md): Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi.
 - __Taiwanese__: 16-tile mahjong with riichi mechanics.
 - [__Bloody 30-Faan Jokers__](documentation/bloody30faan.md): Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR.
 - [__American (2024 NMJL)__](documentation/american.md): American mahjong. Assemble hands with jokers, and declare other players' hands dead.
@@ -198,7 +226,7 @@ Then run:
     (cd assets; npm i)
 
     # Start the server
-    iex -S mix phx.server
+    HTTPS_PORT=4000 iex -S mix phx.server
 
 This should start the server up at `https://localhost:4000`. (Make sure to use `https`! `http` doesn't work locally for some reason.) Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
 

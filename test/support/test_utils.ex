@@ -6,12 +6,43 @@ defmodule RiichiAdvanced.TestUtils do
   import ExUnit.Assertions
 
   @suppress_io true
+  @default_riichi_mods [
+    "kan",
+    %{name: "honba", config: %{"value" => 100}},
+    %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
+    %{name: "nagashi", config: %{"is" => "Mangan"}},
+    %{name: "tobi", config: %{"below" => 0}},
+    %{
+     name: "uma",
+     config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
+    },
+    "agarirenchan",
+    "tenpairenchan",
+    "kuikae_nashi",
+    "double_wind_4_fu",
+    "pao",
+    "kokushi_chankan",
+    "suufon_renda",
+    "suucha_riichi",
+    "suukaikan",
+    "kyuushu_kyuuhai",
+    %{name: "dora", config: %{"start_indicators" => 1}},
+    "ura",
+    "kandora",
+    "yaku/ippatsu",
+    %{name: "yaku/renhou", config: %{"is" => "Yakuman"}},
+    "show_waits",
+    %{name: "min_han", config: %{"min" => 1}},
+    %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
+  ]
+
+  def default_riichi_mods, do: @default_riichi_mods
 
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)}
     {:ok, game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
-    [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, room_code))
+    [{game_state, _}] = Utils.registry_lookup("game_state", ruleset, room_code)
 
     # suppress all IO from game_state
     if @suppress_io do
@@ -96,7 +127,7 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
-  def test_yaku_advanced(ruleset, mods, config, events, expected_winners) do
+  def test_yaku_advanced(ruleset, mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
     test_state = initialize_test_state(ruleset, mods, config)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
 
@@ -123,6 +154,13 @@ defmodule RiichiAdvanced.TestUtils do
       for {key, value} <- expected_winner, key not in [:yaku, :yaku2] do
         assert Map.get(winner, key) == value
       end
+    end
+
+    if Map.has_key?(expected_state, :delta_scores) do
+      delta_scores = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+        Map.get(state.delta_scores, seat, 0)
+      end
+      assert delta_scores == expected_state.delta_scores
     end
   end
 

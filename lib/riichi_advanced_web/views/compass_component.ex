@@ -61,6 +61,8 @@ defmodule RiichiAdvancedWeb.CompassComponent do
     if Map.get(socket.assigns, :show_relative_scores_timer) != nil do Process.cancel_timer(socket.assigns.show_relative_scores_timer) end
     timer = send_update_after(self(), __MODULE__, [id: "compass", show_relative_scores: false, show_relative_scores_timer: nil], 2000)
     socket = assign(socket, :show_relative_scores_timer, timer)
+    # spawn ai
+    GenServer.cast(socket.assigns.game_state, {:fill_empty_seats_with_ai, true})
     # notify ai
     GenServer.cast(socket.assigns.game_state, :notify_ai)
     {:noreply, socket}

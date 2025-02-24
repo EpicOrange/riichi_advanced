@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Rentsuu Honitsu) Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."]]
+|
 .rentsuu_honitsu_definition = [
   [ "exhaustive", [[["1m","2m"],["1p","2p"],["1s","2s"],["8m","9m"],["8p","9p"],["8s","9s"]], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ],
   [ "exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [["kanchan"], 1] ]

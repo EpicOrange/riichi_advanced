@@ -1,13 +1,17 @@
 {
+  "custom_style": {
+    "tile_indices": {"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
+  },
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
-    {"id": "show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
+    {"id": "american/show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
-    {"id": "am_card_ILoveMahj", "conflicts": ["am_card_ATeacherFirst", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
-    {"id": "am_card_ATeacherFirst", "conflicts": ["am_card_ILoveMahj", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
-    {"id": "am_card_MahjLife", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "BETA_am_card_AMJForEveryone"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
-    {"id": "BETA_am_card_AMJForEveryone", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "am_card_MahjLife"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."}
+    {"id": "american/zombie_blanks", "name": "Zombie Blanks", "config": [{"type": "dropdown", "name": "count", "values": [2,4,6,8,10], "default": 4}], "desc": "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
+    {"id": "american/am_card_ILoveMahj", "conflicts": ["am_card_ATeacherFirst", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
+    {"id": "american/am_card_ATeacherFirst", "conflicts": ["am_card_ILoveMahj", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
+    {"id": "american/am_card_MahjLife", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "BETA_am_card_AMJForEveryone"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
+    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "am_card_MahjLife"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."}
   ],
   "display_name": "American",
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md",
@@ -624,12 +628,12 @@
       "actions": [
         ["unset_status", "declare_shimocha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["shimocha"]}], [
-          ["big_text", "Dead hand", "shimocha"],
+          ["as", "shimocha", [["big_text", "Dead hand"]]],
           ["push_message", "correctly declared player on left's hand dead"],
           ["as", "shimocha", [["push_message", "is now disqualified"]]],
           ["as", "shimocha", [["set_status", "dead_hand"]]]
         ], [
-          ["big_text", "Not dead", "shimocha"],
+          ["as", "shimocha", [["big_text", "Not dead"]]],
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared player on left's hand dead"],
           ["push_message", "is now disqualified"],
@@ -646,12 +650,12 @@
       "actions": [
         ["unset_status", "declare_toimen_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["toimen"]}], [
-          ["big_text", "Dead hand", "toimen"],
+          ["as", "toimen", [["big_text", "Dead hand"]]],
           ["push_message", "correctly declared opposite player's hand dead"],
           ["as", "toimen", [["push_message", "is now disqualified"]]],
           ["as", "toimen", [["set_status", "dead_hand"]]]
         ], [
-          ["big_text", "Not dead", "toimen"],
+          ["as", "toimen", [["big_text", "Not dead"]]],
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared opposite player's hand dead"],
           ["push_message", "is now disqualified"],
@@ -668,12 +672,12 @@
       "actions": [
         ["unset_status", "declare_kamicha_dead"],
         ["ite", [{"name": "hand_is_dead", "opts": ["kamicha"]}], [
-          ["big_text", "Dead hand", "kamicha"],
+          ["as", "kamicha", [["big_text", "Dead hand"]]],
           ["push_message", "correctly declared player on left's hand dead"],
           ["as", "kamicha", [["push_message", "is now disqualified"]]],
           ["as", "kamicha", [["set_status", "dead_hand"]]]
         ], [
-          ["big_text", "Not dead", "kamicha"],
+          ["as", "kamicha", [["big_text", "Not dead"]]],
           ["big_text", "Dead hand"],
           ["push_message", "incorrectly declared player on left's hand dead"],
           ["push_message", "is now disqualified"],

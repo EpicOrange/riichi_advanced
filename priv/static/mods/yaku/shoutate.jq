@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (2 Han)", "(Shoutate) \"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair. Stacks with doukou.", 102]]
+|
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |
 .yaku += [

@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Suukaikan", "If fourth kans have been declared (not all by the same player), the game ends in an abortive draw."]]
+|
 # add suukantsu flag on 4th kan
 [["when", [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}], [["set_status", "suukantsu"]]]] as $add_suukantsu
 |

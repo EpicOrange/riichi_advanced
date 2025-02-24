@@ -1,3 +1,5 @@
+.after_initialization.actions += [["add_rule", "Local Yaku (1 Han)", "(Kanburi) Win off the tile discarded by someone who just called kan.", 101]]
+|
 .yaku += [
   {
     "display_name": "Kanburi",

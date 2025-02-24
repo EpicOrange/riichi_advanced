@@ -9,9 +9,14 @@ import Config
 config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  # http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [
+    ip: {0, 0, 0, 0},
+    port: System.get_env("HTTP_PORT") || 80,
+    thousand_island_options: [transport_options: [reuseport: true]],
+  ],
   https: [
-    port: 4000,
+    port: System.get_env("HTTPS_PORT") || 443,
+    thousand_island_options: [transport_options: [reuseport: true]],
     cipher_suite: :strong,
     certfile: "priv/cert/selfsigned.pem",
     keyfile: "priv/cert/selfsigned_key.pem"
@@ -20,8 +25,7 @@ config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
   code_reloader: true,
   debug_errors: true,
   # doesn't really matter what this is if you're running this locally
-  # riichiadvanced.com uses a different key, obviously
-  secret_key_base: "250424b3a560dca9e9700e4adc1d166ca6bffb9b9910cbef270293751f0250a2",
+  secret_key_base: System.get_env("SECRET_KEY") || "250424b3a560dca9e9700e4adc1d166ca6bffb9b9910cbef270293751f0250a2",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:riichi_advanced, ~w(--sourcemap=inline --watch)]},
   ]

@@ -17,7 +17,7 @@ defmodule RiichiAdvancedWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import RiichiAdvancedWeb.Gettext
+  use Gettext, backend: RiichiAdvancedWeb.Gettext
 
   @doc """
   Renders a modal.

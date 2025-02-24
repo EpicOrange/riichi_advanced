@@ -49,6 +49,8 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - An exposed Pung/Kong/Quint is called an "exposure".
 - Discarded tiles may be called for Pungs, Kongs, Quints, and for Mah Jongg. They may not be called to form singles, pairs, or sets of singles.
 - When two players call the same discard, Mah Jongg takes precedence over an exposure. Remaining ties are broken in favour of whoever is next in turn order.
+- Unlike in many other Asian variants, you cannot upgrade a Pung to a Kong. Once a Pung/Kong/Quint is made, it must stay as a Pung/Kong/Quint respectively for the rest of the game.
+- Unlike in many other Asian variants, you can only declare exposures off of discarded tiles. Concealed Kongs are not a thing.
 - **Note that Riichi Advanced's implementation requires you to name what kind of exposure you're calling for, while the rules in *MJME* do not. Riichi Advanced will also not let you edit the tiles in your exposure, even if you have not yet discarded or performed a joker exchange, while the rules in *MJME* allow you to do so.**
 
 ## Jokers
@@ -165,14 +167,13 @@ The following mods are currently available for American:
 - Show Waits: When you can discard a tile to become one tile away from winning, hovering over that tile will tell you what your winning tiles are, and will also tell you how many of them are still available. On by default.
 - Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right. [TODO: Implement score and exposed/concealed info for each hand in this display.]
 - Open Hands: The contents of all hands are revealed to everyone. Primarily useful as a debug or teaching feature.
+- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
 - AMJFE Card: Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
 
 The following mods are planned to be supported (not necessarily in this order):
-
-- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
 - PIE: Each player starts with 600¢. If a player runs out of ¢, they need not pay.
 - Stacks: Instead of performing the Charleston with other players, perform the Charleston with 7 stacks of 3 tiles in front of you. After the Charleston is complete, the remaining tiles are all shuffled back into the wall.
 - Futures: Each player gets to peek at their next draw.

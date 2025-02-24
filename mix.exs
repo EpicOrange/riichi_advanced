@@ -44,7 +44,7 @@ defmodule RiichiAdvanced.MixProject do
       {:phoenix_live_view, "~> 1.0.1"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.8"},
       {:swoosh, "~> 1.5"},
       {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 1.0"},
@@ -65,6 +65,7 @@ defmodule RiichiAdvanced.MixProject do
       {:logger_file_backend, "~> 0.0.10"},
       {:nebulex, "~> 2.6"},
       {:decorator, "~> 1.4"},
+      {:plug_attack, "~> 0.4.2"},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
     ]

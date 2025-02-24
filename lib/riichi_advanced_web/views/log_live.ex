@@ -1,6 +1,7 @@
 defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Choice, as: Choice
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
@@ -65,14 +66,14 @@ defmodule RiichiAdvancedWeb.LogLive do
       end
 
       # start a new game process
-      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: {:via, Registry, {:game_registry, Utils.to_registry_name("log", socket.assigns.ruleset, socket.assigns.room_code)}}}
+      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)}
       {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
         {:ok, _pid} ->
           IO.puts("Starting log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
           GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
           GenServer.call(game_state, {:put_log_seeking_mode, true})
-          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
           GenServer.cast(log_control_state, {:put_log, log})
           GenServer.cast(log_control_state, {:start_walk, 0, 100})
           {game_state, log_control_state}
@@ -82,8 +83,8 @@ defmodule RiichiAdvancedWeb.LogLive do
           {nil, nil}
         {:error, {:already_started, _pid}} ->
           IO.puts("Already started log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", socket.assigns.ruleset, socket.assigns.room_code))
-          [{log_control_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_control_state", socket.assigns.ruleset, socket.assigns.room_code))
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
+          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
           {game_state, log_control_state}
       end
       # subscribe to state updates
@@ -91,7 +92,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
 
       # init a new player and get the current state
-      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket})
+      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket.assigns.session_id})
 
       socket = socket
       |> assign(:game_state, game_state)
@@ -115,7 +116,7 @@ defmodule RiichiAdvancedWeb.LogLive do
           %{bold: true, text: socket.assigns.ruleset},
           %{text: "game"},
         ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: mod} end)
+          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
         else [] end})
         socket
       else socket end
@@ -129,8 +130,8 @@ defmodule RiichiAdvancedWeb.LogLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
-      <%= if Map.has_key?(@state.rules, "tile_images") do %>
-        <.live_component module={RiichiAdvancedWeb.CustomTilesComponent} id="custom-tiles" tiles={@state.rules["tile_images"]}/>
+      <%= if Map.has_key?(@state.rules, "custom_style") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={@state.rules["custom_style"]}/>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
