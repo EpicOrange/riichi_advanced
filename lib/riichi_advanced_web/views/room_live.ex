@@ -129,10 +129,17 @@ defmodule RiichiAdvancedWeb.RoomLive do
             <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} room_code={@room_code} room_state={@room_state} />
           </div>
         <% else %>
-          <input type="radio" id="presets-tab" name="room-settings-tab" checked phx-update="ignore">
-          <label for="presets-tab" class="room-tab-title">Rulesets</label>
-          <input type="radio" id="mods-tab" name="room-settings-tab" phx-update="ignore">
-          <label for="mods-tab" class="room-tab-title">Mods</label>
+          <%= if Enum.empty?(@state.presets) do %>
+            <input type="radio" id="presets-tab" name="room-settings-tab" phx-update="ignore">
+            <label for="presets-tab" class="room-tab-title">Rulesets</label>
+            <input type="radio" id="mods-tab" name="room-settings-tab" checked phx-update="ignore">
+            <label for="mods-tab" class="room-tab-title">Mods</label>
+          <% else %>
+            <input type="radio" id="presets-tab" name="room-settings-tab" checked phx-update="ignore">
+            <label for="presets-tab" class="room-tab-title">Rulesets</label>
+            <input type="radio" id="mods-tab" name="room-settings-tab" phx-update="ignore">
+            <label for="mods-tab" class="room-tab-title">Mods</label>
+          <% end %>
           <input type="radio" id="config-tab" name="room-settings-tab" phx-update="ignore">
           <label for="config-tab" class="room-tab-title">Config</label>
           <div class="presets">
