@@ -1,5 +1,5 @@
 {
-  "mods": ["yaku/riichi", "yaku/ippatsu", "space", "show_waits"],
+  "mods": [{"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}}, "yaku/ippatsu", "space", "show_waits"],
   "config": {
     "starting_hand": {
       "east": ["5z", "2m", "9m", "1p", "3p", "9p", "1s", "2s", "3s", "5s", "1z", "2z", "4z"],
