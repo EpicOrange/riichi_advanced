@@ -271,4 +271,99 @@ defmodule RiichiAdvanced.Constants do
   def available_rulesets, do: @available_rulesets
   def unimplemented_rulesets, do: @unimplemented_rulesets
 
+  @modpacks %{
+    "sanma" => %{
+      display_name: "Sanma",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
+      ruleset: "riichi",
+      mods: ["sanma"],
+      default_mods: [],
+    },
+    "cosmic" => %{
+      display_name: "Cosmic Riichi",
+      tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU/edit",
+      ruleset: "riichi",
+      mods: ["cosmic_base"],
+      default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yakuman_13_han", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/isshoku_sanjun", "yaku/isshoku_yonjun"],
+    },
+    "nojokersmahjongleague" => %{
+      display_name: "No Jokers Mahjong League 2024",
+      tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
+      ruleset: "riichi",
+      mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
+      default_mods: ["show_waits"],
+    },
+    "space" => %{
+      display_name: "Space Mahjong",
+      tutorial_link: "https://riichi.wiki/Space_mahjong",
+      ruleset: "riichi",
+      mods: [],
+      default_mods: ["space"],
+    },
+    "galaxy" => %{
+      display_name: "Galaxy Mahjong",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
+      ruleset: "riichi",
+      mods: [],
+      default_mods: ["galaxy"],
+    },
+    "chinitsu" => %{
+      display_name: "Chinitsu Challenge",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
+      ruleset: "riichi",
+      mods: ["yaku/riichi", "chinitsu_challenge"],
+      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
+    },
+    "minefield" => %{
+      display_name: "Minefield",
+      tutorial_link: "https://riichi.wiki/Minefield_mahjong",
+      ruleset: "riichi",
+      mods: ["minefield"],
+      default_mods: ["kiriage_mangan"],
+    },
+    "kansai" => %{
+      display_name: "Kansai Sanma",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
+      ruleset: "riichi",
+      mods: ["sanma", "kansai"],
+      default_mods: ["tobi"],
+    },
+    "aka_test" => %{
+      display_name: "Kansai Sanma",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
+      ruleset: "riichi",
+      mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
+      default_mods: ["tobi"],
+    },
+    "speed" => %{
+      display_name: "Speed Mahjong",
+      ruleset: "riichi",
+      mods: ["kan", "yaku/riichi", "speed"]
+    }
+  }
+
+  def modpacks, do: @modpacks
+
+  @tutorials %{
+    "riichi" => [
+      {"riichi_basics", "Basic flow of the game", :east},
+      {"riichi_calls", "Calling tiles", :north}
+    ],
+    "sanma" => [
+      {"sanma_vs_riichi", "Differences from four-player", :south}
+    ],
+    "space" => [
+      {"space_basics", "Intro to space mahjong", :east}
+    ],
+    "cosmic" => [
+      {"cosmic_basics", "Intro to cosmic mahjong", :west}
+    ],
+    "galaxy" => [
+      {"galaxy_basics", "Intro to galaxy mahjong", :west},
+      {"galaxy_milky_way", "Milky Way", :south}
+    ]
+  }
+
+  def tutorials, do: @tutorials
+
 end

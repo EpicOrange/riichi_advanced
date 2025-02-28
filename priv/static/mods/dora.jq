@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Dora", "At the beginning of the game, \($start_indicators) dora indicators are revealed in the dead wall. The tile next in sequence to a dora indicator is considered dora, and each copy of dora in hand is worth 1 extra han."]]
+.after_initialization.actions += [["add_rule", "Dora", "At the beginning of the game, \($start_indicators) dora indicators are revealed in the dead wall. The tile next in sequence to a dora indicator is considered dora, and each copy of dora in hand is worth 1 extra han. For winds, the sequence is East, South, West, North. For dragons, the sequence is White, Green, Red."]]
 |
 .max_revealed_tiles = 5
 |
@@ -20,7 +20,6 @@ end
   "7m": ["8m"],
   "8m": ["9m"],
   "9m": ["1m"],
-  "0m": ["6m"],
   "1p": ["2p"],
   "2p": ["3p"],
   "3p": ["4p"],
@@ -30,7 +29,6 @@ end
   "7p": ["8p"],
   "8p": ["9p"],
   "9p": ["1p"],
-  "0p": ["6p"],
   "1s": ["2s"],
   "2s": ["3s"],
   "3s": ["4s"],
@@ -40,7 +38,6 @@ end
   "7s": ["8s"],
   "8s": ["9s"],
   "9s": ["1s"],
-  "0s": ["6s"],
   "1z": ["2z"],
   "2z": ["3z"],
   "3z": ["4z"],

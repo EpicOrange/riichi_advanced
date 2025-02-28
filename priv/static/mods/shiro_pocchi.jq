@@ -33,3 +33,8 @@
 .before_turn_change.actions += [
   ["unset_status", "shiro_pocchi"]
 ]
+|
+# add dora indicators
+.dora_indicators += {
+  "9z": ["6z"]
+}

@@ -10,8 +10,6 @@
     "tsumogiri_bots": true
   },
   "scenes": {
-    "start2": [
-    ],
     "start": [
       ["await_event", ["play_tile", "west", 13]],
       ["sleep", 200],

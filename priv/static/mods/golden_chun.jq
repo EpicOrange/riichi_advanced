@@ -123,3 +123,9 @@ if (.buttons | has("ankan")) then
     {"name": "call_contains", "opts": [["7z"], 1]}
   ]]
 else . end
+|
+# add dora indicators
+.dora_indicators += {
+  "06z": ["7z"],
+  "37z": ["5z"]
+}

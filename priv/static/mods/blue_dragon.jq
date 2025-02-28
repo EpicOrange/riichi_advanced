@@ -1,10 +1,11 @@
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall."],
+  ["add_rule", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall.", -99],
   ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) A triplet of blue dragons is yakuhai."],
   ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons)."],
   ["add_rule", "Local Yaku (2 Han)", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons)."],
   ["add_rule", "Local Yaku (Yakuman)", "(Blue Dragon) Having three dragon triplets and a dragon pair awards the Shousuugen yakuman."],
-  ["add_rule", "Local Yaku (Double Yakuman)", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman."]
+  ["add_rule", "Local Yaku (Double Yakuman)", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman."],
+  ["add_rule", "Dora", "(Blue Dragon) For dragons, the sequence is White, Green, Red, Blue."]
 ]
 |
 .wall += ["0z", "0z", "0z", "0z"]
@@ -61,4 +62,14 @@
 .yaku_precedence += {
   "Daisangen": ["Shousangen"],
   "Daisuugen": ["Shousuugen"]
+}
+|
+# add dora indicators
+.dora_indicators += {
+  "0z": ["5z"],
+  "7z": ["0z"],
+  "07z": ["0z"],
+  "17z": ["0z"],
+  "27z": ["0z"],
+  "37z": ["0z"]
 }

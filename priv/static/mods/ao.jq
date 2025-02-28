@@ -9,7 +9,10 @@ def replace_n_tiles($tile; $aka; $num):
     else . end
   else . end;
 
-.after_initialization.actions += [["add_rule", "Ao", "\($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with blue \"ao dora\" fives that are worth two extra han each."]]
+.after_initialization.actions += [
+  ["add_rule", "Wall", "(Ao) \($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with blue \"ao dora\" fives that are worth two extra han each.", -99],
+  ["update_rule", "Shuugi", "(Ao) If your hand is closed, each ao dora is worth 2 shuugi."]
+]
 |
 # replace 5m,5p,5s in wall with 25m,25p,25s
 .wall |= replace_n_tiles("5m"; "25m"; $man)
@@ -30,10 +33,18 @@ def replace_n_tiles($tile; $aka; $num):
 |
 # count ao
 .before_win.actions += [
-  ["add_counter", "ao", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["25m","25p","25s"], 2] ]]]
+  ["add_counter", "ao", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["25m","25p","25s"], 1] ]]],
+  ["multiply_counter", "ao", 2]
 ]
 |
 # add ao yaku
 .extra_yaku += [
   {"display_name": "Ao", "value": "ao", "when": [{"name": "counter_at_least", "opts": ["ao", 1]}]}
 ]
+|
+# add dora indicators
+.dora_indicators += {
+  "25m": ["6m"],
+  "25p": ["6p"],
+  "25s": ["6s"]
+}

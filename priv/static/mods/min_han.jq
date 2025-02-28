@@ -16,7 +16,7 @@ else
   "."
 end) as $min_han_description
 |
-.after_initialization.actions += [["add_rule", "Minimum Han", $min_han_description]]
+.after_initialization.actions += [["add_rule", "Minimum Han", $min_han_description, -10]]
 |
 (if $min == "Mangan" then
   [
