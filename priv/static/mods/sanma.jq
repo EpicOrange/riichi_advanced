@@ -71,8 +71,7 @@ walk(if . == "pei" then "pei_triplet" else . end)
   "desc": "Automatically declare pei.",
   "actions": [
     ["when", [{"name": "buttons_include", "opts": ["pei"]}], [["press_button", "pei"], ["press_first_call_button", "pei"]]]
-  ],
-  "enabled_at_start": true
+  ]
 }
 |
 # don't let auto discard button skip pei

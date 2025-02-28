@@ -1,5 +1,5 @@
 {
-  "mods": ["yaku/riichi", "cosmic", "yaku/kontsu_yaku", "yaku/ippatsu", "yaku/tsubame_gaeshi", "show_waits", "kontsu", "cosmic_calls", "space"],
+  "mods": [{"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}}, "cosmic", "yaku/kontsu_yaku", "yaku/ippatsu", "yaku/tsubame_gaeshi", "show_waits", "kontsu", "cosmic_calls", "space"],
   "config": {
     "starting_hand": {
       "east": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],

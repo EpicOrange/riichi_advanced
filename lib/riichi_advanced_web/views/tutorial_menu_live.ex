@@ -1,29 +1,10 @@
 defmodule RiichiAdvancedWeb.TutorialMenuLive do
   alias RiichiAdvanced.LobbyState, as: LobbyState
   alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
-
-  @tutorials %{
-    "riichi" => [
-      {"riichi_basics", "Basic flow of the game", :east},
-      {"riichi_calls", "Calling tiles", :north}
-    ],
-    "sanma" => [
-      {"sanma_vs_riichi", "Differences from four-player", :south}
-    ],
-    "space" => [
-      {"space_basics", "Intro to space mahjong", :east}
-    ],
-    "cosmic" => [
-      {"cosmic_basics", "Intro to cosmic mahjong", :west}
-    ],
-    "galaxy" => [
-      {"galaxy_basics", "Intro to galaxy mahjong", :west},
-      {"galaxy_milky_way", "Milky Way", :south}
-    ]
-  }
 
   def mount(params, _session, socket) do
     socket = socket
@@ -31,7 +12,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:display_name, params["ruleset"])
-    |> assign(:available_tutorials, Map.get(@tutorials, params["ruleset"], []))
+    |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
 
     ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)

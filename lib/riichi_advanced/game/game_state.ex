@@ -2057,7 +2057,10 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:calculate_closest_american_hands_pid, nil)
 
     # some conditions (namely "is_tenpai_american") might have changed based on closest american hands, so recalculate buttons
-    state = Buttons.recalculate_buttons(state)
+    # of course, only calculate this if the match has started
+    state = if Enum.all?(state.players, fn {_seat, player} -> "match_start" not in player.status end) do
+      Buttons.recalculate_buttons(state)
+    else state end
     # note that this races the AI: the AI might act before closest_american_hands is calculated, so they may miss buttons that should be there
     # TODO maybe fix this by pausing the game at the start of this particular async calculation, and unpausing after
     state = broadcast_state_change(state, false)

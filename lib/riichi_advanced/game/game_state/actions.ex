@@ -275,7 +275,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     else call_choice end
   end
 
-  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, silent \\ false) do
+  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, simulated \\ false) do
     # get the actual called tile (with attrs)
     called_tile = case call_source do
       :discards -> Enum.at(state.players[state.turn].pond, -1)
@@ -327,30 +327,32 @@ defmodule RiichiAdvanced.GameState.Actions do
       update_action(state, seat, :call, %{from: state.turn, called_tile: Enum.at(call_choice, 0), other_tiles: [], call_name: call_name})
     end
 
-    # messages and log
-    cond do
-      hidden ->
-        push_message(state, [
-          %{text: "Player #{player_name(state, seat)} called "},
-          %{bold: true, text: "#{call_name}"}
-        ])
-      called_tile != nil ->
-        push_message(state, [
-          %{text: "Player #{player_name(state, seat)} called "},
-          %{bold: true, text: "#{call_name}"},
-          %{text: " on "},
-          Utils.pt(called_tile),
-          %{text: " with "}
-        ] ++ Utils.ph(call_choice))
-      true ->
-        push_message(state, [
-          %{text: "Player #{player_name(state, seat)} called "},
-          %{bold: true, text: "#{call_name}"},
-          %{text: " on "}
-        ] ++ Utils.ph(call_choice))
-    end
     state = Log.add_call(state, seat, call_name, call_choice, called_tile)
-    if not silent do
+
+    if not simulated do
+      # messages and log
+      cond do
+        hidden ->
+          push_message(state, [
+            %{text: "Player #{player_name(state, seat)} called "},
+            %{bold: true, text: "#{call_name}"}
+          ])
+        called_tile != nil ->
+          push_message(state, [
+            %{text: "Player #{player_name(state, seat)} called "},
+            %{bold: true, text: "#{call_name}"},
+            %{text: " on "},
+            Utils.pt(called_tile),
+            %{text: " with "}
+          ] ++ Utils.ph(call_choice))
+        true ->
+          push_message(state, [
+            %{text: "Player #{player_name(state, seat)} called "},
+            %{bold: true, text: "#{call_name}"},
+            %{text: " on "}
+          ] ++ Utils.ph(call_choice))
+      end
+      # play sound
       click_sounds = [
         "/audio/call1.mp3",
         "/audio/call2.mp3",

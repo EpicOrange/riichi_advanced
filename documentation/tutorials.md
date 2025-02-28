@@ -17,7 +17,7 @@ For technical reasons, the base ruleset and the player's starting seat are deter
 Let's say we're writing a riichi tutorial for the base riichi ruleset. The tutorial is to show how to declare riichi and win with double riichi ippatsu tsumo. Here's how we could start:
 
     {
-      "mods": ["yaku/riichi", "yaku/ippatsu", "show_waits"],
+      "mods": [{"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}}, "yaku/ippatsu", "show_waits"],
       "config": {
         "starting_hand": {
           "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "7s", "8s", "8s", "1z"],
@@ -33,7 +33,7 @@ Let's say we're writing a riichi tutorial for the base riichi ruleset. The tutor
       }
     }
 
-For riichi and ippatsu, we add the `yaku/riichi` and `yaku/ippatsu` mods, as well as the `show_waits` mod to let the player see their waits. You can get the names of these mods either by enabling them in a game and looking at what's printed in the message log, or by looking in the [mods folder](/priv/static/mods) or at the "available_mods" section of a ruleset. These mods will be applied in order -- here we care that `yaku/riichi` is applied before `yaku/ippatsu`, since there is a dependency there.
+For riichi and ippatsu, we add the `yaku/riichi` and `yaku/ippatsu` mods, as well as the `show_waits` mod to let the player see their waits. You can get the names of these mods by looking at the `"available_mods"` section of a ruleset. These mods will be applied in order -- here we care that `yaku/riichi` is applied before `yaku/ippatsu`, since there is a dependency there.
 
 The `"config"` object is rather important because this is how you set up the conditions for the tutorial. You can see that our hero (`"east"`) starts with a iishanten hand, they just need to draw any of `56789s1z` to achieve tenpai. Using `"starting_draws"`, we make sure their first draw is `"6s"`, and then they will win on `"5s"`.
 
@@ -254,7 +254,7 @@ The `["await_click"]` action simply waits to capture a click before continuing. 
 Our tutorial is basically done. Here's the whole thing:
 
     {
-      "mods": ["yaku/riichi", "yaku/ippatsu", "show_waits"],
+      "mods": [{"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}}, "yaku/ippatsu", "show_waits"],
       "config": {
         "starting_hand": {
           "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "7s", "8s", "8s", "1z"],
@@ -367,7 +367,7 @@ Finally, `["play_scene", scene_name]` will unconditionally jump to the given sce
 Here's an example tutorial sequence making use of branching:
 
     {
-      "mods": ["yaku/riichi", "yaku/ippatsu", "show_waits"],
+      "mods": [{"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}}, "yaku/ippatsu", "show_waits"],
       "config": {
         "starting_hand": {
           "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "7s", "8s", "8s", "1z"],

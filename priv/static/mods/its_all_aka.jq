@@ -9,7 +9,7 @@ def make_aka:
   elif . == "0t" then "05t"
   else . end;
 
-.after_initialization.actions += [["add_rule", "It's All Aka?", "Every standard tile is replaced with a red \"aka dora\" version worth 1 extra han each."]]
+.after_initialization.actions += [["add_rule", "Wall", "(It's All Aka?) Every standard tile is replaced with a red \"aka dora\" version worth 1 extra han each.", -99]]
 |
 # it's all aka now
 .wall |= map(make_aka)
