@@ -1,5 +1,5 @@
 {
-  "mods": ["yaku/riichi", "yaku/ippatsu", "dora", "ura", {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}}, "show_waits", "galaxy"],
+  "mods": [{"name": "yaku/riichi", "config": {"bet": 1000, "drawless": false}}, "yaku/ippatsu", {"name": "dora", "config": {"start_indicators": 1}}, "ura", {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}}, "show_waits", "galaxy"],
   "config": {
     "starting_hand": {
       "east": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"],
