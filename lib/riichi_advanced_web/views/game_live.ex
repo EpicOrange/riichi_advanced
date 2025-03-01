@@ -30,6 +30,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:revealed_tiles, nil)
     |> assign(:visible_waits_hand, nil)
     |> assign(:show_waits_index, nil)
+    |> assign(:selected_index, nil)
     |> assign(:hovered_called_tile, nil)
     |> assign(:hovered_call_choice, nil)
     |> assign(:playable_indices, [])
@@ -128,6 +129,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         called_tile={@hovered_called_tile}
         call_choice={@hovered_call_choice}
         playable_indices={@playable_indices}
+        selected_index={@selected_index}
         preplayed_index={@preplayed_index}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         dead_hand?={"dead_hand" in @state.players[seat].status}
@@ -606,15 +608,17 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:play_tile, index}, socket) do
-    if socket.assigns.seat == socket.assigns.state.turn do
+    if socket.assigns.seat == socket.assigns.state.turn and index == socket.assigns.selected_index do
       socket = assign(socket, :visible_waits, %{})
       socket = assign(socket, :show_waits_index, nil)
       socket = if not Map.has_key?(socket.assigns, :tutorial_sequence) do
         assign(socket, :preplayed_index, index)
       else socket end
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
+      socket = assign(socket, :selected_index, nil)
       {:noreply, socket}
     else
+      socket = assign(socket, :selected_index, index)
       {:noreply, socket}
     end
   end

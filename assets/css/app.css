@@ -1346,6 +1346,10 @@ div.tile:not(.flat) {
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
+div.self div.tile.selected {
+  /* this is here to override the translateZ(0) */
+  transform: translateY(calc(-0.25 * var(--tile-size)));
+}
 div.tile.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
@@ -1501,6 +1505,7 @@ div.tile.removed {
 div.tile.removed ~ div.tile.draw {
   margin-left: 0;
 }
+/* tiles just discarded in pond */
 @keyframes slideUp {
   0% {
     transform: translateY(calc(2 * var(--tile-size)));
@@ -1511,8 +1516,11 @@ div.tile.removed ~ div.tile.draw {
 div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
 }
+/* tiles just played in hand */
 @keyframes slideUp2 {
-  0% {}
+  0% {
+    transform: translateY(calc(-0.25 * var(--tile-size)));
+  }
   100% {
     transform: translateY(calc(-2 * var(--tile-size)));
     opacity: 0;
