@@ -402,7 +402,7 @@ You can reference these actions in the full actions list below.
 
 One final note: the `mark` action also takes two optional action lists to be run before and after marking:
 
-    ["mark", mark_spec, pre_actions, post_actions]
+    ["mark", mark_spec, pre_actions, post_actions, cancel_actions]
 
 These are just extra hooks to run actions (for example, maybe you want to draw tiles immediately before marking) but are basically not necessary unless you are marking after a delay or something.
 

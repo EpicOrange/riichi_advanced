@@ -1348,6 +1348,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "resume_deferred_actions" -> resume_deferred_actions(state)
       "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %Player{ player | deferred_actions: [], deferred_context: %{} } end)
       "recalculate_buttons" -> Buttons.recalculate_buttons(state, Enum.at(opts, 0, 0))
+      "recalculate_playables" -> 
+        GenServer.cast(self(), :calculate_playable_indices)
+        state
       "draw_last_discard" ->
         last_discard_action = get_last_discard_action(state)
         if last_discard_action != nil do
@@ -1546,7 +1549,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
                 state = run_actions(state, actions, %{seat: seat, choice: choice})
                 state
-              {:mark, mark_spec, pre_actions, post_actions} ->
+              {:mark, mark_spec, pre_actions, post_actions, cancel_actions} ->
                 # run pre-mark actions
                 if Debug.debug_actions() do
                   IO.puts("Running pre-mark actions for #{seat}: #{inspect(pre_actions)}")
@@ -1554,7 +1557,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 state = run_actions(state, pre_actions, %{seat: seat})
                 # setup marking
                 cancellable = Map.get(state.rules["buttons"][choice.name], "cancellable", true)
-                state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions)
+                state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions, cancel_actions)
                 if Debug.debug_actions() do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
                 end

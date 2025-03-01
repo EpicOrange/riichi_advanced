@@ -1973,6 +1973,17 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:reset_marking, seat}, state) do
+    # run cancel actions
+    state = case Marking.get_mark_infos(state.marking[seat], :cancel_actions) do
+      [{:cancel_actions, cancel_actions}] -> 
+        if Debug.debug_actions() do
+          IO.puts("Running cancel actions for #{seat}: #{inspect(cancel_actions)}")
+        end
+          IO.puts("Running cancel actions for #{seat}: #{inspect(cancel_actions)}")
+        Actions.run_actions(state, cancel_actions, %{seat: seat})
+      _ -> state
+    end
+
     state = Marking.reset_marking(state, seat)
 
     # go back to button clicking phase

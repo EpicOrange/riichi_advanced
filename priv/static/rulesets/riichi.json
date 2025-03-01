@@ -23,6 +23,7 @@
     "kyuushu_kyuuhai",
     "double_wind_4_fu",
     "yaku/renhou", "pao", "kokushi_chankan",
+    "cancellable_riichi",
     "show_waits"
   ],
   "available_mods": [
@@ -171,6 +172,7 @@
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
+    {"id": "cancellable_riichi", "order": 1, "deps": ["yaku/riichi"], "name": "Cancellable Riichi", "desc": "Everyone plays with tiles shown."},
     {"id": "ten", "order": 1, "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."},
     {"id": "star_suit", "order": 2, "name": "Star Suit (beta)", "desc": "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."},
     {"id": "space", "order": 2, "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
@@ -221,6 +223,7 @@
         "yaku/ippatsu",
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}},
         "shiny_dora",
         "first_gets_riichi_sticks"
@@ -290,6 +293,7 @@
         "yaku/ippatsu",
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}},
         "shiny_dora",
         "first_gets_riichi_sticks"
@@ -319,6 +323,7 @@
         {"name": "yaku/renhou", "config": {"is": "Mangan"}},
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "starting_score", "config": {"points": 30000}}
       ]
     },
@@ -349,6 +354,7 @@
         "yaku/ippatsu",
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}}
       ]
     },
@@ -454,6 +460,7 @@
         "blue_dragon",
         "wareme",
         {"name":"min_han","config":{"min":1}},
+        "cancellable_riichi",
         "immediate_kan_dora",
         "ten",
         "yaku/ippatsu",

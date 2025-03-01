@@ -38,12 +38,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
-                  <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
                   <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
-                    <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
+                    <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                   <% else %>
-                    <div class={Utils.get_tile_class(tile, i, assigns)}></div>
+                    <div class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                   <% end %>
                 <% end %>
               <% end %>
@@ -52,12 +52,12 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <div class="draws" :if={not Enum.empty?(@draw)}>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
-                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
-                  <div class={Utils.get_tile_class(tile, i, assigns)}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                 <% end %>
               <% end %>
             <% end %>

@@ -81,7 +81,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       Enum.any?(choice_actions, fn [action | _opts] -> action == "mark" end) ->
         [_ | opts] = Enum.filter(choice_actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
         mark_spec = Enum.at(opts, 0, []) |> Enum.map(fn [target, needed, restrictions] -> {target, needed, restrictions} end)
-        {state, {:mark, mark_spec, Enum.at(opts, 1, []), Enum.at(opts, 2, [])}}
+        {state, {:mark, mark_spec, Enum.at(opts, 1, []), Enum.at(opts, 2, []), Enum.at(opts, 3, [])}}
       Enum.any?(choice_actions, fn [action | _opts] -> action == "choose_yaku" end) ->
         {state, :declare_yaku}
       true -> {state, nil}
