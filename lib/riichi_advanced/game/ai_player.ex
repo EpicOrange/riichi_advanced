@@ -165,7 +165,8 @@ defmodule RiichiAdvanced.AIPlayer do
             Riichi.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
           end
           |> Enum.reduce(MapSet.new(), &MapSet.union/2)
-          Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
+          safe_playables = Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
+          if Enum.empty?(safe_playables) do playables else safe_playables end
         else playables end
 
         if not Enum.empty?(playables) do
