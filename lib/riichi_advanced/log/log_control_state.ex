@@ -89,6 +89,18 @@ defmodule RiichiAdvanced.LogControlState do
     IO.inspect({"marking", state.game_state.marking})
   end
 
+  def skip_buttons(state) do
+    for {seat, player} <- state.game_state.players, not Enum.empty?(player.buttons), reduce: state do
+      state -> 
+        if "skip" in player.buttons do
+          GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
+        else
+          GenServer.cast(state.game_state_pid, {:press_button, seat, Enum.at(player.buttons, 0)})
+        end
+        Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
+    end
+  end
+
   def send_discard(state, skip_anim, discard_event) do
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
     seat = Log.from_seat(discard_event["player"])
@@ -110,16 +122,10 @@ defmodule RiichiAdvanced.LogControlState do
     # if not, send button press skip events to all players with buttons and try again
     hand_or_draw = if discard_event["tsumogiri"] do draw else hand end
     matches = ix != nil and Utils.same_tile(Enum.at(hand_or_draw, ix), tile)
-    ix = if not matches do
-      state = for _ <- 1..10, {seat, player} <- state.game_state.players, not Enum.empty?(player.buttons), reduce: state do
-        state -> 
-          if "skip" in player.buttons do
-            GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
-          else
-            GenServer.cast(state.game_state_pid, {:press_button, seat, Enum.at(player.buttons, 0)})
-          end
-          Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
-      end
+    playable = ix in state.game_state.players[seat].cache.playable_indices
+    our_turn = state.game_state.turn == seat
+    ix = if not (matches and playable and our_turn) do
+      state = skip_buttons(state)
       hand = state.game_state.players[seat].hand
       draw = state.game_state.players[seat].draw
       get_discard_index.(hand, draw)
@@ -167,10 +173,14 @@ defmodule RiichiAdvanced.LogControlState do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
       if button != nil do
-        if button not in state.game_state.players[seat].buttons do
-          IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
-          print_game_state(state)
-        end
+        state = if button not in state.game_state.players[seat].buttons do
+          state = skip_buttons(state)
+          if button not in state.game_state.players[seat].buttons do
+            IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
+            print_game_state(state)
+          end
+          state
+        else state end
         GenServer.cast(state.game_state_pid, {:press_button, seat, button})
       end
     end

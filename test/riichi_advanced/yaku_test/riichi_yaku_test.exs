@@ -27,6 +27,33 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     })
   end
 
+  test "riichi - double riichi ippatsu tsumo" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "2z", "3z", "4z", "6p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Tsumo", 1}, {"Tanyao", 1}],
+        yaku2: [],
+        minipoints: 40
+      }
+    })
+  end
+
   test "riichi - tanyao nomi" do
     TestUtils.test_yaku_advanced("riichi", [], """
     {
