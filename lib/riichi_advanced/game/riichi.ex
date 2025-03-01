@@ -525,7 +525,8 @@ defmodule RiichiAdvanced.Riichi do
     winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_behavior) |> Utils.strip_attrs()
 
     # initial fu: 20 (open ron), 22 (tsumo), or 30 (closed ron)
-    is_closed_hand = Enum.all?(calls, fn {name, _call} -> name == "ankan" end)
+    # TODO don't hardcode ["ankan", "pei"]
+    is_closed_hand = Enum.all?(calls, fn {name, _call} -> name in ["ankan", "pei"] end)
     fu = cond do
       win_source == :draw -> 22
       is_closed_hand      -> 30
