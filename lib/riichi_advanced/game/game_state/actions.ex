@@ -910,10 +910,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts(interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
         state
       "print_status"          ->
-        IO.inspect({context.seat, state.players[context.seat].status})
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        IO.inspect({seat, state.players[seat].status})
         state
       "print_counter"         ->
-        IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        IO.inspect({seat, Map.get(state.players[seat].counters, Enum.at(opts, 0), 0)})
         state
       "push_message"          ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))

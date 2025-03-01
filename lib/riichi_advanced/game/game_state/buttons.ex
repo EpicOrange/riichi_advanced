@@ -192,7 +192,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = broadcast_state_change(state) # show possible call buttons
       state
     else
-      IO.puts("#{seat} tried to press nonexistent button #{button_name}")
+      IO.puts("#{seat} tried to press nonexistent button #{button_name}; available buttons are #{inspect(state.players[seat].buttons)}")
       state
     end
   end

@@ -44,9 +44,12 @@ defmodule RiichiAdvanced.Admin do
 
     # get ruleset and mods
     ruleset = log["rules"]["ruleset"]
-    mods = Jason.encode!(log["rules"]["mods"])
+    mods = Enum.map_join(log["rules"]["mods"], ", ", &case &1 do
+      %{"name" => name, "config" => config} -> "%{name: \"#{name}\", config: #{inspect(config, limit: :infinity)}}"
+      name -> "\"#{name}\""
+    end)
 
-    calls = for {kyoku, i} <- Enum.with_index(if kyoku_index == nil do log["kyokus"] else [Enum.at(log["kyokus"], kyoku_index)] end) do
+    calls = for {kyoku, i} <- (if kyoku_index == nil do Enum.with_index(log["kyokus"]) else [{Enum.at(log["kyokus"], kyoku_index), kyoku_index}] end) do
       # get config
       starting_hands = kyoku["players"]
       |> Enum.with_index()
@@ -76,13 +79,15 @@ defmodule RiichiAdvanced.Admin do
 
       """
       # kyoku #{i}:
-      TestUtils.test_yaku_advanced("#{ruleset}", #{mods}, \"\"\"
+      TestUtils.test_yaku_advanced("#{ruleset}", [#{mods}], \"\"\"
       {
         "starting_hand": {
       #{starting_hands}
         },
         "starting_draws": #{starting_draws},
-        "starting_dead_wall": #{starting_dead_wall}
+        "starting_dead_wall": #{starting_dead_wall},
+        "starting_round": #{kyoku["kyoku"]},
+        "starting_honba": #{kyoku["honba"]}
       }
       \"\"\", [
         #{events}
@@ -109,7 +114,10 @@ defmodule RiichiAdvanced.Admin do
   end
   def logs_to_test_case(log_ids) do
     log_ids
-    |> Enum.map_join("\n", &log_to_test_case/1)
+    |> Enum.map_join("\n", &case &1 do
+      {log_id, kyoku} -> log_to_test_case(log_id, kyoku)
+      log_id -> log_to_test_case(log_id)
+    end)
     |> IO.puts()
   end
 
