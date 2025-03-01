@@ -1,15 +1,23 @@
 def replace($from; $to):
   if . == $from then $to else . end;
 
+def replace_closed_call_check:
+  replace(
+    {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]};
+    {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}
+  )
+  |
+  replace(
+    {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]};
+    {"name": "not_has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}
+  );
+
 def fix_yaku:
-  map(.when |= walk(
-    replace(
-      {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]};
-      {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}
-    )
-  ));
+  map(.when |= walk(replace_closed_call_check));
 
 .functions.discard_passed |= [["as", "others", [["unset_status", "fuun"]]]] + .
+|
+.functions |= walk(replace_closed_call_check)
 |
 # all closed hand checks should check the new calls
 .yaku |= fix_yaku
@@ -21,10 +29,7 @@ def fix_yaku:
 .meta_yakuman |= fix_yaku
 |
 if (.buttons | has("riichi")) then
-  .buttons.riichi.show_when |= map(replace(
-    {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]};
-    {"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}
-  ))
+  .buttons.riichi.show_when |= map(replace_closed_call_check)
 else . end
 |
 # we need this in case kan mod is not enabled

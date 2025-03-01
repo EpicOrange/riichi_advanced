@@ -578,6 +578,12 @@
   "standard_win_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ]
   ],
+  "kokushi_definition": [
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
+  ],
   "shousuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]],
     [[["ton"], 1], [["nan"], 1], [["shaa_pair"], 1], [["pei"], 1]],
@@ -824,12 +830,6 @@
     "calculate_fu": [
       ["set_counter", "fu", "minipoints",
         ["remove_attrs"],
-        // base 20
-        ["add", 20],
-        // tsumo
-        ["add", 2, ["won_by_draw"]],
-        // closed ron
-        ["add", 10, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]],
         // score calls
         ["convert_calls", {"pon": 2}],
         ["remove_tanyaohai_calls"],
@@ -858,7 +858,37 @@
         // remove final pair, if any
         ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
         // only retain configurations with 0 tiles remaining
-        ["retain_empty_hands"]
+        ["retain_empty_hands"],
+        // add 1000 to pinfu hands so we prioritize pinfu later
+        ["add", 1000, [{"name": "minipoints_equals", "opts": [0]}]],
+        // base 20
+        ["add", 20, []],
+        // tsumo +2 (except closed pinfu tsumo)
+        ["add", 2, [
+          "won_by_draw",
+          [
+            {"name": "minipoints_at_most", "opts": [999]},
+            {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}
+          ]
+        ]],
+        // closed ron +10
+        ["add", 10, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]],
+        // open pinfu ron +10
+        ["add", 10, ["not_won_by_draw", {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_at_least", "opts": [1000]}]],
+        // take max, then subtract 1000 from pinfu hands
+        ["print"],
+        ["take_maximum"],
+        ["add", -1000, [{"name": "minipoints_at_least", "opts": [1000]}]],
+        // round up to nearest 10
+        ["round_up", 10],
+        // add original hand (for special hands like chiitoitsu and kokushi)
+        ["add_original_hand"],
+        // chiitoitsu
+        ["add", 25, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]]}]],
+        // kokushi
+        ["add", 40, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
+        ["add", 30, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
+        ["take_maximum"]
       ]
     ]
   },

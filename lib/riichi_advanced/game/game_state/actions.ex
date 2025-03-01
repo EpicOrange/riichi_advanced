@@ -510,11 +510,12 @@ defmodule RiichiAdvanced.GameState.Actions do
             "add" ->
               amt = Enum.at(opts, 0, 0)
               conditions = Enum.at(opts, 1, [])
-              if Conditions.check_cnf_condition(state, conditions, context) do
-                for {hand, calls, fu} <- hand_calls_fu do
+              for {hand, calls, fu} <- hand_calls_fu do
+                context = Map.put(context, :minipoints, fu)
+                if Conditions.check_cnf_condition(state, conditions, context) do
                   {hand, calls, fu + amt}
-                end
-              else hand_calls_fu end
+                else {hand, calls, fu} end
+              end
             "convert_calls" ->
               value_map = Enum.at(opts, 0, %{})
               for {hand, calls, fu} <- hand_calls_fu do
@@ -587,33 +588,29 @@ defmodule RiichiAdvanced.GameState.Actions do
               for {[], [], fu} <- hand_calls_fu do
                 {[], [], fu}
               end
+            "round_up" ->
+              to = Enum.at(opts, 0, 10)
+              to = if to == 0 do 10 else to end
+              for {hand, calls, fu} <- hand_calls_fu do
+                remainder = rem(fu, to)
+                {hand, calls, if remainder == 0 do fu else fu - remainder + to end}
+              end
+            "take_maximum" ->
+              if not Enum.empty?(hand_calls_fu) do
+                {_hand, _calls, max_fu} = Enum.max_by(hand_calls_fu, fn {_hand, _calls, fu} -> fu end)
+                for {hand, calls, fu} <- hand_calls_fu, fu == max_fu do
+                  {hand, calls, fu}
+                end
+              else hand_calls_fu end
+            "add_original_hand" -> hand_calls_fu ++ [{player.hand, player.calls, 0}]
             "print" ->
               IO.inspect(hand_calls_fu, limit: :infinity)
               hand_calls_fu
           end |> Enum.uniq()
         end
-
-        # old stuff is here
-
-        fus = hand_calls_fu
+        |> Enum.take(1)
         |> Enum.map(fn {_hand, _calls, fu} -> fu end)
-        closed_pinfu_fu = if win_source == :draw do 22 else 30 end
-        fu = if closed_pinfu_fu in fus do closed_pinfu_fu else Enum.max(fus, &>=/2, fn -> 0 end) end
-
-        num_pairs = Match.binary_search_count_matches([{player.hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
-        is_closed_hand = Enum.all?(player.calls, fn {name, _call} -> name in ["ankan", "pei"] end)
-        cond do
-          fu == 22 and win_source == :draw and is_closed_hand -> 20 # closed pinfu tsumo
-          fu == 30 and win_source != :draw and is_closed_hand -> 30 # closed pinfu ron
-          fu == 20 and not is_closed_hand                     -> 30 # open pinfu
-          Enum.empty?(fus) and num_pairs == 6                 -> 25 # chiitoitsu
-          Enum.empty?(fus) and num_pairs == 5                 -> 30 # kakura kurumi (saki card)
-          true                                                ->
-            # round up to nearest 10
-            # TODO this should be an action
-            remainder = rem(fu, 10)
-            if remainder == 0 do fu else fu - remainder + 10 end
-        end
+        |> Enum.at(0, 0)
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->

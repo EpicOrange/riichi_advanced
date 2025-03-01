@@ -553,6 +553,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
         state2 = Actions.trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, context.call_source, true)
         hand2 = state2.players[context.seat].hand ++ state2.players[context.seat].draw
         Enum.any?(hand2, &is_playable?(state2, context.seat, &1))
+      "minipoints_equals"   -> context.minipoints == Enum.at(opts, 0, 0)
+      "minipoints_at_least" -> context.minipoints >= Enum.at(opts, 0, 0)
+      "minipoints_at_most"  -> context.minipoints <= Enum.at(opts, 0, 0)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
