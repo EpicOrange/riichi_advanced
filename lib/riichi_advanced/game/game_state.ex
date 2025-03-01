@@ -909,7 +909,8 @@ defmodule RiichiAdvanced.GameState do
         else state end
 
         # log game, unless we are viewing a log or if this is a tutorial
-        if not (state.log_seeking_mode or state.forced_events != nil) do
+        if not state.log_seeking_mode and state.forced_events == nil do
+          IO.puts("Logging game #{state.ref}")
           Log.output_to_file(state)
         end
         state = Log.finalize_kyoku(state)

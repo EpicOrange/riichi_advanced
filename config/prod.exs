@@ -49,3 +49,6 @@ config :swoosh, :api_client, false
 
 # Enable dev routes for dashboard and mailbox
 config :riichi_advanced, dev_routes: true
+
+# serve files in the toplevel priv (instead of the one in the _build directory)
+config :riichi_advanced, :priv_dir, Path.join(File.cwd!(), "priv")
