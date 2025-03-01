@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.TestUtils do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.LogControlState, as: LogControl
@@ -115,6 +116,14 @@ defmodule RiichiAdvanced.TestUtils do
           state
       end
     end
+    # run before_win and before_scoring actions
+    state = if Map.has_key?(state.rules, "before_win") do
+      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: test_spec.winning_tile, win_source: test_spec.win_source})
+    else state end
+    state = if Map.has_key?(state.rules, "before_scoring") do
+      Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: test_spec.winning_tile, win_source: test_spec.win_source})
+    else state end
+
     {yaku, fu, _winning_tile} = Scoring.get_best_yaku_from_lists(state, yaku_list_names, seat, [test_spec.winning_tile], test_spec.win_source)
 
     assert MapSet.new(yaku) == MapSet.new(test_spec.expected_yaku)

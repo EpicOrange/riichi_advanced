@@ -496,7 +496,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_behavior) |> Utils.strip_attrs()
         win_source = context.win_source
 
-        hand_calls_fu = for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
+        for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
           hand_calls_fu -> case action do
             "put_calls_in_hand" ->
               for {hand, calls, fu} <- hand_calls_fu do
