@@ -487,12 +487,133 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0
       ["honba_value" | _opts] -> get_in(state.rules["score_calculation"]["honba_value"]) || 0
-      ["fu" | _opts] ->
+      ["minipoints" | opts] ->
+        score_actions = opts
+        yakuhai = Scoring.get_yakuhai(state, context.seat)
         player = state.players[context.seat]
-        score_rules = state.rules["score_calculation"]
-        enable_kontsu_fu = Map.get(score_rules, "enable_kontsu_fu", false)
+        tile_behavior = player.tile_behavior
         winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Riichi.calculate_fu(player.hand, player.calls, winning_tile, context.win_source, Scoring.get_yakuhai(state, context.seat), player.tile_behavior, enable_kontsu_fu)
+        winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_behavior) |> Utils.strip_attrs()
+        win_source = context.win_source
+
+        hand_calls_fu = for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
+          hand_calls_fu -> case action do
+            "put_calls_in_hand" ->
+              for {hand, calls, fu} <- hand_calls_fu do
+                {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in opts end)
+                {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fu}
+              end
+            "remove_attrs" ->
+              for {hand, calls, fu} <- hand_calls_fu do
+                {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
+              end
+            "add" ->
+              amt = Enum.at(opts, 0, 0)
+              conditions = Enum.at(opts, 1, [])
+              if Conditions.check_cnf_condition(state, conditions, context) do
+                for {hand, calls, fu} <- hand_calls_fu do
+                  {hand, calls, fu + amt}
+                end
+              else hand_calls_fu end
+            "convert_calls" ->
+              value_map = Enum.at(opts, 0, %{})
+              for {hand, calls, fu} <- hand_calls_fu do
+                value = Enum.map(calls, fn {name, _call} -> Map.get(value_map, name, 0) end)
+                |> Enum.sum()
+                {hand, calls, fu + value}
+              end
+            "remove_tanyaohai_calls" ->
+              for {hand, calls, fu} <- hand_calls_fu do
+                {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.is_tanyaohai?/1) end), fu}
+              end
+            "remove_calls" ->
+              for {hand, _calls, fu} <- hand_calls_fu do
+                {hand, [], fu}
+              end
+            "remove_winning_groups" ->
+              Enum.flat_map(opts, fn group_spec ->
+                group = Map.get(group_spec, "group", [])
+                reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
+                reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
+                base_tiles = winning_tiles
+                |> Enum.reject(fn tile -> Enum.any?(reject_if_exists, fn offsets ->
+                  Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) != nil)
+                end) end)
+                |> Enum.reject(fn tile -> Enum.any?(reject_if_missing, fn offsets ->
+                  Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil)
+                end) end)
+
+                value = Map.get(group_spec, "value", 0)
+                suited_mult = Map.get(group_spec, "suited_mult", 1)
+                yaochuuhai_mult = Map.get(group_spec, "yaochuuhai_mult", 1)
+                tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
+                yakuhai_value = Map.get(group_spec, "yakuhai_value", 0)
+                for {hand, calls, fu} <- hand_calls_fu,
+                    tile <- base_tiles,
+                    {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
+                  value = value
+                  * if Riichi.is_suited?(tile) do suited_mult else 1 end
+                  * if Riichi.is_yaochuuhai?(tile) do yaochuuhai_mult else 1 end
+                  * if win_source == :draw do tsumo_mult else 1 end
+                  value = value + yakuhai_value * Utils.count_tiles(yakuhai, [tile], tile_behavior)
+                  {hand, calls, fu + value}
+                end
+              end) ++ hand_calls_fu
+            "remove_groups" ->
+              Enum.flat_map(opts, fn group_spec ->
+                group = Map.get(group_spec, "group", [])
+                reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
+                reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
+
+                value = Map.get(group_spec, "value", 0)
+                suited_mult = Map.get(group_spec, "suited_mult", 1)
+                yaochuuhai_mult = Map.get(group_spec, "yaochuuhai_mult", 1)
+                tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
+                yakuhai_value = Map.get(group_spec, "yakuhai_value", 0)
+                for {hand, calls, fu} <- hand_calls_fu,
+                    tile <- Match.collect_base_tiles(hand, [], group, tile_behavior),
+                    not Enum.any?(reject_if_exists, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) != nil) end),
+                    not Enum.any?(reject_if_missing, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil) end),
+                    {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
+                  value = value
+                  * if Riichi.is_suited?(tile) do suited_mult else 1 end
+                  * if Riichi.is_yaochuuhai?(tile) do yaochuuhai_mult else 1 end
+                  * if win_source == :draw do tsumo_mult else 1 end
+                  value = value + yakuhai_value * Utils.count_tiles(yakuhai, [tile], tile_behavior)
+                  {hand, calls, fu + value}
+                end
+              end) ++ hand_calls_fu
+            "retain_empty_hands" ->
+              for {[], [], fu} <- hand_calls_fu do
+                {[], [], fu}
+              end
+            "print" ->
+              IO.inspect(hand_calls_fu, limit: :infinity)
+              hand_calls_fu
+          end |> Enum.uniq()
+        end
+
+        # old stuff is here
+
+        fus = hand_calls_fu
+        |> Enum.map(fn {_hand, _calls, fu} -> fu end)
+        closed_pinfu_fu = if win_source == :draw do 22 else 30 end
+        fu = if closed_pinfu_fu in fus do closed_pinfu_fu else Enum.max(fus, &>=/2, fn -> 0 end) end
+
+        num_pairs = Match.binary_search_count_matches([{player.hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
+        is_closed_hand = Enum.all?(player.calls, fn {name, _call} -> name in ["ankan", "pei"] end)
+        cond do
+          fu == 22 and win_source == :draw and is_closed_hand -> 20 # closed pinfu tsumo
+          fu == 30 and win_source != :draw and is_closed_hand -> 30 # closed pinfu ron
+          fu == 20 and not is_closed_hand                     -> 30 # open pinfu
+          Enum.empty?(fus) and num_pairs == 6                 -> 25 # chiitoitsu
+          Enum.empty?(fus) and num_pairs == 5                 -> 30 # kakura kurumi (saki card)
+          true                                                ->
+            # round up to nearest 10
+            # TODO this should be an action
+            remainder = rem(fu, 10)
+            if remainder == 0 do fu else fu - remainder + 10 end
+        end
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
       _ ->

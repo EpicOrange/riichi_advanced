@@ -85,3 +85,12 @@ else . end
   "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
   "precedence_over": ["chii", "pon", "daiminkan"]
 }
+|
+# add kans to fu calculation
+.functions.calculate_fu[0] |= map(if type == "array" and .[0] == "convert_calls" then
+  .[1] += {
+    "ankan": 16,
+    "daiminkan": 8,
+    "kakan": 8
+  }
+else . end)

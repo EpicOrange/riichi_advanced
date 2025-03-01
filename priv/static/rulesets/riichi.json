@@ -820,6 +820,46 @@
       ["when_anyone", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
         [["set_status", "furiten"]]
       ]
+    ],
+    "calculate_fu": [
+      ["set_counter", "fu", "minipoints",
+        ["remove_attrs"],
+        // base 20
+        ["add", 20],
+        // tsumo
+        ["add", 2, ["won_by_draw"]],
+        // closed ron
+        ["add", 10, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]],
+        // score calls
+        ["convert_calls", {"pon": 2}],
+        ["remove_tanyaohai_calls"],
+        ["convert_calls", {"pon": 2}],
+        ["remove_calls"],
+        // now remove the winning group
+        ["remove_winning_groups",
+          // kanchan
+          {"group": [-1, 1], "value": 2},
+          // penchan
+          {"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2},
+          {"group": [1, 2], "reject_if_exists": [[3]], "value": 2},
+          // ryanmen
+          {"group": [-1, -2], "reject_if_missing": [[-3]]},
+          {"group": [1, 2], "reject_if_missing": [[3]]},
+          // shanpon
+          {"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2},
+          // tanki
+          {"group": [0], "value": 2, "yakuhai_value": 2}
+        ],
+        // now remove all closed groups
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        // remove final pair, if any
+        ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
+        // only retain configurations with 0 tiles remaining
+        ["retain_empty_hands"]
+      ]
     ]
   },
   "after_initialization": {
@@ -853,7 +893,7 @@
   ],
   "before_win": {
     "actions": [
-      ["set_counter", "fu", "fu"]
+      ["run", "calculate_fu"]
     ]
   },
   "after_start": {

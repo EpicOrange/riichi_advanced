@@ -63,6 +63,7 @@ defmodule RiichiAdvanced.Match do
     if tile != nil do
       cond do
         Map.has_key?(@fixed_offsets, n) -> _offset_tile(@fixed_offsets[n], suit_to_offset(tile), tile_behavior, true)
+        Utils.is_tile(n) -> Utils.to_tile(n)
         (n < 1 and n > -1) or n < -30 or n >= 30 ->
           tile
         n >= 10 ->
