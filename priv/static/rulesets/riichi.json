@@ -876,7 +876,6 @@
         // open pinfu ron +10
         ["add", 10, ["not_won_by_draw", {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_at_least", "opts": [1000]}]],
         // take max, then subtract 1000 from pinfu hands
-        ["print"],
         ["take_maximum"],
         ["add", -1000, [{"name": "minipoints_at_least", "opts": [1000]}]],
         // round up to nearest 10
@@ -918,9 +917,6 @@
   "before_call": {
     "actions": [["run", "turn_cleanup"], ["unset_status_all", "discards_empty"]]
   },
-  "play_effects": [
-    ["any", [["unset_status", "discards_empty"]]]
-  ],
   "before_win": {
     "actions": [
       ["run", "calculate_fu"]
@@ -929,6 +925,9 @@
   "after_start": {
     "actions": [["set_status_all", "discards_empty"]]
   },
+  "play_effects": [
+    ["any", [["unset_status", "discards_empty"]]]
+  ],
   "buttons": {
     "chii": {
       "display_name": "Chii",

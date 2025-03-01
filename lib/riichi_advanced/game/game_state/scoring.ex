@@ -209,6 +209,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         minipoints = Map.get(score_rules, "fixed_fu", minipoints)
         han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 4)
         han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+        han_fu_starting_han = Map.get(score_rules, "han_fu_starting_han", 2)
         dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
 
         # handle limit scores
@@ -228,7 +229,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {score, Enum.at(limit_names, limit_index)}
         else
           # calculate score using formula
-          base_score = han_fu_multiplier * minipoints * 2 ** (2 + points)
+          base_score = han_fu_multiplier * minipoints * 2 ** (han_fu_starting_han + points)
           score = base_score * if is_dealer do dealer_multiplier else 1 end
           # round up (to nearest 100, by default)
           score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
@@ -414,11 +415,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
               IO.puts("Invalid tsumo_loss value (defaults to true): #{inspect(tsumo_loss)}")
               {ko_payment, oya_payment}
           end
-        else
-          self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
-          self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
-          {self_draw_multiplier * basic_score + self_draw_penalty, self_draw_multiplier * basic_score + self_draw_penalty}
-        end
+        else {basic_score, basic_score} end
 
         # handle motouchi naruka's scoring quirk
         motouchi_naruka_delta = 100 * Integer.floor_div(state.pot, max(1, Map.get(score_rules, "riichi_value", 1000)))
@@ -464,6 +461,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
               push_message(state, [%{text: "Player #{player_name(state, payer)} loses double points for wareme"}])
               payment * 2
             else payment end
+
+            self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
+            self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
+            dealer_self_draw_multiplier = Map.get(score_rules, "dealer_self_draw_multiplier", 1)
+            dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+            multiplier = self_draw_multiplier
+                       * if dealer_seat in [payer, winner.seat] do dealer_self_draw_multiplier else 1 end
+            penalty = self_draw_penalty
+            payment = (payment * multiplier) + penalty
+            
             delta_scores = Map.update!(delta_scores, payer, & &1 - payment - honba_payment)
             delta_scores = Map.update!(delta_scores, winner.seat, & &1 + payment + honba_payment)
             delta_scores

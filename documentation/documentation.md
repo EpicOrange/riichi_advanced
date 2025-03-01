@@ -1079,11 +1079,11 @@ Riichi also specifies the key `"yaku2_overrides_yaku1": true`, which means if an
 
 All of the above is to calculate the basic score of a hand, displayed when the hand wins. How are payouts calculated?
 
-In event of a win-by-discard, the discarder pays the score multiplied by `"discarder_multiplier"`, which defaults to `1`. Non-discarders pay the score multiplied by `"non_discarder_multiplier"`, which defaults to `0`. 
+In event of a win-by-discard, the discarder pays the score multiplied by `"discarder_multiplier"`, which defaults to `1`. Non-discarders pay the score multiplied by `"non_discarder_multiplier"`, which defaults to `0`.
 
-Otherwise the win is by self-draw. Then every player pays the winner the score multiplied by `"draw_multiplier"`, which defaults to `1`.
+Otherwise, the win is by self-draw. Then every player pays the winner the score multiplied by `"self_draw_multiplier"`, which defaults to `1`. If the dealer is paying or being paid, their payment is multiplied by `"dealer_self_draw_multiplier"`, which defaults to `1`.
 
-You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`, `"draw_penalty"` which add a fixed amount to their respective payments (after the multiplication). For example, in MCR all players pay the winner 8 points regardless of the score, so all of these would be set to `8`.
+You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`, `"self_draw_penalty"` which add a fixed amount to their respective payments (after the multiplication). For example, in MCR all players pay the winner 8 points regardless of the score, so all of these would be set to `8`.
 
 If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
 
