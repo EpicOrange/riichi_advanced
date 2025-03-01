@@ -180,19 +180,19 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def handle_event("mark_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :hand})
+    socket.assigns.mark_tile.(ix, :hand)
     {:noreply, socket}
   end
 
   def handle_event("mark_call", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :calls})
+    socket.assigns.mark_tile.(ix, :calls)
     {:noreply, socket}
   end
 
   def handle_event("mark_tile_aside", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :aside})
+    socket.assigns.mark_tile.(ix, :aside)
     {:noreply, socket}
   end
 
