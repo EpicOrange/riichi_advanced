@@ -1199,6 +1199,12 @@ defmodule RiichiAdvanced.GameState do
     Riichi.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
   end
 
+  def get_open_riichi_hands(state) do
+    state.players
+    |> Enum.filter(fn {_seat, player} -> player.hand_revealed end)
+    |> Enum.map(fn {_seat, player} -> {player.hand, player.calls, player.tile_behavior} end)
+  end
+
   def get_doras(state) do
     Enum.flat_map(state.revealed_tiles, fn named_tile ->
       dora_indicator = from_named_tile(state, named_tile)
@@ -1775,6 +1781,7 @@ defmodule RiichiAdvanced.GameState do
             # IO.puts("Notifying #{state.turn} AI that it's their turn")
             params = %{
               player: state.players[state.turn],
+              open_riichis: get_open_riichi_hands(state),
               visible_tiles: get_visible_tiles(state, state.turn),
               closest_american_hands: state.players[state.turn].cache.closest_american_hands,
             }
@@ -1883,6 +1890,7 @@ defmodule RiichiAdvanced.GameState do
           state = broadcast_state_change(state)
           params = %{
             player: state.players[seat],
+            open_riichis: get_open_riichi_hands(state),
             visible_tiles: get_visible_tiles(state, seat),
             closest_american_hands: state.players[seat].cache.closest_american_hands,
           }

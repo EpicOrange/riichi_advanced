@@ -7,6 +7,7 @@
     ["recalculate_playables"]
   ]],
   ["move_tiles", {"hand": ["marked"]}, "discard"],
+  ["move_tiles", "draw", "hand"],
   ["clear_marking"],
   ["big_text", "Riichi"],
   ["push_message", "declared riichi"],
@@ -24,9 +25,12 @@ if (.buttons | has("open_riichi")) then
       ["recalculate_playables"]
     ]],
     ["move_tiles", {"hand": ["marked"]}, "discard"],
+    ["move_tiles", "draw", "hand"],
     ["clear_marking"],
+    ["reveal_hand"],
     ["big_text", "Open Riichi"],
     ["push_message", "declared open riichi"],
-    ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
+    ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
+    ["advance_turn"]
   ]
 else . end

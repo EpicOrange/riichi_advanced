@@ -207,6 +207,7 @@ defmodule RiichiAdvanced.Riichi do
 
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check \\ false) do
     # only check for waits if we're tenpai
     if skip_tenpai_check or Match.match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), tile_behavior) do
