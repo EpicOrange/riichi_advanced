@@ -17,4 +17,4 @@ jobs:
         ssh-keyscan -H riichiadvanced.com >> ~/.ssh/known_hosts
 
     - name: test and deploy
-      run: ssh -q ubuntu@riichiadvanced.com -i ~/.ssh/id_rsa -t '(. "$HOME/.asdf/asdf.sh"; cd riichi_advanced; git stash && git pull && git stash pop && mix test && tmux new -d "./run.sh release")'
+      run: ssh -q ubuntu@riichiadvanced.com -i ~/.ssh/id_rsa -t '(. "$HOME/.asdf/asdf.sh"; cd riichi_advanced; git stash && git pull && git stash pop && ulimit -n 65536 && mix test && tmux new -d "./run.sh release")'
