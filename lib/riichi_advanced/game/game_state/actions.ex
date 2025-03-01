@@ -1385,6 +1385,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
       "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
+      # deprecated
       "merge_draw"          -> update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), draw: [] })
       "delete_tiles"    ->
         # TODO allow specifying target
@@ -1399,6 +1400,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "saki_start"      -> Saki.saki_start(state)
       "register_last_discard" -> register_discard(state, context.seat, Enum.at(state.players[context.seat].pond, -1))
+      "enable_auto_button" ->
+        auto_button_name = Enum.at(opts, 0, "")
+        GenServer.cast(self(), {:toggle_auto_button, context.seat, "4_auto_discard", true})
+        state
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
