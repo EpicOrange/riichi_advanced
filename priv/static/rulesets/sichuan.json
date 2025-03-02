@@ -450,7 +450,7 @@
         ["when", [
             "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron"]}
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
