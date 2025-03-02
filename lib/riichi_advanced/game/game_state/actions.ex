@@ -508,7 +508,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
               end
             "add" ->
-              amt = Enum.at(opts, 0, 0)
+              amt = interpret_amount(state, context, List.wrap(Enum.at(opts, 0, 0)))
               conditions = Enum.at(opts, 1, [])
               for {hand, calls, fu} <- hand_calls_fu do
                 context = Map.put(context, :minipoints, fu)
@@ -1402,7 +1402,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "register_last_discard" -> register_discard(state, context.seat, Enum.at(state.players[context.seat].pond, -1))
       "enable_auto_button" ->
         auto_button_name = Enum.at(opts, 0, "")
-        GenServer.cast(self(), {:toggle_auto_button, context.seat, "4_auto_discard", true})
+        GenServer.cast(self(), {:toggle_auto_button, context.seat, auto_button_name, true})
         state
       _                 ->
         IO.puts("Unhandled action #{action}")
