@@ -253,7 +253,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score = score + if is_self_draw do self_draw_bonus else 0 end
 
     # apply tsumo loss (sanma only)
-    tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
+    tsumo_loss = Map.get(score_rules, "tsumo_loss", true)
     score = cond do
       length(state.available_seats) != 3 -> score
       (is_self_draw and tsumo_loss == true) or tsumo_loss == "ron_loss" ->
@@ -393,7 +393,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # (if dealer tsumo, oya payment is unused)
         {ko_payment, oya_payment} = if split_oya_ko_payment and num_players >= 3 do
           han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-          tsumo_loss = Map.get(score_rules, "tsumo_loss", false)
+          tsumo_loss = Map.get(score_rules, "tsumo_loss", true)
           {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
           cond do
             num_players == 4 or tsumo_loss in [true, "ron_loss"] -> {ko_payment, oya_payment}
@@ -1051,6 +1051,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # score yaku
         yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
+        yaku2 = if highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
         {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
         if Debug.print_wins() do
           IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")

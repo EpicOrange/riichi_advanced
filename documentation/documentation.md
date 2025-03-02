@@ -26,7 +26,9 @@
     * [`"scoring_method": "vietnamese"`](#scoring_method-vietnamese)
     * [`"scoring_method": "han_fu_formula"`](#scoring_method-han_fu_formula)
     * [`"scoring_method": ["han_fu_formula", "multiplier"]`](#scoring_method-han_fu_formula-multiplier)
+    * [Other scoring-related keys](#other-scoring-related-keys)
   + [Payments](#payments)
+    * [Payment-related keys](#payment-related-keys)
     * [Payment-related statuses](#payment-related-statuses)
 
 # `ruleset.json` basic concepts
@@ -593,6 +595,7 @@ Mods:
 
 Rules:
 
+- `agariyame`: If true, the game ends if the dealer wins the final round.
 - `bloody_end`: If true, the game ends after three players win, not after one player wins.
 - `display_honba`: Whether to show number of honba in the middle
 - `display_riichi_sticks`: Whether to show number of riichi sticks in the middle
@@ -612,6 +615,7 @@ Rules:
 - `set_definitions`: List of definitions for sets used in match definitions, described above
 - `shown_statuses`: List of statuses to show (private to the player)
 - `starting_tiles`: Number of tiles every player starts with every round
+- `tenpaiyame`: If true, the game ends if the dealer is tenpai at exhaustive draw in the final round.
 - `wall`: The list of tiles used in the game. [Here are all the tiles available in the tileset currently.](tiles.md)
 
 Yaku and scoring:
@@ -1069,11 +1073,76 @@ Then it checks for limit hands, defined by the following three keys, which for R
 
 The idea is that it checks `[points, minipoints]` against the latest value in `"limit_thresholds"`, and if any of them match, the score is replaced by the corresponding `"limit_score"` and given the corresponding `"limit_name"`.
 
+There are a few more keys for configuring han-fu calculations.
+
+First, if you want to make fu a fixed value (perhaps for testing) then you may specify
+
+    "score_calculation": {
+      "fixed_fu": 30
+    }
+
+Second, recall the han-fu formula:
+
+    han_fu_multiplier * minipoints * 2^(2 + points)
+
+The 2 added to `points` is configurable using the `"han_fu_starting_han"` key, which defaults to 2. Classical Chinese mahjong doesn't add 2, so you would configure this via
+
+    "score_calculation": {
+      "han_fu_starting_han": 0
+    }
+
 ### `"scoring_method": ["han_fu_formula", "multiplier"]`
 
 This is the actual value of `"scoring_method"` used for riichi. The idea for a two-value array value for `"scoring_method"` is that we use `"han_fu_formula"` for `points` and `"multiplier"` for `points2`, and add the resulting scores. For riichi, this means using `"han_fu_formula"` to calculate the standard Han score, and `"multiplier"` for yakuman hands.
 
 Riichi also specifies the key `"yaku2_overrides_yaku1": true`, which means if any yaku contribute to `points2`, then we ignore all yaku that contribute to `points`.
+
+### Other scoring-related keys
+
+All of the keys described below are optional.
+
+After score is calculated, there are two keys that can cap the score to a minimum and maximum: `max_score` and `min_score`. For example:
+
+    "score_calculation": {
+      "min_score": 1,
+      "max_score": 500
+    }
+
+For three-player variants, a win by self-draw typically pays less than a win by discard. For example, a dealer mangan tsumo in riichi is worth 12000 (4000 per player), but is worth only 8000 in three player due to tsumo loss. You can disable tsumo loss by setting the following:
+
+    "score_calculation": {
+      "tsumo_loss": false
+    }
+
+This will take the 'lost' portion of the payment and split it equally between the two paying players.
+
+Other allowed values for `"tsumo_loss"` beyond `true` and `false` are:
+
+- `"add_1000"`: A flat 1000 is added to each player's payment.
+- `"unequal_split"`: When a nondealer wins, the missing payment is split so that the dealer still pays roughly double the payment for the other nondealer.
+- `"north_split"`: This is the same behavior as `false`.
+- `"equal_split"`: The missing payment is split so that both players pay the same amount.
+- `"north_to_oya"`: The missing payment is paid by the dealer.
+- `"double_collection"`: Both players pay the full amount including the missing payment, which effectively doubles the payment.
+- `"ron_loss"`: Tsumo loss is on, but the loss is also applied to ron as well.
+
+If triple ron should be treated as an abortive draw, set:
+
+    "score_calculation": {
+      "triple_ron_draw": true
+    }
+
+In American mahjong, the hands are typically arranged using the definition of the hand on the card. To enable this, set:
+
+    "score_calculation": {
+      "arrange_american_yaku": true
+    }
+
+If you want to only keep the highest-scoring yaku (for both `yaku` and `yaku2`), breaking ties arbitrarily, then set:
+
+    "score_calculation": {
+      "highest_scoring_yaku_only": true
+    }
 
 ## Payments
 
@@ -1092,7 +1161,7 @@ There are typically no payments at exhaustive draw, but you can enable riichi-st
     "score_calculation": {
       "draw_tenpai_payments": [1000, 1500, 3000],
       "draw_nagashi_payments": [2000, 4000],
-    },
+    }
 
 These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
 
@@ -1100,11 +1169,33 @@ Alternatively, you can enable sichuan-style tenpai payments via:
 
     "score_calculation": {
       "score_best_hand_at_draw": true
-    },
+    }
 
 This scores every tenpai player's hand (where players with the `"tenpai"` status are considered tenpai) and awards them the highest possible hand they could have won, so payments proceed as if they won.
 
 This option takes precedence over tenpai and nagashi payments (and nagashi takes precedence over tenpai payments).
+
+### Payment-related keys
+
+To set the value of riichi sticks and honba counters respectively, set:
+
+    "score_calculation": {
+      "riichi_value": 5000,
+      "honba_value": 500
+    }
+
+`"riichi_value"` otherwise defaults to 1000 and `"honba_value"` to 0.
+
+The following keys determine the behavior of pao:
+
+    "score_calculation": {
+      "pao_pays_all_yaku": false,
+      "pao_pays_all_yaku2": false,
+      "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
+      "split_pao_ron": true,
+    }
+
+First, if `"pao_pays_all_yaku"` is true then players who are hit by pao (i.e. have the `"pao"` status on a win) pay the entirety of `yaku`. Same with `"pao_pays_all_yaku2"` and `yaku2`. Otherwise, only yaku named in the `"pao_eligible_yaku"` array has payment handled by pao rules -- the remaining yaku are paid out normally. Finally, `"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba).
 
 ### Payment-related statuses
 
@@ -1112,3 +1203,37 @@ There are a number of statuses you can set on players that can modify their scor
 
 - `"delta_score"`: if set, adds to this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments).
 - `"delta_score_multiplier"`: if set, multiplies this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments). This happens before `"delta_score"`.
+- `"score_as_dealer"`: if set, this player's payments are calculated as if they are the dealer.
+
+# Setting up next-round logic
+
+After a win there are a few decisions to be made:
+
+- Does the game end?
+- Who is the next dealer?
+- Do you increase the repeat counter?
+
+These are all controlled by the following keys in the `"score_calculation"` object, which all default to false:
+
+    "score_calculation": {
+      "next_dealer_is_first_winner": false,
+      "tenpairenchan": false,
+      "notenrenchan_south": false,
+    },
+
+Here's how they work:
+
+- `"next_dealer_is_first_winner"`: if true, then the (first) winner becomes the next round's dealer.
+- `"tenpairenchan"`: if true, the round repeats if the dealer is tenpai at exhaustive draw.
+- `"notenrenchan_south"` if true, the round repeats if it's South round and no one is tenpai at exhaustive draw.
+- 
+
+
+
+
+
+
+
+
+
+
