@@ -484,16 +484,18 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("double_clicked", _assigns, socket) do
     if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+      socket = assign(socket, :selected_index, :any)
       skip_or_discard_draw(socket)
-    end
-    {:noreply, socket}
+      {:noreply, socket}
+    else {:noreply, socket} end
   end
 
   def handle_event("right_clicked", _assigns, socket) do
     if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+      socket = assign(socket, :selected_index, :any)
       skip_or_discard_draw(socket)
-    end
-    {:noreply, socket}
+      {:noreply, socket}
+    else {:noreply, socket} end
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do
@@ -609,7 +611,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:play_tile, index}, socket) do
-    if socket.assigns.seat == socket.assigns.state.turn and index == socket.assigns.selected_index do
+    if socket.assigns.seat == socket.assigns.state.turn and socket.assigns.selected_index in [index, :any] do
       socket = assign(socket, :visible_waits, %{})
       socket = assign(socket, :show_waits_index, nil)
       socket = if not Map.has_key?(socket.assigns, :tutorial_sequence) do

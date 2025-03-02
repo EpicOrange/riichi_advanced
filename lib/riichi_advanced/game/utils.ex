@@ -303,7 +303,7 @@ defmodule RiichiAdvanced.Utils do
     sideways = i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i == length(assigns.pond) - 1
     riichi = Map.has_key?(assigns, :riichi_index) and i == assigns.riichi_index
-    selected = Map.has_key?(assigns, :selected_index) and i == assigns.selected_index
+    selected = Map.has_key?(assigns, :selected_index) and i != nil and i == assigns.selected_index
     number_class = case Riichi.to_num(tile) do
       1 -> ["one"]
       2 -> ["two"]
