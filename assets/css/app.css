@@ -900,8 +900,8 @@ div.tile.markable:hover, div.tile.marked {
 }
 div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }
 div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
-div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
-div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
+div.tile.dora:not(.\31 x) { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
+div.tile.dora:not(.\31 x).sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
 div.tile.\30 m { --number-color: var(--aka-color); background-position-y: calc(-0 * var(--tile-size) - var(--border-width)); }
 div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) - var(--border-width)); }
 div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size) - var(--border-width)); }
@@ -1346,7 +1346,8 @@ div.tile:not(.flat) {
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.self div.tile.selected {
+div.hand.self div.tiles > div.tile.selected,
+div.hand.self div.draws > div.tile.selected {
   /* this is here to override the translateZ(0) */
   transform: translateY(calc(-0.25 * var(--tile-size)));
 }
@@ -1618,6 +1619,7 @@ div.call-buttons > button {
   padding: 0 calc(0.1625 * var(--tile-size));
   background: var(--tile-back);
   filter: none;
+  transform: none;
 }
 div.buttons > button.small-text {
   font-size: calc(0.33 * var(--tile-size));

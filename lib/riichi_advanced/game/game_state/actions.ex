@@ -767,15 +767,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
     end)
     # add tiles to dst (in original ordering)
-    state = Enum.reduce(src_targets, state, fn {_source, tile, _seat, ix}, state ->
+    state = Enum.reduce(src_targets, state, fn {_source, tile, _seat, _ix}, state ->
       case destination do
-        "hand" -> 
-          hand_length = length(state.players[seat].hand)
-          if ix < hand_length do
-            update_player(state, seat, &%Player{ &1 | hand: &1.hand ++ [tile] })
-          else
-            update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
-          end
+        "hand" -> update_player(state, seat, &%Player{ &1 | hand: &1.hand ++ [tile] })
         "draw" -> update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
         "calls" -> update_player(state, seat, &%Player{ &1 | calls: &1.calls ++ [tile] })
         "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })

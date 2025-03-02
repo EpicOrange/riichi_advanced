@@ -225,7 +225,7 @@
   },
   "before_win": {
     "actions": [
-      ["when", [{"name": "seat_is", "opts": ["east"]}], ["set_counter", "dealer_continuation", "honba"]],
+      ["when", [{"name": "seat_is", "opts": ["east"]}], [["set_counter", "dealer_continuation", "honba"]]],
       ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [["any", "_gold"]]]
     ]
   },

@@ -429,7 +429,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
         count = Enum.at(opts, 1, 1)
-        called_tiles = [context.choice.chosen_called_tile] ++ context.choice.chosen_call_choice
+        called_tiles = [context.choice.chosen_called_tile | context.choice.chosen_call_choice]
         Utils.count_tiles(called_tiles, tiles) >= count
       "called_tile_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))

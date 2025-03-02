@@ -432,7 +432,7 @@ defmodule RiichiAdvanced.GameState do
           # this should happen after init_player calls (which populate state.reserved_seats)
           log = Enum.at(opts, 0, nil)
 
-          # run before_new_round actions
+          # run before_start actions
           state = if Map.has_key?(state.rules, "before_start") do
             Actions.run_actions(state, state.rules["before_start"]["actions"], %{seat: state.turn})
           else state end
@@ -901,7 +901,7 @@ defmodule RiichiAdvanced.GameState do
         # apply delta scores
         state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
 
-        # run before_new_round actions
+        # run before_start actions
         # we need to run it here instead of in initialize_new_round
         # so that it can impact e.g. tobi calculations and log
         state = if state.round_result != :continue and Map.has_key?(state.rules, "before_start") do

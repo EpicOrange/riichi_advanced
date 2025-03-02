@@ -184,8 +184,9 @@ defmodule RiichiAdvanced.Riichi do
         hand = if from_hand do List.delete(hand, tile) else hand end
         # before we make calls using the offsets,
         # we must instantiate the tile in case it's a joker
-        instances = Utils.apply_tile_aliases(tile,  tile_behavior)
+        instances = Utils.apply_tile_aliases(tile, tile_behavior)
         if :any in instances do hand else instances end
+        |> Enum.reject(fn tile -> with {tile, _attrs} <- Utils.to_attr_tile(tile) do tile == :any end end)
         |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->

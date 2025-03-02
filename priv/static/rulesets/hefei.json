@@ -34,32 +34,24 @@
     "iipeikou": [0, 0, 1, 1, 2, 2],
     "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
   },
-  "tenpai_definition": [ //or
-    [ //and
-      [ //or
-        [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-        [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-        [ [["pair"], 6] ]
-      ],
-      [ //or
-        [["2m", "3m", "4m", "5m", "6m", "7m"], 7],
-        [["2p", "3p", "4p", "5p", "6p", "7p"], 7],
-        [["2s", "3s", "4s", "5s", "6s", "7s"], 7]
-      ]
-    ]
+  "tenpai_definition": [
+    [ [["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 7], "restart", "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ [["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 7], "restart", "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 7], "restart", [["pair"], 6] ],
+    [ [["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 7], "restart", "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ [["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 7], "restart", "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 7], "restart", [["pair"], 6] ],
+    [ [["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 7], "restart", "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ [["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 7], "restart", "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 7], "restart", [["pair"], 6] ]
   ],
-  "win_definition": [ //or
-    [ //and
-      [ //or
-        [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
-        [ [["pair"], 7] ]
-      ],
-      [ //or
-        [["2m", "3m", "4m", "5m", "6m", "7m"], 8],
-        [["2p", "3p", "4p", "5p", "6p", "7p"], 8],
-        [["2s", "3s", "4s", "5s", "6s", "7s"], 8]
-      ]
-    ]
+  "win_definition": [
+    [ [["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 7], "restart", "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 7], "restart", [["pair"], 7] ],
+    [ [["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 7], "restart", "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 7], "restart", [["pair"], 7] ],
+    [ [["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 7], "restart", "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 7], "restart", [["pair"], 7] ]
   ],
   "iiankou_tsumo_definition": [
     [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ],
@@ -249,9 +241,9 @@
   },
   "before_win": {
     "actions": [
-      ["set_counter", "manzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2m", "3m", "4m", "5m", "6m", "7m", "8m"]],
-      ["set_counter", "pinzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2p", "3p", "4p", "5p", "6p", "7p", "8p"]],
-      ["set_counter", "souzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2s", "3s", "4s", "5s", "6s", "7s", "8s"]],
+      ["set_counter", "manzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 1]]]],
+      ["set_counter", "pinzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 1]]]],
+      ["set_counter", "souzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 1]]]],
       ["when", {"name": "counter_at_least", "opts": ["manzu_count", 8]}, [
           ["set_counter", "suit_bonus", "manzu_count"]
         ]
@@ -265,13 +257,13 @@
         ]
       ],
       ["subtract_counter", "suit_bonus", 8],
-      ["set_counter", "two_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["2m", "2p", "2s"]],
-      ["set_counter", "three_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["3m", "3p", "3s"]],
-      ["set_counter", "four_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["4m", "4p", "4s"]],
-      ["set_counter", "five_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["5m", "5p", "5p"]],
-      ["set_counter", "six_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["6m", "6p", "6s"]],
-      ["set_counter", "seven_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["7m", "7p", "7s"]],
-      ["set_counter", "eight_count", "count_matches", ["hand", "calls", "draw", "last_discard"], ["8m", "8p", "8s"]],
+      ["set_counter", "two_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2m", "2p", "2s"], 1]]]],
+      ["set_counter", "three_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["3m", "3p", "3s"], 1]]]],
+      ["set_counter", "four_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["4m", "4p", "4s"], 1]]]],
+      ["set_counter", "five_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["5m", "5p", "5p"], 1]]]],
+      ["set_counter", "six_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["6m", "6p", "6s"], 1]]]],
+      ["set_counter", "seven_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["7m", "7p", "7s"], 1]]]],
+      ["set_counter", "eight_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["8m", "8p", "8s"], 1]]]],
       ["when", {"name": "counter_at_least", "opts": ["two_count", 4]}, [  ["add_counter", "same_number_bonus", "two_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
       ["when", {"name": "counter_at_least", "opts": ["three_count", 4]}, [  ["add_counter", "same_number_bonus", "three_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
       ["when", {"name": "counter_at_least", "opts": ["four_count", 4]}, [  ["add_counter", "same_number_bonus", "four_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
@@ -338,7 +330,7 @@
       "display_name": "Hu",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
@@ -349,7 +341,7 @@
       "display_name": "Hu",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
@@ -369,7 +361,7 @@
       "display_name": "Zimo",
       "show_when": [
         "our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]

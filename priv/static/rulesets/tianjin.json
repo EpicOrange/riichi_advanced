@@ -80,17 +80,17 @@
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
   "yaku": [
-    { "display_name": "Pure Hand", "value": 3, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [["joker"], 1]]}] },
+    { "display_name": "Pure Hand", "value": 3, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["wild"]}], 1]]]]}] },
     { "display_name": "Wild Card Single Wait", "value": 3, "when": [
       [
-        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["joker"], 1] ] ]]]},
-        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 4], [["any"], 1] ] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
+        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 4], [[{"tile": "any", "attrs": ["wild"]}], 1] ]]]},
+        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 4], [["any"], 1] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["wild"]}], 1]]]]}] }]
       ]
     ] },
     { "display_name": "Double Wild Card Set Wait", "value": 3, "when": [
       [
-        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["joker"], 2] ] ]]]},
-        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [ [["shuntsu", "koutsu"], 3], [["pair"], 1], [["any"], 1], [["joker"], 1] ] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [["joker"], 1]]}] }]
+        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [["joker"], 2] ]]]},
+        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [["any"], 1], [[{"tile": "any", "attrs": ["wild"]}], 1] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [[{"tile": "any", "attrs": ["wild"]}], 1]]}] }]
       ]
     ] },
     { "display_name": "Capturing the Five", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
@@ -133,18 +133,18 @@
   "play_restrictions": [],
   "functions": {
     "pay_for_kong": [
-      ["set_counter", "kong_payment", $base],
-      ["ite", {"name": "seat_is", "as": $payee, "opts": ["east"]},
+      ["set_counter", "kong_payment", "$base"],
+      ["ite", {"name": "seat_is", "as": "$payee", "opts": ["east"]},
         ["multiply_counter", "kong_payment", "delta_score_multiplier_against_dealer"],
         ["when", {"name": "seat_is", "opts": ["east"]},
           [ 
-            ["as", $payee, ["set_counter_all", "temp", "delta_score_multiplier_against_dealer"]],
+            ["as", "$payee", ["set_counter_all", "temp", "delta_score_multiplier_against_dealer"]],
             ["multiply_counter", "kong_payment", "temp"],
             ["set_counter_all", "temp", 1]
           ]
         ]
       ],
-      ["add_score", "kong_payment", $payee],
+      ["add_score", "kong_payment", "$payee"],
       ["subtract_score", "kong_payment"],
       ["multiply_counter", "kong_payment", -1],
       ["big_text", "  $ctr  ", {"ctr": "kong_payment"}]
@@ -179,17 +179,23 @@
   "after_initialization": {
     "actions": [
         // give everyone two challenge tokens at the start of the game
-      ["set_counter_all", "challenge_tokens", 2]
+      ["set_counter_all", "challenge_tokens", 2],
+      ["recalculate_buttons"]
+    ]
+  },
+  "before_start": {
+    "actions": [
+      ["set_status_all", "match_start"]
     ]
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "match_start"],
+      ["set_status_all", "first_turn"],
         // tag wild tiles with 'wild'
-      ["tag_dora", "wild", -1],
+      ["tag_dora", "wild", -14],
         // add the 'dora' attribute to tiles tagged with 'wild', which should make them shiny
-      ["add_attr_tagged", "wild", ["_dora", "_wild"]],
-      ["set_tile_alias_all", [["any", "_wild"]], [["any", "_wild"]]],
+      ["add_attr_tagged", "wild", ["_dora", "wild"]],
+      ["set_tile_alias_all", [{"tile": "any", "attrs": ["wild"]}], ["any"]],
         // initialise delta_score_multiplier so that we can manipulate this value later
       ["set_counter_all", "delta_score_multiplier", 1],
       ["set_counter_all", "delta_score_multiplier_against_dealer", 1]
@@ -229,8 +235,11 @@
         ["big_text", "Double Down"],
         ["set_status_all", "double_down"],
         ["as", "all", [["multiply_counter", "delta_score_multiplier_against_dealer", 2]]],
+        ["uninterruptible_draw", 13],
+        ["move_tiles", "draw", "hand"],
+        ["sort_hand"],
         ["unset_status", "match_start"],
-        ["draw", 13]
+        ["advance_turn"]
       ],
       "unskippable": true
     },
@@ -242,8 +251,11 @@
         ["set_status", "challenge_dealer_twice"],
         ["multiply_counter", "delta_score_multiplier_against_dealer", 4],
         ["subtract_counter", "challenge_tokens", 2],
+        ["uninterruptible_draw", 13],
+        ["move_tiles", "draw", "hand"],
+        ["sort_hand"],
         ["unset_status", "match_start"],
-        ["draw", 13]
+        ["advance_turn"]
       ],
       "unskippable": true
     },
@@ -255,15 +267,18 @@
         ["set_status", "challenge_dealer"],
         ["multiply_counter", "delta_score_multiplier_against_dealer", 2],
         ["subtract_counter", "challenge_tokens", 2],
+        ["uninterruptible_draw", 13],
+        ["move_tiles", "draw", "hand"],
+        ["sort_hand"],
         ["unset_status", "match_start"],
-        ["draw", 13]
+        ["advance_turn"]
       ],
       "unskippable": true
     },
     "start_pass": {
       "display_name": "Pass",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
-      "actions": [["big_text", "Pass"], ["unset_status", "match_start"], ["draw", 13]],
+      "actions": [["big_text", "Pass"], ["uninterruptible_draw", 13], ["move_tiles", "draw", "hand"], ["sort_hand"], ["unset_status", "match_start"], ["advance_turn"]],
       "unskippable": true
     },
     "pon": {
@@ -271,7 +286,7 @@
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [["joker"], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["wild"]}], 1]}
       ],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
@@ -280,10 +295,9 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
-      "show_when": [
-        "not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [["joker"], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["wild"]}], 1]}
       ],
       "actions": [
         ["big_text", "Kong"], ["call"],
@@ -298,26 +312,19 @@
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
       "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
-      "call_conditions": [{"name": "not_call_contains", "opts": [["joker"], 1]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
+      "call_conditions": [[
+        {"name": "call_contains", "opts": [[{"tile": "any", "attrs": ["wild"]}], 4]},
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["wild"]}], 1]}
+      ]],
       "actions": [
         ["big_text", "Kong"], ["self_call"], ["set_status", "kan", "ankan"],
-        ["as", ["shimocha", "toimen", "kamicha"], [
-          ["run", "pay_for_kong", {"base": 2, "payee": "caller"}]
-        ]],
-        ["draw"]
-      ]
-    },
-    "ankan_wild": {
-      "display_name": "Concealed Kong",
-      "call": [[0, 0, 0]],
-      "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
-      "call_conditions": [{"name": "call_contains", "opts": ["nojoker", [["_wild"], 4]]}],
-      "actions": [
-        ["big_text", "Golden Kong"], ["self_call"], ["set_status", "kan", "ankan"],
-        ["as", ["shimocha", "toimen", "kamicha"], [
-          ["run", "pay_for_kong", {"base": 8, "payee": "caller"}]
+        ["as", ["others"], [
+          ["ite", [{"name": "call_contains", "opts": [[{"tile": "any", "attrs": ["wild"]}], 1]}], [
+            ["run", "pay_for_kong", {"base": 8, "payee": "caller"}]
+          ], [
+            ["run", "pay_for_kong", {"base": 2, "payee": "caller"}]
+          ]]
         ]],
         ["draw"]
       ]
@@ -326,9 +333,9 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [["joker"], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["wild"]}], 1]}
       ],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
@@ -342,18 +349,10 @@
       "display_name": "Hu",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-        [
-          [
-            {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ]
-        ],
+        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "last_call_is", "opts": ["kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
         {"name": "has_yaku_with_call", "opts": [1]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
@@ -364,7 +363,7 @@
       "show_when": [
         "our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
         {"name": "has_yaku_with_hand", "opts": [1]}
       ],
@@ -407,7 +406,8 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "advance_turn", "draw", "call", "self_call", "upgrade_call"],
+  "persistent_statuses": ["match_start"], // so it doesn't get cleared after before_start
   "initial_score": 50,
   "starting_tiles": 0,
   "max_rounds": 16,
