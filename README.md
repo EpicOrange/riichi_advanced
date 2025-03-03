@@ -49,7 +49,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
   + Changed riichi to automatically enable auto-discard
   + Fixed AI dealing into open riichi
   + Fixed allowing calls that softlock you due to kuikae
-  + Fixed american mahjong butons
+  + Fixed american mahjong buttons
   + Fixed ao and kin not counting
   + Fixed chankan in sanma
   + Fixed dead hand check for american (again)
