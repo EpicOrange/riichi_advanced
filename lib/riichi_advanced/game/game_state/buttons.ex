@@ -105,7 +105,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             button_choices = state.rules["buttons"]
             |> Enum.filter(fn {name, button} ->
               calls_spec = Map.get(button, "call", [])
-              upgrades = Map.get(button, "upgrades", [])
+              upgrades = Map.get(button, "upgrades", nil)
 
               if Debug.debug_buttons() do
                 IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
