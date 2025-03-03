@@ -146,8 +146,8 @@
     { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
     { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
     { "display_name": "Four of a Kind", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
-    { "display_name": "Dealer Repeat", "value": "dealer_repeat_bonus", "when": [{"name": "counter_equals", "opts": ["dealer_repeat_bonus", 1]}] },
-    { "display_name": "Dealer Repeats", "value": "dealer_repeat_bonus", "when": [{"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 2]}] }
+    { "display_name": "Dealer Repeat", "value": "dealer_repeat_bonus", "when": [{"name": "counter_equals", "opts": ["dealer_repeat_bonus", 4]}] },
+    { "display_name": "Dealer Repeats", "value": "dealer_repeat_bonus", "when": [{"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 8]}] }
   ],
     // separating off the "Special Hands" for now because I don't know whether these override the above or not
     // looks like they don't
@@ -199,6 +199,12 @@
     { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
     { "display_name": "Earthly Win", "value": 150, "when": [{"name": "anyone_status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
+  // since `"yaku2_overrides_yaku1": true` is set,
+  // we need to move dealer repeats to yaku2 but only if the hand scores any yaku2
+  "special_dealer_repeat": [
+    { "display_name": "Dealer Repeat", "value": "dealer_repeat_bonus", "when": [{"name": "has_points", "opts": [1]}, {"name": "counter_equals", "opts": ["dealer_repeat_bonus", 4]}] },
+    { "display_name": "Dealer Repeats", "value": "dealer_repeat_bonus", "when": [{"name": "has_points", "opts": [1]}, {"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 8]}] }
+  ],
   "yaku_precedence": {
     "Concealed Kongs": ["Concealed Kong"],
     "Concealed Pungs": ["Concealed Pung"],
@@ -217,7 +223,7 @@
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
     "yaku_lists": ["yaku"],
-    "yaku2_lists": ["special_yaku"],
+    "yaku2_lists": ["special_yaku", "special_dealer_repeat"],
     "yaku2_overrides_yaku1": true,
     "agarirenchan": true,
     "point_name": "嘴",

@@ -1160,4 +1160,104 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     })
   end
 
+  test "hefei - one dealer repeat dealer win" do
+    TestUtils.test_yaku_advanced("hefei", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["8p", "5s"],
+      "starting_honba": 1
+    }
+    """, [
+      %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Dealer Repeat", 4}],
+        yaku2: []
+      }
+    })
+  end
+
+  test "hefei - one dealer repeat nondealer win" do
+    TestUtils.test_yaku_advanced("hefei", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["8p", "8p", "8p", "8p", "5s"],
+      "starting_round": 3,
+      "starting_honba": 1
+    }
+    """, [
+      %{"type" => "discard", "tile" => "8p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Dealer Repeat", 4}],
+        yaku2: []
+      }
+    })
+  end
+
+  test "hefei - seven pairs with dealer repeat" do
+    TestUtils.test_yaku_advanced("hefei", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "5m", "5m", "6m", "6m", "8m", "8m", "6p", "6p", "7p", "7p", "3s"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "5p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "5p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "5p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["2s", "3s"],
+      "starting_honba": 3
+    }
+    """, [
+      %{"type" => "discard", "tile" => "2s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [{"Seven Pairs", 10}, {"Dealer Repeats", 12}]
+      }
+    })
+  end
+
+  test "hefei - multiple dealer repeats" do
+    TestUtils.test_yaku_advanced("hefei", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["8p", "5s"],
+      "starting_honba": 5
+    }
+    """, [
+      %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Dealer Repeats", 20}],
+        yaku2: []
+      }
+    })
+  end
+
 end
