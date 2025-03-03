@@ -1350,6 +1350,17 @@ div.hand.self div.tiles > div.tile.selected,
 div.hand.self div.draws > div.tile.selected {
   /* this is here to override the translateZ(0) */
   transform: translateY(calc(-0.25 * var(--tile-size)));
+  position: relative;
+}
+div.hand.self div.tiles > div.tile.selected::before,
+div.hand.self div.draws > div.tile.selected::before {
+  /* add a clickable area under the tile */
+  content: "";
+  position: absolute;
+  background: transparent;
+  width: 100%;
+  height: calc(0.25 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
 }
 div.tile.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))

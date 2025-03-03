@@ -377,18 +377,24 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def skip_or_discard_draw(socket) do
-    # do a clientside can_discard check here
-    if RiichiAdvanced.GameState.Actions.can_discard(socket.assigns.state, socket.assigns.seat, true) do
-      # if draw, discard it
-      # otherwise, if buttons, skip
-      player = socket.assigns.state.players[socket.assigns.seat]
-      if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
-        send(self(), {:play_tile, length(player.hand)})
-      else
-        if "skip" in player.buttons do
-          GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+    if socket.assigns.selected_index == nil do
+      # do a clientside can_discard check here
+      if RiichiAdvanced.GameState.Actions.can_discard(socket.assigns.state, socket.assigns.seat, true) do
+        # if draw, discard it
+        # otherwise, if buttons, skip
+        player = socket.assigns.state.players[socket.assigns.seat]
+        if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
+          send(self(), {:play_tile, length(player.hand)})
+          assign(socket, :selected_index, :any)
+        else
+          if "skip" in player.buttons do
+            GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+          end
+          socket
         end
-      end
+      else socket end
+    else
+      assign(socket, :selected_index, nil)
     end
   end
 
@@ -482,20 +488,20 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("double_clicked", _assigns, socket) do
-    if not Map.has_key?(socket.assigns, :tutorial_sequence) do
-      socket = assign(socket, :selected_index, :any)
+  def handle_event("double_clicked", %{"classes" => classes}, socket) do
+    ignore_click = "tile" in classes
+    socket = if not ignore_click and not Map.has_key?(socket.assigns, :tutorial_sequence) do
       skip_or_discard_draw(socket)
-      {:noreply, socket}
-    else {:noreply, socket} end
+    else socket end
+    {:noreply, socket}
   end
 
-  def handle_event("right_clicked", _assigns, socket) do
-    if not Map.has_key?(socket.assigns, :tutorial_sequence) do
-      socket = assign(socket, :selected_index, :any)
+  def handle_event("right_clicked", %{"classes" => classes}, socket) do
+    ignore_click = "tile" in classes
+    socket = if not ignore_click and not Map.has_key?(socket.assigns, :tutorial_sequence) do
       skip_or_discard_draw(socket)
-      {:noreply, socket}
-    else {:noreply, socket} end
+    else socket end
+    {:noreply, socket}
   end
 
   def handle_event("button_clicked", %{"name" => name}, socket) do

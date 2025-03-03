@@ -91,13 +91,13 @@ Hooks.ClickListener = {
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
       if (!inLabelOrButton(e.target) && !window.ignoreDoubleClick && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
-        this.pushEvent("double_clicked");
+        this.pushEvent("double_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
       }
     });
     this.el.addEventListener('contextmenu', e => {
       e.preventDefault();
       if (!inLabelOrButton(e.target) && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
-        this.pushEvent("right_clicked");
+        this.pushEvent("right_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
       }
     });
     this.el.addEventListener('mousemove', e => {
