@@ -596,10 +596,13 @@ defmodule RiichiAdvanced.Riichi do
   def prepend_group_all(hands, calls, winning_tiles, group, win_definitions, tile_behavior) do
     hands = Enum.flat_map(hands, &prepend_group(&1, calls, winning_tiles, group, win_definitions, tile_behavior))
     if Enum.empty?(hands) do [] else
-      max_separators = hands
-      |> Enum.map(&Enum.count(&1, fn item -> item == :separator end))
-      |> Enum.max()
-      Enum.filter(hands, &Enum.count(&1, fn item -> item == :separator end) == max_separators)
+      num_ungrouped_tiles = Enum.map(hands, &Utils.split_on(&1, :separator) |> Enum.at(-1) |> length())
+      min_ungrouped_tiles = Enum.min(num_ungrouped_tiles)
+      hands
+      |> Enum.zip(num_ungrouped_tiles)
+      |> IO.inspect()
+      |> Enum.filter(fn {_hand, num} -> num == min_ungrouped_tiles end)
+      |> Enum.map(fn {hand, _num} -> hand end)
     end
   end
 
