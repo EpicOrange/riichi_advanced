@@ -42,6 +42,9 @@ defmodule RiichiAdvanced.GameState do
 
   defmodule TileBehavior do
     defstruct [
+      # aliases is a map looking like this:
+      # %{"3m": %{["example"] => MapSet.new([{:any, ["joker"]}])}}
+      # this says that any tile with the "joker" attr can be treated as "3m" with the "example" attr
       aliases: %{},
       ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
                   :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
@@ -59,18 +62,14 @@ defmodule RiichiAdvanced.GameState do
       end |> Enum.reduce(%{}, &Map.merge(&1, &2, fn _k, l, r -> l ++ r end))
     end
     def is_any_joker?(tile, tile_behavior) do
-      {tile2, attrs2} = Utils.to_attr_tile(tile)
-      attrs2 = MapSet.new(attrs2)
-      Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {attrs, aliases} ->
-        MapSet.subset?(MapSet.new(attrs), attrs2) and tile2 in aliases
+      Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
+        Utils.has_matching_tile?([tile], aliases)
       end)
     end
     def is_joker?(tile, tile_behavior) do
-      {tile2, attrs2} = Utils.to_attr_tile(tile)
-      attrs2 = MapSet.new(attrs2)
       Enum.any?(tile_behavior.aliases, fn {_tile1, attrs_aliases} ->
-        Enum.any?(attrs_aliases, fn {attrs, aliases} ->
-          MapSet.subset?(MapSet.new(attrs), attrs2) and tile2 in aliases
+        Enum.any?(attrs_aliases, fn {_attrs, aliases} ->
+          Utils.has_matching_tile?([tile], aliases)
         end)
       end)
     end
@@ -86,31 +85,21 @@ defmodule RiichiAdvanced.GameState do
     def sort_by_joker_power(tiles, tile_behavior) do
       Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
     end
-    # restrict current aliases to the assignment given by the joker solver
+    # replace aliases with the assignment given by the joker solver
     def from_joker_assignment(tile_behavior, smt_hand, joker_assignment) do
       # first get a map from joker to a list of tiles it got assigned to
-      mapping = joker_assignment
+      new_aliases = joker_assignment
       |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
       |> Enum.group_by(fn {joker, _tile} -> joker end)
-      |> Map.new(fn {joker, tiles} -> {joker, Enum.map(tiles, fn {_joker, tile} -> tile end)} end)
-      relevant_tiles = Map.values(joker_assignment)
-      new_aliases = for {tile1, attrs_aliases} <- tile_behavior.aliases, tile1 in relevant_tiles, into: %{} do
-        attrs_aliases = for {attrs, aliases} <- attrs_aliases, into: %{} do
-          any_aliases = tile_behavior.aliases
-          |> Map.get(:any, %{})
-          |> Map.get(attrs, MapSet.new())
-          aliases = for tile2 <- MapSet.union(aliases, any_aliases),
-                    Utils.has_matching_tile?(
-                      mapping
-                      |> Enum.filter(fn {x, _ys} -> Utils.same_tile(x, tile2) end)
-                      |> Enum.flat_map(fn {_x, ys} -> ys end), [tile1]),
-                    into: MapSet.new() do
-            tile2
-          end
-          {attrs, aliases}
+      |> Enum.map(fn {joker, tiles} -> {joker, Enum.map(tiles, fn {_joker, tile} -> tile end)} end)
+      |> Enum.reduce(%{}, fn {from, to_tiles}, aliases ->
+        from_tiles = MapSet.new([from])
+        for to <- to_tiles, reduce: aliases do
+          aliases ->
+            {to, attrs} = Utils.to_attr_tile(to)
+            Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
         end
-        {tile1, attrs_aliases}
-      end
+      end)
       %TileBehavior{ tile_behavior | aliases: new_aliases }
     end
   end

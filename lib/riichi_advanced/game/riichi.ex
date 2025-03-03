@@ -578,24 +578,28 @@ defmodule RiichiAdvanced.Riichi do
 
     Enum.flat_map(winning_tiles, fn winning_tile ->
       Match.extract_groups([winning_tile | hand], group, tile_behavior)
-      |> Enum.find(fn {hand, groups} -> Match.match_hand(prearranged ++ hand ++ Enum.concat(groups), calls, win_definitions, tile_behavior) end)
-      |> case do
-        nil            -> []
-        {hand, groups} -> [{winning_tile, hand, groups}]
-      end
+      |> Enum.filter(fn {hand, groups} -> Match.match_hand(prearranged ++ hand ++ Enum.concat(groups), calls, win_definitions, tile_behavior) end)
+      |> Enum.map(fn {hand, groups} -> {winning_tile, hand, groups} end)
     end)
-    |> case do
-      [] -> hand
-      [{winning_tile, hand, groups} | _] ->
-        groups = groups
-        |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-        |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
-        |> Enum.concat()
-        # delete last instance of winning tile
-        prearranged ++ groups ++ hand
-        |> Enum.reverse()
-        |> List.delete(winning_tile)
-        |> Enum.reverse()
+    |> Enum.map(fn {winning_tile, hand, groups} ->
+      groups = groups
+      |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+      |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
+      |> Enum.concat()
+      # delete last instance of winning tile
+      prearranged ++ groups ++ hand
+      |> Enum.reverse()
+      |> List.delete(winning_tile)
+      |> Enum.reverse()
+    end)
+  end
+  def prepend_group_all(hands, calls, winning_tiles, group, win_definitions, tile_behavior) do
+    hands = Enum.flat_map(hands, &prepend_group(&1, calls, winning_tiles, group, win_definitions, tile_behavior))
+    if Enum.empty?(hands) do [] else
+      max_separators = hands
+      |> Enum.map(&Enum.count(&1, fn item -> item == :separator end))
+      |> Enum.max()
+      Enum.filter(hands, &Enum.count(&1, fn item -> item == :separator end) == max_separators)
     end
   end
 

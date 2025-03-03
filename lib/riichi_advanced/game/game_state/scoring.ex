@@ -868,7 +868,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
   def rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile) do
     score_rules = state.rules["score_calculation"]
 
+    # annotate the original hand with joker assignment indices
+    # this is because later we want to match on this hand,
+    # and these indices help match use this joker assignment rather than any assignment
     orig_hand = state.players[seat].hand
+    |> Enum.with_index()
+    |> Enum.map(fn {tile, i} -> Utils.add_attr(tile, ["hand#{i}"]) end)
     orig_draw = state.players[seat].draw
     orig_calls = state.players[seat].calls
     tile_behavior = state.players[seat].tile_behavior
@@ -911,21 +916,22 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # create an alternate separated_hand where sets are separated
     win_definitions = translate_match_definitions(state, ["win"])
     assigned_tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand, joker_assignment)
-    separated_hand = arranged_hand
-    |> Riichi.prepend_group(orig_calls, [winning_tile || new_winning_tile], [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, assigned_tile_behavior)
-    |> Riichi.prepend_group(orig_calls, [winning_tile || new_winning_tile], [0, 0, 1, 1, 2, 2], win_definitions, assigned_tile_behavior)
-    |> Riichi.prepend_group(orig_calls, [winning_tile || new_winning_tile], [0, 1, 2], win_definitions, assigned_tile_behavior)
-    |> Riichi.prepend_group(orig_calls, [winning_tile || new_winning_tile], [0, 0, 0], win_definitions, assigned_tile_behavior)
+    separated_hands = [arranged_hand]
+    |> Riichi.prepend_group_all(orig_calls, [winning_tile || new_winning_tile], [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, assigned_tile_behavior)
+    |> Riichi.prepend_group_all(orig_calls, [winning_tile || new_winning_tile], [0, 0, 1, 1, 2, 2], win_definitions, assigned_tile_behavior)
+    |> Riichi.prepend_group_all(orig_calls, [winning_tile || new_winning_tile], [0, 1, 2], win_definitions, assigned_tile_behavior)
+    |> Riichi.prepend_group_all(orig_calls, [winning_tile || new_winning_tile], [0, 0, 0], win_definitions, assigned_tile_behavior)
     # kontsu/knitted
-    separated_hand2 = separated_hand
-    |> Riichi.prepend_group(orig_calls, [winning_tile || new_winning_tile], [0, 10, 20], win_definitions, assigned_tile_behavior)
-    |> Riichi.prepend_group(orig_calls, [winning_tile || new_winning_tile], [0, 11, 21], win_definitions, assigned_tile_behavior)
+    separated_hands2 = separated_hands
+    |> Riichi.prepend_group_all(orig_calls, [winning_tile || new_winning_tile], [0, 10, 20], win_definitions, assigned_tile_behavior)
+    |> Riichi.prepend_group_all(orig_calls, [winning_tile || new_winning_tile], [0, 11, 21], win_definitions, assigned_tile_behavior)
     # only split pairs if knitted did not match
-    separated_hand = if separated_hand == separated_hand2 do
-      Riichi.prepend_group(separated_hand, orig_calls, [winning_tile || new_winning_tile], [0, 0], win_definitions, assigned_tile_behavior)
-    else separated_hand2 end
+    separated_hands = if separated_hands == separated_hands2 do
+      Riichi.prepend_group_all(separated_hands, orig_calls, [winning_tile || new_winning_tile], [0, 0], win_definitions, assigned_tile_behavior)
+    else separated_hands2 end
     # result should look like [shuntsu, koutsu, kontsu, toitsu, ungrouped] with each set separated by :separator
     # rearrange those groups to be as close to the original hand as possible
+    separated_hand = Enum.at(separated_hands, 0, arranged_hand)
     groups = Utils.split_on(separated_hand, :separator)
     {groups, [ungrouped]} = Enum.split(groups, -1)
     {separated_hand, _, _} = for _ <- groups, reduce: {[], groups, arranged_hand -- ungrouped} do
