@@ -60,10 +60,10 @@
   },
   "set_definitions": {
     "pair": [0, 0],
-    "dora_pair": ["dora", "dora"],
+    "gold_pair": [{"tile": "any", "attrs": ["gold"]}, {"tile": "any", "attrs": ["gold"]}],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
-    "dora_koutsu": ["dora", "dora", "dora"],
+    "gold_koutsu": [{"tile": "any", "attrs": ["gold"]}, {"tile": "any", "attrs": ["gold"]}, {"tile": "any", "attrs": ["gold"]}],
     "quad": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
@@ -110,10 +110,10 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
   ],
   "golden_pair_definition": [
-    [ "exhaustive", [["dora_pair"], 1], [["shuntsu", "koutsu"], 5] ]
+    [ "exhaustive", [["gold_pair"], 1], [["shuntsu", "koutsu"], 5] ]
   ],
   "golden_dragon_definition": [
-    [ "exhaustive", [["pair"], 1], [["dora_koutsu"], 1], [["shuntsu", "koutsu"], 4] ]
+    [ "exhaustive", [["pair"], 1], [["gold_koutsu"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
   "yaku": [
     { "display_name": "Base Points", "value": 10, "when": [] },
@@ -147,13 +147,13 @@
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
     { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
     { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["1z"], 4]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["2z"], 4]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["3z"], 4]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["4z"], 4]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["0z"], 4]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["6z"], 4]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[["7z"], 4]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
+    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
     {
       "display_name": "All Sequences",
       "value": 10,
@@ -166,9 +166,9 @@
       ]
     },
     { "display_name": "Golden Pair", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_pair"]]}] },
-    { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["dora"], 3]]}] },
+    { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [[{"tile": "any", "attrs": ["gold"]}], 3] ]]]}] },
     { "display_name": "Golden Dragon", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_dragon"]]}] },
-    { "display_name": "Robbing the Gold", "value": 50, "when": [{"name": "has_status", "opts": ["qiangjin"]}] },
+    { "display_name": "Robbing the Gold", "value": 50, "when": [{"name": "status", "opts": ["qiangjin"]}] },
     { "display_name": "Blessing of Heaven", "value": 50, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
     { "display_name": "Blessing of Earth", "value": 40, "when": [{"name": "not_seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] }
   ],
@@ -224,7 +224,7 @@
   "before_win": {
     "actions": [
       ["when", [{"name": "seat_is", "opts": ["east"]}], [["set_counter", "dealer_continuation", "honba"]]],
-      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[[[{"tile": "any", "attrs": ["gold"]}], 1]]]]
+      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["gold"]}], 1] ]]]
     ]
   },
   "before_exhaustive_draw": {
@@ -273,7 +273,7 @@
         {"name": "status_missing", "opts": ["flower"]},
         {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}, 
         {"name": "match", "opts": [["hand", "calls"], ["tenpai"]]},
-        {"name": "match", "opts": [["hand", "calls", "dora"], ["win"]]}
+        {"name": "match", "opts": [["hand", "calls"], ["win"]]}
       ],
       "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["set_status", "qiangjin"], ["win_by_draw"]],
       "unskippable": true
