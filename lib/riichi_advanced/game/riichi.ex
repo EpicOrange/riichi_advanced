@@ -600,7 +600,6 @@ defmodule RiichiAdvanced.Riichi do
       min_ungrouped_tiles = Enum.min(num_ungrouped_tiles)
       hands
       |> Enum.zip(num_ungrouped_tiles)
-      |> IO.inspect()
       |> Enum.filter(fn {_hand, num} -> num == min_ungrouped_tiles end)
       |> Enum.map(fn {hand, _num} -> hand end)
     end
