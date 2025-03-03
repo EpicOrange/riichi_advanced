@@ -91,7 +91,7 @@
   ],
   
   "double_sequences_definition": [
-    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "2_double_sequences_definition": [
     [ "exhaustive", [[[[0,1,2],[0,1,2]]], 2], [["pair"], 1] ]
@@ -102,13 +102,12 @@
     [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[0,1,2],[1,2,3]],[[0,1,2],[0,1,2],[0,1,2],[2,3,4]],[[0,1,2],[0,1,2],[1,2,3],[1,2,3]],[[0,1,2],[0,1,2],[1,2,3],[2,3,4]],[[0,1,2],[0,1,2],[2,3,4],[2,3,4]],[[0,1,2],[1,2,3],[1,2,3],[1,2,3]],[[0,1,2],[1,2,3],[1,2,3],[2,3,4]],[[0,1,2],[1,2,3],[2,3,4],[2,3,4]],[[0,1,2],[2,3,4],[2,3,4],[2,3,4]]], 1], [["pair"], 1] ]
   ],
   "pure_shifted_pungs_definition": [
-    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu", "knit_shuntsu1", "knit_shuntsu2", "knit_koutsu"], 2] ]
+    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ]
   ],
   "yaku": [
-    { "display_name": "Win", "value": 15, "when": ["win"] },
     { "display_name": "Suit Bonus", "value": "suit_bonus", "when": [{"name": "counter_at_least", "opts": ["suit_bonus", 1]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Same Number Bonus", "value": ["same_number_bonus"], "when": [] },
+    { "display_name": "Same Number Bonus", "value": "same_number_bonus", "when": [{"name": "counter_at_least", "opts": ["same_number_bonus", 1]}] },
     {
       "display_name": "Concealed Pung",
       "value": 1,
@@ -199,12 +198,14 @@
     "Full Flush": ["Half Flush"]
   },
   "score_calculation": {
-    "scoring_method": "multiplier",
+    "scoring_method": ["multiplier", "multiplier"],
     "score_multiplier": 20,
     "discarder_multiplier": 1,
     "non_discarder_multiplier": 0,
     "self_draw_multiplier": 1,
-    "yaku_lists": ["yaku", "special_yaku"],
+    "yaku_lists": ["yaku"],
+    "yaku2_lists": ["special_yaku"],
+    "yaku2_overrides_yaku1": true,
     "agarirenchan": true,
     "point_name": "嘴",
     "win_by_discard_label": "Hu",
@@ -227,23 +228,32 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", ["not_no_tiles_remaining"], [["draw"]]]
+      ["when", ["not_no_tiles_remaining"], [
+        ["when", [{"name": "not_tiles_remaining", "opts": [5]}], [
+          ["set_status", "sea_floor"]
+        ]],
+        ["draw"]
+      ]]
     ]
   },
-  "after_call": {
-    "actions": []
+  "after_win": {
+    "actions": [
+      ["flip_all_calls_faceup"]
+    ]
+  },
+  "before_exhaustive_draw": {
+    "actions": [
+      ["flip_all_calls_faceup"]
+    ]
   },
   "after_start": {
     "actions": [["set_status_all", "first_turn"]]
   },
-  "after_draw": {
-    "actions": [["when", {"name": "not_tiles_remaining", "opts": [4]}, ["set_status_all", "sea_floor"]]]
-  },
   "before_win": {
     "actions": [
-      ["set_counter", "manzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 1]]]],
-      ["set_counter", "pinzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 1]]]],
-      ["set_counter", "souzu_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 1]]]],
+      ["set_counter", "manzu_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 1]]]],
+      ["set_counter", "pinzu_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["2p", "3p", "4p", "5p", "6p", "7p", "8p"], 1]]]],
+      ["set_counter", "souzu_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["2s", "3s", "4s", "5s", "6s", "7s", "8s"], 1]]]],
       ["when", {"name": "counter_at_least", "opts": ["manzu_count", 8]}, [
           ["set_counter", "suit_bonus", "manzu_count"]
         ]
@@ -257,13 +267,13 @@
         ]
       ],
       ["subtract_counter", "suit_bonus", 8],
-      ["set_counter", "two_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["2m", "2p", "2s"], 1]]]],
-      ["set_counter", "three_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["3m", "3p", "3s"], 1]]]],
-      ["set_counter", "four_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["4m", "4p", "4s"], 1]]]],
-      ["set_counter", "five_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["5m", "5p", "5p"], 1]]]],
-      ["set_counter", "six_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["6m", "6p", "6s"], 1]]]],
-      ["set_counter", "seven_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["7m", "7p", "7s"], 1]]]],
-      ["set_counter", "eight_count", "count_matches", ["hand", "calls", "draw", "last_discard"], [[[["8m", "8p", "8s"], 1]]]],
+      ["set_counter", "two_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["2m", "2p", "2s"], 1]]]],
+      ["set_counter", "three_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["3m", "3p", "3s"], 1]]]],
+      ["set_counter", "four_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["4m", "4p", "4s"], 1]]]],
+      ["set_counter", "five_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["5m", "5p", "5p"], 1]]]],
+      ["set_counter", "six_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["6m", "6p", "6s"], 1]]]],
+      ["set_counter", "seven_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["7m", "7p", "7s"], 1]]]],
+      ["set_counter", "eight_count", "count_matches", ["hand", "call_tiles", "winning_tile"], [[[["8m", "8p", "8s"], 1]]]],
       ["when", {"name": "counter_at_least", "opts": ["two_count", 4]}, [  ["add_counter", "same_number_bonus", "two_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
       ["when", {"name": "counter_at_least", "opts": ["three_count", 4]}, [  ["add_counter", "same_number_bonus", "three_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
       ["when", {"name": "counter_at_least", "opts": ["four_count", 4]}, [  ["add_counter", "same_number_bonus", "four_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
@@ -287,14 +297,14 @@
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": ["not_our_turn", {"name": "tiles_remaining", "opts": [5]}, "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": ["not_our_turn", {"name": "tiles_remaining", "opts": [5]}, "someone_else_just_discarded", "call_available"],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -306,7 +316,7 @@
     "ankan": {
       "display_name": "Concealed Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "tiles_remaining", "opts": [5]}, "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -317,8 +327,9 @@
     "kakan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
+      "call_style": {"self": [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]},
       "upgrades": "pon",
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", {"name": "tiles_remaining", "opts": [5]}, "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -342,17 +353,8 @@
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
-        [
-          [
-            {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ]
-        ]
+        {"name": "last_call_is", "opts": ["kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
