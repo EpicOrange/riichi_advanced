@@ -144,8 +144,18 @@ defmodule RiichiAdvanced.Match do
       from_calls = calls
       |> Enum.map(&Utils.call_to_tiles/1)
       |> Enum.with_index()
-      |> Enum.flat_map(fn {call, i} -> if Enum.empty?(try_remove_all_tiles(call, tiles, tile_behavior)) do [] else [i] end end)
-      |> Enum.map(&{hand, List.delete_at(calls, &1)})
+      |> Enum.flat_map(fn {call, i} ->
+        removed = try_remove_all_tiles(call, tiles, tile_behavior)
+        if Enum.empty?(removed) do [] else
+          if tile_behavior.dismantle_calls do
+            for new_call <- removed do
+              {hand, List.update_at(calls, i, fn {name, _call} -> {name, new_call} end)}
+            end
+          else
+            [{hand, List.delete_at(calls, i)}]
+          end
+        end
+      end)
       from_hand ++ from_calls |> Enum.uniq()
     end
   end
@@ -211,7 +221,7 @@ defmodule RiichiAdvanced.Match do
     ret
   end
 
-  # @match_keywords ["almost", "exhaustive", "ignore_suit", "restart", "unique", "nojoker", "debug"]
+  # @match_keywords ["almost", "exhaustive", "ignore_suit", "restart", "dismantle_calls", "unique", "nojoker", "debug"]
   # def match_keywords(), do: @match_keywords
 
   def filter_irrelevant_tile_aliases(tile_behavior, relevant_tiles) do
@@ -300,8 +310,10 @@ defmodule RiichiAdvanced.Match do
   def remove_match_definition(hand, calls, match_definition, tile_behavior) do
     # t = System.os_time(:millisecond)
     almost = "almost" in match_definition
-    exhaustive = "exhaustive" in match_definition
+    exhaustive_ix = Enum.find_index(match_definition, & &1 == "exhaustive")
     ignore_suit_ix = Enum.find_index(match_definition, & &1 == "ignore_suit")
+    dismantle_calls_ix = Enum.find_index(match_definition, & &1 == "dismantle_calls")
+    no_joker_index = Enum.find_index(match_definition, & &1 == "nojoker")
     unique_ix = Enum.find_index(match_definition, & &1 == "unique")
     debug = "debug" in match_definition
     if almost and :any in hand do
@@ -319,19 +331,22 @@ defmodule RiichiAdvanced.Match do
       IO.puts("Starting hand / calls: #{inspect(hand, charlists: :as_lists)} / #{inspect(calls, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_behavior.aliases)}")
     end
-    no_joker_index = Enum.find_index(match_definition, fn elem -> elem == "nojoker" end)
     ret = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: [{hand, calls}] do
       [] -> []
       hand_calls ->
+        exhaustive = exhaustive_ix != nil and i > exhaustive_ix
         unique = unique_ix != nil and i > unique_ix
-        tile_behavior = %TileBehavior{ tile_behavior | ignore_suit: ignore_suit_ix != nil and i > ignore_suit_ix }
+        tile_behavior = %TileBehavior{ tile_behavior |
+          dismantle_calls: dismantle_calls_ix != nil and i > dismantle_calls_ix,
+          ignore_suit: ignore_suit_ix != nil and i > ignore_suit_ix
+        }
         case match_definition_elem do
           "restart" -> [{hand, calls}]
           [groups, num] ->
             unique = unique or "unique" in groups
             nojoker = no_joker_index != nil and i > no_joker_index
             tile_behavior = if nojoker do %TileBehavior{ tile_behavior | aliases: %{} } else tile_behavior end
-            new_hand_calls = if unique and num >= 1 and not exhaustive and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
+            new_hand_calls = if unique and num >= 1 and not exhaustive and not tile_behavior.dismantle_calls and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
               # optimized routine for unique non-exhaustive tile-only groups
               # since we know the exact tiles required and each can only be used once,
               # this is just a matching problem between our hand/calls and the group

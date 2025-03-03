@@ -219,14 +219,19 @@ defmodule RiichiAdvanced.Riichi do
         # make it exhaustive, unless it's unique
         match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
-        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs} do
-          {keywords, waits_complement} -> case last_match_definition_elem do
-            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement}
-            [_groups, num] when num <= 0 -> {keywords, waits_complement} # ignore lookaheads
+        {_keywords, waits_complement, waits_complement_across_restarts} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs, %{}} do
+          {keywords, waits_complement, waits_complement_across_restarts} -> case last_match_definition_elem do
+            "restart" -> {keywords ++ ["restart"], tile_behavior.tile_freqs, Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end) }
+            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement, waits_complement_across_restarts}
+            [_groups, num] when num <= 0 -> {keywords, waits_complement, waits_complement_across_restarts} # ignore lookaheads
             [groups, num] ->
+              # get all other groups in the current restart of our match definition
+              remaining_match_definition = List.delete_at(match_definition, i)
+              |> Utils.split_on("restart")
+              |> Enum.at(Enum.count(keywords, & &1 == "restart"))
+
               # first remove all other groups
               hand_calls = [{hand, calls}]
-              remaining_match_definition = List.delete_at(match_definition, i)
               hand_calls = Enum.flat_map(hand_calls, fn {hand, calls} ->
                 Match.remove_match_definition(hand, calls, remaining_match_definition, tile_behavior)
               end)
@@ -264,13 +269,15 @@ defmodule RiichiAdvanced.Riichi do
                     Match.match_hand([wait | hand], calls, [final_match_definition], tile_behavior)
                   end)
                 end) |> Map.new()
-              else tile_behavior.tile_freqs end
+              else %{} end # the match definition succeeding without having to add a tile implies all tiles are a wait
 
-              {keywords, waits_complement}
-            _ -> {keywords, waits_complement}
+              {keywords, waits_complement, waits_complement_across_restarts}
+            _ -> {keywords, waits_complement, waits_complement_across_restarts}
           end
         end
-        waits = Utils.inverse_frequencies(waits_complement, tile_behavior)
+        # IO.inspect({match_definition, Utils.inverse_frequencies(waits_complement, tile_behavior), Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)})
+        waits_complement_across_restarts = Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end)
+        waits = Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)
         |> Map.keys()
         |> MapSet.new()
         # IO.inspect(hand, label: "===\nhand")

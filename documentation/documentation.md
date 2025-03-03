@@ -310,7 +310,7 @@ Let's go over these one by one and see how `match` matches against your 14-tile 
 
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ]
 
-Skipping the `exhaustive` flag for now, the intuition of this one is that it takes a pair out of your 14-tile hand, leaving a 12-tile hand. Then it takes one of either `["ryanmen/penchan", "kanchan", "pair"]` out of the 12-tile hand, leaving a 10-tile hand. Finally, it takes out _three_ of either `["shuntsu", "koutsu"]` out of the remainder, leaving one tile, which is ignored. The `exhaustive` flag at the beginning means this entire process exhaustively tries every single possibility of taking out these three **groups**, instead of just taking the first one it sees for each group. The match succeeds if it was able to find each group. Intuitively it means 13 of the 14 tiles in your hand match a standard hand with a ryanmen/penchan/kanchan/pair wait, making you tenpai.
+Skipping the `exhaustive` keyword for now, the intuition of this one is that it takes a pair out of your 14-tile hand, leaving a 12-tile hand. Then it takes one of either `["ryanmen/penchan", "kanchan", "pair"]` out of the 12-tile hand, leaving a 10-tile hand. Finally, it takes out _three_ of either `["shuntsu", "koutsu"]` out of the remainder, leaving one tile, which is ignored. The `exhaustive` keyword at the beginning means this entire process exhaustively tries every single possibility of taking out these three **groups**, instead of just taking the first one it sees for each group. The match succeeds if it was able to find each group. Intuitively it means 13 of the 14 tiles in your hand match a standard hand with a ryanmen/penchan/kanchan/pair wait, making you tenpai.
 
 Things like `pair`, `ryanmen/penchan`, etc are **sets** defined in the top-level `set_definitions` which for riichi looks like this:
 
@@ -357,6 +357,16 @@ Offsets are one of the following:
 - Integers like `[0, 1, 2]`, representing "some tile" together with the two in sequence after that tile. Although negative integers technically work, it's not really useful (since you can always shift each integer so that the least offset is `0`).
 - Exact tiles like `"1m"` and `"9p"` and `"any"`
 - Fixed offsets like `1A` and `2B`. The set `["1A", "2B", "3C"]` represents any 1 tile of some suit, a 2 tile of another suit, and a 3 tile of a third suit. You may also specify `DA`, `DB`, `DC` as well (where red dragon is manzu suit, green dragon is souzu suit, and white dragon is pinzu suit) -- this is mostly used internally to represent American mahjong hands (see below section).
+
+Finally, here is the list of all keywords (each match definition is a combination of groups and keywords):
+
+- `"almost"`: if this is anywhere in a match definition, then it specifies "this match definition minus any one tile"
+- `"exhaustive"`: by default groups are removed by taking away the first match, but any group after the `"exhaustive"` keyword will store all possible removals. This is rather expensive, so only use this if you need it.
+- `"dismantle_calls"`: by default when a group matches a call, even partially, the whole call is removed. This prevents two groups from matching one call, which is desirable in most situations. To disable this, any group after the `"dismantle_calls"` keyword will instead remove the matching tiles from the matching call. For instance, the match definition `["exhaustive", "dismantle_calls", [[[0, 1]], 1]]` matching on the existing call `3m 4m 5m` will leave you with two versions of the call (`3m` and `5m`) after the `[[[0, 1]], 1]` group is matched.
+- `"restart"`: whenever the match definition encounters `"restart"` it resets its current state to the initial hand and calls.
+- `"ignore_suit"`, `"nojoker"`, `"unique"`: applies these keywords to all groups after the keyword.
+
+Note that `"restart"` is the only keyword that can be specified multiple times in a match definition.
 
 ## American hand match specifications
 
