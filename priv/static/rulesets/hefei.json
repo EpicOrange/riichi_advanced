@@ -94,9 +94,6 @@
     [ "exhaustive", [[[[0,0],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[1,1]],[[0,1,2],[0,1,2],[2,2]],[[0,1,2],[1,1],[1,2,3]],[[0,1,2],[1,2,3],[2,2]],[[0,1,2],[2,2],[2,3,4]]], 1], [["shuntsu", "koutsu"], 2] ],
     [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[0,1,2],[1,2,3]],[[0,1,2],[0,1,2],[0,1,2],[2,3,4]],[[0,1,2],[0,1,2],[1,2,3],[1,2,3]],[[0,1,2],[0,1,2],[1,2,3],[2,3,4]],[[0,1,2],[0,1,2],[2,3,4],[2,3,4]],[[0,1,2],[1,2,3],[1,2,3],[1,2,3]],[[0,1,2],[1,2,3],[1,2,3],[2,3,4]],[[0,1,2],[1,2,3],[2,3,4],[2,3,4]],[[0,1,2],[2,3,4],[2,3,4],[2,3,4]]], 1], [["pair"], 1] ]
   ],
-  "pure_shifted_pungs_definition": [
-    [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 2] ]
-  ],
   "yaku": [
     { "display_name": "Suit Bonus", "value": "suit_bonus", "when": [{"name": "counter_at_least", "opts": ["suit_bonus", 1]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
@@ -155,7 +152,7 @@
     // separating off the "Special Hands" for now because I don't know whether these override the above or not
     // looks like they don't
   "special_yaku": [
-    { "display_name": "Seven Pairs", "value": 10, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
+    { "display_name": "Seven Pairs", "value": 10, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["pair"], 7]]]]}] },
     { "display_name": "Luxury Seven Pairs", "value": 50, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 1], [["pair"], 5]]]]}] },
     { "display_name": "Double Luxury Seven Pairs", "value": 100, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2], [["pair"], 3]]]]}] },
     { "display_name": "Sea Floor", "value": 15, "when": [{"name": "status", "opts": ["sea_floor"]}] },
@@ -168,7 +165,13 @@
         {"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","5s","6s","7s","8s"]}
       ]]
     },
-    { "display_name": "Pure Shifted Pungs", "value": 100, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pure_shifted_pungs"]]}] },
+    { "display_name": "Three Consecutive Pungs", "value": 100, "when": [[
+      {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,0,0,1,1,1,2,2,2]]], 1], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]},
+      [
+        "won_by_draw",
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,0,0,1,1,1,2,2,2]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}
+      ]
+    ]] },
     {
       "display_name": "Four Concealed Pungs",
       "value": 100,
@@ -177,7 +180,15 @@
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
       ]]
     },
-    { "display_name": "Ten Identical Tiles", "value": 100, "when": [{"name": "status", "opts": ["ten_identical_tiles"]}] },
+    { "display_name": "Ten Identical Tiles", "value": 100, "when": [[
+      {"name": "counter_at_least", "opts": ["two_count", 10]},
+      {"name": "counter_at_least", "opts": ["three_count", 10]},
+      {"name": "counter_at_least", "opts": ["four_count", 10]},
+      {"name": "counter_at_least", "opts": ["five_count", 10]},
+      {"name": "counter_at_least", "opts": ["six_count", 10]},
+      {"name": "counter_at_least", "opts": ["seven_count", 10]},
+      {"name": "counter_at_least", "opts": ["eight_count", 10]}
+    ]] },
     { "display_name": "Double Concealed Double Sequences", "value": 100, "when": [[
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["iipeikou"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]]]},
       [
@@ -186,7 +197,7 @@
       ]
     ]] },
     { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "anyone_status", "opts": ["first_turn"]}, "no_calls_yet", {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "anyone_status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   "yaku_precedence": {
     "Concealed Kongs": ["Concealed Kong"],
@@ -195,6 +206,8 @@
     "Pure Suit": ["Suit Bonus"],
     "Ten Identical Tiles": ["Same Number Bonus"],
     "Full Flush": ["Half Flush"],
+    "Luxury Seven Pairs": ["Seven Pairs"],
+    "Double Luxury Seven Pairs": ["Luxury Seven Pairs"],
     "Double Concealed Double Sequences": ["Seven Pairs", "Luxury Seven Pairs", "Double Luxury Seven Pairs"]
   },
   "score_calculation": {
@@ -225,10 +238,9 @@
       ["unset_status", "kan", "double_kan", "first_turn"]
     ]
   },
-  // not sure if calls invalidate heavenly win etc
-  // "before_call": {
-  //   "actions": [["unset_status_all", "discards_empty"]]
-  // },
+  "before_call": {
+    "actions": [["unset_status", "first_turn"]]
+  },
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
@@ -285,16 +297,6 @@
       ["when", {"name": "counter_at_least", "opts": ["six_count", 4]}, [  ["add_counter", "same_number_bonus", "six_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
       ["when", {"name": "counter_at_least", "opts": ["seven_count", 4]}, [  ["add_counter", "same_number_bonus", "seven_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
       ["when", {"name": "counter_at_least", "opts": ["eight_count", 4]}, [  ["add_counter", "same_number_bonus", "eight_count"], ["subtract_counter", "same_number_bonus", 3]  ]      ],
-      ["when", [[
-          {"name": "counter_at_least", "opts": ["two_count", 10]},
-          {"name": "counter_at_least", "opts": ["three_count", 10]},
-          {"name": "counter_at_least", "opts": ["four_count", 10]},
-          {"name": "counter_at_least", "opts": ["five_count", 10]},
-          {"name": "counter_at_least", "opts": ["six_count", 10]},
-          {"name": "counter_at_least", "opts": ["seven_count", 10]},
-          {"name": "counter_at_least", "opts": ["eight_count", 10]}
-        ]], ["set_status", "ten_identical_tiles"]
-      ],
       ["when", [[
         {"name": "seat_is", "opts": ["east"]},
         [
