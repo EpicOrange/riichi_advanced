@@ -554,7 +554,7 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
+      "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", "not_no_tiles_remaining", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"], 1] ]]]}],
       "actions": [
         ["big_text", "Flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y"],
@@ -570,7 +570,7 @@
           ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["as", "kamicha", [["big_text", "  -50  "]]]]]
         ]],
         ["set_status", "flower"],
-        ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]
+        ["draw", 1, "opposite_end"]
       ]
     },
     "joker": {

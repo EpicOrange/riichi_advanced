@@ -395,12 +395,14 @@
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
     },
+    // flowers drawn during the game are by default not forced, but we have a mod that makes them forced
     "flower": {
       "display_name": "Flower",
       "show_when": [
         "our_turn",
         {"name": "status_missing", "opts": ["match_start", "flower", "no_flowers"]},
         "not_just_discarded",
+        "not_no_tiles_remaining",
         {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [
@@ -408,12 +410,9 @@
         ["set_status", "flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"],
         ["unset_status", "flower"],
-        ["when", ["not_no_tiles_remaining"], [
-          ["shift_tile_to_dead_wall", 1],
-          ["draw", 1, "opposite_end"]
-        ]]
-      ],
-      "unskippable": true
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
+      ]
     }
   },
   "auto_buttons": {
