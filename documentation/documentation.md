@@ -838,6 +838,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "has_yaku2_with_hand", "opts": [han]}`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_hand", "opts": [1]}`
 - `{"name": "has_yaku2_with_discard", "opts": [han]}`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_discard", "opts": [1]}`
 - `{"name": "has_yaku2_with_call", "opts": [han]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_call", "opts": [1]}`
+- `{"name": "tiles_match", "opts": [[tile1, tile2, ...], [tile_spec1, tile_spec2, ...]]}`: The provided tiles all match any of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "last_discard_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last discard matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "last_called_tile_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last called tile matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "needed_for_hand", "opts": [match_spec1, match_spec2, ...]}`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is needed for the current player's hand to match one of the given match specifications.
@@ -882,6 +883,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "call_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The call contains at least `num` of any of the given tiles.
 - `{"name": "called_tile_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The called tile contains at least `num` of any of the given tiles. (only num=1 is valid)
 - `{"name": "call_choice_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The tiles used to call contains at least `num` of any of the given tiles.
+- `{"name": "tag_exists", "opts": [tag1, tag2, ...]}`: All of the given tags exist.
 - `{"name": "tagged", "opts": [tile, tag_name]}`: The given tile is tagged with the given `tag_name`. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
 - `{"name": "has_hell_wait", "opts": [match_spec1, match_spec2, ...]}`: The current player is waiting on a single out, where a winning hand is defined by the given match definitions.
 - `"third_row_discard"`: The current player has at least 12 tiles in their pond.

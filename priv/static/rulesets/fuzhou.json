@@ -14,6 +14,7 @@
   "available_mods": [
     {"id": "forced_flowers", "conflicts": ["discardable_flowers"], "name": "Forced Flowers", "desc": "Even after the initial forced flower replacement go-around, you must replace flowers drawn during the round (unless there are no more tiles left)."},
     {"id": "discardable_flowers", "conflicts": ["forced_flowers"], "name": "Discardable Flowers", "desc": "You may discard flower tiles like normal tiles."},
+    {"id": "forbid_golden_flowers", "name": "No Gold Flowers", "desc": "The first non-flower tile in the dead wall is the gold tile, starting from the end. Any flowers revealed in this process is given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -196,6 +197,11 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
+  "functions": {
+    "flip_gold_tile": [
+      ["tag_dora", "gold", -2], ["reveal_tile", -2]
+    ]
+  },
   "play_restrictions": [
     [["flower", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], []]
   ],
@@ -211,15 +217,14 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["gold"]}, "not_no_tiles_remaining"], [["draw"]]],
       ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
     ]
   },
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
-        // tag gold tiles with "dora" filler text here
-      ["tag_dora", "gold", -1],
+      ["run", "flip_gold_tile"],
         // add the "dora" attribute to tiles tagged with "gold", which should make them shiny
       ["add_attr_tagged", "gold", ["_dora", "gold"]],
         // sets any tile with attribute "gold" to be an any-joker with attribute "gold"
@@ -244,6 +249,7 @@
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
         {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "not_anyone_status", "opts": ["gold_flower"]},
         {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [
@@ -262,6 +268,7 @@
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
         {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "not_anyone_status", "opts": ["gold_flower"]},
         {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["move_tiles", "draw", "hand"], ["advance_turn"]],
@@ -313,8 +320,8 @@
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw", 1, "opposite_end"],
-        ["shift_tile_to_dead_wall", 1]
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
       ],
       "precedence_over": ["chii", "pon"]
     },
@@ -332,8 +339,10 @@
         ["big_text", "Kong"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw", 1, "opposite_end"],
-        ["shift_tile_to_dead_wall", 1]
+        // ankan moves two tiles
+        ["shift_tile_to_dead_wall", 1],
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
       ]
     },
     "kakan": {
@@ -348,8 +357,8 @@
         ["big_text", "Kong"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
         ["set_status", "kan"],
-        ["draw", 1, "opposite_end"],
-        ["shift_tile_to_dead_wall", 1]
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
       ]
     },
     "ron": {
@@ -465,12 +474,11 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "upgrade_call", "flower"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "upgrade_call", "flower", "noop"],
   "display_honba": true,
   "display_wall": true,
   "initial_score": 0,
   "initial_dead_wall_length": 18,
   "starting_tiles": 16,
-  "max_rounds": 16,
-  "revealed_tiles": [-1]
+  "max_rounds": 16
 }

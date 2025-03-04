@@ -862,13 +862,17 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       state = if length(src_targets) < length(dst_targets) do
         remaining_dst = Enum.drop(dst_targets, length(src_targets))
-        {source, _, seat, _} = Enum.at(src_targets, 0)
-        move_all_tiles(state, seat, remaining_dst, source)
+        case Enum.at(src_targets, 0) do
+          {source, _, seat, _} -> move_all_tiles(state, seat, remaining_dst, source)
+          _                    -> state
+        end
       else state end
       state = if length(src_targets) > length(dst_targets) do
         remaining_src = Enum.drop(src_targets, length(dst_targets))
-        {source, _, seat, _} = Enum.at(dst_targets, 0)
-        move_all_tiles(state, seat, remaining_src, source)
+        case Enum.at(dst_targets, 0) do
+          {source, _, seat, _} -> move_all_tiles(state, seat, remaining_src, source)
+          _                    -> state
+        end
       else state end
       state
     else
@@ -942,6 +946,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand)
       "upgrade_call"          -> upgrade_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile)
       "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand)
+      "trigger_custom_call"   ->
+        name = Enum.at(opts, 0, "")
+        source = case Enum.at(opts, 1, "") do
+          "discards" -> :discards
+          _          -> :hand
+        end
+        {call_choice, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 2, [])) |> Enum.at(0)
+        {called_tiles, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 3, [])) |> Enum.at(0)
+        called_tile = Enum.at(called_tiles, 0)
+        trigger_call(state, context.seat, name, call_choice, called_tile, source)
       "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice.chosen_saki_card)
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)

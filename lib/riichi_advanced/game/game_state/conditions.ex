@@ -244,6 +244,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_declared_yaku_with_discard" -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_action.tile, :discard)
       "has_declared_yaku_with_call"    -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_action.tile, :call)
+      "tiles_match"              -> Enum.at(opts, 0, :"1m") |> Enum.all?(&Riichi.tile_matches(Enum.at(opts, 1, []), %{tile: from_named_tile(state, &1), players: state.players, seat: context.seat}))
       "last_discard_matches"     -> last_discard_action != nil and Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: Map.get(context, :tile, nil), players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action != nil and last_action.action == :call and Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: Map.get(context, :tile, nil), call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_behavior)
@@ -441,6 +442,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         count = Enum.at(opts, 1, 1)
         called_tiles = context.choice.chosen_call_choice
         Utils.count_tiles(called_tiles, tiles) >= count
+      "tag_exists"          -> Enum.all?(opts, &Map.has_key?(state.tags, &1))
       "tagged"              ->
         targets = case Enum.at(opts, 0, "tile") do
           "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
