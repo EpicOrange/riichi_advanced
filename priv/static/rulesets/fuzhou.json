@@ -63,7 +63,14 @@
     "1s": ["1s"],  "2s": ["2s"],  "3s": ["3s"],  "4s": ["4s"],  "5s": ["5s"],  "6s": ["6s"],  "7s": ["7s"],  "8s": ["8s"],  "9s": ["9s"],  "0s": ["5s"],
     "1z": ["1z"],  "2z": ["2z"],  "3z": ["3z"],  "4z": ["4z"],  "0z": ["0z"],  "6z": ["6z"],  "7z": ["7z"],
       // what happens if gold indicator is a flower/season, all flowers/seasons are gold
-    "1f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "2f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "3f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "4f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "1g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "2g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "3g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
+    "1f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "2f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "3f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "4f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "1g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "2g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "3g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
   },
   "set_definitions": {
     "pair": [0, 0],
@@ -74,12 +81,20 @@
     "quad": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
-    "iipeikou": [0, 0, 1, 1, 2, 2],
-    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8],
-    "full_straight": [[0,1,2],[3,4,5],[6,7,8]],
-    "manzu": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"],
-    "pinzu": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"],
-    "souzu": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]
+    "ton": ["nojoker", "1z", "1z", "1z"],
+    "nan": ["nojoker", "2z", "2z", "2z"],
+    "shaa": ["nojoker", "3z", "3z", "3z"],
+    "pei": ["nojoker", "4z", "4z", "4z"],
+    "haku": ["nojoker", "5z", "5z", "5z"],
+    "hatsu": ["nojoker", "6z", "6z", "6z"],
+    "chun": ["nojoker", "7z", "7z", "7z"],
+    "ton_pair": ["nojoker", "1z", "1z"],
+    "nan_pair": ["nojoker", "2z", "2z"],
+    "shaa_pair": ["nojoker", "3z", "3z"],
+    "pei_pair": ["nojoker", "4z", "4z"],
+    "haku_pair": ["nojoker", "5z", "5z"],
+    "hatsu_pair": ["nojoker", "6z", "6z"],
+    "chun_pair": ["nojoker", "7z", "7z"]
   },
   "tenpai_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
@@ -87,6 +102,10 @@
   ],
   "win_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 5], [["pair"], 1] ]
+  ],
+  "false_win_definition": [
+    [ [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1], "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1], "exhaustive", [["shuntsu", "koutsu"], 5] ]
   ],
   "all_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "nojoker", "unique", [["1g","2g","3g","4g"], 4] ]],
@@ -135,15 +154,15 @@
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
-    { "display_name": "Full Bloom", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Flowers)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
+    { "display_name": "Full Bloom (Seasons)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
+    { "display_name": "Full Bloom (East)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
+    { "display_name": "Full Bloom (South)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
+    { "display_name": "Full Bloom (West)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
+    { "display_name": "Full Bloom (North)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
+    { "display_name": "Full Bloom (White)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Green)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Red)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
     {
       "display_name": "All Sequences",
       "value": 10,
@@ -357,7 +376,7 @@
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["jin"]}], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
+        {"name": "not_match", "opts": [["hand", "draw"], ["false_win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
@@ -381,7 +400,7 @@
             {"name": "match", "opts": [["hand", "flowers", "last_called_tile"], ["8_flowers"]]}
           ]
         ],
-        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
+        {"name": "not_match", "opts": [["hand", "draw"], ["false_win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
@@ -394,7 +413,7 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
+        {"name": "not_match", "opts": [["hand", "draw"], ["false_win"]]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]

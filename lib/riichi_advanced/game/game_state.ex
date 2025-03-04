@@ -34,7 +34,7 @@ defmodule RiichiAdvanced.GameState do
       riichi_discard_indices: nil,
       playable_indices: [],
       closest_american_hands: [],
-      winning_hand: nil,
+      winning_hand: [],
       arranged_hand: [],
       arranged_calls: [],
     ]

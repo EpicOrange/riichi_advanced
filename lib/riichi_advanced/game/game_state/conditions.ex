@@ -34,6 +34,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
           "assigned_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
           "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
+          "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
             [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
