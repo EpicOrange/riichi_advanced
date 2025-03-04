@@ -50,11 +50,10 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
   def prepare_wall(assigns) do
     # visible
-    # wall = Enum.drop(assigns.wall, assigns.wall_index)
-    # dead_wall = assigns.dead_wall
-    # hidden
-    wall = List.duplicate(:"1x", max(0, length(assigns.wall) - assigns.wall_index))
-    dead_wall = List.duplicate(:"1x", max(0, length(assigns.dead_wall) - assigns.dead_wall_index))
+    wall = Enum.drop(assigns.wall, assigns.wall_index)
+    |> Enum.map(&if Utils.is_space?(&1) do &1 else :"1x" end)
+    dead_wall = Enum.drop(assigns.dead_wall, assigns.dead_wall_index)
+    |> Enum.map(&if Utils.is_space?(&1) do &1 else :"1x" end)
 
     # show dora indicators in dead wall
     dead_wall = for ix <- assigns.revealed_tiles, is_integer(ix), reduce: dead_wall do

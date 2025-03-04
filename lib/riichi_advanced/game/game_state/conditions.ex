@@ -173,6 +173,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
     |> Enum.map(fn {seat, _player} -> seat end)
   end
 
+  def num_remaining_draws(state) do
+    state.wall
+    |> Enum.drop(state.wall_index)
+    |> Enum.count(&not Utils.has_attr?(&1, ["skip_draw"]))
+  end
+
   def get_yaku_lists(state) do
     (get_in(state.rules["score_calculation"]["yaku_lists"]) || []) -- (get_in(state.rules["score_calculation"]["extra_yaku_lists"]) || [])
   end
@@ -281,10 +287,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
             (tile - length(state.dead_wall)) not in state.revealed_tiles
           else true end
         end)
-      "no_tiles_remaining"       -> length(state.wall) - state.wall_index <= 0
-      "tiles_remaining"          -> length(state.wall) - state.wall_index >= Enum.at(opts, 0, 0)
+      "no_tiles_remaining"       -> num_remaining_draws(state) <= 0
+      "tiles_remaining"          -> num_remaining_draws(state) >= Enum.at(opts, 0, 0)
       "next_draw_possible"       ->
-        draws_left = length(state.wall) - state.wall_index
+        draws_left = num_remaining_draws(state)
         case Utils.get_relative_seat(context.seat, state.turn) do
           :shimocha -> draws_left >= 3
           :toimen   -> draws_left >= 2

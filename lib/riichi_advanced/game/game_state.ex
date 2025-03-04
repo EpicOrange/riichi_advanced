@@ -526,7 +526,10 @@ defmodule RiichiAdvanced.GameState do
         state.rules["starting_dead_wall"]
         |> Enum.map(&Utils.to_tile/1)
         |> Enum.with_index()
-        |> Enum.map(fn {tile, i} -> {length(wall) - i - 1, tile} end)
+        |> Enum.map(fn {tile, i} ->
+          reverse_parity = if rem(i, 2) == 0 do -1 else 1 end
+          {length(wall) - i - 1 + reverse_parity, tile}
+        end)
       else [] end
 
       # swap tiles so that the specified tiles are at the specified indices

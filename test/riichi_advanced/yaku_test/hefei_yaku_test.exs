@@ -954,7 +954,6 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
         "north": ["6p","3s","2p","2m","4p","8m","8p","3s","7p","4s","3p","8m","7p"]
       },
       "starting_draws": ["8m","7s","4s","3p","5s","8s","8p","5s","8m","2s","4p","5p","4m","3m","5m","7p","2s","6m","5p","5p","7p","3s","8p","7m","3m","7m","6s","8p","3s","7s","6m","7s"],
-      "starting_dead_wall": [],
       "starting_round": 0,
       "starting_honba": 0
     }
@@ -1006,7 +1005,6 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
         "north": ["8m","8s","8s","6m","7m","6s","4p","3m","6m","4p","7p","4p","5p"]
       },
       "starting_draws": ["7s","8m","3m","6p","3s","5m","8p","5m","6m","7p","2s","2m","6s","5s","5s","2m","4p","4m","5m","7m","8p","2m","8s","7s","4m","2m","4s","8m","5p","3p","4s","7s"],
-      "starting_dead_wall": [],
       "starting_round": 0,
       "starting_honba": 0
     }

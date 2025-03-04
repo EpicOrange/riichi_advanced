@@ -124,20 +124,23 @@ defmodule RiichiAdvanced.GameState.Actions do
                 |> draw_tile(seat, 1, drawn_tile, to_aside)
                 |> draw_tile(seat, num - 1, tile_spec, to_aside)
               end
-            not Enum.empty?(state.wall) ->
-              # move the last tile of the wall to the dead wall
+            length(state.wall) >= 2 ->
+              # move the last two tiles of the wall to the dead wall
               # then draw the last tile of the dead wall
-              {wall, [tile]} = Enum.split(state.wall, -1)
-              dead_wall = [tile | state.dead_wall]
-              pos = -1 - state.dead_wall_index
-              reverse_parity = if rem(state.dead_wall_index, 2) == 0 do -1 else 1 end
-              drawn_tile = Enum.at(dead_wall, pos + reverse_parity, Enum.at(dead_wall, pos))
+              {wall, [tile1, tile2]} = Enum.split(state.wall, -2)
+              {wall, tile} = if Utils.is_space?(tile1) do
+                {wall, tile2}
+              else
+                {wall ++ [Utils.add_attr(:"2x", ["_skip_draw"]), tile2], tile1}
+              end
+              dead_wall = if rem(length(state.dead_wall), 2) == 0 do
+                [tile | state.dead_wall]
+              else List.insert_at(state.dead_wall, 1, tile) end
               state
               |> Map.put(:wall, wall)
               |> Map.put(:dead_wall, dead_wall)
-              |> draw_tile(seat, 1, drawn_tile, to_aside)
-              |> Map.put(:dead_wall_index, state.dead_wall_index + 1)
-              |> draw_tile(seat, num - 1, tile_spec, to_aside)
+              |> draw_tile(seat, num, tile_spec, to_aside)
+            not Enum.empty?(state.wall) -> draw_tile(state, seat, num, nil, to_aside)
             true ->
               # both walls are exhausted, draw nothing
               IO.puts("#{seat} tried to draw a nil tile!")
@@ -164,23 +167,30 @@ defmodule RiichiAdvanced.GameState.Actions do
           else state end
           # grab the named tile (no op if the tile name is a normal tile)
           tile = from_named_tile(state, tile_name) |> Utils.add_attr(["_draw"])
-          state = if not to_aside do
-            # draw to hand
+          # if this is a skip_draw tile and we're not going to cause an infinite loop, then try again
+          if Utils.has_attr?(tile, ["skip_draw"]) and tile_spec == nil do
             state
-            |> update_player(seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
             |> Map.put(:wall_index, wall_index)
-            |> update_action(seat, :draw, %{tile: tile})
-            |> Log.log(seat, :draw, %{tile: Utils.strip_attrs(tile), kan_draw: "kan" in state.players[seat].status})
+            |> draw_tile(seat, num, nil, to_aside)
           else
-            # draw to aside
-            state
-            |> update_player(seat, &%Player{ &1 | aside: [tile | &1.aside] })
-            |> Map.put(:wall_index, wall_index)
-            # TODO: log this
-          end
+            state = if not to_aside do
+              # draw to hand
+              state
+              |> update_player(seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
+              |> Map.put(:wall_index, wall_index)
+              |> update_action(seat, :draw, %{tile: tile})
+              |> Log.log(seat, :draw, %{tile: Utils.strip_attrs(tile), kan_draw: "kan" in state.players[seat].status})
+            else
+              # draw to aside
+              state
+              |> update_player(seat, &%Player{ &1 | aside: [tile | &1.aside] })
+              |> Map.put(:wall_index, wall_index)
+              # TODO: log this
+            end
 
-          # IO.puts("wall index is now #{get_state().wall_index}")
-          draw_tile(state, seat, num - 1, tile_spec, to_aside)
+            # IO.puts("wall index is now #{get_state().wall_index}")
+            draw_tile(state, seat, num - 1, tile_spec, to_aside)
+          end
       end
     else
       # run after_draw actions            

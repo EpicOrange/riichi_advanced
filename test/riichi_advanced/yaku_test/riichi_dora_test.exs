@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "6p"],
-      "starting_dead_wall": ["1z", "2z", "3z", "4z", "5z", "6p"]
+      "starting_dead_wall": ["2z", "1z", "4z", "3z", "6p", "5z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -38,7 +38,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "6p"],
-      "starting_dead_wall": ["7z", "2z", "3z", "4z", "5z", "6p"]
+      "starting_dead_wall": ["2z", "7z", "4z", "3z", "6p", "5z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -64,7 +64,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "6p"],
-      "starting_dead_wall": ["7z", "2z", "3z", "4z", "5z", "6p"]
+      "starting_dead_wall": ["2z", "7z", "4z", "3z", "6p", "5z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["01m", "02m", "07m", "02p", "05p", "08p", "03s", "06s", "09s", "01z", "02z", "03z", "04z"]
       },
       "starting_draws": ["01z", "06p"],
-      "starting_dead_wall": ["07z", "02z", "03z", "04z", "05z", "04m"]
+      "starting_dead_wall": ["02z", "07z", "04z", "03z", "04m", "05z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -116,7 +116,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "6p"],
-      "starting_dead_wall": ["7z", "2z", "3z", "4z", "4m", "5z"]
+      "starting_dead_wall": ["2z", "7z", "4z", "3z", "5z", "4m"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -142,7 +142,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "6p"],
-      "starting_dead_wall": ["7z", "2z", "3z", "4z", "5z", "4m"]
+      "starting_dead_wall": ["2z", "7z", "4z", "3z", "4m", "5z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -168,7 +168,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1p", "2p", "5p", "7p", "13z"],
-      "starting_dead_wall": ["1z", "2z", "3z", "4z", "5z", "4z"]
+      "starting_dead_wall": ["2z", "1z", "4z", "3z", "4z", "5z"]
     }
     """, [
       %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => true},
