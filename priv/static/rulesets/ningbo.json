@@ -1,7 +1,10 @@
 { 
     //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated.
-  "default_mods": [],
-  "available_mods": [],
+  "default_mods": ["show_waits"],
+  "available_mods": [
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
+  ],
   "display_name": "Ningbo Mahjong",
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-ningbo-mahjong-rules",
   "wall": ["1m", "1m", "1m", "1m",
