@@ -81,28 +81,11 @@
     "souzu": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]
   },
   "tenpai_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
-  ],  
-  "iishanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 4] ]
-  ],
-  "ryanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ]
-  ],
-  "sanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ]
   ],
   "win_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 5] ]
+    [ "exhaustive", [["shuntsu", "koutsu"], 5], [["pair"], 1] ]
   ],
   "all_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "nojoker", "unique", [["1g","2g","3g","4g"], 4] ]],
@@ -110,7 +93,7 @@
   "7_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
   "8_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
   "closed_wait_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4], [["kanchan"], 1] ]
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["kanchan"], 1], [["pair"], 1] ]
   ],
   "single_wait_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
@@ -119,7 +102,7 @@
     [ "exhaustive", [["gold_pair"], 1], [["shuntsu", "koutsu"], 5] ]
   ],
   "golden_dragon_definition": [
-    [ "exhaustive", [["pair"], 1], [["gold_koutsu"], 1], [["shuntsu", "koutsu"], 4] ]
+    [ "exhaustive", [["gold_koutsu"], 1], [["shuntsu", "koutsu"], 4], [["pair"], 1] ]
   ],
   "yaku": [
     { "display_name": "Base Points", "value": 10, "when": [] },
