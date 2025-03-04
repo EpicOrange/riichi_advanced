@@ -875,7 +875,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.with_index()
     |> Enum.map(fn {tile, i} -> Utils.add_attr(tile, ["hand#{i}"]) end)
     orig_draw = state.players[seat].draw
-    {orig_flowers, orig_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    orig_calls = state.players[seat].calls
     tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
@@ -898,10 +898,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else
       # otherwise, sort jokers into the hand
       arranged_hand = Utils.sort_tiles(orig_hand, joker_assignment)
-      # then combine all flower tiles into one call
-      arranged_calls = orig_calls ++ [{"_flowers", Enum.flat_map(orig_flowers, &Utils.call_to_tiles/1)}]
-      |> IO.inspect()
-      {arranged_hand, arranged_calls}
+      {arranged_hand, orig_calls}
     end
 
     # correct the hand if the winning tile was taken from hand (for display purposes)

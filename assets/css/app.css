@@ -877,7 +877,7 @@ div.tile.sideways::after {
   --shadow-end-height: var(--tile-width);
 }
 */
-div.tile.sideways + div.tile.sideways { width: 0; clip-path: none; }
+div.tile.sideways + div.tile.sideways { width: 0; }
 div.tile.sideways + div.tile.sideways::before {
   display: block;
   content: "";
@@ -2204,6 +2204,24 @@ div.hand.winning-hand {
   width: 100%;
   justify-content: center;
   display: none;
+}
+/* stack flowers in winning hand if needed */
+div.hand.winning-hand > div.call.winning-flowers {
+  position: relative;
+}
+div.hand.winning-hand > div.call.winning-flowers > div.tile:not(:last-child) {
+  margin-right: calc(-0.5 * var(--tile-size));
+}
+div.hand.winning-hand > div.call.winning-flowers > div.flower-count {
+  background: var(--tile-front);
+  padding: calc(0.05 * var(--tile-size));
+  border-radius: calc(0.2 * var(--tile-size));
+  filter: drop-shadow(calc(var(--tile-size) / -16) calc(var(--tile-size) / -16) 0 var(--tile-back-side));
+  position: absolute;
+  font-size: calc(0.4 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
+  right: calc(-0.25 * var(--tile-size));
+  z-index: 1;
 }
 /* yakus */
 div.yakus {

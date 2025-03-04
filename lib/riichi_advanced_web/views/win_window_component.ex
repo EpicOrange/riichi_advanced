@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.WinWindowComponent do
+  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
 
@@ -16,8 +17,9 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
           <div class="winning-hand-container">
             <div class="hand winning-hand">
               <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.player.hand)}></div>
-              <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
-                <div class="call">
+              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.player.calls)) do %>
+                <div class={["call", (name == "_flowers" and length(call) > 3) && "winning-flowers"]}>
+                  <div class="flower-count" :if={name == "_flowers" and length(call) > 3}>&#215;<%= length(call) %></div>
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
                 </div>
               <% end %>
@@ -28,8 +30,9 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             </div>
             <div class="hand winning-hand separated-hand">
               <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.separated_hand)}></div>
-              <%= for {{_name, call}, i} <- Enum.with_index(@winner.player.calls) do %>
-                <div class="call">
+              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.player.calls)) do %>
+                <div class={["call", (name == "_flowers" and length(call) > 3) && "winning-flowers"]}>
+                  <div class="flower-count" :if={name == "_flowers" and length(call) > 3}>&#215;<%= length(call) %></div>
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
                 </div>
               <% end %>
@@ -64,5 +67,12 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
       <div class="timer" phx-cancellable-click="ready_for_next_round">Skip (<%= @timer %>)</div>
     </div>
     """
+  end
+
+  def process_calls(calls) do
+    # combine all flower calls into one call
+    # the UI will display this specially if there are too many flowers
+    {flowers, calls} = Enum.split_with(calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    calls ++ [{"_flowers", Enum.flat_map(flowers, &Utils.call_to_tiles/1)}]
   end
 end
