@@ -109,7 +109,7 @@
   ],
   "all_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "nojoker", "unique", [["1g","2g","3g","4g"], 4] ]],
-  "any_flower_definition": [[ "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]],
+  "any_flower_definition": [[ "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1z","2z","3z","4z","0z","6z","7z"], 1] ]],
   "7_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
   "8_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
   "closed_wait_definition": [
@@ -126,22 +126,9 @@
   ],
   "yaku": [
     { "display_name": "Base Points", "value": 10, "when": [] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["1g"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 1]]]]}] },
-    { "display_name": "Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 1]]]]}] },
       // apparently the scoring for these "1 per" yaku is doubled, so these are actually "2 per" yaku. "Gold" being duplicated here is intentional. ditto for "Dealer Continuation".
+    { "display_name": "Flowers", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
+    { "display_name": "Flowers", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
     { "display_name": "Gold", "value": "gold_count", "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
     { "display_name": "Gold", "value": "gold_count", "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
     { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
@@ -154,18 +141,19 @@
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
     { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
-    { "display_name": "Full Bloom (Flowers)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
-    { "display_name": "Full Bloom (Seasons)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
-    { "display_name": "Full Bloom (East)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
-    { "display_name": "Full Bloom (South)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
-    { "display_name": "Full Bloom (West)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
-    { "display_name": "Full Bloom (North)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
-    { "display_name": "Full Bloom (White)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
-    { "display_name": "Full Bloom (Green)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
-    { "display_name": "Full Bloom (Red)", "value": 6, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Flowers)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
+    { "display_name": "Full Bloom (Seasons)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
+    { "display_name": "Full Bloom (East)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
+    { "display_name": "Full Bloom (South)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
+    { "display_name": "Full Bloom (West)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
+    { "display_name": "Full Bloom (North)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
+    { "display_name": "Full Bloom (White)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Green)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Red)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
     {
       "display_name": "All Sequences",
       "value": 10,
+      // note: this is probably the slowest yaku to check
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 5], [["pair"], 1]]]]}]
     },
     { "display_name": "Only One Flower", "value": 15,
@@ -182,6 +170,7 @@
     { "display_name": "Blessing of Earth", "value": 40, "when": [{"name": "not_seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] }
   ],
   "yaku_precedence": {
+    "Golden Pair": ["Gold"],
     "Golden Dragon": ["Three Gold Knockdown", "Golden Pair"],
     "Three Gold Knockdown": ["Golden Pair"]
   },
@@ -240,6 +229,7 @@
   "before_win": {
     "actions": [
       ["when", [{"name": "seat_is", "opts": ["east"]}], [["set_counter", "dealer_continuation", "honba"]]],
+      ["set_counter", "flower_count", "count_matches", ["flowers"], ["any_flower"]],
       ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["jin"]}], 1] ]]]
     ]
   },
@@ -376,7 +366,7 @@
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["jin"]}], 1]]]]},
-        {"name": "not_match", "opts": [["hand", "draw"], ["false_win"]]}
+        {"name": "not_match", "opts": [["hand", "calls", "last_discard"], ["false_win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
@@ -400,7 +390,7 @@
             {"name": "match", "opts": [["hand", "flowers", "last_called_tile"], ["8_flowers"]]}
           ]
         ],
-        {"name": "not_match", "opts": [["hand", "draw"], ["false_win"]]}
+        {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], ["false_win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
@@ -413,7 +403,7 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "not_match", "opts": [["hand", "draw"], ["false_win"]]}
+        {"name": "not_match", "opts": [["hand", "calls", "draw"], ["false_win"]]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
