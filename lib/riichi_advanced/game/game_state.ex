@@ -1339,9 +1339,9 @@ defmodule RiichiAdvanced.GameState do
     |> Enum.filter(fn {seat, _session_id} -> seat != nil and Map.get(state, seat) != nil and not is_pid(Map.get(state, seat)) end)
     |> Map.new(fn {seat, session_id} -> {seat, %RoomPlayer{
       nickname: if state.players[seat].nickname == "" do
-          "player" <> String.slice(Map.get(state, seat), 10, 4)
+          "player" <> String.slice(Map.get(state, seat) |> Enum.at(-1), 10, 4)
         else state.players[seat].nickname end,
-      id: Map.get(state, seat) |> Enum.at(0),
+      id: Map.get(state, seat) |> Enum.at(-1),
       session_id: session_id,
       seat: seat
     }} end)
