@@ -16,8 +16,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :drawn_reserved_tiles, [])
     socket = assign(socket, :prepared_wall, %{self: [], kamicha: [], toimen: [], shimocha: []})
     socket = assign(socket, :kyoku, :east)
-    socket = assign(socket, :die1, 3)
-    socket = assign(socket, :die2, 4)
+    socket = assign(socket, :dice, [3, 4])
     socket = assign(socket, :dice_roll, 7)
     socket = assign(socket, :available_seats, [:east, :south, :west, :north])
     {:ok, socket}
@@ -40,8 +39,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
           id="wall kamicha"
           wall={Map.get(@prepared_wall, :kamicha, [])} />
         <div class="dice">
-          <div class={["die", to_die_class(@die1)]}></div>
-          <div class={["die", to_die_class(@die2)]}></div>
+          <div class={["die", to_die_class(die)]} :for={die <- @dice}></div>
         </div>
       </div>
     </div>

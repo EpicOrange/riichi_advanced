@@ -207,8 +207,7 @@ defmodule RiichiAdvanced.GameState do
       # (these are all reset manually, so if you add a new one go to initialize_new_round to reset it)
       turn: :east,
       awaiting_discard: true, # prevent double discards
-      die1: 3,
-      die2: 4,
+      dice: [],
       wall_index: 0,
       dead_wall_index: 0,
       haipai: [],
@@ -601,9 +600,15 @@ defmodule RiichiAdvanced.GameState do
       end
 
       # roll dice
-      state = state
-      |> Map.put(:die1, Map.get(state.rules, "die1", :rand.uniform(6)))
-      |> Map.put(:die2, Map.get(state.rules, "die2", :rand.uniform(6)))
+      num_dice = Map.get(state.rules, "num_dice", 2) - 2
+      num_dice = max(2, num_dice)
+      num_dice = min(10, num_dice)
+      dice = [
+        Map.get(state.rules, "die1", :rand.uniform(6)),
+        Map.get(state.rules, "die2", :rand.uniform(6))
+      ] ++ Enum.map(2..num_dice//1, fn _ -> :rand.uniform(6) end)
+
+      state = Map.put(state, :dice, dice)
 
       scores = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
 
@@ -651,8 +656,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:kyoku, kyoku_log["kyoku"])
       |> Map.put(:pot, kyoku_log["riichi_sticks"] * 1000)
       |> Map.put(:honba, kyoku_log["honba"])
-      |> Map.put(:die1, kyoku_log["die1"])
-      |> Map.put(:die2, kyoku_log["die2"])
+      |> Map.put(:dice, [kyoku_log["die1"], kyoku_log["die2"]])
 
       {state, hands, scores}
     end

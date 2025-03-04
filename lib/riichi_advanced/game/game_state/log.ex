@@ -178,8 +178,8 @@ defmodule RiichiAdvanced.GameState.Log do
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       kan_tiles: Enum.take(state.dead_wall, -4),
       wall: state.wall |> Enum.drop(52) |> Enum.take(70),
-      die1: state.die1,
-      die2: state.die2,
+      die1: state.dice |> Enum.at(0),
+      die2: state.dice |> Enum.at(1),
       events: state.log_state.log
         |> Enum.reverse()
         |> Enum.with_index()

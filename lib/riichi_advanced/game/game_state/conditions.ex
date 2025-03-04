@@ -485,7 +485,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
-      "dice_equals"         -> (state.die1 + state.die2) in opts
+      "dice_equals"         -> Enum.sum(state.dice) in opts
       "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) in Enum.drop(opts, 1)
       "counter_at_least"    -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) >= Enum.at(opts, 1, 0)
       "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Enum.at(opts, 1, 0)
@@ -508,7 +508,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             end
         end
       "wall_is_here"        ->
-        dice_roll = state.die1 + state.die2
+        dice_roll = Enum.sum(state.dice)
         break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat, state.available_seats)
         end_dir = cond do
           state.wall_index < 2*(17 - dice_roll) -> break_dir
@@ -519,7 +519,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
         end_dir == :self
       "dead_wall_ends_here"        ->
-        dice_roll = state.die1 + state.die2
+        dice_roll = Enum.sum(state.dice)
         break_dir = Riichi.get_break_direction(dice_roll, state.kyoku, context.seat, state.available_seats)
         wall_length = length(state.wall) + length(state.dead_wall)
         end_dir = cond do

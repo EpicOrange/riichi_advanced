@@ -284,9 +284,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         dead_wall={@state.dead_wall}
         atop_wall={@state.atop_wall}
         wall_length={length(Map.get(@state.rules, "wall", []))}
-        die1={@state.die1}
-        die2={@state.die2}
-        dice_roll={@state.die1 + @state.die2}
+        dice={@state.dice}
+        dice_roll={Enum.sum(@state.dice)}
         wall_index={@state.wall_index}
         dead_wall_index={@state.dead_wall_index}
         revealed_tiles={@state.revealed_tiles}
