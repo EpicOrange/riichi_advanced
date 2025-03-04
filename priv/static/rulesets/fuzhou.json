@@ -1,7 +1,7 @@
 {
 // TODOs:
     // this is purely a visual thing if someone clicks on "Show Walls". so, not high-priority, probably not even necessary for PR
-  //⚠️ place the gold tile above the 17th and 18th tiles from the dead wall. as the dead wall shifts (which it will), the revealed "gold" tile is never drawn, it is always moved above the 9th tile-pair away from the end and marks where the dead wall begins.
+  //⚠️ place the gold tile above the 17th and 18th tiles from the dead wall. as the dead wall shifts (which it will), the revealed "jin" tile is never drawn, it is always moved above the 9th tile-pair away from the end and marks where the dead wall begins.
     // need some kind of engine update, i think?
   //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
 // mods/rule-variants
@@ -66,10 +66,10 @@
   },
   "set_definitions": {
     "pair": [0, 0],
-    "gold_pair": [{"tile": "any", "attrs": ["gold"]}, {"tile": "any", "attrs": ["gold"]}],
+    "gold_pair": [{"tile": "any", "attrs": ["jin"]}, {"tile": "any", "attrs": ["jin"]}],
     "shuntsu": [0, 1, 2],
     "koutsu": [0, 0, 0],
-    "gold_koutsu": [{"tile": "any", "attrs": ["gold"]}, {"tile": "any", "attrs": ["gold"]}, {"tile": "any", "attrs": ["gold"]}],
+    "gold_koutsu": [{"tile": "any", "attrs": ["jin"]}, {"tile": "any", "attrs": ["jin"]}, {"tile": "any", "attrs": ["jin"]}],
     "quad": [0, 0, 0, 0],
     "ryanmen/penchan": [0, 1],
     "kanchan": [0, 2],
@@ -172,7 +172,7 @@
       ]
     },
     { "display_name": "Golden Pair", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_pair"]]}] },
-    { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [[{"tile": "any", "attrs": ["gold"]}], 3] ]]]}] },
+    { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [[{"tile": "any", "attrs": ["jin"]}], 3] ]]]}] },
     { "display_name": "Golden Dragon", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_dragon"]]}] },
     { "display_name": "Robbing the Gold", "value": 50, "when": [{"name": "status", "opts": ["qiangjin"]}] },
     { "display_name": "Blessing of Heaven", "value": 50, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
@@ -217,7 +217,7 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["gold"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]],
       ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
     ]
   },
@@ -225,16 +225,16 @@
     "actions": [
       ["set_status_all", "first_turn", "match_start"],
       ["run", "flip_gold_tile"],
-        // add the "dora" attribute to tiles tagged with "gold", which should make them shiny
-      ["add_attr_tagged", "gold", ["_dora", "gold"]],
-        // sets any tile with attribute "gold" to be an any-joker with attribute "gold"
-      ["set_tile_alias_all", [{"tile": "any", "attrs": ["gold"]}], ["any"]]
+        // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
+      ["add_attr_tagged", "jin", ["_dora", "jin"]],
+        // sets any tile with attribute "jin" to be an any-joker with attribute "jin"
+      ["set_tile_alias_all", [{"tile": "any", "attrs": ["jin"]}], ["any"]]
     ]
   },
   "before_win": {
     "actions": [
       ["when", [{"name": "seat_is", "opts": ["east"]}], [["set_counter", "dealer_continuation", "honba"]]],
-      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["gold"]}], 1] ]]]
+      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["jin"]}], 1] ]]]
     ]
   },
   "before_exhaustive_draw": {
@@ -295,7 +295,7 @@
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["gold"]}], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
       ],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
@@ -304,7 +304,7 @@
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["gold"]}], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
       ],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
@@ -314,7 +314,7 @@
       "call": [[0, 0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["gold"]}], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
       ],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
@@ -333,7 +333,7 @@
       ]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["gold"]}], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
       ],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
@@ -351,7 +351,7 @@
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "call_conditions": [
-        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["gold"]}], 1]}
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
       ],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
@@ -369,7 +369,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["gold"]}], 1]]]]}
+        {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["jin"]}], 1]]]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
