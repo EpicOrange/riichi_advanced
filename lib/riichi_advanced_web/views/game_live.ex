@@ -282,6 +282,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}
+        atop_wall={@state.atop_wall}
         wall_length={length(Map.get(@state.rules, "wall", []))}
         die1={@state.die1}
         die2={@state.die2}

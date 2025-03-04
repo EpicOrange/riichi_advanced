@@ -214,6 +214,7 @@ defmodule RiichiAdvanced.GameState do
       haipai: [],
       actions: [],
       dead_wall: [],
+      atop_wall: %{},
       reversed_turn_order: false,
       reserved_tiles: [],
       revealed_tiles: [],
@@ -674,6 +675,7 @@ defmodule RiichiAdvanced.GameState do
          counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
          tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
        })
+    |> Map.put(:atop_wall, %{})
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
     |> Map.put(:game_active, true)
@@ -1023,11 +1025,21 @@ defmodule RiichiAdvanced.GameState do
     else hand end
   end
 
+  def is_named_tile(state, tile_name) do
+    cond do
+      is_binary(tile_name) and tile_name in state.reserved_tiles -> true
+      Utils.is_tile(tile_name) -> true
+      is_integer(tile_name) -> true
+      is_atom(tile_name) -> true
+      true -> false
+    end
+  end
+  
   def from_named_tile(state, tile_name) do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
-          nil -> Map.get(state.tags, tile_name, []) |> Enum.at(0) # check tags
+          nil -> Map.get(state.tags, tile_name, MapSet.new()) |> Enum.at(0) # check tags
           ix  -> Enum.at(state.dead_wall, -ix-1)
         end
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)

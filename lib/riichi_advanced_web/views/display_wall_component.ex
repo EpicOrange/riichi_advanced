@@ -55,12 +55,21 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     # hidden
     wall = List.duplicate(:"1x", max(0, length(assigns.wall) - assigns.wall_index))
     dead_wall = List.duplicate(:"1x", max(0, length(assigns.dead_wall) - assigns.dead_wall_index))
-    dead_wall_parity = rem(assigns.dead_wall_index, 2)
 
     # show dora indicators in dead wall
     dead_wall = for ix <- assigns.revealed_tiles, is_integer(ix), reduce: dead_wall do
-      dead_wall -> List.replace_at(dead_wall, ix + assigns.dead_wall_index + dead_wall_parity, Enum.at(assigns.dead_wall, ix))
+      dead_wall ->
+        pos = ix + assigns.dead_wall_index
+        if pos < 0 do
+          List.replace_at(dead_wall, pos, Enum.at(assigns.dead_wall, ix))
+        else dead_wall end
     end
+
+    # if the dead wall has an odd number of tiles (ignoring dead_wall_index)
+    # like .:::::::
+    # then make it even by prepending :"2x" to get ::::::::
+    dead_wall_odd = rem(length(dead_wall), 2)
+    dead_wall = if dead_wall_odd == 1 do [:"2x" | dead_wall] else dead_wall end
 
     # # hide drawn kan tiles in dead wall
     # dead_wall = for tile <- assigns.drawn_reserved_tiles, reduce: dead_wall do
@@ -73,14 +82,28 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     # end
 
     # concatenate
-    live_wall_spaces = List.duplicate(:"2x", assigns.wall_index)
+    live_wall_spaces = List.duplicate(:"3x", assigns.wall_index)
     live_wall_chunks = Enum.chunk_every(live_wall_spaces ++ wall, 2)
     dead_wall_spaces = List.duplicate(:"2x", assigns.dead_wall_index)
-    dead_wall_chunks = dead_wall ++ dead_wall_spaces
+    dead_wall_chunks = (dead_wall ++ dead_wall_spaces)
     |> Enum.reverse()
     |> Enum.chunk_every(2)
     |> Enum.reverse()
+    dead_wall_parity = rem(assigns.dead_wall_index, 2)
     dead_wall_chunks = if dead_wall_parity == 0 do Enum.map(dead_wall_chunks, &Enum.reverse/1) else dead_wall_chunks end
+    # add tiles atop dead wall
+    {dead_wall_chunks, floating_tiles} = for {ix, tile} <- assigns.atop_wall, reduce: {dead_wall_chunks, []} do
+      {dead_wall_chunks, floating_tiles} -> if Enum.any?(Enum.at(dead_wall_chunks, ix), &Utils.is_space?/1) do
+          {dead_wall_chunks, [tile | floating_tiles]}
+        else
+          {List.update_at(dead_wall_chunks, ix, &[tile | &1]), floating_tiles}
+        end
+    end
+    # place all floating atop_wall tiles on a dead wall stack that actually exists
+    dead_wall_chunks = case Enum.find_index(Enum.reverse(dead_wall_chunks), fn tiles -> not Enum.any?(tiles, &Utils.is_space?/1) end) do
+      nil -> dead_wall_chunks
+      ix  -> List.update_at(dead_wall_chunks, length(dead_wall_chunks) - ix - 1, &floating_tiles ++ &1)
+    end
     final_wall = live_wall_chunks ++ dead_wall_chunks
 
     # figure out where the wall break is relative to our seat
@@ -88,7 +111,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     wall_length = trunc(Float.ceil(assigns.wall_length / num_players / 2))
     break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, assigns.seat, assigns.available_seats)
     dead_wall_num_tiles = length(dead_wall) - assigns.dead_wall_index
-    dead_wall_length = length(dead_wall_chunks)
+    dead_wall_length = length(dead_wall_chunks) - dead_wall_odd
     extra = rem(dead_wall_num_tiles, 2)
     case num_players do
       2 ->

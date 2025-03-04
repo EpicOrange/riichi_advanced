@@ -91,8 +91,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
             |> Enum.reject(&is_nil/1)
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
           _ ->
-            IO.puts("Unhandled hand_calls spec #{inspect(item)}")
-            [{hand, calls}]
+            # try to interpret as a named tile
+            if is_named_tile(state, item) do
+              [{hand ++ [from_named_tile(state, item)], calls}]
+            else
+              IO.puts("Unhandled hand_calls spec #{inspect(item)}")
+              [{hand, calls}]
+            end
         end
       end |> Enum.concat()
     end

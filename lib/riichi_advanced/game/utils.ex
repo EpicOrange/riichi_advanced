@@ -101,7 +101,8 @@ defmodule RiichiAdvanced.Utils do
 
   def tile_color(tile), do: Map.get(Constants.tile_color(), tile, "white")
 
-  def remove_spaces(tiles), do: Enum.reject(tiles, &has_matching_tile?([&1], [:"2x", :"3x", :"4x", :"5x", :"6x", :"7x", :"8x"]))
+  def is_space?(tile), do: has_matching_tile?([tile], [:"2x", :"3x", :"4x", :"5x", :"6x", :"7x", :"8x"]) or has_attr?(tile, ["hidden"])
+  def remove_spaces(tiles), do: Enum.reject(tiles, &is_space?/1)
 
   # print tile, print hand
   # print tile, print hand
@@ -292,7 +293,7 @@ defmodule RiichiAdvanced.Utils do
     id = strip_attrs(tile)
     transparent = has_attr?(tile, ["transparent"])
     inactive = has_attr?(tile, ["inactive"])
-    hidden = has_attr?(tile, ["hidden"])
+    hidden = has_attr?(tile, ["hidden"]) and not Map.get(assigns, :reveal_hidden_tiles, false)
     dora = has_attr?(tile, ["dora"])
     last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
@@ -319,6 +320,11 @@ defmodule RiichiAdvanced.Utils do
         if letter != nil do [letter] else [] end
     end
     color_classes = Enum.filter(@valid_tile_colors, &has_attr?(tile, [&1]))
+    id = cond do
+      hidden -> :"4x"
+      facedown -> :"1x"
+      true -> id
+    end
     [
       "tile", id,
       facedown && "facedown",

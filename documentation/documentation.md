@@ -406,7 +406,8 @@ The mark action only prompts the user to mark tiles -- it doesn't do anything wi
 
 - `["move_tiles", src, dst]`: Move tiles from `src` to `dst`.
 - `["swap_tiles", src, dst]`: Swap tiles between `src` and `dst`.
-- `["clear_marking"]`: Exit marking mode. This is required after you're done with `move_tiles` or `swap_tiles`, since marking mode essentially pauses the game.
+- `["copy_tiles", src, dst]`: Copy tiles from `src` to `dst`.
+- `["clear_marking"]`: Exit marking mode. This is required after you're done with moving around marked tiles, since marking mode essentially pauses the game.
 
 There are a number of ad-hoc actions that also interact with the marked tiles, but they are not meant to be used beyond Sakicards (since they are very specific actions, and the plan is to replace them in the future). For example:
 

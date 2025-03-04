@@ -199,7 +199,10 @@
   },
   "functions": {
     "flip_gold_tile": [
-      ["tag_dora", "gold", -2], ["reveal_tile", -2]
+      ["tag_dora", "jin", -2],
+      ["reveal_tile", -2],
+      ["copy_tiles", {"dead_wall": [-2]}, {"atop_wall": [-9]}],
+      ["add_attr", [-2], ["_skip_draw", "_hidden"]]
     ]
   },
   "play_restrictions": [

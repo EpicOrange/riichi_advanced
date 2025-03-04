@@ -2014,29 +2014,35 @@ div.display-wall > div.wall {
   flex-flow: row-reverse;  
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
+  height: var(--tile-size);
   position: absolute;
 }
+/* debug */
+/*
+div.display-wall > div.wall { background: red; }
+div.display-wall > div.wall * { visibility: hidden; }
+*/
 div.display-wall > div.wall.toimen {
   justify-items: flex-end;
-  top: calc(0.5 * var(--tile-size));
-  left: calc(1.25 * var(--tile-size));
+  top: calc(0.25 * var(--tile-size));
+  left: calc(0.5 * var(--tile-size));
   transform: rotate(180deg);
 }
 div.display-wall > div.wall.shimocha {
-  right: calc(2.5 * var(--tile-size));
-  top: calc(1.25 * var(--tile-size));
+  right: calc(1.5 * var(--tile-size));
+  top: calc(0.75 * var(--tile-size));
   transform: rotate(270deg);
   transform-origin: top right;
 }
 div.display-wall > div.wall.self {
   flex-direction: row;
-  bottom: calc(0 * var(--tile-size));
-  left: calc(1.5 * var(--tile-size));
+  bottom: calc(0.5 * var(--tile-size));
+  left: calc(1.75 * var(--tile-size));
   transform: rotate(180deg);
 }
 div.display-wall > div.wall.kamicha {
-  left: calc(2.5 * var(--tile-size));
-  top: calc(1.75 * var(--tile-size));
+  left: calc(1.5 * var(--tile-size));
+  top: calc(1.5 * var(--tile-size));
   transform: rotate(90deg);
   transform-origin: top left;
 }
@@ -2047,13 +2053,16 @@ div.display-wall > div.wall > div.tile-stack {
 div.display-wall > div.wall > div.spacer {
   width: calc(0.5 * var(--tile-size));
 }
-div.display-wall > div.wall > div.tile-stack > div.tile.top { z-index: 2; }
-div.display-wall > div.wall > div.tile-stack > div.tile.bottom { z-index: 1; transform: translateY(calc(0.75 * var(--tile-size))); }
-div.display-wall > div.wall > div.tile-stack > div.tile:first-child:last-child { transform: translateY(calc(-0.25 * var(--tile-size))); }
-div.display-wall > div.wall.shimocha > div.tile-stack > div.tile.bottom { transform: translateX(calc(-0.25 * var(--tile-size))) translateY(calc(1 * var(--tile-size))); }
-div.display-wall > div.wall.shimocha > div.tile-stack > div.tile:first-child:last-child { transform: translateX(calc(-0.25 * var(--tile-size))); }
-div.display-wall > div.wall.kamicha > div.tile-stack > div.tile.bottom { transform: translateX(calc(0.25 * var(--tile-size))) translateY(calc(1 * var(--tile-size))); }
-div.display-wall > div.wall.kamicha > div.tile-stack > div.tile:first-child:last-child { transform: translateX(calc(0.25 * var(--tile-size))); }
+div.display-wall > div.wall > div.tile-stack > div.tile {
+  z-index: var(--level);
+  transform: translateY(calc(1.25 * var(--level) * var(--tile-size)));
+}
+div.display-wall > div.wall.shimocha > div.tile-stack > div.tile {
+  transform: translateX(calc(0.25 * var(--level) * var(--tile-size))) translateY(calc(1 * var(--level) * var(--tile-size)));
+}
+div.display-wall > div.wall.kamicha > div.tile-stack > div.tile {
+  transform: translateX(calc(-0.25 * var(--level) * var(--tile-size))) translateY(calc(1 * var(--level) * var(--tile-size)));
+}
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(1) { z-index: -1; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(2) { z-index: -2; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(3) { z-index: -3; }
@@ -2072,6 +2081,20 @@ div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(15) { z-index: -1
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(16) { z-index: -16; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(17) { z-index: -17; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(18) { z-index: -18; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(19) { z-index: -19; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(20) { z-index: -20; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(21) { z-index: -21; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(22) { z-index: -22; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(23) { z-index: -23; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(24) { z-index: -24; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(25) { z-index: -25; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(26) { z-index: -26; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(27) { z-index: -27; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(28) { z-index: -28; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(29) { z-index: -29; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(30) { z-index: -30; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(31) { z-index: -31; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(32) { z-index: -32; }
 div.display-wall > div.dice {
   position: absolute;
   width: calc(1.75 * var(--tile-size));
