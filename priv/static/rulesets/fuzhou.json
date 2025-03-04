@@ -402,7 +402,6 @@
         "our_turn",
         {"name": "status_missing", "opts": ["match_start", "flower", "no_flowers"]},
         "not_just_discarded",
-        "not_no_tiles_remaining",
         {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [
@@ -410,8 +409,7 @@
         ["set_status", "flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"],
         ["unset_status", "flower"],
-        ["shift_tile_to_dead_wall", 1],
-        ["draw", 1, "opposite_end"]
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["shift_tile_to_dead_wall", 1], ["draw", 1, "opposite_end"]]]
       ]
     }
   },

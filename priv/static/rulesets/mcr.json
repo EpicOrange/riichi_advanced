@@ -817,8 +817,13 @@
     },
     "flower": {
       "display_name": "Hua",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", "not_no_tiles_remaining", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Hua"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["set_status", "flower"], [["draw", 1, "opposite_end"]]]
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "has_draw", {"name": "not_others_status", "opts": ["call_made"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
+      "actions": [
+        ["big_text", "Hua"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+        ["set_status", "flower"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
+      ]
     }
   },
   "auto_buttons": {
