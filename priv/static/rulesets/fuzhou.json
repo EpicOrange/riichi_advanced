@@ -12,9 +12,10 @@
   
   "default_mods": ["show_waits"],
   "available_mods": [
-    {"id": "forced_flowers", "conflicts": ["discardable_flowers"], "name": "Forced Flowers", "desc": "Even after the initial forced flower replacement go-around, you must replace flowers drawn during the round (unless there are no more tiles left)."},
+    {"id": "forced_flowers", "conflicts": ["discardable_flowers"], "name": "Forced Flowers", "desc": "Every drawn flower must be replaced immediately."},
     {"id": "discardable_flowers", "conflicts": ["forced_flowers"], "name": "Discardable Flowers", "desc": "You may discard flower tiles like normal tiles."},
-    {"id": "forbid_golden_flowers", "name": "No Gold Flowers", "desc": "The first non-flower tile in the dead wall is the gold tile, starting from the end. Any flowers revealed in this process is given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."},
+    {"id": "forbid_golden_flowers", "name": "No Gold Flowers", "desc": "The gold tile is determined by checking each tile in the dead wall until you find a non-flower tile. Flowers revealed in this process are given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."},
+    {"id": "fuzhou_everyone_pays", "name": "Everyone Pays On Discard", "desc": "Non-discarders also pay for a win by discard."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -203,8 +204,8 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "after_start": {
@@ -355,7 +356,8 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["jin"]}], 1]]]]}
+        {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["jin"]}], 1]]]]},
+        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
@@ -378,7 +380,8 @@
             {"name": "caller_status", "opts": ["flower"]},
             {"name": "match", "opts": [["hand", "flowers", "last_called_tile"], ["8_flowers"]]}
           ]
-        ]
+        ],
+        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
@@ -390,7 +393,8 @@
         "not_just_called",
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
