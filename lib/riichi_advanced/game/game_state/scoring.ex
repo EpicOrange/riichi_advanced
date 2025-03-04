@@ -79,8 +79,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def get_best_yaku_and_winning_tile(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
     # returns {winning_tile, best_minipoints, best_yakus}
+    # we take best in terms of total points, then least number of yaku
     get_yaku_advanced(state, yaku_list, seat, winning_tiles, win_source, existing_yaku)
-    |> Enum.max_by(fn {_winning_tile, {_minipoints, possible_yaku}} -> Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end) end)
+    |> Enum.max_by(fn {_winning_tile, {_minipoints, possible_yaku}} -> {Enum.reduce(possible_yaku, 0, fn {_name, value}, acc -> acc + value end), -length(possible_yaku)} end)
   end
 
   def get_best_yaku(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
@@ -111,6 +112,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # look at the actual aliases that match, and add the appropriate attrs
     replace_joker = fn joker, i ->
       for {tile, attrs_aliases} <- state.players[seat].tile_behavior.aliases,
+          Map.has_key?(joker_assignment, i),
           Utils.same_tile(tile, joker_assignment[i]), # allow for :any to match
           {attrs, aliases} <- attrs_aliases,
           Utils.has_matching_tile?(aliases, [joker]) do
@@ -1081,7 +1083,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
     |> Task.yield_many(timeout: :infinity)
     |> Enum.map(fn {_task, {:ok, res}} -> res end)
-    |> Enum.max_by(fn %{score: score, points: points, points2: points2} -> {score, points, points2} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+    |> Enum.max_by(fn %{score: score, points: points, points2: points2, yaku: yaku, yaku2: yaku2} -> {score, points, points2, -length(yaku), -length(yaku2)} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
 
     # rearrange their hand for display purposes
     %{hand: arranged_hand, separated_hand: separated_hand, draw: arranged_draw, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile)

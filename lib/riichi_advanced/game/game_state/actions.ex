@@ -918,7 +918,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     else
       # assert that there's only one entry in dst
       if map_size(dst) == 1 do
-        [{source, _tile, _seat, ix} | _] = dst_targets
+        {source, ix} = case dst_targets do
+          [{source, _tile, _seat, ix} | _] -> {source, ix}
+          _ -> {Map.keys(dst) |> Enum.at(0), nil}
+        end
         # TODO perhaps allow for other seats to be targeted
         # by using flags in dst[destination] to determine the seat
         move_all_tiles(state, seat, src_targets, source, ix, operation in [:move, :delete], operation in [:move, :copy])

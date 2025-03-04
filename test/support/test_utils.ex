@@ -151,7 +151,7 @@ defmodule RiichiAdvanced.TestUtils do
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
 
-    for {seat, expected_winner} <- expected_winners do
+    check_winner = fn seat, expected_winner ->
       assert seat in state.winner_seats
       winner = state.winners[seat]
       if Map.has_key?(expected_winner, :yaku) do
@@ -162,6 +162,14 @@ defmodule RiichiAdvanced.TestUtils do
       end
       for {key, value} <- expected_winner, key not in [:yaku, :yaku2] do
         assert Map.get(winner, key) == value
+      end
+    end
+
+    for {seat, expected_winner} <- expected_winners do
+      if is_list(expected_winner) do
+        Enum.any?(expected_winner, &check_winner.(seat, &1))
+      else
+        check_winner.(seat, expected_winner)
       end
     end
 

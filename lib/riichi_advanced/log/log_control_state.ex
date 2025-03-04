@@ -90,8 +90,8 @@ defmodule RiichiAdvanced.LogControlState do
   end
 
   def skip_buttons(state) do
-    for {seat, player} <- state.game_state.players, "skip" in player.buttons, reduce: state do
-      state -> GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
+    for {seat, player} <- state.game_state.players, "skip" in player.buttons do
+      GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
     end
   end
 

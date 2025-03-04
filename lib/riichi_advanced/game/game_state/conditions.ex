@@ -37,7 +37,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
           "winning_tile" ->
             winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
-            [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
+            if winning_tile != nil do
+              [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
+            else [{hand, calls}] end
           "last_call" -> [{hand, calls ++ [context.call]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end

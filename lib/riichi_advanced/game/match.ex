@@ -46,8 +46,27 @@ defmodule RiichiAdvanced.Match do
     "DC"  => :"6z",
   }
 
+  def is_integer_offset(tile) do
+    case tile do
+      %{"offset" => offset} -> is_integer(offset)
+      _ -> is_integer(tile)
+    end
+  end
+
   def is_offset(tile) do
-    is_integer(tile) or Map.has_key?(@fixed_offsets, tile)
+    is_integer_offset(tile) or Map.has_key?(@fixed_offsets, tile)
+  end
+
+  def combine_offsets(o1, o2, op \\ &+/2) do
+    {o1, attrs1} = case o1 do
+      %{"offset" => offset} -> {offset, Map.get(o1, "attrs", [])}
+      offset                -> {offset, []}
+    end
+    {o2, attrs2} = case o2 do
+      %{"offset" => offset} -> {offset, Map.get(o2, "attrs", [])}
+      offset                -> {offset, []}
+    end
+    %{"offset" => op.(o1, o2), "attrs" => attrs1 ++ attrs2}
   end
 
   defp suit_to_offset(tile) do
@@ -89,11 +108,18 @@ defmodule RiichiAdvanced.Match do
   end
 
   def offset_tile(tile, n, tile_behavior, shift_dragons \\ false) do
-    case tile do
-      :any -> :any
-      {tile, attrs} -> {_offset_tile(tile, n, tile_behavior, shift_dragons), attrs}
-      tile -> _offset_tile(tile, n, tile_behavior, shift_dragons)
-    end    
+    {n, attrs} = case n do
+      %{"offset" => offset} -> {offset, Map.get(n, "attrs", [])}
+      n -> {n, []}
+    end
+    if n != nil do
+      case tile do
+        :any -> :any
+        {tile, attrs2} -> Utils.add_attr(_offset_tile(tile, n, tile_behavior, shift_dragons), attrs2)
+        tile -> _offset_tile(tile, n, tile_behavior, shift_dragons)
+      end
+      |> Utils.add_attr(attrs)
+    else nil end
   end
 
   defp remove_tile(hand, tile, ignore_suit, acc \\ [])
@@ -284,7 +310,7 @@ defmodule RiichiAdvanced.Match do
     base_tiles = offsets
     |> Enum.flat_map(fn offset ->
       cond do
-        is_integer(offset) -> Enum.map(tiles, &offset_tile(&1, -offset, tile_behavior))
+        is_integer_offset(offset) -> Enum.map(tiles, fn tile -> offset_tile(tile, combine_offsets(offset, -1, &*/2), tile_behavior) end)
         Map.has_key?(@fixed_offsets, offset) -> [:"1m", :"1p", :"1s"]
         Utils.is_tile(offset) -> [:"1m"]
         true -> []
@@ -568,7 +594,7 @@ defmodule RiichiAdvanced.Match do
             for {tile, i} <- Enum.with_index(group), tile not in @group_keywords do
               almost_group = List.delete_at(group, i)
               lowest = almost_group |> Enum.filter(&is_integer/1) |> Enum.min(&<=/2, fn -> 0 end)
-              Enum.map(almost_group, &if is_integer(&1) do &1 - lowest else &1 end)
+              Enum.map(almost_group, &if is_integer_offset(&1) do combine_offsets(&1, -lowest) else &1 end)
             end
           # list of lists of integers specifying multiple related subgroups of tiles
           Enum.all?(group, &is_list(&1) or &1 in @group_keywords) and Enum.all?(group, & &1 in @group_keywords or Enum.all?(&1, fn item -> is_offset(item) end)) ->

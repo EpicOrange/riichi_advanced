@@ -318,4 +318,217 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     })
   end
 
+  test "fuzhou - golden pair" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["6m", "5s"],
+      "starting_dead_wall": ["8m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Base Points", 10}, {"Golden Pair", 20}]
+      }
+    })
+  end
+
+  test "fuzhou - golden dragon" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["6m", "5s"],
+      "starting_dead_wall": ["8m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: [
+        %{yaku: [{"Base Points", 10}, {"Golden Dragon", 40}]},
+        %{yaku: [{"All Sequences", 10}, {"Base Points", 10}, {"Three Gold Knockdown", 30}]},
+      ]
+    })
+  end
+
+  test "fuzhou - golden pair tanki tsumo" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["6m", "5s", "3s", "1s", "8m"],
+      "starting_dead_wall": ["8m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Base Points", 10}, {"Golden Pair", 20}]
+      }
+    })
+  end
+
+  test "fuzhou - golden dragon shanpon tsumo" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "5m", "6m", "7m", "8m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["6m", "5s", "3s", "1s", "8m"],
+      "starting_dead_wall": ["8m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: [
+        %{yaku: [{"Base Points", 10}, {"Golden Dragon", 40}]},
+        %{yaku: [{"All Sequences", 10}, {"Base Points", 10}, {"Three Gold Knockdown", 30}]},
+      ]
+    })
+  end
+
+  test "fuzhou - three gold knockdown" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "9m", "3m", "5m", "6m", "9m", "8m", "8m", "3s", "4s", "4p", "5p", "9m", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["6m", "5s"],
+      "starting_dead_wall": ["9m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Base Points", 10}, {"Three Gold Knockdown", 30}]
+      }
+    })
+  end
+
+  test "fuzhou - blessing of heaven" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["5s"],
+      "starting_dead_wall": ["9m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Base Points", 10}, {"Blessing of Heaven", 50}]
+      }
+    })
+  end
+
+  test "fuzhou - blessing of earth" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "south": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["1m", "5s"],
+      "starting_dead_wall": ["9m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
+    ], %{
+      south: %{
+        yaku: [{"Base Points", 10}, {"Blessing of Earth", 40}]
+      }
+    })
+  end
+
+  test "fuzhou - robbing the gold" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_dead_wall": ["2s"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "qiangjin"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Base Points", 10}, {"Robbing the Gold", 50}]
+      }
+    })
+  end
+
+
 end
