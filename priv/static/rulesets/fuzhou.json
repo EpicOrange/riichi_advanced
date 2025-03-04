@@ -10,8 +10,13 @@
   // mahjongpros also seem to have a few more yaku
   // apparently flower declaration is optional (works like nukidora in sanma) in some variants of Fuzhou, which allows you to keep a flower-gold and use it as a joker instead of as a flower
   
-  "default_mods": [],
-  "available_mods": [],
+  "default_mods": ["show_waits"],
+  "available_mods": [
+    {"id": "forced_flowers", "conflicts": ["discardable_flowers"], "name": "Forced Flowers", "desc": "Even after the initial forced flower replacement go-around, you must replace flowers drawn during the round (unless there are no more tiles left)."},
+    {"id": "discardable_flowers", "conflicts": ["forced_flowers"], "name": "Discardable Flowers", "desc": "You may discard flower tiles like normal tiles."},
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
+  ],
   "display_name": "Fuzhou",
   "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-fuzhou-mahjong",
   "wall": ["1m", "1m", "1m", "1m",

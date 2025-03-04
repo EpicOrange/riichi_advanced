@@ -875,7 +875,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.with_index()
     |> Enum.map(fn {tile, i} -> Utils.add_attr(tile, ["hand#{i}"]) end)
     orig_draw = state.players[seat].draw
-    orig_calls = state.players[seat].calls
+    {orig_flowers, orig_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
     {arranged_hand, arranged_calls} = if arrange_american_yaku do
@@ -884,8 +884,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       am_yakus = Enum.filter(state.rules["yaku"], fn y -> y["display_name"] == yaku_name end)
       am_yaku_match_conds = Enum.at(am_yakus, 0)["when"] |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
       am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-      new_winning_tile = Utils.strip_attrs(new_winning_tile)
-      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand) ++ [new_winning_tile], orig_calls, tile_behavior)
+      new_winning_tile = Utils.strip_attrs(new_winning_tile, :salient)
+      arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand, :salient) ++ [new_winning_tile], orig_calls, tile_behavior)
       if arranged_hand != nil do
         arranged_hand = arranged_hand
         |> Enum.intersperse([:"3x"])
@@ -898,7 +898,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
     else
       # otherwise, sort jokers into the hand
       arranged_hand = Utils.sort_tiles(orig_hand, joker_assignment)
-      {arranged_hand, orig_calls}
+      # then combine all flower tiles into one call
+      arranged_calls = orig_calls ++ [{"_flowers", Enum.flat_map(orig_flowers, &Utils.call_to_tiles/1)}]
+      |> IO.inspect()
+      {arranged_hand, arranged_calls}
     end
 
     # correct the hand if the winning tile was taken from hand (for display purposes)

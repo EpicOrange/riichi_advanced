@@ -78,24 +78,23 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  def strip_attrs(tile) do
+  def strip_attrs(tile, mode \\ nil) do
     case tile do
-      {tile, _attrs} -> tile
-      _ when is_list(tile) -> Enum.map(tile, &strip_attrs/1)
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &strip_attrs/1)
-      tile -> tile
-    end
-  end
-
-  def strip_invis_attrs(tile) do
-    case tile do
-      {tile, existing_attrs} ->
-        case Enum.reject(existing_attrs, &String.starts_with?(&1, "_")) do
-          []              -> tile
-          remaining_attrs -> {tile, remaining_attrs}
+      {tile, existing_attrs} -> case mode do
+          nil -> tile
+          :salient -> 
+            case Enum.filter(existing_attrs, &String.starts_with?(&1, "_")) do
+              []              -> tile
+              remaining_attrs -> {tile, remaining_attrs}
+            end
+          :invisible -> 
+            case Enum.reject(existing_attrs, &String.starts_with?(&1, "_")) do
+              []              -> tile
+              remaining_attrs -> {tile, remaining_attrs}
+            end
         end
-      _ when is_list(tile) -> Enum.map(tile, &strip_invis_attrs/1)
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &strip_invis_attrs/1)
+      _ when is_list(tile) -> Enum.map(tile, &strip_attrs(&1, mode))
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &strip_attrs(&1, mode))
       tile -> tile
     end
   end
