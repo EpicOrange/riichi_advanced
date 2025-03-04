@@ -2155,7 +2155,8 @@ div.game-modal-container {
   transition: opacity 0.5s ease;
 }
 div.game-modal-container.inactive,
-div.game-modal-hide:active {
+div.game-modal-hide:active,
+div.game-modal-hide:active + div.timer {
   opacity: 0;
   pointer-events: none;
   user-select: none;
