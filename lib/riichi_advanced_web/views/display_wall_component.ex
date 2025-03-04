@@ -52,7 +52,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     # visible
     wall = Enum.drop(assigns.wall, assigns.wall_index)
     |> Enum.map(&if Utils.is_space?(&1) do &1 else :"1x" end)
-    dead_wall = Enum.drop(assigns.dead_wall, assigns.dead_wall_index)
+    dead_wall = Enum.drop(assigns.dead_wall, -assigns.dead_wall_index)
     |> Enum.map(&if Utils.is_space?(&1) do &1 else :"1x" end)
 
     # show dora indicators in dead wall
@@ -81,7 +81,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     # end
 
     # concatenate
-    live_wall_spaces = List.duplicate(:"3x", assigns.wall_index)
+    live_wall_spaces = List.duplicate(:"2x", assigns.wall_index)
     live_wall_chunks = Enum.chunk_every(live_wall_spaces ++ wall, 2)
     dead_wall_spaces = List.duplicate(:"2x", assigns.dead_wall_index)
     dead_wall_chunks = (dead_wall ++ dead_wall_spaces)

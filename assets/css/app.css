@@ -2011,14 +2011,16 @@ div.display-wall.minimized {
 }
 div.display-wall > div.wall {
   display: flex;
-  flex-flow: row-reverse;  
+  flex-flow: row-reverse;
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
+  width: calc(18 * 0.75 * var(--tile-size));
   height: var(--tile-size);
   position: absolute;
 }
 /* debug */
 /*
+div.display-wall-container { display: block; z-index: 100; }
 div.display-wall > div.wall { background: red; }
 div.display-wall > div.wall * { visibility: hidden; }
 */
