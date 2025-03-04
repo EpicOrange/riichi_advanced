@@ -866,6 +866,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   # rearrange the winner's hand for display on the yaku display screen
   def rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile, new_winning_tile) do
+    # t = System.system_time(:millisecond)
+
     score_rules = state.rules["score_calculation"]
 
     # annotate the original hand with joker assignment indices
@@ -962,6 +964,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       |> Enum.concat()
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
     end
+
+    # IO.puts("rearrange_winner_hand: #{inspect(System.system_time(:millisecond) - t)} ms")
 
     %{ hand: arranged_hand, separated_hand: separated_hand, draw: arranged_draw, calls: arranged_calls }
   end

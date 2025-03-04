@@ -575,11 +575,40 @@ defmodule RiichiAdvanced.Riichi do
     # we will only arrange the contents of the hand after that
     ix = Enum.find_index(Enum.reverse(hand), & &1 == :separator)
     {prearranged, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
+    prearranged_as_calls = prearranged
+    |> Utils.split_on(:separator)
+    |> Enum.reject(&Enum.empty?/1)
+    |> Enum.map(&{"", &1})
+    calls = calls ++ prearranged_as_calls
+
+    # add "dismantle_calls" in case `group` contains multiple sets
+    win_definitions = Enum.map(win_definitions, &["dismantle_calls" | &1])
 
     Enum.flat_map(winning_tiles, fn winning_tile ->
-      Match.extract_groups([winning_tile | hand], group, tile_behavior)
-      |> Enum.filter(fn {hand, groups} -> Match.match_hand(prearranged ++ hand ++ Enum.concat(groups), calls, win_definitions, tile_behavior) end)
-      |> Enum.map(fn {hand, groups} -> {winning_tile, hand, groups} end)
+      hand_groups = Match.extract_groups([winning_tile | hand], group, tile_behavior)
+
+      # `hand_groups` is sorted starting with greatest number of groups
+      # if we have {hand, [group1, group2, group3]} and it matches,
+      # then {hand ++ group1, [group2, group3]} also obviously matches
+      # use this to reduce the number of calls to `match_hand`
+
+      # also, we want to remove a maximal number of groups that matches
+      # so if we ever find a matching solution with e.g. 3 groups,
+      # drop all `hand_groups` with less than 3 groups
+
+      {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
+        {acc, cache, max_groups} ->
+          groups_set = MapSet.new(groups)
+          set_size = MapSet.size(groups_set)
+          cond do
+            set_size < max_groups -> {acc, cache, max_groups}
+            Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
+            Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
+              {[{hand, groups} | acc], [groups_set | Enum.filter(cache, &MapSet.size(&1) == set_size)], max(set_size, max_groups)}
+            true -> {acc, cache, max_groups}
+          end
+      end
+      Enum.map(hand_groups, fn {hand, groups} -> {winning_tile, hand, groups} end)
     end)
     |> Enum.map(fn {winning_tile, hand, groups} ->
       groups = groups
