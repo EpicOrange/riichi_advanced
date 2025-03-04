@@ -204,7 +204,7 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
