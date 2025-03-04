@@ -90,14 +90,8 @@ defmodule RiichiAdvanced.LogControlState do
   end
 
   def skip_buttons(state) do
-    for {seat, player} <- state.game_state.players, not Enum.empty?(player.buttons), reduce: state do
-      state -> 
-        if "skip" in player.buttons do
-          GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
-        else
-          GenServer.cast(state.game_state_pid, {:press_button, seat, Enum.at(player.buttons, 0)})
-        end
-        Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+    for {seat, player} <- state.game_state.players, "skip" in player.buttons, reduce: state do
+      state -> GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
     end
   end
 
@@ -125,7 +119,8 @@ defmodule RiichiAdvanced.LogControlState do
     playable = ix in state.game_state.players[seat].cache.playable_indices
     our_turn = state.game_state.turn == seat
     ix = if not (matches and playable and our_turn) do
-      state = skip_buttons(state)
+      skip_buttons(state)
+      state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
       hand = state.game_state.players[seat].hand
       draw = state.game_state.players[seat].draw
       get_discard_index.(hand, draw)
@@ -173,14 +168,14 @@ defmodule RiichiAdvanced.LogControlState do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
       if button != nil do
-        state = if button not in state.game_state.players[seat].buttons do
-          state = skip_buttons(state)
+        if button not in state.game_state.players[seat].buttons do
+          skip_buttons(state)
+          state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
           if button not in state.game_state.players[seat].buttons do
             IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
             print_game_state(state)
           end
-          state
-        else state end
+        end
         GenServer.cast(state.game_state_pid, {:press_button, seat, button})
       end
     end
@@ -193,6 +188,9 @@ defmodule RiichiAdvanced.LogControlState do
           call_choice = Enum.map(call_choice, &Utils.to_tile/1)
           called_tile = Utils.to_tile(called_tile)
           GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_choice, called_tile})
+        %{"call_choice" => call_choice} ->
+          call_choice = Enum.map(call_choice, &Utils.to_tile/1)
+          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_choice, nil})
         %{"choice" => choice} ->
           GenServer.cast(state.game_state_pid, {:press_saki_card, seat, choice})
         _ -> :ok

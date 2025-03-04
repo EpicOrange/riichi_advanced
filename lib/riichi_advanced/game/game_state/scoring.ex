@@ -132,7 +132,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment
-    assigned_winning_tile = replace_joker.(winning_tile, length(orig_hand))
+    assigned_winning_tile = replace_joker.(winning_tile, length(orig_hand)) || winning_tile
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %PlayerCache{ &1.cache | winning_hand: assigned_winning_hand } })
     {state, assigned_winning_tile}

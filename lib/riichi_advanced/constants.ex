@@ -205,6 +205,7 @@ defmodule RiichiAdvanced.Constants do
 
       _ ->
         IO.puts("Unrecognized tile #{inspect(tile)}, cannot sort!")
+        # IO.inspect(Process.info(self(), :current_stacktrace))
         0
     end
   end

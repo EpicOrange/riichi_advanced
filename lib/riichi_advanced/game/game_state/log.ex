@@ -67,10 +67,7 @@ defmodule RiichiAdvanced.GameState.Log do
     ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw or event.event_type == :discard end)
     if ix != nil do
       update_in(state.log_state.log, &List.update_at(&1, ix, fun))
-    else
-      IO.puts("Tried to update last draw/discard of log, but there is none")
-      state
-    end
+    else state end
   end
 
   defp modify_last_button_press(state, fun, create_at_seat) do

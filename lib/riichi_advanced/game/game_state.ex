@@ -662,7 +662,7 @@ defmodule RiichiAdvanced.GameState do
     persistent_counters = if Map.has_key?(rules, "persistent_counters") do rules["persistent_counters"] else [] end
     persistent_tags = if Map.has_key?(rules, "persistent_tags") do rules["persistent_tags"] else [] end
     initial_auto_buttons = for {name, auto_button} <- Map.get(rules, "auto_buttons", []) do
-      {name, auto_button["desc"], auto_button["enabled_at_start"]}
+      {name, auto_button["desc"], Map.get(auto_button, "enabled_at_start", false) and not state.log_seeking_mode}
     end
 
     # reset player state

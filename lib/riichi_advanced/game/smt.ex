@@ -301,7 +301,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(&MapSet.new/1)
     |> Enum.reduce(MapSet.new(Map.keys(tile_behavior.tile_freqs)), &MapSet.union/2)
     |> MapSet.new(&Utils.strip_attrs/1)
-    |> Enum.reject(& &1 in jokers) # we're solving for jokers, so don't include them as assignables
+    |> Enum.reject(& &1 in jokers or &1 == :any) # we're solving for jokers, so don't include them as assignables
     # IO.puts("Non-joker tiles are #{inspect(all_tiles)}")
     {len, encoding, encoding_r, encoding_boilerplate} = determine_encoding(ordering, all_tiles)
     # encoding = %{
