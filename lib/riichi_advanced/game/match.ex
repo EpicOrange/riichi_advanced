@@ -372,7 +372,7 @@ defmodule RiichiAdvanced.Match do
             unique = unique or "unique" in groups
             nojoker = no_joker_index != nil and i > no_joker_index
             tile_behavior = if nojoker do %TileBehavior{ tile_behavior | aliases: %{} } else tile_behavior end
-            new_hand_calls = if unique and num >= 1 and not exhaustive and not tile_behavior.dismantle_calls and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
+            new_hand_calls = if unique and num >= 1 and not exhaustive and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
               # optimized routine for unique non-exhaustive tile-only groups
               # since we know the exact tiles required and each can only be used once,
               # this is just a matching problem between our hand/calls and the group
@@ -400,7 +400,7 @@ defmodule RiichiAdvanced.Match do
                     adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, %TileBehavior{ tile_behavior | aliases: %{} }) do j end} end)
                     adj = Map.merge(adj_joker, adj_nojoker)
                     {pairing, pairing_r} = Utils.maximum_bipartite_matching(adj)
-                    consumes_call = map_size(pairing) == num_tiles
+                    consumes_call = map_size(pairing) == num_tiles or tile_behavior.dismantle_calls
                     consumes_match = map_size(pairing) == to_remove_num
                     if consumes_call or consumes_match do
                       n = length(joker) 
@@ -408,11 +408,12 @@ defmodule RiichiAdvanced.Match do
                       {from_joker, from_nojoker} = to_remove |> Enum.sort(:desc) |> Enum.split_while(fn i -> i < n end)
                       nojoker = for i <- from_nojoker, reduce: nojoker do nojoker -> List.delete_at(nojoker, i - n) end
                       joker   = for i <- from_joker,   reduce: joker   do joker   -> List.delete_at(joker,   i    ) end
-                      ret = if is_hand do # is hand, so we keep all unmatched tiles
+                      # if this call is hand or dismantlable, we keep all unmatched tiles
+                      ret = if is_hand or tile_behavior.dismantle_calls do
                         to_remove_r = pairing_r |> Map.keys() |> Enum.take(to_remove_num)
-                        hand = for j <- to_remove_r |> Enum.sort(:desc), reduce: tiles do hand -> List.delete_at(hand, j) end
-                        [hand | ret]
-                      else ret end # not hand, so we discard all unmatched tiles
+                        call = for j <- to_remove_r |> Enum.sort(:desc), reduce: tiles do call -> List.delete_at(call, j) end
+                        [call | ret]
+                      else ret end # not hand or dismantlable, so we discard all unmatched tiles
                       {ret, joker, nojoker, to_remove_num - length(to_remove)}
                     else {[call | ret], joker, nojoker, to_remove_num} end
                 end
