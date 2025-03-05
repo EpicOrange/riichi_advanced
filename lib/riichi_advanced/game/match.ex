@@ -300,7 +300,7 @@ defmodule RiichiAdvanced.Match do
     # try to extract group as many times as you can from hand
     # this should return shortest hands first, so take the first one found
     base_tiles = collect_base_tiles(hand, [], group, tile_behavior)
-    _extract_groups([{hand, []}], [], group, base_tiles, tile_behavior)
+    _extract_groups([{hand, []}], [{hand, []}], group, base_tiles, tile_behavior)
   end
 
   def collect_base_tiles(hand, calls, offsets, tile_behavior \\ %TileBehavior{}) do
