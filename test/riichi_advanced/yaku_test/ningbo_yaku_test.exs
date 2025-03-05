@@ -570,4 +570,42 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
     })
   end
 
+  test "ningbo - three meld penalty" do
+    TestUtils.test_yaku_advanced("ningbo", [], """
+    {
+      "starting_hand": {
+        "east": ["6m", "6m", "8m", "8m", "6p", "6p", "8p", "2z", "3z", "4z", "2m", "2m", "2m"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2m", "5p", "5p"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5s", "8s", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "6m", "8m", "6p", "6z", "8p"],
+      "starting_dead_wall": ["7z", "6p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "8m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "4z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"Single Wait", 1}],
+        yaku2: [{"Three Meld Penalty", 5}]
+      }
+    }, %{delta_scores: [20, -20, 0, 0]})
+  end
+
 end
