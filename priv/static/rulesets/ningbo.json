@@ -72,7 +72,13 @@
     "hatsu_pair": ["6z", "6z"],
     "chun_pair": ["7z", "7z"],
     "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"],
-    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
+    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8],
+    "penchan_1": [{"tile": "3m", "attrs": ["winning_tile"]}, "1m", "2m"],
+    "penchan_2": [{"tile": "3p", "attrs": ["winning_tile"]}, "1p", "2p"],
+    "penchan_3": [{"tile": "3s", "attrs": ["winning_tile"]}, "1s", "2s"],
+    "penchan_4": [{"tile": "7m", "attrs": ["winning_tile"]}, "8m", "9m"],
+    "penchan_5": [{"tile": "7p", "attrs": ["winning_tile"]}, "8p", "9p"],
+    "penchan_6": [{"tile": "7s", "attrs": ["winning_tile"]}, "8s", "9s"]
   },
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
@@ -96,20 +102,23 @@
   "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "edge_wait_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [[["1m", "2m"],["1p", "2p"],["1s", "2s"],["8m", "9m"],["8p", "9p"],["8s", "9s"]], 1] ]
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [["penchan_1", "penchan_2", "penchan_3", "penchan_4", "penchan_5", "penchan_6"], 1] ]
   ],
   "closed_wait_definition": [
-    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [["kanchan"], 1] ]
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [[[0, {"offset": 1, "attrs": ["winning_tile"]}, 2]], 0] ]
   ],
   "single_wait_definition": [
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ]
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [[[{"offset": 0, "attrs": ["winning_tile"]}, 0]], 1] ]
+  ],
+  "baida_pair_win_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [[[{"offset": 0, "attrs": ["is_baida", "winning_tile"]}, {"offset": 0, "attrs": ["is_baida"]}]], 1] ]
   ],
   "yaku": [
-    { "display_name": "Edge Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["edge_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Closed Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Single Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Win On Baida", "value": 1, "when": [{"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["baida"]}], 1]]]]}] },
-    { "display_name": "No Baida", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["baida"]}], 1]]]]}] },
+    { "display_name": "Edge Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["edge_wait"]]}] },
+    { "display_name": "Closed Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["closed_wait"]]}] },
+    { "display_name": "Single Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["single_wait"]]}] },
+    { "display_name": "Win On Baida", "value": 1, "when": [{"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["is_baida"]}], 1]]]]}] },
+    { "display_name": "No Baida", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["is_baida"]}], 1]]]]}] },
     {
       "display_name": "Half Flush",
       "value": 2,
@@ -129,11 +138,11 @@
       ]]
     },
     { "display_name": "All Triplets", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
-    { "display_name": "After A Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "After a Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Last Tile", "value": 1, "when": ["no_tiles_remaining", "won_by_draw"] },
     { "display_name": "Self Draw", "value": 1, "when": ["won_by_draw"] },
     { "display_name": "Baida Reuse", "value": "baida_reuse", "when": [{"name": "counter_at_least", "opts": ["baida_reuse", 1]}] },
-    { "display_name": "Baida Pair Win", "value": 1, "when": ["won_by_draw", {"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["baida"]}], 1]]]]}, {"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
+    { "display_name": "Baida Pair Win", "value": 1, "when": ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["baida_pair_win"]]}] },
     { "display_name": "White Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
     { "display_name": "Green Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
     { "display_name": "Red Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}] },
@@ -165,13 +174,15 @@
   ],
   "yaku_multiplier": [
     { "display_name": "Robbing a Kong", "value": 5, "when": ["won_by_call"] },
-    { "display_name": "After A Kong", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "After a Kong", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Three Meld Penalty", "value": 5, "when": [{"name": "status", "opts": ["three_meld_penalty"]}] }
   ],
   "yaku_precedence": {
-      // should probably go over the yaku precedence again at some point
-    "Full Flush": ["Half Flush"],
-    "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
+    "Pure Flush": ["Half Flush"],
+    "Edge Wait": ["Closed Wait"],
+    "Single Wait": ["Edge Wait"],
+    "All Honours": ["All Triplets", "Half Flush"],
+    "Blessing of Heaven": ["Self Draw", "Single Wait"] // note: edge/closed wait are not guaranteed
   },
   "score_calculation": {
     "scoring_method": "multiplier",
@@ -179,7 +190,7 @@
     "yaku_lists": ["yaku"],
     "yaku2_lists": ["yaku_multiplier"],
     "point_name": "Tai",
-    "point2_name": "x",
+    "point2_name": "×",
     "right_display": "points2",
     "score_denomination": "",
     "discarder_multiplier": 1,
@@ -191,7 +202,8 @@
     "win_by_draw_label": "Zimo",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw",
-    "pao_eligible_yaku": ["Three Meld Penalty"]
+    "pao_pays_all_yaku": true,
+    "pao_pays_all_yaku2": true
   },
   "functions": {
     "flip_baida": [
@@ -200,48 +212,48 @@
       ["reveal_tile", -2],
       ["add_attr", [-2], ["_skip_draw", "_hidden"]],
       ["add_attr_tagged", "baida", ["_dora", "baida"]],
-      ["set_tile_alias_all", [["1m", "baida"]], [["any", "baida"], ["1m", "_original"]]],
-      ["set_tile_alias_all", [["2m", "baida"]], [["any", "baida"], ["2m", "_original"]]],
-      ["set_tile_alias_all", [["3m", "baida"]], [["any", "baida"], ["3m", "_original"]]],
-      ["set_tile_alias_all", [["4m", "baida"]], [["any", "baida"], ["4m", "_original"]]],
-      ["set_tile_alias_all", [["5m", "baida"]], [["any", "baida"], ["5m", "_original"]]],
-      ["set_tile_alias_all", [["6m", "baida"]], [["any", "baida"], ["6m", "_original"]]],
-      ["set_tile_alias_all", [["7m", "baida"]], [["any", "baida"], ["7m", "_original"]]],
-      ["set_tile_alias_all", [["8m", "baida"]], [["any", "baida"], ["8m", "_original"]]],
-      ["set_tile_alias_all", [["9m", "baida"]], [["any", "baida"], ["9m", "_original"]]],
-      ["set_tile_alias_all", [["1p", "baida"]], [["any", "baida"], ["1p", "_original"]]],
-      ["set_tile_alias_all", [["2p", "baida"]], [["any", "baida"], ["2p", "_original"]]],
-      ["set_tile_alias_all", [["3p", "baida"]], [["any", "baida"], ["3p", "_original"]]],
-      ["set_tile_alias_all", [["4p", "baida"]], [["any", "baida"], ["4p", "_original"]]],
-      ["set_tile_alias_all", [["5p", "baida"]], [["any", "baida"], ["5p", "_original"]]],
-      ["set_tile_alias_all", [["6p", "baida"]], [["any", "baida"], ["6p", "_original"]]],
-      ["set_tile_alias_all", [["7p", "baida"]], [["any", "baida"], ["7p", "_original"]]],
-      ["set_tile_alias_all", [["8p", "baida"]], [["any", "baida"], ["8p", "_original"]]],
-      ["set_tile_alias_all", [["9p", "baida"]], [["any", "baida"], ["9p", "_original"]]],
-      ["set_tile_alias_all", [["1s", "baida"]], [["any", "baida"], ["1s", "_original"]]],
-      ["set_tile_alias_all", [["2s", "baida"]], [["any", "baida"], ["2s", "_original"]]],
-      ["set_tile_alias_all", [["3s", "baida"]], [["any", "baida"], ["3s", "_original"]]],
-      ["set_tile_alias_all", [["4s", "baida"]], [["any", "baida"], ["4s", "_original"]]],
-      ["set_tile_alias_all", [["5s", "baida"]], [["any", "baida"], ["5s", "_original"]]],
-      ["set_tile_alias_all", [["6s", "baida"]], [["any", "baida"], ["6s", "_original"]]],
-      ["set_tile_alias_all", [["7s", "baida"]], [["any", "baida"], ["7s", "_original"]]],
-      ["set_tile_alias_all", [["8s", "baida"]], [["any", "baida"], ["8s", "_original"]]],
-      ["set_tile_alias_all", [["9s", "baida"]], [["any", "baida"], ["9s", "_original"]]],
-      ["set_tile_alias_all", [["1z", "baida"]], [["any", "baida"], ["1z", "_original"]]],
-      ["set_tile_alias_all", [["2z", "baida"]], [["any", "baida"], ["2z", "_original"]]],
-      ["set_tile_alias_all", [["3z", "baida"]], [["any", "baida"], ["3z", "_original"]]],
-      ["set_tile_alias_all", [["4z", "baida"]], [["any", "baida"], ["4z", "_original"]]],
-      ["set_tile_alias_all", [["0z", "baida"]], [["any", "baida"], ["0z", "_original"]]],
-      ["set_tile_alias_all", [["6z", "baida"]], [["any", "baida"], ["6z", "_original"]]],
-      ["set_tile_alias_all", [["7z", "baida"]], [["any", "baida"], ["7z", "_original"]]],
-      ["set_tile_alias_all", [["1f", "baida"]], [["any", "baida"], ["1f", "_original"]]],
-      ["set_tile_alias_all", [["2f", "baida"]], [["any", "baida"], ["2f", "_original"]]],
-      ["set_tile_alias_all", [["3f", "baida"]], [["any", "baida"], ["3f", "_original"]]],
-      ["set_tile_alias_all", [["4f", "baida"]], [["any", "baida"], ["4f", "_original"]]],
-      ["set_tile_alias_all", [["1g", "baida"]], [["any", "baida"], ["1g", "_original"]]],
-      ["set_tile_alias_all", [["2g", "baida"]], [["any", "baida"], ["2g", "_original"]]],
-      ["set_tile_alias_all", [["3g", "baida"]], [["any", "baida"], ["3g", "_original"]]],
-      ["set_tile_alias_all", [["4g", "baida"]], [["any", "baida"], ["4g", "_original"]]]
+      ["set_tile_alias_all", [["1m", "baida"]], [["any", "_is_baida"], ["1m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["2m", "baida"]], [["any", "_is_baida"], ["2m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["3m", "baida"]], [["any", "_is_baida"], ["3m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["4m", "baida"]], [["any", "_is_baida"], ["4m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["5m", "baida"]], [["any", "_is_baida"], ["5m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["6m", "baida"]], [["any", "_is_baida"], ["6m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["7m", "baida"]], [["any", "_is_baida"], ["7m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["8m", "baida"]], [["any", "_is_baida"], ["8m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["9m", "baida"]], [["any", "_is_baida"], ["9m", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["1p", "baida"]], [["any", "_is_baida"], ["1p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["2p", "baida"]], [["any", "_is_baida"], ["2p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["3p", "baida"]], [["any", "_is_baida"], ["3p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["4p", "baida"]], [["any", "_is_baida"], ["4p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["5p", "baida"]], [["any", "_is_baida"], ["5p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["6p", "baida"]], [["any", "_is_baida"], ["6p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["7p", "baida"]], [["any", "_is_baida"], ["7p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["8p", "baida"]], [["any", "_is_baida"], ["8p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["9p", "baida"]], [["any", "_is_baida"], ["9p", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["1s", "baida"]], [["any", "_is_baida"], ["1s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["2s", "baida"]], [["any", "_is_baida"], ["2s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["3s", "baida"]], [["any", "_is_baida"], ["3s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["4s", "baida"]], [["any", "_is_baida"], ["4s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["5s", "baida"]], [["any", "_is_baida"], ["5s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["6s", "baida"]], [["any", "_is_baida"], ["6s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["7s", "baida"]], [["any", "_is_baida"], ["7s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["8s", "baida"]], [["any", "_is_baida"], ["8s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["9s", "baida"]], [["any", "_is_baida"], ["9s", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["1z", "baida"]], [["any", "_is_baida"], ["1z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["2z", "baida"]], [["any", "_is_baida"], ["2z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["3z", "baida"]], [["any", "_is_baida"], ["3z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["4z", "baida"]], [["any", "_is_baida"], ["4z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["0z", "baida"]], [["any", "_is_baida"], ["0z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["6z", "baida"]], [["any", "_is_baida"], ["6z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["7z", "baida"]], [["any", "_is_baida"], ["7z", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["1f", "baida"]], [["any", "_is_baida"], ["1f", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["2f", "baida"]], [["any", "_is_baida"], ["2f", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["3f", "baida"]], [["any", "_is_baida"], ["3f", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["4f", "baida"]], [["any", "_is_baida"], ["4f", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["1g", "baida"]], [["any", "_is_baida"], ["1g", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["2g", "baida"]], [["any", "_is_baida"], ["2g", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["3g", "baida"]], [["any", "_is_baida"], ["3g", "_is_baida", "_original"]]],
+      ["set_tile_alias_all", [["4g", "baida"]], [["any", "_is_baida"], ["4g", "_is_baida", "_original"]]]
     ]
   },
   "play_restrictions": [
@@ -257,7 +269,7 @@
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"]]]
     ]
   },
   "before_call": {
@@ -277,9 +289,10 @@
       ]]
     ]
   },
-  "before_win": {
+  "before_scoring": {
     "actions": [
-      ["add_counter", "baida_reuse", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]
+      ["flip_all_calls_faceup"],
+      ["add_counter", "baida_reuse", "count_matches", ["winning_hand"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
     ]
   },
   "after_start": {
@@ -394,31 +407,30 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
-        {"name": "has_yaku_with_discard", "opts": [4]}
+        [
+          {"name": "has_yaku_with_discard", "opts": [4]},
+          [{"name": "has_yaku_with_discard", "opts": [2]}, {"name": "has_yaku2_with_discard", "opts": [2]}],
+          [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [4]}]
+        ]
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["pon", "daiminkan", "ankan", "kakan", "ron"]
+      "precedence_over": ["pon", "daiminkan", "ankan", "kakan", "ron", "start_flower", "flower"]
     },
     "chankan": {
       "display_name": "Hu",
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "last_call_is", "opts": ["kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
         [
-          [
-            {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ]
-        ],
-        {"name": "has_yaku_with_call", "opts": [4]}
+          {"name": "has_yaku_with_call", "opts": [4]},
+          [{"name": "has_yaku_with_call", "opts": [2]}, {"name": "has_yaku2_with_call", "opts": [2]}],
+          [{"name": "has_yaku_with_call", "opts": [1]}, {"name": "has_yaku2_with_call", "opts": [4]}]
+        ]
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["pon", "daiminkan", "ankan", "kakan", "chankan"]
+      "precedence_over": ["pon", "daiminkan", "ankan", "kakan", "chankan", "start_flower", "flower"]
     },
     "tsumo": {
       "display_name": "Zimo",
@@ -428,7 +440,11 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [4]}
+        [
+          {"name": "has_yaku_with_hand", "opts": [4]},
+          [{"name": "has_yaku_with_hand", "opts": [2]}, {"name": "has_yaku2_with_hand", "opts": [2]}],
+          [{"name": "has_yaku_with_hand", "opts": [1]}, {"name": "has_yaku2_with_hand", "opts": [4]}]
+        ]
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     },
@@ -495,7 +511,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
   "display_wall": true,
   "initial_score": 0,
   "initial_dead_wall_length": 14,

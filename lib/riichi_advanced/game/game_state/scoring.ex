@@ -108,33 +108,21 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
-    # the joker assignment only maps base tiles (no attrs)
-    # look at the actual aliases that match, and add the appropriate attrs
-    replace_joker = fn joker, i ->
-      for {tile, attrs_aliases} <- state.players[seat].tile_behavior.aliases,
-          Map.has_key?(joker_assignment, i),
-          Utils.same_tile(tile, joker_assignment[i]), # allow for :any to match
-          {attrs, aliases} <- attrs_aliases,
-          Utils.has_matching_tile?(aliases, [joker]) do
-        Utils.add_attr(joker_assignment[i], attrs)
-      end
-      |> Enum.at(0, joker)
-    end
     orig_hand = state.players[seat].hand
     {flower_calls, non_flower_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> if joker_assignment[ix] != nil do replace_joker.(tile, ix) else tile end end)
+    assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
     |> Enum.map(fn {{call_name, call}, i} ->
       call = call
       |> Enum.with_index()
-      |> Enum.map(fn {tile, ix} -> replace_joker.(tile, length(orig_hand) + 1 + 3*i + ix) end)
+      |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, length(orig_hand) + 1 + 3*i + ix, tile) end)
       {call_name, call}
     end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment
-    assigned_winning_tile = replace_joker.(winning_tile, length(orig_hand)) || winning_tile
+    assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %PlayerCache{ &1.cache | winning_hand: assigned_winning_hand } })
     {state, assigned_winning_tile}
@@ -144,7 +132,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # t = System.system_time(:millisecond)
     score_rules = state.rules["score_calculation"]
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
+    tile_behavior = state.players[seat].tile_behavior
+    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior)
     end
@@ -983,12 +972,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     state = update_player(state, seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | winning_hand: winning_hand } })
 
     # deal with jokers
+    tile_behavior = state.players[seat].tile_behavior
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(state.players[seat].tile_behavior.aliases) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do [%{}] else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, state.players[seat].tile_behavior)) do
+      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
         # run smt, but push a message if it takes more than 0.5 seconds
-        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior) end)
+        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior) end)
         notify_task = Task.async(fn ->
           :timer.sleep(500)
           push_message(state, [%{text: "Running joker solver..."}])

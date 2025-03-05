@@ -103,7 +103,6 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     num_players = length(assigns.available_seats)
     wall_length = trunc(Float.ceil(assigns.wall_length / num_players / 2))
     break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, assigns.seat, assigns.available_seats)
-    dead_wall_num_tiles = length(dead_wall) - assigns.dead_wall_index
     dead_wall_length = length(dead_wall_stacks)
     case num_players do
       2 ->

@@ -165,12 +165,20 @@ defmodule RiichiAdvanced.TestUtils do
       end
     end
 
-    for {seat, expected_winner} <- expected_winners do
-      if is_list(expected_winner) do
-        Enum.any?(expected_winner, &check_winner.(seat, &1))
-      else
-        check_winner.(seat, expected_winner)
+    if expected_winners != :no_winners do
+      for {seat, expected_winner} <- expected_winners do
+        if is_list(expected_winner) do
+          Enum.any?(expected_winner, &check_winner.(seat, &1))
+        else
+          check_winner.(seat, expected_winner)
+        end
       end
+    else
+      assert Enum.empty?(state.winner_seats)
+      no_win_buttons = Enum.all?(state.players, fn {_seat, player} ->
+        Enum.all?(["ron", "chankan", "tsumo"], & &1 not in player.buttons)
+      end)
+      assert no_win_buttons
     end
 
     if Map.has_key?(expected_state, :delta_scores) do

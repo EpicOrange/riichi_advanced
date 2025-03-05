@@ -358,11 +358,11 @@ defmodule RiichiAdvanced.Riichi do
   # return all the (unique) tiles that are not needed to match the definitions
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
-    # t = System.os_time(:millisecond)
+    t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
     {match_definitions, hand_calls} = for match_definition <- match_definitions do
-      # initial guess comes from just removing the match definition
+      # initial guess comes from just removing each match definition and seeing what's left
       hand_calls = Match.remove_match_definition(hand, calls, match_definition, tile_behavior)
       # filter out lookaheads from match definition
       match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) or with [_groups, num] <- match_definition_elem do num > 0 end end)
@@ -379,6 +379,11 @@ defmodule RiichiAdvanced.Riichi do
     |> Enum.concat()
     |> Enum.flat_map(fn {hand, _calls} -> hand end)
     |> Enum.uniq()
+
+    elapsed_time = System.os_time(:millisecond) - t
+    if elapsed_time > 250 do
+      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms to get initial tiles")
+    end
 
     ret = if not Enum.empty?(match_definitions) do
       # # method 1: keep tiles in hand that are not needed to match the given match definitions
@@ -414,17 +419,36 @@ defmodule RiichiAdvanced.Riichi do
       # ret = Enum.uniq(ret ++ leftover_tiles)
       # ret |> IO.inspect(label: "c")
 
-      # method 4: same as method 3 but we already have an initial set from above
+      # # method 4: same as method 3 but we already have an initial set from above
+      # remaining = Enum.uniq(hand) -- unneeded
+      # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      # ret = Enum.filter(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+      # ret = Enum.uniq(ret ++ unneeded)
+      # ret
+
+      # method 5: same as method 4 but parallel
       remaining = Enum.uniq(hand) -- unneeded
-      ret = Enum.filter(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+      IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      ret = for tile <- remaining do
+        Task.async(fn -> if Match.match_hand(hand -- [tile], calls, match_definitions, tile_behavior) do [tile] else [] end end)
+      end
+      |> Task.yield_many(timeout: :infinity)
+      |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
       ret = Enum.uniq(ret ++ unneeded)
       ret
+
+      # i think a good method 6 is to use prepend_group_all on individual groups in a match definition
+      # like take all the groups appearing in match definitions
+      # then take each group, say [groups, n]
+      # use prepend_group_all to get all instances of removing n of those groups
+      # oh, but what if groups is multiple groups?
+
     else [] end
 
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if elapsed_time > 10 do
-    #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
-    # end
+    elapsed_time = System.os_time(:millisecond) - t
+    if elapsed_time > 250 do
+      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
+    end
     ret
   end
 
@@ -597,14 +621,18 @@ defmodule RiichiAdvanced.Riichi do
       # drop all `hand_groups` with less than 3 groups
 
       {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
+        # {return value, groups that match, the largest number of groups in cache}
         {acc, cache, max_groups} ->
           groups_set = MapSet.new(groups)
-          set_size = MapSet.size(groups_set)
+          num_groups = MapSet.size(groups_set)
           cond do
-            set_size < max_groups -> {acc, cache, max_groups}
+            # ignore if num of groups is less than highest seen so far
+            num_groups < max_groups -> {acc, cache, max_groups}
+            # check cache to see if a larger set of groups matched; if so, this obviously matches
             Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
+            # otherwise call the match function to see if these groups match
             Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
-              {[{hand, groups} | acc], [groups_set | Enum.filter(cache, &MapSet.size(&1) == set_size)], max(set_size, max_groups)}
+              {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
             true -> {acc, cache, max_groups}
           end
       end
@@ -621,6 +649,7 @@ defmodule RiichiAdvanced.Riichi do
       |> List.delete(winning_tile)
       |> Enum.reverse()
     end)
+    |> then(& &1 ++ [prearranged ++ hand]) # append original handm
   end
   def prepend_group_all(hands, calls, winning_tiles, group, win_definitions, tile_behavior) do
     hands = Enum.flat_map(hands, &prepend_group(&1, calls, winning_tiles, group, win_definitions, tile_behavior))

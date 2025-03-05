@@ -279,6 +279,19 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
+  defp add_attrs_to_assignment(joker_assignment, smt_hand, tile_behavior) do
+    for {ix, assigned_tile} <- joker_assignment, reduce: MapSet.new([%{}]) do
+      acc -> for {tile, attrs_aliases} <- tile_behavior.aliases,
+                 Utils.same_tile(tile, assigned_tile), # allow for :any to match
+                 {attrs, aliases} <- attrs_aliases,
+                 Utils.has_matching_tile?(aliases, [Enum.at(smt_hand, ix)]),
+                 assignment <- acc,
+                 into: MapSet.new() do
+        Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs))
+      end
+    end
+  end
+
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
@@ -651,6 +664,7 @@ defmodule RiichiAdvanced.SMT do
     end
     {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 60000)
     result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
+    |> Enum.flat_map(&add_attrs_to_assignment(&1, hand, tile_behavior))
     # IO.inspect(result)
     result
   end

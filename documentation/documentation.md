@@ -937,9 +937,10 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"jokers"`: selects the player's jokers set aside (including starting jokers). 
 - `"start_jokers"`: selects the player's starting jokers set aside only.
 - `"call_tiles"`: selects the player's calls as if their tiles were part of the hand (therefore their tiles can be combined with tiles in hand).
-- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after the `before_scoring` event. Does not include the winning tile.
-- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after the `before_scoring` event. 
-- `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"` is run, including yaku checks. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `before_win`, but will be replaced by its actual value during `before_scoring` and after.
+- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after or during the `after_win` event. Does not include the winning tile.
+- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after or during the `after_win` event. 
+- `"winning_hand"`: selects the winning hand + call tiles + winning tile. Only usable during or after `"before_win"`. If used in `"before_win"`, you get the winning hand with jokers, but if used during or after `"before_scoring"`, then those jokers get replaced by actual values.
+- `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"`. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `"before_win"`, but will be replaced by its actual value during `"before_scoring"` and after.
 - `"last_call"`: selects the last call made by any player.
 - `"last_called_tile"`: selects the called tile for the last call made by any player.
 - `"last_discard"`: selects the last discard made by any player.

@@ -1213,6 +1213,42 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     })
   end
 
+  test "riichi - dragons triple ron" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["6m", "7m", "8m", "7p", "9p", "9p", "9p", "5s", "6s", "7s", "2m", "2m", "2m"],
+        "south": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1z", "6z", "5z", "5z"],
+        "west": ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "1z", "7z", "6z", "6z"],
+        "north": ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "1z", "2z", "7z", "7z"]
+      },
+      "starting_draws": ["5z", "1z"],
+      "starting_dead_wall": ["1p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "pon"}, nil, nil]},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "pon"}, nil]},
+      %{"type" => "discard", "tile" => "7z", "player" => 2, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "pon"}]},
+      %{"type" => "discard", "tile" => "2z", "player" => 3, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, %{"button" => "ron"}, %{"button" => "ron"}]}
+    ], %{
+      south: %{
+        yaku: [{"Honitsu", 2}, {"Ittsu", 1}, {"Haku", 1}]
+      },
+      west: %{
+        yaku: [{"Honitsu", 2}, {"Ittsu", 1}, {"Hatsu", 1}]
+      },
+      north: %{
+        yaku: [{"Honitsu", 2}, {"Ittsu", 1}, {"Chun", 1}]
+      }
+    })
+  end
+
+  # TODO make these into advanced tests
   test "riichi - yakuless" do
     # yakuless closed
     TestUtils.test_yaku("riichi", [], %{
