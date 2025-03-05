@@ -152,25 +152,32 @@ defmodule RiichiAdvanced.TestUtils do
     state = GenServer.call(test_state.game_state_pid, :get_state)
 
     check_winner = fn seat, expected_winner ->
-      assert seat in state.winner_seats
-      winner = state.winners[seat]
-      if Map.has_key?(expected_winner, :yaku) do
-        assert MapSet.new(winner.yaku) == MapSet.new(expected_winner.yaku)
-      end
-      if Map.has_key?(expected_winner, :yaku2) do
-        assert MapSet.new(winner.yaku2) == MapSet.new(expected_winner.yaku2)
-      end
-      for {key, value} <- expected_winner, key not in [:yaku, :yaku2] do
-        assert Map.get(winner, key) == value
+      if seat not in state.winner_seats do
+        [{:error, "#{seat} didn't win"}]
+      else
+        winner = state.winners[seat]
+        expected_winner
+        |> Enum.map(fn {k, v} ->
+            {expected, actual} = {v, Map.get(winner, k)}
+            if k in [:yaku, :yaku2] do
+              {k, MapSet.new(expected), MapSet.new(actual)}
+            else
+              {k, expected, actual}
+            end
+          end)
+        |> Enum.reduce([], fn {k, expected, actual}, acc ->
+          if expected == actual do acc else
+            ["#{k}: #{inspect(actual)} != expected #{inspect(expected)}" | acc]
+          end
+        end)
       end
     end
 
     if expected_winners != :no_winners do
       for {seat, expected_winner} <- expected_winners do
-        if is_list(expected_winner) do
-          Enum.any?(expected_winner, &check_winner.(seat, &1))
-        else
-          check_winner.(seat, expected_winner)
+        errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
+        if [] not in errs do
+          assert false, Enum.map_join(errs, "\n", &Enum.join(&1, "\n"))
         end
       end
     else
