@@ -397,8 +397,9 @@ defmodule RiichiAdvanced.GameState do
       Actions.run_actions(state, state.rules["after_initialization"]["actions"], %{seat: state.turn})
     else state end
 
-    # terminate game if no one joins
-    :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
+    # terminate game if no one joins in 15 minutes
+    # (also effectively serves as a 15 minute timeout for exunit tests)
+    :timer.apply_after(900_000, GenServer, :cast, [self(), :terminate_game_if_empty])
 
     {:ok, state}
   end
