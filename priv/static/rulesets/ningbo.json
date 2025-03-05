@@ -87,20 +87,8 @@
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
-  "suuankou_tsumo_definition": [
-    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
-  ],
-  "suuankou_ron_definition": [
-    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
-  ],
-  "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
-  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
-  "7_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
-  "8_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
-  "little_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]],
-  "big_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 3] ]],
-  "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
-  "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
+  "7_flowers_definition": [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
+  "8_flowers_definition": [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
   "edge_wait_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 3], [["penchan_1", "penchan_2", "penchan_3", "penchan_4", "penchan_5", "penchan_6"], 1] ]
   ],

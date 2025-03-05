@@ -56,7 +56,7 @@ defmodule RiichiAdvanced.Admin do
       |> Enum.map_join(",\n", fn {player, i} -> "    \"#{Log.from_seat(i)}\": #{Jason.encode!(player["haipai"])}" end)
       starting_draws = kyoku["wall"]
       |> Jason.encode!()
-      starting_dead_wall = (Enum.reverse(kyoku["kan_tiles"]) ++ Enum.concat(Enum.zip_with(kyoku["uras"], kyoku["doras"], &[&1, &2])))
+      starting_dead_wall = (kyoku["kan_tiles"] ++ Enum.concat(Enum.zip_with(kyoku["doras"], kyoku["uras"], &[&1, &2])))
       |> Jason.encode!()
 
       # get event list

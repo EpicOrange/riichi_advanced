@@ -868,7 +868,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     orig_hand = state.players[seat].hand
     |> Enum.with_index()
     |> Enum.map(fn {tile, i} -> Utils.add_attr(tile, ["hand#{i}"]) end)
-    orig_draw = state.players[seat].draw
     orig_calls = state.players[seat].calls
     tile_behavior = state.players[seat].tile_behavior
     arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
@@ -1058,8 +1057,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {remainder, winning_tile}
         else {prev_hand, winning_tile} end
         
-        IO.inspect({prev_hand, winning_tile})
-
         # score yaku
         yaku = if highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
         yaku2 = if highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end

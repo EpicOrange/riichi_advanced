@@ -250,7 +250,7 @@ defmodule RiichiAdvanced.Constants do
     {"classical",    "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points."},
     {"fuzhou",       "Fuzhou", "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."},
     {"tianjin",      "Tianjin (beta)", "Mahjong except the dora indicator actually indicates joker tiles."},
-    {"ningbo",       "Ningbo (beta)", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
+    {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
     {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
