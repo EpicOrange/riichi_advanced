@@ -127,7 +127,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             length(state.wall) >= 1 ->
               # move the last tile of the wall to the dead wall
               # then draw the last tile of the dead wall
-              {wall, [tile]} = Enum.split(state.wall, -1)
+              {wall, [tile]} = cond do
+                rem(length(state.wall), 2) == 1 -> Enum.split(state.wall, -1)
+                length(state.wall) == 1         -> {[], state.wall}
+                true                            -> with {wall, [tile1, tile2]} <- Enum.split(state.wall, -2) do {wall ++ [tile2], [tile1]} end
+              end
               dead_wall = if rem(length(state.dead_wall), 2) == 0 do
                 [tile | state.dead_wall]
               else List.insert_at(state.dead_wall, 1, tile) end
