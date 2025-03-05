@@ -1334,7 +1334,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "tag_tiles"             ->
         tag = Enum.at(opts, 0, "missing_tag")
         tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
-        |> Enum.map(&Utils.to_tile/1)
+        |> Enum.map(&from_named_tile(state, &1))
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
         state
       "tag_drawn_tile"        ->

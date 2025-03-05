@@ -1,5 +1,4 @@
 { 
-    //TODO: implement die rolls and reading the dice so that the dora indicator is correctly calculated.
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
@@ -109,8 +108,8 @@
     { "display_name": "Edge Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["edge_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Closed Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
     { "display_name": "Single Wait", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Win On Baida", "value": 1, "when": [{"name": "match", "opts": [["winning_tile"], [[{"tile": "any", "attrs": ["baida"]}], 1]]}] },
-    { "display_name": "No Baida", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[{"tile": "any", "attrs": ["baida"]}], 1]]}] },
+    { "display_name": "Win On Baida", "value": 1, "when": [{"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["baida"]}], 1]]]]}] },
+    { "display_name": "No Baida", "value": 1, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["baida"]}], 1]]]]}] },
     {
       "display_name": "Half Flush",
       "value": 2,
@@ -134,7 +133,7 @@
     { "display_name": "Last Tile", "value": 1, "when": ["no_tiles_remaining", "won_by_draw"] },
     { "display_name": "Self Draw", "value": 1, "when": ["won_by_draw"] },
     { "display_name": "Baida Reuse", "value": "baida_reuse", "when": [{"name": "counter_at_least", "opts": ["baida_reuse", 1]}] },
-    { "display_name": "Baida Pair Win", "value": 1, "when": ["won_by_draw", {"name": "match", "opts": [["winning_tile"], [[{"tile": "any", "attrs": ["baida"]}], 1]]}, {"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
+    { "display_name": "Baida Pair Win", "value": 1, "when": ["won_by_draw", {"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["baida"]}], 1]]]]}, {"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
     { "display_name": "White Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
     { "display_name": "Green Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
     { "display_name": "Red Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}] },
@@ -194,52 +193,13 @@
     "exhaustive_draw_name": "Draw",
     "pao_eligible_yaku": ["Three Meld Penalty"]
   },
-  "play_restrictions": [
-    [["flower"], []]
-  ],
-  "before_turn_change": {
-    "actions": [
-      ["unset_status", "kan", "double_kan"],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
-    ]
-  },
-  "after_turn_change": {
-    "actions": [
-      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
-    ]
-  },
-  "before_call": {
-    "actions": [
-      // i hope this pao works
-        ["when", ["shimocha_discarded"], [
-          ["add_counter", "calls_from_shimocha", 1],
-          ["when", {"name": "counter_at_least", "opts": ["calls_from_shimocha", 3]}, [["as", "shimocha", ["set_status", "pao"]], ["set_status", "three_meld_penalty"]]]
-        ]],
-        ["when", ["toimen_discarded"], [
-          ["add_counter", "calls_from_toimen", 1],
-          ["when", {"name": "counter_at_least", "opts": ["calls_from_toimen", 3]}, [["as", "toimen", ["set_status", "pao"]], ["set_status", "three_meld_penalty"]]]
-        ]],
-        ["when", ["kamicha_discarded"], [
-          ["add_counter", "calls_from_kamicha", 1],
-          ["when", {"name": "counter_at_least", "opts": ["calls_from_kamicha", 3]}, [["as", "kamicha", ["set_status", "pao"]], ["set_status", "three_meld_penalty"]]]
-        ]]
-    ]
-  },
-  "before_win": {
-    "actions": [
-      ["add_counter", "baida_reuse", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]
-    ]
-  },
-  "after_start": {
-    "actions": [
-      ["set_status_all", "first_turn", "match_start"],
-        // tag 'baida' tiles with baida filler text here
-      ["tag_dora", "baida", -14],
-        // add the 'dora' attribute to tiles tagged with 'baida', which should make them shiny
+  "functions": {
+    "flip_baida": [
+      ["tag_tiles", "baida", [-2]],
+      ["tag_dora", "baida", -2],
+      ["reveal_tile", -2],
+      ["add_attr", [-2], ["_skip_draw", "_hidden"]],
       ["add_attr_tagged", "baida", ["_dora", "baida"]],
-        // sets any tile with attribute 'baida' to be an any-joker with attribute 'baida', or its original value with attribute 'original'
       ["set_tile_alias_all", [["1m", "baida"]], [["any", "baida"], ["1m", "_original"]]],
       ["set_tile_alias_all", [["2m", "baida"]], [["any", "baida"], ["2m", "_original"]]],
       ["set_tile_alias_all", [["3m", "baida"]], [["any", "baida"], ["3m", "_original"]]],
@@ -271,7 +231,7 @@
       ["set_tile_alias_all", [["2z", "baida"]], [["any", "baida"], ["2z", "_original"]]],
       ["set_tile_alias_all", [["3z", "baida"]], [["any", "baida"], ["3z", "_original"]]],
       ["set_tile_alias_all", [["4z", "baida"]], [["any", "baida"], ["4z", "_original"]]],
-      ["set_tile_alias_all", [["5z", "baida"]], [["any", "baida"], ["5z", "_original"]]],
+      ["set_tile_alias_all", [["0z", "baida"]], [["any", "baida"], ["0z", "_original"]]],
       ["set_tile_alias_all", [["6z", "baida"]], [["any", "baida"], ["6z", "_original"]]],
       ["set_tile_alias_all", [["7z", "baida"]], [["any", "baida"], ["7z", "_original"]]],
       ["set_tile_alias_all", [["1f", "baida"]], [["any", "baida"], ["1f", "_original"]]],
@@ -284,17 +244,77 @@
       ["set_tile_alias_all", [["4g", "baida"]], [["any", "baida"], ["4g", "_original"]]]
     ]
   },
+  "play_restrictions": [
+    [["flower"], []]
+  ],
+  "before_turn_change": {
+    "actions": [
+      ["unset_status", "kan", "double_kan"],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+    ]
+  },
+  "after_turn_change": {
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+    ]
+  },
+  "before_call": {
+    "actions": [
+      // i hope this pao works
+      ["when", ["shimocha_discarded"], [
+        ["add_counter", "calls_from_shimocha", 1],
+        ["when", {"name": "counter_at_least", "opts": ["calls_from_shimocha", 3]}, [["as", "shimocha", ["set_status", "pao"]], ["set_status", "three_meld_penalty"]]]
+      ]],
+      ["when", ["toimen_discarded"], [
+        ["add_counter", "calls_from_toimen", 1],
+        ["when", {"name": "counter_at_least", "opts": ["calls_from_toimen", 3]}, [["as", "toimen", ["set_status", "pao"]], ["set_status", "three_meld_penalty"]]]
+      ]],
+      ["when", ["kamicha_discarded"], [
+        ["add_counter", "calls_from_kamicha", 1],
+        ["when", {"name": "counter_at_least", "opts": ["calls_from_kamicha", 3]}, [["as", "kamicha", ["set_status", "pao"]], ["set_status", "three_meld_penalty"]]]
+      ]]
+    ]
+  },
+  "before_win": {
+    "actions": [
+      ["add_counter", "baida_reuse", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]
+    ]
+  },
+  "after_start": {
+    "actions": [
+      ["set_status_all", "first_turn", "match_start"],
+      ["run", "flip_baida"]
+    ]
+  },
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw", 1, "opposite_end"]],
+      "show_when": [
+        {"name": "status", "opts": ["match_start"]},
+        "our_turn",
+        {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}
+      ],
+      "actions": [
+        ["big_text", "Flower"],
+        ["set_status", "flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+        ["unset_status", "flower"],
+        ["draw", 1, "opposite_end"]
+      ],
       "unskippable": true
     },
     "start_no_flower": {
       "display_name": "No flowers",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
+      "show_when": [
+        {"name": "status", "opts": ["match_start"]},
+        "our_turn",
+        {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}
+      ],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["move_tiles", "draw", "hand"], ["advance_turn"]],
       "unskippable": true
     },
     "pon": {
@@ -377,7 +397,7 @@
         {"name": "has_yaku_with_discard", "opts": [4]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "daiminkan", "ron"]
+      "precedence_over": ["pon", "daiminkan", "ankan", "kakan", "ron"]
     },
     "chankan": {
       "display_name": "Hu",
@@ -398,12 +418,13 @@
         {"name": "has_yaku_with_call", "opts": [4]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["chii", "pon", "daiminkan", "chankan"]
+      "precedence_over": ["pon", "daiminkan", "ankan", "kakan", "chankan"]
     },
     "tsumo": {
       "display_name": "Zimo",
       "show_when": [
         "our_turn",
+        "not_just_called",
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
@@ -413,10 +434,17 @@
     },
     "flower": {
       "display_name": "Flower",
-      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "show_when": [
+        "our_turn",
+        {"name": "status_missing", "opts": ["match_start", "flower", "no_flowers"]},
+        "not_just_discarded",
+        {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}
+      ],
       "actions": [
         ["big_text", "Flower"],
+        ["set_status", "flower"],
         ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+        ["unset_status", "flower"],
         ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
       ],
       "unskippable": true
@@ -468,10 +496,9 @@
     }
   },
   "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
+  "display_wall": true,
   "initial_score": 0,
   "initial_dead_wall_length": 14,
   "starting_tiles": 13,
-  "max_rounds": 16,
-    // TODO: change this to be dependent on the second die roll, when the die-roll update comes out. For now, I'll assume the second die roll is always 7.
-  "revealed_tiles": [-14]
+  "max_rounds": 161
 }
