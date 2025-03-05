@@ -428,7 +428,7 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_draw", "opts": [4]}
+        {"name": "has_yaku_with_hand", "opts": [4]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     },
@@ -500,5 +500,6 @@
   "initial_score": 0,
   "initial_dead_wall_length": 14,
   "starting_tiles": 13,
-  "max_rounds": 161
+  "max_rounds": 16,
+  "win_timer": 20
 }
