@@ -222,9 +222,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "no_calls_yet"                -> last_call_action == nil
       "last_call_is"                -> last_call_action != nil and last_call_action.call_name in opts
       # TODO replace with "as": keyword
-      "kamicha_discarded"           -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat)
-      "toimen_discarded"            -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat, 2)
-      "shimocha_discarded"          -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == Utils.prev_turn(context.seat, 3)
+      "kamicha_discarded"           -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat)
+      "toimen_discarded"            -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat, 2)
+      "shimocha_discarded"          -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat, 3)
       "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard
       "someone_else_just_discarded" -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn != context.seat
       "just_discarded"              -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == context.seat
@@ -313,17 +313,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             IO.puts("Unknown round wind #{inspect(Enum.at(opts, 0, "east"))}")
             false
         end
-      "seat_is"                  ->
-        seat_wind = Riichi.get_seat_wind(state.kyoku, context.seat, state.available_seats)
-        case Enum.at(opts, 0, "east") do
-          "east"  -> seat_wind == :east
-          "south" -> seat_wind == :south
-          "west"  -> seat_wind == :west
-          "north" -> seat_wind == :north
-          _       ->
-            IO.puts("Unknown seat wind #{inspect(Enum.at(opts, 0, "east"))}")
-            false
-        end
+      "seat_is"                  -> Enum.any?(opts, fn seats_spec -> context.seat in from_seats_spec(state, context, seats_spec) end)
       "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
       "aside_tile_count"         -> length(cxt_player.aside) in opts
       "hand_dora_count"       ->

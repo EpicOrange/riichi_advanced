@@ -86,6 +86,10 @@ defmodule RiichiAdvanced.LogControlState do
     if south, do: IO.inspect({"south's statuses", state.game_state.players.south.status})
     IO.inspect({"west's statuses", state.game_state.players.west.status})
     if north, do: IO.inspect({"north's statuses", state.game_state.players.north.status})
+    IO.inspect({"east's counters", state.game_state.players.east.counters})
+    if south, do: IO.inspect({"south's counters", state.game_state.players.south.counters})
+    IO.inspect({"west's counters", state.game_state.players.west.counters})
+    if north, do: IO.inspect({"north's counters", state.game_state.players.north.counters})
     IO.inspect({"marking", state.game_state.marking})
   end
 
@@ -169,11 +173,12 @@ defmodule RiichiAdvanced.LogControlState do
       button = button_data["button"]
       if button != nil do
         if button not in state.game_state.players[seat].buttons do
+          state_before = state
           skip_buttons(state)
           state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
           if button not in state.game_state.players[seat].buttons do
             IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
-            print_game_state(state)
+            print_game_state(state_before)
           end
         end
         GenServer.cast(state.game_state_pid, {:press_button, seat, button})

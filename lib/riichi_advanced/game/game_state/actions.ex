@@ -321,11 +321,8 @@ defmodule RiichiAdvanced.GameState.Actions do
     hidden = Map.get(state.rules["buttons"][button_name], "call_hidden", false)
     call = if hidden do Utils.add_attr(call, ["_concealed"]) else call end
 
-    # run before_call actions
+    # finalize call
     call = {call_name, call}
-    state = if Map.has_key?(state.rules, "before_call") do
-      run_actions(state, state.rules["before_call"]["actions"], %{seat: state.turn, callee: state.turn, caller: seat, call: call})
-    else state end
 
     # remove called tiles from its source
     {state, to_remove} = case call_source do
@@ -342,6 +339,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       Logger.error("Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       hand
     else new_hand end
+
     # actually add the call to the player
     state = update_player(state, seat, &%Player{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
     state = if called_tile != nil do
@@ -386,11 +384,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       ]
       play_sound(state, Enum.random(click_sounds))
     end
-
-    # run after_call actions
-    state = if Map.has_key?(state.rules, "after_call") do
-      run_actions(state, state.rules["after_call"]["actions"], %{seat: seat, callee: state.turn, caller: seat, call: call})
-    else state end
 
     state = update_player(state, seat, &%Player{ &1 | call_buttons: %{} })
     state
@@ -957,9 +950,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         IO.inspect({seat, state.players[seat].status})
         state
-      "print_counter"         ->
+      "print_counters"         ->
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        IO.inspect({seat, Map.get(state.players[seat].counters, Enum.at(opts, 0), 0)})
+        IO.inspect({seat, state.players[seat].counters})
         state
       "push_message"          ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
@@ -1612,7 +1605,20 @@ defmodule RiichiAdvanced.GameState.Actions do
                 if Debug.debug_actions() do
                   IO.puts("Running call actions for #{seat}: #{inspect(actions)}")
                 end
+
+                # run before_call actions
+                callee = state.turn
+                state = if Map.has_key?(state.rules, "before_call") do
+                  run_actions(state, state.rules["before_call"]["actions"], %{seat: state.turn, callee: callee, caller: seat})
+                else state end
+
                 state = run_actions(state, actions, %{seat: seat, choice: choice})
+
+                # run after_call actions
+                state = if Map.has_key?(state.rules, "after_call") do
+                  run_actions(state, state.rules["after_call"]["actions"], %{seat: state.turn, callee: callee, caller: seat})
+                else state end
+
                 state
               {:mark, mark_spec, pre_actions, post_actions, cancel_actions} ->
                 # run pre-mark actions

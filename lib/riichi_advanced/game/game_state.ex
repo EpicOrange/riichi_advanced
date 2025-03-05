@@ -776,10 +776,6 @@ defmodule RiichiAdvanced.GameState do
       Actions.run_actions(state, state.rules["after_win"]["actions"], context)
     else state end
 
-    # after the after_win actions, check if pao was set, and add it onto the winner object
-    winner = Scoring.update_winner_pao(state, winner)
-    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-
     state
   end
 
