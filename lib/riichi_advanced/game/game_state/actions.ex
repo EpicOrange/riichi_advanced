@@ -124,15 +124,10 @@ defmodule RiichiAdvanced.GameState.Actions do
                 |> draw_tile(seat, 1, drawn_tile, to_aside)
                 |> draw_tile(seat, num - 1, tile_spec, to_aside)
               end
-            length(state.wall) >= 2 ->
-              # move the last two tiles of the wall to the dead wall
+            length(state.wall) >= 1 ->
+              # move the last tile of the wall to the dead wall
               # then draw the last tile of the dead wall
-              {wall, [tile1, tile2]} = Enum.split(state.wall, -2)
-              {wall, tile} = if Utils.is_space?(tile1) do
-                {wall, tile2}
-              else
-                {wall ++ [Utils.add_attr(:"2x", ["_skip_draw"]), tile2], tile1}
-              end
+              {wall, [tile]} = Enum.split(state.wall, -1)
               dead_wall = if rem(length(state.dead_wall), 2) == 0 do
                 [tile | state.dead_wall]
               else List.insert_at(state.dead_wall, 1, tile) end
@@ -140,7 +135,6 @@ defmodule RiichiAdvanced.GameState.Actions do
               |> Map.put(:wall, wall)
               |> Map.put(:dead_wall, dead_wall)
               |> draw_tile(seat, num, tile_spec, to_aside)
-            not Enum.empty?(state.wall) -> draw_tile(state, seat, num, nil, to_aside)
             true ->
               # both walls are exhausted, draw nothing
               IO.puts("#{seat} tried to draw a nil tile!")
@@ -172,7 +166,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             state
             |> Map.put(:wall_index, wall_index)
             |> draw_tile(seat, num, nil, to_aside)
-          else
+          else # TODO should we check tile != nil here?
+            # if we're drawing a dead wall tile, replace it with an empty undrawable tile
+            state = if is_integer(tile_name) and tile != nil do
+              Map.update!(state, :dead_wall, &List.replace_at(&1, tile_name, Utils.add_attr(:"2x", ["_skip_draw"])))
+            else state end
             state = if not to_aside do
               # draw to hand
               state

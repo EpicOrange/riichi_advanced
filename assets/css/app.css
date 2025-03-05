@@ -2053,7 +2053,7 @@ div.display-wall > div.wall > div.tile-stack {
   flex-direction: column-reverse;
 }
 div.display-wall > div.wall > div.spacer {
-  width: calc(0.5 * var(--tile-size));
+  min-width: calc(0.5 * var(--tile-size));
 }
 div.display-wall > div.wall > div.tile-stack > div.tile {
   z-index: var(--level);

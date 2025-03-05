@@ -245,7 +245,6 @@
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
         {"name": "status_missing", "opts": ["flower", "no_flowers"]},
-        {"name": "not_anyone_status", "opts": ["gold_flower"]},
         {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [
@@ -264,7 +263,6 @@
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
         {"name": "status_missing", "opts": ["flower", "no_flowers"]},
-        {"name": "not_anyone_status", "opts": ["gold_flower"]},
         {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["move_tiles", "draw", "hand"], ["advance_turn"]],
