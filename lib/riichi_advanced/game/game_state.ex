@@ -600,13 +600,13 @@ defmodule RiichiAdvanced.GameState do
       end
 
       # roll dice
-      num_dice = Map.get(state.rules, "num_dice", 2) - 2
+      num_dice = Map.get(state.rules, "num_dice", 2)
       num_dice = max(2, num_dice)
       num_dice = min(10, num_dice)
       dice = [
         Map.get(state.rules, "die1", :rand.uniform(6)),
         Map.get(state.rules, "die2", :rand.uniform(6))
-      ] ++ Enum.map(2..num_dice//1, fn _ -> :rand.uniform(6) end)
+      ] ++ Enum.map(2..(num_dice - 2)//1, fn _ -> :rand.uniform(6) end)
 
       state = Map.put(state, :dice, dice)
 

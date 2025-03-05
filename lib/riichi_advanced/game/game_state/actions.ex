@@ -505,6 +505,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
         else 0 end
+      ["dice" | _opts] -> Enum.sum(state.dice)
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0

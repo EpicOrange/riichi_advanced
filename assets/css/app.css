@@ -2099,14 +2099,13 @@ div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(31) { z-index: -3
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(32) { z-index: -32; }
 div.display-wall > div.dice {
   position: absolute;
-  width: calc(1.75 * var(--tile-size));
+  width: 100%;
   height: calc(1.5 * var(--tile-size));
-  left: calc(50% - 0.875 * var(--tile-size));
   top: calc(50% + 2 * var(--tile-size));
   column-gap: calc(0.25 * var(--tile-size));
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 div.display-wall > div.dice > div.die {
