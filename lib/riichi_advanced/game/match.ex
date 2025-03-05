@@ -411,8 +411,9 @@ defmodule RiichiAdvanced.Match do
                       # if this call is hand or dismantlable, we keep all unmatched tiles
                       ret = if is_hand or tile_behavior.dismantle_calls do
                         to_remove_r = pairing_r |> Map.keys() |> Enum.take(to_remove_num)
-                        call = for j <- to_remove_r |> Enum.sort(:desc), reduce: tiles do call -> List.delete_at(call, j) end
-                        [call | ret]
+                        tiles = for j <- to_remove_r |> Enum.sort(:desc), reduce: tiles do tiles -> List.delete_at(tiles, j) end
+                        item = if is_hand do tiles else with {name, _call} <- call do {name, tiles} end end
+                        [item | ret]
                       else ret end # not hand or dismantlable, so we discard all unmatched tiles
                       {ret, joker, nojoker, to_remove_num - length(to_remove)}
                     else {[call | ret], joker, nojoker, to_remove_num} end

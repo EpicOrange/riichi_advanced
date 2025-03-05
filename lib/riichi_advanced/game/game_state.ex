@@ -455,6 +455,12 @@ defmodule RiichiAdvanced.GameState do
   def get_last_discard_action(state), do: state.actions |> Enum.drop_while(fn action -> action.action != :discard end) |> Enum.at(0)
   def update_action(state, seat, action, opts \\ %{}), do: Map.update!(state, :actions, &[opts |> Map.put(:seat, seat) |> Map.put(:action, action) | &1])
   def clear_actions(state), do: Map.put(state, :actions, [])
+  def get_last_call(state) do
+    last_call_action = get_last_call_action(state)
+    if last_call_action != nil do
+      {last_call_action.call_name, [last_call_action.called_tile | last_call_action.other_tiles]}
+    else nil end
+  end
 
   def show_error(state, message) do
     state = Map.update!(state, :error, fn err -> if err == nil do message else err <> "\n\n" <> message end end)

@@ -428,7 +428,7 @@ defmodule RiichiAdvanced.Riichi do
 
       # method 5: same as method 4 but parallel
       remaining = Enum.uniq(hand) -- unneeded
-      IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
       ret = for tile <- remaining do
         Task.async(fn -> if Match.match_hand(hand -- [tile], calls, match_definitions, tile_behavior) do [tile] else [] end end)
       end
