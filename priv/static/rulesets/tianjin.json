@@ -83,35 +83,31 @@
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
   "yaku": [
-    { "display_name": "Pure Hand", "value": 3, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["wild"]}], 1]]]]}] },
-    { "display_name": "Wild Card Single Wait", "value": 3, "when": [
-      [
-        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 4], [[{"tile": "any", "attrs": ["wild"]}], 1] ]]]},
-        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 4], [["any"], 1] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [[[[{"tile": "any", "attrs": ["wild"]}], 1]]]]}] }]
-      ]
-    ] },
-    { "display_name": "Double Wild Card Set Wait", "value": 3, "when": [
-      [
-        {"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [["joker"], 2] ]]]},
-        [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [["any"], 1], [[{"tile": "any", "attrs": ["wild"]}], 1] ]]]}, { "display_name": "Pure Hand", "value": 3, "when": [{"name": "match", "opts": [["winning_tile"], [[{"tile": "any", "attrs": ["wild"]}], 1]]}] }]
-      ]
-    ] },
-    { "display_name": "Capturing the Five", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
-    { "display_name": "Dragon", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Pure Hand", "value": 2, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["is_wild"]}], 1]]]]}] },
+    { "display_name": "Wild Card Single Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 4], [[{"tile": "any", "attrs": ["is_wild"]}], 1] ]]]}] },
+    { "display_name": "Double Wild Card Set Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [[{"tile": "any", "attrs": ["is_wild"]}], 2] ]]]}] },
+    { "display_name": "Capturing the Five", "value": 3, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
+    { "display_name": "Dragon", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Kong Blossom", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Heavenly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
     { "display_name": "Earthly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   "bonus_yaku": [
-    { "display_name": "Kong Blossom Bonus", "value": 1, "when": [{"name": "not_has_existing_yaku", "opts": ["Pure Hand", "Wild Card Single Wait", "Double Wild Card Single Wait", "Capturing the Five", "Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Concealed Kong Blossom Bonus", "value": 1, "when": [{"name": "status", "opts": ["kan", "ankan"]}] }
+    { "display_name": "Kong Blossom", "value": 1, "when": [{"name": "status", "opts": ["ankan"]}] },
+    { "display_name": "Different Patterns", "value": 1, "when": [1, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": 1, "when": [2, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": 1, "when": [3, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": 1, "when": [4, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": 1, "when": [5, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": 1, "when": [6, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] }
   ],
   "yaku_multiplier": [
-    { "display_name": "Kong Blossom Multiplier", "value": 2, "when": [{"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Heavenly Hand Multiplier", "value": 6, "when": [{"name": "has_existing_yaku", "opts": ["Heavenly Hand"]}] },
-    { "display_name": "Earthly Hand Multiplier", "value": 4, "when": [{"name": "has_existing_yaku", "opts": ["Earthly Hand"]}] }
+    { "display_name": "Kong Blossom", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Heavenly Hand", "value": 6, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Hand", "value": 4, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
-  "yaku_precedence": {    
+  "yaku_precedence": {
+    "Double Wild Card Set Wait": ["Wild Card Single Wait"], // i think?
     "Heavenly Hand": ["Earthly Hand", "Kong Blossom"],
     "Earthly Hand": ["Kong Blossom"]
   },
@@ -121,7 +117,7 @@
     "yaku_lists": ["yaku", "bonus_yaku"],
     "yaku2_lists": ["yaku_multiplier"],
     "point_name": "Fan",
-    "point2_name": "x",
+    "point2_name": "×",
     "right_display": "points2",
     "score_denomination": "",
     "discarder_multiplier": 1,
@@ -135,18 +131,28 @@
   "persistent_counters": ["challenge_tokens"],
   "play_restrictions": [],
   "functions": {
+    "flip_wild": [
+      ["set_counter", "wild_pos", "dice"],
+      ["multiply_counter", "wild_pos", 2],
+      ["shift_tile_to_dead_wall", "wild_pos"],
+      ["multiply_counter", "wild_pos", -1],
+      ["tag_tiles", "wild", ["wild_pos"]],
+      ["tag_dora", "wild", "wild_pos"],
+      ["reveal_tile", "wild_pos"],
+      ["add_attr_tagged", "wild", ["_dora", "wild"]],
+      ["set_tile_alias_all", [{"tile": "any", "attrs": ["wild"]}], [{"tile": "any", "attrs": ["is_wild"]}]]
+    ],
     "pay_for_kong": [
       ["set_counter", "kong_payment", "$base"],
-      ["ite", {"name": "seat_is", "as": "$payee", "opts": ["east"]},
-        ["multiply_counter", "kong_payment", "delta_score_multiplier_against_dealer"],
-        ["when", {"name": "seat_is", "opts": ["east"]},
-          [ 
-            ["as", "$payee", ["set_counter_all", "temp", "delta_score_multiplier_against_dealer"]],
-            ["multiply_counter", "kong_payment", "temp"],
-            ["set_counter_all", "temp", 1]
-          ]
-        ]
-      ],
+      ["ite", {"name": "seat_is", "as": "$payee", "opts": ["east"]}, [
+        ["multiply_counter", "kong_payment", "delta_score_multiplier_against_dealer"]
+      ], [
+        ["when", {"name": "seat_is", "opts": ["east"]}, [
+          ["as", "$payee", ["set_counter_all", "temp", "delta_score_multiplier_against_dealer"]],
+          ["multiply_counter", "kong_payment", "temp"],
+          ["set_counter_all", "temp", 1]
+        ]]
+      ]],
       ["add_score", "kong_payment", "$payee"],
       ["subtract_score", "kong_payment"],
       ["multiply_counter", "kong_payment", -1],
@@ -165,15 +171,13 @@
             ["run", "pay_for_kong", {"base": 1, "payee": "north"}]
           ]]
         ]
-      ],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+      ]
     ]
   },
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "after_call": {
@@ -194,40 +198,28 @@
   "after_start": {
     "actions": [
       ["set_status_all", "first_turn"],
-        // tag wild tiles with 'wild'
-      ["tag_dora", "wild", -14],
-        // add the 'dora' attribute to tiles tagged with 'wild', which should make them shiny
-      ["add_attr_tagged", "wild", ["_dora", "wild"]],
-      ["set_tile_alias_all", [{"tile": "any", "attrs": ["wild"]}], ["any"]],
+      ["run", "flip_wild"],
         // initialise delta_score_multiplier so that we can manipulate this value later
       ["set_counter_all", "delta_score_multiplier", 1],
-      ["set_counter_all", "delta_score_multiplier_against_dealer", 1]
+      ["set_counter_all", "delta_score_multiplier_against_dealer", 1],
+      ["as", "everyone", [["add_attr", ["hand"], ["_concealed"]]]]
     ]
   },
+  "play_effects": [
+    ["any", [["unset_status", "first_turn"]]]
+  ],
   "shown_statuses_public": ["double_down", "challenge_dealer", "challenge_dealer_twice"],
   "before_win": {
     "actions": [
         //if East is the winner, then everyone gets their score doubled/quadrupled/whatever
-      ["when", [[{"name": "status", "as": "east", "opts": ["win_by_draw"]}, {"name": "status", "as": "east", "opts": ["win_by_call"]}]],
-        [
-          ["as", ["south", "west", "north"],
-            [
-              ["set_counter", "delta_score_multiplier", "delta_score_multiplier_against_dealer"]
-            ]
-          ]
-        ]
-      ],
+      ["when", [[{"name": "status", "as": "east", "opts": ["win_by_draw"]}, {"name": "status", "as": "east", "opts": ["win_by_call"]}]], [
+        ["as", ["south", "west", "north"], [["set_counter", "delta_score_multiplier", "delta_score_multiplier_against_dealer"]]]
+      ]],
         //else, if East is not the winner, then East gets their score doubled/quadrupled/whatever
-      ["when", [{"name": "status_missing", "as": "east", "opts": ["win_by_draw"]}, {"name": "status_missing", "as": "east", "opts": ["win_by_call"]}],
-        [
-          ["set_counter_all", "delta_score_multiplier_against_winner", "delta_score_multiplier_against_dealer"],
-          ["as", "east",
-            [
-              ["set_counter", "delta_score_multiplier", "delta_score_multiplier_against_winner"]
-            ]
-          ]
-        ]
-      ]
+      ["when", [{"name": "status_missing", "as": "east", "opts": ["win_by_draw"]}, {"name": "status_missing", "as": "east", "opts": ["win_by_call"]}], [
+        ["set_counter_all", "delta_score_multiplier_against_winner", "delta_score_multiplier_against_dealer"],
+        ["as", "east", [["set_counter", "delta_score_multiplier", "delta_score_multiplier_against_winner"]]]
+      ]]
     ]
   },
   "buttons": {
@@ -238,9 +230,7 @@
         ["big_text", "Double Down"],
         ["set_status_all", "double_down"],
         ["as", "all", [["multiply_counter", "delta_score_multiplier_against_dealer", 2]]],
-        ["uninterruptible_draw", 13],
-        ["move_tiles", "draw", "hand"],
-        ["sort_hand"],
+        ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
         ["advance_turn"]
       ],
@@ -254,9 +244,7 @@
         ["set_status", "challenge_dealer_twice"],
         ["multiply_counter", "delta_score_multiplier_against_dealer", 4],
         ["subtract_counter", "challenge_tokens", 2],
-        ["uninterruptible_draw", 13],
-        ["move_tiles", "draw", "hand"],
-        ["sort_hand"],
+        ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
         ["advance_turn"]
       ],
@@ -270,9 +258,7 @@
         ["set_status", "challenge_dealer"],
         ["multiply_counter", "delta_score_multiplier_against_dealer", 2],
         ["subtract_counter", "challenge_tokens", 2],
-        ["uninterruptible_draw", 13],
-        ["move_tiles", "draw", "hand"],
-        ["sort_hand"],
+        ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
         ["advance_turn"]
       ],
@@ -281,7 +267,7 @@
     "start_pass": {
       "display_name": "Pass",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn"],
-      "actions": [["big_text", "Pass"], ["uninterruptible_draw", 13], ["move_tiles", "draw", "hand"], ["sort_hand"], ["unset_status", "match_start"], ["advance_turn"]],
+      "actions": [["big_text", "Pass"], ["remove_attr_hand", "_concealed"], ["unset_status", "match_start"], ["advance_turn"]],
       "unskippable": true
     },
     "pon": {
@@ -412,9 +398,7 @@
   "interruptible_actions": ["play_tile", "advance_turn", "draw", "call", "self_call", "upgrade_call"],
   "persistent_statuses": ["match_start"], // so it doesn't get cleared after before_start
   "initial_score": 50,
-  "starting_tiles": 0,
+  "starting_tiles": 13,
   "max_rounds": 16,
-    // change this to be dependent on the second die roll-- dammit, we have to implement rerolling the dice. For now, I'll assume the second die roll is always 7.
-  "initial_dead_wall_length": 14,
-  "revealed_tiles": [-14]
+  "display_wall": true
 }

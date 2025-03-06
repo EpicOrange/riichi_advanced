@@ -96,7 +96,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           _ ->
             # try to interpret as a named tile
             if is_named_tile(state, item) do
-              [{hand ++ [from_named_tile(state, item)], calls}]
+              [{hand ++ [from_named_tile(state, context, item)], calls}]
             else
               IO.puts("Unhandled hand_calls spec #{inspect(item)}")
               [{hand, calls}]
@@ -258,7 +258,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_declared_yaku_with_discard" -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_action.tile, :discard)
       "has_declared_yaku_with_call"    -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_call_action.called_tile, :call)
-      "tiles_match"              -> Enum.at(opts, 0, :"1m") |> Enum.all?(&Riichi.tile_matches(Enum.at(opts, 1, []), %{tile: from_named_tile(state, &1), players: state.players, seat: context.seat}))
+      "tiles_match"              -> Enum.at(opts, 0, :"1m") |> Enum.all?(&Riichi.tile_matches(Enum.at(opts, 1, []), %{tile: from_named_tile(state, context, &1), players: state.players, seat: context.seat}))
       "last_discard_matches"     -> last_discard_action != nil and Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: Map.get(context, :tile, nil), players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action != nil and last_action.action == :call and Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: Map.get(context, :tile, nil), call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_behavior)
@@ -317,21 +317,21 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "hand_tile_count"          -> (length(cxt_player.hand) + length(cxt_player.draw)) in opts
       "aside_tile_count"         -> length(cxt_player.aside) in opts
       "hand_dora_count"       ->
-        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(cxt_player.hand, doras) == num
         else false end
       "winning_dora_count"       ->
-        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
           doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(cxt_player.cache.winning_hand, doras) == num
         else false end
       "winning_reverse_dora_count" ->
-        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
           doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)

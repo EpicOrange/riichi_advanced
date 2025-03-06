@@ -299,6 +299,7 @@ defmodule RiichiAdvanced.Utils do
     reversed = transparent and id == :"1x"
     id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
+    concealed = has_attr?(tile, ["concealed"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
     sideways = i != nil and i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i != nil and i == length(assigns.pond) - 1
@@ -323,6 +324,7 @@ defmodule RiichiAdvanced.Utils do
     id = cond do
       hidden -> :"4x"
       facedown -> :"1x"
+      concealed -> :"1x"
       true -> id
     end
     [
