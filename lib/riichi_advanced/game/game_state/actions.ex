@@ -164,7 +164,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             Map.update!(state, :drawn_reserved_tiles, fn tiles -> [tile_name | tiles] end)
           else state end
           # grab the named tile (no op if the tile name is a normal tile)
-          tile = from_named_tile(state, tile_name) |> Utils.add_attr(["_draw"])
+          tile = from_named_tile(state, %{seat: seat}, tile_name) |> Utils.add_attr(["_draw"])
           # if this is a skip_draw tile and we're not going to cause an infinite loop, then try again
           if Utils.has_attr?(tile, ["skip_draw"]) and tile_spec == nil do
             state
@@ -424,7 +424,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def interpret_amount(state, context, amt_spec) do
-    case amt_spec do
+    case List.wrap(amt_spec) do
       ["count_matches" | opts] ->
         # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -485,7 +485,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         length(state.players[seat].draw)
       ["count_dora" | opts] ->
-        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
         hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
@@ -493,7 +493,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
         else 0 end
       ["count_reverse_dora" | opts] ->
-        dora_indicator = from_named_tile(state, Enum.at(opts, 0, :"1m"))
+        dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
         hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
         if dora_indicator != nil do
@@ -526,7 +526,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
               end
             "add" ->
-              amt = interpret_amount(state, context, List.wrap(Enum.at(opts, 0, 0)))
+              amt = interpret_amount(state, context, Enum.at(opts, 0, 0))
               conditions = Enum.at(opts, 1, [])
               for {hand, calls, fu} <- hand_calls_fu do
                 context = Map.put(context, :minipoints, fu)
@@ -675,7 +675,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def interpolate_string(state, context, str, assigns) do
     for {name, value} <- assigns, reduce: str do
-      str -> String.replace(str, "$" <> name, Integer.to_string(interpret_amount(state, context, List.wrap(value))))
+      str -> String.replace(str, "$" <> name, Integer.to_string(interpret_amount(state, context, value)))
     end
   end
 
@@ -1044,11 +1044,15 @@ defmodule RiichiAdvanced.GameState.Actions do
         update_player(state, context.seat, fn player -> %Player{ player | hand: hand, cache: %PlayerCache{ player.cache | playable_indices: playable_indices } } end)
       "reveal_tile"           ->
         tile_name = Enum.at(opts, 0, :"1m")
-        state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
-        state = if is_integer(tile_name) do
-          Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_named_tile(state, tile_name)})
-        else state end
-        state
+        if Utils.is_tile(tile_name) do
+          state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+          state
+        else
+          tile_name = interpret_amount(state, context, [tile_name])
+          state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+          state = Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_named_tile(state, context, tile_name)})
+          state
+        end
       "add_score"             ->
         recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
         amount = interpret_amount(state, context, [Enum.at(opts, 0, 0)])
@@ -1331,7 +1335,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "tag_tiles"             ->
         tag = Enum.at(opts, 0, "missing_tag")
         tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
-        |> Enum.map(&from_named_tile(state, &1))
+        |> Enum.map(&from_named_tile(state, context, &1))
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
         state
       "tag_drawn_tile"        ->
@@ -1348,7 +1352,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "tag_dora"              ->
         tag = Enum.at(opts, 0, "missing_tag")
         named_tile = Enum.at(opts, 1, -1)
-        dora_indicator = from_named_tile(state, named_tile)
+        dora_indicator = from_named_tile(state, context, named_tile)
         doras = (get_in(state.rules["dora_indicators"][Utils.tile_to_string(dora_indicator)]) || [])
         |> Enum.map(&Utils.to_tile/1)
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(doras), &MapSet.union(&1, MapSet.new(doras))) end)
@@ -1394,7 +1398,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
       "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
       "shift_tile_to_dead_wall" -> 
-        {wall, tiles} = Enum.split(state.wall, -Enum.at(opts, 0, 1))
+        amount = interpret_amount(state, context, [Enum.at(opts, 0, 1)])
+        {wall, tiles} = Enum.split(state.wall, -amount)
         state
         |> Map.put(:wall, wall)
         |> Map.put(:dead_wall, tiles ++ state.dead_wall)
@@ -1455,6 +1460,73 @@ defmodule RiichiAdvanced.GameState.Actions do
         auto_button_name = Enum.at(opts, 0, "")
         GenServer.cast(self(), {:toggle_auto_button, context.seat, auto_button_name, true})
         state
+      "modify_winner"   ->
+        {key, type} = case Enum.at(opts, 0, nil) do
+          "score"              -> {:score, :number}
+          "points"             -> {:points, :number}
+          "points2"            -> {:points2, :number}
+          "score_name"         -> {:score_name, :string}
+          "point_name"         -> {:point_name, :string}
+          "point2_name"        -> {:point2_name, :string}
+          "minipoint_name"     -> {:minipoint_name, :string}
+          "minipoints"         -> {:minipoints, :number}
+          "score_denomination" -> {:score_name, :string}
+          "winning_tile_text"  -> {:winning_tile_text, :string}
+          key ->
+            IO.puts("Unhandled modify_winner key #{inspect(key)}")
+            {nil, nil}
+        end
+        method = case Enum.at(opts, 2) do
+          "add"      -> if type == :number do :add else nil end
+          "subtract" -> if type == :number do :subtract else nil end
+          "multiply" -> if type == :number do :multiply else nil end
+          "divide"   -> if type == :number do :divide else nil end
+          "min"      -> if type == :number do :min else nil end
+          "max"      -> if type == :number do :max else nil end
+          "prepend"  -> if type == :string do :prepend else nil end
+          "append"   -> if type == :string do :append else nil end
+          _          -> :set
+        end
+        if key != nil and method != nil and context.seat in state.winner_seats do
+          value = case type do
+            :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
+            :string -> Enum.at(opts, 1, "")
+          end
+          update_in(state.winners[context.seat][key], fn prev_value -> case method do
+            :set      -> value
+            :add      -> prev_value + value
+            :subtract -> prev_value - value
+            :multiply -> prev_value * value
+            :divide   -> Integer.floor_div(prev_value, value)
+            :min      -> min(prev_value, value)
+            :max      -> max(prev_value, value)
+            :prepend  -> value <> prev_value
+            :append   -> prev_value <> value
+          end end)
+        else state end
+      "modify_delta_score"   ->
+        seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
+        method = case Enum.at(opts, 2) do
+          "set"      -> :set
+          "subtract" -> :subtract
+          "multiply" -> :multiply
+          "divide"   -> :divide
+          "min"      -> :min
+          "max"      -> :max
+          _          -> :add
+        end
+        value = interpret_amount(state, context, Enum.at(opts, 1, 0))
+        for seat <- seats, reduce: state do
+          state -> update_in(state.delta_scores[seat], fn prev_value -> case method do
+            :set      -> value
+            :add      -> prev_value + value
+            :subtract -> prev_value - value
+            :multiply -> prev_value * value
+            :divide   -> Integer.floor_div(prev_value, value)
+            :min      -> min(prev_value, value)
+            :max      -> max(prev_value, value)
+          end end)
+        end
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

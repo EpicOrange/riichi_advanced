@@ -574,6 +574,8 @@ A way to think about interrupt levels is that the number defines a priority -- b
 
 Here are all the toplevel keys. Every key is optional.
 
+Events:
+
 - `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
@@ -581,9 +583,10 @@ Here are all the toplevel keys. Every key is optional.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
 - `after_initialization`: Triggers at setup after the game begins (after `before_start`). Useful for writing rules text via `"add_rule"`. Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
+- `after_scoring`: Triggers after payouts are calculated but before they are shown and applied, which happens once per winner or exhaustive/abortive draw.
 - `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east). Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
-- `after_win`: Triggers at the end of a win, after yaku is calculated.
+- `after_win`: Triggers at the end of a win, after yaku is calculated, but before the yaku screen is shown.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
 - `before_call`: Triggers at the start of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `before_conclusion`: Triggers at the end of a game (right before the end scores are shown).
@@ -593,8 +596,32 @@ Here are all the toplevel keys. Every key is optional.
 - `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
 - `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.
-- `on_no_valid_tiles`: Triggers on someone's turn if they cannot discard any tiles.
+- `on_no_valid_tiles`: Triggers on someone's turn (after `after_turn_change`) if they cannot discard any tiles.
 - `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. Context: `seat` is the seat who played a tile, and `tile` is the played tile.
+
+Here is the basic event lifecycle for each round:
+
+- `before_start`
+- `before_turn_change` (to east)
+- `after_turn_change` (to east)
+- `after_start`
+- `after_initialization` (once per game)
+- (game starts, button calculations / interrupts are now active)
+- (either a draw or a winner is declared)
+- On a win:
+  + `before_win`
+  + `before_scoring`
+  + `after_win`
+  + `after_scoring`
+  + `before_continue` (if bloody end rules are enabled)
+- On a draw:
+  + `before_exhaustive_draw`/`before_abortive_draw`
+  + `after_scoring`
+  + `after_bloody_end` (after 3 players win if bloody end rules are enabled)
+- Then one of these is run:
+  - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)
+  - `before_start` (otherwise, unless the game is over)
+  - `before_conclusion` (if the game is over)
 
 Buttons:
 
@@ -733,6 +760,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + `"all"`, `"everyone"`: Selects every seat.
   + `"others"`: Selects every seat except the current seat.
   + `"chii_victims"`: Selects all players for which the current seat has chiis from. (This is implemented and used solely in Sakicards, specifically for Maya Yukiko's second ability)
+  + You can also prepend `not_`, like `"not_east"`, to get the complement of the specified set of seats.
 - `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player. (This changes `seat` in the context.)
 - `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player. (This does not change `seat` in the context.)
 - `["when_others", cond, actions]`: If `cond` evaluates to true for every player except the current player, run the given actions for the current player. (This does not change `seat` in the context.)
@@ -795,6 +823,36 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["delete_tiles", tile1, tile2, ...]`: Delete every instance of the given tiles from the current player's hand/draw.
 - `["pass_draws", seat_spec, num]`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `["saki_start"]`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
+- `["modify_winner", key, value, method]`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_delta_score"`.
+  + Allowed values for `key` are:
+    + `key = "score"`: Final score, displayed at the bottom of the win screen.
+    + `key = "points"`: Points (e.g. han)
+    + `key = "points2"`: Secondary points (e.g. yakuman multiplier), see the [scoring methods](#scoring-methods) section
+    + `key = "minipoints"`: Minipoints (e.g. fu)
+    + The following are also modifiable:
+    + `key = "score_name"`: name for score (e.g. "Mangan")
+    + `key = "point_name"`: name for points (e.g. "Han")
+    + `key = "point2_name"`: name for points (e.g. "★")
+    + `key = "minipoint_name"`: name for minipoints (e.g. "Fu")
+    + `key = "score_denomination"`: name prepended to score
+    + `key = "winning_tile_text"`: text shown above the winning tile
+  The optional `method` argument specifies a modification other than replacing the value. Allowed methods are:
+  + For all values (default):
+  + `key = "set"`
+  + For numeric values (`"score"`, `"points"`, `"points2"`, `"minipoints"`):
+  + `key = "add"`
+  + `key = "subtract"`
+  + `key = "multiply"`
+  + `key = "divide"`
+  + `key = "min"`
+  + `key = "max"`
+  + For string values (everything else):
+  + `key = "prepend"`
+  + `key = "append"`
+- `["modify_delta_score", seat, amount, method]`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_delta_score", "east", -3000], ["modify_delta_score", "not_east", 1000]]`.
+  + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
+  + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
+  + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
 
 Every unrecognized action is a no-op.
 

@@ -709,7 +709,8 @@ defmodule RiichiAdvanced.GameState do
     # initialize saki if needed
     state = if state.rules["enable_saki_cards"] do Saki.initialize_saki(state) else state end
     
-    # start the game
+    # start the game with interrupts disabled
+    state = Map.put(state, :interruptible_actions, %{})
     state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku, state.available_seats))
 
     # run after_start actions
@@ -766,6 +767,8 @@ defmodule RiichiAdvanced.GameState do
       ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Utils.call_to_tiles/1))
     )
 
+    # TODO print yaku here
+
     state = if Map.get(state.rules, "bloody_end", false) do
       # only end the round once there are three winners; otherwise, continue
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
@@ -773,14 +776,7 @@ defmodule RiichiAdvanced.GameState do
 
     # run after_win actions
     state = if Map.has_key?(state.rules, "after_win") do
-      context = %{
-        seat: seat,
-        winning_tile: winning_tile,
-        win_source: win_source,
-        minipoints: winner.minipoints,
-        existing_yaku: winner.yaku ++ winner.yaku2
-      }
-      Actions.run_actions(state, state.rules["after_win"]["actions"], context)
+      Actions.run_actions(state, state.rules["after_win"]["actions"], winner)
     else state end
 
     state
@@ -800,14 +796,19 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :visible_screen, :scores)
-    state = start_timer(state)
 
     {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
-
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
     state = Map.put(state, :next_dealer, next_dealer)
+
+    # run after_scoring actions
+    state = if Map.has_key?(state.rules, "after_scoring") do
+      Actions.run_actions(state, state.rules["after_scoring"]["actions"], %{seat: state.turn})
+    else state end
+
+    state = Map.put(state, :visible_screen, :scores)
+    state = start_timer(state)
     state
   end
 
@@ -826,13 +827,20 @@ defmodule RiichiAdvanced.GameState do
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
-    state = Map.put(state, :visible_screen, :scores)
-    state = start_timer(state)
 
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else "Abortive Draw" end)
     state = Map.put(state, :next_dealer, :self)
+
+    # run after_scoring actions
+    state = if Map.has_key?(state.rules, "after_scoring") do
+      Actions.run_actions(state, state.rules["after_scoring"]["actions"], %{seat: state.turn})
+    else state end
+
+    state = Map.put(state, :visible_screen, :scores)
+    state = start_timer(state)
+
     state
   end
 
@@ -859,12 +867,18 @@ defmodule RiichiAdvanced.GameState do
         # in practice, "nagashi" is used for void suit payments in SBR
         prev_round_result = state.round_result
         {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
+        state = Map.put(state, :delta_scores, delta_scores)
+        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+
+        # run after_scoring actions
+        state = if Map.has_key?(state.rules, "after_scoring") do
+          context = state.winners[Enum.at(state.winner_seats, state.winner_index)]
+          Actions.run_actions(state, state.rules["after_scoring"]["actions"], context)
+        else state end
 
         state = Map.put(state, :processed_bloody_end, true)
         state = Map.put(state, :visible_screen, :scores)
         state = Map.put(state, :round_result, prev_round_result)
-        state = Map.put(state, :delta_scores, delta_scores)
-        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
 
         # run after_bloody_end actions
         state = if Map.has_key?(state.rules, "after_bloody_end") do
@@ -876,19 +890,25 @@ defmodule RiichiAdvanced.GameState do
 
         state
       state.visible_screen == :winner -> # need to see score exchange screen
-        # next time we're on the winner screen, show the next winner
-        state = Map.update!(state, :winner_index, & &1 + 1)
-
-        # show score exchange screen
-        state = Map.put(state, :visible_screen, :scores)
-
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
         {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_win_scoring(state)
         state = Map.put(state, :delta_scores, delta_scores)
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
         # only populate next_dealer the first time we call Scoring.adjudicate_win_scoring
         state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
+
+        # run after_scoring actions
+        state = if Map.has_key?(state.rules, "after_scoring") do
+          context = state.winners[Enum.at(state.winner_seats, state.winner_index)]
+          Actions.run_actions(state, state.rules["after_scoring"]["actions"], context)
+        else state end
+
+        # show score exchange screen
+        state = Map.put(state, :visible_screen, :scores)
         
+        # next time we're on the winner screen, show the next winner
+        state = Map.update!(state, :winner_index, & &1 + 1)
+
         # reset timer
         state = start_timer(state)
         
@@ -1045,7 +1065,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
   
-  def from_named_tile(state, tile_name) do
+  def from_named_tile(state, context, tile_name) do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
@@ -1053,6 +1073,10 @@ defmodule RiichiAdvanced.GameState do
           ix  -> Enum.at(state.dead_wall, -ix-1)
         end
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
+      is_binary(tile_name)
+          and Map.has_key?(context, :seat)
+          and Map.has_key?(state.players[context.seat].counters, tile_name) ->
+        Enum.at(state.dead_wall, state.players[context.seat].counters[tile_name])
       is_integer(tile_name) -> Enum.at(state.dead_wall, tile_name)
       is_atom(tile_name) -> tile_name
       true ->
@@ -1219,7 +1243,7 @@ defmodule RiichiAdvanced.GameState do
 
   def get_doras(state) do
     Enum.flat_map(state.revealed_tiles, fn named_tile ->
-      dora_indicator = from_named_tile(state, named_tile)
+      dora_indicator = from_named_tile(state, %{}, named_tile)
       (get_in(state.rules["dora_indicators"][Utils.tile_to_string(dora_indicator)]) || [])
       |> Enum.map(&Utils.to_tile/1)
     end)

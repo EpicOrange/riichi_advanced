@@ -694,6 +694,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
       true -> :shimocha
     end
 
+    # run before_win actions for each new winner
+    state = if Map.has_key?(state.rules, "before_win") do
+      for {_seat, winner} <- winners, reduce: state do
+        # not sure if this is a good idea, but conveniently, winner objects can be used as a context
+        state -> Actions.run_actions(state, state.rules["before_win"]["actions"], winner)
+      end
+    else state end
+
     {state, delta_scores, delta_scores_reason, next_dealer}
   end
 
@@ -1096,12 +1104,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
       :discard -> get_last_discard_action(state).seat
       :call    -> get_last_call_action(state).seat
     end
+    yaku = if yaku_2_overrides do [] else yaku end |> Enum.map(fn {name, value} -> {translate(state, name), value} end)
+    yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
     %{
       seat: seat,
       player: %Player{ state.players[seat] | hand: arranged_hand, calls: arranged_calls },
       win_source: win_source,
-      yaku: if yaku_2_overrides do [] else yaku end |> Enum.map(fn {name, value} -> {translate(state, name), value} end),
-      yaku2: yaku2 |> Enum.map(fn {name, value} -> {translate(state, name), value} end),
+      yaku: yaku,
+      yaku2: yaku2,
+      existing_yaku: yaku ++ yaku2,
       points: points,
       points2: points2,
       score: score,
@@ -1112,6 +1123,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       minipoint_name: Map.get(score_rules, "minipoint_name", ""),
       minipoints: minipoints,
       payer: payer,
+      # TODO remove pao_seat
       pao_seat: Enum.find(state.available_seats, fn seat -> seat != payer and "pao" in state.players[seat].status end),
       winning_tile: winning_tile,
       right_display: cond do
