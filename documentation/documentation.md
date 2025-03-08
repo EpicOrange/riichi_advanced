@@ -754,6 +754,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["as", seats_spec, actions]`: Sets the `seat` to the given `seats_spec` and runs the actions. If you specify multiple seats, it will run the given actions multiple times (once for each seat). Allowed `seats_spec` values:
   + `"east"`, `"south"`, `"west"`, `"north"`: Selects that seat.
   + `"self"`, `"shimocha"`, `"toimen"`, `"kamicha"`: Selects the seat relative to the current seat.
+  + `"prev_seat"`: Selects the seat that is currently running this `"as"` action.
   + `"last_discarder"`: Selects the last seat that discarded.
   + `"caller"`: Selects the caller, the player receiving the called tile (usable in call buttons only).
   + `"callee"`: Selects the callee, the player giving the called tile (usable in call buttons only).
@@ -823,7 +824,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["delete_tiles", tile1, tile2, ...]`: Delete every instance of the given tiles from the current player's hand/draw.
 - `["pass_draws", seat_spec, num]`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `["saki_start"]`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
-- `["modify_winner", key, value, method]`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_delta_score"`.
+- `["modify_winner", key, value, method]`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
   + Allowed values for `key` are:
     + `key = "score"`: Final score, displayed at the bottom of the win screen.
     + `key = "points"`: Points (e.g. han)
@@ -849,7 +850,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + For string values (everything else):
   + `key = "prepend"`
   + `key = "append"`
-- `["modify_delta_score", seat, amount, method]`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_delta_score", "east", -3000], ["modify_delta_score", "not_east", 1000]]`.
+- `["modify_payout", seat, amount, method]`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_payout", "east", -3000], ["modify_payout", "not_east", 1000]]`.
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
   + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
@@ -887,6 +888,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"has_calls"`: The current player has called tiles.
 - `{"name": "has_call_named", "opts": [call1, call2, ...]}`: The current player has one of the specified calls. Example: `{"name": "has_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}`
 - `{"name": "has_no_call_named", "opts": [call1, call2, ...]}`: The current player has none of the specified calls. Example: `{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}`
+- `"won"`: A player just won.
 - `"won_by_call"`: The winner won by stealing a called tile.
 - `"won_by_draw"`: The winner won by drawing the winning tile.
 - `"won_by_discard"`: The winner won by stealing the discard tile.

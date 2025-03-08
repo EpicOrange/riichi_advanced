@@ -144,6 +144,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "callee" ->
         last_call_action = get_last_call_action(state)
         Map.get(context, :callee, if last_call_action != nil do last_call_action.from else context.seat end)
+      "prev_seat" -> Map.get(context, :prev_seat, context.seat)
       _ -> context.seat
     end
   end
@@ -243,9 +244,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].calls)
       "has_call_named"           -> Enum.all?(cxt_player.calls, fn {name, _call} -> name in opts end)
       "has_no_call_named"        -> Enum.all?(cxt_player.calls, fn {name, _call} -> name not in opts end)
-      "won_by_call"              -> context.win_source == :call
-      "won_by_draw"              -> context.win_source == :draw
-      "won_by_discard"           -> context.win_source == :discard
+      "won"                      -> Map.get(context, :win_source, nil) != nil
+      "won_by_call"              -> Map.get(context, :win_source, nil) == :call
+      "won_by_draw"              -> Map.get(context, :win_source, nil) == :draw
+      "won_by_discard"           -> Map.get(context, :win_source, nil) == :discard
       "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
       "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku2"                -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)

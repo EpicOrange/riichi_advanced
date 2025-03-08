@@ -505,6 +505,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0
       ["honba_value" | _opts] -> get_in(state.rules["score_calculation"]["honba_value"]) || 0
+      ["points" | _opts] when is_map_key(context, :points) -> context.points
+      ["points2" | _opts] when is_map_key(context, :points2) -> context.points2
+      ["score" | _opts] when is_map_key(context, :score) -> context.score
+      ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
         score_actions = opts
         yakuhai = Scoring.get_yakuhai(state, context.seat)
@@ -954,6 +958,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         IO.inspect({seat, state.players[seat].counters})
         state
+      "print_context"         ->
+        IO.inspect(context)
+        state
       "push_message"          ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
         push_message(state, Enum.map(["Player #{player_name(state, context.seat)}", message], &%{text: &1}))
@@ -1048,20 +1055,20 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
           state
         else
-          tile_name = interpret_amount(state, context, [tile_name])
+          tile_name = interpret_amount(state, context, tile_name)
           state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
           state = Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_named_tile(state, context, tile_name)})
           state
         end
       "add_score"             ->
+        amount = interpret_amount(state, context, Enum.at(opts, 0, 0))
         recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
-        amount = interpret_amount(state, context, [Enum.at(opts, 0, 0)])
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
         end
       "subtract_score"             ->
+        amount = -interpret_amount(state, context, Enum.at(opts, 0, 0))
         recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
-        amount = -interpret_amount(state, context, [Enum.at(opts, 0, 0)])
         for recipient <- recipients, reduce: state do
           state -> update_player(state, recipient, fn player -> %Player{ player | score: player.score + amount } end)
         end
@@ -1092,7 +1099,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
       "as"                    ->
         for dir <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, [])), reduce: state do
-          state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
+          state -> run_actions(state, Enum.at(opts, 1, []), Map.merge(context, %{seat: dir, prev_seat: context.seat}))
         end
       "when_anyone"           ->
         for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: state do
@@ -1398,7 +1405,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
       "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
       "shift_tile_to_dead_wall" -> 
-        amount = interpret_amount(state, context, [Enum.at(opts, 0, 1)])
+        amount = interpret_amount(state, context, Enum.at(opts, 0, 1))
         {wall, tiles} = Enum.split(state.wall, -amount)
         state
         |> Map.put(:wall, wall)
@@ -1504,7 +1511,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             :append   -> prev_value <> value
           end end)
         else state end
-      "modify_delta_score"   ->
+      "modify_payout"   ->
         seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
         method = case Enum.at(opts, 2) do
           "set"      -> :set
@@ -1956,7 +1963,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def map_action_opts([action | actions], fun) do
     mapped_action = case action do
       ["when", condition, subactions] -> ["when", condition, map_action_opts(subactions, fun)]
-      ["as", seats_spec, subactions] -> ["as", seats_spec, map_action_opts(subactions, fun)]
+      ["as", seats_spec, subactions] -> ["as", map_action_opts(seats_spec, fun), map_action_opts(subactions, fun)]
       ["when_anyone", condition, subactions] -> ["when_anyone", condition, map_action_opts(subactions, fun)]
       ["when_everyone", condition, subactions] -> ["when_everyone", condition, map_action_opts(subactions, fun)]
       ["when_others", condition, subactions] -> ["when_others", condition, map_action_opts(subactions, fun)]

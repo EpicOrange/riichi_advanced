@@ -136,6 +136,12 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
+  defmacro assert_list(actual, expected) do
+    quote do
+      assert inspect(unquote(actual), charlists: :as_lists) == inspect(unquote(expected), charlists: :as_lists)
+    end
+  end
+
   def test_yaku_advanced(ruleset, mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
     test_state = initialize_test_state(ruleset, mods, config)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
@@ -193,7 +199,26 @@ defmodule RiichiAdvanced.TestUtils do
       delta_scores = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
         Map.get(state.delta_scores, seat, 0)
       end
-      assert delta_scores == expected_state.delta_scores
+      assert_list(delta_scores, expected_state.delta_scores)
+    end
+
+    if Map.has_key?(expected_state, :scores) do
+      cond do
+        is_map(expected_state.scores) ->
+          {scores, expected_scores} = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+            score = state.players[seat].score
+            {score, Map.get(expected_state.scores, seat, score)}
+          end
+          |> Enum.unzip()
+          assert_list(scores, expected_scores)
+        is_list(expected_state.scores) ->
+          scores = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+            state.players[seat].score
+          end
+          assert_list(scores, expected_state.scores)
+        true ->
+          IO.inspect("Invalid score spec #{inspect(expected_state.scores)}")
+      end
     end
   end
 

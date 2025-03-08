@@ -128,7 +128,6 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
-  "persistent_counters": ["challenge_tokens"],
   "play_restrictions": [],
   "functions": {
     "flip_wild": [
@@ -143,35 +142,18 @@
       ["set_tile_alias_all", [{"tile": "any", "attrs": ["wild"]}], [{"tile": "any", "attrs": ["is_wild"]}]]
     ],
     "pay_for_kong": [
-      ["set_counter", "kong_payment", "$base"],
-      ["ite", {"name": "seat_is", "as": "$payee", "opts": ["east"]}, [
-        ["multiply_counter", "kong_payment", "delta_score_multiplier_against_dealer"]
-      ], [
-        ["when", {"name": "seat_is", "opts": ["east"]}, [
-          ["as", "$payee", ["set_counter_all", "temp", "delta_score_multiplier_against_dealer"]],
-          ["multiply_counter", "kong_payment", "temp"],
-          ["set_counter_all", "temp", 1]
-        ]]
-      ]],
-      ["add_score", "kong_payment", "$payee"],
-      ["subtract_score", "kong_payment"],
-      ["multiply_counter", "kong_payment", -1],
-      ["big_text", "  $ctr  ", {"ctr": "kong_payment"}]
+      ["as", "$payee", [
+        ["set_counter", "kong_payment", "$base"],
+        ["multiply_counter", "kong_payment", "kong_mult"],
+        ["add_score", "kong_payment"],
+        ["subtract_score", "kong_payment", "prev_seat"],
+        ["big_text", "  -$ctr  ", {"ctr": "kong_payment"}]
+      ]]
     ]
   },
   "before_turn_change": {
     "actions": [
-      ["unset_status", "kan", "ankan"],
-      ["when", [{"name": "status_missing", "as": "others", "opts": ["first_turn"]}, {"name": "status", "opts": ["first_turn"]}, {"name": "match", "opts": ["all_ponds", [[["quad"], 1], [["any"], -1]]]}],
-        [
-          ["big_text", "Discard Chase"], ["pause", 1000],
-          ["as", "east", [
-            ["run", "pay_for_kong", {"base": 1, "payee": "south"}],
-            ["run", "pay_for_kong", {"base": 1, "payee": "west"}],
-            ["run", "pay_for_kong", {"base": 1, "payee": "north"}]
-          ]]
-        ]
-      ]
+      ["unset_status", "kan", "ankan"]
     ]
   },
   "after_turn_change": {
@@ -197,28 +179,48 @@
   },
   "after_start": {
     "actions": [
+      ["as", "everyone", [["add_attr", ["hand"], ["_concealed"]]]],
       ["set_status_all", "first_turn"],
       ["run", "flip_wild"],
-        // initialise delta_score_multiplier so that we can manipulate this value later
-      ["set_counter_all", "delta_score_multiplier", 1],
-      ["set_counter_all", "delta_score_multiplier_against_dealer", 1],
-      ["as", "everyone", [["add_attr", ["hand"], ["_concealed"]]]]
+      ["set_counter_all", "dealer_mult", 1],
+      ["set_counter_all", "kong_mult", 1]
     ]
   },
   "play_effects": [
-    ["any", [["unset_status", "first_turn"]]]
-  ],
-  "shown_statuses_public": ["double_down", "challenge_dealer", "challenge_dealer_twice"],
-  "before_win": {
-    "actions": [
-        //if East is the winner, then everyone gets their score doubled/quadrupled/whatever
-      ["when", [[{"name": "status", "as": "east", "opts": ["win_by_draw"]}, {"name": "status", "as": "east", "opts": ["win_by_call"]}]], [
-        ["as", ["south", "west", "north"], [["set_counter", "delta_score_multiplier", "delta_score_multiplier_against_dealer"]]]
+    ["any", [
+      ["when", [{"name": "seat_is", "opts": ["north"]}, {"name": "status", "opts": ["first_turn"]}, {"name": "match", "opts": [["all_ponds"], [[ "nojoker", [["quad"], 1], [["any"], -1] ]]]}], [
+        ["as", "east", [
+          ["push_message", "The dealer pays everyone a discard chase bonus of $amt", {"amt": "kong_mult"}],
+          ["run", "pay_for_kong", {"base": 1, "payee": "others"}]
+        ]]
       ]],
-        //else, if East is not the winner, then East gets their score doubled/quadrupled/whatever
-      ["when", [{"name": "status_missing", "as": "east", "opts": ["win_by_draw"]}, {"name": "status_missing", "as": "east", "opts": ["win_by_call"]}], [
-        ["set_counter_all", "delta_score_multiplier_against_winner", "delta_score_multiplier_against_dealer"],
-        ["as", "east", [["set_counter", "delta_score_multiplier", "delta_score_multiplier_against_winner"]]]
+      ["unset_status", "first_turn"]
+    ]]
+  ],
+  "after_scoring": {
+    "actions": [
+      ["when", ["won"], [
+        // if a nondealer won, set dealer's multiplier to the winner's multiplier
+        // and set all other nondealers' multiplier to 1
+        // if dealer won, no change is needed
+        ["when", [{"name": "not_seat_is", "opts": ["east"]}], [
+          ["set_counter_all", "nondealer_mult", "dealer_mult"],
+          ["as", "others", [
+            ["ite", [{"name": "seat_is", "opts": ["east"]}], [
+              ["set_counter", "dealer_mult", "nondealer_mult"]
+            ], [
+              ["set_counter", "dealer_mult", 1]
+            ]]
+          ]]
+        ]],
+        // everyone pays the winner score * multiplier
+        ["modify_payout", "all", 0, "set"],
+        ["as", "others", [
+          ["set_counter", "payout", "score"],
+          ["multiply_counter", "payout", "dealer_mult"],
+          ["modify_payout", "self", "payout", "subtract"],
+          ["modify_payout", "prev_seat", "payout", "add"]
+        ]]
       ]]
     ]
   },
@@ -228,22 +230,8 @@
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "seat_is", "opts": ["east"]}],
       "actions": [
         ["big_text", "Double Down"],
-        ["set_status_all", "double_down"],
-        ["as", "all", [["multiply_counter", "delta_score_multiplier_against_dealer", 2]]],
-        ["remove_attr_hand", "_concealed"],
-        ["unset_status", "match_start"],
-        ["advance_turn"]
-      ],
-      "unskippable": true
-    },
-    "start_challenge_dealer_twice": {
-      "display_name": "Challenge Dealer x2",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 2]}],
-      "actions": [
-        ["big_text", "Challenge Dealer"],
-        ["set_status", "challenge_dealer_twice"],
-        ["multiply_counter", "delta_score_multiplier_against_dealer", 4],
-        ["subtract_counter", "challenge_tokens", 2],
+        ["set_counter_all", "dealer_mult", 2],
+        ["set_counter_all", "kong_mult", 2],
         ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
         ["advance_turn"]
@@ -255,8 +243,20 @@
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 1]}],
       "actions": [
         ["big_text", "Challenge Dealer"],
-        ["set_status", "challenge_dealer"],
-        ["multiply_counter", "delta_score_multiplier_against_dealer", 2],
+        ["multiply_counter", "dealer_mult", 2],
+        ["subtract_counter", "challenge_tokens", 1],
+        ["remove_attr_hand", "_concealed"],
+        ["unset_status", "match_start"],
+        ["advance_turn"]
+      ],
+      "unskippable": true
+    },
+    "start_challenge_dealer_twice": {
+      "display_name": "Challenge Dealer x2",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 2]}],
+      "actions": [
+        ["big_text", "Challenge Dealer"],
+        ["multiply_counter", "dealer_mult", 4],
         ["subtract_counter", "challenge_tokens", 2],
         ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
@@ -342,7 +342,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "last_call_is", "opts": ["kakan"]},
         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
-        {"name": "has_yaku_with_call", "opts": [1]}
+        {"name": "has_yaku_with_call", "opts": [2]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -354,7 +354,7 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        {"name": "has_yaku_with_hand", "opts": [1]}
+        {"name": "has_yaku_with_hand", "opts": [2]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     }
@@ -397,6 +397,8 @@
   },
   "interruptible_actions": ["play_tile", "advance_turn", "draw", "call", "self_call", "upgrade_call"],
   "persistent_statuses": ["match_start"], // so it doesn't get cleared after before_start
+  "persistent_counters": ["challenge_tokens"],
+  "shown_statuses_public": ["challenge_tokens"],
   "initial_score": 50,
   "starting_tiles": 13,
   "max_rounds": 16,
