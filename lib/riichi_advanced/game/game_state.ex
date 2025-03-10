@@ -348,6 +348,8 @@ defmodule RiichiAdvanced.GameState do
         {state, %{}}
     end
 
+    state = check_rules(state, rules)
+
     state = Map.put(state, :rules, rules)
 
     # generate shanten definitions if they don't exist in rules
@@ -443,6 +445,14 @@ defmodule RiichiAdvanced.GameState do
           state
       end
     end
+  end
+
+  def check_rules(state, rules) do
+    state = if get_in(rules["buttons"]["skip"]) != nil do
+      show_error(state, "Error: \"skip\" is an invalid button name.")
+    else state end
+
+    state
   end
 
   def update_player(state, seat, fun), do: Map.update!(state, :players, &Map.update!(&1, seat, fun))
