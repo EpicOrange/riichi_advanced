@@ -433,7 +433,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["1z", "2z", "3z", "4z", "7p"],
+      "starting_draws": ["1z", "2z", "3z", "4z", "6p"],
       "starting_dead_wall": ["6p"]
     }
     """, [
@@ -448,7 +448,37 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Single Wait", 1}, {"Self Draw", 1}, {"Win On Baida", 1}, {"Baida Reuse", 2}, {"Baida Pair Win", 1}],
+        yaku: [{"Single Wait", 1}, {"Self Draw", 1}, {"Win On Baida", 1}, {"Baida Reuse", 1}, {"Baida Pair Win", 1}],
+        yaku2: []
+      }
+    })
+  end
+
+  test "ningbo - baida reuse counts towards 4 han minimum" do
+    TestUtils.test_yaku_advanced("ningbo", [], """
+    {
+      "starting_hand": {
+        "east": ["6m", "7m", "8m", "7p", "9p", "9p", "9p", "5s", "6s", "7s", "2m", "2m", "2m"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "2z", "3z", "4z", "8p"],
+      "starting_dead_wall": ["6m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Closed Wait", 1}, {"Self Draw", 1}, {"Baida Reuse", 2}],
         yaku2: []
       }
     })

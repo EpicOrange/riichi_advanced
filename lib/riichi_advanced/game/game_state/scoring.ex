@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     }
     eligible_yaku = yaku_list
       |> Enum.filter(fn %{"display_name" => _name, "value" => _value, "when" => cond_spec} -> Conditions.check_cnf_condition(state, cond_spec, context) end)
-      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, if is_number(value) do value else Map.get(state.players[seat].counters, value, 0) end} end)
+      |> Enum.map(fn %{"display_name" => name, "value" => value, "when" => _cond_spec} -> {name, Actions.interpret_amount(state, context, value)} end)
     eligible_yaku = existing_yaku ++ eligible_yaku
     yaku_map = Enum.reduce(eligible_yaku, %{}, fn {name, value}, acc -> Map.update(acc, name, value, & &1 + value) end)
     eligible_yaku = eligible_yaku
@@ -147,6 +147,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
       {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+      
+      # run before_scoring actions
+      state = if Map.has_key?(state.rules, "before_scoring") do
+        Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: assigned_winning_tile, win_source: win_source})
+      else state end
+
       {yaku, minipoints, _winning_tile} = get_best_yaku_from_lists(state, yaku_list_names, seat, [assigned_winning_tile], win_source)
       minipoints >= min_minipoints && case min_points do
         :declared ->

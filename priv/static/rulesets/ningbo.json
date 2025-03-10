@@ -392,7 +392,7 @@
       "show_when": [
         "not_our_turn",
         "someone_else_just_discarded",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         [
           {"name": "has_yaku_with_discard", "opts": [4]},

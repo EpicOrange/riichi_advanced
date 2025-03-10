@@ -179,9 +179,8 @@ defmodule RiichiAdvanced.TestUtils do
       for {seat, expected_winner} <- expected_winners do
         assert seat in state.winner_seats
         errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
-        case Enum.find(errs, &not Enum.empty?(&1)) do
-          nil -> :ok
-          err_list -> for {k, actual, expected} <- err_list do
+        if [] not in errs do
+          for tuples <- errs, {k, actual, expected} <- tuples do
             IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
             assert actual == expected
           end
