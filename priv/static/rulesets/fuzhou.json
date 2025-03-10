@@ -1,14 +1,10 @@
 {
 // TODOs:
-    // this is purely a visual thing if someone clicks on "Show Walls". so, not high-priority, probably not even necessary for PR
-  //⚠️ place the gold tile above the 17th and 18th tiles from the dead wall. as the dead wall shifts (which it will), the revealed "jin" tile is never drawn, it is always moved above the 9th tile-pair away from the end and marks where the dead wall begins.
-    // need some kind of engine update, i think?
   //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
 // mods/rule-variants
   // reddit post says only red dragon is a flower, not all 3 dragons
   // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
   // mahjongpros also seem to have a few more yaku
-  // apparently flower declaration is optional (works like nukidora in sanma) in some variants of Fuzhou, which allows you to keep a flower-gold and use it as a joker instead of as a flower
   
   "default_mods": ["show_waits"],
   "available_mods": [
@@ -465,7 +461,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "upgrade_call", "flower", "noop"],
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "upgrade_call", "flower"],
   "display_honba": true,
   "display_wall": true,
   "initial_score": 0,
