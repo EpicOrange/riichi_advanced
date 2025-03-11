@@ -162,7 +162,7 @@
   "yaku_precedence": {
     "Pure Flush": ["Half Flush"],
     "Edge Wait": ["Closed Wait"],
-    "Single Wait": ["Edge Wait"],
+    "Single Wait": ["Edge Wait", "Closed Wait"], // e.g. 2334 should score single wait
     "All Honours": ["All Triplets", "Half Flush"],
     "Blessing of Heaven": ["Self Draw", "Single Wait"] // note: edge/closed wait are not guaranteed
   },
