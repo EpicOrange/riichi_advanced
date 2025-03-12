@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.MahjongScriptSecurityTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.Compiler, as: Compiler
+  alias RiichiAdvanced.Parser, as: Parser
 
   def is_unsafe_jq?(jq) do
     # pass in jq that executes `env`
@@ -19,7 +20,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     script = """
     set("key\\\" | env", "key\\\" | env")
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
@@ -30,7 +31,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
       print("hello")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
@@ -41,7 +42,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
       print("hello\\\" | env")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
@@ -52,7 +53,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
       print("hello `env`")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
@@ -64,7 +65,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
       print("$ENV")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
@@ -77,14 +78,14 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
       print("hello \\\\\\\\(. | env)")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
   test "mahjongscript - parse rejects scripts larger than 4MB" do
     script = "set #{String.duplicate("x", 4 * 1024 * 1024)}, 1"
-    assert {:error, msg} = Compiler.parse(script)
+    assert {:error, msg} = Parser.parse(script)
     assert String.contains?(msg, "script too large")
   end
 

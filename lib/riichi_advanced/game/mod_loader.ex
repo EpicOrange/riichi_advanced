@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.ModLoader do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.Compiler, as: Compiler
+  alias RiichiAdvanced.Parser, as: Parser
 
   def get_mod_name(mod) do
     case mod do
@@ -66,7 +67,7 @@ defmodule RiichiAdvanced.ModLoader do
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
           {:ok, ruleset_majs} ->
-            with {:ok, ast} <- Compiler.parse(ruleset_majs),
+            with {:ok, ast} <- Parser.parse(ruleset_majs),
                  {:ok, jq} <- Compiler.compile_jq(ast) do
               JQ.query_string_with_string!("{}", jq)
             else 

@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.Compiler, as: Compiler
+  alias RiichiAdvanced.Parser, as: Parser
 
   # happy cases
 
@@ -12,7 +13,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -26,7 +27,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -38,7 +39,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
   
@@ -50,7 +51,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -62,7 +63,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -74,7 +75,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -84,7 +85,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     set "name2", "example 2"
     set("name3", "example 3")
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     assert String.contains?(compiled, ".[\"name1\"] = \"example 1\"")
     assert String.contains?(compiled, ".[\"name2\"] = \"example 2\"")
@@ -102,7 +103,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       print("baz")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     assert String.contains?(compiled, ".[\"after_win\"].actions += [[\"run\",\"after_win1\"]]")
     assert String.contains?(compiled, ".[\"after_win\"].actions += [[\"run\",\"after_win2\"]]")
@@ -115,7 +116,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     def foo, do: print("asdf")
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -123,7 +124,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     on foo, "has spaces"
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -133,7 +134,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       print("hello")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
@@ -145,7 +146,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     define_set myset, "1m 2m 3m"
     define_set myset, "0 1m 2p"
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     IO.puts(compiled)
   end
@@ -177,7 +178,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     123
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "invalid root node")
   end
@@ -186,7 +187,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     invalid_command foo, "bar"
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "not a valid toplevel command")
   end
@@ -197,7 +198,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       invalid_action()
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "not a valid action")
   end
@@ -210,7 +211,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "not a valid condition")
   end
@@ -221,7 +222,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       123
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "expected an action")
   end
@@ -234,7 +235,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "`if` expects a condition")
   end
@@ -244,7 +245,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       [1, 2, 3]
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "expected an action")
   end
@@ -257,7 +258,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "`if` expects a condition")
   end
@@ -268,7 +269,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       %{"a" => 1}
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "expected an action")
   end
@@ -281,7 +282,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       end
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "`if` expects a condition")
   end
@@ -294,7 +295,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       print("test \\\\(. | debug)")
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute String.contains?(compiled, " \\(")
   end
@@ -303,7 +304,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     on
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "command expects arguments")
   end
@@ -312,7 +313,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     set
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "command expects arguments")
   end
@@ -321,7 +322,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     on 123
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "got invalid name")
   end
@@ -330,7 +331,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     set 123
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "got invalid name")
   end
@@ -339,7 +340,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     def foo, "not a do block"
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "expected an action")
   end
@@ -351,7 +352,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       "not an action"
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "expected an action")
   end
@@ -363,7 +364,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
       "not an action"
     end
     """
-    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "expected an action")
   end

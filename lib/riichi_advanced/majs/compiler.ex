@@ -1,18 +1,7 @@
 defmodule RiichiAdvanced.Compiler do
-  alias RiichiAdvanced.Validator
+  alias RiichiAdvanced.Parser
   alias RiichiAdvanced.Utils
-
-  def parse(input) when is_binary(input) do
-    case byte_size(input) do
-      size when size > 4 * 1024 * 1024 ->
-        {:error, "script too large (#{size / 1024 / 1024} MB > 4 MB)"}
-      _ ->
-        case Code.string_to_quoted(input, columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, if name == "do" do :do else name end} end) do
-          {:ok, ast} -> {:ok, ast}
-          {:error, err} -> {:error, err}
-        end
-    end
-  end
+  alias RiichiAdvanced.Validator
 
   defp compile_condition(condition, line, column) do
     condition = case condition do
@@ -149,43 +138,29 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_set` command expects a single string value, got #{inspect(args)}"}
     end
 
-    # generate a set using this
-    set_spec = with {:ok, set_spec} <- set_spec do
-      for subgroup <- String.split(set_spec, "|", trim: true) do
-        for item <- String.split(subgroup, " ", trim: true) do
-          # check for attributes
-          item_attrs = case String.split(item, "@") do
-            [item] -> {:ok, {item, []}}
-            [item, attrs] -> {:ok, {item, String.split(attrs, ",")}}
-            _ -> {:error, "expected no more than one @ in set item"}
-          end
-          with {:ok, {item, attrs}} <- item_attrs do
-            offset = case Integer.parse(item) do
-              {offset, ""} -> offset
-              _ -> item
-            end
-            if Enum.empty?(attrs) do
-              {:ok, offset}
-            else
-              {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
-            end
-          end
-        end |> Utils.sequence()
-      end |> Utils.sequence()
-    end
-
-    # simplify singleton sets, i.e. [[0,1,2]] -> [0,1,2]
-    set_spec = with {:ok, set_spec} <- set_spec do
-      case set_spec do
-        [set] when is_list(set) -> {:ok, set}
-        set -> {:ok, set}
-      end
-    end
+    set_spec = with {:ok, set_spec} <- set_spec, do: Parser.parse_set(set_spec)
 
     with {:ok, set_spec} <- set_spec,
          {:ok, set_spec} <- Validator.validate_json(set_spec),
          {:ok, set_spec} <- Jason.encode(set_spec) do
       {:ok, ".set_definitions[#{name}] = #{set_spec}"}
+    end
+  end
+
+  defp compile_command("define_match", name, args, line, column) do
+    match_spec = case args do
+      [match_spec] when is_binary(match_spec) -> {:ok, match_spec}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value, got #{inspect(args)}"}
+    end
+
+    match_spec = with {:ok, match_spec} <- match_spec, do: Parser.parse_match(match_spec)
+
+    with {:ok, match_spec} <- match_spec,
+         {:ok, match_spec} <- Validator.validate_json(match_spec),
+         {:ok, match_spec} <- Jason.encode(match_spec) do
+      # `name` is already escaped, so we just insert _definition right before the last quote
+      name = Utils.insert_at(name, "_definition", -2)
+      {:ok, ".[#{name}] = #{match_spec}"}
     end
   end
 
