@@ -10,11 +10,16 @@
   // * ✅ Figure out the difference between "win_by_discard_label" and "win_by_discard_name". Ditto for "win_by_draw_label" and "win_by_draw_name". Once done, convert these as appropriate.
   
   // <TODO: Add the following mods:>
-  // Flowers: Adds flowers to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
+  // ✅ Flowers: Adds flowers to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
   // Lesser Weight Flowers: Adds flowers to the game, but all flower-related patterns are worth half as much. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
   // 5-point Minimum: As described in Basic Rules Section 5 of https://www.zj-mahjong.info/zj33_rules_eng.html . Otherwise self-explanatory.
   
-  // "available_mods": ["flowers"], ["lesser weight flowers"]
+  "available_mods": [
+		{"id": "zj_flowers", "name": "Bonus Tiles", "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
+			// TODO: implement the following two mods. maybe "zj_lesser_weight_flowers" is a submod of "zj_flowers", if you can figure out how to make the jq work like that.
+		{"id": "zj_lesser_weight_flowers", "name": "Lesser Weight Bonus Tiles", "desc": "Adds bonus tiles to the game, but all bonus tile-related patterns are worth half as much."},
+		{"id": "zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
+	],
   "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
@@ -471,102 +476,7 @@
 	  "display_name": "Seven Pairs",
 	  "value": 30,
 	  "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["pair"], 7]]]]}]
-	}
-    // 11.0 Flowers
-	// NOTE: These yaku only work if you have the "Flowers" mod turned on.
-	
-	// {
-    //   "display_name": "Improper Flower",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["2f","3f","4f"], 1]]]]}]
-    // },
-	// {
-    //   "display_name": "Improper Flower",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["1f","3f","4f"], 1]]]]}]
-    // },
-	// {
-    //   "display_name": "Improper Flower",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["1f","2f","4f"], 1]]]]}]
-    // },
-	// {
-    //   "display_name": "Improper Flower",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["1f","2f","3f"], 1]]]]}]
-    // },
-	
-	// {
-    //   "display_name": "Improper Season",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["2g","3g","4g"], 1]]]]}]
-    // },
-	// {
-    //   "display_name": "Improper Season",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["1g","3g","4g"], 1]]]]}]
-    // },
-	// {
-    //   "display_name": "Improper Season",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["1g","2g","4g"], 1]]]]}]
-    // },
-	// {
-    //   "display_name": "Improper Season",
-    //   "value": 2,
-    //   "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["1g","2g","3g"], 1]]]]}]
-    // },
-	
-    // {
-    //   "display_name": "Proper Flower",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Flower",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Flower",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Flower",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Season",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1g"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Season",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Season",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Proper Season",
-    //   "value": 4,
-    //   "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
-    // },
-    // {
-    //   "display_name": "Four Flowers",
-    //   "value": 10,
-    //   "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}]
-    // },
-    // {
-    //   "display_name": "Four Seasons",
-    //   "value": 10,
-    //   "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}]
-    // },
+		}
   ],
 	"listed_limit_hand": [
     {
@@ -607,12 +517,6 @@
   // <TODO: Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .>
   
   "yaku_precedence": {
-    // "Seat Flower": ["No Flowers"],
-    // "Seat Season": ["No Flowers"],
-    // "All Flowers": ["Seat Flower"],
-    // "All Seasons": ["Seat Season"],
-    // "Seven Flowers": ["All Flowers", "All Seasons"],
-    // "Eight Flowers": ["Seven Flowers"],
     "Pure One-Suit": ["Mixed One-Suit"],
 	
     "Big Three Dragons": ["Small Three Dragons"],
@@ -687,12 +591,13 @@
     "actions": [
       ["unset_status", "kan"],
       ["unset_status_all", "call_made"],
-	  ["unset_status_all", "first_turn"]
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
   "after_turn_change": {
     "actions": [
-      ["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw"]]]
+      ["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [["draw"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "play_effects": [
@@ -727,36 +632,23 @@
 		]
   },
   "buttons": {
-    // <TODO: Re-enable this when flowers are turned on.>
-    // "start_flower": {
-    //   "display_name": "Reveal flower",
-    //   "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-    //   "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]],
-    //   "unskippable": true
-    // },
-    // "start_no_flower": {
-    //   "display_name": "No flowers",
-    //   "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-    //   "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["merge_draw"], ["advance_turn"]],
-    //   "unskippable": true
-    // },
     "chii": {
       "display_name": "Chow",
       "call": [[-2, -1], [-1, 1], [1, 2]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available", {"name": "status_missing", "opts": ["match_start"]}],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
     "pon": {
       "display_name": "Pong",
       "call": [[0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available", {"name": "status_missing", "opts": ["match_start"]}],
       "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
       "display_name": "Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "show_when": ["not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available", {"name": "status_missing", "opts": ["match_start"]}],
       "actions": [
         ["big_text", "Kong"], ["call"], ["change_turn", "self"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -769,7 +661,7 @@
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "status_missing", "opts": ["match_start"]}],
       "actions": [
         ["big_text", "Kong"], ["self_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -782,7 +674,7 @@
       "display_name": "Kong",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}, {"name": "status_missing", "opts": ["match_start"]}],
       "actions": [
         ["big_text", "Kong"], ["upgrade_call"],
         ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
@@ -827,16 +719,12 @@
       "show_when": [
         "our_turn",
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+				{"name": "status_missing", "opts": ["match_start"]}
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
     }
-    // "flower": {
-    //   "display_name": "Flower",
-    //   "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
-    //   "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw"]]
-    // }
   },
   "auto_buttons": {
     "1_auto_sort": {
@@ -868,15 +756,6 @@
       "actions": [["when", ["has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
-    //"5_auto_flower": {
-    //  "display_name": "F",
-    //  "actions": [
-    //    ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
-    //    ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
-    //    ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
-    //  ],
-    //  "enabled_at_start": false
-    //}
   },
   "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
   "display_wall": true,
