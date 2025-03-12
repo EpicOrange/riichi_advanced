@@ -505,6 +505,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0
       ["honba_value" | _opts] -> get_in(state.rules["score_calculation"]["honba_value"]) || 0
+      ["payout" | opts] -> Enum.at(state.delta_scores, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")) |> Log.to_seat())
       ["points" | _opts] when is_map_key(context, :points) -> context.points
       ["points2" | _opts] when is_map_key(context, :points2) -> context.points2
       ["score" | _opts] when is_map_key(context, :score) -> context.score

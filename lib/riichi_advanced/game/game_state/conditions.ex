@@ -156,6 +156,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "all" -> state.available_seats
       "everyone" -> state.available_seats
       "others" -> state.available_seats -- [context.seat]
+      "winners" -> state.winner_seats
       "chii_victims" -> for {"chii", tiles} <- state.players[context.seat].calls do
         # check sideways tiles
         case Enum.map(tiles, &Utils.has_attr?(&1, ["sideways"])) do
