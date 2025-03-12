@@ -3,11 +3,11 @@
   // * Add mods.
   // * Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .
   // * Figure out how to code the weird-ass scoring quirks:
-  // ** 320 point limit except for "Listed Limit" hands (not sure how to code this, but I feel it might be possible?)
-  // ** only one "Listed Limit" hand being counted at once, and all such hands overriding the 320 point limit (DONE!)
-  // ** the "everyone pays the value of the hand up to 25 points, then responsible player pays the remainder" rule (not sure this is codeable yet!)
+  // ** ✅ 320 point limit except for "Listed Limit" hands (not sure how to code this, but I feel it might be possible?)
+  // ** ✅ only one "Listed Limit" hand being counted at once, and all such hands overriding the 320 point limit (DONE!)
+  // ** ✅ the "everyone pays the value of the hand up to 25 points, then responsible player pays the remainder" rule
   // ** the "discarder of first copy of the winning tile in that go-around is responsible" rule (probably doable with a "responsible" tag the way Riichi has a "furiten" tag)
-  // * Figure out the difference between "win_by_discard_label" and "win_by_discard_name". Ditto for "win_by_draw_label" and "win_by_draw_name". Once done, convert these as appropriate.
+  // * ✅ Figure out the difference between "win_by_discard_label" and "win_by_discard_name". Ditto for "win_by_draw_label" and "win_by_draw_name". Once done, convert these as appropriate.
   
   // <TODO: Add the following mods:>
   // Flowers: Adds flowers to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
@@ -15,7 +15,7 @@
   // 5-point Minimum: As described in Basic Rules Section 5 of https://www.zj-mahjong.info/zj33_rules_eng.html . Otherwise self-explanatory.
   
   // "available_mods": ["flowers"], ["lesser weight flowers"]
-  // "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
+  "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -234,7 +234,6 @@
       "when": [{"name": "match", "opts": [["hand"], [["chuurenpoutou"], 1]]}]
     },
 	// 3.0 Honor Tiles
-    // <TODO: make sure this bit works correctly>
     {
       "display_name": "Value Honor",
       "value": 10,
@@ -569,10 +568,7 @@
     //   "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}]
     // },
   ],
-  
-  // <TODO: Test that Chicken Hand and Listed Limit Hands work.>
-  
-  "listed_limit_hand": [
+	"listed_limit_hand": [
     {
       "display_name": "Small Four Winds",
       "value": 320,
@@ -605,11 +601,10 @@
     }
   ],
   "meta_yaku": [
-    {"display_name": "Chicken Hand", "value": 1, "when": ["has_no_yaku","listed_limit_hand"]}
+    {"display_name": "Chicken Hand", "value": 1, "when": ["has_no_yaku"]}
   ],
   
   // <TODO: Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .>
-  //
   
   "yaku_precedence": {
     // "Seat Flower": ["No Flowers"],
@@ -663,20 +658,6 @@
   
   
   "score_calculation": {
-  
-    // <TODO: figure out how to limit max points to 320. See Basic Rules Section 6 of https://www.zj-mahjong.info/zj33_rules_eng.html, quoted below:>
-    // 
-    // >> Maximum Limit: There is a "limit" of 320 points. If the hand contains multiple patterns of which values add up to 320 or more, the hand scores 320 points (called a "Compound Limit Hand"). But if the hand contains a pattern which has a listed value of 320 or more (called a "Listed Limit Hand"), it scores the single highest-valued pattern in the hand. (It scores for one single pattern only.)
-    // 
-    // For reference, the "Listed Limit Hands" are Nine Gates, Small/Big Four Winds, All Honors, Four Kong, Four Identical Sequences, and Pure Greater Terminals.
-	// 
-	// OK, after some sleep, I can probably use "yaku2" for these limit hands to override "yaku". Still not sure how to cap "yaku" at 320 points, though. :/
-	
-	// <TODO: Also figure out what Payoff Scheme Section 4 is going on about. Why does the discarder only pay the full value if the hand is large, WTF?>
-	//
-	// >> Discarder pays for big hands: When the winner wins on discard, in general the discarder is "responsible" (exception explained below). 25 points is taken to be the standard score value; for small hands of 25 points or less, the three players split the payment equally (regardless of who is responsible), and each player pays the winner 1 time the total hand value. For a big hand of over 25 points, each player first pays the winner 25 points, and then the responsible player pays the rest of the balance (so that the winner receives in total 3 times his hand value). For example, if the winning hand is 70 points, the two non-responsible players each pay 25 points, and the responsible player pays the remaining 160 points. The winner gets in total 210 points, which is exactly 3 times 70 points.
-	//
-	// <I guess "split the payment equally" actually means that everyone pays the value of the hand, up to 25 points. This is weird.>
 	
 	// <TODO: oh god it gets worse, look at Section 5:>
 	//
@@ -684,25 +665,19 @@
 	//
 	// <welp i thought this would be easy, but it evidently isn't>
 
-  
-    "scoring_method": ["multiplier", "multiplier"]
+    "scoring_method": ["multiplier", "multiplier"],
     "score_multiplier": 1,
-    "discarder_multiplier": 3,
-    "non_discarder_multiplier": 0,
+    "discarder_multiplier": 1,
+    "non_discarder_multiplier": 1,
     "self_draw_multiplier": 1,
-    "yaku_lists": ["yaku","meta_yaku"],
+    "yaku_lists": ["yaku", "meta_yaku"],
     "yaku2_lists": ["listed_limit_hand"],
-	"yaku2_overrides_yaku1": true
+		"yaku2_overrides_yaku1": true,
     "point_name": "points",
-	"point2_name": "points",
-	
-	// <TODO: Figure out the difference between "win_by_discard_label" and "win_by_discard_name". Ditto for "win_by_draw_label" and "win_by_draw_name". Once done, convert these as appropriate.>
-	
+		"point2_name": "points",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",
-    "win_by_discard_name_2": "Double Hu",
-    "win_by_discard_name_3": "Triple Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
     "score_denomination": "point"
@@ -725,6 +700,31 @@
   ],
   "after_start": {
     "actions": [["set_status_all", "first_turn"]]
+  },
+  "after_win": {
+    "actions": [
+			["when", [
+					// this should be an OR of these conditions, right?
+				{"name": "not_has_yaku2_with_hand", "opts": [1]},
+				{"name": "not_has_yaku2_with_discard", "opts": [1]},
+				{"name": "not_has_yaku2_with_call", "opts": [1]}
+			], [
+				["modify_winner", "score", 320, "max"]
+				]
+			]
+		]
+  },
+  "after_scoring": {
+    "actions": [
+			["when", "won_by_discard", [
+					["set_counter_all", "temp_payout", "payout"],
+					["multiply_counter_all", "temp_payout", 3],
+					["subtract_counter_all", "temp_payout", 50],
+					["modify_payout", "all", 25, "min"],
+					["modify_payout", "last_discarder", "temp_payout", "max"]
+				]
+			]
+		]
   },
   "buttons": {
     // <TODO: Re-enable this when flowers are turned on.>
