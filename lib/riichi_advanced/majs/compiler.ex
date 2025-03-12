@@ -5,10 +5,14 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_condition(condition, line, column) do
     condition = case condition do
+      false -> {:ok, {"false", []}}
+      true -> {:ok, {"true", []}}
       condition when is_binary(condition) -> {:ok, {condition, []}}
       {condition, _pos, nil} when is_binary(condition) -> {:ok, {condition, []}}
       {condition, _pos, opts} when is_binary(condition) -> {:ok, {condition, opts}}
-      _ -> {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, `if` expects a condition, got #{inspect(condition)}"}
+      %{"name" => condition, "opts" => opts} -> {:ok, {condition, opts}}
+      {:%{}, [line: line, column: column], map} -> compile_condition(Map.new(map), line, column)
+      _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
     end
     with {:ok, {condition, opts}} <- condition,
          {:ok, opts} <- Validator.validate_json(opts) do
@@ -19,7 +23,7 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, %{"name" => condition, "opts" => opts}}
         end
       else
-        {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}
+        {:error, "Compiler.compile_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}
       end
     end
   end
@@ -84,7 +88,7 @@ defmodule RiichiAdvanced.Compiler do
               {seats_spec, _pos, nil} when is_binary(seats_spec) -> {:ok, seats_spec}
               _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, `as` expects a seat spec, got #{inspect(seats_spec)}"}
             end
-            with {:ok, seats_spec} <- IO.inspect(seats_spec),
+            with {:ok, seats_spec} <- seats_spec,
                  {:ok, actions} <- compile_action_list(Keyword.get(actions, :do), line, column) do
               {:ok, ["as", seats_spec, actions]}
             end
@@ -92,12 +96,23 @@ defmodule RiichiAdvanced.Compiler do
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
-          case Utils.sequence(Enum.map(args, &Validator.validate_json/1)) do
-            {:ok, args}   -> {:ok, [name | args]}
-            {:error, msg} -> {:error, msg}
+          # each action in a quoted do block should be treated as another parameter
+          args = Enum.map(Enum.with_index(args), &case &1 do
+            {{"quote", [line: line, column: column], [[do: actions]]}, _i} -> compile_action_list(actions, line, column)
+            {arg, i} when name == "add" and i == 1 ->
+              with {:ok, condition} <- compile_cnf_condition(arg, line, column) do
+                {:ok, [condition]}
+              end
+            {arg, _i} -> {:ok, [arg]}
+          end)
+          |> Utils.sequence()
+          with {:ok, args} <- args,
+               {:ok, args} <- args |> Enum.concat() |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
+            {:ok, [name | args]}
           end
         else
-          {:error, "Compiler.compile_action: at line #{line}:#{column}, #{inspect(name)} is not a valid action"}
+          # convert into a function call
+          {:ok, ["run", name]}
         end
       _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
     end

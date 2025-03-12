@@ -237,7 +237,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     """
     assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "`if` expects a condition")
+    assert String.contains?(msg, "expecting a condition")
   end
   test "mahjongscript - invalid list as action" do
     script = """
@@ -260,7 +260,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     """
     assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "`if` expects a condition")
+    assert String.contains?(msg, "expecting a condition")
   end
 
   test "mahjongscript - invalid map as action" do
@@ -284,7 +284,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     """
     assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "`if` expects a condition")
+    assert String.contains?(msg, "expecting a condition")
   end
 
   test "mahjongscript - no string interpolation" do
