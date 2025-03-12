@@ -1,23 +1,12 @@
 {
   // <MASTER TODO LIST:>
-  // * ✅️ Add mods.
   // * Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .
-  // * Figure out how to code the weird-ass scoring quirks:
-  // ** ✅ 320 point limit except for "Listed Limit" hands (not sure how to code this, but I feel it might be possible?)
-  // ** ✅ only one "Listed Limit" hand being counted at once, and all such hands overriding the 320 point limit (DONE!)
-  // ** ✅ the "everyone pays the value of the hand up to 25 points, then responsible player pays the remainder" rule
-  // ** the "discarder of first copy of the winning tile in that go-around is responsible" rule (probably doable with a "responsible" tag the way Riichi has a "furiten" tag)
-  // * ✅ Figure out the difference between "win_by_discard_label" and "win_by_discard_name". Ditto for "win_by_draw_label" and "win_by_draw_name". Once done, convert these as appropriate.
-  
-  // <TODO: Add the following mods:>
-  // ✅ Flowers: Adds flowers to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
-  // ✅️ Lesser Weight Flowers: Adds flowers to the game, but all flower-related patterns are worth half as much. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
-  // ✅️ 5-point Minimum: As described in Basic Rules Section 5 of https://www.zj-mahjong.info/zj33_rules_eng.html . Otherwise self-explanatory.
+  // * Figure out how to implement the "responsibility" rule (not sure how to do this, tbh)
   
   "available_mods": [
 		{"id": "zungjung/zj_flowers", "name": "Bonus Tiles", "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
-			// TODO: implement the following two mods. maybe "zj_lesser_weight_flowers" is a submod of "zj_flowers", if you can figure out how to make the jq work like that.
-		{"id": "zungjung/zj_lesser_weight_flowers", "name": "Lesser Weight Bonus Tiles", "desc": "Adds bonus tiles to the game, but all bonus tile-related patterns are worth half as much."},
+			// TODO: maybe convert "zungjung/zj_lesser_weight_flowers" into a submod of "zungjung/zj_flowers", if you can figure out how to make the jq work like that.
+		{"id": "zungjung/zj_lesser_weight_flowers", "conflicts": ["zungjung/zj_flowers"], "name": "Lesser Weight Bonus Tiles", "desc": "Adds bonus tiles to the game, but all bonus tile-related patterns are worth half as much."},
 		{"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
 	],
   "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
@@ -520,25 +509,22 @@
     "Pure One-Suit": ["Mixed One-Suit"],
 	
     "Big Three Dragons": ["Small Three Dragons"],
-    "Big Four Winds": ["Small Four Winds", "Big Three Winds", "Small Three Winds"],
     "Small Four Winds": ["Big Three Winds", "Small Three Winds"],
     "Big Three Winds": ["Small Three Winds"],
 	
     "Four Concealed Triplets": ["Three Concealed Triplets", "Two Concealed Triplets"],
     "Three Concealed Triplets": ["Two Concealed Triplets"],
-    "Four Kong": ["Three Kong", "Two Kong", "One Kong", "Seven Pairs"],
     "Three Kong": ["Two Kong", "One Kong", "Seven Pairs"],
     "Two Kong": ["One Kong", "Seven Pairs"],
     "One Kong": ["Seven Pairs"],
 	
-    "Four Identical Sequences": ["Three Identical Sequences", "Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
-    "Three Identical Sequences": ["Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
+    "Three Identical Sequences": ["Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs", "Three Consecutive Triplets"],
     "Two Identical Sequences Twice": ["Two Identical Sequences", "Seven Pairs"],
 	
     "Three Similar Triplets": ["Small Three Similar Triplets", "Seven Pairs"],
     "Small Three Similar Triplets": ["Seven Pairs"],
 	
-    "Four Consecutive Triplets": ["Three Consecutive Triplets", "Seven Pairs"],
+    "Four Consecutive Triplets": ["Three Consecutive Triplets", "Seven Pairs", "Three Identical Sequences"],
     "Three Consecutive Triplets": ["Seven Pairs"],
 	
     "Pure Greater Terminals": ["Mixed Greater Terminals", "Pure Lesser Terminals", "Mixed Lesser Terminals"],
@@ -549,10 +535,9 @@
     "Blessing of Earth": ["Blessing of Heaven"],
     "Seven Pairs": ["Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
 	
-	
-    "Four Kong": ["Four Identical Sequences", "Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals"],
-    "Four Identical Sequences": ["Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals"],
-    "Big Four Winds": ["All Honours", "Small Four Winds"],
+    "Four Kong": ["Four Identical Sequences", "Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Kong", "Two Kong", "One Kong", "Seven Pairs"],
+    "Four Identical Sequences": ["Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Identical Sequences", "Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
+    "Big Four Winds": ["All Honours", "Small Four Winds", "Small Four Winds", "Big Three Winds", "Small Three Winds"],
     "All Honours": ["Small Four Winds"]
 	
   },
@@ -584,7 +569,6 @@
     "win_by_discard_name": "Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
-    "score_denomination": "point"
 	
   },
   "before_turn_change": {
