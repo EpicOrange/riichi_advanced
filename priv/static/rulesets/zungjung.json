@@ -1,6 +1,6 @@
 {
   // <MASTER TODO LIST:>
-  // * Add mods.
+  // * ✅️ Add mods.
   // * Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .
   // * Figure out how to code the weird-ass scoring quirks:
   // ** ✅ 320 point limit except for "Listed Limit" hands (not sure how to code this, but I feel it might be possible?)
@@ -11,14 +11,14 @@
   
   // <TODO: Add the following mods:>
   // ✅ Flowers: Adds flowers to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
-  // Lesser Weight Flowers: Adds flowers to the game, but all flower-related patterns are worth half as much. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
+  // ✅️ Lesser Weight Flowers: Adds flowers to the game, but all flower-related patterns are worth half as much. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
   // ✅️ 5-point Minimum: As described in Basic Rules Section 5 of https://www.zj-mahjong.info/zj33_rules_eng.html . Otherwise self-explanatory.
   
   "available_mods": [
-		{"id": "zj_flowers", "name": "Bonus Tiles", "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
+		{"id": "zungjung/zj_flowers", "name": "Bonus Tiles", "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
 			// TODO: implement the following two mods. maybe "zj_lesser_weight_flowers" is a submod of "zj_flowers", if you can figure out how to make the jq work like that.
-		{"id": "zj_lesser_weight_flowers", "name": "Lesser Weight Bonus Tiles", "desc": "Adds bonus tiles to the game, but all bonus tile-related patterns are worth half as much."},
-		{"id": "zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
+		{"id": "zungjung/zj_lesser_weight_flowers", "name": "Lesser Weight Bonus Tiles", "desc": "Adds bonus tiles to the game, but all bonus tile-related patterns are worth half as much."},
+		{"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
 	],
   "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
   "wall": ["1m", "1m", "1m", "1m",
