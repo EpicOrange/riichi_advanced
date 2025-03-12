@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.ModLoader do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.Compiler, as: Compiler
 
   def get_mod_name(mod) do
     case mod do
@@ -62,19 +63,23 @@ defmodule RiichiAdvanced.ModLoader do
   defp read_ruleset_json(ruleset) do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
       {:ok, ruleset_json} -> ruleset_json
-      {:error, _err}      -> "{}"
+      {:error, _err}      ->
+        case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
+          {:ok, ruleset_majs} -> with {:ok, ast} <- Compiler.parse(ruleset_majs), {:ok, jq} <- Compiler.compile_jq(ast), do: JQ.query_string_with_string!("{}", jq)
+          {:error, _err}      -> "{}"
+        end
     end
   end
 
   def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false) do
-    if ruleset == "custom" do
-      case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
-        [ruleset_json] -> ruleset_json
-        _ -> "{}"
-      end
-    else
-      modpacks = Constants.modpacks()
-      if Map.has_key?(modpacks, ruleset) do
+    modpacks = Constants.modpacks()
+    cond do
+      ruleset == "custom" ->
+        case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
+          [ruleset_json] -> ruleset_json
+          _ -> "{}"
+        end
+      Map.has_key?(modpacks, ruleset) ->
         modpack = modpacks[ruleset]
         mods = Map.get(modpack, :mods, [])
         display_name = Map.get(modpack, :display_name, ruleset)
@@ -85,10 +90,9 @@ defmodule RiichiAdvanced.ModLoader do
         |> strip_comments()
         |> apply_mods(mods, modpack.ruleset)
         |> JQ.query_string_with_string!(query)
-      else
+      true ->
         ruleset_json = read_ruleset_json(ruleset)
         if strip_comments? do strip_comments(ruleset_json) else ruleset_json end
-      end
     end
   end
 
