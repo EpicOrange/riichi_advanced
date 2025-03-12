@@ -826,30 +826,30 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["saki_start"]`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
 - `["modify_winner", key, value, method]`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
   + Allowed values for `key` are:
-    + `key = "score"`: Final score, displayed at the bottom of the win screen.
-    + `key = "points"`: Points (e.g. han)
-    + `key = "points2"`: Secondary points (e.g. yakuman multiplier), see the [scoring methods](#scoring-methods) section
-    + `key = "minipoints"`: Minipoints (e.g. fu)
-    + The following are also modifiable:
-    + `key = "score_name"`: name for score (e.g. "Mangan")
-    + `key = "point_name"`: name for points (e.g. "Han")
-    + `key = "point2_name"`: name for points (e.g. "★")
-    + `key = "minipoint_name"`: name for minipoints (e.g. "Fu")
-    + `key = "score_denomination"`: name prepended to score
-    + `key = "winning_tile_text"`: text shown above the winning tile
+    * `key = "score"`: Final score, displayed at the bottom of the win screen.
+    * `key = "points"`: Points (e.g. han)
+    * `key = "points2"`: Secondary points (e.g. yakuman multiplier), see the [scoring methods](#scoring-methods) section
+    * `key = "minipoints"`: Minipoints (e.g. fu)
+    * The following are also modifiable:
+    * `key = "score_name"`: name for score (e.g. "Mangan")
+    * `key = "point_name"`: name for points (e.g. "Han")
+    * `key = "point2_name"`: name for points (e.g. "★")
+    * `key = "minipoint_name"`: name for minipoints (e.g. "Fu")
+    * `key = "score_denomination"`: name prepended to score
+    * `key = "winning_tile_text"`: text shown above the winning tile
   The optional `method` argument specifies a modification other than replacing the value. Allowed methods are:
   + For all values (default):
-  + `key = "set"`
+    * `method = "set"`
   + For numeric values (`"score"`, `"points"`, `"points2"`, `"minipoints"`):
-  + `key = "add"`
-  + `key = "subtract"`
-  + `key = "multiply"`
-  + `key = "divide"`
-  + `key = "min"`
-  + `key = "max"`
+    * `method = "add"`
+    * `method = "subtract"`
+    * `method = "multiply"`
+    * `method = "divide"`
+    * `method = "min"`
+    * `method = "max"`
   + For string values (everything else):
-  + `key = "prepend"`
-  + `key = "append"`
+    * `method = "prepend"`
+    * `method = "append"`
 - `["modify_payout", seat, amount, method]`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_payout", "east", -3000], ["modify_payout", "not_east", 1000]]`.
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
