@@ -30,6 +30,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:revealed_tiles, nil)
     |> assign(:visible_waits_hand, nil)
     |> assign(:show_waits_index, nil)
+    |> assign(:selected_index, nil)
     |> assign(:hovered_called_tile, nil)
     |> assign(:hovered_call_choice, nil)
     |> assign(:playable_indices, [])
@@ -128,10 +129,12 @@ defmodule RiichiAdvancedWeb.GameLive do
         called_tile={@hovered_called_tile}
         call_choice={@hovered_call_choice}
         playable_indices={@playable_indices}
+        selected_index={@selected_index}
         preplayed_index={@preplayed_index}
         dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
         dead_hand?={"dead_hand" in @state.players[seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
+        mark_tile={&send(self(), {:mark_tile, &1, &2})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
@@ -279,10 +282,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}
+        atop_wall={@state.atop_wall}
         wall_length={length(Map.get(@state.rules, "wall", []))}
-        die1={@state.die1}
-        die2={@state.die2}
-        dice_roll={@state.die1 + @state.die2}
+        dice={@state.dice}
+        dice_roll={Enum.sum(@state.dice)}
         wall_index={@state.wall_index}
         dead_wall_index={@state.dead_wall_index}
         revealed_tiles={@state.revealed_tiles}
@@ -374,18 +377,24 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def skip_or_discard_draw(socket) do
-    # do a clientside can_discard check here
-    if RiichiAdvanced.GameState.Actions.can_discard(socket.assigns.state, socket.assigns.seat, true) do
-      # if draw, discard it
-      # otherwise, if buttons, skip
-      player = socket.assigns.state.players[socket.assigns.seat]
-      if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
-        send(self(), {:play_tile, length(player.hand)})
-      else
-        if "skip" in player.buttons do
-          GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+    if socket.assigns.selected_index == nil do
+      # do a clientside can_discard check here
+      if RiichiAdvanced.GameState.Actions.can_discard(socket.assigns.state, socket.assigns.seat, true) do
+        # if draw, discard it
+        # otherwise, if buttons, skip
+        player = socket.assigns.state.players[socket.assigns.seat]
+        if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
+          send(self(), {:play_tile, length(player.hand)})
+          assign(socket, :selected_index, :any)
+        else
+          if "skip" in player.buttons do
+            GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})
+          end
+          socket
         end
-      end
+      else socket end
+    else
+      assign(socket, :selected_index, nil)
     end
   end
 
@@ -479,17 +488,19 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("double_clicked", _assigns, socket) do
-    if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+  def handle_event("double_clicked", %{"classes" => classes}, socket) do
+    ignore_click = "tile" in classes
+    socket = if not ignore_click and not Map.has_key?(socket.assigns, :tutorial_sequence) do
       skip_or_discard_draw(socket)
-    end
+    else socket end
     {:noreply, socket}
   end
 
-  def handle_event("right_clicked", _assigns, socket) do
-    if not Map.has_key?(socket.assigns, :tutorial_sequence) do
+  def handle_event("right_clicked", %{"classes" => classes}, socket) do
+    ignore_click = "tile" in classes
+    socket = if not ignore_click and not Map.has_key?(socket.assigns, :tutorial_sequence) do
       skip_or_discard_draw(socket)
-    end
+    else socket end
     {:noreply, socket}
   end
 
@@ -606,15 +617,28 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:play_tile, index}, socket) do
-    if socket.assigns.seat == socket.assigns.state.turn do
+    if socket.assigns.seat == socket.assigns.state.turn and socket.assigns.selected_index in [index, :any] do
       socket = assign(socket, :visible_waits, %{})
       socket = assign(socket, :show_waits_index, nil)
       socket = if not Map.has_key?(socket.assigns, :tutorial_sequence) do
         assign(socket, :preplayed_index, index)
       else socket end
       GenServer.cast(socket.assigns.game_state, {:play_tile, socket.assigns.seat, index})
+      socket = assign(socket, :selected_index, nil)
       {:noreply, socket}
     else
+      socket = assign(socket, :selected_index, index)
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info({:mark_tile, index, source}, socket) do
+    if source != :hand or index == socket.assigns.selected_index do
+      GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, index, source})
+      socket = assign(socket, :selected_index, nil)
+      {:noreply, socket}
+    else
+      socket = assign(socket, :selected_index, index)
       {:noreply, socket}
     end
   end

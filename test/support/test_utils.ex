@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.TestUtils do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.LogControlState, as: LogControl
@@ -115,6 +116,14 @@ defmodule RiichiAdvanced.TestUtils do
           state
       end
     end
+    # run before_win and before_scoring actions
+    state = if Map.has_key?(state.rules, "before_win") do
+      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: test_spec.winning_tile, win_source: test_spec.win_source})
+    else state end
+    state = if Map.has_key?(state.rules, "before_scoring") do
+      Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: test_spec.winning_tile, win_source: test_spec.win_source})
+    else state end
+
     {yaku, fu, _winning_tile} = Scoring.get_best_yaku_from_lists(state, yaku_list_names, seat, [test_spec.winning_tile], test_spec.win_source)
 
     assert MapSet.new(yaku) == MapSet.new(test_spec.expected_yaku)
@@ -124,6 +133,12 @@ defmodule RiichiAdvanced.TestUtils do
   def verify_events(events) do
     for {event, i} <- Enum.with_index(events) do
       Map.put(event, "index", i)
+    end
+  end
+
+  defmacro assert_list(actual, expected) do
+    quote do
+      assert inspect(unquote(actual), charlists: :as_lists) == inspect(unquote(expected), charlists: :as_lists)
     end
   end
 
@@ -142,25 +157,67 @@ defmodule RiichiAdvanced.TestUtils do
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
 
-    for {seat, expected_winner} <- expected_winners do
-      assert seat in state.winner_seats
+    check_winner = fn seat, expected_winner ->
       winner = state.winners[seat]
-      if Map.has_key?(expected_winner, :yaku) do
-        assert MapSet.new(winner.yaku) == MapSet.new(expected_winner.yaku)
+      expected_winner
+      |> Enum.map(fn {k, v} ->
+          {expected, actual} = {v, Map.get(winner, k)}
+          if k in [:yaku, :yaku2] do
+            {k, MapSet.new(expected), MapSet.new(actual)}
+          else
+            {k, expected, actual}
+          end
+        end)
+      |> Enum.reduce([], fn {k, expected, actual}, acc ->
+        if expected == actual do acc else
+          [{k, actual, expected} | acc]
+        end
+      end)
+    end
+
+    if expected_winners != :no_winners do
+      for {seat, expected_winner} <- expected_winners do
+        assert seat in state.winner_seats
+        errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
+        if [] not in errs do
+          for tuples <- errs, {k, actual, expected} <- tuples do
+            IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
+            assert actual == expected
+          end
+        end
       end
-      if Map.has_key?(expected_winner, :yaku2) do
-        assert MapSet.new(winner.yaku2) == MapSet.new(expected_winner.yaku2)
-      end
-      for {key, value} <- expected_winner, key not in [:yaku, :yaku2] do
-        assert Map.get(winner, key) == value
-      end
+    else
+      assert Enum.empty?(state.winner_seats)
+      no_win_buttons = Enum.all?(state.players, fn {_seat, player} ->
+        Enum.all?(["ron", "chankan", "tsumo"], & &1 not in player.buttons)
+      end)
+      assert no_win_buttons
     end
 
     if Map.has_key?(expected_state, :delta_scores) do
       delta_scores = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
         Map.get(state.delta_scores, seat, 0)
       end
-      assert delta_scores == expected_state.delta_scores
+      assert_list(delta_scores, expected_state.delta_scores)
+    end
+
+    if Map.has_key?(expected_state, :scores) do
+      cond do
+        is_map(expected_state.scores) ->
+          {scores, expected_scores} = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+            score = state.players[seat].score
+            {score, Map.get(expected_state.scores, seat, score)}
+          end
+          |> Enum.unzip()
+          assert_list(scores, expected_scores)
+        is_list(expected_state.scores) ->
+          scores = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+            state.players[seat].score
+          end
+          assert_list(scores, expected_state.scores)
+        true ->
+          IO.inspect("Invalid score spec #{inspect(expected_state.scores)}")
+      end
     end
   end
 

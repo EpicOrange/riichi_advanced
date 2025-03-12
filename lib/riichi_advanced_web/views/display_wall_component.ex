@@ -16,8 +16,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
     socket = assign(socket, :drawn_reserved_tiles, [])
     socket = assign(socket, :prepared_wall, %{self: [], kamicha: [], toimen: [], shimocha: []})
     socket = assign(socket, :kyoku, :east)
-    socket = assign(socket, :die1, 3)
-    socket = assign(socket, :die2, 4)
+    socket = assign(socket, :dice, [3, 4])
     socket = assign(socket, :dice_roll, 7)
     socket = assign(socket, :available_seats, [:east, :south, :west, :north])
     {:ok, socket}
@@ -40,8 +39,7 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
           id="wall kamicha"
           wall={Map.get(@prepared_wall, :kamicha, [])} />
         <div class="dice">
-          <div class={["die", to_die_class(@die1)]}></div>
-          <div class={["die", to_die_class(@die2)]}></div>
+          <div class={["die", to_die_class(die)]} :for={die <- @dice}></div>
         </div>
       </div>
     </div>
@@ -50,58 +48,74 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
 
   def prepare_wall(assigns) do
     # visible
-    # wall = Enum.drop(assigns.wall, assigns.wall_index)
-    # dead_wall = assigns.dead_wall
-    # hidden
-    wall = List.duplicate(:"1x", max(0, length(assigns.wall) - assigns.wall_index))
-    dead_wall = List.duplicate(:"1x", max(0, length(assigns.dead_wall) - assigns.dead_wall_index))
-    dead_wall_parity = rem(assigns.dead_wall_index, 2)
+    wall = Enum.drop(assigns.wall, assigns.wall_index)
+    |> Enum.map(&if Utils.is_space?(&1) do &1 else :"1x" end)
+    dead_wall = Enum.drop(assigns.dead_wall, -assigns.dead_wall_index)
+    |> Enum.map(&if Utils.is_space?(&1) do &1 else :"1x" end)
 
     # show dora indicators in dead wall
     dead_wall = for ix <- assigns.revealed_tiles, is_integer(ix), reduce: dead_wall do
-      dead_wall -> List.replace_at(dead_wall, ix + assigns.dead_wall_index + dead_wall_parity, Enum.at(assigns.dead_wall, ix))
+      dead_wall ->
+        pos = ix + assigns.dead_wall_index
+        if pos < 0 do
+          List.replace_at(dead_wall, pos, Enum.at(assigns.dead_wall, ix))
+        else dead_wall end
     end
 
-    # # hide drawn kan tiles in dead wall
-    # dead_wall = for tile <- assigns.drawn_reserved_tiles, reduce: dead_wall do
-    #   dead_wall ->
-    #     ix = -(1 + Enum.find_index(assigns.reserved_tiles, fn t -> t == tile end))
-    #     # tiles are drawn -2 -1 -4 -3 -6 -5, so we need to figure out the true index
-    #     # basically add 1 if even, sub 1 if odd
-    #     ix = ix + if rem(ix, 2) == 0 do 1 else -1 end
-    #     List.replace_at(dead_wall, ix, :"2x")
-    # end
-
-    # concatenate
+    # make stacks, the idea being each stack looks like [top tile, bottom tile]
     live_wall_spaces = List.duplicate(:"2x", assigns.wall_index)
-    live_wall_chunks = Enum.chunk_every(live_wall_spaces ++ wall, 2)
+    live_wall_stacks = Enum.chunk_every(live_wall_spaces ++ wall, 2)
     dead_wall_spaces = List.duplicate(:"2x", assigns.dead_wall_index)
-    dead_wall_chunks = dead_wall ++ dead_wall_spaces
+    dead_wall_stacks = (dead_wall ++ dead_wall_spaces)
     |> Enum.reverse()
     |> Enum.chunk_every(2)
+    |> Enum.map(&Enum.reverse/1)
     |> Enum.reverse()
-    dead_wall_chunks = if dead_wall_parity == 0 do Enum.map(dead_wall_chunks, &Enum.reverse/1) else dead_wall_chunks end
-    final_wall = live_wall_chunks ++ dead_wall_chunks
+    |> Enum.map(&if &1 == [:"1x", :"2x"] do [:"1x"] else &1 end) # don't let any tiles "float"
+    final_wall = live_wall_stacks ++ dead_wall_stacks
+    # add tiles atop wall
+    {final_wall, _acc} = final_wall
+    |> Enum.zip([[] | final_wall])
+    |> Enum.reverse()
+    |> Enum.map_reduce({[], length(final_wall), false}, fn {stack, next_stack}, {acc, dist, looked_ahead} ->
+      atop = if dist >= 0 do nil else Map.get(assigns.atop_wall, dist, nil) end
+      acc = if atop != nil and not looked_ahead do [{atop, dist} | acc] else acc end
+      if Enum.all?(stack, &Utils.is_space?/1) do
+        {stack, {acc, dist - 1, false}}
+      else
+        # look ahead one tile to see if there's a tile atop a non-2-stack
+        # if so, pick it up here instead
+        atop2 = if dist >= 0 do nil else Map.get(assigns.atop_wall, dist-1, nil) end
+        looked_ahead = atop2 != nil and length(next_stack) < 2
+        acc = if looked_ahead do [{atop2, dist} | acc] else acc end
+
+        dist = if dist >= 0 do -1 else dist end
+        if length(stack) >= 2 and not Enum.empty?(acc) do
+          {here, acc} = Enum.split_with(acc, fn {_atop, ix} -> ix >= dist end)
+          {Enum.map(here, fn {atop, _ix} -> atop end) ++ stack, {acc, dist - 1, looked_ahead}}
+        else {stack, {acc, dist - 1, looked_ahead}} end
+      end
+    end)
+    final_wall = Enum.reverse(final_wall)
+    # IO.inspect(final_wall, limit: :infinity)
 
     # figure out where the wall break is relative to our seat
     num_players = length(assigns.available_seats)
     wall_length = trunc(Float.ceil(assigns.wall_length / num_players / 2))
     break_dir = Riichi.get_break_direction(assigns.dice_roll, assigns.kyoku, assigns.seat, assigns.available_seats)
-    dead_wall_num_tiles = length(dead_wall) - assigns.dead_wall_index
-    dead_wall_length = length(dead_wall_chunks)
-    extra = rem(dead_wall_num_tiles, 2)
+    dead_wall_length = length(dead_wall_stacks)
     case num_players do
       2 ->
         wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, max(0, wall_length - assigns.dice_roll))
-        wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(min(wall_length, length(final_wall) - wall_length))
-        # IO.inspect({length(assigns.dead_wall), length(live_wall_chunks), length(dead_wall_chunks), wall2, wall1})
+        wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(length(final_wall) - wall_length)
+        # IO.inspect({length(assigns.dead_wall), length(live_wall_stacks), length(dead_wall_stacks), wall2, wall1})
         # IO.inspect({length(assigns.dead_wall), length(wall2), length(wall1)})
 
         # insert spacer for dead wall
         {wall1, wall2} = cond do
-          assigns.dice_roll - extra < dead_wall_length -> {wall1, List.insert_at(wall2, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
+          assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall2, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
           assigns.wall_index >= length(assigns.wall) -> {wall1, wall2} # no spacer in wall1 if we drew into the dead wall
-          assigns.dice_roll - extra > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall2}
+          assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall2}
           true -> {wall1, wall2}
         end
         available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.seat, &1))
@@ -112,15 +126,15 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
       3 ->
         wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, max(0, wall_length - assigns.dice_roll))
         wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
-        wall3 = final_wall |> Enum.drop(2*wall_length - assigns.dice_roll) |> Enum.take(min(wall_length, length(final_wall) - 2*wall_length))
-        # IO.inspect({length(assigns.dead_wall), length(live_wall_chunks), length(dead_wall_chunks), wall3, wall1})
+        wall3 = final_wall |> Enum.drop(2*wall_length - assigns.dice_roll) |> Enum.take(length(final_wall) - 2*wall_length)
+        # IO.inspect({length(assigns.dead_wall), length(live_wall_stacks), length(dead_wall_stacks), wall3, wall1})
         # IO.inspect({length(assigns.dead_wall), length(wall3), length(wall1)})
 
         # insert spacer for dead wall
         {wall1, wall3} = cond do
-          assigns.dice_roll - extra < dead_wall_length -> {wall1, List.insert_at(wall3, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
+          assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall3, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
           assigns.wall_index >= length(assigns.wall) -> {wall1, wall3} # no spacer in wall1 if we drew into the dead wall
-          assigns.dice_roll - extra > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall3}
+          assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall3}
           true -> {wall1, wall3}
         end
         available_dirs = Enum.map(assigns.available_seats, &Utils.get_relative_seat(assigns.seat, &1))
@@ -132,15 +146,15 @@ defmodule RiichiAdvancedWeb.DisplayWallComponent do
         wall1 = Enum.take(final_wall, -assigns.dice_roll) ++ Enum.take(final_wall, max(0, wall_length - assigns.dice_roll))
         wall2 = final_wall |> Enum.drop(wall_length - assigns.dice_roll) |> Enum.take(wall_length)
         wall3 = final_wall |> Enum.drop(2*wall_length - assigns.dice_roll) |> Enum.take(wall_length)
-        wall4 = final_wall |> Enum.drop(3*wall_length - assigns.dice_roll) |> Enum.take(min(wall_length, length(final_wall) - 3*wall_length))
-        # IO.inspect({length(assigns.dead_wall), length(live_wall_chunks), length(dead_wall_chunks), wall4, wall1})
+        wall4 = final_wall |> Enum.drop(3*wall_length - assigns.dice_roll) |> Enum.take(length(final_wall) - 3*wall_length)
+        # IO.inspect({length(assigns.dead_wall), length(live_wall_stacks), length(dead_wall_stacks), wall4, wall1})
         # IO.inspect({length(assigns.dead_wall), length(wall4), length(wall1)})
 
         # insert spacer for dead wall
         {wall1, wall4} = cond do
-          assigns.dice_roll - extra < dead_wall_length -> {wall1, List.insert_at(wall4, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
+          assigns.dice_roll < dead_wall_length -> {wall1, List.insert_at(wall4, -(dead_wall_length - assigns.dice_roll + 1), [:dead, :wall])}
           assigns.wall_index >= length(assigns.wall) -> {wall1, wall4} # no spacer in wall1 if we drew into the dead wall
-          assigns.dice_roll - extra > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall4}
+          assigns.dice_roll > dead_wall_length -> {List.insert_at(wall1, assigns.dice_roll - dead_wall_length, [:dead, :wall]), wall4}
           true -> {wall1, wall4}
         end
         %{

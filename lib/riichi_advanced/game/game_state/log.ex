@@ -67,10 +67,7 @@ defmodule RiichiAdvanced.GameState.Log do
     ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw or event.event_type == :discard end)
     if ix != nil do
       update_in(state.log_state.log, &List.update_at(&1, ix, fun))
-    else
-      IO.puts("Tried to update last draw/discard of log, but there is none")
-      state
-    end
+    else state end
   end
 
   defp modify_last_button_press(state, fun, create_at_seat) do
@@ -179,10 +176,10 @@ defmodule RiichiAdvanced.GameState.Log do
       riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(state.rules["score_calculation"], "riichi_value", 1)) else 0 end,
       doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
-      kan_tiles: Enum.take(state.dead_wall, -4),
-      wall: state.wall |> Enum.drop(52) |> Enum.take(70),
-      die1: state.die1,
-      die2: state.die2,
+      kan_tiles: [-2, -1, -4, -3] |> Enum.map(&Enum.at(state.dead_wall, &1)),
+      wall: state.wall |> Enum.drop(4 * Map.get(state.rules, "starting_tiles", 0)),
+      die1: state.dice |> Enum.at(0),
+      die2: state.dice |> Enum.at(1),
       events: state.log_state.log
         |> Enum.reverse()
         |> Enum.with_index()
@@ -239,7 +236,9 @@ defmodule RiichiAdvanced.GameState.Log do
 
   def output_to_file(state) do
     output_json = output(state)
-    File.write!(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{state.ref <> ".json"}"), output_json)
+    priv_dir = Application.get_env(:riichi_advanced, :priv_dir, Application.app_dir(:riichi_advanced, "priv"))
+    filepath = Path.join(priv_dir, "static/logs/#{state.ref}.json")
+    File.write!(filepath, output_json)
   end
 
 end

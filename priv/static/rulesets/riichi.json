@@ -23,6 +23,7 @@
     "kyuushu_kyuuhai",
     "double_wind_4_fu",
     "yaku/renhou", "pao", "kokushi_chankan",
+    "cancellable_riichi",
     "show_waits"
   ],
   "available_mods": [
@@ -171,6 +172,7 @@
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
+    {"id": "cancellable_riichi", "order": 1, "deps": ["yaku/riichi"], "name": "Cancellable Riichi", "desc": "Everyone plays with tiles shown."},
     {"id": "ten", "order": 1, "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."},
     {"id": "star_suit", "order": 2, "name": "Star Suit (beta)", "desc": "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."},
     {"id": "space", "order": 2, "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
@@ -221,6 +223,7 @@
         "yaku/ippatsu",
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}},
         "shiny_dora",
         "first_gets_riichi_sticks"
@@ -290,6 +293,7 @@
         "yaku/ippatsu",
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}},
         "shiny_dora",
         "first_gets_riichi_sticks"
@@ -319,6 +323,7 @@
         {"name": "yaku/renhou", "config": {"is": "Mangan"}},
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "starting_score", "config": {"points": 30000}}
       ]
     },
@@ -349,6 +354,7 @@
         "yaku/ippatsu",
         "show_waits",
         {"name": "min_han", "config": {"min": 1}},
+        "cancellable_riichi",
         {"name": "aka", "config": {"man": 1, "pin": 1, "sou": 1}}
       ]
     },
@@ -454,6 +460,7 @@
         "blue_dragon",
         "wareme",
         {"name":"min_han","config":{"min":1}},
+        "cancellable_riichi",
         "immediate_kan_dora",
         "ten",
         "yaku/ippatsu",
@@ -577,6 +584,12 @@
   ],
   "standard_win_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ]
+  ],
+  "kokushi_definition": [
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
   ],
   "shousuushii_definition": [
     [[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei_pair"], 1]],
@@ -820,6 +833,69 @@
       ["when_anyone", [{"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}],
         [["set_status", "furiten"]]
       ]
+    ],
+    "calculate_fu": [
+      ["set_counter", "fu", "minipoints",
+        ["remove_attrs"],
+        // score calls
+        ["convert_calls", {"pon": 2}],
+        ["remove_tanyaohai_calls"],
+        ["convert_calls", {"pon": 2}],
+        ["remove_calls"],
+        // now remove the winning group
+        ["remove_winning_groups",
+          // kanchan
+          {"group": [-1, 1], "value": 2},
+          // penchan
+          {"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2},
+          {"group": [1, 2], "reject_if_exists": [[3]], "value": 2},
+          // ryanmen
+          {"group": [-1, -2], "reject_if_missing": [[-3]]},
+          {"group": [1, 2], "reject_if_missing": [[3]]},
+          // shanpon
+          {"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2},
+          // tanki
+          {"group": [0], "value": 2, "yakuhai_value": 2}
+        ],
+        // now remove all closed groups
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        // remove final pair, if any
+        ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
+        // only retain configurations with 0 tiles remaining
+        ["retain_empty_hands"],
+        // add 1000 to pinfu hands so we prioritize pinfu later
+        ["add", 1000, [{"name": "minipoints_equals", "opts": [0]}]],
+        // base 20
+        ["add", 20, []],
+        // tsumo +2 (except closed pinfu tsumo)
+        ["add", 2, [
+          "won_by_draw",
+          [
+            {"name": "minipoints_at_most", "opts": [999]},
+            {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}
+          ]
+        ]],
+        // closed ron +10
+        ["add", 10, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]],
+        // open pinfu ron +10
+        ["add", 10, ["not_won_by_draw", {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_at_least", "opts": [1000]}]],
+        // take max, then subtract 1000 from pinfu hands
+        ["take_maximum"],
+        ["add", -1000, [{"name": "minipoints_at_least", "opts": [1000]}]],
+        // round up to nearest 10
+        ["round_up", 10],
+        // add original hand (for special hands like chiitoitsu and kokushi)
+        ["add_original_hand"],
+        // chiitoitsu
+        ["add", 25, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]]}]],
+        // kokushi
+        ["add", 40, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
+        ["add", 30, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
+        ["take_maximum"]
+      ]
     ]
   },
   "after_initialization": {
@@ -848,17 +924,17 @@
   "before_call": {
     "actions": [["run", "turn_cleanup"], ["unset_status_all", "discards_empty"]]
   },
-  "play_effects": [
-    ["any", [["unset_status", "discards_empty"]]]
-  ],
   "before_win": {
     "actions": [
-      ["set_counter", "fu", "fu"]
+      ["run", "calculate_fu"]
     ]
   },
   "after_start": {
     "actions": [["set_status_all", "discards_empty"]]
   },
+  "play_effects": [
+    ["any", [["unset_status", "discards_empty"]]]
+  ],
   "buttons": {
     "chii": {
       "display_name": "Chii",
@@ -924,7 +1000,7 @@
         ["when", [
           "not_our_turn",
           {"name": "buttons_include", "opts": ["skip"]},
-          {"name": "buttons_exclude", "opts": ["ron"]}
+          {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
         ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false

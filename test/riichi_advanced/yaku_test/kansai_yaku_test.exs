@@ -3,8 +3,6 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @kansai_mods [
-    "sanma",
-    "kansai",
     "kan",
     %{name: "honba", config: %{"value" => 100}},
     %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
@@ -43,12 +41,12 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   ]
 
   test "kansai - ao doesn't break half flush" do
-    TestUtils.test_yaku_advanced("riichi", @kansai_mods, """
+    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "25p", "6p", "7p", "4z", "4z", "4z", "2z", "2z", "2z"],
-        "south": ["1p", "4p", "7p", "2s", "3s", "5s", "6s", "7s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1p", "4p", "7p", "2s", "3s", "5s", "6s", "7s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1p", "4p", "6p", "7p", "2s", "3s", "6s", "7s", "9s", "1z", "3z", "5z", "6z"],
+        "west": ["1p", "4p", "6p", "7p", "2s", "3s", "6s", "7s", "9s", "1z", "3z", "5z", "6z"]
       },
       "starting_draws": ["1z", "1p"]
     }
@@ -62,6 +60,30 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
         yaku: [{"Ao", 2}, {"Double Riichi", 2}, {"Honitsu", 3}, {"Ippatsu", 1}, {"North Wind", 1}],
         yaku2: [],
         minipoints: 50
+      }
+    })
+  end
+
+  test "kansai - ippatsu still works" do
+    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
+    {
+      "starting_hand": {
+        "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
+        "south": ["1p", "2p", "4p", "2s", "6s", "7s", "9s", "1z", "2z", "3z", "4z", "5z", "6z"],
+        "west": ["1p", "2p", "4p", "2s", "6s", "7s", "9s", "1z", "2z", "3z", "4z", "5z", "6z"]
+      },
+      "starting_draws": ["1z", "6p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Tanyao", 1}],
+        yaku2: [],
+        minipoints: 40
       }
     })
   end

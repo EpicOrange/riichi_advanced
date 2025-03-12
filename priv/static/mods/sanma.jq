@@ -8,7 +8,7 @@
 |
 # add no tsumo loss mod to the list, right before abortive draws category
 (.available_mods | index("Abortive Draws")) as $ix | .available_mods |= .[:$ix] + [
-  {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Mangan tsumo gives you 8000 total instead of 4000+2000.)"}
+  {"id": "sanma_no_tsumo_loss", "name": "No Tsumo Loss", "desc": "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"}
 ] + .[$ix:]
 |
 # remove manzu from wall

@@ -62,7 +62,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
           true ->
             callable_tiles = if is_call do Enum.take(state.players[state.turn].pond, -1) else [] end
             call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, tile_behavior, callable_tiles)
-            |> Enum.map(fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end)
+            |> Enum.map(fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile, :invisible) => call_choice} end)
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
             {state, call_choices}
         end
@@ -81,7 +81,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       Enum.any?(choice_actions, fn [action | _opts] -> action == "mark" end) ->
         [_ | opts] = Enum.filter(choice_actions, fn [action | _opts] -> action == "mark" end) |> Enum.at(0)
         mark_spec = Enum.at(opts, 0, []) |> Enum.map(fn [target, needed, restrictions] -> {target, needed, restrictions} end)
-        {state, {:mark, mark_spec, Enum.at(opts, 1, []), Enum.at(opts, 2, [])}}
+        {state, {:mark, mark_spec, Enum.at(opts, 1, []), Enum.at(opts, 2, []), Enum.at(opts, 3, [])}}
       Enum.any?(choice_actions, fn [action | _opts] -> action == "choose_yaku" end) ->
         {state, :declare_yaku}
       true -> {state, nil}
@@ -105,7 +105,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             button_choices = state.rules["buttons"]
             |> Enum.filter(fn {name, button} ->
               calls_spec = Map.get(button, "call", [])
-              upgrades = Map.get(button, "upgrades", [])
+              upgrades = Map.get(button, "upgrades", nil)
 
               if Debug.debug_buttons() do
                 IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
@@ -192,7 +192,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       state = broadcast_state_change(state) # show possible call buttons
       state
     else
-      IO.puts("#{seat} tried to press nonexistent button #{button_name}")
+      IO.puts("#{seat} tried to press nonexistent button #{button_name}; available buttons are #{inspect(state.players[seat].buttons)}")
       state
     end
   end

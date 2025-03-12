@@ -38,7 +38,30 @@ else
   }
 end
 |
-.score_calculation.enable_kontsu_fu = true
+# add kontsu to fu calculation function
+.functions.calculate_fu[0] |= map(
+  if type == "array" and .[0] == "convert_calls" then
+    .[1] += {
+      "chon": 1,
+      "kapon": 2,
+      "kakakan": 8,
+      "chon_honors": 1,
+      "anfuun": 8,
+      "daiminfuun": 4,
+      "kafuun": 4
+    }
+  elif type == "array" and .[0] == "remove_winning_groups" then
+    . += [{"group": [10, 20], "value": 1, "yaochuuhai_mult": 2, "tsumo_mult": 2}]
+  elif type == "array" and .[0] == "remove_groups" and .[1].group == [0, 1, 2] then
+    . += [
+      {"group": [0, 10, 20], "value": 2, "yaochuuhai_mult": 2},
+      {"group": [0, 1, 2], "value": 4, "suited_mult": 0}
+    ]
+  else . end
+)
+|
+# ton calls should be put in hand before fu calculations
+.functions.calculate_fu[0] |= .[:3] + [["put_calls_in_hand", "ton"]] + .[3:]
 |
 .tenpai_definition |= fix_match_definition
 |

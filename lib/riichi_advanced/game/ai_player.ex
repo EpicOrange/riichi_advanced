@@ -137,7 +137,7 @@ defmodule RiichiAdvanced.AIPlayer do
   
   def handle_info({:your_turn, params}, state) do
     t = System.os_time(:millisecond)
-    %{player: player, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
+    %{player: player, open_riichis: open_riichis, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
     if state.initialized do
       state = Map.put(state, :player, player)
       if GenServer.call(state.game_state, {:can_discard, state.seat}) do
@@ -156,7 +156,18 @@ defmodule RiichiAdvanced.AIPlayer do
           "void_souzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_souzu?(tile) end)
           true -> []
         end
+
         playables = if Enum.empty?(non_voided_playables) do playables else non_voided_playables end
+
+        # if anyone is open riichi, don't deal into them
+        playables = if not Enum.empty?(open_riichis) do
+          danger_tiles = for {hand, calls, tile_behavior} <- open_riichis, into: MapSet.new() do
+            Riichi.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
+          end
+          |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+          safe_playables = Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
+          if Enum.empty?(safe_playables) do playables else safe_playables end
+        else playables end
 
         if not Enum.empty?(playables) do
           # pick a random tile

@@ -700,12 +700,20 @@
     "flower": {
       "display_name": "Flower",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]]
+      "actions": [
+        ["big_text", "Flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
+      ]
     },
     "joker": {
       "display_name": "Joker",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["0j", "2j", "4j", "5j", "6j", "7j", "8j"], 1] ]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "0j", "2j", "4j", "5j", "6j", "7j", "8j"], ["draw", 1, "opposite_end"]]
+      "actions": [
+        ["big_text", "Joker"],
+        ["flower", "0j", "2j", "4j", "5j", "6j", "7j", "8j"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
+      ]
     }
   },
   "auto_buttons": {
@@ -741,7 +749,7 @@
         ["when", [
             "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron"]}
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false

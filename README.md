@@ -29,6 +29,36 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __1 Mar 2025__: v1.2.0:
+  + Added ability for mods to add rules text
+  + Added ability to configure fu calculations
+  + Added ability to configure individual mods with parameters (aka, riichi, tobi, etc)
+  + Added cancellable riichi mod
+  + Added Chinese Classical ruleset
+  + Added custom styles (custom tile numbering, tile back color, and tablecloth color)
+  + Added displaying numbers on the corner of tiles (off by default)
+  + Added full documentation for match keywords, match targets, interrupt levels, and scoring
+  + Added Fuzhou, Tianjin, Ningbo, Hefei rulesets (thanks Sophie)
+  + Added more tile colors (lightblue, brown, pink, rainbow)
+  + Added preset mod packs for Riichi
+  + Added string interpolation for `push_message` and `big_text` actions
+  + Added uma mod
+  + Added various tests
+  + Added zombie blanks mod to american mahjong (thanks Sophie)
+  + Changed discards to be double click, not single click
+  + Changed riichi to automatically enable auto-discard
+  + Fixed AI dealing into open riichi
+  + Fixed allowing calls that softlock you due to kuikae
+  + Fixed american mahjong buttons
+  + Fixed ao and kin not counting
+  + Fixed chankan in sanma
+  + Fixed dead hand check for american (again)
+  + Fixed ippatsu not working (again)
+  + Fixed kansai sanma having 4x dora
+  + Fixed minefield dora and other bugs
+  + Fixed safari viewport issues
+  + Fixed seat shuffling not working
+  + Fixed several crashes
 - __17 Feb 2025__: v1.1.1:
   + Added tutorial for cosmic riichi and galaxy mahjong
   + Added rules and strategy document for MCR

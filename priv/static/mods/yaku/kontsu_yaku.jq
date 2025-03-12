@@ -10,16 +10,11 @@
   "yondoukon": [[0, 10, 20], [0, 10, 20], [0, 10, 20], [0, 10, 20]]
 }
 |
-# we need these to be set to 0.5 so that yaku precheck grant 0.5 han instead of 0
-# TODO handle the case where you have 2+ dragon kontsu only, or 2+ wind kontsu only
-.after_start.actions += [
-  ["set_counter_all", "mini_sangen", 0.5],
-  ["set_counter_all", "mixed_winds", 0.5]
-]
-|
-.before_win.actions += [
+.before_scoring.actions += [
+  # initialize counters
   ["set_counter", "mini_sangen", 0],
   ["set_counter", "mixed_winds", 0],
+  # count each mini sangen and multiply by 0.5
   ["add_counter", "mini_sangen", "count_matches", ["hand", "calls", "winning_tile"], [[[["kontsu_dragons"], 1]]]],
   ["multiply_counter", "mini_sangen", 0.5],
   # count mixed winds that contain both prevalent and seat wind

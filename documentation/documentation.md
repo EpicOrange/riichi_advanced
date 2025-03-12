@@ -26,8 +26,12 @@
     * [`"scoring_method": "vietnamese"`](#scoring_method-vietnamese)
     * [`"scoring_method": "han_fu_formula"`](#scoring_method-han_fu_formula)
     * [`"scoring_method": ["han_fu_formula", "multiplier"]`](#scoring_method-han_fu_formula-multiplier)
+    * [Other scoring-related keys](#other-scoring-related-keys)
   + [Payments](#payments)
+    * [Payment-related keys](#payment-related-keys)
     * [Payment-related statuses](#payment-related-statuses)
+  + [Calculating fu](#calculating-fu)
+  + [Setting up next-round logic](#setting-up-next-round-logic)
 
 # `ruleset.json` basic concepts
 
@@ -306,7 +310,7 @@ Let's go over these one by one and see how `match` matches against your 14-tile 
 
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ]
 
-Skipping the `exhaustive` flag for now, the intuition of this one is that it takes a pair out of your 14-tile hand, leaving a 12-tile hand. Then it takes one of either `["ryanmen/penchan", "kanchan", "pair"]` out of the 12-tile hand, leaving a 10-tile hand. Finally, it takes out _three_ of either `["shuntsu", "koutsu"]` out of the remainder, leaving one tile, which is ignored. The `exhaustive` flag at the beginning means this entire process exhaustively tries every single possibility of taking out these three **groups**, instead of just taking the first one it sees for each group. The match succeeds if it was able to find each group. Intuitively it means 13 of the 14 tiles in your hand match a standard hand with a ryanmen/penchan/kanchan/pair wait, making you tenpai.
+Skipping the `exhaustive` keyword for now, the intuition of this one is that it takes a pair out of your 14-tile hand, leaving a 12-tile hand. Then it takes one of either `["ryanmen/penchan", "kanchan", "pair"]` out of the 12-tile hand, leaving a 10-tile hand. Finally, it takes out _three_ of either `["shuntsu", "koutsu"]` out of the remainder, leaving one tile, which is ignored. The `exhaustive` keyword at the beginning means this entire process exhaustively tries every single possibility of taking out these three **groups**, instead of just taking the first one it sees for each group. The match succeeds if it was able to find each group. Intuitively it means 13 of the 14 tiles in your hand match a standard hand with a ryanmen/penchan/kanchan/pair wait, making you tenpai.
 
 Things like `pair`, `ryanmen/penchan`, etc are **sets** defined in the top-level `set_definitions` which for riichi looks like this:
 
@@ -354,6 +358,16 @@ Offsets are one of the following:
 - Exact tiles like `"1m"` and `"9p"` and `"any"`
 - Fixed offsets like `1A` and `2B`. The set `["1A", "2B", "3C"]` represents any 1 tile of some suit, a 2 tile of another suit, and a 3 tile of a third suit. You may also specify `DA`, `DB`, `DC` as well (where red dragon is manzu suit, green dragon is souzu suit, and white dragon is pinzu suit) -- this is mostly used internally to represent American mahjong hands (see below section).
 
+Finally, here is the list of all keywords (each match definition is a combination of groups and keywords):
+
+- `"almost"`: if this is anywhere in a match definition, then it specifies "this match definition minus any one tile"
+- `"exhaustive"`: by default groups are removed by taking away the first match, but any group after the `"exhaustive"` keyword will store all possible removals. This is rather expensive, so only use this if you need it.
+- `"dismantle_calls"`: by default when a group matches a call, even partially, the whole call is removed. This prevents two groups from matching one call, which is desirable in most situations. To disable this, any group after the `"dismantle_calls"` keyword will instead remove the matching tiles from the matching call. For instance, the match definition `["exhaustive", "dismantle_calls", [[[0, 1]], 1]]` matching on the existing call `3m 4m 5m` will leave you with two versions of the call (`3m` and `5m`) after the `[[[0, 1]], 1]` group is matched.
+- `"restart"`: whenever the match definition encounters `"restart"` it resets its current state to the initial hand and calls.
+- `"ignore_suit"`, `"nojoker"`, `"unique"`: applies these keywords to all groups after the keyword.
+
+Note that `"restart"` is the only keyword that can be specified multiple times in a match definition.
+
 ## American hand match specifications
 
 American hands are a special case since they're so specific. They can be implemented using the above syntax, but there is a shorthand specifically for these kinds of hands (which are then translated to the above syntax behind-the-scenes).
@@ -392,7 +406,8 @@ The mark action only prompts the user to mark tiles -- it doesn't do anything wi
 
 - `["move_tiles", src, dst]`: Move tiles from `src` to `dst`.
 - `["swap_tiles", src, dst]`: Swap tiles between `src` and `dst`.
-- `["clear_marking"]`: Exit marking mode. This is required after you're done with `move_tiles` or `swap_tiles`, since marking mode essentially pauses the game.
+- `["copy_tiles", src, dst]`: Copy tiles from `src` to `dst`.
+- `["clear_marking"]`: Exit marking mode. This is required after you're done with moving around marked tiles, since marking mode essentially pauses the game.
 
 There are a number of ad-hoc actions that also interact with the marked tiles, but they are not meant to be used beyond Sakicards (since they are very specific actions, and the plan is to replace them in the future). For example:
 
@@ -402,7 +417,7 @@ You can reference these actions in the full actions list below.
 
 One final note: the `mark` action also takes two optional action lists to be run before and after marking:
 
-    ["mark", mark_spec, pre_actions, post_actions]
+    ["mark", mark_spec, pre_actions, post_actions, cancel_actions]
 
 These are just extra hooks to run actions (for example, maybe you want to draw tiles immediately before marking) but are basically not necessary unless you are marking after a delay or something.
 
@@ -559,6 +574,8 @@ A way to think about interrupt levels is that the number defines a priority -- b
 
 Here are all the toplevel keys. Every key is optional.
 
+Events:
+
 - `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
@@ -566,9 +583,10 @@ Here are all the toplevel keys. Every key is optional.
 - `after_draw`: Triggers at the end of any draw. Context: `seat` is the drawing player's seat.
 - `after_initialization`: Triggers at setup after the game begins (after `before_start`). Useful for writing rules text via `"add_rule"`. Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
+- `after_scoring`: Triggers after payouts are calculated but before they are shown and applied, which happens once per winner or exhaustive/abortive draw.
 - `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east). Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
 - `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
-- `after_win`: Triggers at the end of a win, after yaku is calculated.
+- `after_win`: Triggers at the end of a win, after yaku is calculated, but before the yaku screen is shown.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
 - `before_call`: Triggers at the start of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `before_conclusion`: Triggers at the end of a game (right before the end scores are shown).
@@ -578,8 +596,32 @@ Here are all the toplevel keys. Every key is optional.
 - `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
 - `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
 - `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.
-- `on_no_valid_tiles`: Triggers on someone's turn if they cannot discard any tiles.
+- `on_no_valid_tiles`: Triggers on someone's turn (after `after_turn_change`) if they cannot discard any tiles.
 - `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. Context: `seat` is the seat who played a tile, and `tile` is the played tile.
+
+Here is the basic event lifecycle for each round:
+
+- `before_start`
+- `before_turn_change` (to east)
+- `after_turn_change` (to east)
+- `after_start`
+- `after_initialization` (once per game)
+- (game starts, button calculations / interrupts are now active)
+- (either a draw or a winner is declared)
+- On a win:
+  + `before_win`
+  + `before_scoring`
+  + `after_win`
+  + `after_scoring`
+  + `before_continue` (if bloody end rules are enabled)
+- On a draw:
+  + `before_exhaustive_draw`/`before_abortive_draw`
+  + `after_scoring`
+  + `after_bloody_end` (after 3 players win if bloody end rules are enabled)
+- Then one of these is run:
+  - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)
+  - `before_start` (otherwise, unless the game is over)
+  - `before_conclusion` (if the game is over)
 
 Buttons:
 
@@ -593,6 +635,7 @@ Mods:
 
 Rules:
 
+- `agariyame`: If true, the game ends if the dealer wins the final round.
 - `bloody_end`: If true, the game ends after three players win, not after one player wins.
 - `display_honba`: Whether to show number of honba in the middle
 - `display_riichi_sticks`: Whether to show number of riichi sticks in the middle
@@ -612,6 +655,7 @@ Rules:
 - `set_definitions`: List of definitions for sets used in match definitions, described above
 - `shown_statuses`: List of statuses to show (private to the player)
 - `starting_tiles`: Number of tiles every player starts with every round
+- `tenpaiyame`: If true, the game ends if the dealer is tenpai at exhaustive draw in the final round.
 - `wall`: The list of tiles used in the game. [Here are all the tiles available in the tileset currently.](tiles.md)
 
 Yaku and scoring:
@@ -685,7 +729,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + `"count_reverse_dora", dora_indicator`: Counts the number of reverse dora in the current player's hand and calls, given the `dora_indicator`. This uses the toplevel `"reverse_dora_indicators"` key to determine the mapping of dora indicator to reverse dora.
   + `"pot"`: The number of points in the pot.
   + `"honba"`: The number of honba (repeats) for the current round.
-  + `"fu"`: Only usable in `before_win`. Calculates fu for the winning hand.
+  + `"minipoints", action1, action2, ...`: Only usable during or after `before_win`. Calculates minipoints for the winning hand using the following actions. See [Calculating fu](#calculating-fu) for how the actions are specified.
 - `["set_counter_all", counter_name, amount or spec, ...opts]`: Same as `set_counter`, but calculates the amount once and sets every player's `counter_name`. Right now this is the only way to pass counters between players.
 - `["add_counter", counter_name, amount or spec, ...opts]`: Same as `set_counter`, but adds to the existing counter instead. For nonexistent counters this is the same as `set_counter` since nonexistent counters are considered to be at zero.
 - `["subtract_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but subtracts.
@@ -710,12 +754,14 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["as", seats_spec, actions]`: Sets the `seat` to the given `seats_spec` and runs the actions. If you specify multiple seats, it will run the given actions multiple times (once for each seat). Allowed `seats_spec` values:
   + `"east"`, `"south"`, `"west"`, `"north"`: Selects that seat.
   + `"self"`, `"shimocha"`, `"toimen"`, `"kamicha"`: Selects the seat relative to the current seat.
+  + `"prev_seat"`: Selects the seat that is currently running this `"as"` action.
   + `"last_discarder"`: Selects the last seat that discarded.
   + `"caller"`: Selects the caller, the player receiving the called tile (usable in call buttons only).
   + `"callee"`: Selects the callee, the player giving the called tile (usable in call buttons only).
   + `"all"`, `"everyone"`: Selects every seat.
   + `"others"`: Selects every seat except the current seat.
   + `"chii_victims"`: Selects all players for which the current seat has chiis from. (This is implemented and used solely in Sakicards, specifically for Maya Yukiko's second ability)
+  + You can also prepend `not_`, like `"not_east"`, to get the complement of the specified set of seats.
 - `["when_anyone", cond, actions]`: For each player, if `cond` evaluates to true for that player, run the given actions for that player. (This changes `seat` in the context.)
 - `["when_everyone", cond, actions]`: If `cond` evaluates to true for every player, run the given actions for the current player. (This does not change `seat` in the context.)
 - `["when_others", cond, actions]`: If `cond` evaluates to true for every player except the current player, run the given actions for the current player. (This does not change `seat` in the context.)
@@ -778,6 +824,36 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["delete_tiles", tile1, tile2, ...]`: Delete every instance of the given tiles from the current player's hand/draw.
 - `["pass_draws", seat_spec, num]`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `["saki_start"]`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
+- `["modify_winner", key, value, method]`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
+  + Allowed values for `key` are:
+    + `key = "score"`: Final score, displayed at the bottom of the win screen.
+    + `key = "points"`: Points (e.g. han)
+    + `key = "points2"`: Secondary points (e.g. yakuman multiplier), see the [scoring methods](#scoring-methods) section
+    + `key = "minipoints"`: Minipoints (e.g. fu)
+    + The following are also modifiable:
+    + `key = "score_name"`: name for score (e.g. "Mangan")
+    + `key = "point_name"`: name for points (e.g. "Han")
+    + `key = "point2_name"`: name for points (e.g. "★")
+    + `key = "minipoint_name"`: name for minipoints (e.g. "Fu")
+    + `key = "score_denomination"`: name prepended to score
+    + `key = "winning_tile_text"`: text shown above the winning tile
+  The optional `method` argument specifies a modification other than replacing the value. Allowed methods are:
+  + For all values (default):
+  + `key = "set"`
+  + For numeric values (`"score"`, `"points"`, `"points2"`, `"minipoints"`):
+  + `key = "add"`
+  + `key = "subtract"`
+  + `key = "multiply"`
+  + `key = "divide"`
+  + `key = "min"`
+  + `key = "max"`
+  + For string values (everything else):
+  + `key = "prepend"`
+  + `key = "append"`
+- `["modify_payout", seat, amount, method]`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_payout", "east", -3000], ["modify_payout", "not_east", 1000]]`.
+  + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
+  + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
+  + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
 
 Every unrecognized action is a no-op.
 
@@ -812,6 +888,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"has_calls"`: The current player has called tiles.
 - `{"name": "has_call_named", "opts": [call1, call2, ...]}`: The current player has one of the specified calls. Example: `{"name": "has_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}`
 - `{"name": "has_no_call_named", "opts": [call1, call2, ...]}`: The current player has none of the specified calls. Example: `{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}`
+- `"won"`: A player just won.
 - `"won_by_call"`: The winner won by stealing a called tile.
 - `"won_by_draw"`: The winner won by drawing the winning tile.
 - `"won_by_discard"`: The winner won by stealing the discard tile.
@@ -822,6 +899,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "has_yaku2_with_hand", "opts": [han]}`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_hand", "opts": [1]}`
 - `{"name": "has_yaku2_with_discard", "opts": [han]}`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_discard", "opts": [1]}`
 - `{"name": "has_yaku2_with_call", "opts": [han]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `{"name": "has_yaku_with_call", "opts": [1]}`
+- `{"name": "tiles_match", "opts": [[tile1, tile2, ...], [tile_spec1, tile_spec2, ...]]}`: The provided tiles all match any of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "last_discard_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last discard matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "last_called_tile_matches", "opts": [tile_spec1, tile_spec2, ...]}`: The last called tile matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `{"name": "needed_for_hand", "opts": [match_spec1, match_spec2, ...]}`: Only used when a tile is in context, e.g. in `play_restrictions`. The context's tile is needed for the current player's hand to match one of the given match specifications.
@@ -866,6 +944,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "call_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The call contains at least `num` of any of the given tiles.
 - `{"name": "called_tile_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The called tile contains at least `num` of any of the given tiles. (only num=1 is valid)
 - `{"name": "call_choice_contains", "opts": [[tile1, tile2, ...], num]}`: For call buttons only. The tiles used to call contains at least `num` of any of the given tiles.
+- `{"name": "tag_exists", "opts": [tag1, tag2, ...]}`: All of the given tags exist.
 - `{"name": "tagged", "opts": [tile, tag_name]}`: The given tile is tagged with the given `tag_name`. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
 - `{"name": "has_hell_wait", "opts": [match_spec1, match_spec2, ...]}`: The current player is waiting on a single out, where a winning hand is defined by the given match definitions.
 - `"third_row_discard"`: The current player has at least 12 tiles in their pond.
@@ -918,9 +997,10 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"jokers"`: selects the player's jokers set aside (including starting jokers). 
 - `"start_jokers"`: selects the player's starting jokers set aside only.
 - `"call_tiles"`: selects the player's calls as if their tiles were part of the hand (therefore their tiles can be combined with tiles in hand).
-- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after the `before_scoring` event. Does not include the winning tile.
-- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after the `before_scoring` event. 
-- `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"` is run, including yaku checks. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `before_win`, but will be replaced by its actual value during `before_scoring` and after.
+- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after or during the `after_win` event. Does not include the winning tile.
+- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after or during the `after_win` event. 
+- `"winning_hand"`: selects the winning hand + call tiles + winning tile. Only usable during or after `"before_win"`. If used in `"before_win"`, you get the winning hand with jokers, but if used during or after `"before_scoring"`, then those jokers get replaced by actual values.
+- `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"`. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `"before_win"`, but will be replaced by its actual value during `"before_scoring"` and after.
 - `"last_call"`: selects the last call made by any player.
 - `"last_called_tile"`: selects the called tile for the last call made by any player.
 - `"last_discard"`: selects the last discard made by any player.
@@ -1069,21 +1149,86 @@ Then it checks for limit hands, defined by the following three keys, which for R
 
 The idea is that it checks `[points, minipoints]` against the latest value in `"limit_thresholds"`, and if any of them match, the score is replaced by the corresponding `"limit_score"` and given the corresponding `"limit_name"`.
 
+There are a few more keys for configuring han-fu calculations.
+
+First, if you want to make fu a fixed value (perhaps for testing) then you may specify
+
+    "score_calculation": {
+      "fixed_fu": 30
+    }
+
+Second, recall the han-fu formula:
+
+    han_fu_multiplier * minipoints * 2^(2 + points)
+
+The 2 added to `points` is configurable using the `"han_fu_starting_han"` key, which defaults to 2. Classical Chinese mahjong doesn't add 2, so you would configure this via
+
+    "score_calculation": {
+      "han_fu_starting_han": 0
+    }
+
 ### `"scoring_method": ["han_fu_formula", "multiplier"]`
 
 This is the actual value of `"scoring_method"` used for riichi. The idea for a two-value array value for `"scoring_method"` is that we use `"han_fu_formula"` for `points` and `"multiplier"` for `points2`, and add the resulting scores. For riichi, this means using `"han_fu_formula"` to calculate the standard Han score, and `"multiplier"` for yakuman hands.
 
 Riichi also specifies the key `"yaku2_overrides_yaku1": true`, which means if any yaku contribute to `points2`, then we ignore all yaku that contribute to `points`.
 
+### Other scoring-related keys
+
+All of the keys described below are optional.
+
+After score is calculated, there are two keys that can cap the score to a minimum and maximum: `max_score` and `min_score`. For example:
+
+    "score_calculation": {
+      "min_score": 1,
+      "max_score": 500
+    }
+
+For three-player variants, a win by self-draw typically pays less than a win by discard. For example, a dealer mangan tsumo in riichi is worth 12000 (4000 per player), but is worth only 8000 in three player due to tsumo loss. You can disable tsumo loss by setting the following:
+
+    "score_calculation": {
+      "tsumo_loss": false
+    }
+
+This will take the 'lost' portion of the payment and split it equally between the two paying players.
+
+Other allowed values for `"tsumo_loss"` beyond `true` and `false` are:
+
+- `"add_1000"`: A flat 1000 is added to each player's payment.
+- `"unequal_split"`: When a nondealer wins, the missing payment is split so that the dealer still pays roughly double the payment for the other nondealer.
+- `"north_split"`: This is the same behavior as `false`.
+- `"equal_split"`: The missing payment is split so that both players pay the same amount.
+- `"north_to_oya"`: The missing payment is paid by the dealer.
+- `"double_collection"`: Both players pay the full amount including the missing payment, which effectively doubles the payment.
+- `"ron_loss"`: Tsumo loss is on, but the loss is also applied to ron as well.
+
+If triple ron should be treated as an abortive draw, set:
+
+    "score_calculation": {
+      "triple_ron_draw": true
+    }
+
+In American mahjong, the hands are typically arranged using the definition of the hand on the card. To enable this, set:
+
+    "score_calculation": {
+      "arrange_american_yaku": true
+    }
+
+If you want to only keep the highest-scoring yaku (for both `yaku` and `yaku2`), breaking ties arbitrarily, then set:
+
+    "score_calculation": {
+      "highest_scoring_yaku_only": true
+    }
+
 ## Payments
 
 All of the above is to calculate the basic score of a hand, displayed when the hand wins. How are payouts calculated?
 
-In event of a win-by-discard, the discarder pays the score multiplied by `"discarder_multiplier"`, which defaults to `1`. Non-discarders pay the score multiplied by `"non_discarder_multiplier"`, which defaults to `0`. 
+In event of a win-by-discard, the discarder pays the score multiplied by `"discarder_multiplier"`, which defaults to `1`. Non-discarders pay the score multiplied by `"non_discarder_multiplier"`, which defaults to `0`.
 
-Otherwise the win is by self-draw. Then every player pays the winner the score multiplied by `"draw_multiplier"`, which defaults to `1`.
+Otherwise, the win is by self-draw. Then every player pays the winner the score multiplied by `"self_draw_multiplier"`, which defaults to `1`. If the dealer is paying or being paid, their payment is multiplied by `"dealer_self_draw_multiplier"`, which defaults to `1`.
 
-You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`, `"draw_penalty"` which add a fixed amount to their respective payments (after the multiplication). For example, in MCR all players pay the winner 8 points regardless of the score, so all of these would be set to `8`.
+You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`, `"self_draw_penalty"` which add a fixed amount to their respective payments (after the multiplication). For example, in MCR all players pay the winner 8 points regardless of the score, so all of these would be set to `8`.
 
 If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
 
@@ -1092,7 +1237,7 @@ There are typically no payments at exhaustive draw, but you can enable riichi-st
     "score_calculation": {
       "draw_tenpai_payments": [1000, 1500, 3000],
       "draw_nagashi_payments": [2000, 4000],
-    },
+    }
 
 These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
 
@@ -1100,11 +1245,33 @@ Alternatively, you can enable sichuan-style tenpai payments via:
 
     "score_calculation": {
       "score_best_hand_at_draw": true
-    },
+    }
 
 This scores every tenpai player's hand (where players with the `"tenpai"` status are considered tenpai) and awards them the highest possible hand they could have won, so payments proceed as if they won.
 
 This option takes precedence over tenpai and nagashi payments (and nagashi takes precedence over tenpai payments).
+
+### Payment-related keys
+
+To set the value of riichi sticks and honba counters respectively, set:
+
+    "score_calculation": {
+      "riichi_value": 5000,
+      "honba_value": 500
+    }
+
+`"riichi_value"` otherwise defaults to 1000 and `"honba_value"` to 0.
+
+The following keys determine the behavior of pao:
+
+    "score_calculation": {
+      "pao_pays_all_yaku": false,
+      "pao_pays_all_yaku2": false,
+      "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
+      "split_pao_ron": true,
+    }
+
+First, if `"pao_pays_all_yaku"` is true then players who are hit by pao (i.e. have the `"pao"` status on a win) pay the entirety of `yaku`. Same with `"pao_pays_all_yaku2"` and `yaku2`. Otherwise, only yaku named in the `"pao_eligible_yaku"` array has payment handled by pao rules -- the remaining yaku are paid out normally. Finally, `"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba).
 
 ### Payment-related statuses
 
@@ -1112,3 +1279,134 @@ There are a number of statuses you can set on players that can modify their scor
 
 - `"delta_score"`: if set, adds to this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments).
 - `"delta_score_multiplier"`: if set, multiplies this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments). This happens before `"delta_score"`.
+- `"score_as_dealer"`: if set, this player's payments are calculated as if they are the dealer.
+
+## Calculating fu
+
+If you want to calculate fu (minipoints), then you need to set the `fu` counter any time before or during `before_scoring`, or else it will default to 0 fu. To do so, run the following action:
+
+    ["set_counter", "fu", "minipoints",
+      action1,
+      action2,
+      ...
+    ]
+
+Fu calculation is done by a series of manipulations described by the action list above. For example, riichi uses the following (assuming kan is disabled):
+
+    ["set_counter", "fu", "minipoints",
+      ["remove_attrs"],
+      // score calls
+      ["convert_calls", {"pon": 2}],
+      ["remove_tanyaohai_calls"],
+      ["convert_calls", {"pon": 2}],
+      ["remove_calls"],
+      // now remove the winning group
+      ["remove_winning_groups",
+        // kanchan
+        {"group": [-1, 1], "value": 2},
+        // penchan
+        {"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2},
+        {"group": [1, 2], "reject_if_exists": [[3]], "value": 2},
+        // ryanmen
+        {"group": [-1, -2], "reject_if_missing": [[-3]]},
+        {"group": [1, 2], "reject_if_missing": [[3]]},
+        // shanpon
+        {"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2},
+        // tanki
+        {"group": [0], "value": 2, "yakuhai_value": 2}
+      ],
+      // now remove all closed groups
+      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+      // remove final pair, if any
+      ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
+      // only retain configurations with 0 tiles remaining
+      ["retain_empty_hands"],
+      // add 1000 to pinfu hands so we prioritize pinfu later
+      ["add", 1000, [{"name": "minipoints_equals", "opts": [0]}]],
+      // base 20
+      ["add", 20, []],
+      // tsumo +2 (except closed pinfu tsumo)
+      ["add", 2, [
+        "won_by_draw",
+        [
+          {"name": "minipoints_at_most", "opts": [999]},
+          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}
+        ]
+      ]],
+      // closed ron +10
+      ["add", 10, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]],
+      // open pinfu ron +10
+      ["add", 10, ["not_won_by_draw", {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_at_least", "opts": [1000]}]],
+      // take max, then subtract 1000 from pinfu hands
+      ["take_maximum"],
+      ["add", -1000, [{"name": "minipoints_at_least", "opts": [1000]}]],
+      // round up to nearest 10
+      ["round_up", 10],
+      // add original hand (for special hands like chiitoitsu and kokushi)
+      ["add_original_hand"],
+      // chiitoitsu
+      ["add", 25, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]]}]],
+      // kokushi
+      ["add", 40, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
+      ["add", 30, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
+      ["take_maximum"]
+    ]
+
+Essentially, fu calculations start with the winning hand and calls scoring 0 fu. Each fu calculation action manipulates one of these three (hand, calls, fu):
+
+- `["remove_attrs"]`: remove all tile attributes from hand and calls.
+- `["convert_calls", call_mapping]`: adds the score for every call as determined by `call_mapping`, which is an object specifying a map from call name to fu value (e.g. `{"pon": 2}`. Does not remove any calls.
+- `["remove_tanyaohai_calls"]`: deletes all calls that contain tanyaohai. The idea is that you run `"convert_calls"` to score all calls, run `"remove_tanyaohai_calls"` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
+- `["remove_calls"]`: deletes all calls.
+- `["remove_winning_groups", group1, group2, ...]`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
+  * Kanchan: `{"group": [-1, 1], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
+  * Penchan (left): `{"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)
+  * Ryanmen (left): `{"group": [-1, -2], "reject_if_exists": [[-3]]}` (remove the two tiles left of the winning tile, but only if the tile (winning tile - 3) also exists)
+  * Shanpon: `{"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yaochuuhai, multiply by 2, if the win is self-draw then multiply by 2)
+  * Tanki: `{"group": [0], "value": 2, "yakuhai_value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yakuhai, add 2 per yakuhai (so double wind counts as +4 fu)
+- `["remove_groups", group1, group2, ...]`: same as "remove_winning_groups", but it can be centered on any tile, not just the winning tile
+
+The above manipulations will leave you with multiple possibilities for (hand, calls, fu). To keep only the ones that use up the whole hand, use `["retain_empty_hands"]`. Afterwards the following manipulations are useful:
+
+- `["add", amount, condition]`: Add the given amount to each possibility where the condition evaluates to true. Useful conditions usable only here are:
+  + `{"name": "minipoints_equals", "opts": [fu]}`: you have `fu` minipoints.
+  + `{"name": "minipoints_at_least", "opts": [fu]}`: you have at least `fu` minipoints.
+  + `{"name": "minipoints_at_most", "opts": [fu]}`: you have at most `fu` minipoints.
+- `["take_maximum"]`: Drop all possibilities that aren't the maximum fu among all possibilities.
+- `["round_up", 10]`: Round up all fu values to the nearest 10.
+- `["add_original_hand"]`: Add the original (hand, calls, 0 fu) to the list of possibilities. This is useful if you want to calculate alternate scores for the hand (e.g. chiitoitsu and kokushi)
+
+The list of actions should end with `["take_maximum"]` in order to reduce the list of possible (hand, calls, fu) tuples to the maximum possible. The calculated fu will be the fu for the first possibility in the list.
+
+## Setting up next-round logic
+
+After a win there are a few decisions to be made:
+
+- Does the game end?
+- Who is the next dealer?
+- Do you increase the repeat counter?
+
+In general, 
+
+These are all controlled by the following keys in the `"score_calculation"` object, which all default to false or unset:
+
+    "score_calculation": {
+      "tobi": (unset),
+      "next_dealer_is_first_winner": false,
+      "agarirenchan": false,
+      "tenpairenchan": false,
+      "notenrenchan_south": false,
+    }
+
+Here's how they work:
+
+- `"tobi"`: if set, then if anyone's score is below this amount after a round, the game ends (that player "busts out").
+- `"next_dealer_is_first_winner"`: if true, then the (first) winner becomes the next round's dealer.
+- `"agarirenchan"`: if true, the round repeats if the dealer wins.
+- `"tenpairenchan"`: if true, the round repeats if the dealer is tenpai at exhaustive draw.
+- `"notenrenchan_south"` if true, the round repeats if it's South round and no one is tenpai at exhaustive draw.
+
+Regardless of the above settings, the honba (repeat) counter is incremented when the dealer wins or an exhaustive draw happens, and is reset when a nondealer wins.
