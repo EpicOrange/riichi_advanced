@@ -143,6 +143,52 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_command("define_set", name, args, line, column) do
+    set_spec = case args do
+      [set_spec] when is_binary(set_spec) -> {:ok, set_spec}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_set` command expects a single string value, got #{inspect(args)}"}
+    end
+
+    # generate a set using this
+    set_spec = with {:ok, set_spec} <- set_spec do
+      for subgroup <- String.split(set_spec, "|", trim: true) do
+        for item <- String.split(subgroup, " ", trim: true) do
+          # check for attributes
+          item_attrs = case String.split(item, "@") do
+            [item] -> {:ok, {item, []}}
+            [item, attrs] -> {:ok, {item, String.split(attrs, ",")}}
+            _ -> {:error, "expected no more than one @ in set item"}
+          end
+          with {:ok, {item, attrs}} <- item_attrs do
+            offset = case Integer.parse(item) do
+              {offset, ""} -> offset
+              _ -> item
+            end
+            if Enum.empty?(attrs) do
+              {:ok, offset}
+            else
+              {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
+            end
+          end
+        end |> Utils.sequence()
+      end |> Utils.sequence()
+    end
+
+    # simplify singleton sets, i.e. [[0,1,2]] -> [0,1,2]
+    set_spec = with {:ok, set_spec} <- set_spec do
+      case set_spec do
+        [set] when is_list(set) -> {:ok, set}
+        set -> {:ok, set}
+      end
+    end
+
+    with {:ok, set_spec} <- set_spec,
+         {:ok, set_spec} <- Validator.validate_json(set_spec),
+         {:ok, set_spec} <- Jason.encode(set_spec) do
+      {:ok, ".set_definitions[#{name}] = #{set_spec}"}
+    end
+  end
+
   defp compile_command(cmd, _name, _args, line, column) do
     {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command}"}
   end
@@ -167,7 +213,7 @@ defmodule RiichiAdvanced.Compiler do
           compile_command(cmd, name, args, line, column)
           case args do
             [[do: args]] -> compile_command(cmd, name, args, line, column)
-            [args] -> compile_command(cmd, name, List.wrap(args), line, column)
+            [args] -> compile_command(cmd, name, [args], line, column)
             [] -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects an argument, got #{inspect(args)}"} 
             _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid arguments #{inspect(args)}"}
           end
@@ -190,7 +236,7 @@ defmodule RiichiAdvanced.Compiler do
       {:__block__, [], nodes} -> 
         # IO.inspect(nodes, label: "AST")
         case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
-          {:ok, val}    -> {:ok, Enum.join(val, "\n|\n")}
+          {:ok, val}    -> {:ok, Enum.join(val, "\n| ")}
           {:error, msg} -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})

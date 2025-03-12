@@ -65,7 +65,15 @@ defmodule RiichiAdvanced.ModLoader do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
-          {:ok, ruleset_majs} -> with {:ok, ast} <- Compiler.parse(ruleset_majs), {:ok, jq} <- Compiler.compile_jq(ast), do: JQ.query_string_with_string!("{}", jq)
+          {:ok, ruleset_majs} ->
+            with {:ok, ast} <- Compiler.parse(ruleset_majs),
+                 {:ok, jq} <- Compiler.compile_jq(ast) do
+              JQ.query_string_with_string!("{}", jq)
+            else 
+              {:error, msg} ->
+                IO.puts(msg)
+                "{}"
+            end
           {:error, _err}      -> "{}"
         end
     end

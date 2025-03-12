@@ -137,7 +137,18 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
-
+  test "mahjongscript - define_set" do
+    script = """
+    define_set myset, "0 1 2"
+    define_set myset, "0@attr 1 2"
+    define_set myset, "0@attr,attr2 1 2"
+    define_set myset, "1m 2m 3m"
+    define_set myset, "0 1m 2p"
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
+    IO.puts(compiled)
+  end
 
 
 

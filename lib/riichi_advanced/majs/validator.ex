@@ -28,7 +28,6 @@ defmodule RiichiAdvanced.Validator do
   def validate_json({:%{}, _pos, contents}) do
     validated_map = contents
     |> Enum.map(fn {key, val} ->
-      IO.inspect(key)
       if is_binary(key) do
         case {validate_json(key), validate_json(val)} do
           {{:ok, key}, {:ok, val}} -> {:ok, {key, val}}
