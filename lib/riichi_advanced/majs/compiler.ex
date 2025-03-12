@@ -96,23 +96,29 @@ defmodule RiichiAdvanced.Compiler do
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
-          # each action in a quoted do block should be treated as another parameter
-          args = Enum.map(Enum.with_index(args), &case &1 do
-            {{"quote", [line: line, column: column], [[do: actions]]}, _i} -> compile_action_list(actions, line, column)
-            {arg, i} when name == "add" and i == 1 ->
-              with {:ok, condition} <- compile_cnf_condition(arg, line, column) do
-                {:ok, [condition]}
-              end
-            {arg, _i} -> {:ok, [arg]}
-          end)
-          |> Utils.sequence()
-          with {:ok, args} <- args,
-               {:ok, args} <- args |> Enum.concat() |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
-            {:ok, [name | args]}
+          if args != nil do
+            # each action in a do block should be treated as another parameter
+            args = Enum.map(Enum.with_index(args), &case &1 do
+              {[do: actions], _i} -> compile_action_list(actions, line, column)
+              {arg, i} when name == "add" and i == 1 ->
+                with {:ok, condition} <- compile_cnf_condition(arg, line, column) do
+                  {:ok, [condition]}
+                end
+              {arg, _i} -> {:ok, [arg]}
+            end)
+            |> Utils.sequence()
+            with {:ok, args} <- args,
+                 {:ok, args} <- args |> Enum.concat() |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
+              {:ok, [name | args]}
+            end
+          else
+            {:ok, [name]}
           end
         else
           # convert into a function call
-          {:ok, ["run", name]}
+          with {:ok, name} <- Validator.validate_json(name) do
+            {:ok, ["run", name]}
+          end
         end
       _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
     end
@@ -216,6 +222,60 @@ defmodule RiichiAdvanced.Compiler do
         with {:ok, supercedes} <- Validator.validate_json(supercedes),
              {:ok, supercedes} <- Jason.encode(supercedes) do
           {:ok, add_yaku <> "\n| .yaku_precedence[#{display_name}] += #{supercedes}"}
+        end
+      end
+    end
+  end
+
+  defp compile_command("define_button", name, args, line, column) do
+    args = case args do
+      [args, [do: actions]] -> {:ok, Map.new(args)}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_button` command expects a keyword list followed by a do block, got #{inspect(args)}"}
+    end
+
+    with {:ok, args} <- args,
+         {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "Button")),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, show_when} <- compile_cnf_condition(Map.get(args, "show_when", "false"), line, column),
+         {:ok, show_when} <- Validator.validate_json(show_when),
+         {:ok, show_when} <- Jason.encode(show_when),
+         {:ok, actions} <- compile_action_list(Map.get(args, "actions", []), line, column),
+         {:ok, actions} <- Validator.validate_json(actions),
+         {:ok, actions} <- Jason.encode(actions),
+         {:ok, precedence_over} <- Validator.validate_json(Map.get(args, "precedence_over", [])),
+         {:ok, precedence_over} <- Jason.encode(precedence_over),
+         {:ok, unskippable} <- Validator.validate_json(Map.get(args, "unskippable", false)),
+         {:ok, unskippable} <- Jason.encode(unskippable),
+         {:ok, cancellable} <- Validator.validate_json(Map.get(args, "cancellable", false)),
+         {:ok, cancellable} <- Jason.encode(cancellable) do
+      add_button = ~s"""
+      .buttons[#{name}] = {
+        \"display_name\": #{display_name},
+        \"show_when\": #{show_when},
+        \"actions\": #{actions},
+        \"precedence_over\": #{precedence_over},
+        \"unskippable\": #{unskippable},
+        \"cancellable\": #{cancellable}
+      }
+      """
+      if Enum.empty?(Map.get(args, "call", [])) do
+        {:ok, add_button}
+      else
+        with {:ok, call} <- Validator.validate_json(Map.get(args, "call", [])),
+             {:ok, call} <- Jason.encode(call),
+             {:ok, call_conditions} <- compile_cnf_condition(Map.get(args, "call_conditions", "true"), line, column),
+             {:ok, call_conditions} <- Validator.validate_json(call_conditions),
+             {:ok, call_conditions} <- Jason.encode(call_conditions),
+             {:ok, call_style} <- Validator.validate_json(Map.get(args, "call_style", [])),
+             {:ok, call_style} <- Jason.encode(call_style) do
+          add_call_button = ~s"""
+          .buttons[#{name}] += {
+            \"call\": #{call},
+            \"call_conditions\": #{call_conditions},
+            \"call_style\": #{call_style}
+          }
+          """
+          {:ok, add_button <> "\n| " <> add_call_button}
         end
       end
     end
