@@ -12,8 +12,8 @@ defmodule RiichiAdvanced.Validator do
 
   # all of json, but don't allow null, true, or false
   def validate_json(:null), do: {:error, "null not allowed"}
-  def validate_json(:true), do: {:error, "true not allowed"}
-  def validate_json(:false), do: {:error, "false not allowed"}
+  def validate_json(:true), do: {:ok, true}
+  def validate_json(:false), do: {:ok, false}
   def validate_json(ast) when is_integer(ast) or is_float(ast), do: {:ok, ast}
   def validate_json(ast) when is_binary(ast) do
     str = ast
@@ -25,8 +25,12 @@ defmodule RiichiAdvanced.Validator do
     |> Enum.map(&validate_json(&1))
     |> Utils.sequence()
   end
-  def validate_json({:%{}, _pos, contents}) do
-    validated_map = contents
+  def validate_json(ast) when is_map(ast), do: validate_map(ast)
+  def validate_json({:%{}, _pos, contents}), do: validate_map(contents)
+  def validate_json(not_json), do: {:error, "invalid JSON: #{inspect(not_json)}"}
+
+  def validate_map(map) do
+    validated_map = map
     |> Enum.map(fn {key, val} ->
       if is_binary(key) do
         case {validate_json(key), validate_json(val)} do
@@ -41,7 +45,6 @@ defmodule RiichiAdvanced.Validator do
       {:ok, Map.new(validated_map)}
     end
   end
-  def validate_json(not_json), do: {:error, "invalid JSON: #{inspect(not_json)}"}
 
   def validate_condition_name(name) do
     negated = is_binary(name) and String.starts_with?(name, "not_")

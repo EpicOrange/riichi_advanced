@@ -6,6 +6,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_condition(condition, line, column) do
     condition = case condition do
       condition when is_binary(condition) -> {:ok, {condition, []}}
+      {condition, _pos, nil} when is_binary(condition) -> {:ok, {condition, []}}
       {condition, _pos, opts} when is_binary(condition) -> {:ok, {condition, opts}}
       _ -> {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, `if` expects a condition, got #{inspect(condition)}"}
     end
@@ -59,17 +60,35 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action(action, line, column) do
     case action do
-      {"if", [line: line, column: column], [condition, actions]} ->
-        with {:ok, condition} <- compile_cnf_condition(condition, line, column),
-             {:ok, then_branch} <- compile_action_list(Keyword.get(actions, :do), line, column) do
-          else_branch_ast = Keyword.get(actions, :else)
-          if else_branch_ast == nil do
-            {:ok, [["when", condition, then_branch]]}
-          else
-            with {:ok, else_branch} <- compile_action_list(else_branch_ast, line, column) do
-              {:ok, [["ite", condition, then_branch, else_branch]]}
+      {"if", [line: line, column: column], opts} ->
+        case opts do
+          [condition, actions] ->
+            with {:ok, condition} <- compile_cnf_condition(condition, line, column),
+                 {:ok, then_branch} <- compile_action_list(Keyword.get(actions, :do), line, column) do
+              else_branch_ast = Keyword.get(actions, :else)
+              if else_branch_ast == nil do
+                {:ok, ["when", condition, then_branch]}
+              else
+                with {:ok, else_branch} <- compile_action_list(else_branch_ast, line, column) do
+                  {:ok, ["ite", condition, then_branch, else_branch]}
+                end
+              end
             end
-          end
+          _ -> {:error, "\"if\" got invalid parameters: #{inspect(opts)}"}
+        end
+      {"as", [line: line, column: column], opts} ->
+        case opts do
+          [seats_spec, actions] ->
+            seats_spec = case seats_spec do
+              seats_spec when is_binary(seats_spec) -> {:ok, seats_spec}
+              {seats_spec, _pos, nil} when is_binary(seats_spec) -> {:ok, seats_spec}
+              _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, `as` expects a seat spec, got #{inspect(seats_spec)}"}
+            end
+            with {:ok, seats_spec} <- IO.inspect(seats_spec),
+                 {:ok, actions} <- compile_action_list(Keyword.get(actions, :do), line, column) do
+              {:ok, ["as", seats_spec, actions]}
+            end
+          _ -> {:error, "\"as\" got invalid parameters: #{inspect(opts)}"}
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
@@ -134,11 +153,9 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_set", name, args, line, column) do
     set_spec = case args do
-      [set_spec] when is_binary(set_spec) -> {:ok, set_spec}
+      [set_spec] when is_binary(set_spec) -> Parser.parse_set(set_spec)
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_set` command expects a single string value, got #{inspect(args)}"}
     end
-
-    set_spec = with {:ok, set_spec} <- set_spec, do: Parser.parse_set(set_spec)
 
     with {:ok, set_spec} <- set_spec,
          {:ok, set_spec} <- Validator.validate_json(set_spec),
@@ -149,11 +166,9 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_match", name, args, line, column) do
     match_spec = case args do
-      [match_spec] when is_binary(match_spec) -> {:ok, match_spec}
+      [match_spec] when is_binary(match_spec) -> Parser.parse_match(match_spec)
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value, got #{inspect(args)}"}
     end
-
-    match_spec = with {:ok, match_spec} <- match_spec, do: Parser.parse_match(match_spec)
 
     with {:ok, match_spec} <- match_spec,
          {:ok, match_spec} <- Validator.validate_json(match_spec),
@@ -161,6 +176,33 @@ defmodule RiichiAdvanced.Compiler do
       # `name` is already escaped, so we just insert _definition right before the last quote
       name = Utils.insert_at(name, "_definition", -2)
       {:ok, ".[#{name}] = #{match_spec}"}
+    end
+  end
+
+  defp compile_command("define_yaku", name, args, line, column) do
+    yaku_spec = case args do
+      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list, a display name, a value, and a condition, got #{inspect(args)}"}
+    end
+
+    with {:ok, {display_name, value, condition, supercedes}} <- yaku_spec,
+         {:ok, display_name} <- Validator.validate_json(display_name),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value),
+         {:ok, condition} <- compile_cnf_condition(condition, line, column),
+         {:ok, condition} <- Validator.validate_json(condition),
+         {:ok, condition} <- Jason.encode(condition) do
+      add_yaku = ".[#{name}] += [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]"
+      if Enum.empty?(supercedes) do
+        {:ok, add_yaku}
+      else
+        with {:ok, supercedes} <- Validator.validate_json(supercedes),
+             {:ok, supercedes} <- Jason.encode(supercedes) do
+          {:ok, add_yaku <> "\n| .yaku_precedence[#{display_name}] += #{supercedes}"}
+        end
+      end
     end
   end
 
@@ -188,7 +230,7 @@ defmodule RiichiAdvanced.Compiler do
           compile_command(cmd, name, args, line, column)
           case args do
             [[do: args]] -> compile_command(cmd, name, args, line, column)
-            [args] -> compile_command(cmd, name, [args], line, column)
+            args when is_list(args) -> compile_command(cmd, name, args, line, column)
             [] -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects an argument, got #{inspect(args)}"} 
             _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid arguments #{inspect(args)}"}
           end

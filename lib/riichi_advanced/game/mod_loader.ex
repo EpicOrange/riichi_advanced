@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.ModLoader do
               JQ.query_string_with_string!("{}", jq)
             else 
               {:error, msg} ->
-                IO.puts(msg)
+                if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
                 "{}"
             end
           {:error, _err}      -> "{}"

@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.Parser do
           if Enum.empty?(attrs) do
             {:ok, offset}
           else
-            {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
+            {:ok, %{"offset" => offset, "attrs" => attrs}}
           end
         end
       end |> Utils.sequence()
@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.Parser do
                 with {:ok, {base, attrs}} <- base_attrs do
                   groups = case attrs do
                     [] -> base
-                    attrs -> {:%{}, [], [{"tile", base}, {"attrs", attrs}]}
+                    attrs -> %{"tile" => base, "attrs" => attrs}
                   end
                   {:ok, groups}
                 end
