@@ -162,7 +162,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "expected a condition")
+    assert String.contains?(msg, "`if` expects a condition")
   end
   test "mahjongscript - invalid list as action" do
     script = """
@@ -185,7 +185,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "expected a condition")
+    assert String.contains?(msg, "`if` expects a condition")
   end
 
   test "mahjongscript - invalid map as action" do
@@ -209,7 +209,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "expected a condition")
+    assert String.contains?(msg, "`if` expects a condition")
   end
 
   test "mahjongscript - no string interpolation" do
@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid event")
+    assert String.contains?(msg, "command expects arguments")
   end
 
   test "mahjongscript - empty set command" do
@@ -240,7 +240,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid key")
+    assert String.contains?(msg, "command expects arguments")
   end
 
   test "mahjongscript - invalid on command" do
@@ -249,7 +249,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid event")
+    assert String.contains?(msg, "got invalid name")
   end
 
   test "mahjongscript - invalid set command" do
@@ -258,7 +258,7 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     """
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid key")
+    assert String.contains?(msg, "got invalid name")
   end
 
 

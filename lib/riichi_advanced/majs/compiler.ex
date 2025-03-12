@@ -10,17 +10,22 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_condition(condition, line, column) do
-    case condition do
-      name when is_binary(name) -> {:ok, Validator.validate_condition_name(name)}
-      {name, [line: line, column: column], opts} when is_binary(name) ->
-        if Validator.validate_condition_name(name) do
-          with {:ok, validated_opts} <- Validator.validate_json(opts) do
-            {:ok, %{"name" => name, "opts" => validated_opts}}
-          end
+    condition = case condition do
+      condition when is_binary(condition) -> {:ok, {condition, []}}
+      {condition, _pos, opts} when is_binary(condition) -> {:ok, {condition, opts}}
+      _ -> {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, `if` expects a condition, got #{inspect(condition)}"}
+    end
+    with {:ok, {condition, opts}} <- condition,
+         {:ok, opts} <- Validator.validate_json(opts) do
+      if Validator.validate_condition_name(condition) do
+        if Enum.empty?(opts) do
+          {:ok, condition}
         else
-          {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, \"#{name}\" is not a valid condition"}
+          {:ok, %{"name" => condition, "opts" => opts}}
         end
-      _ -> {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, expected a condition, got #{inspect(condition)}"}
+      else
+        {:error, "Compiler.compile_cnf_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}
+      end
     end
   end
 
@@ -60,6 +65,18 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action(action, line, column) do
     case action do
+      {"if", [line: line, column: column], [condition, actions]} ->
+        with {:ok, condition} <- compile_cnf_condition(condition, line, column),
+             {:ok, then_branch} <- compile_action_list(Keyword.get(actions, :do), line, column) do
+          else_branch_ast = Keyword.get(actions, :else)
+          if else_branch_ast == nil do
+            {:ok, [["when", condition, then_branch]]}
+          else
+            with {:ok, else_branch} <- compile_action_list(else_branch_ast, line, column) do
+              {:ok, [["ite", condition, then_branch, else_branch]]}
+            end
+          end
+        end
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
           case Utils.sequence(Enum.map(args, &Validator.validate_json/1)) do
@@ -67,106 +84,87 @@ defmodule RiichiAdvanced.Compiler do
             {:error, msg} -> {:error, msg}
           end
         else
-          {:error, "Compiler.compile_action: at line #{line}:#{column}, \"#{name}\" is not a valid action"}
+          {:error, "Compiler.compile_action: at line #{line}:#{column}, #{inspect(name)} is not a valid action"}
         end
-      _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action, got #{inspect(action)}"}
+      _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
     end
   end
 
-  defp compile_action_list!(action, line, column) do
-    case compile_action_list(action, line, column) do
-      {:ok, json} -> json
-      {:error, error} -> raise error
-    end
-  end
+  # defp compile_action_list!(action, line, column) do
+  #   case compile_action_list(action, line, column) do
+  #     {:ok, json} -> json
+  #     {:error, error} -> raise error
+  #   end
+  # end
   defp compile_action_list(ast, line, column) do
     case ast do
-      {:__block__, _pos, actions} ->
-        case Utils.sequence(Enum.map(actions, &compile_action(&1, line, column))) do
-          {:ok, exprs} -> {:ok, exprs}
-          {:error, message} -> {:error, message}
-        end
-      {"if", [line: line, column: column], [condition, actions]} ->
-        case compile_cnf_condition(condition, line, column) do
-          {:ok, condition} ->
-            case compile_action_list(Keyword.get(actions, :do), line, column) do
-              {:ok, then_branch} ->
-                else_branch_ast = Keyword.get(actions, :else)
-                if else_branch_ast == nil do
-                  {:ok, [["when", condition, then_branch]]}
-                else
-                  case compile_action_list(else_branch_ast, line, column) do
-                    {:ok, else_branch} -> {:ok, [["ite", condition, then_branch, else_branch]]}
-                    {:error, message} -> {:error, message}
-                  end
-                end
-              {:error, message} -> {:error, message}
-            end
-          {:error, message} -> {:error, message}
-        end
-      {_name, _pos, _actions} -> compile_action_list({:__block__, [], [ast]}, line, column)
+      {:__block__, _pos, actions} -> compile_action_list(actions, line, column)
+      {_name, _pos, _actions} -> compile_action_list([ast], line, column)
+      actions when is_list(actions) -> Utils.sequence(Enum.map(actions, &compile_action(&1, line, column)))
       _ -> {:error, "Compiler.compile_action_list: at line #{line}:#{column}, expected an action list, got #{inspect(ast)}"}
     end
   end
 
-  def compile_jq_toplevel!(ast) do
-    case compile_jq_toplevel(ast) do
-      {:ok, jq} -> jq
-      {:error, error} -> raise error
+  defp compile_command("def", name, args, line, column) do
+    with {:ok, actions} <- compile_action_list(args, line, column),
+         {:ok, actions} <- Validator.validate_json(actions),
+         {:ok, actions} <- Jason.encode(actions) do
+      {:ok, ".functions[#{name}] = #{actions}"}
     end
   end
+
+  defp compile_command("set", name, args, line, column) do
+    value = case args do
+      [value] -> {:ok, value}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `set` command expects only one value, got #{inspect(args)}"}
+    end
+    with {:ok, value} <- value,
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value) do
+      {:ok, ".[#{name}] = #{value}"}
+    end
+  end
+
+  defp compile_command("on", name, args, line, column) do
+    body = case args do
+      [fn_name] when is_binary(fn_name) -> {:ok, [["run", fn_name]]}
+      [{fn_name, _pos, nil}] when is_binary(fn_name) -> {:ok, [["run", fn_name]]}
+      _ -> compile_action_list(args, line, column)
+    end
+    with {:ok, body} <- body,
+         {:ok, body} <- Validator.validate_json(body),
+         {:ok, body} <- Jason.encode(body) do
+      {:ok, ".[#{name}].actions += #{body}"}
+    end
+  end
+
+  # def compile_jq_toplevel!(ast) do
+  #   case compile_jq_toplevel(ast) do
+  #     {:ok, jq} -> jq
+  #     {:error, error} -> raise error
+  #   end
+  # end
   defp compile_jq_toplevel(ast) do
     case ast do
-      {"def", [line: line, column: column], nodes} ->
-        case nodes do
-          [{name, [line: line, column: column], _params}, body] when is_binary(name) ->
-            case body do
-              [do: nodes] ->
-                case compile_action_list(nodes, line, column) do
-                  {:ok, actions} -> {:ok, ".functions[\"#{name}\"] = #{Jason.encode!(actions)}"}
-                  {:error, msg}  -> {:error, msg}
-                end
-              {_name, _pos, _actions} -> {:ok, ".functions[\"#{name}\"] = #{compile_action_list!(body, line, column) |> Jason.encode!()}"}
-              _ -> {:error, "Compiler.compile: at line #{line}:#{column}, def expects a \"do\" block after name, got #{inspect(body)}"}
-            end
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, def got invalid name #{inspect(nodes && Enum.at(nodes, 0))}"}
+      {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
+        name = case name do
+          name when is_binary(name) -> {:ok, name}
+          {name, _pos, _params} -> {:ok, name}
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid name #{inspect(name)}"}
         end
-      {"set", [line: line, column: column], nodes} ->
-        args = case nodes do
-          [{key, _pos, nil}, value] when is_binary(key) -> {:ok, [key, value]}
-          [key, value] when is_binary(key) -> {:ok, [key, value]}
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, set got invalid key #{inspect(nodes && Enum.at(nodes, 0))}"}
-        end
-        with {:ok, [key, value]} <- args,
-             {:ok, key} <- Validator.validate_json(key),
-             {:ok, key} <- Jason.encode(key),
-             {:ok, value} <- Validator.validate_json(value),
-             {:ok, value} <- Jason.encode(value) do
-          {:ok, ".[#{key}] = #{value}"}
-        end
-      {"on", [line: line, column: column], nodes} ->
-        args = case nodes do
-          [{event, _pos, nil}, body] when is_binary(event) -> {:ok, [event, body]}
-          [event, body] when is_binary(event) -> {:ok, [event, body]}
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, on got invalid event #{inspect(nodes && Enum.at(nodes, 0))}"}
-        end
-        with {:ok, [event, body]} <- args,
-             {:ok, event} <- Validator.validate_json(event),
-             {:ok, event} <- Jason.encode(event) do
-          body = case body do
-            name when is_binary(name) -> with {:ok, name} <- Validator.validate_json(name), do: {:ok, [["run", name]]}
-            {name, _pos, nil} -> with {:ok, name} <- Validator.validate_json(name), do: {:ok, [["run", name]]}
-            [do: actions] -> compile_action_list(actions, line, column)
-            {_name, _pos, _actions} -> compile_action_list(body, line, column)
-            _ -> {:error, "Compiler.compile: at line #{line}:#{column}, on expects a function name or a do block, got #{inspect(body)}"}
-          end
-          with {:ok, body} <- body,
-               {:ok, body} <- Validator.validate_json(body),
-               {:ok, body} <- Jason.encode(body) do
-            {:ok, ".[#{event}].actions += #{body}"}
+        with {:ok, name} <- name,
+             {:ok, name} <- Validator.validate_json(name),
+             {:ok, name} <- Jason.encode(name) do
+          compile_command(cmd, name, args, line, column)
+          case args do
+            [[do: args]] -> compile_command(cmd, name, args, line, column)
+            [args] -> compile_command(cmd, name, List.wrap(args), line, column)
+            _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid arguments #{inspect(args)}"}
           end
         end
-      _ -> {:error, "Compiler.compile: got invalid toplevel command #{inspect(ast)}"}
+      {cmd, [line: line, column: column], args} when is_binary(cmd) ->
+        {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects arguments, got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: expected toplevel command, got #{inspect(ast)}"}
     end
   end
 
