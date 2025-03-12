@@ -2,10 +2,15 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Validator
   alias RiichiAdvanced.Utils
 
-  def parse(input) do
-    case Code.string_to_quoted(input, columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, name} end) do
-      {:ok, ast} -> {:ok, ast}
-      {:error, err} -> {:error, err}
+  def parse(input) when is_binary(input) do
+    case byte_size(input) do
+      size when size > 4 * 1024 * 1024 ->
+        {:error, "script too large (#{size / 1024 / 1024} MB > 4 MB)"}
+      _ ->
+        case Code.string_to_quoted(input, columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, if name == "do" do :do else name end} end) do
+          {:ok, ast} -> {:ok, ast}
+          {:error, err} -> {:error, err}
+        end
     end
   end
 
@@ -98,8 +103,8 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action_list(ast, line, column) do
     case ast do
-      {:__block__, _pos, actions} -> compile_action_list(actions, line, column)
-      {_name, _pos, _actions} -> compile_action_list([ast], line, column)
+      {:__block__, [], actions} -> compile_action_list(actions, line, column)
+      {_name, [line: line, column: column], _actions} -> compile_action_list([ast], line, column)
       actions when is_list(actions) -> Utils.sequence(Enum.map(actions, &compile_action(&1, line, column)))
       _ -> {:error, "Compiler.compile_action_list: at line #{line}:#{column}, expected an action list, got #{inspect(ast)}"}
     end
@@ -138,6 +143,10 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_command(cmd, _name, _args, line, column) do
+    {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command}"}
+  end
+
   # def compile_jq_toplevel!(ast) do
   #   case compile_jq_toplevel(ast) do
   #     {:ok, jq} -> jq
@@ -159,6 +168,7 @@ defmodule RiichiAdvanced.Compiler do
           case args do
             [[do: args]] -> compile_command(cmd, name, args, line, column)
             [args] -> compile_command(cmd, name, List.wrap(args), line, column)
+            [] -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects an argument, got #{inspect(args)}"} 
             _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid arguments #{inspect(args)}"}
           end
         end

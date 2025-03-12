@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.MahjongScriptTest do
+defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.Compiler, as: Compiler
 
@@ -111,11 +111,74 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     assert String.contains?(compiled, ".[\"before_win\"].actions += [[\"print\",\"bar\"],[\"print\",\"baz\"]]")
   end
 
+  test "mahjongscript - single line def" do
+    script = """
+    def foo, do: print("asdf")
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, _compiled} = Compiler.compile_jq(parsed)
+  end
+
+  test "mahjongscript - on handlers can have spaces" do
+    script = """
+    on foo, "has spaces"
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, _compiled} = Compiler.compile_jq(parsed)
+  end
+
+  test "mahjongscript - def name can have spaces" do
+    script = """
+    def "has spaces" do
+      print("hello")
+    end
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:ok, _compiled} = Compiler.compile_jq(parsed)
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
   # erroring cases
+
+  test "mahjongscript - invalid root" do
+    script = """
+    123
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:error, msg} = Compiler.compile_jq(parsed)
+    assert String.contains?(msg, "invalid root node")
+  end
+
+  test "mahjongscript - invalid command" do
+    script = """
+    invalid_command foo, "bar"
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:error, msg} = Compiler.compile_jq(parsed)
+    assert String.contains?(msg, "not a valid toplevel command")
+  end
 
   test "mahjongscript - invalid action" do
     script = """
@@ -259,6 +322,39 @@ defmodule RiichiAdvanced.MahjongScriptTest do
     assert {:ok, parsed} = Compiler.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "got invalid name")
+  end
+
+  test "mahjongscript - def must have do block" do
+    script = """
+    def foo, "not a do block"
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:error, msg} = Compiler.compile_jq(parsed)
+    assert String.contains?(msg, "expected an action")
+  end
+
+  test "mahjongscript - def body contains a non-action" do
+    script = """
+    def foo do
+      print("test")
+      "not an action"
+    end
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:error, msg} = Compiler.compile_jq(parsed)
+    assert String.contains?(msg, "expected an action")
+  end
+
+  test "mahjongscript - on body contains a non-action" do
+    script = """
+    on foo do
+      print("test")
+      "not an action"
+    end
+    """
+    assert {:ok, parsed} = Compiler.parse(script)
+    assert {:error, msg} = Compiler.compile_jq(parsed)
+    assert String.contains?(msg, "expected an action")
   end
 
 
