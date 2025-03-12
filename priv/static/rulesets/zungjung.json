@@ -12,7 +12,7 @@
   // <TODO: Add the following mods:>
   // ✅ Flowers: Adds flowers to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
   // Lesser Weight Flowers: Adds flowers to the game, but all flower-related patterns are worth half as much. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring.
-  // 5-point Minimum: As described in Basic Rules Section 5 of https://www.zj-mahjong.info/zj33_rules_eng.html . Otherwise self-explanatory.
+  // ✅️ 5-point Minimum: As described in Basic Rules Section 5 of https://www.zj-mahjong.info/zj33_rules_eng.html . Otherwise self-explanatory.
   
   "available_mods": [
 		{"id": "zj_flowers", "name": "Bonus Tiles", "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
