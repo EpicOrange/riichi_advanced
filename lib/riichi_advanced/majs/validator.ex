@@ -16,9 +16,9 @@ defmodule RiichiAdvanced.Validator do
   def allowed_events, do: @allowed_events
 
   # all of json, but don't allow null, true, or false
-  def validate_json(:null), do: {:error, "null not allowed"}
-  def validate_json(:true), do: {:ok, true}
-  def validate_json(:false), do: {:ok, false}
+  def validate_json(nil), do: {:ok, nil}
+  def validate_json(true), do: {:ok, true}
+  def validate_json(false), do: {:ok, false}
   def validate_json(ast) when is_integer(ast) or is_float(ast), do: {:ok, ast}
   def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
   def validate_json(ast) when is_binary(ast) do

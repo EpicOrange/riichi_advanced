@@ -250,12 +250,12 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, cancellable} <- Jason.encode(cancellable) do
       add_button = ~s"""
       .buttons[#{name}] = {
-        \"display_name\": #{display_name},
-        \"show_when\": #{show_when},
-        \"actions\": #{actions},
-        \"precedence_over\": #{precedence_over},
-        \"unskippable\": #{unskippable},
-        \"cancellable\": #{cancellable}
+        "display_name": #{display_name},
+        "show_when": #{show_when},
+        "actions": #{actions},
+        "precedence_over": #{precedence_over},
+        "unskippable": #{unskippable},
+        "cancellable": #{cancellable}
       }
       """
       if Enum.empty?(Map.get(args, "call", [])) do
@@ -270,9 +270,9 @@ defmodule RiichiAdvanced.Compiler do
              {:ok, call_style} <- Jason.encode(call_style) do
           add_call_button = ~s"""
           .buttons[#{name}] += {
-            \"call\": #{call},
-            \"call_conditions\": #{call_conditions},
-            \"call_style\": #{call_style}
+            "call": #{call},
+            "call_conditions": #{call_conditions},
+            "call_style": #{call_style}
           }
           """
           {:ok, add_button <> "\n| " <> add_call_button}
@@ -284,7 +284,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("define_auto_button", name, args, line, column) do
     args = case args do
       [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put(:actions, actions)}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_auto_button` command expects a keyword list followed by a do block, got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_auto_button` command expects a keyword list followed by a do block of actions, got #{inspect(args)}"}
     end
 
     with {:ok, args} <- args,
@@ -299,13 +299,127 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, enabled_at_start} <- Jason.encode(enabled_at_start) do
       add_button = ~s"""
       .auto_buttons[#{name}] = {
-        \"display_name\": #{display_name},
-        \"desc\": #{desc},
-        \"actions\": #{actions},
-        \"enabled_at_start\": #{enabled_at_start}
+        "display_name": #{display_name},
+        "desc": #{desc},
+        "actions": #{actions},
+        "enabled_at_start": #{enabled_at_start}
       }
       """
       {:ok, add_button}
+    end
+  end
+
+  defp compile_command("define_mod_category", name, args, line, column) do
+    prepend = case args do
+      [] -> {:ok, false}
+      [args] ->
+        prepend = Map.get(args, "prepend")
+        prepend = if is_boolean(prepend) do prepend else false end
+        {:ok, prepend}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_mod_category` command expects a keyword list, got #{inspect(args)}"}
+    end
+
+    with {:ok, prepend} <- prepend do
+      if prepend do
+        {:ok, ".available_mods |= [#{name}] + ."}
+      else
+        {:ok, ".available_mods += [#{name}]"}
+      end
+    end
+  end
+
+  defp compile_command("define_mod", name, args, line, column) do
+    args = case args do
+      [args] -> {:ok, Map.new(args)}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_mod` command expects a keyword list, got #{inspect(args)}"}
+    end
+
+    with {:ok, args} <- args,
+         {:ok, display_name} <- Validator.validate_json(Map.get(args, "name", "Button")),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, desc} <- Validator.validate_json(Map.get(args, "desc", "")),
+         {:ok, desc} <- Jason.encode(desc),
+         {:ok, order} <- Validator.validate_json(Map.get(args, "order", 0)),
+         {:ok, order} <- Jason.encode(order),
+         {:ok, category_val} <- Validator.validate_json(Map.get(args, "category", nil)),
+         {:ok, category} <- Jason.encode(category_val),
+         {:ok, deps} <- Validator.validate_json(Map.get(args, "deps", [])),
+         {:ok, deps} <- Jason.encode(deps),
+         {:ok, conflicts} <- Validator.validate_json(Map.get(args, "conflicts", [])),
+         {:ok, conflicts} <- Jason.encode(conflicts),
+         {:ok, default} <- Validator.validate_json(Map.get(args, "default", false)) do
+      add_mod = if category_val != nil do
+        ~s"""
+        (.available_mods | index(#{category})) as $ix1
+        |
+        (.available_mods[$ix1+1:] | map(type == "string") | index(true)) as $ix2
+        |
+        ($ix1 + $ix2 + 1) as $ix
+        |
+        .available_mods |= .[:$ix] + [{
+          "id": #{name},
+          "name": #{display_name},
+          "desc": #{desc},
+          "order": #{order},
+          "deps": #{deps},
+          "conflicts": #{conflicts}
+        }] + .[$ix:]
+        """
+      else
+        ~s"""
+        .available_mods += [{
+          "id": #{name},
+          "name": #{display_name},
+          "desc": #{desc},
+          "default": #{default},
+          "order": #{order},
+          "deps": #{deps},
+          "conflicts": #{conflicts}
+        }]
+        """
+      end
+      {:ok, add_mod}
+    end
+  end
+
+  defp compile_command("config_mod", name, args, line, column) do
+    args = case args do
+      [args] -> {:ok, Map.new(args)}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `config_mod` command expects a keyword list, got #{inspect(args)}"}
+    end
+    with {:ok, args} <- args,
+         {:ok, type} <- Validator.validate_json(Map.get(args, "type", "dropdown")),
+         {:ok, type} <- Jason.encode(type),
+         {:ok, display_name} <- Validator.validate_json(Map.get(args, "name", "")),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, values} <- Validator.validate_json(Map.get(args, "values", [])),
+         {:ok, values} <- Jason.encode(values),
+         {:ok, default_val} <- Validator.validate_json(Map.get(args, "default", nil)),
+         {:ok, default} <- Jason.encode(default_val) do
+      if default_val != nil do
+        add_mod_config = ~s"""
+        .available_mods |= map(if type == "object" and .id == #{name} then
+          .config += [{
+            "type": #{type},
+            "name": #{display_name},
+            "values": #{values},
+            "default": #{default}
+          }]
+        else . end)
+        """
+        {:ok, add_mod_config}
+      else
+        add_mod_config = ~s"""
+        .available_mods |= map(if type == "object" and .id == #{name} then
+          .config += [{
+            "type": #{type},
+            "name": #{display_name},
+            "values": #{values}
+          }]
+        else . end)
+        """
+        {:ok, add_mod_config}
+      end
     end
   end
 
