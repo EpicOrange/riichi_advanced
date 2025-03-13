@@ -14,10 +14,10 @@ defmodule RiichiAdvanced.ModLoader do
   def read_mod(mod) do
     case mod do
       %{name: name, config: config} -> 
-        mod_contents = File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name <> ".jq"}"))
+        mod_contents = read_mod_jq(name)
         config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "(#{inspect(val)}) as $#{key}\n|\n"
         Enum.join(config_queries) <> mod_contents
-      name -> File.read!(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name <> ".jq"}"))
+      name -> read_mod_jq(name)
     end
   end
 
@@ -75,7 +75,26 @@ defmodule RiichiAdvanced.ModLoader do
                 if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
                 "{}"
             end
-          {:error, _err}      -> "{}"
+          {:error, _err} -> "{}"
+        end
+    end
+  end
+
+  def read_mod_jq(name) do
+    case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
+      {:ok, mod_jq} -> mod_jq
+      {:error, _err}      ->
+        case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
+          {:ok, mod_majs} ->
+            with {:ok, ast} <- Parser.parse(mod_majs),
+                 {:ok, jq} <- Compiler.compile_jq(ast) do
+              jq
+            else
+              {:error, msg} ->
+                if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
+                ""
+            end
+          {:error, _err} -> ""
         end
     end
   end

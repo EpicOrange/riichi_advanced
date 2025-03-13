@@ -3,6 +3,8 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
 
+  @binops ["atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"]
+
   defp compile_condition(condition, line, column) do
     condition = case condition do
       false -> {:ok, {"false", []}}
@@ -157,6 +159,32 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value) do
       {:ok, ".[#{name}] = #{value}"}
+    end
+  end
+
+  defp compile_command("apply", name, args, line, column) do
+    path_value = case args do
+      [path, value] when is_binary(path) -> {:ok, {path, value}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` command expects a jq path string and an optional string value, got #{inspect(args)}"}
+    end
+    with {:ok, {path, value}} <- path_value,
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value) do
+      path = if String.starts_with?(path, ".") do path else "." <> path end
+      if Validator.validate_json_path(path) do
+        case Jason.decode!(name) do
+          "set"      -> {:ok, "#{path} = #{value}"}
+          "add"      -> {:ok, "#{path} += #{value}"}
+          "subtract" -> {:ok, "#{path} -= #{value}"}
+          "multiply" -> {:ok, "#{path} *= #{value}"}
+          "divide"   -> {:ok, "#{path} /= #{value}"}
+          "modulo"   -> {:ok, "#{path} %= #{value}"}
+          op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
+        end
+      else
+        {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid path #{path}"}
+      end
     end
   end
 
@@ -493,7 +521,7 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq!(ast) do
     case compile_jq(ast) do
-      {:ok, jq} -> jq
+      {:ok, jq} -> jq |> IO.inspect()
       {:error, error} -> raise error
     end
   end

@@ -52,4 +52,10 @@ defmodule RiichiAdvanced.Validator do
     base_name = if negated do String.slice(name, 4..-1//1) else name end
     base_name in @allowed_conditions
   end
+
+  @valid_path_regex ~r/^(\.[a-zA-Z0-9_]+)+$/
+  def validate_json_path(path) when is_binary(path) do
+    Regex.match?(@valid_path_regex, path)
+  end
+
 end
