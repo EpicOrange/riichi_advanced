@@ -230,6 +230,19 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_command("define_yaku_precedence", name, args, line, column) do
+    yaku = case args do
+      [yaku] when is_list(yaku) -> {:ok, yaku}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku_precedence` command expects a list of yaku names or values, got #{inspect(args)}"}
+    end
+
+    with {:ok, yaku} <- yaku,
+         {:ok, yaku} <- Validator.validate_json(yaku),
+         {:ok, yaku} <- Jason.encode(yaku) do
+      {:ok, ".yaku_precedence[#{name}] += #{yaku}"}
+    end
+  end
+
   defp compile_command("define_button", name, args, line, column) do
     args = case args do
       [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put(:actions, actions)}
@@ -390,6 +403,7 @@ defmodule RiichiAdvanced.Compiler do
       [args] -> {:ok, Map.new(args)}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `config_mod` command expects a keyword list, got #{inspect(args)}"}
     end
+
     with {:ok, args} <- args,
          {:ok, type} <- Validator.validate_json(Map.get(args, "type", "dropdown")),
          {:ok, type} <- Jason.encode(type),
@@ -429,6 +443,7 @@ defmodule RiichiAdvanced.Compiler do
       [mods] -> {:ok, mods}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_preset` command expects a list of mods, got #{inspect(args)}"}
     end
+
     with {:ok, mods} <- mods,
          {:ok, mods} <- Validator.validate_json(mods),
          {:ok, mods} <- Jason.encode(mods) do

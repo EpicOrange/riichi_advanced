@@ -173,6 +173,48 @@ define_yaku yaku, "Chinitsu", 5,
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+define_yaku meta_yaku, "Chanta", 1, has_no_call_named("chii", "pon", "daiminkan", "kakan") and has_existing_yaku("Chanta")
+define_yaku meta_yaku, "Ittsu", 1, has_no_call_named("chii", "pon", "daiminkan", "kakan") and has_existing_yaku("Ittsu")
+define_yaku meta_yaku, "Sanshoku", 1, has_no_call_named("chii", "pon", "daiminkan", "kakan") and has_existing_yaku("Sanshoku")
+define_yaku meta_yaku, "Junchan", 1, has_no_call_named("chii", "pon", "daiminkan", "kakan") and has_existing_yaku("Junchan")
+define_yaku meta_yaku, "Honitsu", 1, has_no_call_named("chii", "pon", "daiminkan", "kakan") and has_existing_yaku("Honitsu")
+define_yaku meta_yaku, "Chinitsu", 1, has_no_call_named("chii", "pon", "daiminkan", "kakan") and has_existing_yaku("Chinitsu")
+define_yaku yakuman, "Tenhou", 1, status("discards_empty") and won_by_draw and seat_is("east")
+define_yaku yakuman, "Chiihou", 1, status("discards_empty") and won_by_draw and not_seat_is("east")
+define_yaku yakuman, "Daisangen", 1, match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1")
+define_yaku yakuman, "Suuankou", 1, won_by_draw and has_no_call_named("pon", "daiminkan", "kakan") and match(["hand", "calls"], ~m"koutsu:3, pair:2")
+define_yaku yakuman, "Suuankou Tanki", 2,
+      has_no_call_named("pon", "daiminkan", "kakan")
+  and match(["hand", "calls"], ~m"koutsu:4")
+  and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yakuman, "Tsuuiisou", 1, winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z")
+define_yaku yakuman, "Ryuuiisou", 1, winning_hand_consists_of("2s","3s","4s","6s","8s","6z")
+define_yaku yakuman, "Chinroutou", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s")
+define_yaku yakuman, "Chuurenpoutou", 1, match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+define_yaku yakuman, "Junsei Chuurenpoutou", 2, match(["hand"], ~m"chuurenpoutou:1")
+define_yaku yakuman, "Kokushi Musou", 1, match(["hand", "winning_tile"], ~m"orphans_all:1")
+define_yaku yakuman, "Kokushi Musou Juusan Menmachi", 2, match(["hand"], ~m"orphans_all:1")
+define_yaku yakuman, "Daisuushii", 2, match(["hand", "calls", "winning_tile"], ~m"daisuushii:1")
+define_yaku yakuman, "Shousuushii", 1, match(["hand", "calls", "winning_tile"], ~m"shousuushii:1")
+# tenhou upgrades certain yakuman to double yakuman
+define_yaku meta_yakuman, "Suuankou Tanki", 2, not_has_existing_yaku("Suuankou Tanki") and has_existing_yaku("Tenhou", "Suuankou")
+define_yaku meta_yakuman, "Junsei Chuurenpoutou", 2, not_has_existing_yaku("Junsei Chuurenpoutou") and has_existing_yaku("Tenhou", "Chuurenpoutou")
+define_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi", 2, not_has_existing_yaku("Kokushi Musou Juusan Menmachi") and has_existing_yaku("Tenhou", "Kokushi Musou")
+
+define_yaku_precedence "Double Riichi", ["Riichi"]
+define_yaku_precedence "Chinitsu", ["Honitsu"]
+define_yaku_precedence "Chiitoitsu", ["Iipeikou"]
+define_yaku_precedence "Toitoi", ["Iipeikou"]
+define_yaku_precedence "Sanankou", ["Iipeikou"]
+define_yaku_precedence "Ryanpeikou", ["Iipeikou", "Chiitoitsu"]
+define_yaku_precedence "Junchan", ["Chanta"]
+define_yaku_precedence "Honroutou", ["Chanta", "Junchan"]
+define_yaku_precedence "Suuankou", ["Toitoi", "Sanankou"]
+define_yaku_precedence "Suuankou Tanki", ["Suuankou"]
+define_yaku_precedence "Chuurenpoutou", ["Chinitsu"]
+define_yaku_precedence "Junsei Chuurenpoutou", ["Chuurenpoutou"]
+define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Kokushi Musou"]
+define_yaku_precedence "Daisuushii", ["Shousuushii"]
 
 set score_calculation, %{
     scoring_method: ["han_fu_formula", "multiplier"],
