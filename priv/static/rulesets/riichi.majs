@@ -118,6 +118,8 @@ define_match shousuushii,
   | ton_pair:1, nan:1, shaa:1, pei:1
   """
 
+define_match daisuushii, ~m"ton:1, nan:1, shaa:1, pei:1"
+
 define_match sanankou_tsumo,
   ~m"""
   (pon daiminkan kakan):-1, (koutsu):3, (shuntsu koutsu):1, pair:1
@@ -194,8 +196,8 @@ define_yaku yakuman, "Chuurenpoutou", 1, match(["hand", "winning_tile"], ~m"chuu
 define_yaku yakuman, "Junsei Chuurenpoutou", 2, match(["hand"], ~m"chuurenpoutou:1")
 define_yaku yakuman, "Kokushi Musou", 1, match(["hand", "winning_tile"], ~m"orphans_all:1")
 define_yaku yakuman, "Kokushi Musou Juusan Menmachi", 2, match(["hand"], ~m"orphans_all:1")
-define_yaku yakuman, "Daisuushii", 2, match(["hand", "calls", "winning_tile"], ~m"daisuushii:1")
-define_yaku yakuman, "Shousuushii", 1, match(["hand", "calls", "winning_tile"], ~m"shousuushii:1")
+define_yaku yakuman, "Daisuushii", 2, match(["hand", "calls", "winning_tile"], ["daisuushii"])
+define_yaku yakuman, "Shousuushii", 1, match(["hand", "calls", "winning_tile"], ["shousuushii"])
 # tenhou upgrades certain yakuman to double yakuman
 define_yaku meta_yakuman, "Suuankou Tanki", 2, not_has_existing_yaku("Suuankou Tanki") and has_existing_yaku("Tenhou", "Suuankou")
 define_yaku meta_yakuman, "Junsei Chuurenpoutou", 2, not_has_existing_yaku("Junsei Chuurenpoutou") and has_existing_yaku("Tenhou", "Chuurenpoutou")
