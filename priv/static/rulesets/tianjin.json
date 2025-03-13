@@ -198,10 +198,10 @@
         // everyone pays the winner score * multiplier
         ["modify_payout", "all", 0, "set"],
         ["as", "others", [
-          ["set_counter", "payout", "score"],
-          ["multiply_counter", "payout", "dealer_mult"],
-          ["modify_payout", "self", "payout", "subtract"],
-          ["modify_payout", "prev_seat", "payout", "add"]
+          ["set_counter", "basic_score", "score"],
+          ["multiply_counter", "basic_score", "dealer_mult"],
+          ["modify_payout", "self", "basic_score", "subtract"],
+          ["modify_payout", "prev_seat", "basic_score", "add"]
         ]]
       ]]
     ]

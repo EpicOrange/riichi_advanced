@@ -505,7 +505,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> get_in(state.rules["score_calculation"]["riichi_value"]) || 0
       ["honba_value" | _opts] -> get_in(state.rules["score_calculation"]["honba_value"]) || 0
-      ["payout" | opts] -> Enum.at(state.delta_scores, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")) |> Log.to_seat())
+      ["payout" | opts] -> state.delta_scores[Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))]
       ["points" | _opts] when is_map_key(context, :points) -> context.points
       ["points2" | _opts] when is_map_key(context, :points2) -> context.points2
       ["score" | _opts] when is_map_key(context, :score) -> context.score
@@ -1513,28 +1513,30 @@ defmodule RiichiAdvanced.GameState.Actions do
           end end)
         else state end
       "modify_payout"   ->
-        seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
-        method = case Enum.at(opts, 2) do
-          "set"      -> :set
-          "subtract" -> :subtract
-          "multiply" -> :multiply
-          "divide"   -> :divide
-          "min"      -> :min
-          "max"      -> :max
-          _          -> :add
-        end
-        value = interpret_amount(state, context, Enum.at(opts, 1, 0))
-        for seat <- seats, reduce: state do
-          state -> update_in(state.delta_scores[seat], fn prev_value -> case method do
-            :set      -> value
-            :add      -> prev_value + value
-            :subtract -> prev_value - value
-            :multiply -> prev_value * value
-            :divide   -> Integer.floor_div(prev_value, value)
-            :min      -> min(prev_value, value)
-            :max      -> max(prev_value, value)
-          end end)
-        end
+        if not Enum.empty?(state.delta_scores) do
+          seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
+          method = case Enum.at(opts, 2) do
+            "set"      -> :set
+            "subtract" -> :subtract
+            "multiply" -> :multiply
+            "divide"   -> :divide
+            "min"      -> :min
+            "max"      -> :max
+            _          -> :add
+          end
+          value = interpret_amount(state, context, Enum.at(opts, 1, 0))
+          for seat <- seats, reduce: state do
+            state -> update_in(state.delta_scores, &Map.update!(&1, seat, fn prev_value -> case method do
+              :set      -> value
+              :add      -> prev_value + value
+              :subtract -> prev_value - value
+              :multiply -> prev_value * value
+              :divide   -> Integer.floor_div(prev_value, value)
+              :min      -> min(prev_value, value)
+              :max      -> max(prev_value, value)
+            end end))
+          end
+        else state end
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

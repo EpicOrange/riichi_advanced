@@ -327,6 +327,7 @@ defmodule RiichiAdvanced.Utils do
       concealed -> :"1x"
       true -> id
     end
+    number_class = if hidden or facedown or concealed do [] else number_class end
     [
       "tile", id,
       facedown && "facedown",

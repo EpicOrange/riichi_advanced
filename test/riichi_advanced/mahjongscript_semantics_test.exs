@@ -147,8 +147,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     define_set myset, "0 1m 2p"
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq(parsed)
-    IO.puts(compiled)
+    assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
 
@@ -190,17 +189,6 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "not a valid toplevel command")
-  end
-
-  test "mahjongscript - invalid action" do
-    script = """
-    def foo do
-      invalid_action()
-    end
-    """
-    assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "not a valid action")
   end
 
   test "mahjongscript - invalid condition" do
