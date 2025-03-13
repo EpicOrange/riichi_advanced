@@ -63,22 +63,42 @@ end
 # ton calls should be put in hand before fu calculations
 .functions.calculate_fu[0] |= .[:3] + [["put_calls_in_hand", "ton"]] + .[3:]
 |
-.tenpai_definition |= fix_match_definition
+if has("tenpai_definition") then
+  .tenpai_definition |= fix_match_definition
+else . end
 |
-.tenpai_14_definition |= fix_match_definition
+if has("tenpai_14_definition") then
+  .tenpai_14_definition |= fix_match_definition
+else . end
 |
-.win_definition |= fix_match_definition
+if has("win_definition") then
+  .win_definition |= fix_match_definition
+else . end
 |
-.standard_win_definition |= fix_match_definition
+if has("standard_win_definition") then
+  .standard_win_definition |= fix_match_definition
+else . end
 |
-.yaku |= fix_yaku
+if has("yaku") then
+  .yaku |= fix_yaku
+else . end
 |
-.yakuman |= fix_yaku
+if has("yakuman") then
+  .yakuman |= fix_yaku
+else . end
 |
-.meta_yaku |= fix_yaku
+if has("meta_yaku") then
+  .meta_yaku |= fix_yaku
+else . end
 |
-.meta_yakuman |= fix_yaku
+if has("meta_yakuman") then
+  .meta_yakuman |= fix_yaku
+else . end
 |
-.sanankou_tsumo_definition |= fix_match_definition
+if has("sanankou_tsumo_definition") then
+  .sanankou_tsumo_definition |= fix_match_definition
+else . end
 |
-.sanankou_ron_definition |= fix_match_definition
+if has("sanankou_ron_definition") then
+  .sanankou_ron_definition |= fix_match_definition
+else . end

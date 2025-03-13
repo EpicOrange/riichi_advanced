@@ -2,7 +2,7 @@
 .buttons |= del(.pei)
 |
 # remove pei autobutton
-.auto_buttons |= del(.["5_auto_pei"])
+.auto_buttons |= del(.["_5_auto_pei"])
 |
 # add pei yakuhai
 .yaku += [
@@ -37,7 +37,7 @@
 }
 |
 # add flower autobutton
-.auto_buttons["5_auto_flower"] = {
+.auto_buttons["_5_auto_flower"] = {
   "display_name": "F",
   "desc": "Automatically declare all flowers.",
   "actions": [

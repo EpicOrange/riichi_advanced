@@ -511,8 +511,6 @@
            "5z", "5z", "5z", "5z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z"],
-  "revealed_tiles": [],
-  "max_revealed_tiles": 0,
   "set_definitions": {
     "pair": [0, 0],
     "shuntsu": [0, 1, 2],

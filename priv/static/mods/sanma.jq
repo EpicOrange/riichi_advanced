@@ -66,7 +66,7 @@ walk(if . == "pei" then "pei_triplet" else . end)
 }
 |
 # add auto pei
-.auto_buttons["5_auto_pei"] = {
+.auto_buttons["_5_auto_pei"] = {
   "display_name": "K",
   "desc": "Automatically declare pei.",
   "actions": [
@@ -75,7 +75,7 @@ walk(if . == "pei" then "pei_triplet" else . end)
 }
 |
 # don't let auto discard button skip pei
-.auto_buttons["4_auto_discard"].actions[0][1] |= map(if type == "object" and .name == "buttons_exclude" then .opts += ["pei"] else . end)
+.auto_buttons["_4_auto_discard"].actions[0][1] |= map(if type == "object" and .name == "buttons_exclude" then .opts += ["pei"] else . end)
 |
 # presets
 .available_presets |= map(if .display_name == "Mahjong Soul" then
@@ -119,9 +119,9 @@ if (.buttons | has("chankan") | not) then
     "actions": [["big_text", "Ron"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
     "precedence_over": ["chii", "pon", "daiminkan"]
   }
+  |
+  # add pei to chankan
+  .buttons.chankan.show_when |= map(if type == "object" and .name == "last_call_is" then .opts += ["pei"] else . end)
 else . end
-|
-# add pei to chankan
-.buttons.chankan.show_when |= map(if type == "object" and .name == "last_call_is" then .opts += ["pei"] else . end)
 |
 .interruptible_actions += ["flower"]

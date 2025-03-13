@@ -35,7 +35,7 @@
     ["big_text", "Riichi"],
     ["set_status", "riichi", "just_reached"],
     ["push_message", "declared riichi"],
-    ["enable_auto_button", "4_auto_discard"],
+    ["enable_auto_button", "_4_auto_discard"],
     ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
   ]
 }
