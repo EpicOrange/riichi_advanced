@@ -492,12 +492,30 @@ defmodule RiichiAdvanced.Utils do
     |> Map.new()
   end
 
-  # why is this not builtin
+  @css_color_regex ~r/^#[a-fA-F0-9]{6}$|^#[a-fA-F0-9]{3}$|^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$|^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*[\d.]+\)$|^[a-zA-Z]+$/
+  def css_color_regex, do: @css_color_regex
+
+
+
+  # why are these not builtin
   def _split_on([], _delim, acc, ret), do: [acc | ret]
   def _split_on([x | xs], delim, acc, ret) when x == delim, do: _split_on(xs, delim, [], [acc | ret])
   def _split_on([x | xs], delim, acc, ret), do: _split_on(xs, delim, [x | acc], ret)
   def split_on(xs, delim), do: _split_on(Enum.reverse(xs), delim, [], [])
 
-  @css_color_regex ~r/^#[a-fA-F0-9]{6}$|^#[a-fA-F0-9]{3}$|^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$|^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*[\d.]+\)$|^[a-zA-Z]+$/
-  def css_color_regex, do: @css_color_regex
+  def sequence(xs) do
+    xs
+    |> Enum.with_index()
+    |> Enum.find(fn {{tag, _}, _i} -> tag == :error end)
+    |> case do
+      nil                -> {:ok, Enum.map(xs, fn {:ok, x} -> x end)}
+      {{:error, msg}, i} -> {:error, "index #{i}: " <> msg}
+    end
+  end
+
+  def insert_at(s1, s2, ix) do
+    {l, r} = String.split_at(s1, if ix < 0 do String.length(s1) + ix + 1 else ix end)
+    l <> s2 <> r
+  end
+
 end
