@@ -65,7 +65,7 @@
 ]
 |
 # if kan mod doesn't add rinshan, we must
-if .yaku | any(.display_name == "Rinshan") then . else
+if (has("yaku") | not) or (.yaku | any(.display_name == "Rinshan")) then . else
   .yaku += [{ "display_name": "Rinshan", "value": 1, "when": [{"name": "not_status_missing", "opts": ["kan", "fuun"]}]}]
 end
 |

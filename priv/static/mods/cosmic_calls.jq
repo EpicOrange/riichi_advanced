@@ -20,13 +20,21 @@ def fix_yaku:
 .functions |= walk(replace_closed_call_check)
 |
 # all closed hand checks should check the new calls
-.yaku |= fix_yaku
+if has("yaku") then
+  .yaku |= fix_yaku
+else . end
 |
-.yakuman |= fix_yaku
+if has("yakuman") then
+  .yakuman |= fix_yaku
+else . end
 |
-.meta_yaku |= fix_yaku
+if has("meta_yaku") then
+  .meta_yaku |= fix_yaku
+else . end
 |
-.meta_yakuman |= fix_yaku
+if has("meta_yakuman") then
+  .meta_yakuman |= fix_yaku
+else . end
 |
 if (.buttons | has("riichi")) then
   .buttons.riichi.show_when |= map(replace_closed_call_check)

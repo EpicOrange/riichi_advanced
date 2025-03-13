@@ -54,17 +54,19 @@
   ]]
 ]
 |
-.yaku |= map(
-  if .display_name == "Rinshan" then .when = [{"name": "not_status_missing", "opts": ["kan", "fuun"]}] else . end
-  |
-  if .display_name == "Chiitoitsu" or .display_name == "Ryanpeikou" then
-    .value = 1
-  else . end
-  |
-  if .display_name == "Chankan" then
-    .when += [{"name": "last_call_is", "opts": ["kakan", "kakapon"]}]
-  else . end
-)
+if has("yaku") then
+  .yaku |= map(
+    if .display_name == "Rinshan" then .when = [{"name": "not_status_missing", "opts": ["kan", "fuun"]}] else . end
+    |
+    if .display_name == "Chiitoitsu" or .display_name == "Ryanpeikou" then
+      .value = 1
+    else . end
+    |
+    if .display_name == "Chankan" then
+      .when += [{"name": "last_call_is", "opts": ["kakan", "kakapon"]}]
+    else . end
+  )
+else . end
 |
 .meta_yaku += [
   { "display_name": "Chiitoitsu", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]}, {"name": "has_existing_yaku", "opts": ["Chiitoitsu"]}] },

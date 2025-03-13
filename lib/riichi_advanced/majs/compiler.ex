@@ -213,7 +213,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value),
          {:ok, condition} <- compile_cnf_condition(condition, line, column),
-         {:ok, condition} <- Validator.validate_json(condition),
+         {:ok, condition} <- Validator.validate_json(List.wrap(condition)),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = ".[#{name}] += [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]"
       if Enum.empty?(supercedes) do
@@ -237,7 +237,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "Button")),
          {:ok, display_name} <- Jason.encode(display_name),
          {:ok, show_when} <- compile_cnf_condition(Map.get(args, "show_when", "false"), line, column),
-         {:ok, show_when} <- Validator.validate_json(show_when),
+         {:ok, show_when} <- Validator.validate_json(List.wrap(show_when)),
          {:ok, show_when} <- Jason.encode(show_when),
          {:ok, actions} <- compile_action_list(args.actions, line, column),
          {:ok, actions} <- Validator.validate_json(actions),
@@ -264,10 +264,11 @@ defmodule RiichiAdvanced.Compiler do
         with {:ok, call} <- Validator.validate_json(Map.get(args, "call", [])),
              {:ok, call} <- Jason.encode(call),
              {:ok, call_conditions} <- compile_cnf_condition(Map.get(args, "call_conditions", "true"), line, column),
-             {:ok, call_conditions} <- Validator.validate_json(call_conditions),
+             {:ok, call_conditions} <- Validator.validate_json(List.wrap(call_conditions)),
              {:ok, call_conditions} <- Jason.encode(call_conditions),
              {:ok, call_style} <- Validator.validate_json(Map.get(args, "call_style", [])),
              {:ok, call_style} <- Jason.encode(call_style) do
+
           add_call_button = ~s"""
           .buttons[#{name}] += {
             "call": #{call},
