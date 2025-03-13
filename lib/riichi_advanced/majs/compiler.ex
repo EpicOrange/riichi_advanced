@@ -229,7 +229,7 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_button", name, args, line, column) do
     args = case args do
-      [args, [do: actions]] -> {:ok, Map.new(args)}
+      [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put(:actions, actions)}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_button` command expects a keyword list followed by a do block, got #{inspect(args)}"}
     end
 
@@ -239,7 +239,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, show_when} <- compile_cnf_condition(Map.get(args, "show_when", "false"), line, column),
          {:ok, show_when} <- Validator.validate_json(show_when),
          {:ok, show_when} <- Jason.encode(show_when),
-         {:ok, actions} <- compile_action_list(Map.get(args, "actions", []), line, column),
+         {:ok, actions} <- compile_action_list(args.actions, line, column),
          {:ok, actions} <- Validator.validate_json(actions),
          {:ok, actions} <- Jason.encode(actions),
          {:ok, precedence_over} <- Validator.validate_json(Map.get(args, "precedence_over", [])),
@@ -278,6 +278,34 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, add_button <> "\n| " <> add_call_button}
         end
       end
+    end
+  end
+
+  defp compile_command("define_auto_button", name, args, line, column) do
+    args = case args do
+      [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put(:actions, actions)}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_auto_button` command expects a keyword list followed by a do block, got #{inspect(args)}"}
+    end
+
+    with {:ok, args} <- args,
+         {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "Button")),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, desc} <- Validator.validate_json(Map.get(args, "desc", "")),
+         {:ok, desc} <- Jason.encode(desc),
+         {:ok, actions} <- compile_action_list(args.actions, line, column),
+         {:ok, actions} <- Validator.validate_json(actions),
+         {:ok, actions} <- Jason.encode(actions),
+         {:ok, enabled_at_start} <- Validator.validate_json(Map.get(args, "enabled_at_start", false)),
+         {:ok, enabled_at_start} <- Jason.encode(enabled_at_start) do
+      add_button = ~s"""
+      .auto_buttons[#{name}] = {
+        \"display_name\": #{display_name},
+        \"desc\": #{desc},
+        \"actions\": #{actions},
+        \"enabled_at_start\": #{enabled_at_start}
+      }
+      """
+      {:ok, add_button}
     end
   end
 
