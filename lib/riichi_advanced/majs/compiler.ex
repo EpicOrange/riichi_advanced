@@ -348,8 +348,8 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, conflicts} <- Validator.validate_json(Map.get(args, "conflicts", [])),
          {:ok, conflicts} <- Jason.encode(conflicts),
          {:ok, default} <- Validator.validate_json(Map.get(args, "default", false)) do
-      add_mod = if category_val != nil do
-        ~s"""
+      if category_val != nil do
+        {:ok, ~s"""
         (.available_mods | index(#{category})) as $ix1
         |
         (.available_mods[$ix1+1:] | map(type == "string") | index(true)) as $ix2
@@ -364,9 +364,9 @@ defmodule RiichiAdvanced.Compiler do
           "deps": #{deps},
           "conflicts": #{conflicts}
         }] + .[$ix:]
-        """
+        """}
       else
-        ~s"""
+        {:ok, ~s"""
         .available_mods += [{
           "id": #{name},
           "name": #{display_name},
@@ -376,9 +376,8 @@ defmodule RiichiAdvanced.Compiler do
           "deps": #{deps},
           "conflicts": #{conflicts}
         }]
-        """
+        """}
       end
-      {:ok, add_mod}
     end
   end
 
@@ -397,7 +396,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, default_val} <- Validator.validate_json(Map.get(args, "default", nil)),
          {:ok, default} <- Jason.encode(default_val) do
       if default_val != nil do
-        add_mod_config = ~s"""
+        {:ok, ~s"""
         .available_mods |= map(if type == "object" and .id == #{name} then
           .config += [{
             "type": #{type},
@@ -406,10 +405,9 @@ defmodule RiichiAdvanced.Compiler do
             "default": #{default}
           }]
         else . end)
-        """
-        {:ok, add_mod_config}
+        """}
       else
-        add_mod_config = ~s"""
+        {:ok, ~s"""
         .available_mods |= map(if type == "object" and .id == #{name} then
           .config += [{
             "type": #{type},
@@ -417,9 +415,25 @@ defmodule RiichiAdvanced.Compiler do
             "values": #{values}
           }]
         else . end)
-        """
-        {:ok, add_mod_config}
+        """}
       end
+    end
+  end
+
+  defp compile_command("define_preset", name, args, line, column) do
+    mods = case args do
+      [mods] -> {:ok, mods}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_preset` command expects a list of mods, got #{inspect(args)}"}
+    end
+    with {:ok, mods} <- mods,
+         {:ok, mods} <- Validator.validate_json(mods),
+         {:ok, mods} <- Jason.encode(mods) do
+      {:ok, ~s"""
+      .available_presets += [{
+        "display_name": #{name},
+        "enabled_mods": #{mods}
+      }]
+      """}
     end
   end
 
