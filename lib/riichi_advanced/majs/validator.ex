@@ -21,16 +21,8 @@ defmodule RiichiAdvanced.Validator do
   def validate_json(false), do: {:ok, false}
   def validate_json(ast) when is_integer(ast) or is_float(ast), do: {:ok, ast}
   def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
-  def validate_json(ast) when is_binary(ast) do
-    str = ast
-    |> String.replace("\\(", "\\\\(") # disallow any string interpolation
-    {:ok, str}
-  end
-  def validate_json(ast) when is_list(ast) do
-    ast
-    |> Enum.map(&validate_json(&1))
-    |> Utils.sequence()
-  end
+  def validate_json(ast) when is_binary(ast), do: {:ok, String.replace(ast, "\\(", "\\\\(")} # disallow any string interpolation
+  def validate_json(ast) when is_list(ast), do: ast |> Enum.map(&validate_json(&1)) |> Utils.sequence()
   def validate_json(ast) when is_map(ast), do: validate_map(ast)
   def validate_json({:%{}, _pos, contents}), do: validate_map(contents)
   def validate_json(not_json) do

@@ -15,6 +15,7 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
     end
     with {:ok, {condition, opts}} <- condition,
+         {:ok, opts} <- Parser.parse_sigils(opts),
          {:ok, opts} <- Validator.validate_json(opts) do
       if Validator.validate_condition_name(condition) do
         if Enum.empty?(opts) do
@@ -36,7 +37,7 @@ defmodule RiichiAdvanced.Compiler do
         end
       {:or, [line: line, column: column], args} ->
         with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_dnf_condition(&1, line, column))) do
-          {:ok, compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()}
+          {:ok, [compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()]}
         end
       _ -> compile_condition(condition, line, column)
     end
@@ -174,11 +175,12 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_set", name, args, line, column) do
     set_spec = case args do
-      [set_spec] when is_binary(set_spec) -> Parser.parse_set(set_spec)
+      [{:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}] when is_binary(set_spec) -> {:ok, set_spec}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_set` command expects a single string value, got #{inspect(args)}"}
     end
 
     with {:ok, set_spec} <- set_spec,
+         {:ok, set_spec} <- Parser.parse_set(set_spec),
          {:ok, set_spec} <- Validator.validate_json(set_spec),
          {:ok, set_spec} <- Jason.encode(set_spec) do
       {:ok, ".set_definitions[#{name}] = #{set_spec}"}
@@ -187,11 +189,12 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_match", name, args, line, column) do
     match_spec = case args do
-      [match_spec] when is_binary(match_spec) -> Parser.parse_match(match_spec)
+      [{:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}] when is_binary(match_spec) -> {:ok, match_spec}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value, got #{inspect(args)}"}
     end
 
     with {:ok, match_spec} <- match_spec,
+         {:ok, match_spec} <- Parser.parse_match(match_spec),
          {:ok, match_spec} <- Validator.validate_json(match_spec),
          {:ok, match_spec} <- Jason.encode(match_spec) do
       # `name` is already escaped, so we just insert _definition right before the last quote

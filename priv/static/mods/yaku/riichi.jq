@@ -5,6 +5,8 @@
   { "display_name": "Double Riichi", "value": 2, "when": [{"name": "status", "opts": ["double_riichi"]}] }
 ] + .
 |
+.yaku_precedence["Double Riichi"] = ["Riichi"]
+|
 # used to check for riichi eligibility
 .tenpai_14_definition = [
   [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
