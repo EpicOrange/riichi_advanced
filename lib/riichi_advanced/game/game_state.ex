@@ -303,7 +303,7 @@ defmodule RiichiAdvanced.GameState do
     ruleset_json = if state.config != nil do
       try do
         ruleset_json = ModLoader.strip_comments(ruleset_json)
-        query = ModLoader.majs_to_jq(ModLoader.strip_comments(state.config))
+        query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
         JQ.query_string_with_string!(ruleset_json, query)
       rescue
         err ->

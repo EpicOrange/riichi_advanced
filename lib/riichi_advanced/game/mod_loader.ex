@@ -61,17 +61,18 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def majs_to_jq(majs) do
-    with {:ok, ast} <- Parser.parse(majs),
-         {:ok, jq} <- Compiler.compile_jq(ast) do
-      jq
-    else
-      # try interpreting it as json instead
-      {:error, msg} ->
-        case Jason.decode(majs) do
-          {:ok, _}    -> ". * " <> majs
-          {:error, _} -> 
-            IO.puts("Error in majs_to_jq:")
+  def convert_to_jq(majs) do
+    # first check that it's not actually json
+    case Jason.decode(majs) do
+      {:ok, json}    -> ". * " <> Jason.encode!(json) # just merge the json (reencoding to ensure it's safe)
+      {:error, _} -> 
+        # now try to parse it as majs
+        with {:ok, ast} <- Parser.parse(majs),
+             {:ok, jq} <- Compiler.compile_jq(ast) do
+          jq
+        else
+          {:error, msg} ->
+            IO.puts("Error in convert_to_jq:")
             if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
             IO.puts("Input majs was:")
             IO.puts(majs)
@@ -85,7 +86,7 @@ defmodule RiichiAdvanced.ModLoader do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
-          {:ok, ruleset_majs} -> JQ.query_string_with_string!("{}", majs_to_jq(ruleset_majs))
+          {:ok, ruleset_majs} -> JQ.query_string_with_string!("{}", convert_to_jq(ruleset_majs))
           {:error, _err}      -> "{}"
         end
     end
@@ -96,7 +97,7 @@ defmodule RiichiAdvanced.ModLoader do
       {:ok, mod_jq} -> mod_jq
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
-          {:ok, mod_majs} -> majs_to_jq(mod_majs)
+          {:ok, mod_majs} -> convert_to_jq(mod_majs)
           {:error, _err}  -> "."
         end
     end
@@ -110,7 +111,7 @@ defmodule RiichiAdvanced.ModLoader do
           [ruleset_json_or_majs] ->
             case Jason.decode(ruleset_json_or_majs) do
               {:ok, _}    -> ruleset_json_or_majs
-              {:error, _} -> JQ.query_string_with_string!("{}", majs_to_jq(ruleset_json_or_majs))
+              {:error, _} -> JQ.query_string_with_string!("{}", convert_to_jq(ruleset_json_or_majs))
             end
           _ -> "{}"
         end
