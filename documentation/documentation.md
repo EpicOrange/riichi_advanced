@@ -221,7 +221,7 @@ We will spend this section breaking down the following implementation.
         and not_no_tiles_remaining
         and someone_else_just_discarded
         and call_available,
-      call: [[0]],
+      call: [[0]]
       do
         call
         change_turn("self")

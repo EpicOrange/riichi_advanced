@@ -13,7 +13,41 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   defmodule Room do
-    @initial_textarea Delta.Op.insert("{}")
+    @initial_textarea """
+    # check out the documentation link above to see how this works!
+
+    set wall, ["1m", "1m", "1m", "1m", "2m", "2m", "2m", "2m", "3m", "3m", "3m", "3m", "4m", "4m", "4m", "4m", "5m", "5m", "5m", "5m", "6m", "6m", "6m", "6m", "7m", "7m", "7m", "7m", "8m", "8m", "8m", "8m", "9m", "9m", "9m", "9m",
+               "1p", "1p", "1p", "1p", "2p", "2p", "2p", "2p", "3p", "3p", "3p", "3p", "4p", "4p", "4p", "4p", "5p", "5p", "5p", "5p", "6p", "6p", "6p", "6p", "7p", "7p", "7p", "7p", "8p", "8p", "8p", "8p", "9p", "9p", "9p", "9p",
+               "1s", "1s", "1s", "1s", "2s", "2s", "2s", "2s", "3s", "3s", "3s", "3s", "4s", "4s", "4s", "4s", "5s", "5s", "5s", "5s", "6s", "6s", "6s", "6s", "7s", "7s", "7s", "7s", "8s", "8s", "8s", "8s", "9s", "9s", "9s", "9s"]
+
+    set starting_tiles, 13
+
+    on after_turn_change do
+      if no_tiles_remaining do ryuukyoku else draw end
+    end
+
+    define_auto_button auto_sort,
+      display_name: "A",
+      desc: "Automatically sort your hand.",
+      enabled_at_start: true
+      do
+        sort_hand
+      end
+
+    define_button pair,
+      display_name: "Pair", 
+      show_when: not_our_turn
+        and not_no_tiles_remaining
+        and someone_else_just_discarded
+        and call_available,
+      call: [[0]]
+      do
+        call
+        change_turn("self")
+      end
+
+    set interruptible_actions, ["play_tile", "draw", "advance_turn"]
+    """
     def initial_textarea, do: @initial_textarea
     defstruct [
       # params
@@ -42,8 +76,8 @@ defmodule RiichiAdvanced.RoomState do
       selected_preset_ix: nil,
       categories: [],
       tutorial_link: nil,
-      textarea: [@initial_textarea],
-      textarea_deltas: [[@initial_textarea]],
+      textarea: [Delta.Op.insert(@initial_textarea)],
+      textarea_deltas: [[Delta.Op.insert(@initial_textarea)]],
       textarea_delta_uuids: [[]],
       textarea_version: 0,
     ]
@@ -67,23 +101,34 @@ defmodule RiichiAdvanced.RoomState do
     [{supervisor, _}] = Utils.registry_lookup("room", state.ruleset, state.room_code)
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_room", state.ruleset, state.room_code)
 
-    # read in the ruleset
-    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.room_code)
+    # read in the last cached ruleset
+    ruleset_json = case RiichiAdvanced.ETSCache.get(state.room_code, nil, :cache_rulesets) do
+      [ruleset_json_or_majs] -> ruleset_json_or_majs
+      _ ->
+        if state.ruleset == "config" do
+          Room.initial_textarea()
+        else
+          ModLoader.get_ruleset_json(state.ruleset, state.room_code, true)
+        end
+    end
+
     config = ModLoader.get_config_json(state.ruleset, state.room_code)
 
     # parse the ruleset now, in order to get the list of eligible mods
-    {state, rules} = try do
-      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
-        {:ok, rules} -> {state, rules}
-        {:error, err} ->
-          state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+    {state, rules} = if state.ruleset != "custom" do
+      try do
+        case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
+          {:ok, rules} -> {state, rules}
+          {:error, err} ->
+            state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+            {state, %{}}
+        end
+      rescue
+        ArgumentError ->
+          state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
           {state, %{}}
       end
-    rescue
-      ArgumentError ->
-        state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
-        {state, %{}}
-    end
+    else {state, %{}} end
 
     presets = Map.get(rules, "available_presets", [])
 
@@ -114,6 +159,11 @@ defmodule RiichiAdvanced.RoomState do
       3 -> [:east, :south, :west]
       4 -> [:east, :south, :west, :north]
     end
+
+    # replace ruleset_json with default if ruleset doesn't exist
+    # because modloader gives "{}" if ruleset doesn't exist
+    ruleset_json = if String.trim(ruleset_json) == "{}" do Room.initial_textarea() else ruleset_json end
+
     # put params and process ids into state
     state = Map.merge(state, %Room{
       available_seats: available_seats,
@@ -125,7 +175,7 @@ defmodule RiichiAdvanced.RoomState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      display_name: Map.get(rules, "display_name", state.ruleset),
+      display_name: Map.get(rules, "display_name", if state.ruleset == "custom" do "Custom" else state.ruleset end),
       mods: mods |> Map.new(fn mod -> {mod["id"], %{
         enabled: Map.has_key?(starting_mods, mod["id"]),
         index: mod["index"],
@@ -448,20 +498,25 @@ defmodule RiichiAdvanced.RoomState do
   def handle_cast(:start_game, state) do
     state = Map.put(state, :starting, true)
     state = broadcast_state_change(state)
-    {mods, config} = if state.ruleset == "custom" do
-      ruleset_json = Enum.at(state.textarea, 0)["insert"]
-      # 2MB char limit on ruleset_json
-      if ruleset_json != nil and byte_size(ruleset_json) <= 2 * 1024 * 1024 do
-        RiichiAdvanced.ETSCache.put(state.room_code, ruleset_json, :cache_rulesets)
-      end
-      {[], nil}
-    else
-      config = Enum.at(state.textarea, 0)["insert"]
-      if config != nil do
+
+    # for custom, config is just the submitted ruleset
+    config = Enum.at(state.textarea, 0)["insert"]
+
+    # check for 4MB limit, and save if within limit
+    state = if byte_size(config) <= 4 * 1024 * 1024 do
+      if state.ruleset == "custom" do
+        RiichiAdvanced.ETSCache.put(state.room_code, config, :cache_rulesets)
+      else
         RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, config, :cache_configs)
       end
-      {get_enabled_mods(state), config}
+      state
+    else
+      show_error(state, "WARNING: ruleset too large (>4MB)!")
     end
+
+    # get mods if any
+    mods = if state.ruleset == "custom" do [] else get_enabled_mods(state) end
+
     # shuffle seats
     seat_map = if state.shuffle do Enum.shuffle(state.available_seats) else state.available_seats end
     |> Enum.zip(state.available_seats)
