@@ -353,20 +353,25 @@ defmodule RiichiAdvancedWeb.GameLive do
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
       </div>
-      <%= if not Enum.empty?(@state.rules_text) do %>
-        <input id="rules-popover-checkbox" type="checkbox" class="rules-popover-checkbox" phx-update="ignore">
-        <label for="rules-popover-checkbox">Rules</label>
-        <div class="rules-popover-container"}>
-          <div class="rules-popover">
-            <%= for {title, {text, priority}} <- Enum.sort_by(@state.rules_text, fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
-              <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
-                <div class="rules-popover-title"><%= title %></div>
-                <div class="rules-popover-text"><%= text %></div>
-              </div>
-            <% end %>
+
+      <div class="rules-wrapper">
+        <%= for rules_text_name <- @state.rules_text_order, not Enum.empty?(@state.rules_text[rules_text_name]) do %>
+          <input type="radio" id={"rules-popover-radio-#{rules_text_name}"} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
+          <label for={"rules-popover-radio-#{rules_text_name}"}><%= rules_text_name %></label>
+          <div class="rules-popover-container">
+            <div class="rules-popover">
+              <%= for {title, {text, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
+                <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
+                  <div class="rules-popover-title"><%= title %></div>
+                  <div class="rules-popover-text"><%= text %></div>
+                </div>
+              <% end %>
+            </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
+        <input type="radio" id={"rules-popover-unselect"} name="rules-popover-tab" class="rules-popover-unselect" phx-update="ignore">
+        <label for={"rules-popover-unselect"}></label>
+      </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
         <textarea readonly><%= @state.ruleset_json %></textarea>

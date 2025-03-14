@@ -534,7 +534,8 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq(ast) do
     case ast do
-      {:__block__, [], nodes} -> 
+      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, _pos, nodes} ->
         # IO.inspect(nodes, label: "AST")
         case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
           {:ok, val}    -> {:ok, Enum.join(val, "\n| ")}

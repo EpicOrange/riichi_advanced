@@ -971,20 +971,37 @@ defmodule RiichiAdvanced.GameState.Actions do
         push_message(state, [%{text: message}])
         state
       "add_rule"             ->
-        id = Enum.at(opts, 0, "")
-        text = Enum.at(opts, 1, "")
-        priority = Enum.at(opts, 2, nil)
-        update_in(state.rules_text, &Map.update(&1, id, {text, if priority == nil do 0 else priority end}, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
+        tab = Enum.at(opts, 0, "Rules")
+        id = Enum.at(opts, 1, "")
+        text = Enum.at(opts, 2, "")
+        priority = Enum.at(opts, 3, nil)
+        state = if not Map.has_key?(state.rules_text, tab) do
+          state = put_in(state.rules_text[tab], %{})
+          state = update_in(state.rules_text_order, & &1 ++ [tab])
+          state
+        else state end
+        update_in(state.rules_text[tab], &Map.update(&1, id, {text, if priority == nil do 0 else priority end}, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
       "update_rule"             ->
-        id = Enum.at(opts, 0, "")
-        if Map.has_key?(state.rules_text, id) do
-          text = Enum.at(opts, 1, "")
-          priority = Enum.at(opts, 2, nil)
-          update_in(state.rules_text, &Map.update!(&1, id, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
+        tab = Enum.at(opts, 0, "Rules")
+        id = Enum.at(opts, 1, "")
+        if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
+          text = Enum.at(opts, 2, "")
+          priority = Enum.at(opts, 3, nil)
+          update_in(state.rules_text[tab], &Map.update!(&1, id, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
         else state end
       "delete_rule"             ->
-        id = Enum.at(opts, 0, "")
-        update_in(state.rules_text, &Map.delete(&1, id))
+        tab = Enum.at(opts, 0, "Rules")
+        id = Enum.at(opts, 1, "")
+        if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
+          update_in(state.rules_text[tab], &Map.delete(&1, id))
+        else state end
+      "add_rule_tab"             ->
+        tab = Enum.at(opts, 0, "Rules")
+        if not Map.has_key?(state.rules_text, tab) do
+          state = put_in(state.rules_text[tab], %{})
+          state = update_in(state.rules_text_order, & &1 ++ [tab])
+          state
+        else state end
       "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)

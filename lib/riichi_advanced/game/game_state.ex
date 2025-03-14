@@ -192,6 +192,7 @@ defmodule RiichiAdvanced.GameState do
       players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       rules: %{},
       rules_text: %{},
+      rules_text_order: [],
       interruptible_actions: %{},
       wall: [],
       kyoku: 0,

@@ -1877,24 +1877,54 @@ div.declare-yaku button.declare-yaku-button:active {
 }
 
 /* rules */
-input.rules-popover-checkbox + label {
+div.rules-wrapper {
+  z-index: 10000;
+  width: 100%;
+  height: 100%;
+  user-select: none;
   position: absolute;
-  padding: 0 calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
-  font-size: calc(0.75 * var(--tile-size));
-  bottom: calc(-1.5 * var(--tile-size));
-  width: calc(0.75 * var(--tile-size));
-  height: calc(2 * var(--tile-size));
-  left: calc(-1.5 * var(--tile-size));
+  left: calc(-1.25 * var(--tile-size));
   top: calc(-0.5 * var(--tile-size));
+  display: flex;
+  flex-flow: column nowrap;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+input.rules-popover-radio + label {
+  padding: calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
+  width: calc(0.5 * var(--tile-size));
   display: flex;
   justify-content: center;
   align-items: center;
   writing-mode: sideways-lr;
 }
+/*
+  hack; add invisible "unselect" radio option to allow unselecting
+  this appears above the selected label, but below unselected labels
+*/
+input.rules-popover-unselect + label {
+  background: transparent;
+  width: calc(0.5 * var(--tile-size));
+  height: 100%;
+  position: absolute;
+  z-index: -2;
+}
+input.rules-popover-radio:checked ~ input.rules-popover-unselect + label {
+  z-index: 0;
+}
+input.rules-popover-radio:checked + label {
+  z-index: -1;
+}
+input.rules-popover-radio:not(:checked) + label {
+  z-index: 1;
+}
 div.rules-popover-container {
   z-index: 10000;
   position: absolute;
+  left: calc(1.25 * var(--tile-size));
+  top: calc(0.5 * var(--tile-size));
   width: 0;
   transition: width 0.1s ease;
   height: 100%;
@@ -1912,11 +1942,11 @@ div.rules-popover-container::before {
   z-index: -1;
   transition: border-width 0.1s cubic-bezier(0, 1, 0, 1);
 }
-input.rules-popover-checkbox:checked ~ div.rules-popover-container {
+input.rules-popover-radio:checked + label + div.rules-popover-container {
   width: 100%;
   user-select: text;
 }
-input.rules-popover-checkbox:checked ~ div.rules-popover-container::before {
+input.rules-popover-radio:checked + label + div.rules-popover-container::before {
   border-width: calc(0.125 * var(--tile-size));
 }
 div.rules-popover {

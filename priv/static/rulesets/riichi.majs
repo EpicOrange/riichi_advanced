@@ -364,11 +364,18 @@ def calculate_fu do
 end
 
 on after_initialization do
-  add_rule("Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
-  add_rule("Win Condition", "You may win with one of the following:", -100)
-  add_rule("Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
-  add_rule("Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
-  add_rule("Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
+  add_rule("Rules", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
+  add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
+  add_rule("Rules", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
+  add_rule_tab("1 Han")
+  add_rule_tab("2 Han")
+  add_rule_tab("3 Han")
+  add_rule_tab("4 Han")
+  add_rule_tab("5 Han")
+  add_rule_tab("Mangan")
+  add_rule_tab("Yakuman")
 end
 
 on before_turn_change do
