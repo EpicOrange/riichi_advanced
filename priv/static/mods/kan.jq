@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."],
-  ["add_rule", "Chankan", "If someone calls kan to upgrade a triplet (added kan), you may call ron on the added tile. Doing so awards chankan (1 han)."]
+  ["add_rule", "Rules", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."],
+  ["add_rule", "Rules", "Chankan", "If someone calls kan to upgrade a triplet (added kan), you may call ron on the added tile. Doing so awards chankan (1 han)."]
 ]
 |
 .yaku += [

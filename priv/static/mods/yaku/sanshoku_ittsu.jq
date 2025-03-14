@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (1 Han)", "(Sanshoku Ittsu) 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed.", 101]]
+.after_initialization.actions += [["add_rule", "1 Han", "Sanshoku Ittsu", "1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed.", 101]]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |

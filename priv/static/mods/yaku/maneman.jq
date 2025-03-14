@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Maneman) \"Imitation Mangan\". If you copy any opponent's first five discards exactly, they will pay mangan if you win with less than mangan. Calls invalidate.", 105]]
+.after_initialization.actions += [["add_rule", "Mangan", "Maneman", "\"Imitation Mangan\". If you copy any opponent's first five discards exactly, they will pay mangan if you win with less than mangan. Calls invalidate.", 105]]
 |
 .maneman += [
   {

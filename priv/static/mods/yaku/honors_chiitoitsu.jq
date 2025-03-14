@@ -1,7 +1,7 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (1 Han)", "(Sangen Chiitoitsu) Win with a seven pairs hand that includes all three dragons.", 101],
-  ["add_rule", "Local Yaku (1 Han)", "(Suushi Chiitoitsu) Win with a seven pairs hand that includes all four winds.", 101],
-  ["add_rule", "Local Yaku (Double Yakuman)", "(Daichishin) \"Big Seven Stars\". Win with a seven pairs hand consisting of all seven honor tiles.", 126]
+  ["add_rule", "1 Han", "Sangen Chiitoitsu", "Win with a seven pairs hand that includes all three dragons.", 101],
+  ["add_rule", "1 Han", "Suushi Chiitoitsu", "Win with a seven pairs hand that includes all four winds.", 101],
+  ["add_rule", "Yakuman", "Daichishin", "\"Big Seven Stars\". Win with a seven pairs hand consisting of all seven honor tiles.", 126]
 ]
 |
 .yaku += [

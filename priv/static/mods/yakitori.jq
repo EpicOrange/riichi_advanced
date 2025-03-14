@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Yakitori", "Every player starts with a yakitori token that is flipped after their first win. If the game ends, every player with an unflipped yakitori token pays each player \($penalty) points."]]
+.after_initialization.actions += [["add_rule", "Rules", "Yakitori", "Every player starts with a yakitori token that is flipped after their first win. If the game ends, every player with an unflipped yakitori token pays each player \($penalty) points."]]
 |
 .persistent_statuses += ["yakitori_unflipped", "yakitori_flipped"]
 |

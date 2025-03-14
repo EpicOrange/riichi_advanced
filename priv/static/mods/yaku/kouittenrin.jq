@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Kouittenrin) Like ryuuiisou, except you have a red dragon triplet and a pair of 5s (5 bamboo).", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Kouittenrin", "Like ryuuiisou, except you have a red dragon triplet and a pair of 5s (5 bamboo).", 113]]
 |
 .yakuman += [
   {

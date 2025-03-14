@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Kyuushu Kyuuhai", "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players."]]
+.after_initialization.actions += [["add_rule", "Rules", "Kyuushu Kyuuhai", "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players."]]
 |
 # add kyuushu kyuuhai definition
 .kyuushu_kyuuhai_definition = [

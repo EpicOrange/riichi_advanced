@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth \($worth) each, which are gained and lost separately from points."]]
+.after_initialization.actions += [["add_rule", "Rules", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth \($worth) each, which are gained and lost separately from points."]]
 |
 .after_win.actions += [
   ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["add_counter", "shuugi_payment", 1]]],

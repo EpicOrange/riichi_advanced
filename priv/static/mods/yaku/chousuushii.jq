@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Quadruple Yakuman)", "(Chousuushii) You have kans of all four winds.", 152]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Chousuushii", "You have kans of all four winds.", 152]]
 |
 .yakuman += [
   {

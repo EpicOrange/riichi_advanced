@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Wall", "(Chinitsu) The wall is composed of 16 copies of each bamboo tile.", -99]]
+.after_initialization.actions += [["add_rule", "Rules", "Wall", "(Chinitsu) The wall is composed of 16 copies of each bamboo tile.", -99]]
 |
 [
   "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", 

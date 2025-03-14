@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Uupin Kaihou) \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles).", 105]]
+.after_initialization.actions += [["add_rule", "Mangan", "Uupin Kaihou", "\"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles).", 105]]
 |
 .yaku_uupin_kaihou += [
   {

@@ -3,7 +3,7 @@ def insert_after_kan_draw($arr):
   |
   if $ix then (.[:$ix+1] + $arr + .[$ix+1:]) else . end;
 
-.after_initialization.actions += [["add_rule", "Kandora", "Every kan reveals another dora indicator after the discard, except for concealed kan, which reveals one immediately."]]
+.after_initialization.actions += [["add_rule", "Rules", "Kandora", "Every kan reveals another dora indicator after the discard, except for concealed kan, which reveals one immediately."]]
 |
 # flip next dora after non-ankan kan
 .functions.flip_dora = [

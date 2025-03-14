@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Yakuman)", "(Isshoku Yonjun) \"Pure Quadruple Sequences\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.", 113],
-  ["add_rule", "Sekinin Barai (Pao)", "(Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else."]
+  ["add_rule", "Yakuman", "Isshoku Yonjun", "\"Pure Quadruple Sequences\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.", 113],
+  ["add_rule", "1 Han", "Sekinin Barai (Pao)", "(Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else."]
 ]
 |
 .yakuman += [

@@ -6,9 +6,9 @@ def fix_chanta_match_definition($new_groups):
   else . end);
 
 .after_initialization.actions += [
-  ["add_rule", "Space Mahjong", "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."],
-  ["add_rule", "Win Condition", "- (Space Mahjong) Seven Pairs is no longer a winning hand.", -100],
-  ["add_rule", "Local Yaku (3 Han)", "(Space Mahjong) Open kokushi musou is 3 han."]
+  ["add_rule", "Rules", "Space Mahjong", "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."],
+  ["add_rule", "Rules", "Win Condition", "- (Space Mahjong) Seven Pairs is no longer a winning hand.", -100],
+  ["add_rule", "3 Han", "Open Kokushi Musou", "(Space Mahjong) Open kokushi musou is worth 3 han."]
 ]
 |
 # add open kokushi

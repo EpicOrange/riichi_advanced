@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (2 Han)", "(Isshoku Sanjun) \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).", 102]]
+.after_initialization.actions += [["add_rule", "2 Han", "Isshoku Sanjun", "\"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).", 102]]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |

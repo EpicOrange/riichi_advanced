@@ -1,10 +1,10 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (1 Han)", "(Sanshoku Choupaikou) Your hand has the pattern 111333555 in different suits (doesn't have to start at 1).", 101],
-  ["add_rule", "Local Yaku (1 Han)", "(Sanshoku Sujipaikou) Your hand has the pattern 111444777 in different suits (doesn't have to start at 1).", 101],
-  ["add_rule", "Local Yaku (1 Han)", "(Sanshoku Chousankou) Your hand has the pattern 111555999 in different suits.", 101],
-  ["add_rule", "Local Yaku (2 Han)", "(Choupaikou) Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1).", 102],
-  ["add_rule", "Local Yaku (2 Han)", "(Sujipaikou) Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1).", 102],
-  ["add_rule", "Local Yaku (2 Han)", "(Chousankou) Your hand has the pattern 111555999 in the same suit.", 102]
+  ["add_rule", "1 Han", "Sanshoku Choupaikou", "Your hand has the pattern 111333555 in different suits (doesn't have to start at 1).", 101],
+  ["add_rule", "1 Han", "Sanshoku Sujipaikou", "Your hand has the pattern 111444777 in different suits (doesn't have to start at 1).", 101],
+  ["add_rule", "1 Han", "Sanshoku Chousankou", "Your hand has the pattern 111555999 in different suits.", 101],
+  ["add_rule", "2 Han", "Choupaikou", "Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1).", 102],
+  ["add_rule", "2 Han", "Sujipaikou", "Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1).", 102],
+  ["add_rule", "2 Han", "Chousankou", "Your hand has the pattern 111555999 in the same suit.", 102]
 ]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others

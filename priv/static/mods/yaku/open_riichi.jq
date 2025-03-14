@@ -1,4 +1,4 @@
-.after_initialization.actions += [["update_rule", "Riichi", "(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win."]]
+.after_initialization.actions += [["update_rule", "Rules", "Riichi", "(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win."]]
 |
 # add open riichi button
 .buttons.open_riichi = {

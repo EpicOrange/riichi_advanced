@@ -7,7 +7,7 @@ def insert_after_kan_draw($arr):
 
 .after_initialization.actions += [
   ["delete_rule", "Kandora"],
-  ["add_rule", "Kandora", "Every kan reveals another dora indicator immediately."]
+  ["add_rule", "Rules", "Kandora", "Every kan reveals another dora indicator immediately."]
 ]
 |
 # dora flips immediately after daiminkan

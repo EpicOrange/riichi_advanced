@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Yakuman)", "(Shiisanpuutaa) \"Thirteen Unconnected\". Start with 13 disconnected tiles, plus one forming a pair. Calls invalidate.", 113],
-  ["add_rule", "Win Condition", "- (Shiisanpuutaa) Start with 13 disconnected tiles, plus one forming a pair.", -100]
+  ["add_rule", "Yakuman", "Shiisanpuutaa", "\"Thirteen Unconnected\". Start with 13 disconnected tiles, plus one forming a pair. Calls invalidate.", 113],
+  ["add_rule", "Rules", "Win Condition", "- (Shiisanpuutaa) Start with 13 disconnected tiles, plus one forming a pair.", -100]
 ]
 |
 .yakuman += [

@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Suucha Riichi", "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw."]]
+.after_initialization.actions += [["add_rule", "Rules", "Suucha Riichi", "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw."]]
 |
 .before_turn_change.actions = [
   ["when", [{"name": "num_players", "opts": [4]}, {"name": "everyone_status", "opts": ["riichi"]}], [

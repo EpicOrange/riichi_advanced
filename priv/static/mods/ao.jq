@@ -10,8 +10,8 @@ def replace_n_tiles($tile; $aka; $num):
   else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Ao) \($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with blue \"ao dora\" fives that are worth two extra han each.", -99],
-  ["update_rule", "Shuugi", "(Ao) If your hand is closed, each ao dora is worth 2 shuugi."]
+  ["add_rule", "Rules", "Wall", "(Ao) \($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with blue \"ao dora\" fives that are worth two extra han each.", -99],
+  ["update_rule", "Rules", "Shuugi", "(Ao) If your hand is closed, each ao dora is worth 2 shuugi."]
 ]
 |
 # replace 5m,5p,5s in wall with 25m,25p,25s

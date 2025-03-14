@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Kouitten) \"A Little Red\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons).", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Kouitten", "\"A Little Red\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons).", 113]]
 |
 .yakuman += [
   {

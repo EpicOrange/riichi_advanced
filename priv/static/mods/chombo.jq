@@ -11,7 +11,7 @@ def disable_when_dead:
   .show_when = [{"name": "status_missing", "opts": ["dead_hand"]}] + .show_when;
 
 .after_initialization.actions += [
-  ["add_rule", "Chombo", "The tsumo and ron (and riichi) buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."]
+  ["add_rule", "Rules", "Chombo", "The tsumo and ron (and riichi) buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."]
 ]
 |
 if (.buttons | has("ron")) then

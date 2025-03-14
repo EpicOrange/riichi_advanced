@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Golden Gate Bridge) Your hand contains 123 345 567 789 all in one suit. No restrictions on your pair.", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Golden Gate Bridge", "Your hand contains 123 345 567 789 all in one suit. No restrictions on your pair.", 113]]
 |
 .yakuman += [
   {

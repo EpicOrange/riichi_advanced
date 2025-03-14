@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Double Round Wind", "Opposing winds are also round winds. So in East round, West is also a round wind."]]
+.after_initialization.actions += [["add_rule", "Rules", "Double Round Wind", "Opposing winds are also round winds. So in East round, West is also a round wind."]]
 |
 # sanma calls it pei_triplet
 (if .set_definitions | has("pei_triplet") then "pei_triplet" else "pei" end) as $pei

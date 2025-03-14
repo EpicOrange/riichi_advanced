@@ -1,7 +1,7 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Yakuman)", "(Shousharin) Your closed winning hand is 11223344556677 or 33445566778899 of circles.", 113],
-  ["add_rule", "Local Yaku (Yakuman)", "(Shouchikurin) Your closed winning hand is 11223344556677 or 33445566778899 of bamboo.", 113],
-  ["add_rule", "Local Yaku (Yakuman)", "(Shousuurin) Your closed winning hand is 11223344556677 or 33445566778899 of characters.", 113]
+  ["add_rule", "Yakuman", "Shousharin", "Your closed winning hand is 11223344556677 or 33445566778899 of circles.", 113],
+  ["add_rule", "Yakuman", "Shouchikurin", "Your closed winning hand is 11223344556677 or 33445566778899 of bamboo.", 113],
+  ["add_rule", "Yakuman", "Shousuurin", "Your closed winning hand is 11223344556677 or 33445566778899 of characters.", 113]
 ]
 |
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "shouminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"] else ["chii", "pon", "daiminkan", "kakan"] end) as $open_calls

@@ -6,8 +6,8 @@ def replace_tenpai_check($source):
   map(if . == $from then $to else . end);
 
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Yakuman)", "(American Civil War) You have no calls (not even concealed kan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and triplets of north and south winds.", 113],
-  ["add_rule", "Win Condition", "- (American Civil War) Have 1861 in one suit, 1865 in another suit, and triplets of north and south winds. Must have no calls (not even concealed kan).", -100]
+  ["add_rule", "Yakuman", "American Civil War", "You have no calls (not even concealed kan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and triplets of north and south winds.", 113],
+  ["add_rule", "Rules", "Win Condition", "- (American Civil War) Have 1861 in one suit, 1865 in another suit, and triplets of north and south winds. Must have no calls (not even concealed kan).", -100]
 ]
 |
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan", "anfuun", "ankan"] else ["chii", "pon", "daiminkan", "kakan", "ankan"] end) as $all_calls

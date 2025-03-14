@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Kokuiisou) \"All Black\". Like ryuuiisou but black: you can only have 248p and winds.", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Kokuiisou", "\"All Black\". Like ryuuiisou but black: you can only have 248p and winds.", 113]]
 |
 .yakuman += [
   {

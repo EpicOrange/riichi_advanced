@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (1 Han)", "(Tsubame Gaeshi) Win off a riichi discard.", 101]]
+.after_initialization.actions += [["add_rule", "1 Han", "Tsubame Gaeshi", "Win off a riichi discard.", 101]]
 |
 .yaku += [
   {
