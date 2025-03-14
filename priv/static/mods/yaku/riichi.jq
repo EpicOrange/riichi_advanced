@@ -84,15 +84,16 @@ if (.buttons | has("tsumo")) then
   .buttons.tsumo.show_when += [{"name": "status_missing", "opts": ["just_reached"]}]
 else . end
 |
-.functions.turn_cleanup |= [
-  # if we just reached then place down a riichi stick
-  ["when", [{"name": "status", "opts": ["just_reached"]}], [["as", "last_discarder", [["run", "put_down_riichi_stick"]]]]]
-] + map(if . == ["unset_status", "furiten"] then
+.functions.turn_cleanup |= map(if . == ["unset_status", "furiten"] then
   # unset furiten (unless in riichi)
   ["when", [{"name": "status_missing", "opts": ["riichi"]}], [["unset_status", "furiten"]]]
 else . end)
 |
-.functions.discard_passed |= [["as", "others", [["unset_status", "just_reached"]]]] + .
+.functions.discard_passed |= [["as", "others", [
+  # if we just reached then place down a riichi stick
+  ["when", [{"name": "status", "opts": ["just_reached"]}], [["run", "put_down_riichi_stick"]]],
+  ["unset_status", "just_reached"]
+]]] + .
 |
 .functions.put_down_riichi_stick = [
   ["when", [{"name": "status_missing", "opts": ["put_down_riichi_stick"]}], [
