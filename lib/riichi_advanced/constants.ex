@@ -252,6 +252,7 @@ defmodule RiichiAdvanced.Constants do
     {"tianjin",      "Tianjin", "Mahjong except the dora indicator actually indicates joker tiles."},
     {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
     {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
+    {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
   @unimplemented_rulesets [
@@ -260,7 +261,6 @@ defmodule RiichiAdvanced.Constants do
     {"changsha",     "Changsha", "Mahjong, but every win gets two chances at ura dora. However, a standard hand must have a pair of 22, 55, or 88.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-changsha-mahjong"},
     {"shenyang",     "Shenyang", "Mahjong, but every hand must be open, contain every suit, contain a terminal/honor, and contain either a triplet, kan, or dragon pair.", "https://peterish.com/riichi-docs/shenyang-mahjong-rules/"},
     {"korean",       "Korean", "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-korean-mahjong-rules"},
-    {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system.", "https://www.zj-mahjong.info/zj33_rules_eng.html"},
     {"british",      "British", "No description provided.", "https://wonderfuloldthings.wordpress.com/wp-content/uploads/2013/09/british-rules-guide-to-mahjong-v2-1.pdf"},
     {"italian",      "Italian", "No description provided.", "https://www.fimj.it/wp-content/uploads/2012/01/111213_Regolamento_FIMJ_A4.pdf"},
     {"dutch",        "Dutch", "No description provided.", "https://mahjongbond.org/wp-content/uploads/2019/10/NMB-NTS-Spelregelboekje.pdf"},
