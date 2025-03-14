@@ -112,7 +112,7 @@ defmodule RiichiAdvanced.RoomState do
         end
     end
 
-    config = ModLoader.get_config_json(state.ruleset, state.room_code)
+    config_majs = ModLoader.get_config_majs(state.ruleset, state.room_code)
 
     # parse the ruleset now, in order to get the list of eligible mods
     {state, rules} = if state.ruleset != "custom" do
@@ -209,9 +209,9 @@ defmodule RiichiAdvanced.RoomState do
         Map.get(rules, "tutorial_link", nil)
       end,
       textarea: if state.ruleset == "custom" do
-        [Delta.Op.insert(ruleset_json)]
+        [Delta.Op.insert(ruleset_json)] # could be majs as well
       else
-        [Delta.Op.insert(config)]
+        [Delta.Op.insert(config_majs)]
       end,
     })
 

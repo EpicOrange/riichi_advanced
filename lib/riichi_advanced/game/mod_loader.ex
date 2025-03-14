@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  defp majs_to_jq(majs, base \\ "{}") do
+  def majs_to_jq(majs, base \\ "{}") do
     with {:ok, ast} <- Parser.parse(majs),
          {:ok, jq} <- Compiler.compile_jq(ast) do
       jq
@@ -124,24 +124,26 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   @default_config """
-  {
-    // this is for advanced users!
-    // this JSON gets merged into the existing ruleset (after applying mods)
-    // the below is helpful to test out yaku and stuff
+  # this is for advanced users!
+  # this mahjongscript gets applied to the ruleset after applying other mods
+  # so basically here is where you write a custom mod
+  # see documentation here: https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md
+  # feel free to submit your mod to the repository by opening an issue or pull request!
 
-    // "starting_hand": {
-    //   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
-    // },
-    // "starting_draws": ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"],
-    // "starting_dead_wall": ["5m", "4m"], // so the first kan draw is 5m. this goes backwards
-    // "starting_round": 4, // start in south round
-    // "debug_status": true // show statuses, counters, and buttons
-  }
+  # the examples below are helpful to test out yaku and stuff
+
+  # set starting_hand, %{
+  #   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
+  # }
+  # set starting_draws, ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
+  # set starting_dead_wall, ["5m", "4m"] # so the first kan draw is 5m. this goes backwards
+  # set starting_round, 4 # start in south round
+  # set debug_status, true # show statuses, counters, and buttons
   """
 
-  def get_config_json(ruleset, room_code) do
-    case RiichiAdvanced.ETSCache.get({ruleset, room_code}, [@default_config], :cache_configs) do
-      [ruleset_json] -> ruleset_json
+  def get_config_majs(ruleset, room_code) do
+    case RiichiAdvanced.ETSCache.get({ruleset, room_code}, nil, :cache_configs) do
+      [config_majs] -> config_majs
       _ -> @default_config
     end
   end

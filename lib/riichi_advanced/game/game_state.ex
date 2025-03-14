@@ -292,7 +292,7 @@ defmodule RiichiAdvanced.GameState do
 
     # apply mods
     ruleset_json = if state.ruleset != "custom" and not Enum.empty?(mods) do
-      RiichiAdvanced.ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
+      ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
     else ruleset_json end
     if not Enum.empty?(mods) do
       # cache mods
@@ -302,10 +302,12 @@ defmodule RiichiAdvanced.GameState do
     # apply config
     ruleset_json = if state.config != nil do
       try do
-        JQ.merge_jsons!(RiichiAdvanced.ModLoader.strip_comments(ruleset_json), RiichiAdvanced.ModLoader.strip_comments(state.config))
+        ruleset_json = ModLoader.strip_comments(ruleset_json)
+        query = ModLoader.majs_to_jq(ModLoader.strip_comments(state.config))
+        JQ.query_string_with_string!(ruleset_json, query)
       rescue
-        _ ->
-          IO.puts("Failed to load config:\n#{state.config}")
+        err ->
+          IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
           ruleset_json
       end
     else ruleset_json end
@@ -333,7 +335,7 @@ defmodule RiichiAdvanced.GameState do
 
     # decode the rules json
     {state, rules} = try do
-      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
+      case Jason.decode(ModLoader.strip_comments(ruleset_json)) do
         {:ok, rules} -> {state, rules}
         {:error, err} ->
           IO.puts("Erroring json:")
