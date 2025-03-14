@@ -9,10 +9,9 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     "kansai_draw",
     "kansai_flowers",
     "kansai_yaku",
-    "nagashi_yakuman",
     "kansai_no_100_sticks",
     "kansai_30_fu",
-    %{name: "nagashi", config: %{"is" => "Mangan"}},
+    %{name: "nagashi", config: %{"is" => "Yakuman"}},
     %{name: "tobi", config: %{"below" => 1}},
     %{
      name: "uma",
