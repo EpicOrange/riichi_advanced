@@ -82,15 +82,22 @@ define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 define_match tenpai,
   ~m"""
   exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
-  | exhaustive, (shuntsu koutsu):4 
+  | exhaustive, (shuntsu koutsu):4
   | (nojoker koutsu):-1, pair:6
+  | unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  """
+
+define_match tenpai_14,
+  ~m"""
+  exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
+  | exhaustive, (shuntsu koutsu):4
+  | (nojoker quad):-1, koutsu:-2, pair:6
   | unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match kokushi_tenpai,
   ~m"""
-  unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12 
-  | (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match win,
@@ -287,13 +294,13 @@ end
 
 def calculate_fu do
   set_counter("fu", "minipoints") do
-    remove_attrs()
+    remove_attrs
 
     # score calls
     convert_calls(%{pon: 2})
-    remove_tanyaohai_calls()
+    remove_tanyaohai_calls
     convert_calls(%{pon: 2})
-    remove_calls()
+    remove_calls
 
     # now remove the winning group
     remove_winning_groups(
@@ -321,7 +328,7 @@ def calculate_fu do
     remove_groups(%{group: [0, 0], yakuhai_value: 2})
 
     # only retain configurations with 0 tiles remaining
-    retain_empty_hands()
+    retain_empty_hands
 
     # add 1000 to pinfu hands so we prioritize pinfu later
     add(1000, minipoints_equals(0))
@@ -337,14 +344,14 @@ def calculate_fu do
     add(10, "not_won_by_draw" and not_has_no_call_named("chii", "pon", "daiminkan", "kakan") and minipoints_at_least(1000))
 
     # take max, then subtract 1000 from pinfu hands
-    take_maximum()
+    take_maximum
     add(-1000, minipoints_at_least(1000))
 
     # round up to nearest 10
     round_up(10)
     
     # add original hand (for special hands like chiitoitsu and kokushi)
-    add_original_hand()
+    add_original_hand
     
     # chiitoitsu
     add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]))
@@ -352,7 +359,7 @@ def calculate_fu do
     # kokushi
     add(40, not_won_by_draw and has_no_call_named("chii", "pon", "daiminkan", "kakan") and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi"]))
     add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi"]))
-    take_maximum()
+    take_maximum
   end
 end
 

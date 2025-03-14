@@ -46,46 +46,53 @@ defmodule RiichiAdvanced.Parser do
 
   @match_keywords ["exhaustive", "unique"]
 
+  defp parse_group(group_spec) do
+    case String.split(group_spec, ":", trim: true) do
+      [groups_str, count_str] ->
+        # parse count
+        count = case Integer.parse(count_str) do
+          {count, ""} -> {:ok, count}
+          _ -> {:error, "could not parse count: #{inspect(count_str)}"}
+        end
+        # parse groups
+        groups = groups_str
+        |> String.replace_leading("(", "")
+        |> String.replace_trailing(")", "")
+        |> String.split(" ", trim: true)
+        |> Enum.map(fn group ->
+          # check for attributes
+          base_attrs = case String.split(group, "@", trim: true) |> Enum.map(&String.trim/1) do
+            [base] -> {:ok, {base, []}}
+            [base, attrs] -> {:ok, {base, String.split(attrs, ",", trim: true)}}
+            _ -> {:error, "invalid attribute syntax: #{group}"}
+          end
+          with {:ok, {base, attrs}} <- base_attrs do
+            groups = case attrs do
+              [] -> base
+              attrs -> %{"tile" => base, "attrs" => attrs}
+            end
+            {:ok, groups}
+          end
+        end)
+        |> Utils.sequence()
+        with {:ok, groups} <- groups,
+             {:ok, count} <- count do
+          {:ok, [groups, count]}
+        end
+      _ -> {:error, "expected :count after item #{inspect(group_spec)}"}
+    end
+  end
+
   def parse_match(match_spec) do
     for match_definition <- String.split(match_spec, "|", trim: true) |> Enum.map(&String.trim/1) do
-      for item <- String.split(match_definition, ",", trim: true) |> Enum.map(&String.trim/1) do
-        if item not in @match_keywords do
-          case String.split(item, ":", trim: true) do
-            [groups_str, count_str] ->
-              # parse count
-              count = case Integer.parse(count_str) do
-                {count, ""} -> {:ok, count}
-                _ -> {:error, "could not parse count: #{inspect(count_str)}"}
-              end
-              # parse groups
-              groups = groups_str
-              |> String.replace_leading("(", "")
-              |> String.replace_trailing(")", "")
-              |> String.split(" ", trim: true)
-              |> Enum.map(fn group ->
-                # check for attributes
-                base_attrs = case String.split(group, "@", trim: true) |> Enum.map(&String.trim/1) do
-                  [base] -> {:ok, {base, []}}
-                  [base, attrs] -> {:ok, {base, String.split(attrs, ",", trim: true)}}
-                  _ -> {:error, "invalid attribute syntax: #{group}"}
-                end
-                with {:ok, {base, attrs}} <- base_attrs do
-                  groups = case attrs do
-                    [] -> base
-                    attrs -> %{"tile" => base, "attrs" => attrs}
-                  end
-                  {:ok, groups}
-                end
-              end)
-              |> Utils.sequence()
-              with {:ok, groups} <- groups,
-                   {:ok, count} <- count do
-                {:ok, [groups, count]}
-              end
-            _ -> {:error, "expected :count after item #{inspect(item)}"}
-          end
-        else {:ok, item} end
-      end |> Utils.sequence()
+      items = String.split(match_definition, ",", trim: true) |> Enum.map(&String.trim/1)
+      if "american" in items do
+        {:ok, Enum.find(items, & &1 != "american")}
+      else
+        for item <- items do
+          if item not in @match_keywords do parse_group(item) else {:ok, item} end
+        end |> Utils.sequence()
+      end
     end |> Utils.sequence()
   end
   def parse_sigils(nil), do: {:ok, nil}

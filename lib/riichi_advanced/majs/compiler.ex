@@ -175,8 +175,11 @@ defmodule RiichiAdvanced.Compiler do
         case Jason.decode!(name) do
           "set"      -> {:ok, "#{path} = #{value}"}
           "add"      -> {:ok, "#{path} += #{value}"}
+          "prepend"  -> {:ok, "#{path} |= #{value} + ."}
+          "append"   -> {:ok, "#{path} += #{value}"}
           "subtract" -> {:ok, "#{path} -= #{value}"}
           "multiply" -> {:ok, "#{path} *= #{value}"}
+          "merge"    -> {:ok, "#{path} *= #{value}"}
           "divide"   -> {:ok, "#{path} /= #{value}"}
           "modulo"   -> {:ok, "#{path} %= #{value}"}
           op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
@@ -291,7 +294,9 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, unskippable} <- Validator.validate_json(Map.get(args, "unskippable", false)),
          {:ok, unskippable} <- Jason.encode(unskippable),
          {:ok, cancellable} <- Validator.validate_json(Map.get(args, "cancellable", false)),
-         {:ok, cancellable} <- Jason.encode(cancellable) do
+         {:ok, cancellable} <- Jason.encode(cancellable),
+         {:ok, interrupt_level} <- Validator.validate_json(Map.get(args, "interrupt_level", 100)),
+         {:ok, interrupt_level} <- Jason.encode(interrupt_level) do
       add_button = ~s"""
       .buttons[#{name}] = {
         "display_name": #{display_name},
@@ -299,7 +304,8 @@ defmodule RiichiAdvanced.Compiler do
         "actions": #{actions},
         "precedence_over": #{precedence_over},
         "unskippable": #{unskippable},
-        "cancellable": #{cancellable}
+        "cancellable": #{cancellable},
+        "interrupt_level": #{interrupt_level}
       }
       """
       if Enum.empty?(Map.get(args, "call", [])) do
@@ -333,7 +339,7 @@ defmodule RiichiAdvanced.Compiler do
     end
 
     with {:ok, args} <- args,
-         {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "Button")),
+         {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "A")),
          {:ok, display_name} <- Jason.encode(display_name),
          {:ok, desc} <- Validator.validate_json(Map.get(args, "desc", "")),
          {:ok, desc} <- Jason.encode(desc),
