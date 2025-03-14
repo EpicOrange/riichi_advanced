@@ -114,10 +114,40 @@ else . end
 |
 # change yaku to accommodate star suit
 # need to change the following yaku:
-# * tanyao (now 2~8m, 2~8s, 2~8p, and 2~8t)
-# * chanta/junchan (add junchan_13~16 and junchan_pair_7~8
-# * honrou/chinrou (add 1t, 9t)
-# * honitsu/chinitsu (add 1t~9t as an option)
+# * ✅ tanyao (now 2~8m, 2~8s, 2~8p, and 2~8t)
+# * ✅ honrou/chinrou (add 1t, 9t)
+# * chanta/junchan (add junchan_13~16 and junchan_pair_7~8)  // code is currently copied from Ten Mod so it makes no sense
+# * honitsu/chinitsu (add 1t~9t as an option)                // code is currently copied from Ten Mod so it makes no sense
+
+# change tanyao, honroutou, honitsu, chinitsu
+.yaku |= map(
+  if .display_name == "Tanyao" then
+    .when[0].opts += ["2t", "3t", "4t", "5t", "6t", "7t", "8t"]
+  elif .display_name == "Honroutou" then
+    .when[0].opts += ["1t", "9t"]
+#  elif .display_name == "Chanta" then
+#    .when[0].opts += ["1t", "9t"]
+#  elif .display_name == "Junchan" then
+#    .when[0].opts += ["1t", "9t"]
+#  elif .display_name == "Honitsu" or .display_name == "Chinitsu" or .display_name == "Half Flush" or .display_name == "Full Flush" then
+#    .when[-1][0].opts += ["10m"] | .when[-1][1].opts += ["10p"] | .when[-1][2].opts += ["10s"]
+  else . end
+)
+|
+# change chinroutou
+.yakuman |= map(
+  if .display_name == "Chinroutou" then
+    .when[0].opts += ["1t", "9t"]
+  else . end
+)
+|
+# add the following yaku:
+# * yonshoku doujun (4/3 han open)
+# * yonshoku doukou (5 han)
+
+
+
+
 
 
 
