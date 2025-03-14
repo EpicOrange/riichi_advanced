@@ -72,11 +72,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       # subscribe to state updates
       # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
-
       # start a new game process, if it doesn't exist already
       init_actions = [["init_player", socket.assigns.session_id, socket.assigns.seat_param], ["initialize_game"]]
       init_actions = if Map.has_key?(socket.assigns, :tutorial_sequence) do
-        ["initialize_tutorial" | init_actions] # block events if we're a tutorial
+        [["initialize_tutorial"] | init_actions] # block events if we're a tutorial
       else init_actions end
       args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)]
       game_spec = %{
