@@ -61,14 +61,22 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def majs_to_jq(majs, base \\ "{}") do
+  def majs_to_jq(majs) do
     with {:ok, ast} <- Parser.parse(majs),
          {:ok, jq} <- Compiler.compile_jq(ast) do
       jq
-    else 
+    else
+      # try interpreting it as json instead
       {:error, msg} ->
-        if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
-        "."
+        case Jason.decode(majs) do
+          {:ok, _}    -> ". * " <> majs
+          {:error, _} -> 
+            IO.puts("Error in majs_to_jq:")
+            if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
+            IO.puts("Input majs was:")
+            IO.puts(majs)
+            "." # no-op
+        end
     end
   end
 
