@@ -1,8 +1,4 @@
 {
-  // <MASTER TODO LIST:>
-  // * Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .
-  // * Figure out how to implement the "responsibility" rule (not sure how to do this, tbh)
-  
   "available_mods": [
     {"id": "zungjung/zj_flowers", "name": "Bonus Tiles", "config": [{"type": "dropdown", "name": "flower_value", "values": [1, 2], "default": 2}], "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
     {"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
@@ -502,13 +498,6 @@
     "All Honours": ["Small Four Winds"]
   },
   "score_calculation": {
-  
-  // <TODO: oh god it gets worse, look at Section 5:>
-  //
-  // Rule of Same-Round Immunity: When the winner wins on discard, if in the same round (starting from and including the winner's previous discarded tile, until before the win) another player has just discarded the same tile as the winning tile, then the discarder will not be "responsible" for having followed with the same discard. If it is the winner who has just discarded the winning tile, then no one will be considered responsible (the three players split the payment equally). Otherwise, the player who first discarded the winning tile in the same round (after the winner's previous discard) will be considered responsible.
-  //
-  // <welp i thought this would be easy, but it evidently isn't>
-
     "scoring_method": ["multiplier", "multiplier"],
     "score_multiplier": 1,
     "discarder_multiplier": 1,
@@ -524,7 +513,6 @@
     "win_by_discard_name": "Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
-
   },
   "before_turn_change": {
     "actions": [
@@ -562,15 +550,40 @@
   },
   "after_scoring": {
     "actions": [
-      ["set_counter_all", "extra_payout", "payout"],
+      ["set_counter", "extra_payout", "payout"],
       ["subtract_counter", "extra_payout", 75],
       ["when", ["won_by_discard", {"name": "counter_at_least", "opts": ["extra_payout", 1]}], [
         // do a normal payout where everyone pays 25 points
         ["modify_payout", "others", -25, "set"],
         ["modify_payout", "self", 75, "set"],
         // "responsible player" pays the remainder
+        // starting from self and going clockwise check if their last discard matches the winning tile
+        // first player who matches is responsible
+        // if self is responsible, score it like tsumo
         ["modify_payout", "self", "extra_payout", "add"],
-        ["modify_payout", "last_discarder", "extra_payout", "subtract"]
+        ["ite", [{"name": "match", "opts": [["self_last_discard", "winning_tile"], [[[["pair"], 1]]]]}], [
+          // make it basically a tsumo
+          ["push_message", "dealt the same winning tile last turn, so all players pay equally"],
+          ["set_counter", "extra_payout", "payout"],
+          ["divide_counter", "extra_payout", -3],
+          ["modify_payout", "others", "extra_payout", "set"]
+        ], [
+          ["ite", [{"name": "match", "opts": [["shimocha_last_discard", "winning_tile"], [[[["pair"], 1]]]]}], [
+            // shimocha is responsible
+            ["when", [{"name": "not_our_turn", "as": "shimocha"}], [["as", "shimocha", [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]]]],
+            ["modify_payout", "shimocha", "extra_payout", "subtract"]
+          ], [
+            ["ite", [{"name": "match", "opts": [["toimen_last_discard", "winning_tile"], [[[["pair"], 1]]]]}], [
+              // toimen is responsible
+              ["when", [{"name": "not_our_turn", "as": "toimen"}], [["as", "toimen", [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]]]],
+              ["modify_payout", "toimen", "extra_payout", "subtract"]
+            ], [
+              // otherwise kamicha must be responsible
+              ["when", [{"name": "not_our_turn", "as": "kamicha"}], [["as", "kamicha", [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]]]],
+              ["modify_payout", "kamicha", "extra_payout", "subtract"]
+            ]]
+          ]]
+        ]]
       ]]
     ]
   },

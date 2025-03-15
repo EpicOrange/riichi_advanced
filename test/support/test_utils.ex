@@ -7,6 +7,7 @@ defmodule RiichiAdvanced.TestUtils do
   import ExUnit.Assertions
 
   @suppress_io true
+  # @suppress_io false
   @default_riichi_mods [
     "kan",
     %{name: "honba", config: %{"value" => 100}},
