@@ -1,9 +1,15 @@
 def replace_n_tiles($tile; $aka; $num):
   if $num > 0 then
-    index($tile) as $ix
+    (map(if type == "object" then .tile elif type == "array" then .[0] else . end) | index($tile)) as $ix
     |
     if $ix then
-      .[$ix] = $aka
+      if .[$ix] | type == "object" then
+        .[$ix].tile = $aka
+      elif .[$ix] | type == "array" then
+        .[$ix][0] = $aka
+      else
+        .[$ix] = $aka
+      end
       |
       replace_n_tiles($tile; $aka; $num - 1)
     else . end
