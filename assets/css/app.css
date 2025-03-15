@@ -517,8 +517,14 @@ div.pond.kamicha {
     padding-top: calc(0.25 * var(--tile-size));
     max-width: calc(11 * var(--tile-size));
   }
+  input.mobile-zoom-checkbox:checked ~ div.hand.self {
+    flex-flow: row wrap-reverse;
+    justify-content: center;
+    row-gap: calc(0.25 * var(--tile-size));
+  }
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles {
     margin-left: 0;
+    flex-grow: 1;
   }
   input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls {
     transform: scale(calc(1 / var(--mobile-scale-factor)));
