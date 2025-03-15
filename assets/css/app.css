@@ -1341,10 +1341,18 @@ div.tile {
   filter: brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
 div.tile:not(.flat) {
-  transform: translateZ(0); /* https://stackoverflow.com/a/77475473 */
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+}
+div.tile:not(.flat) {
+  /* various ways to address weird drop-shadow flickering */
+  /* chrome: https://issues.chromium.org/issues/41471914 */
+  /* safari: https://bugs.webkit.org/show_bug.cgi?id=207586 */
+  transform: translateZ(0); /* https://stackoverflow.com/a/77475473 */
+  will-change: filter; /* https://stackoverflow.com/a/78130590 */
+  backdrop-filter: blur(0); /* https://stackoverflow.com/a/75027316 */
+  -webkit-backface-visibility: hidden; /* https://old.reddit.com/r/css/comments/bweqdc/-/kjinb4c/ */
 }
 div.hand.self div.tiles > div.tile.selected,
 div.hand.self div.draws > div.tile.selected {
