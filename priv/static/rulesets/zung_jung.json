@@ -559,7 +559,8 @@
         ["modify_payout", "others", -25, "set"],
         ["modify_payout", "self", 75, "set"],
         // "responsible player" pays the remainder
-        // starting from self and going clockwise check if their last discard matches the winning tile
+        // starting from self and going in turn order,
+        //   check if their last discard matches the winning tile
         // first player who matches is responsible
         // if self is responsible, score it like tsumo
         ["modify_payout", "self", "extra_payout", "add"],
