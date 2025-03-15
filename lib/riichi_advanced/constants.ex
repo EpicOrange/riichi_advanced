@@ -252,7 +252,7 @@ defmodule RiichiAdvanced.Constants do
     {"tianjin",      "Tianjin", "Mahjong except the dora indicator actually indicates joker tiles."},
     {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
     {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
-    {"zung_jung",    "Zung Jung (beta)", "Mahjong with an additive (rather than multiplicative) scoring system."},
+    {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
   @unimplemented_rulesets [
