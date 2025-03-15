@@ -29,6 +29,34 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __14 Mar 2025__: v1.3.0:
+  + Added `dismantle_calls` match spec keyword that will only remove the matching part from a call
+  + Added `modify_winner` and `modify_payout` actions for custom scoring
+  + Added `payout` amount and `winners` seat spec
+  + Added a "tile on top of wall" visual for Fuzhou
+  + Added a couple mods for Fuzhou (mostly replacing flowers revealed as gold vs allowing flowers to be used as gold)
+  + Added ability to roll multiple dice
+  + Added ability to use MahjongScript (.majs) in place of JSON for both rulesets and config (i.e. custom mods)
+  + Added tab system for rules text
+  + Added test coverage for Hefei, Fuzhou, Ningbo, Tianjin, and Zung Jung -- we're at 318 tests now
+  + Added Zung Jung ruleset and mods (thanks Sophie!)
+  + Changed main documentation to be for MahjongScript instead of JSON (JSON docs are still available)
+  + Changed win screen to display multiple flowers more compactly
+  + Fixed `before_call`, `after_call`, `*_discarded`, `seat_is`, and some tile attrs
+  + Fixed auto discard autobutton skipping tsumo and ankan in all variants
+  + Fixed chanta/junchan never recognizing 11123 as 11 123
+  + Fixed Cosmic Riichi crashes
+  + Fixed declaring a flower allowing you to draw a replacement tile from an exhausted wall
+  + Fixed double clicking on tiles discarding your draw instead
+  + Fixed drawing from the dead wall removing the bottom tile before the tile above it
+  + Fixed index numbers revealing what number tile a hidden tile is
+  + Fixed joker flowers being able to form triplets/quads in Fuzhou
+  + Fixed riichi sticks being put on the wrong player
+  + Fixed skip calls button skipping chankan in all variants
+  + Fixed the 1223 wait on 2 counting as both a single wait and a closed wait in Ningbo
+  + Fixed Tianjin Baida Reuse not counting as part of the minimum score of 4
+  + Fixed Tianjin multipliers not counting as part of the minimum score of 4
+  + Fixed winning hand arrangement function taking forever to run
 - __1 Mar 2025__: v1.2.0:
   + Added ability for mods to add rules text
   + Added ability to configure fu calculations
@@ -178,7 +206,7 @@ Each ruleset has optional mods like chombo and aotenjo, you'll have to check out
 
 Once you enter the lobby or room for a ruleset you can scroll down to view the JSON object defining the ruleset.
 
-If you're looking to make a custom ruleset using the game's JSON-based ruleset format, that documentation is available [here](documentation/documentation.md). To play a custom ruleset, simply select Custom on the main page, click Room Settings, and paste and edit your ruleset in the box provided.
+If you're looking to make a custom ruleset using the game's MahjongScript ruleset language, that documentation is available [here](documentation/documentation.md). To play a custom ruleset, simply select Custom on the main page, click Room Settings, and paste and edit your ruleset in the box provided.
 
 ## How can I contribute?
 
