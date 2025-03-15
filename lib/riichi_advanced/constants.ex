@@ -277,7 +277,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
       ruleset: "riichi",
-      mods: ["sanma"],
+      mods: ["sanma", "sanma_presets"],
       default_mods: [],
     },
     "cosmic" => %{

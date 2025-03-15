@@ -111,6 +111,7 @@ defmodule RiichiAdvanced.Compiler do
             end)
             |> Utils.sequence()
             with {:ok, args} <- args,
+                 {:ok, args} <- Parser.parse_sigils(args),
                  {:ok, args} <- args |> Enum.concat() |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
               {:ok, [name | args]}
             end
@@ -119,8 +120,13 @@ defmodule RiichiAdvanced.Compiler do
           end
         else
           # convert into a function call
-          with {:ok, name} <- Validator.validate_json(name) do
-            {:ok, ["run", name]}
+          with {:ok, name} <- Validator.validate_json(name),
+               {:ok, args} <- Parser.parse_sigils(args),
+               {:ok, args} <- Validator.validate_json(args) do
+            case args do
+              [args] -> {:ok, ["run", name, Map.new(args)]}
+              _      -> {:ok, ["run", name]}
+            end
           end
         end
       _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
@@ -168,20 +174,33 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` command expects a jq path string and an optional string value, got #{inspect(args)}"}
     end
     with {:ok, {path, value}} <- path_value,
-         {:ok, value} <- Validator.validate_json(value),
-         {:ok, value} <- Jason.encode(value) do
+         {:ok, value_val} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value_val) do
       path = if String.starts_with?(path, ".") do path else "." <> path end
       if Validator.validate_json_path(path) do
         case Jason.decode!(name) do
-          "set"      -> {:ok, "#{path} = #{value}"}
-          "add"      -> {:ok, "#{path} += #{value}"}
-          "prepend"  -> {:ok, "#{path} |= #{value} + ."}
-          "append"   -> {:ok, "#{path} += #{value}"}
-          "subtract" -> {:ok, "#{path} -= #{value}"}
-          "multiply" -> {:ok, "#{path} *= #{value}"}
-          "merge"    -> {:ok, "#{path} *= #{value}"}
-          "divide"   -> {:ok, "#{path} /= #{value}"}
-          "modulo"   -> {:ok, "#{path} %= #{value}"}
+          "set"                                  -> {:ok, "#{path} = #{value}"}
+          "add"                                  -> {:ok, "#{path} += #{value}"}
+          "prepend"                              -> {:ok, "#{path} |= #{value} + ."}
+          "append"                               -> {:ok, "#{path} += #{value}"}
+          "subtract"                             -> {:ok, "#{path} -= #{value}"}
+          "delete"                               -> {:ok, "#{path} -= #{value}"}
+          "multiply"                             -> {:ok, "#{path} *= #{value}"}
+          "merge"                                -> {:ok, "#{path} *= #{value}"}
+          "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
+          "modulo"     when is_number(value_val) -> {:ok, "#{path} %= #{value}"}
+          "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
+          "delete_key" when is_list(value_val)   ->
+            if Enum.all?(value_val, &is_binary/1) do
+              {:ok, "#{path} |= (reduce #{value}[] as $_k (.; del(.[$_k])))"}
+            else
+              {:error, "Compiler.compile: at line #{line}:#{column}, `apply delete_key` tried to delete a non-string or non-list-of-strings #{value}"}
+            end
+          "replace_all" when is_list(value_val)  ->
+            case value_val do
+              [from, to] -> {:ok, "#{path} |= walk(if . == #{Jason.encode!(from)} then #{Jason.encode!(to)} else . end)"}
+              _          -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply replace_all` requires a 2-element list [from, to] as the value"}
+            end
           op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
           _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
         end
@@ -527,7 +546,7 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq!(ast) do
     case compile_jq(ast) do
-      {:ok, jq} -> jq |> IO.inspect()
+      {:ok, jq} -> jq
       {:error, error} -> raise error
     end
   end
@@ -543,6 +562,36 @@ defmodule RiichiAdvanced.Compiler do
         end
       {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})
       _ -> {:error, "Compiler.compile: got invalid root node #{inspect(ast)}"}
+    end
+  end
+
+
+
+  # WIP simple decompiler: json -> majs
+
+  defp decompile_toplevel_key(key, value) do
+    with {:ok, key} <- Validator.validate_json(key),
+         {:ok, value} <- Jason.encode(value) do
+      {:ok, "set #{key}" <> value}
+    end
+  end
+
+  def decompile_json(json) do
+    case Jason.decode(json) do
+      {:ok, root} when is_map(root) ->
+        for {top_key, value} <- root do
+          decompile_toplevel_key(top_key, value)
+        end
+        |> Utils.sequence()
+        |> case do
+          {:ok, majs} -> Enum.join(majs, "\n\n")
+          {:error, msg} ->
+            IO.puts(msg)
+            ""
+        end
+      {:error, msg} ->
+        IO.puts(msg)
+        ""
     end
   end
 end

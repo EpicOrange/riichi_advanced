@@ -1,0 +1,103 @@
+set num_players, 3
+set initial_score, 35000
+set max_rounds, 6
+apply subtract, "default_mods", ["suufon_renda", "suucha_riichi"]
+
+define_mod "sanma_no_tsumo_loss", name: "No Tsumo Loss", category: "Rules", desc: "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+
+# remove manzu from wall
+apply subtract, "wall", [
+  "2m", "2m", "2m", "2m",
+  "3m", "3m", "3m", "3m",
+  "4m", "4m", "4m", "4m",
+  "5m", "5m", "5m", "5m",
+  "6m", "6m", "6m", "6m",
+  "7m", "7m", "7m", "7m",
+  "8m", "8m", "8m", "8m"
+]
+
+apply delete, "default_mods", ["suufon_renda", "suucha_riichi"]
+
+# change "pei" set to "pei_triplet" (since our call is named "pei")
+apply delete_key, "set_definitions", "pei"
+define_set pei_triplet, ~s"4z 4z 4z"
+apply replace_all, "", ["pei", "pei_triplet"]
+
+# now we can add stuff related to pei button and status
+apply prepend, "functions.discard_passed", [["as", "others", [["unset_status", "pei"]]]]
+
+# change tenpai payments and add tsumo loss
+apply append, "score_calculation", %{
+  draw_tenpai_payments: [1000, 2000, 0],
+  tsumo_loss: true
+}
+
+# nukidora
+define_yaku extra_yaku, "Pei", "nukidora", counter_at_least("nukidora", 1)
+on before_win do
+  add_counter("nukidora", "count_matches", ["flowers"], ~m"pei:1")
+end
+
+# no chii
+apply delete_key, "buttons", "chii"
+
+# pei button
+define_button pei,
+  display_name: "Pei", 
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and not_status("just_reached")
+    and match(["hand", "draw"], ~m"4z:1")
+    and tile_not_drawn(-8)
+  do
+    big_text("Pei")
+    flower("4z")
+    discard_passed
+    do_kan_draw(status: "pei")
+    unset_status("kan")
+  end
+
+# pei auto button
+define_auto_button _5_auto_pei,
+  display_name: "K",
+  desc: "Automatically declare pei."
+  do
+    if buttons_include("pei") do
+      press_button("pei")
+      press_first_call_button("pei")
+    end
+  end
+
+# don't let auto discard button skip pei
+define_auto_button _4_auto_discard,
+  display_name: "D",
+  desc: "Automatically discard your drawn tile."
+  do
+    if our_turn and buttons_exclude("tsumo", "ankan", "pei") and has_draw do
+      discard_draw
+    end
+  end
+
+# we need these in case kan mod is not enabled
+def do_kan_draw do
+  set_status("$status")
+  shift_tile_to_dead_wall(1)
+  draw(1, "opposite_end")
+end
+define_button chankan,
+  display_name: "Ron", 
+  show_when: not_our_turn
+    and match(["hand", "calls"], ["tenpai"])
+    and status_missing("furiten", "just_reached")
+    and last_call_is("kakan", "pei")
+    and match(["hand", "calls", "last_called_tile"], ["win"])
+  do
+    big_text("Ron")
+    pause(1000)
+    reveal_hand
+    win_by_call
+  end
+
+# allow chankan on pei calls
+apply append, "interruptible_actions", ["flower"]
