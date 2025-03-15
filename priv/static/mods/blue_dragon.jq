@@ -16,9 +16,9 @@
 |
 .yaku |= map(
   if .display_name == "Chanta" then
-    .when[-1].opts[1][0][0][0] += ["baiban"]
+    .when[-1].opts[1][0][1][0] += ["baiban"]
     |
-    .when[-1].opts[1][0][1][0] += ["baiban_pair"]
+    .when[-1].opts[1][0][2][0] += ["baiban_pair"]
   elif .display_name == "Shousangen" then
     .value = 1
     |

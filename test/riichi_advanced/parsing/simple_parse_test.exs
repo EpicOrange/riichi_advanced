@@ -62,8 +62,14 @@ defmodule RiichiAdvanced.SimpleParseTest do
         |> Enum.map(&mods[&1].spec)
         mod_specs = mod_specs ++ [mod.spec]
         # IO.inspect(mod_specs)
-        modded = ModLoader.apply_multiple_mods(ruleset_json, mod_specs)
-        assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+        try do
+          modded = ModLoader.apply_multiple_mods(ruleset_json, mod_specs)
+          assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+        rescue
+          _ ->
+            IO.puts("Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})")
+            assert false
+        end
       end
     end
   end
