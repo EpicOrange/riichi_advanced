@@ -22,54 +22,58 @@ defmodule RiichiAdvanced.GameState.American do
   defp preprocess_american_match_definition(am_match_definition) do
     # e.g. "FF 2024a 2222b 2222c" becomes
     # [
-    #   {:unsuited, [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 2]},
-    #   {:a, ["2", "0", "2", "4"]},
-    #   {:b, ["2", "2", "2", "2"]},
-    #   {:c, ["2", "2", "2", "2"]}
+    #   [{:unsuited, [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 2]}],
+    #   [{:a, ["2", "0", "2", "4"]}],
+    #   [{:b, ["2", "2", "2", "2"]}],
+    #   [{:c, ["2", "2", "2", "2"]}]
     # ]
-    for group <- String.split(am_match_definition), reduce: [] do
-      result ->
-        t = String.first(group)
-        cond do
-          # unsuited groups include F (flowers), Z (winds), 0 (5z), and any wind group (NNN, NEWS, EW, etc)
-          # the rest (1-9, D (dragons), X (relative)) are suited
-          t in ["F", "Z", "0", "R", "G", "N", "E", "W", "S"] ->
-            # unsuited group
-            groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
-              case c do
-                "F" -> [[["1f","2f","3f","4f","1g","2g","3g","4g"], freq]]
-                # below we use List.duplicate so that they can match calls
-                "Z" -> [[[List.duplicate("1z", freq),List.duplicate("2z", freq),List.duplicate("3z", freq),List.duplicate("4z", freq)], 1]]
-                "0" -> [[[List.duplicate("0z", freq)], 1]]
-                "R" -> [[[List.duplicate("7z", freq)], 1]]
-                "G" -> [[[List.duplicate("6z", freq)], 1]]
-                "N" -> [[[List.duplicate("4z", freq)], 1]]
-                "E" -> [[[List.duplicate("1z", freq)], 1]]
-                "W" -> [[[List.duplicate("3z", freq)], 1]]
-                "S" -> [[[List.duplicate("2z", freq)], 1]]
-                _   -> 
-                  IO.inspect("Unknown character #{inspect(c)} in unsuited group #{inspect(group)}")
-                  []
+    # each group is a list of alternatives, like "22a|33a"
+    # becomes [{:a, ["2", "2"]}, {:b, ["3", "3"]}]
+    for group <- String.split(am_match_definition), reduce: [[]] do
+      results ->
+        for result <- results, group <- String.split(group, "|") do
+          t = String.first(group)
+          cond do
+            # unsuited groups include F (flowers), Z (winds), 0 (5z), and any wind group (NNN, NEWS, EW, etc)
+            # the rest (1-9, D (dragons), X (relative)) are suited
+            t in ["F", "Z", "0", "G", "R", "N", "E", "W", "S"] ->
+              # unsuited group
+              groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
+                case c do
+                  "F" -> [[["1f","2f","3f","4f","1g","2g","3g","4g"], freq]]
+                  # below we use List.duplicate so that they can match calls
+                  "Z" -> [[[List.duplicate("1z", freq),List.duplicate("2z", freq),List.duplicate("3z", freq),List.duplicate("4z", freq)], 1]]
+                  "0" -> [[[List.duplicate("0z", freq)], 1]]
+                  "G" -> [[[List.duplicate("6z", freq)], 1]]
+                  "R" -> [[[List.duplicate("7z", freq)], 1]]
+                  "N" -> [[[List.duplicate("4z", freq)], 1]]
+                  "E" -> [[[List.duplicate("1z", freq)], 1]]
+                  "W" -> [[[List.duplicate("3z", freq)], 1]]
+                  "S" -> [[[List.duplicate("2z", freq)], 1]]
+                  _   -> 
+                    IO.inspect("Unknown character #{inspect(c)} in unsuited group #{inspect(group)}")
+                    []
+                end
+              end |> Enum.concat()            
+              result ++ Enum.map(groups, &{:unsuited, &1})
+            t in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "D"] ->
+              suit = case String.last(group) do
+                "a" -> :a
+                "b" -> :b
+                "c" -> :c
               end
-            end |> Enum.concat()            
-            result ++ Enum.map(groups, &{:unsuited, &1})
-          t in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "D"] ->
-            suit = case String.last(group) do
-              "a" -> :a
-              "b" -> :b
-              "c" -> :c
-            end
-            tiles = group |> String.graphemes() |> Enum.drop(-1)
-            result ++ [{suit, tiles}]
-          t == "X" ->
-            suit = case String.last(group) do
-              "a" -> :a
-              "b" -> :b
-              "c" -> :c
-            end
-            num = group |> String.graphemes() |> Enum.drop(-2) |> length()
-            shift = String.slice(group, -2, 1) |> String.to_integer()
-            result ++ [{suit, List.duplicate(shift, num)}]
+              tiles = group |> String.graphemes() |> Enum.drop(-1)
+              result ++ [{suit, tiles}]
+            t == "X" ->
+              suit = case String.last(group) do
+                "a" -> :a
+                "b" -> :b
+                "c" -> :c
+              end
+              num = group |> String.graphemes() |> Enum.drop(-2) |> length()
+              shift = String.slice(group, -2, 1) |> String.to_integer()
+              result ++ [{suit, List.duplicate(shift, num)}]
+          end
         end
     end
   end
@@ -138,6 +142,7 @@ defmodule RiichiAdvanced.GameState.American do
       ["debug"] ++ ret
     else ret end
   end
+
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:translate_american_match_definitions, am_match_definitions})
   def translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- am_match_definitions do
@@ -148,19 +153,23 @@ defmodule RiichiAdvanced.GameState.American do
       #   b: [["2", "2", "2", "2"]],
       #   c: [["2", "2", "2", "2"]]
       # }
-      parsed = for {suit, group} <- preprocess_american_match_definition(am_match_definition), reduce: %{unsuited: [], a: [], b: [], c: []} do
-        parsed -> Map.update!(parsed, suit, & &1 ++ [group])
-      end
-      for [sa, sb, sc] <- [["A","B","C"], ["A","C","B"]] do
+      parsed = am_match_definition
+      |> preprocess_american_match_definition()
+      |> Enum.flat_map(fn groups ->
+        for {suit, group} <- groups, reduce: [%{unsuited: [], a: [], b: [], c: []}] do
+          parsed -> for acc <- parsed, do: Map.update!(acc, suit, & &1 ++ [group])
+        end
+      end)
+      for choice <- parsed, [sa, sb, sc] <- [["A","B","C"], ["A","C","B"]] do
         parsed_groups =
-          translate_american_match_definitions_suits(parsed.a, sa)
-          ++ translate_american_match_definitions_suits(parsed.b, sb)
-          ++ translate_american_match_definitions_suits(parsed.c, sc)
+          translate_american_match_definitions_suits(choice.a, sa)
+          ++ translate_american_match_definitions_suits(choice.b, sb)
+          ++ translate_american_match_definitions_suits(choice.c, sc)
         {offsets, nonoffsets} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> Match.is_offset(t) end))
         offsets = Enum.concat(offsets)
         offsets = if Enum.empty?(offsets) do [] else [[["unique" | offsets], length(offsets)]] end
         nonoffsets = Enum.map(nonoffsets, fn g -> [[g], 1] end)
-        [offsets ++ nonoffsets ++ parsed.unsuited]
+        [offsets ++ nonoffsets ++ choice.unsuited]
       end
       |> Enum.concat()
       |> Enum.map(&{am_match_definition, &1})
@@ -214,107 +223,97 @@ defmodule RiichiAdvanced.GameState.American do
         # ]
         # 
         # turn each of those items into a match definition that looks like [[groups, 1]]
-        match_definition = for {suit, group} <- preprocess_american_match_definition(am_match_definition) do
-          # turn group into a match definition using the base tile and suit
-          case suit do
-            :unsuited -> group
-            :a -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, a))], 1]
-            :b -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, b))], 1]
-            :c -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, c))], 1]
+        
+        match_definitions = am_match_definition
+        |> preprocess_american_match_definition()
+        |> Enum.map(fn groups ->
+          for {suit, group} <- groups do
+            # turn group into a match definition using the base tile and suit
+            case suit do
+              :unsuited -> group
+              :a -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, a))], 1]
+              :b -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, b))], 1]
+              :c -> [[Enum.map(group, &translate_letter_to_tile_spec(&1, c))], 1]
+            end
           end
-        end
-        # convert [[["9m", "9m", "9m", "9m", "9m"]], 1] -> [["9m"], 5]
-        |> Enum.map(fn [groups, num] ->
-          all_same = Enum.all?(groups, &is_list(&1) and Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
-          if all_same do
-            len = length(Enum.at(groups, 0))
-            groups = Enum.map(groups, fn [t | _] -> t; x -> x end)
-            [groups, len * num]
-          else [groups, num] end
+          # convert [[["9m", "9m", "9m", "9m", "9m"]], 1] -> [["9m"], 5]
+          |> Enum.map(fn [groups, num] ->
+            all_same = Enum.all?(groups, &is_list(&1) and Enum.all?(&1, fn tile -> tile == Enum.at(&1, 0) end))
+            if all_same do
+              len = length(Enum.at(groups, 0))
+              groups = Enum.map(groups, fn [t | _] -> t; x -> x end)
+              [groups, len * num]
+            else [groups, num] end
+          end)
         end)
-        # calculate which base tiles will make the offsets in match_definition match the hand
-        all_offsets = for [groups, _num] <- Enum.filter(match_definition, &is_list/1),
-                          group <- Enum.reject(groups, & &1 in Match.group_keywords()),
-                          offset <- (if is_list(group) do group else [group] end),
-                          into: MapSet.new() do offset end
-        base_tiles = Match.collect_base_tiles(hand, calls, all_offsets, tile_behavior)
 
-        # this old method of finding base tiles relies on 13- or 14-tile hands
-        # base_tiles = Enum.filter(possible_base_tiles, fn base_tile -> 
-        #   offset_tiles = MapSet.new(all_offsets, &Match.apply_base_tile_to_offset(&1, base_tile, tile_behavior))
-        #   # offset_tiles can contain more than available_tiles because it can have all flowers, while available_tiles doesn't
-        #   MapSet.subset?(available_tiles, offset_tiles)
-        # end)
-
-        # debug for the old method
-        # if Enum.empty?(base_tiles) and [a,b,c] == Enum.at(permutations, -1) do # debug
-        #   IO.puts("arrange_american_hand: no base tiles found for hand #{am_match_definition} #{inspect(hand)} / #{inspect(calls)}\n  available_tiles: #{inspect(available_tiles)}\n  all_offsets: #{inspect(all_offsets)}\n  match_definition: #{inspect(match_definition, charlists: :as_lists)}\n  #{inspect([a,b,c])}")
-        #   for base_tile <- possible_base_tiles do
-        #     offset_tiles = MapSet.new(all_offsets, &Match.apply_base_tile_to_offset(&1, base_tile, tile_behavior))
-        #     missing = MapSet.difference(available_tiles, offset_tiles)
-        #     IO.puts("applying #{base_tile} to offsets gives #{inspect(MapSet.to_list(offset_tiles))}, missing #{inspect(MapSet.to_list(missing))}")
-        #   end
-        # end
-
-        arrangements = for base_tile <- base_tiles do
-          for [groups, num] <- match_definition, reduce: {hand, call_tiles, []} do
-            {hand, calls, nil} -> {hand, calls, nil}
-            {hand, calls, ret} ->
-              # apply offsets
-              groups = groups
-              |> Enum.map(&Match.apply_base_tile_to_group(&1, base_tile, tile_behavior))
-              |> Utils.strip_attrs()
-              if nil not in groups do
-                # check if this matches a call exactly
-                i = Enum.find_index(calls, fn call ->
-                  jokerless = Utils.replace_jokers(call, [:"1j"], tile_behavior)
-                  Utils.count_tiles(jokerless, groups) == num
-                end)
-                if i != nil do
-                  # if so, use that call directly
-                  {call, calls} = List.pop_at(calls, i)
-                  {hand, calls, [call | ret]}
-                else
-                  # if not, we remove groups one at time from hand, prioritizing nonjokers
-                  new_hand = Enum.reduce_while(1..num, hand, fn n, hand ->
-                    # first phase: remove a nonjoker
-                    new_hand = Enum.find_value(groups, fn group ->
-                      # calls were taken care of above, so we can just focus on hand
-                      case Match._remove_group(hand, [], group, base_tile, %TileBehavior{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }) do
-                        [{hand, _} | _] -> hand
-                        []              ->
-                          # if am_match_definition == "NN EEE 2024a WWW SS" do
-                          #   IO.puts("Failed to remove #{inspect(group)} from #{inspect(hand)} / #{inspect(calls)}")
-                          # end
-                          nil
+        arrangements = Enum.flat_map(match_definitions, fn match_definition ->
+          # calculate which base tiles will make the offsets in match_definition match the hand
+          all_offsets = for [groups, _num] <- Enum.filter(match_definition, &is_list/1),
+                            group <- Enum.reject(groups, & &1 in Match.group_keywords()),
+                            offset <- (if is_list(group) do group else [group] end),
+                            into: MapSet.new(), do: offset
+          for base_tile <- Match.collect_base_tiles(hand, calls, all_offsets, tile_behavior) do
+            for [groups, num] <- match_definition, reduce: {hand, call_tiles, []} do
+              {hand, calls, nil} -> {hand, calls, nil}
+              {hand, calls, ret} ->
+                # apply offsets
+                groups = groups
+                |> Enum.map(&Match.apply_base_tile_to_group(&1, base_tile, tile_behavior))
+                |> Utils.strip_attrs()
+                # continue if this is a valid group
+                if nil not in groups do
+                  # check if this matches a call exactly
+                  i = Enum.find_index(calls, fn call ->
+                    jokerless = Utils.replace_jokers(call, [:"1j"], tile_behavior)
+                    Utils.count_tiles(jokerless, groups) == num
+                  end)
+                  if i != nil do
+                    # if so, use that call directly
+                    {call, calls} = List.pop_at(calls, i)
+                    {hand, calls, [call | ret]}
+                  else
+                    # if not, we remove groups one at time from hand, prioritizing nonjokers
+                    new_hand = Enum.reduce_while(1..num, hand, fn n, hand ->
+                      # first phase: remove a nonjoker
+                      new_hand = Enum.find_value(groups, fn group ->
+                        # calls were taken care of above, so we can just focus on hand
+                        case Match._remove_group(hand, [], group, base_tile, %TileBehavior{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }) do
+                          [{hand, _} | _] -> hand
+                          []              ->
+                            # if am_match_definition == "NN EEE 2024a WWW SS" do
+                            #   IO.puts("Failed to remove #{inspect(group)} from #{inspect(hand)} / #{inspect(calls)}")
+                            # end
+                            nil
+                        end
+                      end)
+                      if new_hand != nil do
+                        {:cont, new_hand}
+                      else
+                        # second phase: no more nonjokers, so remove all jokers
+                        # we removed n-1 nonjokers, so we need num-(n-1) jokers
+                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", num-(n-1))) |> Enum.at(0)}
                       end
                     end)
                     if new_hand != nil do
-                      {:cont, new_hand}
+                      # sort 2024, NEWS etc according to the corresponding match_definition
+                      new_group = case {groups, num} do
+                        {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, hand -- new_hand, tile_behavior)
+                        _            -> Utils.sort_tiles(hand -- new_hand)
+                      end
+                      {new_hand, calls, [new_group | ret]}
                     else
-                      # second phase: no more nonjokers, so remove all jokers
-                      # we removed n-1 nonjokers, so we need num-(n-1) jokers
-                      {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", num-(n-1))) |> Enum.at(0)}
+                      # if am_match_definition == "NN EEE 2024a WWW SS" do
+                      #   IO.puts("Failed to complete #{inspect(match_definition)} for #{inspect(hand)} / #{inspect(calls)}")
+                      # end
+                      {[], [], nil}
                     end
-                  end)
-                  if new_hand != nil do
-                    # sort 2024, NEWS etc according to the corresponding match_definition
-                    new_group = case {groups, num} do
-                      {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, hand -- new_hand, tile_behavior)
-                      _            -> Utils.sort_tiles(hand -- new_hand)
-                    end
-                    {new_hand, calls, [new_group | ret]}
-                  else
-                    # if am_match_definition == "NN EEE 2024a WWW SS" do
-                    #   IO.puts("Failed to complete #{inspect(match_definition)} for #{inspect(hand)} / #{inspect(calls)}")
-                    # end
-                    {[], [], nil}
                   end
-                end
-              else {[], [], nil} end
+                else {[], [], nil} end
+            end
           end
-        end
-        # we don't check for empty hand, since this procedure is used with larger hands
+        end)
+        # we don't check for empty hand after removing specified tiles, since this procedure is used with larger hands
         # just to see if such a hand can be arranged with the given tiles (i.e. dead hand checking)
         case Enum.find(arrangements, fn {_hand, calls, ret} -> Enum.empty?(calls) and ret != nil end) do
           nil                  -> nil
