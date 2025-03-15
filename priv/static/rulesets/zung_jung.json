@@ -4,9 +4,7 @@
   // * Figure out how to implement the "responsibility" rule (not sure how to do this, tbh)
   
   "available_mods": [
-    {"id": "zungjung/zj_flowers", "name": "Bonus Tiles", "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
-      // TODO: maybe convert "zungjung/zj_lesser_weight_flowers" into a submod of "zungjung/zj_flowers", if you can figure out how to make the jq work like that.
-    {"id": "zungjung/zj_lesser_weight_flowers", "conflicts": ["zungjung/zj_flowers"], "name": "Lesser Weight Bonus Tiles", "desc": "Adds bonus tiles to the game, but all bonus tile-related patterns are worth half as much."},
+    {"id": "zungjung/zj_flowers", "name": "Bonus Tiles", "config": [{"type": "dropdown", "name": "flower_value", "values": [1, 2], "default": 2}], "desc": "Adds bonus tiles to the game. See https://www.zj-mahjong.info/zj_flowers_eng.html for scoring."},
     {"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
   ],
   "display_name": "Zung Jung",

@@ -1,106 +1,116 @@
 # add flowers
 .wall += ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
 |
+(2 * $flower_value) as $proper_value
+|
+(5 * $flower_value) as $all_value
+|
 # add flower yaku
 .yaku += [	
 	 {
        "display_name": "Improper Flower",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["2f","3f","4f"], 1]]]]}]
      },
 	 {
        "display_name": "Improper Flower",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["1f","3f","4f"], 1]]]]}]
      },
 	 {
        "display_name": "Improper Flower",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["1f","2f","4f"], 1]]]]}]
      },
 	 {
        "display_name": "Improper Flower",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["1f","2f","3f"], 1]]]]}]
      },
 	
 	 {
        "display_name": "Improper Season",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["2g","3g","4g"], 1]]]]}]
      },
 	 {
        "display_name": "Improper Season",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["1g","3g","4g"], 1]]]]}]
      },
 	 {
        "display_name": "Improper Season",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["1g","2g","4g"], 1]]]]}]
      },
 	 {
        "display_name": "Improper Season",
-       "value": 2,
+       "value": $flower_value,
        "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["1g","2g","3g"], 1]]]]}]
      },
 	
      {
        "display_name": "Proper Flower",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}]
      },
      {
        "display_name": "Proper Flower",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}]
      },
      {
        "display_name": "Proper Flower",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}]
      },
      {
        "display_name": "Proper Flower",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}]
      },
      {
        "display_name": "Proper Season",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1g"], 1]]]]}]
      },
      {
        "display_name": "Proper Season",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}]
      },
      {
        "display_name": "Proper Season",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}]
      },
      {
        "display_name": "Proper Season",
-       "value": 4,
+       "value": $proper_value,
        "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
      },
      {
        "display_name": "Four Flowers",
-       "value": 10,
+       "value": $all_value,
        "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}]
      },
      {
        "display_name": "Four Seasons",
-       "value": 10,
+       "value": $all_value,
        "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}]
      }
 ]
 |
 # add start_flower call
-.after_start = {
-  "actions": [["set_status_all", "first_turn", "match_start"]]
-}
+.after_start.actions += [["set_status_all", "match_start"]]
+|
+# start match once everyone has the no_flowers status
+.after_turn_change.actions += [
+  ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [
+    ["unset_status_all", "no_flowers", "match_start"],
+    ["change_turn", "east"]
+  ]]
+]
 |
 # add start_flower call
 .buttons.start_flower = {
@@ -121,7 +131,7 @@
 # add flower call
 .buttons.flower = {
   "display_name": "Flower",
-  "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+  "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
   "actions": [
     ["big_text", "Flower"],
     ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
@@ -139,5 +149,5 @@
     ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
     ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
   ],
-  "enabled_at_start": true
+  "enabled_at_start": false
 }

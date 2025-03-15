@@ -1,8 +1,13 @@
-def add_5_condition($check):
-  {"name": $check, "opts": [5]};
-
-.buttons.ron.show_when += [add_5_condition("has_yaku_with_discard")]
+([{"name": "has_yaku_with_discard", "opts": [5]}, {"name": "has_yaku2_with_discard", "opts": [1]}]) as $checks
 |
-.buttons.chankan.show_when += [add_5_condition("has_yaku_with_call")]
+if (.buttons | has("ron")) then
+  .buttons.ron.show_when += [$checks]
+else . end
 |
-.buttons.tsumo.show_when += [add_5_condition("has_yaku_with_hand")]
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when += [$checks | map(.name |= sub("discard"; "call"))]
+else . end
+|
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo.show_when += [$checks | map(.name |= sub("discard"; "hand"))]
+else . end
