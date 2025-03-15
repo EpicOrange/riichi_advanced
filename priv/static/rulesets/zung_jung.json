@@ -514,6 +514,43 @@
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
   },
+  "functions": {
+    "tag_responsible": [
+      ["when", [{"name": "not_tagged", "opts": ["last_discard", "$tag"]},
+                {"name": "match", "opts": [["hand", "calls"], ["tenpai", "kokushi_tenpai"]]},
+                {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}], [
+        ["tag_tiles", "$tag", "last_discard"],
+        ["add_attr", ["last_discard"], "$attr"]
+      ]]
+    ],
+    "untag_responsible": [
+      ["remove_attr_tagged", "$tag", ["$attr"]],
+      ["untag", "$tag"]
+    ],
+    "pay_responsible_player": [
+      ["ite", [{"name": "seat_is", "opts": ["$seat"]}], [
+        // self is responsible, so make it basically a tsumo
+        ["push_message", "dealt the same winning tile last turn, so all players pay equally"],
+        ["set_counter", "extra_payout", "payout"],
+        ["divide_counter", "extra_payout", -3],
+        ["modify_payout", "others", "extra_payout", "set"]
+      ], [
+        // otherwise, we just pay
+        ["when", ["not_our_turn"], [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]],
+        ["modify_payout", "self", "extra_payout", "subtract"]
+      ]]
+    ],
+    "find_responsible_player": [
+      ["unless", [{"name": "status", "opts": ["visited"]}], [
+        ["set_status", "visited"],
+        ["ite", [{"name": "match", "opts": [["winning_tile", "any_discard"], [[[[[0, {"offset": 0, "attrs": ["$attr"]}]], 1]]]]}], [
+          ["run", "pay_responsible_player", {"seat": "$seat"}]
+        ], [
+          ["as", "shimocha", [["run", "find_responsible_player", {"seat": "$seat", "attr": "$attr"}]]]
+        ]]
+      ]]
+    ]
+  },
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan"],
@@ -525,11 +562,22 @@
     "actions": [
       ["ite", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]], [
         ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]]
-      ]]
+      ]],
+      ["when", [{"name": "seat_is", "opts": ["east"]}], [["run", "untag_responsible", {"tag": "responsible_for_east", "attr": "_responsible_for_east"}]]],
+      ["when", [{"name": "seat_is", "opts": ["south"]}], [["run", "untag_responsible", {"tag": "responsible_for_south", "attr": "_responsible_for_south"}]]],
+      ["when", [{"name": "seat_is", "opts": ["west"]}], [["run", "untag_responsible", {"tag": "responsible_for_west", "attr": "_responsible_for_west"}]]],
+      ["when", [{"name": "seat_is", "opts": ["north"]}], [["run", "untag_responsible", {"tag": "responsible_for_north", "attr": "_responsible_for_north"}]]]
     ]
   },
   "play_effects": [
-    ["any", [["unset_status", "first_turn"]]]
+    ["any", [["unset_status", "first_turn"]]],
+    ["any", [
+      // tag this discard with the correct responsibilities (must go in atamahane order)
+      ["as", "east", [["run", "tag_responsible", {"tag": "responsible_for_east", "attr": "_responsible_for_east"}]]],
+      ["as", "south", [["run", "tag_responsible", {"tag": "responsible_for_south", "attr": "_responsible_for_south"}]]],
+      ["as", "west", [["run", "tag_responsible", {"tag": "responsible_for_west", "attr": "_responsible_for_west"}]]],
+      ["as", "north", [["run", "tag_responsible", {"tag": "responsible_for_north", "attr": "_responsible_for_north"}]]]
+    ]]
   ],
   "before_call": {
     "actions": [["unset_status_all", "first_turn"]]
@@ -564,29 +612,11 @@
         // first player who matches is responsible
         // if self is responsible, score it like tsumo
         ["modify_payout", "self", "extra_payout", "add"],
-        ["ite", [{"name": "match", "opts": [["self_last_discard", "winning_tile"], [[[["pair"], 1]]]]}], [
-          // make it basically a tsumo
-          ["push_message", "dealt the same winning tile last turn, so all players pay equally"],
-          ["set_counter", "extra_payout", "payout"],
-          ["divide_counter", "extra_payout", -3],
-          ["modify_payout", "others", "extra_payout", "set"]
-        ], [
-          ["ite", [{"name": "match", "opts": [["shimocha_last_discard", "winning_tile"], [[[["pair"], 1]]]]}], [
-            // shimocha is responsible
-            ["when", [{"name": "not_our_turn", "as": "shimocha"}], [["as", "shimocha", [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]]]],
-            ["modify_payout", "shimocha", "extra_payout", "subtract"]
-          ], [
-            ["ite", [{"name": "match", "opts": [["toimen_last_discard", "winning_tile"], [[[["pair"], 1]]]]}], [
-              // toimen is responsible
-              ["when", [{"name": "not_our_turn", "as": "toimen"}], [["as", "toimen", [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]]]],
-              ["modify_payout", "toimen", "extra_payout", "subtract"]
-            ], [
-              // otherwise kamicha must be responsible
-              ["when", [{"name": "not_our_turn", "as": "kamicha"}], [["as", "kamicha", [["push_message", "is responsible for the extra payment due to dealing the winning tile earlier"]]]]],
-              ["modify_payout", "kamicha", "extra_payout", "subtract"]
-            ]]
-          ]]
-        ]]
+        ["set_counter_all", "extra_payout", "extra_payout"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["run", "find_responsible_player", {"seat": "east", "attr": "responsible_for_east"}]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["run", "find_responsible_player", {"seat": "south", "attr": "responsible_for_south"}]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["run", "find_responsible_player", {"seat": "west", "attr": "responsible_for_west"}]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["run", "find_responsible_player", {"seat": "north", "attr": "responsible_for_north"}]]]
       ]]
     ]
   },

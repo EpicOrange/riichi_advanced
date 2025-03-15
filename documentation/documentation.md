@@ -748,6 +748,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `add_attr_tagged(tag, [attr1, ...])`: Add the given attributes to all instances of the tagged tiles. (includes wall)
 - `remove_attr_hand(attr1, attr2, ...)`: Remove the given attributes from all tiles in the current player's hand.
 - `remove_attr_all(attr1, attr2, ...)`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
+- `remove_attr_tagged(tag, [attr1, ...])`: Remove the given attributes from all instances of the tagged tiles. (includes wall)
 - `tag_tiles(tag_name, tiles)`: Globally tag the given tile(s) with the given tag name.
 - `tag_drawn_tile(tag_name)`: Globally tag the current player's drawn tile with the given tag name.
 - `tag_last_discard(tag_name)`: Globally tag the current player's last discard with the given tag name.

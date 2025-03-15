@@ -451,18 +451,21 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Utils.count_tiles(called_tiles, tiles) >= count
       "tag_exists"          -> Enum.all?(opts, &Map.has_key?(state.tags, &1))
       "tagged"              ->
-        targets = case Enum.at(opts, 0, "tile") do
-          "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
-          tile -> if Utils.is_tile(tile) do
-              [Utils.to_tile(tile)]
-            else
-              [context.tile]
-            end
-        end
         tag = Enum.at(opts, 1, "missing_tag")
-        tagged_tiles = state.tags[tag]
-        tile_behavior = state.players[context.seat].tile_behavior
-        Enum.any?(targets, fn target -> Utils.has_matching_tile?(target, tagged_tiles, tile_behavior) end)
+        case state.tags[tag] do
+          nil -> false
+          tagged_tiles ->
+            targets = case Enum.at(opts, 0, "tile") do
+              "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
+              tile -> if Utils.is_tile(tile) do
+                  [Utils.to_tile(tile)]
+                else
+                  [context.tile]
+                end
+            end
+            tile_behavior = state.players[context.seat].tile_behavior
+            Enum.any?(targets, fn target -> Utils.has_matching_tile?([target], tagged_tiles, tile_behavior) end)
+        end
       "has_attr"              ->
         targets = get_hand_calls_spec(state, context, [Enum.at(opts, 0, "tile")])
         |> Enum.map(fn {hand, _calls} -> hand end)

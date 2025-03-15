@@ -751,6 +751,14 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
+  def remove_attr_tagged(tiles, attrs, tagged) do
+    for tile <- tiles do
+      if Utils.has_matching_tile?([tile], tagged) do
+        Utils.remove_attr(tile, attrs)
+      else tile end
+    end
+  end
+
   defp call_function(state, context, fn_name, args) do
     if length(state.call_stack) < 10 do
       args = Map.new(args, fn {name, value} -> {"$" <> name, value} end)
@@ -964,6 +972,13 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "print_context"         ->
         IO.inspect(context)
+        state
+      "print_discards"         ->
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        IO.inspect({seat, state.players[seat].discards})
+        state
+      "print_tags"         ->
+        IO.inspect(state.tags)
         state
       "push_message"          ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
@@ -1317,7 +1332,12 @@ defmodule RiichiAdvanced.GameState.Actions do
               "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs))
               "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs))
               "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs))
-              "last_discard" -> update_in(state.players[context.seat].pond, fn pond -> Enum.drop(pond, -1) ++ add_attr_matching([Enum.at(pond, -1)], attrs, tile_specs) end)
+              "last_discard" ->
+                last_discarder = get_last_discard_action(state).seat
+                state = update_in(state.players[last_discarder].discards, fn discards -> Enum.drop(discards, -1) ++ add_attr_matching([Enum.at(discards, -1)], attrs, tile_specs) end)
+                state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ add_attr_matching([Enum.at(pond, -1)], attrs, tile_specs) end)
+                state
+              "last_called_tile" -> state # TODO
               _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs) |> Enum.at(0)) end)
               _      ->
                 IO.inspect("Unhandled add_attr target #{inspect(target)}")
@@ -1349,7 +1369,26 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = update_in(state.players[seat].draw, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].aside, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].pond, &add_attr_tagged(&1, attrs, tagged))
+            state = update_in(state.players[seat].discards, &add_attr_tagged(&1, attrs, tagged))
             state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_tagged(call, attrs, tagged)} end))
+            state
+        end
+        state
+      "remove_attr_tagged"   ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        tagged = Map.get(state.tags, tag, MapSet.new())
+        attrs = List.wrap(Enum.at(opts, 1, []))
+        # update every zone i guess
+        state = update_in(state.wall, &remove_attr_tagged(&1, attrs, tagged))
+        state = update_in(state.dead_wall, &remove_attr_tagged(&1, attrs, tagged))
+        state = for seat <- state.available_seats, reduce: state do
+          state ->
+            state = update_in(state.players[seat].hand, &remove_attr_tagged(&1, attrs, tagged))
+            state = update_in(state.players[seat].draw, &remove_attr_tagged(&1, attrs, tagged))
+            state = update_in(state.players[seat].aside, &remove_attr_tagged(&1, attrs, tagged))
+            state = update_in(state.players[seat].pond, &remove_attr_tagged(&1, attrs, tagged))
+            state = update_in(state.players[seat].discards, &remove_attr_tagged(&1, attrs, tagged))
+            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, remove_attr_tagged(call, attrs, tagged)} end))
             state
         end
         state
@@ -1364,7 +1403,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "tag_tiles"             ->
         tag = Enum.at(opts, 0, "missing_tag")
         tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
-        |> Enum.map(&from_named_tile(state, context, &1))
+        |> Enum.flat_map(&case &1 do
+          "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+          _ -> [from_named_tile(state, context, &1)]
+        end)
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
         state
       "tag_drawn_tile"        ->
