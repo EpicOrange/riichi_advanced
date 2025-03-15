@@ -1860,24 +1860,22 @@ defmodule RiichiAdvanced.GameState.Actions do
     # basically, starting from the current turn player's choice, clear out others' choices
     ordered_seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
     |> Enum.filter(fn seat -> seat in state.available_seats end)
-    {_, state} = for _ <- ordered_seats, reduce: {ordered_seats, state} do
-      {[seat | later_seats], state} ->
+    {_, _, state} = for _ <- ordered_seats, reduce: {ordered_seats, ["skip", "play_tile"], state} do
+      {[seat | later_seats], superceded_choices, state} ->
         choice = state.players[seat].choice
-        state = if state.players[seat].choice != nil and state.players[seat].choice.name not in [nil, "skip", "play_tile"] do
-          superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice.name) do
-            Map.get(state.rules["buttons"][choice.name], "precedence_over", [])
-          else [] end
-
+        new_superceded_choices = if choice != nil do get_in(state.rules["buttons"][choice.name]["precedence_over"]) || [] else [] end
+        superceded_choices = superceded_choices ++ new_superceded_choices
+        state = if choice != nil and choice.name not in [nil, "skip", "play_tile"] do
           # replace with "skip" every button and choice that is superceded by our choice
           update_all_players(state, fn dir, player ->
             is_later = dir in later_seats
-            choice_superceded = player.choice != nil and player.choice.name in superceded_choices
-            all_choices_superceded = Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
-            if is_later and (choice_superceded or all_choices_superceded) do
+            our_choices = if player.choice != nil do [player.choice.name] else player.buttons ++ Map.keys(player.button_choices) end
+            all_choices_superceded = Enum.all?(our_choices, fn button -> button in superceded_choices end)
+            strictly_supercedes = Enum.all?(our_choices, fn button -> button != choice.name and button in superceded_choices end)
+            if (is_later or strictly_supercedes) and all_choices_superceded do
               if Debug.debug_actions() do
                 cond do
-                  all_choices_superceded -> IO.puts("Player #{dir} must skip due to having choices superceded by #{seat}, original choice was: #{inspect(choice)}")
-                  choice_superceded -> IO.puts("Player #{dir} must skip due to having choices superceded, original choice was: #{inspect(choice)}")
+                  all_choices_superceded -> IO.puts("Player #{dir} must skip due to having choices superceded by #{seat}, original choices were: #{inspect(player.buttons ++ Map.keys(player.button_choices))}")
                   true -> :ok
                 end
               end
@@ -1885,7 +1883,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             else player end
           end)
         else state end
-        {later_seats, state}
+        {later_seats, superceded_choices, state}
     end
 
     # check call priority lists
@@ -1920,6 +1918,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         end)
     end
 
+    if Debug.debug_actions() do
+      IO.puts("Final choices:")
+      IO.inspect(Enum.map(state.players, fn {_seat, player} -> player.choice end))
+    end
+
     # check if nobody else needs to make choices
     if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
       # if every action is skip, we need to resume deferred actions for all players
@@ -1938,9 +1941,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
     else
       if Debug.debug_actions() do
-        for {seat, player} <- state.players, player.choice != nil do
+        for {seat, player} <- state.players, player.choice == nil do
           IO.puts("Player #{seat} still has a choice to make")
         end
+        IO.puts("")
       end
       # when we interrupt the current turn AI with our button choice, they fail to make a choice
       # this rectifies that
