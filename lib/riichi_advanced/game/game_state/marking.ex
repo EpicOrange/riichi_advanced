@@ -212,6 +212,16 @@ defmodule RiichiAdvanced.GameState.Marking do
     else state end
   end
 
+  def unmark_tile(state, marking_player, seat, index, source) do
+    if not Enum.empty?(state.marking[marking_player]) do
+      valid_mark_info_ix = state.marking[marking_player]
+      |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
+      update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
+        {src, update_in(mark_info.marked, fn marked -> marked -- [{get_object(state, seat, index, source), seat, index}] end)}
+      end))
+    else state end
+  end
+
   def clear_marked_objects(state, marking_player) do
     if not Enum.empty?(state.marking[marking_player]) do
       update_in(state.marking[marking_player], &Enum.map(&1, fn {source, mark_info} -> {source, case source do

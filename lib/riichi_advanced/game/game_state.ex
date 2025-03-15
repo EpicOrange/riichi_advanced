@@ -2011,13 +2011,19 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  # marking calls
   def handle_cast({:mark_tile, marking_player, seat, index, source}, state) do
     state = Marking.mark_tile(state, marking_player, seat, index, source)
     state = Marking.adjudicate_marking(state)
     if Marking.needs_marking?(state, marking_player) do
       notify_ai_marking(state, marking_player)
     end
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:unmark_tile, marking_player, seat, index, source}, state) do
+    state = Marking.unmark_tile(state, marking_player, seat, index, source)
+    notify_ai_marking(state, marking_player)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
