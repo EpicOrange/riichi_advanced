@@ -91,35 +91,32 @@
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
     [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 6] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "kokushi_tenpai_definition": [
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["pair"], 7] ],
     [ "unique",
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
-      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
     ]
   ],
-  "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
-  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
-  "7_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
-  "8_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
   "little_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]],
   "big_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 3] ]],
   "little_three_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 2], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
   "big_three_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3] ]],
   "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
-  
   "一般高_definition": [
     [ "exhaustive", [[[[0,1,2],[0,1,2]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
@@ -156,6 +153,30 @@
   "一色四連刻_definition": [
     [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["pair"], 1] ]
   ],
+  "ryanankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "ryanankou_ron_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 2], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "sanankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "sanankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ],
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "suuankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "suuankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
   "yaku": [
     // 1.0 Trivial Patterns
     {
@@ -171,9 +192,9 @@
     {
       "display_name": "No Terminals",
       "value": 5,
-      "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}]
+      "when": [{"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}]
     },
-  // 2.0 One-Suit patterns
+    // 2.0 One-Suit patterns
     {
       "display_name": "Mixed One-Suit",
       "value": 40,
@@ -192,35 +213,30 @@
         {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
       ]]
     },
-    {
-      "display_name": "Nine Gates",
-      "value": 13,
-      "when": [{"name": "match", "opts": [["hand"], [["chuurenpoutou"], 1]]}]
-    },
-  // 3.0 Honor Tiles
+      // 3.0 Honor Tiles
     {
       "display_name": "Value Honor",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["haku"], 1]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
     },
     {
       "display_name": "Value Honor",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["hatsu"], 1]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}]
     },
     {
       "display_name": "Value Honor",
       "value": 10,
-      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["chun"], 1]]}]
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
     },
     {
       "display_name": "Value Honor",
       "value": 10,
       "when": [[
-        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["ton"], 1]]}],
-        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["nan"], 1]]}],
-        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["shaa"], 1]]}],
-        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["pei"], 1]]}]
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
       ]]
     },
     {
@@ -234,142 +250,110 @@
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
     },
     { 
-    "display_name": "Little Three Winds",
-    "value": 30,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_winds"]]}]
-  },
+      "display_name": "Small Three Winds",
+      "value": 30,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_winds"]]}]
+    },
     { 
-    "display_name": "Big Three Winds",
-    "value": 120,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}]
-  },
-  // 4.0 Triplets and Kong
-  // Triplet hands
+      "display_name": "Big Three Winds",
+      "value": 120,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}]
+    },
+    // 4.0 Triplets and Kong
     {
       "display_name": "All Triplets",
-      "value": 3,
+      "value": 30,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
     },
-  {
+    {
       "display_name": "Two Concealed Triplets",
       "value": 5,
       "when": [[
-        // 0-2 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
-        // 0-1 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
-        // 0 open triplets, hand must be 2 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]},
-        [
-          "won_by_draw",
-          [
-            // 0-2 open triplet tsumo, hand must be 4 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -3], [["koutsu"], 4], [["pair"], 1]]]]},
-            // 0-1 open triplet tsumo, hand must be 3 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
-            // 0 open triplet tsumo, hand must be 2 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 2], [["shuntsu"], 2], [["pair"], 1]]]]}
-          ]
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_ron"]]}]
       ]]
     },
     {
       "display_name": "Three Concealed Triplets",
       "value": 30,
       "when": [[
-        // 0-1 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
-        // 0 open triplets, hand must be 3 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]},
-        [
-          "won_by_draw",
-          [
-            // 0-1 open triplet tsumo, hand must be 4 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -2], [["koutsu"], 4], [["pair"], 1]]]]},
-            // 0 open triplet tsumo, hand must be 3 triplets and a pair
-            {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 3], [["shuntsu"], 1], [["pair"], 1]]]]}
-          ]
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_ron"]]}]
       ]]
     },
     {
       "display_name": "Four Concealed Triplets",
       "value": 125,
       "when": [[
-        // 0 open triplets, hand must be 4 triplets and a pair
-        {"name": "match", "opts": [["hand", "calls"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]},
-        [
-          "won_by_draw",
-          // 0 open triplet tsumo, hand must be 4 triplets and a pair
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]}
-        ]
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
       ]]
     },
     {
-    "display_name": "One Kong",
-    "value": 5,
-    "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 1]]]]}]
-  },
-    {
-    "display_name": "Two Kong",
-    "value": 20,
-    "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}]
-  },
-    {
-    "display_name": "Three Kong",
-    "value": 120,
-    "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}]
-  },
+      "display_name": "One Kong",
+      "value": 5,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 1]]]]}]
+    },
+      {
+      "display_name": "Two Kong",
+      "value": 20,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}]
+    },
+      {
+      "display_name": "Three Kong",
+      "value": 120,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}]
+    },
     // 5.0 Identical Sets
     {
-    "display_name": "Identical Sequences",
-    "value": 10,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一般高"]]}]
-  },
+      "display_name": "Two Identical Sequences",
+      "value": 10,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一般高"]]}]
+    },
     {
-    "display_name": "Two Identical Sequences",
-    "value": 60,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雙般高"]]}]
-  },
+      "display_name": "Two Identical Sequences Twice",
+      "value": 60,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雙般高"]]}]
+    },
     {
-    "display_name": "Three Identical Sequences",
-    "value": 120,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}]
-  },
-  // 6.0 Similar Sets
+      "display_name": "Three Identical Sequences",
+      "value": 120,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}]
+    },
+    // 6.0 Similar Sets
     {
-    "display_name": "Three Similar Sequences",
-    "value": 35,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}]
-  },
+      "display_name": "Three Similar Sequences",
+      "value": 35,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}]
+    },
     {
-    "display_name": "Small Three Similar Triplets",
-    "value": 30,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三同刻"]]}]
-  },
+      "display_name": "Small Three Similar Triplets",
+      "value": 30,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三同刻"]]}]
+    },
     {
-    "display_name": "Three Similar Triplets",
-    "value": 120,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色同刻"]]}]
-  },
-  // 7.0 Consecutive Sets
+      "display_name": "Three Similar Triplets",
+      "value": 120,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色同刻"]]}]
+    },
+    // 7.0 Consecutive Sets
     {
-    "display_name": "Nine-Tile Straight",
-    "value": 40,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清龍"]]}]
-  },
+      "display_name": "Nine-Tile Straight",
+      "value": 40,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清龍"]]}]
+    },
     {
-    "display_name": "Three Consecutive Triplets",
-    "value": 100,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三連刻"]]}]
-  },
+      "display_name": "Three Consecutive Triplets",
+      "value": 100,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三連刻"]]}]
+    },
     {
-    "display_name": "Four Consecutive Triplets",
-    "value": 200,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}]
-  },
-  // 8.0 Terminals
-  {
+      "display_name": "Four Consecutive Triplets",
+      "value": 200,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}]
+    },
+    // 8.0 Terminals
+    {
       "display_name": "Mixed Lesser Terminals",
       "value": 40,
       "when": [
@@ -396,7 +380,7 @@
       "value": 100,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
     },
-  //9.0 Incidental Bonuses
+    // 9.0 Incidental Bonuses
     {
       "display_name": "Final Draw",
       "value": 10,
@@ -420,18 +404,18 @@
     {
       "display_name": "Blessing of Heaven",
       "value": 155,
-      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}, "not_has_calls"]
+      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
     },
     {
       "display_name": "Blessing of Earth",
       "value": 155,
-      "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard", {"name": "not_has_calls", "as": "east"}]
+      "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard", {"name": "not_seat_is", "opts": ["east"]}]
     },
-  // 10.0 Irregular Hands
+    // 10.0 Irregular Hands
     {
       "display_name": "Thirteen Terminals",
       "value": 160,
-      "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
+      "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
     },
     {
     "display_name": "Seven Pairs",
@@ -456,19 +440,24 @@
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}]
     },
     {
-    "display_name": "Four Kong",
-    "value": 480,
-    "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}]
-  },
+      "display_name": "Four Kong",
+      "value": 480,
+      "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}]
+    },
     {
-    "display_name": "Four Identical Sequences",
-    "value": 480,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}]
-  },
+      "display_name": "Four Identical Sequences",
+      "value": 480,
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}]
+    },
     {
       "display_name": "Pure Greater Terminals",
       "value": 400,
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
+    },
+    {
+      "display_name": "Nine Gates",
+      "value": 480,
+      "when": [{"name": "match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]}]
     }
   ],
   "meta_yaku": [
@@ -507,11 +496,12 @@
     "Blessing of Earth": ["Blessing of Heaven"],
     "Seven Pairs": ["Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
   
+    "Thirteen Terminals": ["Mixed Greater Terminals"],
+    "Nine Gates": ["Concealed Hand", "Pure One-Suit"],
     "Four Kong": ["Four Identical Sequences", "Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Kong", "Two Kong", "One Kong", "Seven Pairs"],
     "Four Identical Sequences": ["Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Identical Sequences", "Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
     "Big Four Winds": ["All Honours", "Small Four Winds", "Small Four Winds", "Big Three Winds", "Small Three Winds"],
     "All Honours": ["Small Four Winds"]
-  
   },
   "score_calculation": {
   
@@ -555,6 +545,9 @@
   "play_effects": [
     ["any", [["unset_status", "first_turn"]]]
   ],
+  "before_call": {
+    "actions": [["unset_status_all", "first_turn"]]
+  },
   "after_start": {
     "actions": [["set_status_all", "first_turn"]]
   },
@@ -571,14 +564,16 @@
   },
   "after_scoring": {
     "actions": [
-      ["when", "won_by_discard", [
-          ["set_counter_all", "temp_payout", "payout"],
-          ["multiply_counter_all", "temp_payout", 3],
-          ["subtract_counter_all", "temp_payout", 50],
-          ["modify_payout", "all", 25, "min"],
-          ["modify_payout", "last_discarder", "temp_payout", "max"]
-        ]
-      ]
+      ["set_counter_all", "extra_payout", "payout"],
+      ["subtract_counter", "extra_payout", 75],
+      ["when", ["won_by_discard", {"name": "counter_at_least", "opts": ["extra_payout", 1]}], [
+        // do a normal payout where everyone pays 25 points
+        ["modify_payout", "others", -25, "set"],
+        ["modify_payout", "self", 75, "set"],
+        // "responsible player" pays the remainder
+        ["modify_payout", "self", "extra_payout", "add"],
+        ["modify_payout", "last_discarder", "extra_payout", "subtract"]
+      ]]
     ]
   },
   "buttons": {
@@ -707,7 +702,7 @@
       "enabled_at_start": false
     }
   },
-  "interruptible_actions": ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"],
+  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
   "display_wall": true,
   "initial_score": 0,
   "initial_dead_wall_length": 14,
