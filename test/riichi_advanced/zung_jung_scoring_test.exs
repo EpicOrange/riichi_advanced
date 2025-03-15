@@ -105,5 +105,32 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
     }, %{delta_scores: [-160, 480, -160, -160]})
   end
 
+  test "zung jung - compound limit hand cap at 320 points" do
+    TestUtils.test_yaku_advanced("zung_jung", [], """
+    {
+      "starting_hand": {
+        "east": ["6p", "6p", "6p", "7p", "7p", "7p", "8p", "8p", "8p", "9p", "9p", "9p", "5p"],
+        "south": ["6m", "6m", "1p", "3p", "4p", "1z", "2z", "3z", "4z", "2s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "8m", "1p", "3p", "4p", "1z", "2z", "3z", "4z", "2s", "6s", "7s"],
+        "north": ["2m", "7m", "7m", "1p", "3p", "4p", "1z", "2z", "3z", "4z", "2s", "6s", "7s"]
+      },
+      "starting_draws": ["5p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [
+          {"All Triplets", 30},
+          {"Blessing of Heaven", 155},
+          {"Concealed Hand", 5},
+          {"Four Concealed Triplets", 125},
+          {"Four Consecutive Triplets", 200},
+          {"Pure One-Suit", 80}
+        ],
+        score: 320
+      }
+    }, %{delta_scores: [960, -320, -320, -320]})
+  end
 
 end

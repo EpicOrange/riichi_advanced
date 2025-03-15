@@ -964,6 +964,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "push_message"          ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
+        # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
         push_message(state, Enum.map(["Player #{player_name(state, context.seat)}", message], &%{text: &1}))
         state
       "push_system_message"   ->

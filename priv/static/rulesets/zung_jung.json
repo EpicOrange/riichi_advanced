@@ -539,17 +539,19 @@
   },
   "after_win": {
     "actions": [
-      ["when", [[
-        ["won_by_draw", {"name": "has_yaku2_with_hand", "opts": [1]}],
-        ["won_by_discard", {"name": "has_yaku2_with_discard", "opts": [1]}],
-        ["won_by_call", {"name": "has_yaku2_with_call", "opts": [1]}]
-      ]], [
-        ["modify_winner", "score", 320, "max"]
+      // cap the score at 320 unless we have any listed limit hand
+      ["set_counter", "score", "score"],
+      ["unless", [["has_yaku2", {"name": "counter_at_most", "opts": ["score", 319]}]], [
+        ["push_message", "has their score capped at 320"],
+        ["modify_winner", "score", 320, "set"],
+        ["modify_payout", "self", 960, "set"],
+        ["modify_payout", "others", -320, "set"]
       ]]
     ]
   },
   "after_scoring": {
     "actions": [
+      // use our 3x payout to calculate payout for others
       ["set_counter", "extra_payout", "payout"],
       ["subtract_counter", "extra_payout", 75],
       ["when", ["won_by_discard", {"name": "counter_at_least", "opts": ["extra_payout", 1]}], [
