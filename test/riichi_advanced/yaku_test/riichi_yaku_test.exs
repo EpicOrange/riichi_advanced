@@ -505,6 +505,34 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     })
   end
 
+  test "riichi - chanta/junchan should consider all possibilities" do
+    # basically it shouldn't remove 111s before 123s
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "1z", "7m", "8m", "9m", "7p", "8p", "9p", "1s", "1s", "1s", "3s"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"]
+      },
+      "starting_draws": ["6m", "2z", "3z", "3m", "2s"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Junchan", 2}]
+      }
+    })
+  end
+
   test "riichi - open junchan" do
     TestUtils.test_yaku_advanced("riichi", [], """
     {
@@ -562,7 +590,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     TestUtils.test_yaku_advanced("riichi", [], """
     {
       "starting_hand": {
-        "east": ["1m", "1m", "4p", "5p", "6p", "7p", "8p", "1p", "2p", "8p", "9p", "1z", "2z"],
+        "east": ["1m", "1m", "1p", "2p", "4p", "5p", "6p", "7p", "8p", "8p", "9p", "1z", "2z"],
         "south": ["2m", "4m", "7m", "2p", "5p", "9p", "3s", "6s", "9s", "3z", "4z", "5z", "7z"],
         "west": ["2m", "4m", "7m", "2p", "5p", "9p", "3s", "6s", "9s", "3z", "4z", "5z", "7z"],
         "north": ["2m", "4m", "7m", "2p", "5p", "9p", "3s", "6s", "9s", "3z", "4z", "5z", "7z"]
