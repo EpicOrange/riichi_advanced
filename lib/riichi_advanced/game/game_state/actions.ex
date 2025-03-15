@@ -756,7 +756,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       args = Map.new(args, fn {name, value} -> {"$" <> name, value} end)
       state = Map.update!(state, :call_stack, &[[fn_name | args] | &1])
       actions = Map.get(state.rules["functions"], fn_name)
-      actions = map_action_opts(actions, &Map.get(args, &1, &1))
+      actions = Utils.walk_json(actions, &Map.get(args, &1, &1))
       if Debug.debug_actions() do
         IO.puts("Running function: #{inspect(actions)}")
       end
@@ -950,6 +950,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "noop"                  -> state
       "print"                 ->
         IO.puts(interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
+        state
+      "inspect"               ->
+        IO.inspect(opts)
         state
       "print_status"          ->
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
@@ -1980,24 +1983,5 @@ defmodule RiichiAdvanced.GameState.Actions do
     end ++ extract_actions(actions, names)
   end
   def extract_actions(_anything_else, _names), do: []
-
-  def map_action_opts([action | actions], fun) do
-    mapped_action = case action do
-      ["when", condition, subactions] -> ["when", condition, map_action_opts(subactions, fun)]
-      ["as", seats_spec, subactions] -> ["as", map_action_opts(seats_spec, fun), map_action_opts(subactions, fun)]
-      ["when_anyone", condition, subactions] -> ["when_anyone", condition, map_action_opts(subactions, fun)]
-      ["when_everyone", condition, subactions] -> ["when_everyone", condition, map_action_opts(subactions, fun)]
-      ["when_others", condition, subactions] -> ["when_others", condition, map_action_opts(subactions, fun)]
-      ["unless", condition, subactions] -> ["unless", condition, map_action_opts(subactions, fun)]
-      ["ite", condition, subactions1, subactions2] -> ["ite", condition, map_action_opts(subactions1, fun), map_action_opts(subactions2, fun)]
-      ["run", fn_name, args] -> ["run", fn_name, Map.new(args, fn {name, value} -> {name, fun.(value)} end)]
-      # this matches nested list args
-      _ when is_list(action) -> Enum.map(action, &if is_list(&1) do map_action_opts(&1, fun) else fun.(&1) end)
-      # this matches any arg
-      _ -> fun.(action)
-    end
-    [mapped_action | map_action_opts(actions, fun)]
-  end
-  def map_action_opts(anything_else, fun), do: fun.(anything_else)
 
 end
