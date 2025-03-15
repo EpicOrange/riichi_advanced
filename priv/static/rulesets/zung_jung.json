@@ -492,9 +492,9 @@
 
     "Final Discard": ["Final Draw"],
     "Blessing of Earth": ["Blessing of Heaven"],
-    "Seven Pairs": ["Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
+    "Seven Pairs": ["Concealed Hand", "Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
   
-    "Thirteen Terminals": ["Mixed Greater Terminals"],
+    "Thirteen Terminals": ["Concealed Hand", "Mixed Greater Terminals"],
     "Nine Gates": ["Concealed Hand", "Pure One-Suit"],
     "Four Kong": ["Four Identical Sequences", "Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Kong", "Two Kong", "One Kong", "Seven Pairs"],
     "Four Identical Sequences": ["Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Identical Sequences", "Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
