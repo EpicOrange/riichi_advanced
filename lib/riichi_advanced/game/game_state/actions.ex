@@ -1299,7 +1299,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           ordering: Map.merge(&1.tile_behavior.ordering, ordering),
           ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r)
         } })
-      "set_tile_ordering_all"     ->
+      "set_tile_ordering_all" ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
@@ -1818,20 +1818,20 @@ defmodule RiichiAdvanced.GameState.Actions do
     # basically, starting from the current turn player's choice, clear out others' choices
     ordered_seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
     |> Enum.filter(fn seat -> seat in state.available_seats end)
-    state = for seat <- ordered_seats, reduce: state do
-      state ->
+    {_, state} = for _ <- ordered_seats, reduce: {ordered_seats, state} do
+      {[seat | later_seats], state} ->
         choice = state.players[seat].choice
-        if choice != nil and choice.name not in [nil, "skip", "play_tile"] do
+        state = if state.players[seat].choice != nil and state.players[seat].choice.name not in [nil, "skip", "play_tile"] do
           superceded_choices = ["skip", "play_tile"] ++ if Map.has_key?(state.rules["buttons"], choice.name) do
             Map.get(state.rules["buttons"][choice.name], "precedence_over", [])
           else [] end
 
           # replace with "skip" every button and choice that is superceded by our choice
           update_all_players(state, fn dir, player ->
-            not_us = seat != dir
+            is_later = dir in later_seats
             choice_superceded = player.choice != nil and player.choice.name in superceded_choices
             all_choices_superceded = Enum.all?(player.buttons ++ Map.keys(player.button_choices), fn button -> button in superceded_choices end)
-            if not_us and (choice_superceded or all_choices_superceded) do
+            if is_later and (choice_superceded or all_choices_superceded) do
               if Debug.debug_actions() do
                 cond do
                   all_choices_superceded -> IO.puts("Player #{dir} must skip due to having choices superceded by #{seat}, original choice was: #{inspect(choice)}")
@@ -1843,6 +1843,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             else player end
           end)
         else state end
+        {later_seats, state}
     end
 
     # check call priority lists
