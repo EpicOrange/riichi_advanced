@@ -130,38 +130,40 @@ defmodule RiichiAdvanced.LogControlState do
       get_discard_index.(hand, draw)
     else ix end
 
-    if Debug.debug_log() and ix == nil do
-      # debug
-      IO.puts("At event index = #{discard_event["index"]}; couldn't find tile #{inspect(tile)} in #{seat}'s #{if discard_event["tsumogiri"] do "draw" else "hand" end}!")
-      IO.inspect({discard_event})
-      print_game_state(state)
-    end
-
-    prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
-
-    GenServer.cast(state.game_state_pid, {:play_tile, seat, ix})
-    # get new buttons
-    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
-
-    # for all possible calls attached to this event
-    # have players press skip on them if they weren't actually called
-    # (unless they have other buttons available, such as ron)
-    call_player = if Map.has_key?(discard_event, "call") do [discard_event["call"]["player"]] else [] end
-    Map.get(discard_event, "possible_calls", [])
-    |> Enum.group_by(& &1["player"])
-    |> Map.drop(call_player)
-    |> Map.new(fn {seat, calls} -> {Log.from_seat(seat), calls} end)
-    |> Enum.each(fn {seat, calls} ->
-      expected_buttons = ["skip"] ++ Enum.map(calls, & &1["type"])
-      if Enum.empty?(state.game_state.players[seat].buttons -- expected_buttons) do
-        GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
+    if ix == nil do
+      if Debug.debug_log() do
+        IO.puts("At event index = #{discard_event["index"]}; couldn't find tile #{inspect(tile)} in #{seat}'s #{if discard_event["tsumogiri"] do "draw" else "hand" end}!")
+        IO.inspect({discard_event})
+        print_game_state(state)
       end
-    end)
+      state
+    else
+      prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
 
-    GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
-    GenServer.cast(state.game_state_pid, :sort_hands)
-    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
-    state
+      GenServer.cast(state.game_state_pid, {:play_tile, seat, ix})
+      # get new buttons
+      state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+
+      # for all possible calls attached to this event
+      # have players press skip on them if they weren't actually called
+      # (unless they have other buttons available, such as ron)
+      call_player = if Map.has_key?(discard_event, "call") do [discard_event["call"]["player"]] else [] end
+      Map.get(discard_event, "possible_calls", [])
+      |> Enum.group_by(& &1["player"])
+      |> Map.drop(call_player)
+      |> Map.new(fn {seat, calls} -> {Log.from_seat(seat), calls} end)
+      |> Enum.each(fn {seat, calls} ->
+        expected_buttons = ["skip"] ++ Enum.map(calls, & &1["type"])
+        if Enum.empty?(state.game_state.players[seat].buttons -- expected_buttons) do
+          GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
+        end
+      end)
+
+      GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
+      GenServer.cast(state.game_state_pid, :sort_hands)
+      state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+      state
+    end
   end
 
   def send_button_press(state, skip_anim, button_press_event) do
