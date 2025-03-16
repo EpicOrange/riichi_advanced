@@ -47,6 +47,7 @@ main div#container {
   display: flex;
   flex-flow: column nowrap;
   user-select: none;
+  contain: layout; /* make {position: fixed;} elements relative to this */
 }
 main div.messages-container {
   position: absolute;
@@ -109,6 +110,37 @@ main div.messages-container > div.messages {
   }
   main div.messages-container > div.messages {
     flex-direction: column-reverse;
+  }
+}
+/* all tooltips: https://stackoverflow.com/a/60660207 */
+@media (pointer: coarse), (hover: none) {
+  label[data-name][title]:not(.saki-card):focus::before,
+  label[data-name][title]:not(.saki-card):focus::after {
+    position: fixed;
+    font-weight: 500;
+    left: calc(1 * var(--tile-size));
+    color: var(--tile-front);
+    background: inherit;
+    border: none;
+    width: calc(100% - 2 * var(--tile-size));
+    height: fit-content;
+    padding: calc(0.25 * var(--tile-size));
+    box-sizing: border-box;
+    line-height: 1;
+    z-index: 100;
+  }
+  label[data-name][title]:not(.saki-card):focus::before {
+    content: attr(data-name);
+    font-size: calc(0.75 * var(--tile-size));
+    top: calc(0.25 * var(--tile-size));
+    border-radius: calc(0.5 * var(--tile-size)) calc(0.5 * var(--tile-size)) 0 0;
+  }
+  label[data-name][title]:not(.saki-card):focus::after {
+    content: attr(title);
+    font-size: calc(0.5 * var(--tile-size));
+    top: calc(1.5 * var(--tile-size));
+    border-radius: 0 0 calc(0.5 * var(--tile-size)) calc(0.5 * var(--tile-size));
+    white-space: pre-wrap;
   }
 }
 

@@ -41,13 +41,13 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
-            <label for={ruleset} title={desc}><%= name %></label>
+            <label for={ruleset} title={desc} data-name={name} tabindex={i}><%= name %></label>
           <% end %>
           <br/>
           To be implemented:
-          <%= for {ruleset, name, desc, link} <- @unimplemented_rulesets do %>
+          <%= for {{ruleset, name, desc, link}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
-            <label for={ruleset} title={desc}><a href={link} target="_blank"><%= name %></a></label>
+            <label for={ruleset} title={desc} data-name={name} tabindex={i}><a href={link} target="_blank"><%= name %></a></label>
           <% end %>
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" value={@nickname || ""} />
