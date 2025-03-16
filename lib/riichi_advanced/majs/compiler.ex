@@ -385,11 +385,8 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("define_mod_category", name, args, line, column) do
     prepend = case args do
       [] -> {:ok, false}
-      [args] ->
-        prepend = Map.get(args, "prepend")
-        prepend = if is_boolean(prepend) do prepend else false end
-        {:ok, prepend}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_mod_category` command expects a keyword list, got #{inspect(args)}"}
+      [[{"prepend", prepend}]] when is_boolean(prepend) -> {:ok, prepend}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_mod_category` command only takes an optional `prepend: true`, got #{inspect(args)}"}
     end
 
     with {:ok, prepend} <- prepend do
