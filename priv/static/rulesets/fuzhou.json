@@ -377,12 +377,11 @@
       "display_name": "Qiangjin",
       "show_when": [
         {"name": "status", "opts": ["match_start"]},
-        "our_turn",
         {"name": "status_missing", "opts": ["flower"]},
-        {"name": "match", "opts": [["hand", "revealed_tiles"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}
       ],
       "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["set_status", "qiangjin"], ["win_by_draw"]],
+      "precedence_over": ["start_flower", "start_no_flower"],
       "unskippable": true
     },
     "tsumo": {

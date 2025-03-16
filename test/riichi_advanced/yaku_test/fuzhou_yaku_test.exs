@@ -530,5 +530,24 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     })
   end
 
+  test "fuzhou - robbing the gold as north" do
+    TestUtils.test_yaku_advanced("fuzhou", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"]
+      },
+      "starting_dead_wall": ["2s"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "qiangjin"}]}
+    ], %{
+      north: %{
+        yaku: [{"Base Points", 10}, {"Robbing the Gold", 50}]
+      }
+    })
+  end
 
 end
