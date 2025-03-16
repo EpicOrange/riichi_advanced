@@ -1955,7 +1955,8 @@ div.rules-wrapper > label {
 input.rules-popover-unselect + label {
   background: transparent;
   width: calc(0.5 * var(--tile-size));
-  height: 100%;
+  height: calc(100% + 1 * var(--tile-size));
+  top: 0;
   position: absolute;
   z-index: -2;
 }
@@ -1992,6 +1993,7 @@ div.rules-popover-container::before {
 }
 input.rules-popover-radio:checked + label + div.rules-popover-container {
   width: 100%;
+  pointer-events: initial;
   user-select: text;
 }
 input.rules-popover-radio:checked + label + div.rules-popover-container::before {
