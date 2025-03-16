@@ -1276,78 +1276,193 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     })
   end
 
-  # TODO make these into advanced tests
-  test "riichi - yakuless" do
-    # yakuless closed
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"2m", :"3m", :"2s", :"2s", :"2s", :"7s", :"8s", :"9s", :"4p", :"5p", :"6p", :"6p", :"6p"],
-      winning_tile: :"1m",
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [],
-      expected_minipoints: 40,
+  test "riichi - yakuless closed" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "2s", "2s", "2s", "7s", "8s", "9s", "4p", "5p", "6p", "6p", "6p"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+      },
+      "starting_draws": ["5m", "1m"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [],
+        minipoints: 40
+      }
     })
-    # yakuless open pinfu
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"1m", :"2m", :"3m", :"6m", :"7m", :"8m", :"5p", :"5p", :"7p", :"8p"],
-      calls: [{"chii", [:"2p", :"3p", :"4p"]}],
-      winning_tile: :"6p",
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [],
-      expected_minipoints: 30,
+  end
+
+  test "riichi - yakuless open pinfu" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "6m", "7m", "8m", "5p", "5p", "7p", "8p", "2p", "3p", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+      },
+      "starting_draws": ["1z", "2z", "3z", "4p", "6p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii", "call_choice" => ["2p", "3p"], "called_tile" => "4p"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [],
+        minipoints: 30
+      }
     })
+  end
+
+  test "riichi - south round wrong winds" do
     # south round wrong winds
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"3z", :"3z", :"3z", :"1z", :"1z", :"1z", :"5m", :"5m", :"7m", :"8m"],
-      calls: [{"chii", [:"2p", :"3p", :"4p"]}],
-      winning_tile: :"6m",
-      round: 4,
-      seat: :north,
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [],
-      expected_minipoints: 40,
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["3z", "3z", "3z", "1z", "1z", "1z", "5m", "5m", "7m", "8m", "2p", "3p", "1z"]
+      },
+      "starting_draws": ["1z", "2z", "4p", "6m"],
+      "starting_round": 4
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "chii"}]},
+      %{"type" => "discard", "tile" => "1z", "player" => 3, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
+    ], %{
+      north: %{
+        yaku: [],
+        yaku2: [],
+        minipoints: 40
+      }
     })
-    # invalid chiitoitsu with quad
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"1m", :"1m", :"4m", :"4m", :"4m", :"4m", :"2p", :"2p", :"4p", :"6s", :"6s", :"1z", :"1z"],
-      winning_tile: :"4p",
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [],
-      expected_minipoints: 25,
+  end
+
+  test "riichi - invalid chiitoitsu with quad" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "4m", "4m", "4m", "4m", "2p", "2p", "4p", "6s", "6s", "1z", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["3z", "3z", "3z", "1z", "1z", "1z", "5m", "5m", "7m", "8m", "2p", "3p", "1z"]
+      },
+      "starting_draws": ["1z", "4p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 1, "tsumogiri" => true}
+    ], :no_winners)
+  end
+
+  test "riichi - false ittsu" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "3p", "4p", "5p", "6p", "7p", "1p", "2p", "8p", "9p", "2z", "3z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+      },
+      "starting_draws": ["1z", "2z", "3z", "3p", "4z", "1z", "7p", "5p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii", "call_choice" => ["1p", "2p"], "called_tile" => ["3p"]}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii", "call_choice" => ["8p", "9p"], "called_tile" => ["7p"]}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [],
+        minipoints: 30
+      }
     })
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"1m", :"1m", :"3p", :"4p", :"5p", :"6p", :"7p"],
-      calls: [{"chii", [:"1p", :"2p", :"3p"]}, {"chii", [:"7p", :"8p", :"9p"]}],
-      winning_tile: :"5p",
-      win_source: :discard,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [],
-      expected_minipoints: 30,
+  end
+
+  test "riichi - no sanankou one pon" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "1m", "7s", "8s", "9s", "3z", "3z", "5z", "5z", "2p", "2p", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+      },
+      "starting_draws": ["1z", "2p", "2z", "1z", "4z", "3z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [],
+        minipoints: 50
+      }
     })
-    # no sanankou one pon
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"1m", :"1m", :"1m", :"7s", :"8s", :"9s", :"3z", :"3z", :"5z", :"5z"],
-      calls: [{"pon", [:"2p", :"2p", :"2p"]}],
-      winning_tile: :"3z",
-      win_source: :draw,
-      yaku_lists: ["yaku", "meta_yaku"],
-      expected_yaku: [],
-      expected_minipoints: 50,
-    })
-    # open chuurenpoutou
-    TestUtils.test_yaku("riichi", [], %{
-      hand: [:"1m", :"1m", :"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m"],
-      calls: [{"pon", [:"9m", :"9m", :"9m"]}],
-      status: [],
-      conditions: ["make_discards_exist"],
-      winning_tile: :"9m",
-      win_source: :discard,
-      yaku_lists: ["yakuman", "meta_yakuman"],
-      expected_yaku: [],
-      expected_minipoints: 30,
+  end
+
+  test "riichi - open chuurenpoutou" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "9m", "2z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+      },
+      "starting_draws": ["1z", "9m", "9m"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Chinitsu", 5}, {"Ittsu", 1}],
+        yaku2: [],
+        minipoints: 30
+      }
     })
   end
 
