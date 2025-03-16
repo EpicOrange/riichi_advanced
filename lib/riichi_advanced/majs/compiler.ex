@@ -174,7 +174,10 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` command expects a jq path string and an optional string value, got #{inspect(args)}"}
     end
     with {:ok, {path, value}} <- path_value,
-         {:ok, value_val} <- Validator.validate_json(value),
+         {:ok, value_val} <- (case Validator.validate_json(value) do
+                               {:ok, value_val} -> {:ok, value_val}
+                               {:error, _} -> compile_cnf_condition(value, line, column)
+                             end),
          {:ok, value} <- Jason.encode(value_val) do
       path = if String.starts_with?(path, ".") do path else "." <> path end
       if Validator.validate_json_path(path) do
@@ -505,6 +508,22 @@ defmodule RiichiAdvanced.Compiler do
         "display_name": #{name},
         "enabled_mods": #{mods}
       }]
+      """}
+    end
+  end
+
+  defp compile_command("remove_yaku", name, args, line, column) do
+    names = case args do
+      [names] when is_binary(names) -> {:ok, [names]}
+      [names] when is_list(names) -> {:ok, names}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `remove_yaku` command expects a name or a list of names, got #{inspect(args)}"}
+    end
+
+    with {:ok, names} <- names,
+         {:ok, names} <- Validator.validate_json(names),
+         {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
+      {:ok, ~s"""
+      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
       """}
     end
   end

@@ -58,24 +58,6 @@ define_set pei_pair, ~s"4z 4z"
 define_set haku_pair, ~s"5z 5z"
 define_set hatsu_pair, ~s"6z 6z"
 define_set chun_pair, ~s"7z 7z"
-define_set junchan_1, ~s"1m 1m 1m"
-define_set junchan_2, ~s"1p 1p 1p"
-define_set junchan_3, ~s"1s 1s 1s"
-define_set junchan_4, ~s"1m 2m 3m"
-define_set junchan_5, ~s"1p 2p 3p"
-define_set junchan_6, ~s"1s 2s 3s"
-define_set junchan_7, ~s"7m 8m 9m"
-define_set junchan_8, ~s"7p 8p 9p"
-define_set junchan_9, ~s"7s 8s 9s"
-define_set junchan_10, ~s"9m 9m 9m"
-define_set junchan_11, ~s"9p 9p 9p"
-define_set junchan_12, ~s"9s 9s 9s"
-define_set junchan_pair_1, ~s"1m 1m"
-define_set junchan_pair_2, ~s"1p 1p"
-define_set junchan_pair_3, ~s"1s 1s"
-define_set junchan_pair_4, ~s"9m 9m"
-define_set junchan_pair_5, ~s"9p 9p"
-define_set junchan_pair_6, ~s"9s 9s"
 define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 
@@ -104,7 +86,7 @@ define_match win,
   ~m"""
   exhaustive, (shuntsu koutsu):4, pair:1
   | (nojoker quad):-1, pair:7
-  | unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):13, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):13, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match standard_win,
