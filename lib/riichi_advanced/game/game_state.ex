@@ -1228,13 +1228,16 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def get_winning_tiles(state, seat, :draw), do: MapSet.new([Enum.at(state.players[seat].draw, 0)])
+  def get_winning_tiles(state, seat, :draw) do
+    winning_tile = Enum.at(state.players[seat].draw, 0)
+    if winning_tile != nil do MapSet.new([winning_tile]) else MapSet.new() end
+  end
   def get_winning_tiles(state, _seat, :discard) do
     last_discarder_action = get_last_discard_action(state)
     if last_discarder_action != nil do
       last_discarder = last_discarder_action.seat
       winning_tile = Enum.at(state.players[last_discarder].discards, -1)
-      MapSet.new([winning_tile])
+      if winning_tile != nil do MapSet.new([winning_tile]) else MapSet.new() end
     else MapSet.new() end
   end
   def get_winning_tiles(state, _seat, :call) do
@@ -1242,7 +1245,7 @@ defmodule RiichiAdvanced.GameState do
     if last_call_action != nil do
       {_name, call} = Enum.at(state.players[last_call_action.seat].calls, -1)
       winning_tile = Enum.find(call, &Utils.same_tile(&1, last_call_action.called_tile))
-      MapSet.new([winning_tile])
+      if winning_tile != nil do MapSet.new([winning_tile]) else MapSet.new() end
     else MapSet.new() end
   end
   def get_winning_tiles(state, _seat, :second_discard) do
@@ -1250,7 +1253,7 @@ defmodule RiichiAdvanced.GameState do
     |> Enum.reverse()
     |> Enum.drop(1)
     |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
-    MapSet.new([winning_tile])
+    if winning_tile != nil do MapSet.new([winning_tile]) else MapSet.new() end
   end
   def get_winning_tiles(state, seat, win_source) do
     cond do

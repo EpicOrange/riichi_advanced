@@ -88,7 +88,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     state = put_in(state.players[seat].draw, draw)
     state = put_in(state.players[seat].calls, calls)
     state = update_in(state.players[seat].status, &MapSet.put(&1, "discards_empty")) # trigger tenhou
-    state = GameState.win(state, seat, :"6p", :draw)
+    state = GameState.win(state, seat, :draw)
     {_state, delta_scores, _delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
     score = state.winners[seat].score
     assert score == expected_score
