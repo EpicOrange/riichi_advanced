@@ -356,6 +356,7 @@ defmodule RiichiAdvanced.Match do
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
       IO.puts("Starting hand / calls: #{inspect(hand, charlists: :as_lists)} / #{inspect(calls, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_behavior.aliases)}")
+      # IO.puts("Tile ordering: #{inspect(tile_behavior.ordering)}")
     end
     ret = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: [{hand, calls}] do
       [] -> []

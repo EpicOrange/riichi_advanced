@@ -750,12 +750,12 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  def win(state, seat, winning_tile, win_source) do
+  def win(state, seat, win_source) do
     state = Map.put(state, :round_result, :win)
 
     # run before_win actions
     state = if Map.has_key?(state.rules, "before_win") do
-      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: winning_tile, win_source: win_source})
+      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, win_source: win_source})
     else state end
 
     # reset animation (and allow discarding again, in bloody end rules)
@@ -765,7 +765,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :visible_screen, :winner)
     state = start_timer(state)
 
-    winner = Scoring.calculate_winner_details(state, seat, [winning_tile], win_source)
+    winner = Scoring.calculate_winner_details(state, seat, win_source)
     state = update_player(state, seat, fn player -> %Player{ player | cache: %PlayerCache{ player.cache | arranged_hand: winner.arranged_hand, arranged_calls: winner.arranged_calls } } end)
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
@@ -1225,6 +1225,74 @@ defmodule RiichiAdvanced.GameState do
       true                     ->
         GenServer.cast(self(), {:show_error, "Unknown revealed tile spec: #{inspect(tile_spec)}"})
         state
+    end
+  end
+
+  def get_winning_tiles(state, seat, :draw), do: MapSet.new([Enum.at(state.players[seat].draw, 0)])
+  def get_winning_tiles(state, _seat, :discard) do
+    last_discarder_action = get_last_discard_action(state)
+    if last_discarder_action != nil do
+      last_discarder = last_discarder_action.seat
+      winning_tile = Enum.at(state.players[last_discarder].discards, -1)
+      MapSet.new([winning_tile])
+    else MapSet.new() end
+  end
+  def get_winning_tiles(state, _seat, :call) do
+    last_call_action = get_last_call_action(state)
+    if last_call_action != nil do
+      {_name, call} = Enum.at(state.players[last_call_action.seat].calls, -1)
+      winning_tile = Enum.find(call, &Utils.same_tile(&1, last_call_action.called_tile))
+      MapSet.new([winning_tile])
+    else MapSet.new() end
+  end
+  def get_winning_tiles(state, _seat, :second_discard) do
+    winning_tile = state.players[get_last_discard_action(state).seat].pond
+    |> Enum.reverse()
+    |> Enum.drop(1)
+    |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
+    MapSet.new([winning_tile])
+  end
+  def get_winning_tiles(state, seat, win_source) do
+    cond do
+      win_source in [:worst_discard, :best_draw] ->
+        winner = state.players[seat]
+        win_definitions = translate_match_definitions(state, Map.get(state.rules["show_waits"], "win_definitions", []))
+        waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_behavior)
+        if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
+    end
+  end
+
+  def update_winning_tile(state, seat, :draw, fun), do: update_in(state.players[seat].draw, &[fun.(Enum.at(&1, 0))])
+  def update_winning_tile(state, seat, :best_draw, fun), do: update_winning_tile(state, seat, :draw, fun)
+  def update_winning_tile(state, _seat, :call, fun) do
+    last_call_action = get_last_call_action(state)
+    if last_call_action != nil do
+      update_in(state.players[last_call_action.seat].calls, fn calls ->
+        {name, call} = Enum.at(calls, -1)
+        ix = Enum.find_index(call, &Utils.same_tile(&1, last_call_action.called_tile))
+        updated_call = List.update_at(call, ix, fun)
+        List.replace_at(calls, -1, {name, updated_call})
+      end)
+    else state end
+  end
+  def update_winning_tile(state, _seat, win_source, fun) do
+    ix = case win_source do
+      :discard -> -1
+      :second_discard -> -2
+      :worst_discard -> -1
+    end
+    last_discard_action = get_last_discard_action(state)
+    if last_discard_action != nil do
+      last_discarder = last_discard_action.seat
+      state = update_in(state.players[last_discarder].discards, &List.update_at(&1, ix, fun))
+      state = update_in(state.players[last_discarder].pond, &List.update_at(&1, ix, fun))
+      state
+    else
+      # this branch is basically only used for tests
+      last_discarder = Utils.prev_turn(state.turn)
+      state = update_in(state.players[last_discarder].discards, fn _ -> IO.inspect([fun.(:"4x")]) end)
+      state = update_in(state.players[last_discarder].pond, fn _ -> [fun.(:"4x")] end)
+      state
     end
   end
 

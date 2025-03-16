@@ -20,7 +20,7 @@ defmodule RiichiAdvanced.Admin do
   end
 
   # hell yeah automated test case generation let's goooo
-  # RiichiAdvanced.Utils.logs_to_test_case(["riichi"])
+  # RiichiAdvanced.Admin.logs_to_test_case(["riichi"])
   def log_to_test_case(log_id, kyoku_index \\ nil) do
     # read in the log
     log_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{log_id <> ".json"}")) do

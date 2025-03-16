@@ -64,35 +64,6 @@ defmodule RiichiAdvanced.TestUtils do
     }
   end
 
-  def generate_winner(ruleset, mods, config, test_spec) do
-    test_state = initialize_test_state(ruleset, mods, config)
-    state = GenServer.call(test_state.game_state_pid, :get_state)
-
-    seat = Map.get(test_spec, :seat, :east)
-    hand = test_spec.hand
-    draw = test_spec.draw
-    calls = Map.get(test_spec, :calls, [])
-    state = put_in(state.players[seat].hand, hand)
-    state = put_in(state.players[seat].draw, draw)
-    state = put_in(state.players[seat].calls, calls)
-    state = put_in(state.kyoku, Map.get(test_spec, :round, 0))
-    state = put_in(state.honba, Map.get(test_spec, :honba, 0))
-    state = put_in(state.players[seat].status, Map.get(test_spec, :status, state.players[seat].status) |> MapSet.new())
-    state = for condition <- Map.get(test_spec, :conditions, []), reduce: state do
-      state -> case condition do
-        "make_discards_exist" ->
-          state = RiichiAdvanced.GameState.update_action(state, seat, :discard, %{tile: :"1x"}) 
-          update_in(state.players[seat].status, &MapSet.delete(&1, "discards_empty"))
-        "no_draws_remaining"  -> Map.put(state, :wall_index, length(state.wall))
-        _ ->
-          GenServer.cast(self(), {:show_error, "Unknown test condition #{inspect(condition)}"})
-          state
-      end
-    end
-
-    Scoring.calculate_winner_details(state, seat, [test_spec.winning_tile], test_spec.win_source)
-  end
-    
   def test_yaku(ruleset, mods, test_spec) do
     test_state = initialize_test_state(ruleset, mods)
     state = GenServer.call(test_state.game_state_pid, :get_state)
@@ -117,12 +88,13 @@ defmodule RiichiAdvanced.TestUtils do
           state
       end
     end
+    state = RiichiAdvanced.GameState.update_winning_tile(state, seat, test_spec.win_source, fn _ -> test_spec.winning_tile end)
     # run before_win and before_scoring actions
     state = if Map.has_key?(state.rules, "before_win") do
-      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, winning_tile: test_spec.winning_tile, win_source: test_spec.win_source})
+      Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, win_source: test_spec.win_source})
     else state end
     state = if Map.has_key?(state.rules, "before_scoring") do
-      Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: test_spec.winning_tile, win_source: test_spec.win_source})
+      Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: test_spec.win_source})
     else state end
 
     {yaku, fu, _winning_tile} = Scoring.get_best_yaku_from_lists(state, yaku_list_names, seat, [test_spec.winning_tile], test_spec.win_source)
@@ -157,6 +129,9 @@ defmodule RiichiAdvanced.TestUtils do
     end
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
+
+    # debug
+    # IO.inspect(state.players.east.hand)
 
     check_winner = fn seat, expected_winner ->
       winner = state.winners[seat]

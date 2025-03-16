@@ -36,10 +36,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
           "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
           "winning_tile" ->
-            winning_tile = Map.get(context, :winning_tile, get_in(state.winners[context.seat].winning_tile))
-            if winning_tile != nil do
-              [{hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}]
-            else [{hand, calls}] end
+            for winning_tile <- get_winning_tiles(state, context.seat, context.win_source) do
+              {hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}
+            end
           "last_call" -> [{hand, calls ++ [get_last_call(state)]}]
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
@@ -351,8 +350,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
-        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
+        winning_tiles = get_winning_tiles(state, context.seat, context.win_source)
+        Enum.any?(winning_tiles, fn winning_tile ->
+          Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
+        end)
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
         tiles = Enum.map(opts, &Utils.to_tile/1)

@@ -515,12 +515,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         yakuhai = Scoring.get_yakuhai(state, context.seat)
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
-        winning_tile = if Map.has_key?(context, :winning_tile) do context.winning_tile else state.winners[context.seat].winning_tile end
-        winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_behavior) |> Utils.strip_attrs()
         win_source = context.win_source
+        winning_tiles = get_winning_tiles(state, context.seat, context.win_source)
+        winning_tiles = Utils.apply_tile_aliases(winning_tiles, tile_behavior) |> Utils.strip_attrs()
 
         for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
-          hand_calls_fu -> case action do
+          hand_calls_fu -> case action do # IO.inspect(hand_calls_fu, label: action)
             "put_calls_in_hand" ->
               for {hand, calls, fu} <- hand_calls_fu do
                 {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in opts end)
@@ -1043,16 +1043,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)
       "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")), true)
-      "win_by_discard"        -> win(state, context.seat, get_last_discard_action(state).tile, :discard)
-      "win_by_call"           -> win(state, context.seat, get_last_call_action(state).called_tile, :call)
-      "win_by_draw"           -> win(state, context.seat, Enum.at(state.players[context.seat].draw, 0), :draw)
-      "win_by_second_visible_discard" ->
-        seat = get_last_discard_action(state).seat
-        tile = state.players[seat].pond
-        |> Enum.reverse()
-        |> Enum.drop(1)
-        |> Enum.find(fn tile -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"]) end)
-        win(state, context.seat, tile, :discard)
+      "win_by_discard"        -> win(state, context.seat, :discard)
+      "win_by_call"           -> win(state, context.seat, :call)
+      "win_by_draw"           -> win(state, context.seat, :draw)
+      "win_by_second_visible_discard" -> win(state, context.seat, :second_discard)
       "ryuukyoku"             -> exhaustive_draw(state, Enum.at(opts, 0, nil))
       "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, nil))
       "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
@@ -1331,13 +1325,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             case target do
               "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs))
               "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs))
+              "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs)} end))
               "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs))
-              "last_discard" ->
-                last_discarder = get_last_discard_action(state).seat
-                state = update_in(state.players[last_discarder].discards, fn discards -> Enum.drop(discards, -1) ++ add_attr_matching([Enum.at(discards, -1)], attrs, tile_specs) end)
-                state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ add_attr_matching([Enum.at(pond, -1)], attrs, tile_specs) end)
-                state
-              "last_called_tile" -> state # TODO
+              "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
+              "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
+              "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
               _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs) |> Enum.at(0)) end)
               _      ->
                 IO.inspect("Unhandled add_attr target #{inspect(target)}")

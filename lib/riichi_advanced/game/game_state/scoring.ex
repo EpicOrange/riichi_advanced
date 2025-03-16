@@ -108,7 +108,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  def apply_joker_assignment(state, seat, joker_assignment, winning_tile \\ nil) do
+  def apply_joker_assignment(state, seat, joker_assignment, win_source) do
     orig_hand = state.players[seat].hand
     {flower_calls, non_flower_calls} = Enum.split_with(state.players[seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     assigned_hand = orig_hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
@@ -123,10 +123,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(orig_hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment
-    assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), winning_tile)
+    assigned_winning_tile = Map.get(joker_assignment, length(orig_hand), nil)
+    state = if assigned_winning_tile != nil do
+      update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
+    else state end
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     state = update_player(state, seat, &%Player{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %PlayerCache{ &1.cache | winning_hand: assigned_winning_hand } })
-    {state, assigned_winning_tile}
+    state
   end
 
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
@@ -146,14 +149,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
     joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
     Enum.any?(joker_assignments, fn joker_assignment ->
-      {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+      state = apply_joker_assignment(state, seat, joker_assignment, win_source)
       
       # run before_scoring actions
       state = if Map.has_key?(state.rules, "before_scoring") do
-        Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: assigned_winning_tile, win_source: win_source})
+        Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: win_source})
       else state end
 
-      {yaku, minipoints, _winning_tile} = get_best_yaku_from_lists(state, yaku_list_names, seat, [assigned_winning_tile], win_source)
+      # get winning tile after before_scoring does its thing
+      winning_tiles = get_winning_tiles(state, seat, win_source)
+      {yaku, minipoints, _winning_tile} = get_best_yaku_from_lists(state, yaku_list_names, seat, winning_tiles, win_source)
       minipoints >= min_minipoints && case min_points do
         :declared ->
           names = Enum.map(yaku, fn {name, _value} -> name end)
@@ -547,10 +552,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if delta_scores[seat] < 0 and "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
               win_definitions = translate_match_definitions(state, ["win"])
-              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_behavior) ++ [:"2x"]
+              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_behavior)
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
-                winner = calculate_winner_details(state, seat, waits, :discard, true)
+                winner = calculate_winner_details(state, seat, :worst_discard)
                 worst_yaku = if Enum.empty?(winner.yaku2) do winner.yaku else winner.yaku2 end
 
                 # add honba
@@ -723,25 +728,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     {state, delta_scores} = cond do
       # handle sichuan style scoring best hands at draw (if any non-winner is tenpai)
-      Map.get(score_rules, "score_best_hand_at_draw", false) and map_size(state.winners) < 3 and Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? and seat not in state.winner_seats end) ->
+      Map.get(score_rules, "score_best_hand_at_draw", false)
+          and map_size(state.winners) < 3
+          and Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? and seat not in state.winner_seats end) ->
         # declare tenpai players as winners, as if they won from non-tenpai people (opponents)
         opponents = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
         # for each tenpai player who hasn't won, find the highest point hand they could get
-        win_definitions = translate_match_definitions(state, ["win"])
         winners_before = state.winner_seats
         state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners_before, reduce: state do
           state ->
-            # calculate possible waits
-            winner = state.players[seat]
-            waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_behavior)
-
-            # display nothing if waits are empty
-            # shouldn't happen under normal conditions, since tenpai implies nonempty waits
-            waits = if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
-
             # calculate new winner object
             state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
-            winner = calculate_winner_details(state2, seat, waits, :draw)
+            winner = calculate_winner_details(state2, seat, :best_draw)
             |> Map.put(:opponents, opponents)
             |> Map.put(:best_hand_at_draw, true)
 
@@ -970,11 +968,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   # generate a winner object for a given seat
-  def calculate_winner_details(state, seat, possible_winning_tiles, win_source, get_worst_yaku \\ false) do
+  def calculate_winner_details(state, seat, win_source) do
     score_rules = state.rules["score_calculation"]
 
     # add winning hand to the winner player (yaku conditions often check this)
-    winning_tile = Enum.at(possible_winning_tiles, 0, nil)
+    winning_tiles = get_winning_tiles(state, seat, win_source)
+    winning_tile = if MapSet.size(winning_tiles) == 1 do Enum.at(winning_tiles, 0) else nil end
     call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
     state = update_player(state, seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | winning_hand: winning_hand } })
@@ -1020,6 +1019,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # find the maximum score obtainable across all joker assignments
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
+    get_worst_yaku = win_source == :worst_discard
     %{
       state: state,
       joker_assignment: joker_assignment,
@@ -1041,22 +1041,24 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # temporarily replace winner's hand with joker assignment to determine yaku
         prev_hand = state.players[seat].hand
         prev_calls = state.players[seat].calls
-        {state, assigned_winning_tile} = apply_joker_assignment(state, seat, joker_assignment, winning_tile)
+        state = apply_joker_assignment(state, seat, joker_assignment, win_source)
 
         # run before_scoring actions
         state = if Map.has_key?(state.rules, "before_scoring") do
-          Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, winning_tile: assigned_winning_tile, win_source: win_source})
+          Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: win_source})
         else state end
 
+        # get winning tile after before_scoring does its thing
+        winning_tiles = get_winning_tiles(state, seat, win_source)
+
         # obtain yaku and minipoints
-        winning_tiles = if winning_tile != nil do [assigned_winning_tile] else possible_winning_tiles end
         {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
         {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
           get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
         else {[], minipoints, new_winning_tile} end
         if Debug.print_wins() do
           assigned_winning_hand = state.players[seat].cache.winning_hand
-          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(assigned_winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(new_winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
         end
 
         # winning tile is nil if you won with e.g. 14 tiles in hand self draw
