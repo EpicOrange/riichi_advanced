@@ -23,9 +23,16 @@ def nine_to_ten:
 |
 # add ten ordering
 .after_start.actions += [
-  ["set_tile_ordering", ["9m", "10m"]],
-  ["set_tile_ordering", ["9p", "10p"]],
-  ["set_tile_ordering", ["9s", "10s"]]
+  # check for space mahjong to see if we need to connect 10 to 1
+  ["when", [{"name": "match", "opts": [["1m", "9m"], [[[[[0, 1]], 1]]]]}], [
+    ["set_tile_ordering_all", ["10m", "1m"]],
+    ["set_tile_ordering_all", ["10p", "1p"]],
+    ["set_tile_ordering_all", ["10s", "1s"]]
+  ]],
+  # after that we can replace 9 to connect to 10
+  ["set_tile_ordering_all", ["9m", "10m"]],
+  ["set_tile_ordering_all", ["9p", "10p"]],
+  ["set_tile_ordering_all", ["9s", "10s"]]
 ]
 |
 # expand dora indicator map, if it exists

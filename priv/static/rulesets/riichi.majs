@@ -84,7 +84,7 @@ define_match tenpai,
   exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
   | exhaustive, (shuntsu koutsu):4
   | (nojoker koutsu):-1, pair:6
-  | unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match tenpai_14,
@@ -92,12 +92,12 @@ define_match tenpai_14,
   exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
   | exhaustive, (shuntsu koutsu):4
   | (nojoker quad):-1, koutsu:-2, pair:6
-  | unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match kokushi_tenpai,
   ~m"""
-  unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match win,
@@ -114,7 +114,7 @@ define_match standard_win,
 
 define_match kokushi,
   ~m"""
-  unique, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):13, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):13, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
 define_match shousuushii,
@@ -162,7 +162,26 @@ define_yaku yaku, "Seat Wind", 1,
   or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, (shuntsu koutsu):3, pair:1"))
   or (seat_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, (shuntsu koutsu):3, pair:1"))
 define_yaku yaku, "Chiitoitsu", 2, match(["hand", "calls", "winning_tile"], ~m"quad:-1, pair:7")
-define_yaku yaku, "Chanta", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (junchan_1 junchan_2 junchan_3 junchan_4 junchan_5 junchan_6 junchan_7 junchan_8 junchan_9 junchan_10 junchan_11 junchan_12 ton nan shaa pei haku hatsu chun):4, (junchan_pair_1 junchan_pair_2 junchan_pair_3 junchan_pair_4 junchan_pair_5 junchan_pair_6 ton_pair nan_pair shaa_pair pei_pair haku_pair hatsu_pair chun_pair):1")
+
+# welcome to the chanta zone
+on before_scoring do
+  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+end
+define_set terminal_l, ~s"0@terminal 1 2"
+define_set terminal_r, ~s"0 1 2@terminal"
+define_set terminal_t, ~s"0@terminal 0 0"
+define_set terminal_pair, ~s"0@terminal 0"
+define_set yaochuu_l, ~s"0@yaochuu 1 2"
+define_set yaochuu_r, ~s"0 1 2@yaochuu"
+define_set yaochuu_t, ~s"0@yaochuu 0 0"
+define_set yaochuu_pair, ~s"0@yaochuu 0"
+define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
+define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1" 
+define_yaku yaku, "Chanta", 1, match(["hand", "calls", "winning_tile"], ["chanta"])
+define_yaku yaku, "Junchan", 2, match(["hand", "calls", "winning_tile"], ["junchan"])
+# now leaving the chanta zone
+
 define_yaku yaku, "Ittsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsu:1, (shuntsu koutsu):1, pair:1")
 define_yaku yaku, "Sanshoku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, (shuntsu koutsu):1, pair:1")
 define_yaku yaku, "Sanshoku Doukou", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, (shuntsu koutsu):1, pair:1")
@@ -173,7 +192,6 @@ define_yaku yaku, "Sanankou", 2,
 define_yaku yaku, "Shousangen", 2, match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
 define_yaku yaku, "Honroutou", 2, winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
 define_yaku yaku, "Ryanpeikou", 3, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
-define_yaku yaku, "Junchan", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (junchan_1 junchan_2 junchan_3 junchan_4 junchan_5 junchan_6 junchan_7 junchan_8 junchan_9 junchan_10 junchan_11 junchan_12):4, (junchan_pair_1 junchan_pair_2 junchan_pair_3 junchan_pair_4 junchan_pair_5 junchan_pair_6):1")
 define_yaku yaku, "Honitsu", 2,
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z")
@@ -695,7 +713,7 @@ define_mod_category "Other"
 define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
 define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Everyone plays with tiles shown."
-define_mod ten, order: 1, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
+define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
 define_mod star_suit, order: 2, name: "Star Suit (beta)", desc: "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
 define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 define_mod galaxy, order: 2, conflicts: ["chinitsu"], name: "Galaxy Mahjong", desc: "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
@@ -980,12 +998,12 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "min_han", config: %{min: 1}},
   "cancellable_riichi",
   "immediate_kan_dora",
-  "ten",
   "yaku/ippatsu",
   "star_suit",
   "space",
   "galaxy",
   "shiro_pocchi",
+  "ten",
   %{name: "aka", config: %{man: 2, pin: 2, sou: 2}},
   %{name: "ao", config: %{man: 1, pin: 1, sou: 1}},
   %{name: "kin", config: %{man: 1, pin: 1, sou: 1}},
