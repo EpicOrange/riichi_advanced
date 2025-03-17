@@ -304,6 +304,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     called_tile = case call_source do
       :discards -> Enum.at(state.players[state.turn].pond, -1)
       :hand     -> called_tile
+      :draw     -> called_tile
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
 
@@ -328,6 +329,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     {state, to_remove} = case call_source do
       :discards -> {update_player(state, state.turn, &%Player{ &1 | pond: Enum.drop(&1.pond, -1) }), call_choice}
       :hand     -> {state, if called_tile != nil do [called_tile | call_choice] else call_choice end}
+      :draw     -> {state, if called_tile != nil do [called_tile | call_choice] else call_choice end}
       _         ->
         IO.puts("Unhandled call_source #{inspect(call_source)}")
         {state, call_choice}
@@ -520,7 +522,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         winning_tiles = Utils.apply_tile_aliases(winning_tiles, tile_behavior) |> Utils.strip_attrs()
 
         for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
-          hand_calls_fu -> case action do # IO.inspect(hand_calls_fu, label: action)
+          hand_calls_fu -> case action do # IO.inspect(hand_calls_fu, label: action);
             "put_calls_in_hand" ->
               for {hand, calls, fu} <- hand_calls_fu do
                 {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in opts end)
