@@ -1,4 +1,3 @@
-
 # replace closed call check
 apply replace_all, "", [["chii", "pon", "daiminkan", "kakan"], ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]]
 apply replace_all, "buttons.kakan.show_when", [["kakan"], ["kakan", "kakakan"]]
@@ -9,12 +8,14 @@ def do_kan_draw do
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
+# chankan should work on kakakan
+# TODO make last_call_is a constant
 define_button chankan,
   display_name: "Ron", 
   show_when: not_our_turn
     and match(["hand", "calls"], ["tenpai"])
     and status_missing("furiten", "just_reached")
-    and last_call_is("kakan", "pei")
+    and last_call_is("kakan", "kakakan", "pei")
     and match(["hand", "calls", "last_called_tile"], ["win"])
   do
     big_text("Ron")
@@ -125,10 +126,7 @@ define_button anfuun,
     and status_missing("just_reached")
     and (status_missing("riichi") or not_call_would_change_waits("win"))
     and self_call_available,
-  call_conditions:
-        can_discard_after_call
-    and match(["called_tile"], ~m"(1z 2z 3z 4z):1")
-    and (status_missing("riichi") or not_call_changes_waits("win")),
+  call_conditions: match(["called_tile"], ~m"(1z 2z 3z 4z):1") and (status_missing("riichi") or not_call_changes_waits("win")),
   call: [[1, 2, 3]],
   call_style: %{
     self: [["1x", 2], 0, 1, ["1x", 3]]
@@ -149,7 +147,7 @@ define_button kapon,
     and status_missing("just_reached")
     and (status_missing("riichi") or not_call_would_change_waits("win"))
     and can_upgrade_call,
-  call_conditions: can_discard_after_call and (status_missing("riichi") or not_call_changes_waits("win")),
+  call_conditions: status_missing("riichi") or not_call_changes_waits("win"),
   call: [[0, 0]],
   upgrades: "ton",
   call_style: %{
@@ -170,7 +168,7 @@ define_button kakakan,
     and status_missing("just_reached")
     and (status_missing("riichi") or not_call_would_change_waits("win"))
     and can_upgrade_call,
-  call_conditions: can_discard_after_call and (status_missing("riichi") or not_call_changes_waits("win")),
+  call_conditions: status_missing("riichi") or not_call_changes_waits("win"),
   call: [[0, 0, 0]],
   upgrades: "kapon",
   call_style: %{

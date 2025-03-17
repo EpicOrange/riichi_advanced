@@ -827,6 +827,12 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
   end
 
   test "riichi - sanankou after completing sequence" do
+    # tsumo = 22 fu
+    # ankan 2p = 16 fu
+    # closed 1m = 8 fu
+    # closed 3z = 8 fu
+    # yakuhai 5z pair = 2 fu
+    # total 56 = 60 fu
     TestUtils.test_yaku_advanced("riichi", ["kan"], """
     {
       "starting_hand": {

@@ -1,0 +1,78 @@
+define_set kontsu_123, ~s"1z 2z 3z"
+define_set kontsu_124, ~s"1z 2z 4z"
+define_set kontsu_134, ~s"1z 3z 4z"
+define_set kontsu_234, ~s"2z 3z 4z"
+define_set kontsu_567, ~s"5z 6z 7z"
+define_set fuun, ~s"1z 2z 3z 4z"
+define_set ryandoukon, ~s"0 10 20, 0 10 20"
+define_set sandoukon, ~s"0 10 20, 0 10 20, 0 10 20"
+define_set yondoukon, ~s"0 10 20, 0 10 20, 0 10 20, 0 10 20"
+
+# handle mini-sangen counting
+on before_scoring do
+  set_counter("mini_sangen", 0)
+  # count each mini sangen and multiply by 0.5
+  add_counter("mini_sangen", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_567:1")
+  multiply_counter("mini_sangen", 0.5)
+end
+define_yaku yaku, "Mini-Sangen", "mini_sangen", counter_at_least("mini_sangen", 0.5)
+
+# handle mixed winds counting
+on before_scoring do
+  set_counter("mixed_winds", 0)
+  # count mixed winds that contain both prevalent and seat wind
+  unless round_wind_is("north") and seat_is("north") do
+    add_counter("mixed_winds_123", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_123:1")
+  end
+  unless round_wind_is("west") and seat_is("west") do
+    add_counter("mixed_winds_124", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_124:1")
+  end
+  unless round_wind_is("south") and seat_is("south") do
+    add_counter("mixed_winds_134", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_134:1")
+  end
+  unless round_wind_is("east") and seat_is("east") do
+    add_counter("mixed_winds_234", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_234:1")
+  end
+  # the above counts will count fuuns, so subtract fuun count from each
+  # "fuuns" in hand also contribute to double counting
+  add_counter("fuun_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"fuun:1")
+  subtract_counter("mixed_winds_123", "fuun_count")
+  subtract_counter("mixed_winds_124", "fuun_count")
+  subtract_counter("mixed_winds_134", "fuun_count")
+  subtract_counter("mixed_winds_234", "fuun_count")
+  # add the counts up and multiply by 0.5
+  if counter_at_least("mixed_winds_123", 1) do
+    add_counter("mixed_winds", "mixed_winds_123")
+  end
+  if counter_at_least("mixed_winds_124", 1) do
+    add_counter("mixed_winds", "mixed_winds_124")
+  end
+  if counter_at_least("mixed_winds_134", 1) do
+    add_counter("mixed_winds", "mixed_winds_134")
+  end
+  if counter_at_least("mixed_winds_234", 1) do
+    add_counter("mixed_winds", "mixed_winds_234")
+  end
+  if counter_at_least("fuun_count", 1) do
+    add_counter("mixed_winds", "fuun_count")
+  end
+  multiply_counter("mixed_winds", 0.5)
+end
+define_yaku yaku, "Mixed Winds", "mixed_winds", counter_at_least("mixed_winds", 0.5)
+
+# other kontsu yaku
+
+define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+
+define_yaku yaku, "Toikon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_dragons):4, pair:1")
+define_yaku yaku, "Ryandoukon", 1, "@closed_hand" and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, (shuntsu koutsu kontsu):2, pair:1")
+define_yaku yaku, "Sandoukon", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, (shuntsu koutsu kontsu):1, pair:1")
+remove_yaku yaku, "Rinshan"
+define_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+define_yaku yakuman, "Yondoukon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1")
+define_yaku meta_yaku, "Toikon", 1, @closed_hand and has_existing_yaku("Toikon")
+define_yaku meta_yaku, "Sandoukon", 1, @closed_hand and has_existing_yaku("Sandoukon")
+
+define_yaku_precedence "Sanshoku Doukou", ["Sandoukon"]
+define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
+define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
