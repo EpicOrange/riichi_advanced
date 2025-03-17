@@ -835,7 +835,7 @@
       ]
     ],
     "calculate_fu": [
-      ["set_counter", "fu", "minipoints",
+      ["set_counter", "fu", "minipoints", [
         ["remove_attrs"],
         // score calls
         ["convert_calls", {"pon": 2}],
@@ -843,7 +843,7 @@
         ["convert_calls", {"pon": 2}],
         ["remove_calls"],
         // now remove the winning group
-        ["remove_winning_groups",
+        ["remove_winning_groups", [
           // kanchan
           {"group": [-1, 1], "value": 2},
           // penchan
@@ -856,14 +856,14 @@
           {"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2},
           // tanki
           {"group": [0], "value": 2, "yakuhai_value": 2}
-        ],
+        ]],
         // now remove all closed groups
-        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
-        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
-        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
-        ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+        ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
+        ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
+        ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
+        ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
         // remove final pair, if any
-        ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
+        ["remove_groups", [{"group": [0, 0], "yakuhai_value": 2}]],
         // only retain configurations with 0 tiles remaining
         ["retain_empty_hands"],
         // add 1000 to pinfu hands so we prioritize pinfu later
@@ -895,7 +895,7 @@
         ["add", 40, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
         ["add", 30, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
         ["take_maximum"]
-      ]
+      ]]
     ]
   },
   "after_initialization": {

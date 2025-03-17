@@ -1,0 +1,85 @@
+apply set, "score_calculation.limit_thresholds", [
+  [3, 70], [4, 40], [5, 0],
+  [6, 0],
+  [8, 0],
+  [11, 0],
+  [13, 0],
+  [18, 0],
+  [26, 0],
+  [39, 0],
+  [52, 0],
+  [65, 0],
+  [78, 0],
+  [91, 0],
+  [104, 0]
+]
+apply set, "score_calculation.limit_scores", [
+  8000, 8000, 8000,
+  12000,
+  16000,
+  24000,
+  32000,
+  48000,
+  64000,
+  96000,
+  128000,
+  160000,
+  192000,
+  224000,
+  256000
+]
+apply set, "score_calculation.limit_names", [
+  "Mangan", "Mangan", "Mangan",
+  "Haneman",
+  "Baiman",
+  "Sanbaiman",
+  "Yakuman",
+  "Haneyakuman",
+  "Double Yakuman",
+  "Triple Yakuman",
+  "Quadruple Yakuman",
+  "Quintuple Yakuman",
+  "Sextuple Yakuman",
+  "Septuple Yakuman",
+  "Octuple Yakuman"
+]
+
+on after_win do
+  # tsubame gaeshi awards the riichi bet
+  if has_existing_yaku("Tsubame Gaeshi") do
+    as last_discarder do
+      put_down_riichi_stick
+    end
+  end
+end
+
+# modify yaku
+remove_yaku yaku, ["Rinshan", "Chiitoitsu", "Ryanpeikou", "Chankan"]
+define_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+define_yaku yaku, "Chiitoitsu", 1, match(["hand", "calls", "winning_tile"], ~m"quad:-1, pair:7")
+define_yaku yaku, "Ryanpeikou", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
+define_yaku yaku, "Chankan", 1, last_call_is("kakan", "kakakan")
+define_yaku meta_yaku, "Chiitoitsu", 1, has_existing_yaku("Chiitoitsu") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+define_yaku meta_yaku, "Ryanpeikou", 2, has_existing_yaku("Ryanpeikou") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+
+# add chiitoitsu back to win definitions
+define_match tenpai,
+  ~m"""
+  exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
+  | exhaustive, (shuntsu koutsu):4
+  | (nojoker koutsu):-1, pair:6
+  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  """
+define_match tenpai_14,
+  ~m"""
+  exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
+  | exhaustive, (shuntsu koutsu):4
+  | (nojoker quad):-1, koutsu:-2, pair:6
+  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  """
+define_match win,
+  ~m"""
+  exhaustive, (shuntsu koutsu):4, pair:1
+  | (nojoker quad):-1, pair:7
+  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):13, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
+  """

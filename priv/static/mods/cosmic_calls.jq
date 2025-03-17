@@ -40,6 +40,10 @@ if (.buttons | has("riichi")) then
   .buttons.riichi.show_when |= map(replace_closed_call_check)
 else . end
 |
+if (.buttons | has("chankan")) then
+  .buttons.chankan.show_when |= walk(replace(["kakan"]; ["kakan", "kakakan"]))
+else . end
+|
 # we need this in case kan mod is not enabled
 .functions.do_kan_draw = [
   ["set_status", "$status"],
@@ -120,7 +124,7 @@ else . end
       "shimocha": [0, ["sideways", 1], "call_sideways"]
     },
     "upgrades": "ton",
-    "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+    "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
     "actions": [["big_text", "Pon"], ["upgrade_call"]]
   },
   "kakakan": {
@@ -131,7 +135,7 @@ else . end
       "shimocha": [0, ["sideways", 1], ["sideways", 2], "call_sideways"]
     },
     "upgrades": "kapon",
-    "show_when": ["our_turn", "not_no_tiles_remaining", "not_just_discarded", "not_just_called", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+    "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
     "actions": [["big_text", "Kan"], ["upgrade_call"], ["run", "do_kan_draw", {"status": "kan"}]]
   },
   "kafuun": {
