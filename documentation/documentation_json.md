@@ -1287,15 +1287,15 @@ There are a number of statuses you can set on players that can modify their scor
 
 If you want to calculate fu (minipoints), then you need to set the `fu` counter any time before or during `before_scoring`, or else it will default to 0 fu. To do so, run the following action:
 
-    ["set_counter", "fu", "minipoints",
+    ["set_counter", "fu", "minipoints", [
       action1,
       action2,
       ...
-    ]
+    ]]
 
 Fu calculation is done by a series of manipulations described by the action list above. For example, riichi uses the following (assuming kan is disabled):
 
-    ["set_counter", "fu", "minipoints",
+    ["set_counter", "fu", "minipoints", [
       ["remove_attrs"],
       // score calls
       ["convert_calls", {"pon": 2}],
@@ -1303,7 +1303,7 @@ Fu calculation is done by a series of manipulations described by the action list
       ["convert_calls", {"pon": 2}],
       ["remove_calls"],
       // now remove the winning group
-      ["remove_winning_groups",
+      ["remove_winning_groups", [
         // kanchan
         {"group": [-1, 1], "value": 2},
         // penchan
@@ -1316,12 +1316,12 @@ Fu calculation is done by a series of manipulations described by the action list
         {"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2},
         // tanki
         {"group": [0], "value": 2, "yakuhai_value": 2}
-      ],
+      ]],
       // now remove all closed groups
-      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
-      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
-      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
-      ["remove_groups", {"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}],
+      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
+      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
+      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
+      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
       // remove final pair, if any
       ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
       // only retain configurations with 0 tiles remaining
@@ -1355,7 +1355,7 @@ Fu calculation is done by a series of manipulations described by the action list
       ["add", 40, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
       ["add", 30, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
       ["take_maximum"]
-    ]
+    ]]
 
 Essentially, fu calculations start with the winning hand and calls scoring 0 fu. Each fu calculation action manipulates one of these three (hand, calls, fu):
 

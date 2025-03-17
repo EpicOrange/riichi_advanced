@@ -520,11 +520,11 @@ defmodule RiichiAdvanced.Utils do
   end
 
   def walk_json(action, fun) do
-    # this just walks the action and calls fun on every leaf
-    case action do
-      _ when is_list(action) -> Enum.map(action, &walk_json(&1, fun))
-      _ when is_map(action) -> Map.new(action, fn {k, v} -> {k, walk_json(v, fun)} end)
-      _ -> fun.(action)
+    # this just walks the action and calls fun on every node
+    case fun.(action) do
+      action when is_list(action) -> Enum.map(action, &walk_json(&1, fun))
+      action when is_map(action) -> Map.new(action, fn {k, v} -> {k, walk_json(v, fun)} end)
+      action -> action
     end
   end
 

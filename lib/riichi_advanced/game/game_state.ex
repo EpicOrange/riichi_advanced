@@ -351,7 +351,20 @@ defmodule RiichiAdvanced.GameState do
         {state, %{}}
     end
 
+    # verify rules
     state = check_rules(state, rules)
+
+    # replace all @ constants in rules
+    rules = if Map.has_key?(rules, "constants") do
+      Utils.walk_json(rules, fn
+        value when is_binary(value) ->
+          cond do
+            String.starts_with?(value, "@") -> Map.get(rules["constants"], String.replace_leading(value, "@", ""), value)
+            true -> value
+          end
+        value -> value
+      end)
+    else rules end
 
     state = Map.put(state, :rules, rules)
 

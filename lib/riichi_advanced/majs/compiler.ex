@@ -102,7 +102,10 @@ defmodule RiichiAdvanced.Compiler do
           if args != nil do
             # each action in a do block should be treated as another parameter
             args = Enum.map(Enum.with_index(args), &case &1 do
-              {[do: actions], _i} -> compile_action_list(actions, line, column)
+              {[do: actions], _i} ->
+                with {:ok, action_list} <- compile_action_list(actions, line, column) do
+                  {:ok, [action_list]}
+                end
               {arg, i} when name == "add" and i == 1 ->
                 with {:ok, condition} <- compile_cnf_condition(arg, line, column) do
                   {:ok, [condition]}
@@ -148,6 +151,18 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_command("var", name, args, line, column) do
+    value = case args do
+      [value] -> {:ok, value}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `set` command expects only one value, got #{inspect(args)}"}
+    end
+    with {:ok, value} <- value,
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value) do
+      {:ok, ".[#{name}] = #{value}"}
+    end
+  end
+
   defp compile_command("def", name, args, line, column) do
     with {:ok, actions} <- compile_action_list(args, line, column),
          {:ok, actions} <- Validator.validate_json(actions),
@@ -176,7 +191,11 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, {path, value}} <- path_value,
          {:ok, value_val} <- (case Validator.validate_json(value) do
                                {:ok, value_val} -> {:ok, value_val}
-                               {:error, _} -> compile_cnf_condition(value, line, column)
+                               {:error, _} ->
+                                 case compile_cnf_condition(value, line, column) do
+                                  {:ok, value_val} -> {:ok, value_val}
+                                  {:error, _} -> compile_action_list(Keyword.get(value, :do), line, column)
+                                 end
                              end),
          {:ok, value} <- Jason.encode(value_val) do
       path = if String.starts_with?(path, ".") do path else "." <> path end
@@ -253,6 +272,19 @@ defmodule RiichiAdvanced.Compiler do
       # `name` is already escaped, so we just insert _definition right before the last quote
       name = Utils.insert_at(name, "_definition", -2)
       {:ok, ".[#{name}] = #{match_spec}"}
+    end
+  end
+
+  defp compile_command("define_const", name, args, line, column) do
+    json = case args do
+      [json] -> {:ok, json}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_const` command expects a single JSON value, got #{inspect(args)}"}
+    end
+
+    with {:ok, json} <- json,
+         {:ok, json} <- Validator.validate_json(json),
+         {:ok, json} <- Jason.encode(json) do
+      {:ok, ".constants[#{name}] = #{json}"}
     end
   end
 

@@ -53,7 +53,7 @@ defmodule RiichiAdvanced.Validator do
     base_name in @allowed_conditions
   end
 
-  @valid_path_regex ~r/^(\.[a-zA-Z0-9_]+)+$/
+  @valid_path_regex ~r/^(\.[a-zA-Z0-9_]+|\[-?[0-9]+\])+$/
   def validate_json_path(path) when is_binary(path) do
     path == "." or Regex.match?(@valid_path_regex, path)
   end

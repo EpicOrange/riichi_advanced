@@ -150,7 +150,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def from_seats_spec(state, context, seat_spec) do
     negated = is_binary(seat_spec) and String.starts_with?(seat_spec, "not_")
-    seat_spec = if negated do String.slice(seat_spec, 4..-1//1) else seat_spec end
+    seat_spec = if negated do String.replace_leading(seat_spec, "not_", "") else seat_spec end
     seats = case seat_spec do
       "all" -> state.available_seats
       "everyone" -> state.available_seats
@@ -195,7 +195,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     t = System.os_time(:millisecond)
 
     negated = String.starts_with?(cond_spec, "not_")
-    cond_spec = if negated do String.slice(cond_spec, 4..-1//1) else cond_spec end
+    cond_spec = if negated do String.replace_leading(cond_spec, "not_", "") else cond_spec end
     last_action = get_last_action(state)
     last_call_action = get_last_call_action(state)
     last_discard_action = get_last_discard_action(state)

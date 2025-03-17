@@ -511,7 +511,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["score" | _opts] when is_map_key(context, :score) -> context.score
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
-        score_actions = opts
+        score_actions = Enum.at(opts, 0)
         yakuhai = Scoring.get_yakuhai(state, context.seat)
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
@@ -555,7 +555,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 {hand, [], fu}
               end
             "remove_winning_groups" ->
-              Enum.flat_map(opts, fn group_spec ->
+              Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
                 group = Map.get(group_spec, "group", [])
                 reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
                 reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
@@ -584,7 +584,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
               end) ++ hand_calls_fu
             "remove_groups" ->
-              Enum.flat_map(opts, fn group_spec ->
+              Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
                 group = Map.get(group_spec, "group", [])
                 reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
                 reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
@@ -953,7 +953,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     marked_objects = state.marking[context.seat]
     uninterruptible = String.starts_with?(action, "uninterruptible_")
-    action = if uninterruptible do String.slice(action, 16..-1//1) else action end
+    action = if uninterruptible do String.replace_leading(action, "uninterruptible_", "") else action end
     state = case action do
       "noop"                  -> state
       "print"                 ->

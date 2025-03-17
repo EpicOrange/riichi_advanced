@@ -1256,7 +1256,7 @@ Fu calculation is done by a series of manipulations described by the action list
       remove_calls
     
       # now remove the winning group
-      remove_winning_groups(
+      remove_winning_groups([
         # kanchan
         %{group: [-1, 1], value: 2},
         # penchan
@@ -1269,16 +1269,16 @@ Fu calculation is done by a series of manipulations described by the action list
         %{group: [0, 0], value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
         # tanki
         %{group: [0], value: 2, yakuhai_value: 2}
-      )
+      ])
     
       # now remove all closed groups
-      remove_groups(%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2})
-      remove_groups(%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2})
-      remove_groups(%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2})
-      remove_groups(%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2})
+      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
     
       # remove final pair, if any
-      remove_groups(%{group: [0, 0], yakuhai_value: 2})
+      remove_groups([%{group: [0, 0], yakuhai_value: 2}])
     
       # only retain configurations with 0 tiles remaining
       retain_empty_hands
@@ -1293,8 +1293,8 @@ Fu calculation is done by a series of manipulations described by the action list
       add(2, won_by_draw and (minipoints_at_most(999) or not_has_no_call_named("chii", "pon", "daiminkan", "kakan")))
     
       # closed ron +10 and open pinfu ron +10
-      add(10, "not_won_by_draw" and has_no_call_named("chii", "pon", "daiminkan", "kakan"))
-      add(10, "not_won_by_draw" and not_has_no_call_named("chii", "pon", "daiminkan", "kakan") and minipoints_at_least(1000))
+      add(10, not_won_by_draw and has_no_call_named("chii", "pon", "daiminkan", "kakan"))
+      add(10, not_won_by_draw and not_has_no_call_named("chii", "pon", "daiminkan", "kakan") and minipoints_at_least(1000))
     
       # take max, then subtract 1000 from pinfu hands
       take_maximum
