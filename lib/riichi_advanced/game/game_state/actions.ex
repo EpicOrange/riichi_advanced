@@ -338,7 +338,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     draw = Utils.add_attr(state.players[seat].draw, ["_hand"])
     new_hand = Match.try_remove_all_tiles(hand ++ draw, to_remove) |> Enum.at(0) |> Utils.remove_attr(["_hand", "_draw"])
     new_hand = if new_hand == nil do
-      Logger.error("Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
+      Logger.error("trigger_call: Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       hand
     else new_hand end
 

@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_set(set_spec) do
-    set_spec = for subgroup <- String.split(set_spec, "|", trim: true) |> Enum.map(&String.trim/1) do
+    set_spec = for subgroup <- String.split(set_spec, ",", trim: true) |> Enum.map(&String.trim/1) do
       for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
         # check for attributes
         item_attrs = case String.split(item, "@") |> Enum.map(&String.trim/1) do

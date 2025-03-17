@@ -201,6 +201,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     last_discard_action = get_last_discard_action(state)
     cxt_player = if Map.has_key?(context, :seat) do state.players[context.seat] else nil end
     result = case cond_spec do
+      "not"                         -> not check_cnf_condition(state, Enum.at(opts, 0), context)
       "true"                        -> true
       "false"                       -> false
       "print"                       ->
@@ -563,6 +564,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
         done_calculating and Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
       "can_discard_after_call" ->
         # simulate the call
+        # TODO need to call upgrade_call instead, in the case of upgrade calls
+        # though there's not yet a need to check this condition for upgrade calls
         state2 = Actions.trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, context.call_source, true)
         hand2 = state2.players[context.seat].hand ++ state2.players[context.seat].draw
         Enum.any?(hand2, &is_playable?(state2, context.seat, &1))
