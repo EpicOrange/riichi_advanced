@@ -377,12 +377,12 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     TestUtils.test_yaku_advanced("fuzhou", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "east": ["3m", "3m", "3m", "6m", "6m", "7m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
-      "starting_draws": ["6m", "5s", "3s", "1s", "8m"],
+      "starting_draws": ["5m", "5s", "3s", "1s", "8m"],
       "starting_dead_wall": ["8m"]
     }
     """, [
@@ -390,7 +390,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
-      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => false},
       %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "1s", "player" => 3, "tsumogiri" => true},
@@ -406,12 +406,12 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     TestUtils.test_yaku_advanced("fuzhou", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "5m", "6m", "7m", "8m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "east": ["3m", "3m", "6m", "6m", "7m", "8m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
-      "starting_draws": ["6m", "5s", "3s", "1s", "8m"],
+      "starting_draws": ["5m", "5s", "3s", "1s", "8m"],
       "starting_dead_wall": ["8m"]
     }
     """, [
@@ -419,7 +419,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
-      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "1s", "player" => 3, "tsumogiri" => true},

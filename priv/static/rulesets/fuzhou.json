@@ -1,10 +1,10 @@
 {
-// TODOs:
-  //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
-// mods/rule-variants
-  // reddit post says only red dragon is a flower, not all 3 dragons
-  // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
-  // mahjongpros also seem to have a few more yaku
+  // TODOs:
+    //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
+  // mods/rule-variants
+    // reddit post says only red dragon is a flower, not all 3 dragons
+    // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
+    // mahjongpros also seem to have a few more yaku
   
   "default_mods": ["show_waits"],
   "available_mods": [
@@ -208,18 +208,24 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start", "qiangjin"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "match_start"],
       ["run", "flip_gold_tile"],
-        // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
+      // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
       ["add_attr_tagged", "jin", ["_dora", "jin"]],
-        // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
-      ["set_tile_alias_all", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]]
+      // before making jin a joker, check for qiangjin for all players
+      ["as", "everyone", [
+        ["when", [{"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}], [
+          ["set_status", "qiangjin"]
+        ]]
+      ]],
+      // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
+      ["set_tile_alias", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]],
+      ["set_status_all", "first_turn", "match_start"]
     ]
   },
   "before_win": {
@@ -240,7 +246,7 @@
       "show_when": [
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
-        {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "status_missing", "opts": ["qiangjin", "flower", "no_flowers"]},
         {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [
@@ -258,7 +264,7 @@
       "show_when": [
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
-        {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "status_missing", "opts": ["qiangjin", "flower", "no_flowers"]},
         {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["move_tiles", "draw", "hand"], ["advance_turn"]],
@@ -376,12 +382,20 @@
     "qiangjin": {
       "display_name": "Qiangjin",
       "show_when": [
-        {"name": "status", "opts": ["match_start"]},
-        {"name": "status_missing", "opts": ["flower"]},
-        {"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
+        {"name": "status_missing", "opts": ["flower"]}
       ],
       "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["set_status", "qiangjin"], ["win_by_draw"]],
       "precedence_over": ["start_flower", "start_no_flower"],
+      "unskippable": true
+    },
+    "qiangjin_skip": {
+      "display_name": "Skip",
+      "show_when": [
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
+        {"name": "status_missing", "opts": ["flower"]}
+      ],
+      "actions": [["unset_status", "qiangjin"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "tsumo": {
