@@ -23,6 +23,10 @@ defmodule RiichiAdvanced.Validator do
   def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
   def validate_json(ast) when is_binary(ast), do: {:ok, String.replace(ast, "\\(", "\\\\(")} # disallow any string interpolation
   def validate_json(ast) when is_list(ast), do: ast |> Enum.map(&validate_json(&1)) |> Utils.sequence()
+  def validate_json({:@, _, [{name, _, nil}]}), do: validate_constant(name)
+  def validate_json({:+, _, [{name, _, nil}]}), do: validate_variable(name)
+  def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(name)
+  def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(name)
   def validate_json(ast) when is_map(ast), do: validate_map(ast)
   def validate_json({:%{}, _pos, contents}), do: validate_map(contents)
   def validate_json(not_json) do
@@ -50,8 +54,10 @@ defmodule RiichiAdvanced.Validator do
   def validate_condition_name(name) when is_binary(name) do
     negated = is_binary(name) and String.starts_with?(name, "not_")
     base_name = if negated do String.replace_leading(name, "not_", "") else name end
-    base_name in @allowed_conditions or String.starts_with?(name, "@")
+    base_name in @allowed_conditions
   end
+  def validate_condition_name(%RiichiAdvanced.Compiler.Constant{}), do: true
+  def validate_condition_name(%RiichiAdvanced.Compiler.Variable{}), do: true
   def validate_condition_name(_name), do: false
 
   def validate_action_name(name) when is_binary(name) do
@@ -63,7 +69,32 @@ defmodule RiichiAdvanced.Validator do
 
   @valid_path_regex ~r/^(\.[a-zA-Z0-9_]+|\[-?[0-9]+\])+$/
   def validate_json_path(path) when is_binary(path) do
-    path == "." or Regex.match?(@valid_path_regex, path)
+    path = if String.starts_with?(path, ".") do path else "." <> path end
+    if path == "." or Regex.match?(@valid_path_regex, path) do
+      {:ok, path}
+    else
+      {:error, "got invalid path #{inspect(path)}"}
+    end
   end
+  def validate_json_path(path), do: {:error, "got non-string path #{inspect(path)}"}
 
+  @valid_constant_regex ~r/^[a-z_][a-z0-9_]*$/
+  def validate_constant(name) when is_binary(name) do
+    if Regex.match?(@valid_constant_regex, name) do
+      {:ok, %RiichiAdvanced.Compiler.Constant{name: name}}
+    else
+      {:error, "invalid constant name: #{inspect(name)}"}
+    end
+  end
+  def validate_constant(name), do: {:error, "non-string constant name: #{inspect(name)}"}
+
+  @valid_variable_regex ~r/^[a-z_][a-z0-9_]*$/
+  def validate_variable(name) when is_binary(name) do
+    if Regex.match?(@valid_variable_regex, name) do
+      {:ok, %RiichiAdvanced.Compiler.Variable{name: name}}
+    else
+      {:error, "invalid variable name: #{inspect(name)}"}
+    end
+  end
+  def validate_variable(name), do: {:error, "non-string variable name: #{inspect(name)}"}
 end

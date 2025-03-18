@@ -1,4 +1,30 @@
+defmodule RiichiAdvanced.Compiler.Constant do
+  defstruct [
+    name: "constant"
+  ]
+end
+
+defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Constant do
+  def encode(%RiichiAdvanced.Compiler.Constant{name: name}, opts) do
+    Jason.Encode.string("@" <> name, opts)
+  end
+end
+
+defmodule RiichiAdvanced.Compiler.Variable do
+  defstruct [
+    name: "variable"
+  ]
+end
+
+defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Variable do
+  def encode(%RiichiAdvanced.Compiler.Variable{name: name}, _opts) do
+    "$" <> name
+  end
+end
+
 defmodule RiichiAdvanced.Compiler do
+  alias RiichiAdvanced.Compiler.Constant
+  alias RiichiAdvanced.Compiler.Variable
   alias RiichiAdvanced.Parser
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
@@ -16,11 +42,15 @@ defmodule RiichiAdvanced.Compiler do
           false -> {:ok, {"false", []}}
           true -> {:ok, {"true", []}}
           condition when is_binary(condition) -> {:ok, {condition, []}}
-          {:@, _, [{constant, _, nil}]} when is_binary(constant) -> {:ok, {"@" <> constant, []}}
           {condition, _, nil} when is_binary(condition) -> {:ok, {condition, []}}
           {condition, _, opts} when is_binary(condition) -> {:ok, {condition, opts}}
           %{"name" => condition, "opts" => opts} -> {:ok, {condition, opts}}
-          _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
+          condition ->
+            case Validator.validate_json(condition) do
+              {:ok, %Constant{} = condition} -> {:ok, {condition, []}}
+              {:ok, %Variable{} = condition} -> {:ok, {condition, []}}
+              _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
+            end
         end
         with {:ok, {condition, opts}} <- condition,
              {:ok, opts} <- Parser.parse_sigils(opts),
@@ -80,7 +110,6 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action(action, line, column) do
     case action do
-      {:@, _pos, action} -> {:ok, Validator.validate_json(action)}
       {"if", [line: line, column: column], opts} ->
         case opts do
           [condition, actions] ->
@@ -163,7 +192,12 @@ defmodule RiichiAdvanced.Compiler do
             end
           end
         end
-      _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
+      action ->
+        case Validator.validate_json(action) do
+          {:ok, %Constant{} = action} -> {:ok, action}
+          {:ok, %Variable{} = action} -> {:ok, action}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
+        end
     end
   end
 
@@ -183,9 +217,15 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_constant(value, line, column) do
-    with {:error, _} <- Validator.validate_json(value),
-         {:error, _} <- compile_cnf_condition(value, line, column),
+    # this order is important: 
+    # compile_action will treat conditions as custom actions (function calls)
+    # validate_json will treat actions/conditions as raw JSON
+    # compile_cnf_condition defaults to a single condition
+    # and compile_action_list assumes a do block
+    with {:error, _} <- compile_condition(value, line, column),
          {:error, _} <- compile_action(value, line, column),
+         {:error, _} <- Validator.validate_json(value),
+         {:error, _} <- compile_cnf_condition(value, line, column),
          {:error, _} <- compile_action_list(Keyword.get(value, :do), line, column) do
       {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
     end
@@ -229,46 +269,59 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` command expects a jq path string and an optional string value, got #{inspect(args)}"}
     end
     with {:ok, {path, value}} <- path_value,
+         {:ok, path} <- Validator.validate_json_path(path),
          {:ok, value_val} <- compile_constant(value, line, column),
          {:ok, value} <- Jason.encode(value_val) do
-      path = if String.starts_with?(path, ".") do path else "." <> path end
-      if Validator.validate_json_path(path) do
-        operation = case Jason.decode!(name) do
-          "set"                                  -> {:ok, "#{path} = #{value}"}
-          "add"                                  -> {:ok, "#{path} += #{value}"}
-          "prepend"    when is_list(value_val)   -> {:ok, "#{path} |= #{value} + ."}
-          "prepend"                              -> {:ok, "#{path} |= #{Jason.encode!(List.wrap(value_val))} + ."}
-          "append"     when is_list(value_val)   -> {:ok, "#{path} += #{value}"}
-          "append"                               -> {:ok, "#{path} += #{Jason.encode!(List.wrap(value_val))}"}
-          "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
-          "merge"                                -> {:ok, "#{path} += #{Jason.encode!(Map.new(value_val))}"}
-          "subtract"                             -> {:ok, "#{path} -= #{value}"}
-          "delete"                               -> {:ok, "#{path} -= #{value}"}
-          "multiply"                             -> {:ok, "#{path} *= #{value}"}
-          "deep_merge"                           -> {:ok, "#{path} *= #{value}"}
-          "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
-          "modulo"     when is_number(value_val) -> {:ok, "#{path} %= #{value}"}
-          "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
-          "delete_key" when is_list(value_val)   ->
-            if Enum.all?(value_val, &is_binary/1) do
-              {:ok, "#{path} |= (reduce #{value}[] as $_k (.; del(.[$_k])))"}
-            else
-              {:error, "Compiler.compile: at line #{line}:#{column}, `apply delete_key` tried to delete a non-string or non-list-of-strings #{value}"}
-            end
-          "replace_all" when is_list(value_val)  ->
-            case value_val do
-              [from, to] -> {:ok, "#{path} |= walk(if . == #{Jason.encode!(from)} then #{Jason.encode!(to)} else . end)"}
-              _          -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply replace_all` requires a 2-element list [from, to] as the value"}
-            end
-          op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
-        end
-        with {:ok, operation} <- operation do
-          # only perform operation if the path exists
-          {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
-        end
-      else
-        {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid path #{path}"}
+      operation = case Jason.decode!(name) do
+        "set"                                  -> {:ok, "#{path} = #{value}"}
+        "add"                                  -> {:ok, "#{path} += #{value}"}
+        "prepend"    when is_list(value_val)   -> {:ok, "#{path} |= #{value} + ."}
+        "prepend"                              -> {:ok, "#{path} |= #{Jason.encode!(List.wrap(value_val))} + ."}
+        "append"     when is_list(value_val)   -> {:ok, "#{path} += #{value}"}
+        "append"                               -> {:ok, "#{path} += #{Jason.encode!(List.wrap(value_val))}"}
+        "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
+        "merge"                                -> {:ok, "#{path} += #{Jason.encode!(Map.new(value_val))}"}
+        "subtract"                             -> {:ok, "#{path} -= #{value}"}
+        "delete"                               -> {:ok, "#{path} -= #{value}"}
+        "multiply"                             -> {:ok, "#{path} *= #{value}"}
+        "deep_merge"                           -> {:ok, "#{path} *= #{value}"}
+        "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
+        "modulo"     when is_number(value_val) -> {:ok, "#{path} %= #{value}"}
+        "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
+        "delete_key" when is_list(value_val)   ->
+          if Enum.all?(value_val, &is_binary/1) do
+            {:ok, "#{path} |= (reduce #{value}[] as $_k (.; del(.[$_k])))"}
+          else
+            {:error, "Compiler.compile: at line #{line}:#{column}, `apply delete_key` tried to delete a non-string or non-list-of-strings #{value}"}
+          end
+        op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
+        _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
+      end
+      with {:ok, operation} <- operation do
+        # only perform operation if the path exists
+        {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
+      end
+    end
+  end
+
+  defp compile_command("replace", name, args, line, column) do
+    path_value1_value2 = case args do
+      [path, value1, value2] when is_binary(path) -> {:ok, {path, value1, value2}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace all` command expects a jq path string followed by two values, `to_replace` and `replacement`, instead got #{inspect(args)}"}
+    end
+    with {:ok, {path, value1, value2}} <- path_value1_value2,
+         {:ok, path} <- Validator.validate_json_path(path),
+         {:ok, value1_val} <- compile_constant(value1, line, column),
+         {:ok, value1} <- Jason.encode(value1_val),
+         {:ok, value2_val} <- compile_constant(value2, line, column),
+         {:ok, value2} <- Jason.encode(value2_val) do
+      operation = case Jason.decode!(name) do
+        "all" -> {:ok, "#{path} |= walk(if . == #{value1} then #{value2} else . end)"}
+        _     -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` got invalid method #{name}"}
+      end
+      with {:ok, operation} <- operation do
+        # only perform operation if the path exists
+        {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
       end
     end
   end
@@ -573,6 +626,25 @@ defmodule RiichiAdvanced.Compiler do
       {:ok, ~s"""
       .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
       """}
+    end
+  end
+
+  defp compile_command("define", name, args, line, column) do
+    case Jason.decode!(name) do
+      "play_restriction" -> 
+        args = case args do
+          [targets, condition] -> {:ok, {List.wrap(targets), condition}}
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define play_restriction` command expects a target (or list of targets) and a condition, got #{inspect(args)}"}
+        end
+
+        with {:ok, {targets, condition}} <- args,
+             {:ok, targets} <- Validator.validate_json(targets),
+             {:ok, targets} <- Jason.encode(targets),
+             {:ok, condition} <- compile_condition_list(condition, line, column),
+             {:ok, condition} <- Jason.encode(condition) do
+          {:ok, ".play_restrictions += [[#{targets}, #{condition}]]"}
+        end
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define` got invalid type #{name}"}
     end
   end
 

@@ -103,6 +103,7 @@ defmodule RiichiAdvanced.Parser do
   def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}) when is_binary(match_spec), do: parse_match(match_spec)
   def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
   def parse_sigils([]), do: {:ok, []}
+  def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
     # check if keyword list (except the keys are binaries, not atoms)
     if Enum.all?(ast, &match?({k, _v} when is_binary(k), &1)) do
@@ -115,6 +116,8 @@ defmodule RiichiAdvanced.Parser do
       ast |> Enum.map(&parse_sigils/1) |> Utils.sequence()
     end
   end
+  def parse_sigils(%RiichiAdvanced.Compiler.Constant{} = ast), do: {:ok, ast}
+  def parse_sigils(%RiichiAdvanced.Compiler.Variable{} = ast), do: {:ok, ast}
   def parse_sigils(ast) when is_map(ast), do: parse_sigils_map(ast)
   def parse_sigils({:%{}, _pos, contents}), do: parse_sigils_map(contents)
   def parse_sigils_map(map) do
