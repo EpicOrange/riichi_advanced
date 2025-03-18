@@ -14,33 +14,37 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_set(set_spec) do
-    set_spec = for subgroup <- String.split(set_spec, ",", trim: true) |> Enum.map(&String.trim/1) do
-      for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
-        # check for attributes
-        item_attrs = case String.split(item, "@") |> Enum.map(&String.trim/1) do
-          [item] -> {:ok, {item, []}}
-          [item, attrs] -> {:ok, {item, String.split(attrs, ",")}}
-          _ -> {:error, "expected no more than one @ in set item"}
-        end
-        with {:ok, {item, attrs}} <- item_attrs do
-          offset = case Integer.parse(item) do
-            {offset, ""} -> offset
-            _ -> item
+    set_spec = for group <- String.split(set_spec, "|", trim: true) |> Enum.map(&String.trim/1) do
+      for subgroup <- String.split(group, ",", trim: true) |> Enum.map(&String.trim/1) do
+        for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
+          # check for attributes
+          item_attrs = case String.split(item, "@") |> Enum.map(&String.trim/1) do
+            [item] -> {:ok, {item, []}}
+            [item, attrs] -> {:ok, {item, String.split(attrs, ",")}}
+            _ -> {:error, "expected no more than one @ in set item"}
           end
-          if Enum.empty?(attrs) do
-            {:ok, offset}
-          else
-            {:ok, %{"offset" => offset, "attrs" => attrs}}
+          with {:ok, {item, attrs}} <- item_attrs do
+            offset = case Integer.parse(item) do
+              {offset, ""} -> offset
+              _ -> item
+            end
+            if Enum.empty?(attrs) do
+              {:ok, offset}
+            else
+              {:ok, %{"offset" => offset, "attrs" => attrs}}
+            end
           end
-        end
+        end |> Utils.sequence()
       end |> Utils.sequence()
     end |> Utils.sequence()
     # simplify singleton sets, i.e. [[0,1,2]] -> [0,1,2]
     with {:ok, set_spec} <- set_spec do
-      case set_spec do
-        [set] when is_list(set) -> {:ok, set}
-        set -> {:ok, set}
-      end
+      {:ok, for group <- set_spec do
+        case group do
+          [set] when is_list(set) -> set
+          set -> set
+        end
+      end}
     end
   end
 

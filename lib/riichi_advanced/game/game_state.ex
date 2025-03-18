@@ -1134,15 +1134,7 @@ defmodule RiichiAdvanced.GameState do
     for match_definition <- match_definitions do
       for match_definition_elem <- match_definition do
         case match_definition_elem do
-          [groups, num] ->
-            translated_groups = for group <- groups do
-              result = Map.get(set_definitions, group, group)
-              # if is_binary(result) and not Utils.is_tile(result) do
-              #   IO.puts("Warning: unrecognized set #{result}. Did you forget to put it in set_definitions?")
-              # end
-              result
-            end
-            [translated_groups, num]
+          [groups, num] -> [Enum.flat_map(groups, &Map.get(set_definitions, &1, [&1])), num]
           _ when is_binary(match_definition_elem) -> match_definition_elem
           _ ->
             IO.puts("#{inspect(match_definition_elem)} is not a valid match definition element.")
@@ -1190,19 +1182,19 @@ defmodule RiichiAdvanced.GameState do
       acc ->
         translated = cond do
           is_binary(match_definition) ->
-            name = match_definition <> "_definition"
-            if Map.has_key?(state.rules, name) do
-              {am_match_definitions, match_definitions} = Enum.split_with(state.rules[name], &is_binary/1)
-              translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
-              translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
-              translated_match_definitions ++ translated_am_match_definitions
-            else
-              if String.contains?(match_definition, " ") do
-                American.translate_american_match_definitions([match_definition])
-              else
-                GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
-                []
-              end
+            case Map.get(state.rules, match_definition <> "_definition", nil) do
+              nil ->
+                if String.contains?(match_definition, " ") do
+                  American.translate_american_match_definitions([match_definition])
+                else
+                  GenServer.cast(self(), {:show_error, "Could not find match definition \"#{match_definition}_definition\" in the rules."})
+                  []
+                end
+              named_match_definitions -> 
+                {am_match_definitions, match_definitions} = Enum.split_with(named_match_definitions, &is_binary/1)
+                translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
+                translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
+                translated_match_definitions ++ translated_am_match_definitions
             end
           is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
           true                        ->

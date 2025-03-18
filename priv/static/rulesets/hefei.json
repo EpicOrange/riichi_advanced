@@ -28,14 +28,14 @@
            "7s", "7s", "7s", "7s",
            "8s", "8s", "8s", "8s"],
   "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "open_iipeikou": [[0, 1, 2], [0, 1, 2]],
-    "iipeikou": [0, 0, 1, 1, 2, 2]
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "open_iipeikou": [[[0, 1, 2], [0, 1, 2]]],
+    "iipeikou": [[0, 0, 1, 1, 2, 2]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3], "restart", "dismantle_calls", [["2m", "3m", "4m", "5m", "6m", "7m", "8m"], 7]],

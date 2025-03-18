@@ -54,7 +54,7 @@
            "1j", "1j", "1j", "1j",
            "1j", "1j", "1j", "1j"],
   "set_definitions": {
-    "pair": [0, 0]
+    "pair": [[0, 0]]
   },
   "win_definition": [
     // 2024
