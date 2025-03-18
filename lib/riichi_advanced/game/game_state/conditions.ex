@@ -202,8 +202,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
     cxt_player = if Map.has_key?(context, :seat) do state.players[context.seat] else nil end
     result = case cond_spec do
       "not"                         -> not check_cnf_condition(state, Enum.at(opts, 0), context)
-      true                          -> true
-      false                         -> false
       "true"                        -> true
       "false"                       -> false
       "print"                       ->
@@ -595,11 +593,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def check_dnf_condition(state, cond_spec, context \\ %{}) do
     cond do
-      is_binary(cond_spec) -> check_condition(state, cond_spec, context)
-      is_map(cond_spec)    ->
+      is_binary(cond_spec)  -> check_condition(state, cond_spec, context)
+      is_map(cond_spec)     ->
         context = if Map.has_key?(cond_spec, "as") do Map.merge(context, %{orig_seat: context.seat, seat: from_seat_spec(state, context, cond_spec["as"])}) else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
-      is_list(cond_spec)   ->
+      is_list(cond_spec)    ->
         case cond_spec do
           # at most n (but at least 1)
           [n | cond_spec] when is_integer(n) ->
@@ -608,7 +606,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           # at most all (but at least 1)
           _ -> Enum.any?(cond_spec, &check_cnf_condition(state, &1, context))
         end
-      true                 ->
+      is_boolean(cond_spec) -> cond_spec
+      true                  ->
         IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
         true
     end
@@ -616,18 +615,19 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def check_cnf_condition(state, cond_spec, context \\ %{}) do
     cond do
-      is_binary(cond_spec) -> check_condition(state, cond_spec, context)
-      is_map(cond_spec)    ->
+      is_binary(cond_spec)  -> check_condition(state, cond_spec, context)
+      is_map(cond_spec)     ->
         context = if Map.has_key?(cond_spec, "as") do %{context | seat: from_seat_spec(state, context, cond_spec["as"])} else context end
         check_condition(state, cond_spec["name"], context, cond_spec["opts"])
-      is_list(cond_spec)   ->
+      is_list(cond_spec)    ->
         case cond_spec do
           # at least n
           [n | cond_spec] when is_integer(n) -> Enum.count(cond_spec, &check_dnf_condition(state, &1, context)) >= n
           # at least all
           _ -> Enum.all?(cond_spec, &check_dnf_condition(state, &1, context))
         end
-      true                 ->
+      is_boolean(cond_spec) -> cond_spec
+      true                  ->
         IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
         true
     end
