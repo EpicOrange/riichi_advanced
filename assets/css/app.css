@@ -192,6 +192,17 @@ button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(0);
 }
+button:active::before,
+button:active::before {
+  /* add a clickable area above the button */
+  content: "";
+  position: absolute;
+  background: transparent;
+  width: 100%;
+  height: calc(0.125 * var(--tile-size));
+  top: calc(-0.125 * var(--tile-size));
+  left: 0;
+}
 
 /* hands */
 div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
