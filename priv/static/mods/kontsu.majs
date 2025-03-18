@@ -26,6 +26,6 @@ apply append, "constants.groups_fu", [
 apply prepend, "functions.calculate_fu[0][3]" do
   put_calls_in_hand("ton")
 end
-apply replace_all, "", [["ryanmen/penchan", "kanchan", "pair"], ["ryanmen/penchan", "kanchan", "pair", "mixed_pair"]]
-apply replace_all, "", [["shuntsu", "koutsu"], ["shuntsu", "koutsu", "kontsu"]]
-apply replace_all, "", [["shuntsu"], ["shuntsu", "kontsu"]]
+replace all, "", ["ryanmen/penchan", "kanchan", "pair"], ["ryanmen/penchan", "kanchan", "pair", "mixed_pair"]
+replace all, "", ["shuntsu", "koutsu"], ["shuntsu", "koutsu", "kontsu"]
+replace all, "", ["shuntsu"], ["shuntsu", "kontsu"]

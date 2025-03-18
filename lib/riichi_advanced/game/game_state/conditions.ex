@@ -202,6 +202,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
     cxt_player = if Map.has_key?(context, :seat) do state.players[context.seat] else nil end
     result = case cond_spec do
       "not"                         -> not check_cnf_condition(state, Enum.at(opts, 0), context)
+      true                          -> true
+      false                         -> false
       "true"                        -> true
       "false"                       -> false
       "print"                       ->

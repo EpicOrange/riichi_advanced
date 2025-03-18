@@ -69,14 +69,6 @@ define_match tenpai,
   | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
   """
 
-define_match tenpai_14,
-  ~m"""
-  exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
-  | exhaustive, (shuntsu koutsu):4
-  | (nojoker quad):-1, koutsu:-2, pair:6
-  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
-  """
-
 define_match kokushi_tenpai,
   ~m"""
   unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
@@ -212,7 +204,6 @@ define_yaku meta_yakuman, "Suuankou Tanki", 2, not_has_existing_yaku("Suuankou T
 define_yaku meta_yakuman, "Junsei Chuurenpoutou", 2, not_has_existing_yaku("Junsei Chuurenpoutou") and has_existing_yaku("Tenhou", "Chuurenpoutou")
 define_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi", 2, not_has_existing_yaku("Kokushi Musou Juusan Menmachi") and has_existing_yaku("Tenhou", "Kokushi Musou")
 
-define_yaku_precedence "Double Riichi", ["Riichi"]
 define_yaku_precedence "Chinitsu", ["Honitsu"]
 define_yaku_precedence "Chiitoitsu", ["Iipeikou"]
 define_yaku_precedence "Toitoi", ["Iipeikou"]

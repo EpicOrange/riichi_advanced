@@ -272,7 +272,8 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, path} <- Validator.validate_json_path(path),
          {:ok, value_val} <- compile_constant(value, line, column),
          {:ok, value} <- Jason.encode(value_val) do
-      operation = case Jason.decode!(name) do
+      op = Jason.decode!(name)
+      operation = case op do
         "set"                                  -> {:ok, "#{path} = #{value}"}
         "add"                                  -> {:ok, "#{path} += #{value}"}
         "prepend"    when is_list(value_val)   -> {:ok, "#{path} |= #{value} + ."}
@@ -298,8 +299,12 @@ defmodule RiichiAdvanced.Compiler do
         _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
       end
       with {:ok, operation} <- operation do
-        # only perform operation if the path exists
-        {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
+        if op == "set" do
+          {:ok, operation}
+        else
+          # only perform operation if the path exists
+          {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
+        end
       end
     end
   end
@@ -366,6 +371,22 @@ defmodule RiichiAdvanced.Compiler do
       # `name` is already escaped, so we just insert _definition right before the last quote
       name = Utils.insert_at(name, "_definition", -2)
       {:ok, ".[#{name}] = #{match_spec}"}
+    end
+  end
+
+  defp compile_command("extend_match", name, args, line, column) do
+    match_spec = case args do
+      [{:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}] when is_binary(match_spec) -> {:ok, match_spec}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `extend_match` command expects a single string value, got #{inspect(args)}"}
+    end
+
+    with {:ok, match_spec} <- match_spec,
+         {:ok, match_spec} <- Parser.parse_match(match_spec),
+         {:ok, match_spec} <- Validator.validate_json(match_spec),
+         {:ok, match_spec} <- Jason.encode(match_spec) do
+      # `name` is already escaped, so we just insert _definition right before the last quote
+      name = Utils.insert_at(name, "_definition", -2)
+      {:ok, ".[#{name}] += #{match_spec}"}
     end
   end
 
