@@ -216,6 +216,8 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_constant(true, _line, _column), do: {:ok, true}
+  defp compile_constant(false, _line, _column), do: {:ok, false}
   defp compile_constant(value, line, column) do
     # this order is important: 
     # compile_action will treat conditions as custom actions (function calls)
@@ -361,16 +363,30 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("define_match", name, args, line, column) do
     match_spec = case args do
       [{:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}] when is_binary(match_spec) -> {:ok, match_spec}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value, got #{inspect(args)}"}
+      [names] when is_list(names) ->
+        if Enum.all?(names, &is_binary/1) do
+          {:ok, names}
+        else
+          {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value or a list of strings, got non-string list #{inspect(args)}"}
+        end
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value or a list of strings, got #{inspect(args)}"}
     end
 
-    with {:ok, match_spec} <- match_spec,
-         {:ok, match_spec} <- Parser.parse_match(match_spec),
-         {:ok, match_spec} <- Validator.validate_json(match_spec),
-         {:ok, match_spec} <- Jason.encode(match_spec) do
+    with {:ok, match_spec} <- match_spec do
       # `name` is already escaped, so we just insert _definition right before the last quote
       name = Utils.insert_at(name, "_definition", -2)
-      {:ok, ".[#{name}] = #{match_spec}"}
+      if is_binary(match_spec) do
+        with {:ok, match_spec} <- Parser.parse_match(match_spec),
+             {:ok, match_spec} <- Validator.validate_json(match_spec),
+             {:ok, match_spec} <- Jason.encode(match_spec) do
+          {:ok, ".[#{name}] = #{match_spec}"}
+        end
+      else
+        with {:ok, match_spec} <- Validator.validate_json(match_spec) do
+          match_spec = Enum.map_join(match_spec, " + ", &".#{&1}_definition")
+          {:ok, ".[#{name}] = #{match_spec}"}
+        end
+      end
     end
   end
 

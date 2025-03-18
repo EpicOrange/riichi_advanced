@@ -8,23 +8,9 @@ define_yaku yaku, "Open Kokushi Musou", 3, match(["hand", "call_tiles", "winning
 
 # remove chiitoitsu
 remove_yaku yaku, "Chiitoitsu"
-define_match tenpai,
-  ~m"""
-  exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
-  | exhaustive, (shuntsu koutsu):4
-  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
-  """
-define_match tenpai_14,
-  ~m"""
-  exhaustive, (shuntsu koutsu):3, (ryanmen/penchan kanchan pair):1, pair:1
-  | exhaustive, (shuntsu koutsu):4
-  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):12, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
-  """
-define_match win,
-  ~m"""
-  exhaustive, (shuntsu koutsu):4, pair:1
-  | unique, dismantle_calls, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):13, (1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z):1
-  """
+define_match tenpai, ["standard_tenpai", "kokushi_tenpai"]
+define_match tenpai_14, ["standard_tenpai", "kokushi_tenpai"]
+define_match win, ["standard_win", "kokushi_win"]
 
 # sequences wrap, and honors form wrapping sequences
 on after_start do
