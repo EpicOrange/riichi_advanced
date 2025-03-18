@@ -1,3 +1,14 @@
+on after_initialization do
+  add_rule("0.5 Han", "Mini-Sangen", "0.5 han is awarded for each mixed triplet of dragons.")
+  add_rule("0.5 Han", "Mixed Winds", "0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind.")
+  add_rule("1 Han", "Toikon", "1 han if your hand is all kontsu. 2 han if closed.")
+  add_rule("1 Han", "Ryandoukon", "1 han if your closed hand contains two copies of the exact same kontsu.")
+  add_rule("2 Han", "Sandoukon", "2 han if your closed hand contains three copies of the exact same kontsu. 3 han if closed.")
+  add_rule("Yakuman", "Yondoukon", "Yakuman if your closed hand contains four copies of the exact same kontsu.")
+  add_rule("1 Han", "Rinshan", "(Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
+end
+
+define_set kontsu, ~s"0 10 20"
 define_set kontsu_123, ~s"1z 2z 3z"
 define_set kontsu_124, ~s"1z 2z 4z"
 define_set kontsu_134, ~s"1z 3z 4z"
@@ -65,7 +76,7 @@ define_yaku yaku, "Mixed Winds", "mixed_winds", counter_at_least("mixed_winds", 
 define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
 
 define_yaku yaku, "Toikon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_dragons):4, pair:1")
-define_yaku yaku, "Ryandoukon", 1, "@closed_hand" and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, (shuntsu koutsu kontsu):2, pair:1")
+define_yaku yaku, "Ryandoukon", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, (shuntsu koutsu kontsu):2, pair:1")
 define_yaku yaku, "Sandoukon", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, (shuntsu koutsu kontsu):1, pair:1")
 remove_yaku yaku, "Rinshan"
 define_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")

@@ -1,0 +1,13 @@
+on after_initialization do
+  add_rule("2 Han", "Uumensai (Cosmic)", "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun.")
+end
+
+define_yaku yaku, "Uumensai", 2,
+      match(["hand", "calls", "winning_tile"], ["standard_win"])
+  and match(["hand", "calls", "winning_tile"], ~m"""
+      exhaustive, pair:1, shuntsu:1, koutsu:1, kontsu:1, quad:1
+    | exhaustive, pair:1, shuntsu:1, koutsu:1, kontsu:1, fuun:1
+    | exhaustive, pair:1, shuntsu:1, koutsu:1, quad:1, fuun:1
+    | exhaustive, pair:1, shuntsu:1, kontsu:1, quad:1, fuun:1
+    | exhaustive, pair:1, koutsu:1, kontsu:1, quad:1, fuun:1
+    """)

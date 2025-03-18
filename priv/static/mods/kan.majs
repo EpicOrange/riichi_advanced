@@ -1,6 +1,8 @@
 on after_initialization do
-  add_rule("Rules", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
-  add_rule("Rules", "Chankan", "If someone calls kan to upgrade a triplet (added kan), you may call ron on the added tile. Doing so awards chankan (1 han).)")
+  add_rule("1 Han", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
+  add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)")
+  add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
+  add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
 end
 
 define_yaku yaku, "Chankan", 1, won_by_call
