@@ -1,3 +1,7 @@
+define_set mixed_pair, ~s"0 1"
+define_set mixed_pair, ~s"0 1"
+define_set mentsu, ~s"0 0 0 | 0 1 2 | 0 10 20"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2 | 0 10"
 
 # welcome to the chanta zone
 define_set terminal_k, ~s"0@terminal 10 20"
@@ -26,6 +30,3 @@ apply append, "constants.groups_fu", [
 apply prepend, "functions.calculate_fu[0][3]" do
   put_calls_in_hand("ton")
 end
-replace all, "", ["ryanmen/penchan", "kanchan", "pair"], ["ryanmen/penchan", "kanchan", "pair", "mixed_pair"]
-replace all, "", ["shuntsu", "koutsu"], ["shuntsu", "koutsu", "kontsu"]
-replace all, "", ["shuntsu"], ["shuntsu", "kontsu"]
