@@ -316,6 +316,8 @@ defmodule RiichiAdvanced.Riichi do
       "pinzu" -> is_pinzu?(context.tile)
       "souzu" -> is_souzu?(context.tile)
       "jihai" -> is_jihai?(context.tile)
+      "dragon" -> is_dragon?(context.tile)
+      "wind" -> is_wind?(context.tile)
       "terminal" -> is_terminal?(context.tile)
       "yaochuuhai" -> is_yaochuuhai?(context.tile)
       "tanyaohai" -> is_tanyaohai?(context.tile)
