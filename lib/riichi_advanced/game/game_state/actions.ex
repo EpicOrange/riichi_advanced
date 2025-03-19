@@ -537,8 +537,9 @@ defmodule RiichiAdvanced.GameState.Actions do
                 end
               _ when not passes_conditions -> hand_calls_fu
               "put_calls_in_hand" ->
+                call_names = List.wrap(Map.get(opts, 0, []))
                 for {hand, calls, fu} <- hand_calls_fu do
-                  {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in opts or Enum.empty?(opts) end)
+                  {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in call_names or Enum.empty?(call_names) end)
                   {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fu}
                 end
               "put_winning_tile_in_hand" ->

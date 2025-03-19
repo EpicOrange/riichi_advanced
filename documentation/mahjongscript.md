@@ -53,6 +53,17 @@ Note that this handler will run after any existing handlers for that event.
 
 Note that this new yaku combines with any yaku of the same name, i.e. if you get the same yaku twice then you get that yaku whose value is the sum.
 
+### `remove_yaku`: Remove all instances of a given yaku by name
+
+    remove_yaku yaku_list, name
+    remove_yaku yaku_list, [name1, name2]
+
+### `replace_yaku`: Replace all instances of a yaku with a new definition
+
+    replace_yaku list_name display_name value condition supercedes_list
+
+This is essentially the same as `remove_yaku display_name` followed by `define_yaku`, except it will do nothing if the yaku doesn't exist in the first place.
+
 ### `define_yaku_precedence`: Define precedence for a given yaku
 
     define_yaku display_name supercedes_list
@@ -113,9 +124,3 @@ Note that if `category` is not specified the mod is simply appended to the end o
 ### (advanced) `define_preset`: Add a new mod preset
 
     define_preset name, list of mods
-
-### `remove_yaku`: Remove all instances of a given yaku by name
-
-    remove_yaku yaku_list, name
-    remove_yaku yaku_list, [name1, name2]
-

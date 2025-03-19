@@ -247,8 +247,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_call"              -> Map.get(context, :win_source, nil) == :call
       "won_by_draw"              -> Map.get(context, :win_source, nil) == :draw
       "won_by_discard"           -> Map.get(context, :win_source, nil) == :discard
-      # TODO replace this with minipoints_equals below
-      "fu_equals"                -> Map.get(context, :minipoints, 0) == Enum.at(opts, 0, 20)
       "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku2"                -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
@@ -483,6 +481,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
       "dice_equals"         -> Enum.sum(state.dice) in opts
+      # TODO turn these into just "equals" etc
       "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) in Enum.map(Enum.drop(opts, 1), &Actions.interpret_amount(state, context, &1))
       "counter_at_least"    -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) >= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))

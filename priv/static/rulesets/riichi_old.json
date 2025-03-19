@@ -620,7 +620,7 @@
       "when": [
         {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]},
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["standard_win"]]},
-        [["won_by_draw", {"name": "fu_equals", "opts": [20]}], ["not_won_by_draw", {"name": "fu_equals", "opts": [30]}]]
+        [["won_by_draw", {"name": "minipoints_equals", "opts": [20]}], ["not_won_by_draw", {"name": "minipoints_equals", "opts": [30]}]]
       ]
     },
     { "display_name": "Tanyao", "value": 1, "when": [{"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}] },

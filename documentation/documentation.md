@@ -845,7 +845,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `won_by_call`: The winner won by stealing a called tile.
 - `won_by_draw`: The winner won by drawing the winning tile.
 - `won_by_discard`: The winner won by stealing the discard tile.
-- `fu_equals(fu)`: The winning player has the given amount of fu. Valid values of fu are multiples of 10.
+- `minipoints_equals(fu)`: The winning player has the given amount of minipoints.
 - `has_yaku_with_hand(han)`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_hand(1)`
 - `has_yaku_with_discard(han)`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_discard(1)`
 - `has_yaku_with_call(han)`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_call(1)`
@@ -906,6 +906,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `counter_equals(counter_name, amount)`: The counter `counter_name` equals `amount`.
 - `counter_at_least(counter_name, amount)`: The counter `counter_name` is at least `amount`.
 - `counter_at_most(counter_name, amount)`: The counter `counter_name` is at most `amount`.
+- `counter_more_than(counter_name, amount)`: The counter `counter_name` is more than `amount`.
+- `counter_less_than(counter_name, amount)`: The counter `counter_name` is less than `amount`.
 - `has_attr(tile, attr1, attr2)`: The given tile is has the given attributes `attr1`, `attr2`, etc. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
 - `hand_tile_count(count1, count2, ...)`: The current player has one of `count1`, `count2`, etc. tiles in hand (counts hand+draw, ignores calls and aside tiles)
 - `genbutsu_kamicha`: The last discard was genbutsu against kamicha.
@@ -1256,27 +1258,27 @@ Fu calculation is done by a series of manipulations described by the action list
       # now remove the winning group
       remove_winning_groups([
         # kanchan
-        %{group: [-1, 1], value: 2},
+        %{groups: ~s"-1 1", value: 2},
         # penchan
-        %{group: [-1, -2], reject_if_exists: [[-3]], value: 2},
-        %{group: [1, 2], reject_if_exists: [[3]], value: 2},
+        %{groups: ~s"-1 -2", reject_if_exists: ~s"-3", value: 2},
+        %{groups: ~s"1 2", reject_if_exists: ~s"3", value: 2},
         # ryanmen
-        %{group: [-1, -2], reject_if_missing: [[-3]]},
-        %{group: [1, 2], reject_if_missing: [[3]]},
+        %{groups: ~s"-1 -2", reject_if_missing: ~s"-3"},
+        %{groups: ~s"1 2", reject_if_missing: ~s"3"},
         # shanpon
-        %{group: [0, 0], value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
+        %{groups: ~s"0 0", value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
         # tanki
-        %{group: [0], value: 2, yakuhai_value: 2}
+        %{groups: ~s"0", value: 2, yakuhai_value: 2}
       ])
     
       # now remove all closed groups
-      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
-      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
-      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
-      remove_groups([%{group: [0, 1, 2]}, %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
     
       # remove final pair, if any
-      remove_groups([%{group: [0, 0], yakuhai_value: 2}])
+      remove_groups([%{groups: ~s"0 0", yakuhai_value: 2}])
     
       # only retain configurations with 0 tiles remaining
       retain_empty_hands
@@ -1318,25 +1320,29 @@ Essentially, fu calculations start with the winning hand and calls scoring 0 fu.
 - `remove_attrs`: remove all tile attributes from hand and calls.
 - `convert_calls(call_mapping)`: adds the score for every call as determined by `call_mapping`, which is an object specifying a map from call name to fu value (e.g. `{"pon": 2}`. Does not remove any calls.
 - `remove_calls(tile_specs)`: deletes all calls that include any tile matching all the given `tile_specs`. The idea is that you run `"convert_calls"` to score all calls, run `remove_calls(["tanyaohai"])` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
-- `remove_winning_groups(group1, group2, ...)`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
-  * Kanchan: `{"group": [-1, 1], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
-  * Penchan (left): `{"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)
-  * Ryanmen (left): `{"group": [-1, -2], "reject_if_exists": [[-3]]}` (remove the two tiles left of the winning tile, but only if the tile (winning tile - 3) also exists)
-  * Shanpon: `{"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yaochuuhai, multiply by 2, if the win is self-draw then multiply by 2)
-  * Tanki: `{"group": [0], "value": 2, "yakuhai_value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yakuhai, add 2 per yakuhai (so double wind counts as +4 fu)
-- `remove_groups(group1, group2, ...)`: same as "remove_winning_groups", but it can be centered on any tile, not just the winning tile
+- `remove_winning_groups([group1, group2, ...])`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
+  * Kanchan: `{"groups": [[-1, 1]], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
+  * Penchan (left): `{"groups": [[-1, -2]], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)
+  * Ryanmen (left): `{"groups": [[-1, -2]], "reject_if_missing": [[-3]]}` (remove the two tiles left of the winning tile, but only if the tile (winning tile - 3) also exists)
+  * Shanpon: `{"groups": [[0, 0]], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yaochuuhai, multiply by 2, if the win is self-draw then multiply by 2)
+  * Tanki: `{"groups": [[0]], "value": 2, "yakuhai_value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yakuhai, add 2 per yakuhai (so double wind counts as +4 fu)
+- `remove_groups([group1, group2, ...])`: same as "remove_winning_groups", but it can be centered on any tile, not just the winning tile
 
-The above manipulations will leave you with multiple possibilities for (hand, calls, fu). To keep only theones(at use up the whole hand, use `[retain_empty_hands")`. Afterwards the following manipulations are useful:
+The above manipulations will leave you with multiple possibilities for (hand, calls, fu). To keep only the ones that use up the whole hand, use `retain_empty_hands`. Afterwards the following manipulations are useful:
 
 - `add(amount, condition)`: Add the given amount to each possibility where the condition evaluates to true. Useful conditions usable only here are:
-  + `{"name": "minipoints_equals", "opts": [fu]}`: you have `fu` minipoints.
-  + `{"name": "minipoints_at_least", "opts": [fu]}`: you have at least `fu` minipoints.
-  + `{"name": "minipoints_at_most", "opts": [fu]}`: you have at most `fu` minipoints.
+  + `minipoints_equals(fu)`: filters for hands with `fu` minipoints.
+  + `minipoints_at_least(fu)`: filters for hands with at least `fu` minipoints.
+  + `minipoints_at_most(fu)`: filters for hands with at most `fu` minipoints.
 - `take_maximum`: Drop all possibilities that aren't the maximum fu among all possibilities.
 - `round_up(10)`: Round up all fu values to the nearest 10.
 - `add_original_hand`: Add the original (hand, calls, 0 fu) to the list of possibilities. This is useful if you want to calculate alternate scores for the hand (e.g. chiitoitsu and kokushi)
+- `put_calls_in_hand([call_name, call_name2, ...])`: Moves all of the specified calls into the hand. If no argument is given, all calls are moved.
+- `put_winning_tile_in_hand`: Adds all possible winning tiles to the hand. (This adds one tile to each possibility.)
 
-Thelist( actions should end with `[take_maximum")` in order to reduce the list of possible (hand, calls, fu) tuples to the maximum possible. The calculated fu will be the fu for the first possibility in the list.
+The list of actions should end with `take_maximum"` in order to reduce the list of possible (hand, calls, fu) tuples to the maximum possible. The calculated fu will be the fu for the first possibility in the list.
+
+Note that every one of these actions can take a second `condition` parameter, just like `add`, but for efficiency reasons, only `add` can test for minipoints.
 
 ## Setting up next-round logic
 

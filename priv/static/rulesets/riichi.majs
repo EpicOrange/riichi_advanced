@@ -101,7 +101,7 @@ define_yaku yaku, "Haitei", 1, no_tiles_remaining and won_by_draw
 define_yaku yaku, "Houtei", 1, no_tiles_remaining and not_won_by_draw
 define_yaku yaku, "Pinfu", 1, @closed_hand
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
-  and ((won_by_draw and fu_equals(20)) or (not_won_by_draw and fu_equals(30)))
+  and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
 define_yaku yaku, "Tanyao", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
 define_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
 define_yaku yaku, "Haku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
