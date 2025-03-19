@@ -552,13 +552,10 @@ defmodule RiichiAdvanced.GameState.Actions do
                 |> Enum.sum()
                 {hand, calls, fu + value}
               end
-            "remove_tanyaohai_calls" ->
-              for {hand, calls, fu} <- hand_calls_fu do
-                {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.is_tanyaohai?/1) end), fu}
-              end
             "remove_calls" ->
-              for {hand, _calls, fu} <- hand_calls_fu do
-                {hand, [], fu}
+              tile_specs = List.wrap(Enum.at(opts, 0, []))
+              for {hand, calls, fu} <- hand_calls_fu do
+                {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.tile_matches_all(tile_specs, %{tile: &1})) end), fu}
               end
             "remove_winning_groups" ->
               Enum.flat_map(Enum.at(opts, 0), fn group_spec ->

@@ -1359,8 +1359,7 @@ Essentially, fu calculations start with the winning hand and calls scoring 0 fu.
 
 - `["remove_attrs"]`: remove all tile attributes from hand and calls.
 - `["convert_calls", call_mapping]`: adds the score for every call as determined by `call_mapping`, which is an object specifying a map from call name to fu value (e.g. `{"pon": 2}`. Does not remove any calls.
-- `["remove_tanyaohai_calls"]`: deletes all calls that contain tanyaohai. The idea is that you run `"convert_calls"` to score all calls, run `"remove_tanyaohai_calls"` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
-- `["remove_calls"]`: deletes all calls.
+- `["remove_calls", tile_specs]`: deletes all calls that include any tile matching all the given `tile_specs`. The idea is that you run `"convert_calls"` to score all calls, run `remove_calls(["tanyaohai"])` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
 - `["remove_winning_groups", group1, group2, ...]`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
   * Kanchan: `{"group": [-1, 1], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
   * Penchan (left): `{"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)

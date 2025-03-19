@@ -293,7 +293,7 @@
         ["remove_attrs"],
         // score calls
         ["convert_calls", {"pon": 2, "ankan": 16, "daiminkan": 8, "kakan": 8, "flower": 2}],
-        ["remove_tanyaohai_calls"],
+        ["remove_calls", "tanyaohai"],
         ["convert_calls", {"pon": 2, "ankan": 16, "daiminkan": 8, "kakan": 8, "flower": 2}],
         ["remove_calls"],
         // now remove the winning group

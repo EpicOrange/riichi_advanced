@@ -288,7 +288,7 @@ def calculate_fu do
 
     # score calls
     convert_calls(@calls_fu)
-    remove_tanyaohai_calls
+    remove_calls(["tanyaohai"])
     convert_calls(@calls_fu)
     remove_calls
 
