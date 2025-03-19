@@ -370,33 +370,33 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_command("define_match", name, args, line, column) do
-    match_spec = case args do
-      [{:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}] when is_binary(match_spec) -> {:ok, match_spec}
-      [names] when is_list(names) ->
-        if Enum.all?(names, &is_binary/1) do
-          {:ok, names}
-        else
-          {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value or a list of strings, got non-string list #{inspect(args)}"}
-        end
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value or a list of strings, got #{inspect(args)}"}
-    end
-
-    with {:ok, match_spec} <- match_spec do
-      # `name` is already escaped, so we just insert _definition right before the last quote
-      name = Utils.insert_at(name, "_definition", -2)
-      if is_binary(match_spec) do
+  defp compile_command("define_match", name, args, _line, _column) do
+    match_specs = Enum.map(args, fn
+      {:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]} ->
+        # standard match definition
         with {:ok, match_spec} <- Parser.parse_match(match_spec),
              {:ok, match_spec} <- Validator.validate_json(match_spec),
              {:ok, match_spec} <- Jason.encode(match_spec) do
-          {:ok, ".[#{name}] = #{match_spec}"}
+          {:ok, "#{match_spec}"}
         end
-      else
+      {:sigil_a, _, [{:<<>>, _, [match_spec]}, _args]} ->
+        # american match definition
+        with {:ok, match_spec} <- Validator.validate_json(match_spec),
+             {:ok, match_spec} <- Jason.encode(match_spec) do
+          {:ok, "[#{match_spec}]"}
+        end
+      match_spec when is_binary(match_spec) ->
+        # existing match definition
         with {:ok, match_spec} <- Validator.validate_json(match_spec) do
-          match_spec = Enum.map_join(match_spec, " + ", &".#{&1}_definition")
-          {:ok, ".[#{name}] = #{match_spec}"}
+          {:ok, ".#{match_spec}_definition"}
         end
-      end
+    end)
+    |> Utils.sequence()
+    with {:ok, match_specs} <- match_specs do
+      # `name` is already escaped, so we just insert _definition right before the last quote
+      name = Utils.insert_at(name, "_definition", -2)
+      match_specs = Enum.join(match_specs, " + ")
+      {:ok, ".[#{name}] = #{match_specs}"}
     end
   end
 

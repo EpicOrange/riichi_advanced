@@ -42,6 +42,7 @@ defmodule JQ do
   end
 
   def query_string_with_string!(payload, query) do
+    # IO.puts(query)
     {fd, query_path} = Temp.open!(%{mode: [:write, :utf8]})
     IO.write(fd, query)
     File.close(fd)

@@ -7,7 +7,7 @@ define_yaku yaku, "Double Riichi", 2, status("double_riichi")
 define_yaku_precedence "Double Riichi", ["Riichi"]
 
 define_match chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
-define_match tenpai_14, ["standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"]
+define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"
 
 set display_riichi_sticks, true
 

@@ -38,7 +38,9 @@ Note that this handler will run after any existing handlers for that event.
 
 ### `define_match`: Define a match for reference in conditions
 
-    define_set match ~m"pair:7"
+    define_match mymatch1, ~m"pair:7"
+    define_match mymatch2, ~a"FF XXXX0a NEWS XXXX0b"
+    define_match mymatch3, "existing_match_1", "existing_match_2"
 
 ### `define_const`: Define a constant JSON value that can be referenced later in actions
 

@@ -66,6 +66,6 @@ define_yaku meta_yaku, "Chiitoitsu", 1, has_existing_yaku("Chiitoitsu") and has_
 define_yaku meta_yaku, "Ryanpeikou", 2, has_existing_yaku("Ryanpeikou") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
 
 # add chiitoitsu back to win definitions (since space mahjong removes it)
-define_match tenpai, ["standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"]
-define_match tenpai_14, ["standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"]
-define_match win, ["standard_win", "chiitoitsu_win", "kokushi_win"]
+define_match tenpai, "standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"
+define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"
+define_match win, "standard_win", "chiitoitsu_win", "kokushi_win"

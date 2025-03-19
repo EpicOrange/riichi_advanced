@@ -65,12 +65,12 @@ define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
 define_match chiitoitsu_tenpai, ~m"(nojoker koutsu):-1, pair:6"
 define_match kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
-define_match tenpai, ["standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"]
+define_match tenpai, "standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"
 
 define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
 define_match chiitoitsu_win, ~m"(nojoker quad):-1, pair:7"
 define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
-define_match win, ["standard_win", "chiitoitsu_win", "kokushi_win"]
+define_match win, "standard_win", "chiitoitsu_win", "kokushi_win"
 
 define_match shousuushii,
   ~m"""
