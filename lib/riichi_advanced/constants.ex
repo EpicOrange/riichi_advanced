@@ -291,7 +291,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "No Jokers Mahjong League 2024",
       tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
       ruleset: "riichi",
-      mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
+      mods: ["kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
       default_mods: ["show_waits"],
     },
     "space" => %{
@@ -312,7 +312,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Chinitsu Challenge",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
-      mods: ["yaku/riichi", "chinitsu_challenge"],
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
@@ -339,7 +339,7 @@ defmodule RiichiAdvanced.Constants do
     "speed" => %{
       display_name: "Speed Mahjong",
       ruleset: "riichi",
-      mods: ["kan", "yaku/riichi", "speed"]
+      mods: ["kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
     }
   }
 
