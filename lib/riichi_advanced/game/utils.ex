@@ -28,13 +28,6 @@ defmodule RiichiAdvanced.Utils do
     else nil end
   end
 
-  def tile_to_attrs(tile) do
-    case tile do
-      {tile, attrs} -> [Atom.to_string(tile) | attrs]
-      tile          -> [Atom.to_string(tile)]
-    end
-  end
-
   def to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}
@@ -297,7 +290,7 @@ defmodule RiichiAdvanced.Utils do
     dora = has_attr?(tile, ["dora"])
     last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
-    id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
+    id = if reversed do strip_attrs(tile) else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
     concealed = has_attr?(tile, ["concealed"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
@@ -345,27 +338,8 @@ defmodule RiichiAdvanced.Utils do
     ] ++ extra_classes ++ number_class ++ color_classes
   end
 
-  def flip_faceup(tile) do
-    case tile do
-      {:"1x", attrs} ->
-        tile_attr = Enum.find(attrs, &is_tile/1)
-        if tile_attr != nil do
-          to_tile([tile_attr | attrs]) |> remove_attr([tile_attr])
-        else tile end
-      tile -> tile
-    end
-  end
-
-  def flip_facedown(tile) do
-    case tile do
-      :"1x" -> :"1x"
-      {:"1x", attrs} -> {:"1x", attrs}
-      tile -> {:"1x", tile_to_attrs(tile)}
-    end
-  end
-
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
-    tiles = Enum.map(call, &flip_faceup/1)
+    tiles = remove_attr(call, ["_facedown"])
     if replace_am_jokers and has_matching_tile?(tiles, [:"1j"]) do
       # replace all american jokers with the nonjoker tile
       nonjoker = Enum.find(tiles, &not same_tile(&1, :"1j")) |> strip_attrs()

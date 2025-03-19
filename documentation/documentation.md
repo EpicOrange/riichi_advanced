@@ -940,9 +940,7 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"hand"`: selects the player's hand (not draw).
 - `"draw"`: selects the player's draw.
 - `"pond"`: selects the player's visible pond (not called tiles).
-- `"pond_faceup"`: selects the player's visible pond, flipping facedown tiles faceup.
 - `"discards"`: selects the player's discards, including called discards.
-- `"discards_faceup"`: selects the player's discards, flipping facedown tiles faceup.
 - `"aside"`: selects the player's tiles set aside.
 - `"calls"`: selects the player's calls (not flowers). Calls are treated as a single unit that can only be matched against once.
 - `"flowers"`: selects the player's flowers (including starting flowers and pei).

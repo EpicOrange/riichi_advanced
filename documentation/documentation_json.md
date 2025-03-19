@@ -692,9 +692,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
 - `["push_message", message, vars]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", {"n": "honba"}]`.
 - `["push_system_message", message, vars]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
-- `["add_rule", title, text, sort_order]`: Adds the string `text` to the rules tab on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
-- `["update_rule", title, text, sort_order]`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
-- `["delete_rule", title]`: Deletes the rule text identified by `title`.
+- `["add_rule", tab, title, text, sort_order]`: Adds the string `text` to the rules tab on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
+- `["update_rule", tab, title, text, sort_order]`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
+- `["delete_rule", tab, title]`: Deletes the rule text identified by `title`.
 - `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
 - `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.
@@ -989,9 +989,7 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"hand"`: selects the player's hand (not draw).
 - `"draw"`: selects the player's draw.
 - `"pond"`: selects the player's visible pond (not called tiles).
-- `"pond_faceup"`: selects the player's visible pond, flipping facedown tiles faceup.
 - `"discards"`: selects the player's discards, including called discards.
-- `"discards_faceup"`: selects the player's discards, flipping facedown tiles faceup.
 - `"aside"`: selects the player's tiles set aside.
 - `"calls"`: selects the player's calls (not flowers). Calls are treated as a single unit that can only be matched against once.
 - `"flowers"`: selects the player's flowers (including starting flowers and pei).

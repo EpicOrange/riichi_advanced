@@ -65,7 +65,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
       facedown = "discard_facedown" in state.players[seat].status or Utils.has_attr?(tile, ["_facedown"])
-      tile = if facedown do {:"1x", Utils.tile_to_attrs(Utils.remove_attr(tile, ["_facedown"]))} else tile end
+      tile = if facedown do Utils.add_attr(tile, ["_facedown"]) else tile end
       tile = Utils.add_attr(tile, ["_discard"])
 
       state = update_player(state, seat, &%Player{ &1 |
@@ -76,7 +76,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         last_discard: {tile, index}
       })
       tsumogiri = index >= length(state.players[seat].hand)
-      state = register_discard(state, seat, tile, tsumogiri)
+      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri)
 
       # trigger play effects
       state = if Map.has_key?(state.rules, "play_effects") do
@@ -287,12 +287,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           "call_sideways"                         -> called_tile |> Utils.add_attr(["_sideways"])
           ix when is_integer(ix)                  -> Enum.at(tiles, ix)
           ["sideways", ix] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways"])
-          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.flip_facedown()
-          ["1x", "call"]                          -> called_tile |> Utils.flip_facedown()
-          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.flip_facedown()
-          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.flip_facedown() |> Utils.add_attr(["_sideways"])
-          ["1x_sideways", "call"]                 -> called_tile |> Utils.flip_facedown() |> Utils.add_attr(["_sideways"])
-          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.flip_facedown() |> Utils.add_attr(["_sideways"])
+          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown"])
+          ["1x", "call"]                          -> called_tile |> Utils.add_attr(["_facedown"])
+          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown"])
+          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", "call"]                 -> called_tile |> Utils.add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown", "_sideways"])
           tile                                    -> Utils.to_tile(tile)
         end
       end
@@ -981,6 +981,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "print_context"         ->
         IO.inspect(context)
         state
+      "print_hand"         ->
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls})
+        state
       "print_discards"         ->
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         IO.inspect({seat, state.players[seat].discards})
@@ -1281,7 +1285,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "flip_marked_discard_facedown" ->
         {_discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
-        state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+        state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
 
         state = Marking.mark_done(state, context.seat)
 
@@ -1439,25 +1443,17 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state) # TODO remove
         state
-      # "flip_draw_faceup" -> update_player(state, context.seat, fn player -> %Player{ player | draw: Enum.map(player.draw, &Utils.flip_faceup/1) } end)
-      # "flip_last_discard_faceup"  ->
-      #   last_discarder = get_last_discard_action(state).seat
-      #   tile = Utils.flip_faceup(get_last_discard_action(state).tile)
-      #   state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
-      #   state = update_action(state, last_discarder, :discard, %{tile: tile})
-      #   state = Buttons.recalculate_buttons(state) # TODO remove
-      #   state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, &Utils.flip_faceup/1)} end)
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown"])} end)
           %Player{ player | calls: faceup_calls }
         end)
       "flip_first_visible_discard_facedown" -> 
-        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
+        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.has_attr?(tile, ["_facedown"]) and not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
         if ix != nil do
-          update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+          update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
         else state end
-      "flip_aside_facedown" -> update_in(state.players[context.seat].aside, &Enum.map(&1, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+      "flip_aside_facedown" -> update_in(state.players[context.seat].aside, &Enum.map(&1, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
       # "shuffle_aside"      -> update_in(state.players[context.seat].aside, &Enum.shuffle/1)
       "draw_from_aside"    ->
         state = case state.players[context.seat].aside do

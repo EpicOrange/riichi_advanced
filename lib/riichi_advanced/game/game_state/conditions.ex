@@ -22,9 +22,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "hand" -> [{hand ++ state.players[context.seat].hand, calls}]
           "draw" -> [{hand ++ state.players[context.seat].draw, calls}]
           "pond" -> [{hand ++ state.players[context.seat].pond, calls}]
-          "pond_faceup" -> [{hand ++ Enum.map(state.players[context.seat].pond, &Utils.flip_faceup/1), calls}]
           "discards" -> [{hand ++ state.players[context.seat].discards, calls}]
-          "discards_faceup" -> [{hand ++ Enum.map(state.players[context.seat].discards, &Utils.flip_faceup/1), calls}]
           "aside" -> [{hand ++ state.players[context.seat].aside, calls}]
           "calls" -> [{hand, calls ++ Enum.reject(state.players[context.seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
           "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "pei"] end)}]
@@ -210,7 +208,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "print_status"                ->
         IO.inspect({context.seat, state.players[context.seat].status})
         state
-      "print_counter"               ->
+      "print_counters"              ->
         IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
         state
       "print_context"               ->
