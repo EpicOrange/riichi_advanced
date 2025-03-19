@@ -20,7 +20,7 @@ defmodule RiichiAdvanced.Parser do
           # check for attributes
           item_attrs = case String.split(item, "@") |> Enum.map(&String.trim/1) do
             [item] -> {:ok, {item, []}}
-            [item, attrs] -> {:ok, {item, String.split(attrs, ",")}}
+            [item, attrs] -> {:ok, {item, String.split(attrs, "&")}}
             _ -> {:error, "expected no more than one @ in set item"}
           end
           with {:ok, {item, attrs}} <- item_attrs do
@@ -67,7 +67,7 @@ defmodule RiichiAdvanced.Parser do
           # check for attributes
           base_attrs = case String.split(group, "@", trim: true) |> Enum.map(&String.trim/1) do
             [base] -> {:ok, {base, []}}
-            [base, attrs] -> {:ok, {base, String.split(attrs, ",", trim: true)}}
+            [base, attrs] -> {:ok, {base, String.split(attrs, "&", trim: true)}}
             _ -> {:error, "invalid attribute syntax: #{group}"}
           end
           with {:ok, {base, attrs}} <- base_attrs do
