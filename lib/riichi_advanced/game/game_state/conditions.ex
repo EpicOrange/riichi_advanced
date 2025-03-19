@@ -247,7 +247,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_call"              -> Map.get(context, :win_source, nil) == :call
       "won_by_draw"              -> Map.get(context, :win_source, nil) == :draw
       "won_by_discard"           -> Map.get(context, :win_source, nil) == :discard
-      "fu_equals"                -> context.minipoints == Enum.at(opts, 0, 20)
+      # TODO replace this with minipoints_equals below
+      "fu_equals"                -> Map.get(context, :minipoints, 0) == Enum.at(opts, 0, 20)
       "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku2"                -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
@@ -482,9 +483,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
       "dice_equals"         -> Enum.sum(state.dice) in opts
-      "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) in Enum.drop(opts, 1)
-      "counter_at_least"    -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) >= Enum.at(opts, 1, 0)
-      "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Enum.at(opts, 1, 0)
+      "counter_equals"      -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) in Enum.map(Enum.drop(opts, 1), &Actions.interpret_amount(state, context, &1))
+      "counter_at_least"    -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) >= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "counter_more_than"   -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) > Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "counter_less_than"   -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) < Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "genbutsu_shimocha"   ->
         tiles = (Utils.get_seat(context.seat, :shimocha) |> Riichi.get_safe_tiles_against(state.players, state.turn))
         last_discard_action != nil and Utils.has_matching_tile?(tiles, [Utils.strip_attrs(last_discard_action.tile)])
@@ -567,9 +570,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
         state2 = Actions.trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, context.call_source, true)
         hand2 = state2.players[context.seat].hand ++ state2.players[context.seat].draw
         Enum.any?(hand2, &is_playable?(state2, context.seat, &1))
-      "minipoints_equals"   -> context.minipoints == Enum.at(opts, 0, 0)
-      "minipoints_at_least" -> context.minipoints >= Enum.at(opts, 0, 0)
-      "minipoints_at_most"  -> context.minipoints <= Enum.at(opts, 0, 0)
+      "minipoints_equals"   -> Map.get(context, :minipoints, 0) == Enum.at(opts, 0, 0)
+      "minipoints_at_least" -> Map.get(context, :minipoints, 0) >= Enum.at(opts, 0, 0)
+      "minipoints_at_most"  -> Map.get(context, :minipoints, 0) <= Enum.at(opts, 0, 0)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

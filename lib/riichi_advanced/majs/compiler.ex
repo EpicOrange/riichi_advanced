@@ -33,10 +33,16 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_condition(condition, line, column) do
     case condition do
+      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
       {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
       {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
       {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
       {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
       {:not, _, [condition]} ->
         with {:ok, result} <- compile_cnf_condition(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
@@ -173,23 +179,8 @@ defmodule RiichiAdvanced.Compiler do
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
           if args != nil do
-            # each action in a do block should be treated as another parameter
-            args = Enum.map(Enum.with_index(args), &case &1 do
-              {{:@, _, [{constant, _, nil}]}, _i} when is_binary(constant) -> {:ok, ["@" <> constant]}
-              {[do: actions], _i} ->
-                with {:ok, action_list} <- compile_action_list(actions, line, column) do
-                  {:ok, [action_list]}
-                end
-              {arg, i} when name == "add" and i == 1 ->
-                with {:ok, condition} <- compile_condition_list(arg, line, column) do
-                  {:ok, [condition]}
-                end
-              {arg, _i} -> {:ok, [arg]}
-            end)
-            |> Utils.sequence()
-            with {:ok, args} <- args,
-                 {:ok, args} <- Parser.parse_sigils(args),
-                 {:ok, args} <- args |> Enum.concat() |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
+            with {:ok, args} <- Enum.map(args, &compile_constant(&1, line, column)) |> Utils.sequence(),
+                 {:ok, args} <- args |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
               {:ok, [name | args]}
             end
           else
@@ -442,7 +433,7 @@ defmodule RiichiAdvanced.Compiler do
     yaku_spec = case args do
       [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
       [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list, a display name, a value, and a condition, got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 
     with {:ok, {display_name, value, condition, supercedes}} <- yaku_spec,
@@ -454,6 +445,53 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, condition} <- Validator.validate_json(condition),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = ".[#{name}] += [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]"
+      if Enum.empty?(supercedes) do
+        {:ok, add_yaku}
+      else
+        with {:ok, supercedes} <- Validator.validate_json(supercedes),
+             {:ok, supercedes} <- Jason.encode(supercedes) do
+          {:ok, add_yaku <> "\n| .yaku_precedence[#{display_name}] += #{supercedes}"}
+        end
+      end
+    end
+  end
+
+  defp compile_command("remove_yaku", name, args, line, column) do
+    names = case args do
+      [names] when is_binary(names) -> {:ok, [names]}
+      [names] when is_list(names) -> {:ok, names}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `remove_yaku` command expects a name or a list of names, got #{inspect(args)}"}
+    end
+
+    with {:ok, names} <- names,
+         {:ok, names} <- Validator.validate_json(names),
+         {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
+      {:ok, ~s"""
+      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
+      """}
+    end
+  end
+
+  defp compile_command("replace_yaku", name, args, line, column) do
+    yaku_spec = case args do
+      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
+    end
+
+    with {:ok, {display_name, value, condition, supercedes}} <- yaku_spec,
+         {:ok, display_name} <- Validator.validate_json(display_name),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value),
+         {:ok, condition} <- compile_condition_list(condition, line, column),
+         {:ok, condition} <- Validator.validate_json(condition),
+         {:ok, condition} <- Jason.encode(condition) do
+      add_yaku = """
+        if .[#{name}] | any(.display_name == #{display_name}) then
+          .[#{name}] |= map(select(.display_name != #{display_name})) + [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]
+        else . end
+      """
       if Enum.empty?(supercedes) do
         {:ok, add_yaku}
       else
@@ -665,22 +703,6 @@ defmodule RiichiAdvanced.Compiler do
         "display_name": #{name},
         "enabled_mods": #{mods}
       }]
-      """}
-    end
-  end
-
-  defp compile_command("remove_yaku", name, args, line, column) do
-    names = case args do
-      [names] when is_binary(names) -> {:ok, [names]}
-      [names] when is_list(names) -> {:ok, names}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `remove_yaku` command expects a name or a list of names, got #{inspect(args)}"}
-    end
-
-    with {:ok, names} <- names,
-         {:ok, names} <- Validator.validate_json(names),
-         {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
-      {:ok, ~s"""
-      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
       """}
     end
   end

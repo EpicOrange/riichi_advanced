@@ -7,7 +7,7 @@ define_set taatsu, ~s"0 0 | 0 1 | 0 2 | 0 10"
 define_set terminal_k, ~s"0@terminal 10 20"
 define_set yaochuu_k, ~s"0@terminal 10 20"
 define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t yaochuu_k):4, yaochuu_pair:1" 
-define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t terminak_k):4, terminal_pair:1" 
+define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t terminal_k):4, terminal_pair:1" 
 # now leaving the chanta zone
 
 # kontsu fu
@@ -21,11 +21,11 @@ apply merge, "constants.calls_fu", %{
   kafuun: 4
 }
 apply append, "constants.winning_groups_fu", [
-  %{group: [10, 20], value: 1, yaochuuhai_mult: 2, tsumo_mult: 2}
+  %{groups: ~s"10 20", value: 1, yaochuuhai_mult: 2, tsumo_mult: 2}
 ]
 apply append, "constants.groups_fu", [
-  %{group: [0, 10, 20], value: 2, yaochuuhai_mult: 2},
-  %{group: [0, 1, 2], value: 4, suited_mult: 0}
+  %{groups: ~s"0 10 20", value: 2, yaochuuhai_mult: 2},
+  %{groups: ~s"0 1 2", value: 4, suited_mult: 0}
 ]
 apply prepend, "functions.calculate_fu[0][3]" do
   put_calls_in_hand("ton")

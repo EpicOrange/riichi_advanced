@@ -1,3 +1,7 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (Cosmic Riichi) Seven Pairs is again a possible winning hand.", -100)
+end
+
 apply set, "score_calculation.limit_thresholds", [
   [3, 70], [4, 40], [5, 0],
   [6, 0],
@@ -54,11 +58,10 @@ on after_win do
 end
 
 # modify yaku
-remove_yaku yaku, ["Rinshan", "Chiitoitsu", "Ryanpeikou", "Chankan"]
-define_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+remove_yaku yaku, "Chiitoitsu"
 define_yaku yaku, "Chiitoitsu", 1, match(["hand", "calls", "winning_tile"], ~m"quad:-1, pair:7")
-define_yaku yaku, "Ryanpeikou", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
-define_yaku yaku, "Chankan", 1, last_call_is("kakan", "kakakan")
+replace_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+replace_yaku yaku, "Ryanpeikou", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
 define_yaku meta_yaku, "Chiitoitsu", 1, has_existing_yaku("Chiitoitsu") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
 define_yaku meta_yaku, "Ryanpeikou", 2, has_existing_yaku("Ryanpeikou") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
 
