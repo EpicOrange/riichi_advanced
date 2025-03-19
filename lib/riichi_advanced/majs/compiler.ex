@@ -33,6 +33,10 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_condition(condition, line, column) do
     case condition do
+      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
       {:not, _, [condition]} ->
         with {:ok, result} <- compile_cnf_condition(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
@@ -110,6 +114,16 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action(action, line, column) do
     case action do
+      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, r]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
       {"if", [line: line, column: column], opts} ->
         case opts do
           [condition, actions] ->
@@ -219,24 +233,29 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_constant(true, _line, _column), do: {:ok, true}
   defp compile_constant(false, _line, _column), do: {:ok, false}
   defp compile_constant(value, line, column) do
-    # this order is important: 
-    # compile_action will treat conditions as custom actions (function calls)
-    # validate_json will treat actions/conditions as raw JSON
-    # compile_cnf_condition defaults to a single condition
-    # and compile_action_list assumes a do block
-    with {:error, _} <- compile_condition(value, line, column),
-         {:error, _} <- compile_action(value, line, column),
-         {:error, _} <- Validator.validate_json(value),
-         {:error, _} <- compile_cnf_condition(value, line, column),
-         {:error, _} <- compile_action_list(Keyword.get(value, :do), line, column) do
-      {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
+    case value do
+      # if it's a do block, use compile_action_list
+      [do: actions] -> compile_action_list(actions, line, column)
+      # otherwise, try a bunch of things
+      # this order is important: 
+      # compile_action will treat conditions as custom actions (function calls)
+      # validate_json will treat actions/conditions as raw JSON
+      # compile_cnf_condition defaults to a single condition
+      _ ->
+        with {:ok, value} <- Parser.parse_sigils(value),
+             {:error, _} <- compile_condition(value, line, column),
+             {:error, _} <- compile_action(value, line, column),
+             {:error, _} <- Validator.validate_json(value),
+             {:error, _} <- compile_cnf_condition(value, line, column) do
+          {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
+        end
     end
   end
 
   defp compile_command("var", name, args, line, column) do
     value = case args do
       [value] -> {:ok, value}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `set` command expects only one value, got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `var` command expects only one value, got #{inspect(args)}"}
     end
     with {:ok, value} <- value,
          {:ok, value} <- Validator.validate_json(value),

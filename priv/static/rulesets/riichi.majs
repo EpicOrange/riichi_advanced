@@ -265,21 +265,21 @@ end
 define_const calls_fu, %{pon: 2}
 define_const winning_groups_fu, [
   # kanchan
-  %{group: [-1, 1], value: 2},
+  %{groups: ~s"-1 1", value: 2},
   # penchan
-  %{group: [-1, -2], reject_if_exists: [[-3]], value: 2},
-  %{group: [1, 2], reject_if_exists: [[3]], value: 2},
+  %{groups: ~s"-1 -2", reject_if_exists: [[-3]], value: 2},
+  %{groups: ~s"1 2", reject_if_exists: [[3]], value: 2},
   # ryanmen
-  %{group: [-1, -2], reject_if_missing: [[-3]]},
-  %{group: [1, 2], reject_if_missing: [[3]]},
+  %{groups: ~s"-1 -2", reject_if_missing: [[-3]]},
+  %{groups: ~s"1 2", reject_if_missing: [[3]]},
   # shanpon
-  %{group: [0, 0], value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
+  %{groups: ~s"0 0", value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
   # tanki
-  %{group: [0], value: 2, yakuhai_value: 2}
+  %{groups: ~s"0", value: 2, yakuhai_value: 2}
 ]
 define_const groups_fu, [
-  %{group: [0, 1, 2]},
-  %{group: [0, 0, 0], value: 4, yaochuuhai_mult: 2}
+  %{groups: ~s"0 1 2"},
+  %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}
 ]
 
 def calculate_fu do
@@ -302,7 +302,7 @@ def calculate_fu do
     remove_groups(@groups_fu)
 
     # remove final pair, if any
-    remove_groups([%{group: [0, 0], yakuhai_value: 2}])
+    remove_groups([%{groups: ~s"0 0", yakuhai_value: 2}])
 
     # only retain configurations with 0 tiles remaining
     retain_empty_hands

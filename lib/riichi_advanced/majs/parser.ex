@@ -105,7 +105,6 @@ defmodule RiichiAdvanced.Parser do
   def parse_sigils(ast) when is_integer(ast) or is_float(ast) or is_binary(ast), do: {:ok, ast}
   def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}) when is_binary(set_spec), do: parse_set(set_spec)
   def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}) when is_binary(match_spec), do: parse_match(match_spec)
-  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
   def parse_sigils([]), do: {:ok, []}
   def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
@@ -124,14 +123,14 @@ defmodule RiichiAdvanced.Parser do
   def parse_sigils(%RiichiAdvanced.Compiler.Variable{} = ast), do: {:ok, ast}
   def parse_sigils(ast) when is_map(ast), do: parse_sigils_map(ast)
   def parse_sigils({:%{}, _pos, contents}), do: parse_sigils_map(contents)
+  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
   def parse_sigils_map(map) do
     parsed_map = map
     |> Enum.map(fn {key, val} ->
       if is_binary(key) do
-        case {parse_sigils(key), parse_sigils(val)} do
-          {{:ok, key}, {:ok, val}} -> {:ok, {key, val}}
-          {{:error, msg}, _}       -> {:error, "error parsing sigils in map key: " <> msg}
-          {_, {:error, msg}}       -> {:error, "error parsing sigils in map value: " <> msg}
+        case parse_sigils(val) do
+          {:ok, val}    -> {:ok, {key, val}}
+          {:error, msg} -> {:error, "error parsing sigils in map value: " <> msg}
         end
       else {:error, "non-string JSON key: #{inspect(key)}"} end
     end)
