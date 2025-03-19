@@ -42,7 +42,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
                  Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
             |> Enum.flat_map(&Enum.map(&1, fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end))
-            |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
+            |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn k, l, r -> Enum.uniq_by(l ++ r, &MapSet.new(Utils.strip_attrs([k | &1]))) end) end)
+            |> Enum.uniq_by(fn {k, ccs} -> Enum.map(ccs, fn cc -> MapSet.new(Utils.strip_attrs([k | cc])) end) end)
+            |> Map.new()
             {state, call_choices}
           is_flower ->
             flowers = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
@@ -64,6 +66,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
             call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, tile_behavior, callable_tiles)
             |> Enum.map(fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile, :invisible) => call_choice} end)
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
+            |> Enum.uniq_by(fn {k, ccs} -> Enum.map(ccs, fn cc -> MapSet.new(Utils.strip_attrs([k | cc])) end) end)
+            |> Map.new()
             {state, call_choices}
         end
         # filter call_choices
