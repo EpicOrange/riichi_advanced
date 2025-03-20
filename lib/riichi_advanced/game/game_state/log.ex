@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.GameState.Log do
       doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       kan_tiles: [-2, -1, -4, -3] |> Enum.map(&Enum.at(state.dead_wall, &1)),
-      wall: state.wall |> Enum.drop(4 * Map.get(state.rules, "starting_tiles", 0)),
+      wall: state.wall |> Enum.drop(length(state.available_seats) * Map.get(state.rules, "starting_tiles", 0)),
       die1: state.dice |> Enum.at(0),
       die2: state.dice |> Enum.at(1),
       events: state.log_state.log
