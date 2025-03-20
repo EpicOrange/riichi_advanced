@@ -557,7 +557,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             |> Enum.empty?()
         end
       "is_ai"               -> is_pid(Map.get(state, context.seat))
-      "num_players"         -> length(state.available_seats) == Enum.at(opts, 0, 4)
+      "num_players"         -> length(state.available_seats) in opts
       "is_tenpai_american"  ->
         done_calculating = state.calculate_closest_american_hands_pid == nil
         player = state.players[context.seat]
