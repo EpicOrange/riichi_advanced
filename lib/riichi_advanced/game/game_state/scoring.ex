@@ -248,9 +248,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {0, 0, 0, ""}
     end
 
-    min_score = Map.get(score_rules, "min_score", 0)
-    score = max(score, min_score)
-
     dealer_multiplier = if scoring_method == "han_fu_formula" do 1 else Map.get(score_rules, "dealer_multiplier", 1) end
     self_draw_bonus = Map.get(score_rules, "self_draw_bonus", 0)
     score = score * if is_dealer do dealer_multiplier else 1 end |> Utils.try_integer()
@@ -269,14 +266,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
       true -> score
     end
 
-    max_score = Map.get(score_rules, "max_score", :infinity)
-    score = min(score, max_score)
-
     score = if scoring_method == "han_fu_formula" do
       # round up (to nearest 100, by default)
       han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
       trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
     else score end
+
+    min_score = Map.get(score_rules, "min_score", 0)
+    score = max(score, min_score)
+
+    max_score = Map.get(score_rules, "max_score", :infinity)
+    score = min(score, max_score)
 
     score = Utils.try_integer(score)
     points = Utils.try_integer(points)
@@ -328,7 +328,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {riichi_payment, honba_payment} = if collect_sticks do {state.pot, Map.get(score_rules, "honba_value", 0) * state.honba} else {0, 0} end
       honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
 
-      basic_score = winner.orig_score
+      basic_score = winner.score
       
       basic_score = if "wareme" in state.players[winner.seat].status do
         push_message(state, [%{text: "Player #{player_name(state, winner.seat)} gains double points for wareme"}])
@@ -570,7 +570,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 worst_yaku = if Enum.empty?(winner.yaku2) do winner.yaku else winner.yaku2 end
 
                 # add honba
-                score = winner.orig_score + (Map.get(score_rules, "honba_value", 0) * state.honba)
+                score = winner.score + (Map.get(score_rules, "honba_value", 0) * state.honba)
 
                 if not Enum.empty?(worst_yaku) do
                   push_message(state, [
@@ -1144,10 +1144,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
       existing_yaku: yaku ++ yaku2,
       points: points,
       points2: points2,
-      # since score is visually changeable with modify_winner,
-      # we use orig_score to restore the original score when actually scoring
       score: score,
-      orig_score: score,
+      displayed_score: score,
       score_name: score_name,
       score_denomination: Map.get(score_rules, "score_denomination", ""),
       point_name: Map.get(score_rules, if yaku_2_overrides do "point2_name" else "point_name" end, ""),

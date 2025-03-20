@@ -151,7 +151,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
           {"Four Consecutive Triplets", 200},
           {"Pure One-Suit", 80}
         ],
-        score: 320
+        displayed_score: 320
       }
     }, %{delta_scores: [960, -320, -320, -320]})
   end

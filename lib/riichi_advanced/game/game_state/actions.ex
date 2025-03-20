@@ -1531,7 +1531,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "modify_winner"   ->
         {key, type} = case Enum.at(opts, 0, nil) do
-          "score"              -> {:score, :number}
+          "score"              -> {:displayed_score, :number}
           "points"             -> {:points, :number}
           "points2"            -> {:points2, :number}
           "score_name"         -> {:score_name, :string}
