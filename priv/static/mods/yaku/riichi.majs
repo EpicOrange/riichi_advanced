@@ -47,17 +47,17 @@ replace all, "functions.turn_cleanup", unset_status("furiten"), (if status_missi
 apply prepend, "functions.discard_passed" do
   as others do
     if status("just_reached") do
-      put_down_riichi_stick
+      place_riichi_stick
     end
     unset_status("just_reached")
   end
 end
 
-def put_down_riichi_stick do
-  if status_missing("put_down_riichi_stick") do
+def place_riichi_stick do
+  if status_missing("riichi_stick_placed") do
     subtract_score("riichi_value")
     put_down_riichi_stick
-    set_status("put_down_riichi_stick")
+    set_status("riichi_stick_placed")
   end
 end
 
