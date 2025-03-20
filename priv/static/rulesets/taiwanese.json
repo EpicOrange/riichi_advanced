@@ -2,6 +2,7 @@
   "default_mods": ["eight_flower_win", "show_waits"],
   "available_mods": [
     {"id": "eight_flower_win", "name": "Eight Flower Win", "desc": "Allow instant win upon obtaining 8 flowers. If you have 7 flowers, you may steal the declaration of an 8th flower."},
+    {"id": "reset_honba_on_draw", "name": "Draws Reset Dealer Bonus", "desc": "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
