@@ -1392,7 +1392,12 @@ defmodule RiichiAdvanced.GameState do
       GenServer.cast(self(), :calculate_playable_indices)
       # async populate closest_american_hands for all players
       if state.ruleset == "american" do
-        GenServer.cast(self(), :calculate_closest_american_hands)
+        win_definition = Map.get(state.rules, "win_definition", [])
+        # the am_card_free mod sets win_definition to the empty one, because it uses an alternate wincon
+        # in which case we don't calculate closest hands
+        if win_definition != [[]] do
+          GenServer.cast(self(), :calculate_closest_american_hands)
+        end
       end
     end
     # IO.puts("broadcast_state_change called")

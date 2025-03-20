@@ -295,7 +295,8 @@ defmodule RiichiAdvanced.Compiler do
         "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
         "merge"                                -> {:ok, "#{path} += #{Jason.encode!(Map.new(value_val))}"}
         "subtract"                             -> {:ok, "#{path} -= #{value}"}
-        "delete"                               -> {:ok, "#{path} -= #{value}"}
+        "delete"     when is_list(value_val)   -> {:ok, "#{path} |= map(select(#{value} | index(.) | not))"}
+        "delete"                               -> {:ok, "#{path} |= map(select(. != #{value}))"}
         "multiply"                             -> {:ok, "#{path} *= #{value}"}
         "deep_merge"                           -> {:ok, "#{path} *= #{value}"}
         "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
