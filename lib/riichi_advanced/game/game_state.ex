@@ -2199,6 +2199,7 @@ defmodule RiichiAdvanced.GameState do
     |> update_player(seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | playable_indices: playable_indices } })
     |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, seat, nil))
     state = broadcast_state_change(state, false)
+    notify_ai_marking(state, seat)
     {:noreply, state}
   end
 

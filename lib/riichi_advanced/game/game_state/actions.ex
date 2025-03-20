@@ -1776,7 +1776,6 @@ defmodule RiichiAdvanced.GameState.Actions do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
                 end
                 state = schedule_actions(state, seat, actions, %{seat: seat})
-                notify_ai_marking(state, seat)
                 state
               _ ->
                 # just run all button actions as normal
@@ -1806,6 +1805,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       else state end
 
       # ensure playable_indices is populated for the current player
+      # this also notifies ai marking once :set_playable_indices is received
       state = broadcast_state_change(state, true)
 
       state
