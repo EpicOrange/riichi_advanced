@@ -135,6 +135,13 @@ defmodule RiichiAdvanced.TestUtils do
       assert_list(delta_scores, expected_state.delta_scores)
     end
 
+    if Map.has_key?(expected_state, :shuugi) do
+      shuugi = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+        Map.get(state.players[seat].counters, "shuugi", 0)
+      end
+      assert_list(shuugi, expected_state.shuugi)
+    end
+
     if Map.has_key?(expected_state, :scores) do
       cond do
         is_map(expected_state.scores) ->

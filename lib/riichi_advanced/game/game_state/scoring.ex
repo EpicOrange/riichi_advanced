@@ -773,12 +773,22 @@ defmodule RiichiAdvanced.GameState.Scoring do
         # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
         # TODO refactor to calculate the delta scores first, then apply it to the state
         [pay_ko, pay_oya] = draw_nagashi_payments
+        dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
+        pay_oya_split = if length(state.available_seats) == 4 do
+          Utils.try_integer(dealer_multiplier * (2 * pay_ko + pay_oya) / 2) # yonma
+        else
+          Utils.try_integer(dealer_multiplier * (pay_ko + pay_oya) / 2) # sanma
+        end
         scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
         state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do
           state ->
-            oya_payment = pay_oya
-            ko_payment = if Riichi.get_east_player_seat(state.kyoku, state.available_seats) == seat do pay_oya else pay_ko end
-            payment = if Riichi.get_east_player_seat(state.kyoku, state.available_seats) == payer do oya_payment else ko_payment end
+            dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+            is_dealer = seat == dealer_seat
+
+
+            oya_payment = if is_dealer do pay_oya_split else pay_oya end
+            ko_payment = if is_dealer do pay_oya_split else pay_ko end
+            payment = if payer == dealer_seat do oya_payment else ko_payment end
 
             # handle kanbara satomi's scoring quirk
             payment = if "kanbara_satomi_double_loss" in state.players[payer].status do

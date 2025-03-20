@@ -117,7 +117,7 @@ define_yaku yaku, "Seat Wind", 1,
   or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
   or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
   or (seat_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1"))
-define_yaku yaku, "Chiitoitsu", 2, match(["hand", "calls", "winning_tile"], ~m"quad:-1, pair:7")
+define_yaku yaku, "Chiitoitsu", 2, match(["hand", "calls", "winning_tile"], ~m"(nojoker quad):-1, pair:7")
 
 # welcome to the chanta zone
 on before_scoring do
@@ -281,6 +281,7 @@ define_const groups_fu, [
   %{groups: ~s"0 1 2"},
   %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}
 ]
+define_const pair_fu, [%{groups: ~s"0 0", yakuhai_value: 2}]
 
 def calculate_fu do
   set_counter("fu", "minipoints") do
@@ -302,7 +303,7 @@ def calculate_fu do
     remove_groups(@groups_fu)
 
     # remove final pair, if any
-    remove_groups([%{groups: ~s"0 0", yakuhai_value: 2}])
+    remove_groups(@pair_fu)
 
     # only retain configurations with 0 tiles remaining
     retain_empty_hands
@@ -561,7 +562,7 @@ define_mod tenpairenchan, name: "Tenpairenchan", desc: "A round repeats if the d
 define_mod agariyame, deps: ["agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
 define_mod tenpaiyame, deps: ["tenpairenchan"], name: "Tenpaiyame", desc: "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
 define_mod sudden_death, name: "Sudden Death", desc: "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."
-config_mod sudden_death, name: "goal", values: [25000,30000,35000], default: 30000
+config_mod sudden_death, name: "goal", values: [10000,15000,20000,25000,30000,35000,40000,45000,50000], default: 30000
 define_mod tonpuu, name: "Tonpuu", desc: "Limit the game to the East round only."
 define_mod kuitan_nashi, name: "Kuitan Nashi", desc: "Disallow open tanyao."
 define_mod kuikae_nashi, name: "Kuikae Nashi", desc: "Disallow swap-calling."

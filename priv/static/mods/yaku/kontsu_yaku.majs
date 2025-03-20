@@ -305,7 +305,7 @@ def calculate_fu_with_maximums do
     remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
 
     # remove final pair, if any
-    remove_groups([%{groups: ~s"0 0", yakuhai_value: 2}])
+    remove_groups(@pair_fu)
 
     # only retain configurations with 0 tiles remaining
     retain_empty_hands

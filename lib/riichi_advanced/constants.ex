@@ -326,7 +326,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "kansai"],
+      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
       default_mods: ["tobi"],
     },
     "aka_test" => %{

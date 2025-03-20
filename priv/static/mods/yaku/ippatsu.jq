@@ -15,8 +15,13 @@
 ] + .[$ix+1:]
 |
 # set ippatsu status on riichi
-if .buttons.riichi then
+if (.buttons | has("riichi")) then
   .buttons.riichi.actions |= map(if .[0] == "set_status" then . + ["ippatsu"] else . end)
+else . end
+|
+# set ippatsu status on open riichi
+if (.buttons | has("open_riichi")) then
+  .buttons.open_riichi.actions |= map(if .[0] == "set_status" then . + ["ippatsu"] else . end)
 else . end
 |
 .functions.discard_passed |= [
