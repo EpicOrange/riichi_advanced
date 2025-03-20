@@ -284,7 +284,7 @@ defmodule RiichiAdvanced.SMT do
       acc -> for {tile, attrs_aliases} <- tile_behavior.aliases,
                  Utils.same_tile(tile, assigned_tile), # allow for :any to match
                  {attrs, aliases} <- attrs_aliases,
-                 Utils.has_matching_tile?(aliases, [Enum.at(smt_hand, ix)]),
+                 Utils.has_matching_tile?([Enum.at(smt_hand, ix)], aliases),
                  assignment <- acc,
                  into: MapSet.new() do
         Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs))
