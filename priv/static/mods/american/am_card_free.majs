@@ -43,7 +43,6 @@ define_match blocks_4, ~m"pair:1, (am_pung am_dragon_pung):4"
 # 6 unique blocks
 define_match blocks_3, ~m"pair:5, (am_kong am_news_kong):1"
 define_match blocks_5, ~m"pair:4, (am_pung am_dragon_pung):2"
-define_match blocks, "blocks_1", "blocks_2", "blocks_3", "blocks_4", "blocks_5", "blocks_6", "blocks_7", "blocks_8", "blocks_9"
 
 define_match am_dragons_love, ~a"DDDDa DDDDb FFF FFF"
 define_match am_dragons_wings, ~m"am_dragons_wings:1"
@@ -86,8 +85,12 @@ apply set, "score_calculation.arrange_american_yaku", false
 apply set, "score_calculation.highest_scoring_yaku_only", false
 
 define_const win_con, match(["hand", "call_tiles", "draw"], ["dragon_hand_win"])
-    or (match(["hand", "call_tiles", "draw"], ["blocks"])
-    and (
+    or ((
+       (match(["hand", "call_tiles", "draw"], ["unique_3"]) and match(["hand", "call_tiles", "draw"], ["blocks_7", "blocks_8"]))
+    or (match(["hand", "call_tiles", "draw"], ["unique_4"]) and match(["hand", "call_tiles", "draw"], ["blocks_1", "blocks_6", "blocks_9"]))
+    or (match(["hand", "call_tiles", "draw"], ["unique_5"]) and match(["hand", "call_tiles", "draw"], ["blocks_2", "blocks_4"]))
+    or (match(["hand", "call_tiles", "draw"], ["unique_6"]) and match(["hand", "call_tiles", "draw"], ["blocks_3", "blocks_5"]))
+    ) and (
        (match(["hand", "call_tiles", "draw"], ["any_like_numbers_true"]) and not_match(["hand", "call_tiles", "draw"], ["any_like_numbers_false"]))
     or (match(["hand", "call_tiles", "draw"], ["winds_news_true"]) and not_match(["hand", "call_tiles", "draw"], ["winds_news_false"]))
     or (match(["hand", "call_tiles", "draw"], ["winds_ns_true"]) and not_match(["hand", "call_tiles", "draw"], ["winds_ns_false"]))
