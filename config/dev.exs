@@ -57,7 +57,7 @@ config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
 config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(\.js|\.css|\.png|\.jpeg|\.jpg|\.gif|\.svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/riichi_advanced_web/(controllers|live|components)/.*(ex|heex)$",
       ~r"priv/svgs/.*(svg)$"
