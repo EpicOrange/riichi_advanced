@@ -40,7 +40,6 @@ define_button daiminkan,
         not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
-    and status_missing("riichi") # TODO should the riichi mod add this?
     and tile_not_drawn(-4)
     and call_available,
   call_conditions: can_discard_after_call,
@@ -64,7 +63,6 @@ define_button ankan,
         our_turn
     and not_no_tiles_remaining
     and has_draw
-    and status_missing("just_reached") # TODO should the riichi mod add this?
     and tile_not_drawn(-4)
     and self_call_available,
   precedence_over: ["chii", "pon", "daiminkan"],
@@ -82,7 +80,6 @@ define_button kakan,
         our_turn
     and not_no_tiles_remaining
     and has_draw
-    and status_missing("just_reached") # TODO should the riichi mod add this?
     and tile_not_drawn(-4)
     and can_upgrade_call,
   precedence_over: ["chii", "pon", "daiminkan"],
