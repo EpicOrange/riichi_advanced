@@ -328,7 +328,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {riichi_payment, honba_payment} = if collect_sticks do {state.pot, Map.get(score_rules, "honba_value", 0) * state.honba} else {0, 0} end
       honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
 
-      basic_score = winner.score
+      basic_score = winner.orig_score
       
       basic_score = if "wareme" in state.players[winner.seat].status do
         push_message(state, [%{text: "Player #{player_name(state, winner.seat)} gains double points for wareme"}])
@@ -570,7 +570,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
                 worst_yaku = if Enum.empty?(winner.yaku2) do winner.yaku else winner.yaku2 end
 
                 # add honba
-                score = winner.score + (Map.get(score_rules, "honba_value", 0) * state.honba)
+                score = winner.orig_score + (Map.get(score_rules, "honba_value", 0) * state.honba)
 
                 if not Enum.empty?(worst_yaku) do
                   push_message(state, [
@@ -620,7 +620,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         if "nelly_virsaladze_take_bets" in player.status do
           push_message(state, [%{text: "Player #{player_name(state, seat)} takes all bets on the table (#{state.pot}) and is paid 1500 by every player (Nelly Virsaladze)"}])
           delta_scores = Map.update!(delta_scores, seat, & &1 + state.pot + 4500)
-          delta_scores = for {dir, _player} <- state.placeyers, dir != seat, reduce: delta_scores do
+          delta_scores = for {dir, _player} <- state.players, dir != seat, reduce: delta_scores do
             delta_scores -> Map.update!(delta_scores, dir, & &1 - 1500)
           end
           state = Map.put(state, :pot, 0)
@@ -1144,7 +1144,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       existing_yaku: yaku ++ yaku2,
       points: points,
       points2: points2,
+      # since score is visually changeable with modify_winner,
+      # we use orig_score to restore the original score when actually scoring
       score: score,
+      orig_score: score,
       score_name: score_name,
       score_denomination: Map.get(score_rules, "score_denomination", ""),
       point_name: Map.get(score_rules, if yaku_2_overrides do "point2_name" else "point_name" end, ""),
