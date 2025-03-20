@@ -318,8 +318,9 @@ defmodule RiichiAdvanced.Match do
     end)
     |> Enum.uniq()
     # also add all tile mappings
-    base_tiles = base_tiles
-    |> Enum.flat_map(&Map.get(TileBehavior.tile_mappings(tile_behavior), &1, [&1]))
+    mappings = for {tile, mappings} <- TileBehavior.tile_mappings(tile_behavior), base_tile <- base_tiles, Utils.same_tile(base_tile, tile) do mappings end
+    base_tiles = [base_tiles | mappings]
+    |> Enum.concat()
     |> Enum.uniq()
     # also strip attrs (after applying tile mappings)
     base_tiles = base_tiles ++ Utils.strip_attrs(base_tiles)
