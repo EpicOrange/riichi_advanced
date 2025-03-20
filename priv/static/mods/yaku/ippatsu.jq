@@ -16,12 +16,12 @@
 |
 # set ippatsu status on riichi
 if (.buttons | has("riichi")) then
-  .buttons.riichi.actions |= map(if .[0] == "set_status" then . + ["ippatsu"] else . end)
+  .buttons.riichi.actions += [["set_status", "ippatsu"]]
 else . end
 |
 # set ippatsu status on open riichi
 if (.buttons | has("open_riichi")) then
-  .buttons.open_riichi.actions |= map(if .[0] == "set_status" then . + ["ippatsu"] else . end)
+  .buttons.open_riichi.actions += [["set_status", "ippatsu"]]
 else . end
 |
 .functions.discard_passed |= [
