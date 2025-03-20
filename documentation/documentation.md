@@ -925,6 +925,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"pinzu"`: Matches a pinzu tile (hardcoded).
 - `"souzu"`: Matches a souzu tile (hardcoded).
 - `"jihai"`: Matches a honor tile (hardcoded).
+- `"dragon"`: Matches a dragon tile (hardcoded).
+- `"wind"`: Matches a wind tile (hardcoded).
 - `"terminal"`: Matches a terminal tile (hardcoded).
 - `"yaochuuhai"`: Matches a terminal/honor tile (hardcoded).
 - `"flower"`: Matches a flower tile (hardcoded).
@@ -934,6 +936,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"tsumogiri"`: Matches a discard that was tsumogiri (discarded from draw).
 - `"dora"`: Matches dora (as indicated by visible dora indicators and the `"dora_indicators"` map).
 - `"kuikae"`: Matches a tile that is kuikae to the last call. Only used in `play_restrictions`.
+
+You can also prepend `"not_"` to any of these to get the inverse specification.
 
 ## Match targets
 
