@@ -123,6 +123,11 @@ Note that if `category` is not specified the mod is simply appended to the end o
       values: ["Mangan", "Yakuman"],
       default: "Yakuman"
 
+### `remove_mod`: Delete mods by id
+
+    remove_mod id
+    remove_mod id1, id2, id2
+
 ### (advanced) `define_preset`: Add a new mod preset
 
     define_preset name, list of mods
