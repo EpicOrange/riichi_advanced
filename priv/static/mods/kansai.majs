@@ -25,8 +25,7 @@ define_yaku yaku, "Shousharin", 6, match(["hand", "calls", "winning_tile"], ~m"p
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"))
 define_yaku yakuman, "Daisharin", 1, match(["hand", "calls", "winning_tile"], ~m"pair:7") and 
-    (winning_hand_consists_of("1m","9m")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+    (winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s"))
 define_yaku yakuman, "Manzu Honitsu", 1, winning_hand_consists_of("1m","9m","1z","2z","3z","4z","5z","6z","7z")
 define_yaku_precedence "Shousharin", ["Chiitoitsu", "Honitsu"]
