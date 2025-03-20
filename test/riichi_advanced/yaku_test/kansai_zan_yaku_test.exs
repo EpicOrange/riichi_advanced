@@ -109,7 +109,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Aka", 3}, {"Sanankou", 2}, {"Sanrenkou", 2}],
+        yaku: [{"Aka", 3}, {"Sanankou", 2}, {"Sanrenkou", 2}, {"Toitoi", 2}],
         yaku2: []
       }
     })
