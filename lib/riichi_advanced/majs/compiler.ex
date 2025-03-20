@@ -314,8 +314,9 @@ defmodule RiichiAdvanced.Compiler do
         if op == "set" do
           {:ok, operation}
         else
-          # only perform operation if the path exists
-          {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
+          # only perform operation if the parent path exists
+          parent_path = Validator.get_parent_path(path)
+          {:ok, "if (#{parent_path} | type) != \"null\" then #{operation} else . end"}
         end
       end
     end

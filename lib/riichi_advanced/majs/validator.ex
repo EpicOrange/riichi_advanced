@@ -78,6 +78,15 @@ defmodule RiichiAdvanced.Validator do
   end
   def validate_json_path(path), do: {:error, "got non-string path #{inspect(path)}"}
 
+  def get_parent_path(path) when is_binary(path) do
+    path = Regex.scan(~r/(\.[^.\[\]]+|\[[^\]]+\])/, path)
+    |> Enum.map(fn [match | _captures] -> match end)
+    |> Enum.drop(-1)
+    |> Enum.join("")
+    if String.starts_with?(path, ".") do path else "." <> path end
+  end
+  def get_parent_path(path), do: {:error, "got non-string path #{inspect(path)}"}
+
   @valid_constant_regex ~r/^[a-z_][a-z0-9_]*$/
   def validate_constant(name) when is_binary(name) do
     if Regex.match?(@valid_constant_regex, name) do
