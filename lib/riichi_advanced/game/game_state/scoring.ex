@@ -151,6 +151,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
     Enum.any?(joker_assignments, fn joker_assignment ->
       state = apply_joker_assignment(state, seat, joker_assignment, win_source)
       
+      # run before_win actions
+      state = if Map.has_key?(state.rules, "before_win") do
+        Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, win_source: win_source})
+      else state end
       # run before_scoring actions
       state = if Map.has_key?(state.rules, "before_scoring") do
         Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: win_source})
@@ -211,7 +215,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
         minipoints = Map.get(score_rules, "fixed_fu", minipoints)
         han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 4)
-        han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
         han_fu_starting_han = Map.get(score_rules, "han_fu_starting_han", 2)
         dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
 
@@ -234,8 +237,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
           # calculate score using formula
           base_score = han_fu_multiplier * minipoints * 2 ** (han_fu_starting_han + points)
           score = base_score * if is_dealer do dealer_multiplier else 1 end
-          # round up (to nearest 100, by default)
-          score = trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
           {score, nil}
         end
 
@@ -270,6 +271,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     max_score = Map.get(score_rules, "max_score", :infinity)
     score = min(score, max_score)
+
+    score = if scoring_method == "han_fu_formula" do
+      # round up (to nearest 100, by default)
+      han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
+      trunc(Float.ceil(score / han_fu_rounding_factor)) * han_fu_rounding_factor
+    else score end
 
     score = Utils.try_integer(score)
     points = Utils.try_integer(points)
@@ -398,7 +405,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
           tsumo_loss = Map.get(score_rules, "tsumo_loss", true)
           {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score, is_dealer, num_players, han_fu_rounding_factor)
-          cond do
+          {ko_payment, oya_payment} = cond do
             num_players == 4 or tsumo_loss in [true, "ron_loss"] -> {ko_payment, oya_payment}
             tsumo_loss == "add_1000" ->
               {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(basic_score - 2000, is_dealer, 4, han_fu_rounding_factor)
@@ -418,6 +425,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
               IO.puts("Invalid tsumo_loss value (defaults to true): #{inspect(tsumo_loss)}")
               {ko_payment, oya_payment}
           end
+          # round one last time
+          ko_payment = trunc(Float.ceil(ko_payment / han_fu_rounding_factor)) * han_fu_rounding_factor
+          oya_payment = trunc(Float.ceil(oya_payment / han_fu_rounding_factor)) * han_fu_rounding_factor
+          {ko_payment, oya_payment}
         else {basic_score, basic_score} end
 
         # handle motouchi naruka's scoring quirk
