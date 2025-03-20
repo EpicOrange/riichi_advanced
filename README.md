@@ -29,6 +29,30 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __20 Mar 2025__: v1.3.1:
+  + Added ability to unselect marked tiles in hand
+  + Added `counter_more_than`, `counter_less_than` conditions
+  + Added `dragon` and `wind` and `not_*` tile specs
+  + Added mobile tooltips
+  + Added `not` for conditions in mahjongscript
+  + Added or-patterns to American match specifications
+  + Added or-patterns to set definitions
+  + Added "responsibility" logic to Zung Jung
+  + Added reset honba on exhaustive draw mod to Fuzhou
+  + Added test coverage for space mahjong, cosmic riichi, galaxy mahjong, and zan sanma -- we're at 419 tests now
+  + Added top-level JSON constants that get substituted on load
+  + Added Zan Sanma preset for kansai sanma
+  + Fixed AI going too fast and discarding invalid tiles when cancellable riichi mod is on
+  + Fixed button clicks not registering if you click the top of a button
+  + Fixed Concealed Hand being scored for Seven Pairs and Thirteen Terminals hands in Zung Jung
+  + Fixed cosmic riichi awarding both kontsu and triplet yaku for the same hand
+  + Fixed facedown tiles identity being visible if you just look at the HTML
+  + Fixed head bump actually being a race of who clicks the ron button first
+  + Fixed joker solver not being able to solve for tiles with attributes
+  + Fixed robbing the gold not working for nondealers in Fuzhou mahjong
+  + Fixed some more crashes
+  + Fixed transparent Washizu tiles not being replaced with aka/ao/kindora
+  + Fixed variables not being substituted in certain locations in functions
 - __14 Mar 2025__: v1.3.0:
   + Added `dismantle_calls` match spec keyword that will only remove the matching part from a call
   + Added `modify_winner` and `modify_payout` actions for custom scoring
