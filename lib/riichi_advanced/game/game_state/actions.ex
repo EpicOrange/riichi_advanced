@@ -426,7 +426,13 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def interpret_amount(state, context, amt_spec) do
-    case List.wrap(amt_spec) do
+    amt_spec = List.wrap(amt_spec)
+    # counters should take precedence over keywords
+    counter = with [amount | _opts] <- amt_spec do
+      Map.get(state.players[context.seat].counters, amount, nil)
+    end
+    case amt_spec do
+      _ when counter != nil -> counter
       ["count_matches" | opts] ->
         # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))

@@ -35,6 +35,8 @@ defmodule RiichiAdvanced.Compiler do
     case condition do
       {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
       {:==, pos, [{l, _, nil}, r]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
+      {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
+      {:!=, pos, [{l, _, nil}, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
       {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
       {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
       {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
