@@ -37,11 +37,11 @@ defmodule RiichiAdvanced.KansaiZanScoring do
     "shiro_pocchi",
     %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
     "shiny_dora",
-    "kansai_draw",
     "kansai_flowers",
     "kansai_no_100_sticks",
     "kansai_40_fu",
     "kansai_shuugi",
+    "kansai_draw",
     "zan_scoring",
     "kansai_no_furiten_riichi"
   ]

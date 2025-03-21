@@ -37,12 +37,12 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "shiro_pocchi",
     %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
     "shiny_dora",
-    "kansai_draw",
     "kansai_flowers",
     "kansai_no_100_sticks",
     "kansai_40_fu",
     "kansai_shuugi",
     "zan_scoring",
+    "kansai_draw",
     "kansai_no_furiten_riichi"
   ]
 
@@ -120,8 +120,8 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     {
       "starting_hand": {
         "east": ["2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z", "5z", "5z", "8s", "8s"],
-        "south": ["1p", "2p", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
-        "west": ["1p", "4p", "7p", "2p", "0p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"]
+        "south": ["1p", "2p", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "7z"],
+        "west": ["1p", "4p", "7p", "2p", "0p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "7z"]
       },
       "starting_draws": ["6z", "8s"]
     }

@@ -31,6 +31,11 @@ define_yaku yakuman, "Manzu Honitsu", 1, winning_hand_consists_of("1m","9m","1z"
 define_yaku_precedence "Shousharin", ["Chiitoitsu", "Honitsu"]
 define_yaku_precedence "Daisharin", ["Chiitoitsu", "Chinitsu"]
 define_yaku_precedence "Manzu Honitsu", ["Honitsu", "Chinitsu"]
+replace_yaku yaku, "Seat Wind", 1,
+     (seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
+  or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
+  or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
+define_yaku yaku, "North Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei_triplet:1, mentsu:3, pair:1")
 
 # end-of-game shuugi payment
 on before_conclusion do
@@ -83,7 +88,7 @@ end
 remove_mod "kansai_chiitoitsu" # this is preapplied
 
 define_mod_category "Kansai", prepend: true
-define_mod kansai_draw, name: "Draw To Dora Indicator", category: "Kansai", order: 5, deps: ["dora"], desc: "The game ends once the next draw is the last dora indicator."
+define_mod kansai_draw, name: "Draw To Dora Indicator", category: "Kansai", order: 6, deps: ["dora"], desc: "The game ends once the next draw is the last dora indicator."
 define_mod kansai_flowers, name: "Kansai Flowers", category: "Kansai", order: 5, desc: "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
 define_mod kansai_no_furiten_riichi, name: "No Furiten Riichi", category: "Kansai", order: 6, deps: ["yaku/riichi"], desc: "Riichi is disallowed while in furiten."
 define_mod kansai_no_100_sticks, name: "No 100 sticks", category: "Kansai", order: 5, desc: "All scores are rounded to 1000s instead of 100s."

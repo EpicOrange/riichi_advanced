@@ -188,6 +188,7 @@ defmodule RiichiAdvanced.Utils do
     end |> Enum.sum()
   end
 
+  # TODO what about 3-player
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = case seat do
