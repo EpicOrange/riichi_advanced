@@ -520,7 +520,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
         score_actions = Enum.at(opts, 0)
-        yakuhai = Scoring.get_yakuhai(state, context.seat)
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
         win_source = context.win_source
@@ -582,19 +581,13 @@ defmodule RiichiAdvanced.GameState.Actions do
                   end) end)
 
                   value = Map.get(group_spec, "value", 0)
-                  suited_mult = Map.get(group_spec, "suited_mult", 1)
-                  yaochuuhai_mult = Map.get(group_spec, "yaochuuhai_mult", 1)
                   tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
-                  yakuhai_value = Map.get(group_spec, "yakuhai_value", 0)
                   for group <- groups,
                       {hand, calls, fu} <- hand_calls_fu,
                       tile <- base_tiles,
                       {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
                     value = value
-                    * if Riichi.is_suited?(tile) do suited_mult else 1 end
-                    * if Riichi.is_yaochuuhai?(tile) do yaochuuhai_mult else 1 end
                     * if win_source == :draw do tsumo_mult else 1 end
-                    value = value + yakuhai_value * Utils.count_tiles(yakuhai, [tile], tile_behavior)
                     {hand, calls, fu + value}
                   end
                 end) ++ hand_calls_fu
@@ -605,10 +598,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                   reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
 
                   value = Map.get(group_spec, "value", 0)
-                  suited_mult = Map.get(group_spec, "suited_mult", 1)
-                  yaochuuhai_mult = Map.get(group_spec, "yaochuuhai_mult", 1)
                   tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
-                  yakuhai_value = Map.get(group_spec, "yakuhai_value", 0)
                   for group <- groups,
                       {hand, calls, fu} <- hand_calls_fu,
                       tile <- Match.collect_base_tiles(hand, [], group, tile_behavior),
@@ -616,10 +606,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                       not Enum.any?(reject_if_missing, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil) end),
                       {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
                     value = value
-                    * if Riichi.is_suited?(tile) do suited_mult else 1 end
-                    * if Riichi.is_yaochuuhai?(tile) do yaochuuhai_mult else 1 end
                     * if win_source == :draw do tsumo_mult else 1 end
-                    value = value + yakuhai_value * Utils.count_tiles(yakuhai, [tile], tile_behavior)
                     {hand, calls, fu + value}
                   end
                 end) ++ hand_calls_fu

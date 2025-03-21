@@ -211,7 +211,7 @@ define_const yakuhai_wind_groups, [
   %{groups: ~s"0@prevalent&seat 0@prevalent&seat 0@prevalent&seat", value: 4},
 ]
 on before_scoring do
-  add_attr(["hand", "calls", "winning_tile"], "wind", ["wind"])
+  add_attr(["hand", "calls", "winning_tile"], "_wind", ["wind"])
 
   # first check hand
   set_counter("mixed_winds", "minipoints") do
@@ -262,11 +262,13 @@ end
 define_yaku yaku, "Mixed Winds", "mixed_winds", counter_at_least("mixed_winds", 0.5)
 
 define_const triplets_fu, [
-  %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}
+  %{groups: ~s"0 0 0", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}
 ]
 define_const kontsu_fu, [
-  %{groups: ~s"0 10 20", value: 2, yaochuuhai_mult: 2},
-  %{groups: ~s"0 1 2", value: 4, suited_mult: 0}
+  %{groups: ~s"0 10 20", value: 2},
+  %{groups: ~s"0@yaochuu 10@yaochuu 20@yaochuu", value: 4},
+  %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4}
 ]
 def calculate_fu_with_maximums do
   set_counter("fu", "minipoints") do

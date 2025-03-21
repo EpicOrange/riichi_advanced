@@ -1251,8 +1251,6 @@ If you want to calculate fu (minipoints), then you need to set the `fu` counter 
 Fu calculation is done by a series of manipulations described by the action list above. For example, riichi uses the following (assuming kan is disabled):
 
     set_counter("fu", "minipoints") do
-      remove_attrs
-    
       # score calls
       convert_calls(%{pon: 2})
       remove_tanyaohai_calls
@@ -1270,19 +1268,19 @@ Fu calculation is done by a series of manipulations described by the action list
         %{groups: ~s"-1 -2", reject_if_missing: ~s"-3"},
         %{groups: ~s"1 2", reject_if_missing: ~s"3"},
         # shanpon
-        %{groups: ~s"0 0", value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
+        %{groups: ~s"0 0", value: 2, tsumo_mult: 2},
         # tanki
-        %{groups: ~s"0", value: 2, yakuhai_value: 2}
+        %{groups: ~s"0", value: 2}
       ])
     
       # now remove all closed groups
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
+      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
     
       # remove final pair, if any
-      remove_groups([%{groups: ~s"0 0", yakuhai_value: 2}])
+      remove_groups([%{groups: ~s"0 0"}])
     
       # only retain configurations with 0 tiles remaining
       retain_empty_hands
@@ -1321,16 +1319,16 @@ Fu calculation is done by a series of manipulations described by the action list
 
 Essentially, fu calculations start with the winning hand and calls scoring 0 fu. Each fu calculation action manipulates one of these three (hand, calls, fu):
 
-- `remove_attrs`: remove all tile attributes from hand and calls.
 - `convert_calls(call_mapping)`: adds the score for every call as determined by `call_mapping`, which is an object specifying a map from call name to fu value (e.g. `{"pon": 2}`. Does not remove any calls.
 - `remove_calls(tile_specs)`: deletes all calls that include any tile matching all the given `tile_specs`. The idea is that you run `"convert_calls"` to score all calls, run `remove_calls(["tanyaohai"])` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
 - `remove_winning_groups([group1, group2, ...])`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
   * Kanchan: `{"groups": [[-1, 1]], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
   * Penchan (left): `{"groups": [[-1, -2]], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)
   * Ryanmen (left): `{"groups": [[-1, -2]], "reject_if_missing": [[-3]]}` (remove the two tiles left of the winning tile, but only if the tile (winning tile - 3) also exists)
-  * Shanpon: `{"groups": [[0, 0]], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yaochuuhai, multiply by 2, if the win is self-draw then multiply by 2)
-  * Tanki: `{"groups": [[0]], "value": 2, "yakuhai_value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yakuhai, add 2 per yakuhai (so double wind counts as +4 fu)
+  * Shanpon: `{"groups": [[0, 0]], "value": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the win is self-draw, then multiply by 2)
+  * Tanki: `{"groups": [[0]], "value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do)
 - `remove_groups([group1, group2, ...])`: same as "remove_winning_groups", but it can be centered on any tile, not just the winning tile
+- `remove_attrs`: remove all tile attributes from hand and calls.
 
 The above manipulations will leave you with multiple possibilities for (hand, calls, fu). To keep only the ones that use up the whole hand, use `retain_empty_hands`. Afterwards the following manipulations are useful:
 
@@ -1347,6 +1345,8 @@ The above manipulations will leave you with multiple possibilities for (hand, ca
 The list of actions should end with `take_maximum"` in order to reduce the list of possible (hand, calls, fu) tuples to the maximum possible. The calculated fu will be the fu for the first possibility in the list.
 
 Note that every one of these actions can take a second `condition` parameter, just like `add`, but for efficiency reasons, only `add` can test for minipoints.
+
+Also note that the above doesn't handle yakuhai pair fu and terminal/honor triplet fu. These are addressed in a somewhat convoluted way by adding attributes to certain tiles prior to fu calculation -- to see what's up, check out [the ruleset file](/priv/static/rulesets/riichi.majs).
 
 ## Setting up next-round logic
 

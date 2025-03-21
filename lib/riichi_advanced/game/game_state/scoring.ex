@@ -36,28 +36,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     eligible_yaku
   end
 
-  def get_yakuhai(state, seat) do
-    # TODO support aka, ao, kin, versions
-    dragons = [:"0z", :"5z", :"6z", :"7z", :"8z", :"9z"]
-    seat_wind = case Riichi.get_seat_wind(state.kyoku, seat, state.available_seats) do
-      :east -> :"1z"
-      :south -> :"2z"
-      :west -> :"3z"
-      :north -> :"4z"
-    end
-    round_wind = case Riichi.get_round_wind(state.kyoku, length(state.available_seats)) do
-      :east -> :"1z"
-      :south -> :"2z"
-      :west -> :"3z"
-      :north -> :"4z"
-    end
-    if Map.get(state.rules["score_calculation"], "double_wind_4_fu", false) do
-      dragons ++ [seat_wind, round_wind]
-    else
-      dragons ++ Enum.dedup([seat_wind, round_wind])
-    end
-  end
-
   def get_yaku_advanced(state, yaku_list, seat, winning_tiles, win_source, existing_yaku \\ []) do
     # returns a map %{winning_tile => {minipoints, yakus}}
     if winning_tiles == nil or winning_tiles == [nil] or Enum.empty?(winning_tiles) do
