@@ -43,7 +43,7 @@ In addition, there is a concept of a numeric "amount". An **amount** is either a
 
 ## Conditions
 
-Any condition in the [supported list of conditions](./documentation.md#conditions) can be written like
+Any condition in the [supported list of conditions](./documentation.md#conditions-1) can be written like
 
 ```elixir
 (our_turn and has_score(1000)) or has_score(0)
@@ -109,7 +109,7 @@ def myfun2 do
     draw
   end
 
-  # unless-else-blocks compile down to "unless" actions
+  # unless-blocks compile down to "unless" actions
   unless no_tiles_remaining do
     draw(1, "opposite_end")
   end
@@ -118,6 +118,9 @@ def myfun2 do
   as everyone do
     push_message("says hi")
   end
+
+  # this becomes ["set_counter", "counter_name", "score"]
+  counter_name = "score"
 
   # this becomes ["add_counter", "counter_name", 1]
   counter_name = counter_name + 1
@@ -143,6 +146,11 @@ To make a function take parameters like this, simply use the parameter e.g. `"$m
 ```elixir
 def myfun3 do
   push_message("has a score of $score!", %{"score": "$myscore"})
+end
+# elsewhere:
+def myfun4 do
+  my_score = "score"
+  myfun3(score: "my_score")
 end
 ```
 
@@ -175,6 +183,8 @@ This compiles to
 ```jq
 .set_definitions["myset"] = [[0, 1, {"offset": 2, "attrs": ["myattr", "myattr2"]}], ["1z", "2z", "3z"]]
 ```
+
+Sets are mostly used in match definitions, but they are also extensively used in fu calculations.
 
 ### Match sigils
 
@@ -211,9 +221,7 @@ This compiles to
 ]}
 ```
 
-# Reference
-
-## Commands
+# Command Reference
 
 ### `def`: Function definition
 
@@ -229,17 +237,13 @@ def my_function_name do
 end
 ```
 
-### `set`: Set any parameter
+### `set`: Set any toplevel parameter
 
 ```elixir
 set initial_points, 25000
 ```
 
-### (advanced) `apply`: Modify any path
-
-```elixir
-apply add, "initial_points", 5000
-```
+To set arbitrary paths, see `apply` below.
 
 ### `on`: Add a new handler for an event
 
@@ -249,7 +253,7 @@ on before_win do
 end
 ```
 
-Note that this handler will run after any existing handlers for that event.
+Note that this handler will run after any existing handlers for that event. To prepend instead of append to existing handlers, see `apply` below.
 
 ### `define_set`: Define a set for reference in matches
 
@@ -277,10 +281,25 @@ end
 ### `define_yaku`: Add a new yaku
 
 ```elixir
-define_yaku list_name display_name value condition supercedes_list
+define_yaku list_name, display_name, value, condition
 ```
 
 Note that this new yaku combines with any yaku of the same name, i.e. if you get the same yaku twice then you get that yaku whose value is the sum.
+
+After the condition you may optionally specify a list of yaku names as shorthand for the below:
+
+```elixir
+define_yaku list_name, display_name, value, condition, supercedes_list
+# is the same as
+define_yaku list_name, display_name, value, condition
+define_yaku_precedence display_name, supercedes_list
+```
+
+### `define_yaku_precedence`: Define precedence for a given yaku
+
+```elixir
+define_yaku_precedence display_name, supercedes_list
+```
 
 ### `remove_yaku`: Remove all instances of a given yaku by name
 
@@ -292,16 +311,10 @@ remove_yaku yaku_list, [name1, name2]
 ### `replace_yaku`: Replace all instances of a yaku with a new definition
 
 ```elixir
-replace_yaku list_name display_name value condition supercedes_list
+replace_yaku list_name, display_name, value, condition, optional_supercedes_list
 ```
 
 This is essentially the same as `remove_yaku display_name` followed by `define_yaku`, except it will do nothing if the yaku doesn't exist in the first place.
-
-### `define_yaku_precedence`: Define precedence for a given yaku
-
-```elixir
-define_yaku display_name supercedes_list
-```
 
 ### `define_button`: Add a new button
 
@@ -336,13 +349,16 @@ Note that any existing auto button of the same `id` will be overwritten.
 ### `define_mod_category`: Add a mod category
 
 ```elixir
-define_mod_category name
-define_mod_category name, prepend: true
+# append a mod category to the list
+define_mod_category "Other"
+
+# prepend a mod category to the list
+define_mod_category "Rules", prepend: true
 ```
 
 Note that you can have multiple instances of a category, however only the first one will be added to when adding mods to a category.
 
-### `define_mod`: Add a new mod to a given category
+### `define_mod`: Add a new mod
 
 ```elixir
 define_mod id,
@@ -355,7 +371,7 @@ define_mod id,
   category: name
 ```
 
-Note that if `category` is not specified the mod is simply appended to the end of the list.
+Note that if `category` is not specified, the mod is simply appended to the end of the mod list.
 
 ### `config_mod`: Add a new config option to a given mod
 
@@ -373,8 +389,71 @@ remove_mod id
 remove_mod id1, id2, id2
 ```
 
+### (advanced) `apply`: Modify any path
+
+```elixir
+# add to an existing path
+apply add, "initial_points", 5000
+
+# set values at arbitrary paths
+apply set, "score_calculation.tenpairenchan", true
+
+# append to a function
+apply append, "functions.myfunc" do
+  as everyone do
+    add_score(1000)
+  end
+end
+
+# prepend to an event handler
+apply prepend, "before_win.actions" do
+  as everyone do
+    add_score(1000)
+  end
+end
+```
+
+The allowed methods for `apply <method>` are:
+
+- `"set"`: set the value at the given path.
+- `"add"`: add a numeric value.
+- `"prepend"`: prepend an element or an array to an array.
+- `"append"`: append an element or an array to an array, or create the array if it doesn't exist.
+- `"merge"`: merge an object to an existing object.
+- `"subtract"`: subtract a numeric value.
+- `"delete"`: remove an element or an array of elements from an array.
+- `"multiply"`: multiply a numeric value.
+- `"deep_merge"`: merge an object to an existing object, and merge shared keys recursively.
+- `"divide"`: divide a numeric value.
+- `"modulo"`: modulo a numeric value.
+- `"delete_key"`: remove a key or an array of keys from an object. (specify keys as strings)
+- any of the following C binary numeric operations theoretically work too: `"atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"`
+
+If the parent node for the given path doesn't exist, the command does nothing (with the exception of `apply set`, in which case the path is created).
+
+### (advanced) `replace all`: Replace all nodes under a path
+
+```elixir
+replace all, "", ["pon"], ["pon", "daiminkan", "kakan"]
+
+replace all, "available_mods",
+  %{type: "dropdown", name: "below", values: [0, 1, 1000, 1001]},
+  %{type: "dropdown", name: "below", values: [0, 1, 1000, 1001], default: 1}
+```
+
+Given a path and two values `from` and `to`, look at all subnodes of the given `path` and replace all instances of `from` with `to`.
+
 ### (advanced) `define_preset`: Add a new mod preset
 
 ```elixir
-define_preset name, list of mods
+define_preset "Mahjong Soul", [
+  "kan",
+  %{name: "honba", config: %{value: 100}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "tobi", config: %{below: 0}},
+  %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
+  "agarirenchan",
+  ...
+}
 ```

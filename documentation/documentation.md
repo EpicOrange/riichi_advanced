@@ -21,7 +21,7 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
     * [Attributes and tile aliasing](#attributes-and-tile-aliasing)
 - [`ruleset.json` full documentation](#rulesetjson-full-documentation)
   + [Actions](#actions)
-  + [Conditions](#conditions)
+  + [Conditions](#conditions-1)
   + [Tile specs](#tile-specs)
   + [Match targets](#match-targets)
   + [Scoring methods](#scoring-methods)
