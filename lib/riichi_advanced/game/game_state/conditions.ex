@@ -166,6 +166,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       _ when is_list(seat_spec) -> Enum.flat_map(seat_spec, &from_seats_spec(state, context, &1)) |> Enum.uniq()
       _ -> [from_seat_spec(state, context, seat_spec)]
     end
+    |> Enum.filter(& &1 in state.available_seats)
     if negated do state.available_seats -- seats else seats end
   end
 
@@ -262,7 +263,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "last_discard_matches"     -> last_discard_action != nil and Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: Map.get(context, :tile, nil), players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action != nil and last_action.action == :call and Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: Map.get(context, :tile, nil), call: last_call_action, players: state.players, seat: context.seat})
       "needed_for_hand"          -> Riichi.needed_for_hand(cxt_player.hand ++ cxt_player.draw, cxt_player.calls, context.tile, translate_match_definitions(state, opts), cxt_player.tile_behavior)
-      "is_drawn_tile"            -> Utils.has_attr?(context.tile, ["_draw"])
+      "is_drawn_tile"            -> Utils.has_attr?(context.tile, ["draw"])
       "status"                   -> Enum.all?(opts, fn st -> st in cxt_player.status end)
       "status_missing"           -> Enum.all?(opts, fn st -> st not in cxt_player.status end)
       "discarder_status"         -> last_action != nil and last_action.action == :discard and Enum.all?(opts, fn st -> st in state.players[last_action.seat].status end)

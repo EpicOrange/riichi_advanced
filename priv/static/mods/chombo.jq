@@ -19,7 +19,7 @@ if (.buttons | has("ron")) then
 else . end
 |
 if (.buttons | has("chankan")) then
-  .buttons.chankan |= make_chombo_button("Ron"; "win_by_call"; "last_called_tile"; "has_yaku_with_call"; "has_yaku2_with_call"; ["not_our_turn", {"name": "last_call_is", "opts": ["kakan", "ankan"]}])
+  .buttons.chankan |= make_chombo_button("Ron"; "win_by_call"; "last_called_tile"; "has_yaku_with_call"; "has_yaku2_with_call"; ["not_our_turn", "someone_else_just_called", {"name": "last_call_is", "opts": ["kakan", "ankan"]}])
 else . end
 |
 if (.buttons | has("tsumo")) then
@@ -57,15 +57,15 @@ if (.buttons | has("riichi")) then
   # you can riichi discard any tile
   .play_restrictions |= map(select(. != [["any"], [{"name": "status", "opts": ["riichi", "just_reached"]}, {"name": "needed_for_hand", "opts": ["tenpai"]}]]))
   |
-  # if you noten riichi, pay 8000 to everyone
+  # if you noten riichi, pay 8000 to everyone, and don't increase honba
   # TODO make this payment configurable
-  # TODO also need to repeat the round without adding honba, somehow
   .before_exhaustive_draw.actions += [
-    ["when_anyone", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["tenpai"]}] [
+    ["when_anyone", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["tenpai"]}], [
       ["push_message", "must pay 8000 to every player for being noten riichi"],
       ["subtract_score", 8000], ["add_score", 8000, "shimocha"],
       ["subtract_score", 8000], ["add_score", 8000, "toimen"],
-      ["subtract_score", 8000], ["add_score", 8000, "kamicha"]
+      ["subtract_score", 8000], ["add_score", 8000, "kamicha"],
+      ["add_honba", -1]
     ]]
   ]
 else . end
