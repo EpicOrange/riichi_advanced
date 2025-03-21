@@ -346,9 +346,10 @@ defmodule RiichiAdvanced.Riichi do
           sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
           not Enum.empty?(triplet ++ sequence)
         tile_spec ->
+          tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
           # "1m", "2z" are also specs
           if Utils.is_tile(tile_spec) do
-            Utils.same_tile(context.tile, Utils.to_tile(tile_spec))
+            Utils.same_tile(context.tile, Utils.to_tile(tile_spec), tile_behavior)
           else
             IO.puts("Unhandled tile spec #{inspect(tile_spec)}")
             true

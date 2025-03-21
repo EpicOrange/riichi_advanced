@@ -287,7 +287,10 @@ defmodule RiichiAdvanced.SMT do
                  Utils.has_matching_tile?([Enum.at(smt_hand, ix)], aliases),
                  assignment <- acc,
                  into: MapSet.new() do
-        Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs))
+        from_tile = Enum.find(aliases, &Utils.same_tile(Enum.at(smt_hand, ix), &1))
+        # orig_attrs = all attributes from the original hand tile that aren't "used up" by the aliasing
+        orig_attrs = Utils.get_attrs(Enum.at(smt_hand, ix)) -- Utils.get_attrs(from_tile)
+        Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs ++ orig_attrs))
       end
     end
   end

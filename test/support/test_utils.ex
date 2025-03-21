@@ -116,8 +116,8 @@ defmodule RiichiAdvanced.TestUtils do
         if [] not in errs do
           for tuples <- errs, {k, actual, expected} <- tuples do
             IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
-            assert actual == expected
           end
+          assert false
         end
       end
     else

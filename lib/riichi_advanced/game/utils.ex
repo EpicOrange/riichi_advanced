@@ -130,18 +130,19 @@ defmodule RiichiAdvanced.Utils do
     else
       # every joker is connected to any-tile jokers
       any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
+      any_tiles = MapSet.new([tile | any_tiles])
       for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
+        # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
         t2 = add_attr(tile2, attrs2)
-        cond do
-          has_matching_tile?([tile], aliases) ->
-            # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
-            MapSet.new(aliases)
-            |> MapSet.delete(:any) # never return :any
-            |> MapSet.put(t2)
-          same_tile(tile, t2) -> MapSet.new(aliases)
-          true -> MapSet.new()
+        {results, extra_attrs} = case Enum.find(aliases, &same_tile(tile, &1)) do
+          nil -> if same_tile(tile, t2) do {aliases, get_attrs(tile) -- attrs2} else {[], []} end
+          t1  -> {MapSet.put(aliases, t2), get_attrs(tile) -- get_attrs(t1)}
         end
-      end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
+        results
+        |> Enum.reject(&strip_attrs(&1) == :any)
+        |> add_attr(extra_attrs)
+        |> MapSet.new()
+      end |> Enum.reduce(any_tiles, &MapSet.union/2)
     end
   end
 

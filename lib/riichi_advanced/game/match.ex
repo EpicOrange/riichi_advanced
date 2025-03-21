@@ -227,7 +227,16 @@ defmodule RiichiAdvanced.Match do
         end
         # handle joker subgroups next
         hand_calls = for subgroup <- group_to_subgroups(joker, base_tile, tile_behavior), reduce: hand_calls do
-          hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, tile_behavior) end)
+          hand_calls ->
+            ret = Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, tile_behavior) end)
+            # if {:ok, [group]} == RiichiAdvanced.Parser.parse_set("0@yaochuu 0@yaochuu 0@winning_tile&tsumo") do
+            #   if ret != [] do
+            #     IO.inspect({subgroup, hand_calls, ret})
+            #     IO.inspect(tile_behavior.aliases)
+            #     IO.puts("")
+            #   end
+            # end
+            ret
         end
         hand_calls
       is_offset(group) -> remove_from_hand_calls(hand, calls, [offset_tile(base_tile, group, tile_behavior)], tile_behavior)
@@ -261,7 +270,7 @@ defmodule RiichiAdvanced.Match do
     %TileBehavior{ tile_behavior | aliases:
       for {tile, attrs_aliases} <- tile_behavior.aliases do
         new_attrs_aliases = for {attrs, aliases} <- attrs_aliases do
-          {attrs, Enum.filter(aliases, fn t -> Enum.any?(relevant_tiles, &Utils.same_tile(&1, t)) end)}
+          {attrs, Enum.filter(aliases, fn t -> Enum.any?(relevant_tiles, &Utils.same_tile(&1, t)) end) |> MapSet.new()}
         end
         |> Enum.reject(fn {_attrs, aliases} -> Enum.empty?(aliases) end)
         |> Map.new()

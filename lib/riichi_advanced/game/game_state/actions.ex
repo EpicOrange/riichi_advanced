@@ -82,7 +82,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       # trigger play effects
       state = if Map.has_key?(state.rules, "play_effects") do
         doras = get_doras(state)
-        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile, doras: doras}), reduce: state do
+        context = %{tile: tile, doras: doras}
+        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(List.wrap(tile_spec), context), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end
@@ -708,9 +709,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     end) } end)
   end
 
-  def add_attr_matching(tiles, attrs, tile_specs) do
+  def add_attr_matching(tiles, attrs, tile_specs, tile_behavior) do
     for tile <- tiles do
-      if Riichi.tile_matches_all(tile_specs, %{tile: tile}) do
+      if Riichi.tile_matches_all(tile_specs, %{tile: tile, tile_behavior: tile_behavior}) do
         Utils.add_attr(tile, attrs)
       else tile end
     end
@@ -1297,17 +1298,18 @@ defmodule RiichiAdvanced.GameState.Actions do
         targets = Enum.at(opts, 0, [])
         attrs = List.wrap(Enum.at(opts, 1, []))
         tile_specs = Enum.at(opts, 2, [])
+        tile_behavior = state.players[context.seat].tile_behavior
         for target <- targets, reduce: state do
           state ->
             case target do
-              "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs))
-              "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs))
-              "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs)} end))
-              "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs))
-              "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
-              "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
-              "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
-              _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs) |> Enum.at(0)) end)
+              "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+              "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+              "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs, tile_behavior)} end))
+              "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+              "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+              "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+              "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+              _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs, tile_behavior) |> Enum.at(0)) end)
               _      ->
                 IO.inspect("Unhandled add_attr target #{inspect(target)}")
                 state

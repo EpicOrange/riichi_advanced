@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         yaku: [{"Chun", 1}],
         yaku2: [],
         minipoints: 40
-      }, ]
+      }]
     })
   end
 
@@ -64,7 +64,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["5z", "14z"]
