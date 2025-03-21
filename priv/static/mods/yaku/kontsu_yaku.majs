@@ -201,7 +201,8 @@ define_const mixed_winds_groups, [
     | 0@prevalent&seat 1@wind 2@wind
     | 0@wind 1@prevalent&seat 2@wind
     | 0@wind 1@wind 2@prevalent&seat
-    """, value: 1}
+    """, value: 1},
+  %{groups: ~s""} # no-op
 ]
 define_const yakuhai_wind_groups, [
   %{groups: ~s"""
@@ -209,6 +210,7 @@ define_const yakuhai_wind_groups, [
     | 0@seat 0@seat 0@seat
     """, value: 2},
   %{groups: ~s"0@prevalent&seat 0@prevalent&seat 0@prevalent&seat", value: 4},
+  %{groups: ~s""} # no-op
 ]
 on before_scoring do
   add_attr(["hand", "calls", "winning_tile"], "_wind", ["wind"])
@@ -216,7 +218,6 @@ on before_scoring do
   # first check hand
   set_counter("mixed_winds", "minipoints") do
     remove_calls
-    put_winning_tile_in_hand
     remove_groups(@yakuhai_wind_groups, max_triplets >= 1)
     remove_groups(@yakuhai_wind_groups, max_triplets >= 2)
     remove_groups(@yakuhai_wind_groups, max_triplets >= 3)
@@ -226,16 +227,16 @@ on before_scoring do
     remove_groups(@mixed_winds_groups, max_kontsu >= 3)
     remove_groups(@mixed_winds_groups, max_kontsu >= 4)
     # remove remaining groups
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
     # remove pair
-    remove_groups([%{groups: ~s"0 0"}])
+    remove_groups([%{groups: ~s"0 0 |"}])
     retain_empty_hands
     take_maximum
   end
-  # must adjust minipoints to match, easiest way is to recalculate it
+  # on a non-pinfu win, must adjust minipoints to match
   if max_triplets >= 1 or max_kontsu >= 1 do
     calculate_fu_with_maximums
   end
@@ -260,78 +261,58 @@ on before_scoring do
   remove_attr_all("wind", "prevalent", "seat")
 end
 define_yaku yaku, "Mixed Winds", "mixed_winds", counter_at_least("mixed_winds", 0.5)
-
 define_const triplets_fu, [
-  %{groups: ~s"0 0 0", value: 4},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  %{groups: ~s""} # no-op
 ]
 define_const kontsu_fu, [
-  %{groups: ~s"0 10 20", value: 2},
-  %{groups: ~s"0@yaochuu 10@yaochuu 20@yaochuu", value: 4},
-  %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4}
+  %{groups: ~s"0@tanyao 10@tanyao 20@tanyao", value: 2},
+  %{groups: ~s"0@terminal 10@terminal 20@terminal", value: 4},
+  %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4},
+  %{groups: ~s""} # no-op
 ]
+
 def calculate_fu_with_maximums do
-  set_counter("fu", "minipoints") do
-    # score calls
-    convert_calls(@calls_fu)
-    remove_calls(["tanyaohai"])
-    convert_calls(@calls_fu)
-    remove_calls
+  # if we previously calculated pinfu, chiitoitsu, or kokushi, don't bother recalculating fu
+  unless (won_by_draw and minipoints_equals(20))
+      or (not_won_by_draw and minipoints_equals(30))
+      or match(["hand", "calls", "winning_tile"], ["chiitoitsu_win"])
+      or match(["hand", "calls", "winning_tile"], ["kokushi_win"]) do
+    set_counter("fu", "minipoints") do
+      # score calls
+      convert_calls(@calls_fu)
+      remove_calls(["tanyaohai"])
+      convert_calls(@calls_fu)
+      remove_calls
 
-    # now remove the winning group
-    remove_winning_groups(@winning_groups_fu)
+      # first remove anywhere between 0-4 sequences (not honors kontsu)
+      remove_groups(@winning_groups_fu)
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      # then try removing 0-max triplets and 0-max kontsu
+      remove_groups(@triplets_fu, max_triplets >= 1)
+      remove_groups(@triplets_fu, max_triplets >= 2)
+      remove_groups(@triplets_fu, max_triplets >= 3)
+      remove_groups(@triplets_fu, max_triplets >= 4)
+      remove_groups(@kontsu_fu, max_kontsu >= 1)
+      remove_groups(@kontsu_fu, max_kontsu >= 2)
+      remove_groups(@kontsu_fu, max_kontsu >= 3)
+      remove_groups(@kontsu_fu, max_kontsu >= 4)
+      remove_groups([%{groups: ~s"0 0 |"}])
 
-    # now remove all closed groups
-    remove_groups(@triplets_fu, max_triplets >= 1)
-    remove_groups(@triplets_fu, max_triplets >= 2)
-    remove_groups(@triplets_fu, max_triplets >= 3)
-    remove_groups(@triplets_fu, max_triplets >= 4)
-    remove_groups(@kontsu_fu, max_kontsu >= 1)
-    remove_groups(@kontsu_fu, max_kontsu >= 2)
-    remove_groups(@kontsu_fu, max_kontsu >= 3)
-    remove_groups(@kontsu_fu, max_kontsu >= 4)
-    # remove remaining groups without scoring fu
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
-    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20"}])
+      # only retain configurations with 0 tiles remaining
+      retain_empty_hands
 
-    # remove final pair, if any
-    remove_groups(@pair_fu)
-
-    # only retain configurations with 0 tiles remaining
-    retain_empty_hands
-
-    # add 1000 to pinfu hands so we prioritize pinfu later
-    add(1000, minipoints_equals(0))
-
-    # base 20
-    add(20)
-
-    # tsumo +2 (except closed pinfu tsumo)
-    add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
-
-    # closed ron +10 and open pinfu ron +10
-    add(10, not_won_by_draw and @closed_hand)
-    add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
-
-    # take max, then subtract 1000 from pinfu hands
-    take_maximum
-    add(-1000, minipoints_at_least(1000))
-
-    # round up to nearest 10
-    round_up(10)
-    
-    # add original hand (for special hands like chiitoitsu and kokushi)
-    add_original_hand
-    
-    # chiitoitsu
-    add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]))
-
-    # kokushi
-    add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-    add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-    take_maximum
+      # base 20, tsumo +2 or closed ron +10, take max, round up
+      add(20)
+      add(2, won_by_draw)
+      add(10, not_won_by_draw and @closed_hand)
+      take_maximum
+      round_up(10)
+    end
   end
 end
 

@@ -1248,8 +1248,27 @@ If you want to calculate fu (minipoints), then you need to set the `fu` counter 
       ...
     ]
 
-Fu calculation is done by a series of manipulations described by the action list above. For example, riichi uses the following (assuming kan is disabled):
+Fu calculation is done by a series of manipulations described by the action list above. The following is essentially how base riichi does it:
 
+    # add a bunch of attributes
+    add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+    add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
+    add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+    if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
+    if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
+    if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
+    if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
+    if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
+    if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
+    if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
+    if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
+    add_attr(["winning_tile"], ["_winning_tile"])
+    if won_by_draw do
+      add_attr(["winning_tile"], ["_tsumo"])
+    else
+      add_attr(["winning_tile"], ["_ron"])
+    end
+    # actually calculate fu now
     set_counter("fu", "minipoints") do
       # score calls
       convert_calls(%{pon: 2})
@@ -1260,27 +1279,40 @@ Fu calculation is done by a series of manipulations described by the action list
       # now remove the winning group
       remove_winning_groups([
         # kanchan
-        %{groups: ~s"-1 1", value: 2},
+        %{groups: ~s"-1 0@winning_tile 1", value: 2},
         # penchan
-        %{groups: ~s"-1 -2", reject_if_exists: ~s"-3", value: 2},
-        %{groups: ~s"1 2", reject_if_exists: ~s"3", value: 2},
+        %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
+        %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
         # ryanmen
-        %{groups: ~s"-1 -2", reject_if_missing: ~s"-3"},
-        %{groups: ~s"1 2", reject_if_missing: ~s"3"},
+        %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
+        %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
         # shanpon
-        %{groups: ~s"0 0", value: 2, tsumo_mult: 2},
+        %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
+        %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
+        %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
+        %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
         # tanki
-        %{groups: ~s"0", value: 2}
+        %{groups: ~s"0 0@winning_tile", value: 2},
+        %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4}
       ])
     
       # now remove all closed groups
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
-      remove_groups([%{groups: ~s"0 1 2"}, %{groups: ~s"0 0 0", value: 4}])
+      remove_groups([%{groups: ~s"0 1 2"},
+                     %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+                     %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}])
+      remove_groups([%{groups: ~s"0 1 2"},
+                     %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+                     %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}])
+      remove_groups([%{groups: ~s"0 1 2"},
+                     %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+                     %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}])
+      remove_groups([%{groups: ~s"0 1 2"},
+                     %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+                     %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}])
     
       # remove final pair, if any
-      remove_groups([%{groups: ~s"0 0"}])
+      remove_groups([%{groups: ~s"0 0"},
+                     %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}])
     
       # only retain configurations with 0 tiles remaining
       retain_empty_hands
@@ -1321,14 +1353,7 @@ Essentially, fu calculations start with the winning hand and calls scoring 0 fu.
 
 - `convert_calls(call_mapping)`: adds the score for every call as determined by `call_mapping`, which is an object specifying a map from call name to fu value (e.g. `{"pon": 2}`. Does not remove any calls.
 - `remove_calls(tile_specs)`: deletes all calls that include any tile matching all the given `tile_specs`. The idea is that you run `"convert_calls"` to score all calls, run `remove_calls(["tanyaohai"])` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
-- `remove_winning_groups([group1, group2, ...])`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
-  * Kanchan: `{"groups": [[-1, 1]], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
-  * Penchan (left): `{"groups": [[-1, -2]], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)
-  * Ryanmen (left): `{"groups": [[-1, -2]], "reject_if_missing": [[-3]]}` (remove the two tiles left of the winning tile, but only if the tile (winning tile - 3) also exists)
-  * Shanpon: `{"groups": [[0, 0]], "value": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the win is self-draw, then multiply by 2)
-  * Tanki: `{"groups": [[0]], "value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do)
-- `remove_groups([group1, group2, ...])`: same as "remove_winning_groups", but it can be centered on any tile, not just the winning tile
-- `remove_attrs`: remove all tile attributes from hand and calls.
+- `remove_groups([group1, group2, ...])`: removes one of any of the specified groups, each defined by a set sigil and an associated value. Removing the given set adds the given minipoints value to the hand. Using tile attributes, we can select very specific tiles to remove (e.g. penchan vs ryanmen) in order to add different amounts of minipoints for different waits. In particular, the `_winning_tile` attribute is used to remove the winning wait and add the appropriate amount of minipoints.
 
 The above manipulations will leave you with multiple possibilities for (hand, calls, fu). To keep only the ones that use up the whole hand, use `retain_empty_hands`. Afterwards the following manipulations are useful:
 

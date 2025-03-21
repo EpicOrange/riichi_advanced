@@ -85,8 +85,9 @@ defmodule RiichiAdvanced.GameState do
     end
     # the idea is to move the most powerful jokers to the back
     # power is just number of aliases
+    # then we sort by number of attrs (more attrs should be in the back)
     def sort_by_joker_power(tiles, tile_behavior) do
-      Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
+      Enum.sort_by(tiles, &{joker_power(&1, tile_behavior), length(Utils.get_attrs(&1))})
     end
     # replace aliases with the assignment given by the joker solver
     def from_joker_assignment(tile_behavior, smt_hand, joker_assignment) do

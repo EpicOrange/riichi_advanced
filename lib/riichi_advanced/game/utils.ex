@@ -35,6 +35,13 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def get_attrs(tile) do
+    case tile do
+      {_tile, attrs} -> attrs
+      _tile          -> []
+    end
+  end
+
   def add_attr(tile, []), do: tile
   def add_attr(tile, attrs) do
     case tile do

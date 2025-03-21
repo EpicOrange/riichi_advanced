@@ -66,7 +66,8 @@ defmodule RiichiAdvanced.Match do
       %{"offset" => offset} -> {offset, Map.get(o2, "attrs", [])}
       offset                -> {offset, []}
     end
-    %{"offset" => op.(o1, o2), "attrs" => attrs1 ++ attrs2}
+    attrs = MapSet.to_list(MapSet.intersection(MapSet.new(attrs1), MapSet.new(attrs2)))
+    %{"offset" => op.(o1, o2), "attrs" => attrs}
   end
 
   defp suit_to_offset(tile) do
@@ -159,7 +160,12 @@ defmodule RiichiAdvanced.Match do
   end
 
   def try_remove_all_tiles(hand, tiles, tile_behavior \\ %TileBehavior{}) do
-    if length(hand) >= length(tiles) do _try_remove_all_tiles(hand, tiles, tile_behavior) else [] end
+    if length(hand) >= length(tiles) do
+      # even if there are no jokers,
+      # we want to sort by attr length so tiles with more attrs get removed last
+      hand = TileBehavior.sort_by_joker_power(hand, tile_behavior)
+      _try_remove_all_tiles(hand, tiles, tile_behavior)
+    else [] end
   end
 
   def remove_from_hand_calls(hand, calls, tiles, tile_behavior) do

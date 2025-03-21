@@ -129,6 +129,7 @@ define_yaku yaku, "Seat Wind", 1, match(["hand", "calls", "winning_tile"], ~m"ex
 # welcome to the chanta zone
 apply append, "functions.add_scoring_attrs" do
   add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
   add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
 end
 define_set terminal_l, ~s"0@terminal 1 2"
@@ -273,26 +274,27 @@ end
 define_const calls_fu, %{pon: 2}
 define_const winning_groups_fu, [
   # kanchan
-  %{groups: ~s"-1 1", value: 2},
+  %{groups: ~s"-1 0@winning_tile 1", value: 2},
   # penchan
-  %{groups: ~s"-1 -2", reject_if_exists: [[-3]], value: 2},
-  %{groups: ~s"1 2", reject_if_exists: [[3]], value: 2},
+  %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
   # ryanmen
-  %{groups: ~s"-1 -2", reject_if_missing: [[-3]]},
-  %{groups: ~s"1 2", reject_if_missing: [[3]]},
+  %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
   # shanpon
-  %{groups: ~s"0 0", value: 2, tsumo_mult: 2},
-  %{groups: ~s"0@yaochuu 0@yaochuu", value: 4, tsumo_mult: 2},
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
   # tanki
-  %{groups: ~s"0@not_yakuhai", value: 2},
-  %{groups: ~s"0@prevalent | 0@seat | 5z | 6z | 7z", value: 4}
+  %{groups: ~s"0@not_yakuhai 0@winning_tile", value: 2},
+  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4}
 ]
 define_const groups_fu, [
   %{groups: ~s"0 1 2"},
-  %{groups: ~s"0 0 0", value: 4},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8}
-]
-define_const pair_fu, [
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  # pair
   # for pinfu reasons, only non-yakuhai can be removed for 0 value
   %{groups: ~s"0@not_yakuhai 0@not_yakuhai"},
   %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
@@ -307,6 +309,13 @@ apply append, "functions.add_scoring_attrs" do
   if round_wind_is("west") or seat_is("west") do untag_tiles("not_yakuhai", "3z") end
   if round_wind_is("north") or seat_is("north") do untag_tiles("not_yakuhai", "4z") end
   add_attr_tagged("not_yakuhai", "_not_yakuhai")
+  # tag winning tile with some attributes
+  add_attr(["winning_tile"], ["_winning_tile"])
+  if won_by_draw do
+    add_attr(["winning_tile"], ["_tsumo"])
+  else
+    add_attr(["winning_tile"], ["_ron"])
+  end
 end
 def calculate_fu do
   set_counter("fu", "minipoints") do
@@ -316,17 +325,12 @@ def calculate_fu do
     convert_calls(@calls_fu)
     remove_calls
 
-    # now remove the winning group
-    remove_winning_groups(@winning_groups_fu)
-
     # now remove all closed groups
+    remove_groups(@winning_groups_fu)
     remove_groups(@groups_fu)
     remove_groups(@groups_fu)
     remove_groups(@groups_fu)
     remove_groups(@groups_fu)
-
-    # remove final pair, if any
-    remove_groups(@pair_fu)
 
     # only retain configurations with 0 tiles remaining
     retain_empty_hands

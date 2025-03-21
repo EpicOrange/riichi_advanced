@@ -21,12 +21,18 @@ apply merge, "constants.calls_fu", %{
   kafuun: 4
 }
 apply append, "constants.winning_groups_fu", [
-  %{groups: ~s"10 20", value: 1, tsumo_mult: 2},
-  %{groups: ~s"10@yaochuu 20@yaochuu", value: 2, tsumo_mult: 2}
+  # anything can be ryanmen now (not honors though)
+  %{groups: ~s"0@winning_tile&tanyao 1 2"},
+  %{groups: ~s"0@winning_tile&terminal 1 2"},
+  %{groups: ~s"0@winning_tile&tanyao -1 -2"},
+  %{groups: ~s"0@winning_tile&terminal -1 -2"},
+  # kontsu wait
+  %{groups: ~s"0@winning_tile 10@tanyao 20@tanyao", value: 3},
+  %{groups: ~s"0@winning_tile 10@yaochuu 20@yaochuu", value: 4}
 ]
 apply append, "constants.groups_fu", [
-  %{groups: ~s"0 10 20", value: 2},
-  %{groups: ~s"0@yaochuu 10@yaochuu 20@yaochuu", value: 4},
+  %{groups: ~s"0@tanyao 10@tanyao 20@tanyao", value: 2},
+  %{groups: ~s"0@terminal 10@terminal 20@terminal", value: 4},
   %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4}
 ]
 apply append, "functions.add_scoring_attrs" do

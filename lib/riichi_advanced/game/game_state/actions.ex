@@ -530,10 +530,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
         win_source = context.win_source
-        orig_winning_tiles = get_winning_tiles(state, context.seat, context.win_source)
-        winning_tiles = Utils.apply_tile_aliases(orig_winning_tiles, tile_behavior) |> Utils.strip_attrs()
-
-        for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
+        initial_hand_calls_fu = get_winning_tiles(state, context.seat, context.win_source)
+        |> Enum.map(&{[&1 | player.hand], player.calls, 0})
+        for [action | opts] <- score_actions, reduce: initial_hand_calls_fu do
           hand_calls_fu -> 
             conditions = Enum.at(opts, 1, [])
             passes_conditions = Conditions.check_cnf_condition(state, conditions, context)
@@ -554,10 +553,6 @@ defmodule RiichiAdvanced.GameState.Actions do
                   {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in call_names or Enum.empty?(call_names) end)
                   {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fu}
                 end
-              "put_winning_tile_in_hand" ->
-                for {hand, calls, fu} <- hand_calls_fu, winning_tile <- orig_winning_tiles do
-                  {[winning_tile | hand], calls, fu}
-                end
               "remove_attrs" ->
                 for {hand, calls, fu} <- hand_calls_fu do
                   {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
@@ -574,49 +569,18 @@ defmodule RiichiAdvanced.GameState.Actions do
                 for {hand, calls, fu} <- hand_calls_fu do
                   {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.tile_matches_all(tile_specs, %{tile: &1})) end), fu}
                 end
-              "remove_winning_groups" ->
-                Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
-                  groups = Map.get(group_spec, "groups", [])
-                  reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
-                  reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
-                  base_tiles = winning_tiles
-                  |> Enum.reject(fn tile -> Enum.any?(reject_if_exists, fn offsets ->
-                    Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) != nil)
-                  end) end)
-                  |> Enum.reject(fn tile -> Enum.any?(reject_if_missing, fn offsets ->
-                    Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil)
-                  end) end)
-
-                  value = Map.get(group_spec, "value", 0)
-                  tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
-                  for group <- groups,
-                      {hand, calls, fu} <- hand_calls_fu,
-                      tile <- base_tiles,
-                      {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
-                    value = value
-                    * if win_source == :draw do tsumo_mult else 1 end
-                    {hand, calls, fu + value}
-                  end
-                end) ++ hand_calls_fu
               "remove_groups" ->
-                Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
+                result = Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
                   groups = Map.get(group_spec, "groups", [])
-                  reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
-                  reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
-
                   value = Map.get(group_spec, "value", 0)
-                  tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
                   for group <- groups,
                       {hand, calls, fu} <- hand_calls_fu,
                       tile <- Match.collect_base_tiles(hand, [], group, tile_behavior),
-                      not Enum.any?(reject_if_exists, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) != nil) end),
-                      not Enum.any?(reject_if_missing, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil) end),
                       {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
-                    value = value
-                    * if win_source == :draw do tsumo_mult else 1 end
                     {hand, calls, fu + value}
                   end
-                end) ++ hand_calls_fu
+                end)
+                if Enum.empty?(result) do hand_calls_fu else result end
               "retain_empty_hands" ->
                 for {[], [], fu} <- hand_calls_fu do
                   {[], [], fu}
@@ -635,7 +599,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                     {hand, calls, fu}
                   end
                 else hand_calls_fu end
-              "add_original_hand" -> hand_calls_fu ++ [{player.hand, player.calls, 0}]
+              "add_original_hand" -> hand_calls_fu ++ initial_hand_calls_fu
               "print" ->
                 IO.inspect(hand_calls_fu, limit: :infinity)
                 hand_calls_fu
