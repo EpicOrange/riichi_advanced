@@ -107,17 +107,22 @@ define_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winni
 define_yaku yaku, "Haku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku yaku, "Hatsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
 define_yaku yaku, "Chun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
-define_yaku yaku, "Round Wind", 1,
-     (round_wind_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
-  or (round_wind_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
-  or (round_wind_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
-  or (round_wind_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1"))
-define_yaku yaku, "Seat Wind", 1,
-     (seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
-  or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
-  or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
-  or (seat_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1"))
-define_yaku yaku, "Chiitoitsu", 2, match(["hand", "calls", "winning_tile"], ~m"(nojoker quad):-1, pair:7")
+
+# round and seat winds
+on before_scoring do
+  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["1z"]) end
+  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["2z"]) end
+  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["3z"]) end
+  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["4z"]) end
+  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], "seat", ["1z"]) end
+  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], "seat", ["2z"]) end
+  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], "seat", ["3z"]) end
+  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], "seat", ["4z"]) end
+end
+define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
+define_set seat_wind, ~s"0@seat 0@seat 0@seat"
+define_yaku yaku, "Round Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
+define_yaku yaku, "Seat Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
 
 # welcome to the chanta zone
 on before_scoring do
@@ -142,6 +147,7 @@ define_yaku yaku, "Ittsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaus
 define_yaku yaku, "Sanshoku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")
 define_yaku yaku, "Sanshoku Doukou", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1")
 define_yaku yaku, "Toitoi", 2, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yaku, "Chiitoitsu", 2, match(["hand", "calls", "winning_tile"], ~m"(nojoker quad):-1, pair:7")
 define_yaku yaku, "Sanankou", 2,
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
@@ -275,18 +281,33 @@ define_const winning_groups_fu, [
   # shanpon
   %{groups: ~s"0 0", value: 2, yaochuuhai_mult: 2, tsumo_mult: 2},
   # tanki
-  %{groups: ~s"0", value: 2, yakuhai_value: 2}
+  %{groups: ~s"0@not_yakuhai", value: 2},
+  %{groups: ~s"0@prevalent | 0@seat | 5z | 6z | 7z", value: 4}
 ]
 define_const groups_fu, [
   %{groups: ~s"0 1 2"},
   %{groups: ~s"0 0 0", value: 4, yaochuuhai_mult: 2}
 ]
-define_const pair_fu, [%{groups: ~s"0 0", yakuhai_value: 2}]
+define_const pair_fu, [
+  # for pinfu reasons, only non-yakuhai can be removed for 0 value
+  %{groups: ~s"0@not_yakuhai 0@not_yakuhai"},
+  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
+]
+define_const always_yakuhai, ["5z", "6z", "7z"]
+
+on before_win do
+  # make sure this happens before calculate_fu is run
+  tag_tiles("not_yakuhai", "all")
+  untag_tiles("not_yakuhai", @always_yakuhai)
+  if round_wind_is("east") or seat_is("east") do untag_tiles("not_yakuhai", "1z") end
+  if round_wind_is("south") or seat_is("south") do untag_tiles("not_yakuhai", "2z") end
+  if round_wind_is("west") or seat_is("west") do untag_tiles("not_yakuhai", "3z") end
+  if round_wind_is("north") or seat_is("north") do untag_tiles("not_yakuhai", "4z") end
+  add_attr_tagged("not_yakuhai", "_not_yakuhai")
+end
 
 def calculate_fu do
   set_counter("fu", "minipoints") do
-    remove_attrs
-
     # score calls
     convert_calls(@calls_fu)
     remove_calls(["tanyaohai"])

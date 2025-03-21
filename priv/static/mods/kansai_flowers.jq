@@ -4,9 +4,6 @@
 # remove pei autobutton
 .auto_buttons |= del(.["_5_auto_pei"])
 |
-# pei pair gives yakuhai 2 fu
-.score_calculation.north_wind_yakuhai = true
-|
 # add flowers
 .wall += ["1f", "2f", "3f", "4f"]
 |

@@ -212,14 +212,6 @@ define_const yakuhai_wind_groups, [
 ]
 on before_scoring do
   add_attr(["hand", "calls", "winning_tile"], "wind", ["wind"])
-  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["1z"]) end
-  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["2z"]) end
-  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["3z"]) end
-  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], "prevalent", ["4z"]) end
-  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], "seat", ["1z"]) end
-  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], "seat", ["2z"]) end
-  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], "seat", ["3z"]) end
-  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], "seat", ["4z"]) end
 
   # first check hand
   set_counter("mixed_winds", "minipoints") do
@@ -278,8 +270,6 @@ define_const kontsu_fu, [
 ]
 def calculate_fu_with_maximums do
   set_counter("fu", "minipoints") do
-    remove_attrs
-
     # score calls
     convert_calls(@calls_fu)
     remove_calls(["tanyaohai"])

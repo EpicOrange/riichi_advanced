@@ -56,6 +56,9 @@ defmodule RiichiAdvanced.GameState do
       dismantle_calls: false,
       ignore_suit: false
     ]
+    def get_all_tiles(tile_behavior) do
+      Map.keys(tile_behavior.tile_freqs) ++ Map.keys(tile_behavior.aliases)
+    end
     def tile_mappings(tile_behavior) do
       for {tile1, attrs_aliases} <- tile_behavior.aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases do
         %{tile2 => [Utils.add_attr(tile1, attrs)]}

@@ -14,10 +14,7 @@ set initial_score, 50000
 apply set, "score_calculation.notenrenchan_south", true
 
 # north wind pair grants 2 fu in order to invalidate pinfu
-define_const pair_fu, [
-  %{groups: ~s"0 0", yakuhai_value: 2},
-  %{groups: ~s"4z 4z", value: 2}
-]
+apply append, "constants.always_yakuhai", "4z"
 
 # some new yaku
 define_yaku yaku, "Shousharin", 6, match(["hand", "calls", "winning_tile"], ~m"pair:7") and 

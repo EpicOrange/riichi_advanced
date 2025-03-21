@@ -51,11 +51,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       :west -> :"3z"
       :north -> :"4z"
     end
-    north_wind = if Map.get(state.rules["score_calculation"], "north_wind_yakuhai", false) do [:"4z"] else [] end
     if Map.get(state.rules["score_calculation"], "double_wind_4_fu", false) do
-      dragons ++ [seat_wind, round_wind] ++ north_wind
+      dragons ++ [seat_wind, round_wind]
     else
-      dragons ++ Enum.dedup([seat_wind, round_wind]) ++ north_wind
+      dragons ++ Enum.dedup([seat_wind, round_wind])
     end
   end
 

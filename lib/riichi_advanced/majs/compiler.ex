@@ -318,8 +318,11 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, operation}
         else
           # only perform operation if the parent path exists
-          parent_path = Validator.get_parent_path(path)
-          {:ok, "if (#{parent_path} | type) != \"null\" then #{operation} else . end"}
+          with {:ok, parent_path} <- Validator.get_parent_path(path) do
+            ret = "if (#{parent_path}? != null) then (#{operation}) else . end"
+            # IO.puts(ret)
+            {:ok, ret}
+          end
         end
       end
     end
@@ -791,9 +794,12 @@ defmodule RiichiAdvanced.Compiler do
     case ast do
       {:__block__, _pos, []} -> {:ok, "."}
       {:__block__, _pos, nodes} ->
-        # IO.inspect(nodes, label: "AST")
+        # IO.inspect(nodes, label: "AST", limit: :infinity)
         case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
-          {:ok, val}    -> {:ok, Enum.join(val, "\n| ")}
+          {:ok, val}    ->
+            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
+            # IO.puts(ret)
+            {:ok, ret}
           {:error, msg} -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})

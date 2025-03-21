@@ -498,7 +498,7 @@ defmodule RiichiAdvanced.Riichi do
 
   def get_player_from_seat_wind(kyoku, wind, available_seats) do
     ix = Enum.find_index(available_seats, & &1 == wind)
-    Enum.at(available_seats, rem(ix + kyoku, length(available_seats)))
+    if ix == nil do nil else Enum.at(available_seats, rem(ix + kyoku, length(available_seats))) end
   end
 
   def get_east_player_seat(kyoku, available_seats) do

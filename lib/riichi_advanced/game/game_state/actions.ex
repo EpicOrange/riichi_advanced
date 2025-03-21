@@ -1417,6 +1417,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
         |> Enum.flat_map(&case &1 do
           "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+          "all" -> TileBehavior.get_all_tiles(state.players[context.seat].tile_behavior)
           _ -> [from_named_tile(state, context, &1)]
         end)
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
@@ -1439,6 +1440,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         doras = (get_in(state.rules["dora_indicators"][Utils.tile_to_string(dora_indicator)]) || [])
         |> Enum.map(&Utils.to_tile/1)
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(doras), &MapSet.union(&1, MapSet.new(doras))) end)
+        state
+      "untag_tiles"           ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
+        |> Enum.flat_map(&case &1 do
+          "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+          "all" -> TileBehavior.get_all_tiles(state.players[context.seat].tile_behavior)
+          _ -> [from_named_tile(state, context, &1)]
+        end)
+        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.difference(&1, MapSet.new(tiles))) end)
         state
       "untag"                 ->
         tag = Enum.at(opts, 0, "missing_tag")
