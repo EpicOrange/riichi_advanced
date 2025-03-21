@@ -1,0 +1,571 @@
+set display_name, "Chinese Classical"
+set tutorial_link, "http://mahjong.wikidot.com/rules:chinese-classical-scoring"
+set wall, ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g"]
+define_set pair, ~s"0 0"
+define_set shuntsu, ~s"0 1 2"
+define_set koutsu, ~s"0 0 0"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+define_set quad, ~s"0 0 0 0"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2"
+define_set ittsu, ~s"0 1 2, 3 4 5, 6 7 8"
+define_set ton, ~s"1z 1z 1z"
+define_set nan, ~s"2z 2z 2z"
+define_set shaa, ~s"3z 3z 3z"
+define_set pei, ~s"4z 4z 4z"
+define_set haku, ~s"0z 0z 0z"
+define_set hatsu, ~s"6z 6z 6z"
+define_set chun, ~s"7z 7z 7z"
+define_set ton_pair, ~s"1z 1z"
+define_set nan_pair, ~s"2z 2z"
+define_set shaa_pair, ~s"3z 3z"
+define_set pei_pair, ~s"4z 4z"
+define_set haku_pair, ~s"0z 0z"
+define_set hatsu_pair, ~s"6z 6z"
+define_set chun_pair, ~s"7z 7z"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|0z|6z|7z"
+define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
+
+define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
+define_match kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
+define_match tenpai, "standard_tenpai", "kokushi_tenpai"
+
+define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
+define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
+define_match win, "standard_win", "kokushi_win"
+
+define_match shousuushii,
+  ~m"""
+  ton:1, nan:1, shaa:1, pei_pair:1
+  | ton:1, nan:1, shaa_pair:1, pei:1
+  | ton:1, nan_pair:1, shaa:1, pei:1
+  | ton_pair:1, nan:1, shaa:1, pei:1
+  """
+
+define_match daisuushii, ~m"ton:1, nan:1, shaa:1, pei:1"
+
+define_match sanankou_tsumo,
+  ~m"""
+  (pon daiminkan kakan):-1, koutsu:3, mentsu:1, pair:1
+  | (pon daiminkan kakan):-2, koutsu:4, pair:1
+  """
+define_match sanankou_ron,
+  ~m"""
+  exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1
+  | exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
+  """
+define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
+define_match suuankou_ron, ~m"exhaustive, (pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
+
+define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
+
+define_yaku yaku, "Pure Straight", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsu:1, mentsu:1, pair:1")
+define_yaku yaku, "All Triplets", 1, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yaku, "Three Concealed Triplets", 1,
+     (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
+  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
+define_yaku yaku, "White Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
+define_yaku yaku, "Green Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
+define_yaku yaku, "Red Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
+define_yaku yaku, "Little Three Dragons", 3, match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+define_yaku yaku, "All Simples", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
+
+# prevalent and seat winds
+def add_scoring_attrs do
+  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
+  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
+  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
+  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
+  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
+  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
+  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
+  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
+end
+define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
+define_set seat_wind, ~s"0@seat 0@seat 0@seat"
+define_yaku yaku, "Prevalent Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
+define_yaku yaku, "Seat Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
+
+# outside hand
+apply append, "functions.add_scoring_attrs" do
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+end
+define_set yaochuu_l, ~s"0@yaochuu 1 2"
+define_set yaochuu_r, ~s"0 1 2@yaochuu"
+define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
+define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
+define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
+define_yaku yaku, "Outside Hand", 1, match(["hand", "calls", "winning_tile"], ["chanta"])
+
+define_yaku yaku, "All Terminals and Honors", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "Half Flush", 1,
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "Out on a Replacement", 1, status("kan") or status("flower")
+define_yaku yaku, "Robbing the Kong", 1, won_by_call
+define_yaku yaku, "Last Tile Draw", 1, no_tiles_remaining and won_by_draw
+define_yaku yaku, "Last Tile Discard", 1, no_tiles_remaining and not_won_by_draw
+define_yaku yaku, "Concealed Hand", 1, won_by_draw and @closed_hand
+define_yaku yaku, "Seat Flower", 1,
+     (seat_is("east") and match(["flowers"], ~m"1f:1"))
+  or (seat_is("south") and match(["flowers"], ~m"2f:1"))
+  or (seat_is("west") and match(["flowers"], ~m"3f:1"))
+  or (seat_is("north") and match(["flowers"], ~m"4f:1"))
+define_yaku yaku, "Seat Season", 1,
+     (seat_is("east") and match(["flowers"], ~m"1g:1"))
+  or (seat_is("south") and match(["flowers"], ~m"2g:1"))
+  or (seat_is("west") and match(["flowers"], ~m"3g:1"))
+  or (seat_is("north") and match(["flowers"], ~m"4g:1"))
+define_yaku yaku, "Full Flush", 4,
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+define_yaku yaku, "All Flowers", 4, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
+define_yaku yaku, "All Seasons", 4, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
+
+
+
+define_yaku yakuman, "Blessing of Heaven", 1, status("first_turn") and won_by_draw and seat_is("east")
+define_yaku yakuman, "Blessing of Earth", 1, status("first_turn") and won_by_draw and not_seat_is("east")
+define_yaku yakuman, "Four Concealed Triplets", 1,
+     (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))
+  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"]))
+define_yaku yakuman, "Four Kongs", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
+define_yaku yakuman, "All Terminals", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s")
+define_yaku yakuman, "All Honors", 1, winning_hand_consists_of("1z","2z","3z","4z","0z","6z","7z")
+define_yaku yakuman, "Thirteen Orphans", 1, match(["hand", "winning_tile"], ~m"orphans_all:1")
+define_yaku yakuman, "Nine Gates", 1, match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+define_yaku yakuman, "Big Three Dragons", 1, match(["hand", "calls", "winning_tile"], ["daisangen"])
+define_yaku yakuman, "Little Four Winds", 1, match(["hand", "calls", "winning_tile"], ["shousuushii"])
+define_yaku yakuman, "Big Four Winds", 1, match(["hand", "calls", "winning_tile"], ["daisuushii"])
+define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", 1, no_tiles_remaining and won_by_draw and match(["winning_tile"], ~m"1p:1")
+define_yaku yakuman, "Gathering the Plum Blossom from the Roof", 1, status("kan") and match(["winning_tile"], ~m"5p:1")
+define_yaku yakuman, "Scratching a Carrying-Pole", 1, won_by_call and match(["winning_tile"], ~m"2s:1")
+define_yaku yakuman, "Two-Fold Fortune", 1, status("double_kan")
+define_yaku yakuman, "Dealer's 13 Consecutive Win", 1, seat_is("east") and counter_at_least("dealer_repeats", 12)
+
+define_yaku_precedence "All Flowers", ["Seat Flower"]
+define_yaku_precedence "All Seasons", ["Seat Season"]
+define_yaku_precedence "Seven Flowers", ["All Flowers", "All Seasons"]
+define_yaku_precedence "Eight Flowers", ["Seven Flowers"]
+define_yaku_precedence "After Multiple Kongs", ["After a Kong"]
+define_yaku_precedence "Full Flush", ["Half Flush"]
+define_yaku_precedence "Big Four Winds", ["Small Four Winds"]
+define_yaku_precedence "Big Three Dragons", ["Small Three Dragons"]
+define_yaku_precedence "Blessing of Earth", ["Blessing of Man"]
+define_yaku_precedence "Four Concealed Triplets", ["All Triplets"]
+define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
+
+set score_calculation, %{
+  scoring_method: ["han_fu_formula", "multiplier"],
+  score_multiplier: 500,
+  han_fu_starting_han: 0,
+  han_fu_multiplier: 1,
+  han_fu_rounding_factor: 1,
+  dealer_multiplier: 2,
+  self_draw_multiplier: 1,
+  dealer_self_draw_multiplier: 2,
+  max_score: 500,
+  yaku_lists: ["yaku"],
+  yaku2_lists: ["yakuman"],
+  yaku2_overrides_yaku1: true,
+  agarirenchan: true,
+  right_display: "minipoints",
+  point_name: "Doubles",
+  point2_name: "Limit",
+  minipoint_name: "Pts",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_discard_name_2: "Double Hu",
+  win_by_discard_name_3: "Triple Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw"
+}
+
+define play_restriction, "flower", true
+
+define_const calls_fu, %{pon: 2, ankan: 16, daiminkan: 8, kakan: 8, flower: 2}
+define_const winning_groups_fu, [
+  # kanchan
+  %{groups: ~s"-1 0@winning_tile 1", value: 2},
+  # penchan
+  %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
+  # ryanmen
+  %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
+  # shanpon
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
+  # tanki
+  %{groups: ~s"0 0@winning_tile", value: 2},
+  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 0z 0z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4},
+  %{groups: ~s"0@prevalent&seat 0@winning_tile", value: 6}
+]
+define_const groups_fu, [
+  %{groups: ~s"0 1 2"},
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  # pair
+  %{groups: ~s"0 0"},
+  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 0z 0z | 6z 6z | 7z 7z", value: 2},
+  %{groups: ~s"0@prevalent&seat 0@prevalent&seat", value: 4}
+]
+
+apply append, "functions.add_scoring_attrs" do
+  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
+  # tag winning tile with some attributes
+  add_attr(["winning_tile"], ["_winning_tile"])
+  if won_by_draw do
+    add_attr(["winning_tile"], ["_tsumo"])
+  else
+    add_attr(["winning_tile"], ["_ron"])
+  end
+end
+def calculate_fu do
+  set_counter("fu", "minipoints") do
+    # score calls
+    convert_calls(@calls_fu)
+    remove_calls(["tanyaohai"])
+    convert_calls(@calls_fu)
+    remove_calls
+
+    # now remove all closed groups
+    remove_groups(@winning_groups_fu)
+    remove_groups(@groups_fu)
+    remove_groups(@groups_fu)
+    remove_groups(@groups_fu)
+    remove_groups(@groups_fu)
+
+    # only retain configurations with 0 tiles remaining
+    retain_empty_hands
+
+    # base 20, tsumo +2, closed hand +10, take maximum
+    add(20)
+    add(2, won_by_draw)
+    add(10, @closed_hand)
+    take_maximum
+  end
+end
+
+on before_turn_change do
+  unset_status("flower", "kan", "double_kan")
+  if status_missing("match_start") do
+    unset_status("first_turn")
+  end
+end
+
+on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  else
+    if status_missing("match_start") do
+      draw
+    end
+  end
+  if everyone_status("no_flowers") do
+    unset_status_all("no_flowers", "match_start")
+    change_turn("east")
+  end
+end
+
+on after_call do
+  if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
+    as callee do
+      set_status("pao")
+    end
+  end
+  if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
+    as callee do
+      set_status("pao")
+    end
+  end
+end
+
+on before_win do
+  set_counter("dealer_repeats", "honba")
+  add_scoring_attrs
+  calculate_fu
+end
+
+on after_start do
+  set_status_all("first_turn", "match_start")
+end
+
+define_button start_flower,
+  display_name: "Reveal flower", 
+  show_when: status("match_start")
+    and our_turn
+    and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: true
+  do
+    big_text("Flower")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
+    draw(1, "opposite_end")
+  end
+
+define_button start_no_flower,
+  display_name: "No flowers", 
+  show_when: status("match_start")
+    and our_turn
+    and not_match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: true
+  do
+    big_text("No Flowers")
+    set_status("no_flowers")
+    advance_turn
+    recalculate_buttons
+  end
+
+define_button chii,
+  display_name: "Chow", 
+  show_when: status_missing("match_start")
+    and not_our_turn
+    and not_no_tiles_remaining
+    and kamicha_discarded
+    and call_available,
+  call: [[-2, -1], [-1, 1], [1, 2]]
+  do
+    big_text("Chow")
+    call
+    change_turn("self")
+  end
+
+define_button pon,
+  display_name: "Pung", 
+  show_when: status_missing("match_start")
+    and not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii"],
+  call: [[0, 0]]
+  do
+    big_text("Pung")
+    call
+    change_turn("self")
+  end
+
+define_button daiminkan,
+  display_name: "Kong", 
+  show_when: status_missing("match_start")
+    and not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii", "pon"],
+  call: [[0, 0, 0]]
+  do
+    big_text("Kong")
+    call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button ankan,
+  display_name: "Self Kong", 
+  show_when: status_missing("match_start")
+    and our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and self_call_available,
+  call: [[0, 0, 0]]
+  do
+    big_text("Kong")
+    self_call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button kakan,
+  display_name: "Kong", 
+  show_when: status_missing("match_start")
+    and our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and can_upgrade_call,
+  call: [[0, 0, 0]]
+  do
+    big_text("Kong")
+    upgrade_call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button ron,
+  display_name: "Hu", 
+  show_when: status_missing("match_start")
+    and not_our_turn
+    and someone_else_just_discarded
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_discard"], ["win"]),
+  precedence_over: ["chii", "pon", "daiminkan", "ron"]
+  do
+    big_text("Hu")
+    pause(1000)
+    reveal_hand
+    win_by_discard
+  end
+
+define_button chankan,
+  display_name: "Hu", 
+  show_when: status_missing("match_start")
+    and not_our_turn
+    and ((last_call_is("kakan") and match(["hand", "calls", "last_called_tile"], ["win"]))
+     or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"]))),
+  precedence_over: ["chii", "pon", "daiminkan", "chankan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    reveal_hand
+    win_by_call
+  end
+
+define_button tsumo,
+  display_name: "Zimo", 
+  show_when: status_missing("match_start")
+    and our_turn
+    and match(["hand", "calls", "draw"], ["tenpai"])
+    and match(["hand", "calls", "draw"], ["win"])
+  do
+    big_text("Zimo")
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
+
+define_button flower,
+  display_name: "Flower", 
+  show_when: status_missing("match_start")
+    and our_turn
+    and has_draw
+    and not_just_discarded
+    and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1")
+  do
+    big_text("Flower")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
+    set_status("flower")
+    if no_tiles_remaining do
+      advance_turn
+    else
+      draw(1, "opposite_end")
+    end
+  end
+
+define_auto_button _1_auto_sort,
+  display_name: "A",
+  desc: "Automatically sort your hand.",
+  enabled_at_start: true
+  do
+    sort_hand
+  end
+
+define_auto_button _2_auto_ron,
+  display_name: "R",
+  desc: "Automatically declare wins."
+  do
+    if buttons_include("ron") do
+      press_button("ron")
+    end
+    if buttons_include("tsumo") do
+      press_button("tsumo")
+    end
+  end
+
+define_auto_button _3_auto_no_call,
+  display_name: "C",
+  desc: "Skip all calls except wins."
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
+      press_button("skip")
+    end
+  end
+
+define_auto_button _4_auto_discard,
+  display_name: "D",
+  desc: "Automatically discard your drawn tile."
+  do
+    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
+      discard_draw
+    end
+  end
+
+define_auto_button _5_auto_flower,
+  display_name: "F",
+  desc: "Automatically declare all flowers.",
+  enabled_at_start: true
+  do
+    if buttons_include("start_flower") do
+      press_button("start_flower")
+      press_first_call_button("start_flower")
+    end
+    if buttons_include("start_no_flower") do
+      press_button("start_no_flower")
+    end
+    if buttons_include("flower") do
+      press_button("flower")
+      press_first_call_button("flower")
+    end
+  end
+
+set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
+set initial_score, 0
+set starting_tiles, 13
+set max_rounds, 16
+
+# mods
+define_mod_category "Other"
+define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
+define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
+
+set default_mods, ["show_waits"]

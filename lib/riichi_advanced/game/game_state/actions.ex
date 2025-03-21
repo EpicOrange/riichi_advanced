@@ -529,7 +529,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         score_actions = Enum.at(opts, 0)
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
-        win_source = context.win_source
         initial_hand_calls_fu = get_winning_tiles(state, context.seat, context.win_source)
         |> Enum.map(&{[&1 | player.hand], player.calls, 0})
         for [action | opts] <- score_actions, reduce: initial_hand_calls_fu do
