@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.AIPlayer do
                 {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> Utils.has_matching_tile?([tile], remaining_tiles) end)}
               else
                 GenServer.cast(state.game_state, {:ai_thinking, state.seat})
-                GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
+                GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.tenpai})
                 {state, []}
               end
             Marking.is_marking?(marked_objects, :aside) and length(player.hand) == 13 ->

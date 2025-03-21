@@ -9,7 +9,6 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Saki, as: Saki
-  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Match, as: Match
@@ -39,23 +38,25 @@ defmodule RiichiAdvanced.GameState.Actions do
     and not Marking.needs_marking?(state, seat)
   end
 
-  def register_discard(state, seat, tile, tsumogiri \\ true) do
+  def register_discard(state, seat, tile, tsumogiri \\ true, quiet \\ false) do
     state = update_action(state, seat, :discard, %{tile: tile})
-    push_message(state, [
-      %{text: "Player #{player_name(state, seat)} discarded"},
-      Utils.pt(tile)
-    ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
     riichi = "just_reached" in state.players[seat].status
     state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
 
-    click_sounds = [
-      "/audio/tile1.mp3",
-      "/audio/tile2.mp3",
-      "/audio/tile3.mp3",
-      "/audio/tile4.mp3",
-      "/audio/tile5.mp3",
-    ]
-    play_sound(state, Enum.random(click_sounds))
+    if not quiet do
+      push_message(state, [
+        %{text: "Player #{player_name(state, seat)} discarded"},
+        Utils.pt(tile)
+      ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
+      click_sounds = [
+        "/audio/tile1.mp3",
+        "/audio/tile2.mp3",
+        "/audio/tile3.mp3",
+        "/audio/tile4.mp3",
+        "/audio/tile5.mp3",
+      ]
+      play_sound(state, Enum.random(click_sounds))
+    end
 
     state
   end
@@ -494,20 +495,26 @@ defmodule RiichiAdvanced.GameState.Actions do
         length(state.players[seat].draw)
       ["count_dora" | opts] ->
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
-        {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-        if dora_indicator != nil do
-          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
-        else 0 end
+        case Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) do
+          [] -> 0
+          [{hand, calls} | _] ->
+            hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
+            if dora_indicator != nil do
+              doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+              Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
+            else 0 end
+        end
       ["count_reverse_dora" | opts] ->
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
-        {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-        if dora_indicator != nil do
-          doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
-        else 0 end
+        case Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) do
+          [] -> 0
+          [{hand, calls} | _] ->
+            hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
+            if dora_indicator != nil do
+              doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+              Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
+            else 0 end
+        end
       ["dice" | _opts] -> Enum.sum(state.dice)
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
@@ -811,7 +818,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           "draw" -> update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
           "calls" -> update_player(state, seat, &%Player{ &1 | calls: &1.calls ++ [tile] })
           "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })
-          "discard" -> update_player(state, seat, &%Player{ &1 | pond: &1.pond ++ [tile] })
+          "discard" -> update_player(state, seat, &%Player{ &1 | pond: &1.pond ++ [tile], discards: &1.discards ++ [tile] })
           "dead_wall" -> Map.update!(state, :dead_wall, &List.replace_at(&1, destination_ix, tile))
           "atop_wall" -> Map.update!(state, :atop_wall, &Map.update(&1, destination_ix, tile, fn _prev_tile -> tile end))
         end

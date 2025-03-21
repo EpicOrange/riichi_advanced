@@ -62,8 +62,10 @@ define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
 define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 
-define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
-define_match chiitoitsu_tenpai, ~m"(nojoker koutsu):-1, pair:6"
+# the instances of any:1 are for minefield,
+# which assumes that tenpai specifies exactly 13 tiles
+define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4, any:1"
+define_match chiitoitsu_tenpai, ~m"(nojoker koutsu):-1, pair:6, any:1"
 define_match kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
 define_match tenpai, "standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"
 
@@ -131,12 +133,12 @@ apply append, "functions.add_scoring_attrs" do
 end
 define_set terminal_l, ~s"0@terminal 1 2"
 define_set terminal_r, ~s"0 1 2@terminal"
-define_set terminal_t, ~s"0@terminal 0 0"
-define_set terminal_pair, ~s"0@terminal 0"
+define_set terminal_t, ~s"0@terminal 0@terminal 0@terminal"
+define_set terminal_pair, ~s"0@terminal 0@terminal"
 define_set yaochuu_l, ~s"0@yaochuu 1 2"
 define_set yaochuu_r, ~s"0 1 2@yaochuu"
-define_set yaochuu_t, ~s"0@yaochuu 0 0"
-define_set yaochuu_pair, ~s"0@yaochuu 0"
+define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
+define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
 define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
 define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1" 
 define_yaku yaku, "Chanta", 1, match(["hand", "calls", "winning_tile"], ["chanta"])
@@ -554,7 +556,7 @@ define_auto_button _4_auto_discard,
     end
   end
 
-set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call"]
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]
 set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000

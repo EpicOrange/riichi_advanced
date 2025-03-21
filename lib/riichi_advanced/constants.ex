@@ -319,7 +319,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Minefield",
       tutorial_link: "https://riichi.wiki/Minefield_mahjong",
       ruleset: "riichi",
-      mods: ["minefield"],
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
       default_mods: ["kiriage_mangan"],
     },
     "kansai" => %{
