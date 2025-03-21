@@ -64,12 +64,7 @@ any(.wall[]; . == "1t") as $star
 .yakuman += [{
   "display_name": "Milky Way",
   "value": 1,
-  "when": [{"name": "winning_hand_consists_of", "opts": add_star_suit($star; [
-    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
-    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
-    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
-    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
-  ])}]
+  "when": [{"name": "counter_equals", "opts": ["non_galaxy_jokers", 0]}]
 }]
 |
 # add joker rules
@@ -216,15 +211,15 @@ if (.buttons | has("ankan")) then
   .buttons.ankan.call_style = {"self": [0, 1, 2, 3]}
 else . end
 |
-.before_win.actions += [
-  ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "draw", "winning_tile"], ["any_joker"]],
+.before_win.actions |= [
+  ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"]],
   ["set_counter", "non_galaxy_jokers", "count_tiles"],
   ["subtract_counter", "non_galaxy_jokers", "galaxy_jokers"],
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
-    ["clear_tile_aliases"], # disable jokers
-    ["set_counter", "fu", 30]
+    #["clear_tile_aliases"], # disable jokers
+    ["set_counter", "fu", 30] # don't try to calculate fu
   ]]
-]
+] + .
 |
 .after_win.actions |= [
   ["add_counter", "galaxy_shuugi", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]

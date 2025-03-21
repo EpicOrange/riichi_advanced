@@ -113,19 +113,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # t = System.system_time(:millisecond)
     score_rules = state.rules["score_calculation"]
     use_smt = Map.get(score_rules, "use_smt", true)
+    call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     tile_behavior = state.players[seat].tile_behavior
-    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([%{}]) else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), state.players[seat].tile_behavior)
+      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
+        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior)
+      else Stream.concat([%{}]) end
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
-
-    if Debug.print_wins() do
-      IO.puts("Joker assignments (seat_scores_points): #{inspect(joker_assignments)}")
-    end
-    joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
-    Enum.any?(joker_assignments, fn joker_assignment ->
+    Task.async_stream(joker_assignments, fn joker_assignment ->
       state = apply_joker_assignment(state, seat, joker_assignment, win_source)
       
       # run before_win actions
@@ -148,7 +146,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
           points >= min_points
       end
-    end)
+    end, timeout: :infinity, ordered: false)
+    |> Enum.any?(fn {:ok, result} -> result end)
   end
 
   def score_yaku(state, seat, yaku, yaku2, is_dealer, is_self_draw, minipoints \\ 0) do
@@ -979,26 +978,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # deal with jokers
     tile_behavior = state.players[seat].tile_behavior
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do [%{}] else
+    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([%{}]) else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
-        # run smt, but push a message if it takes more than 0.5 seconds
-        smt_task = Task.async(fn -> RiichiAdvanced.SMT.match_hand_smt_v2(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior) end)
-        notify_task = Task.async(fn ->
-          :timer.sleep(500)
-          push_message(state, [%{text: "Running joker solver..."}])
-        end)
-        res = Task.await(smt_task, :infinity)
-        if Task.yield(notify_task, 0) == nil do
-          Task.shutdown(notify_task, :brutal_kill)
-        end
-        res
-      else [%{}] end
+        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior)
+      else Stream.concat([%{}]) end
     end
-    if Debug.print_wins() do
-      IO.puts("Joker assignments (calculate_winner_details): #{inspect(joker_assignments)}")
-    end
-    joker_assignments = if Enum.empty?(joker_assignments) do [%{}] else joker_assignments end
 
     # check if we're dealer
     is_dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats) == seat
@@ -1015,6 +1000,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
       Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) or dir == seat end)
     else state.available_seats -- [seat] end
 
+    # consume the smt stream
+    # but push a message if it takes more than 0.5 seconds to solve
+    notify_task = Task.async(fn ->
+      :timer.sleep(500)
+      push_message(state, [%{text: "Running joker solver..."}])
+    end)
     # find the maximum score obtainable across all joker assignments
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     get_worst_yaku = win_source == :worst_discard
@@ -1029,76 +1020,78 @@ defmodule RiichiAdvanced.GameState.Scoring do
       points2: points2,
       minipoints: minipoints,
       score_name: score_name
-    } = for joker_assignment <- joker_assignments do
-      Task.async(fn ->
-        # replace 5z in joker assignment with 0z if 0z is present in the game
-        joker_assignment = if Map.has_key?(state.players[seat].tile_behavior.tile_freqs, :"0z") do
-          Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
-        else joker_assignment end
+    } = Task.async_stream(joker_assignments, fn joker_assignment ->
+      # replace 5z in joker assignment with 0z if 0z is present in the game
+      joker_assignment = if Map.has_key?(state.players[seat].tile_behavior.tile_freqs, :"0z") do
+        Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
+      else joker_assignment end
 
-        # temporarily replace winner's hand with joker assignment to determine yaku
-        prev_hand = state.players[seat].hand
-        prev_calls = state.players[seat].calls
-        state = apply_joker_assignment(state, seat, joker_assignment, win_source)
+      # temporarily replace winner's hand with joker assignment to determine yaku
+      prev_hand = state.players[seat].hand
+      prev_calls = state.players[seat].calls
+      state = apply_joker_assignment(state, seat, joker_assignment, win_source)
 
-        # run before_scoring actions
-        state = if Map.has_key?(state.rules, "before_scoring") do
-          Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: win_source})
-        else state end
+      # run before_scoring actions
+      state = if Map.has_key?(state.rules, "before_scoring") do
+        Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: win_source})
+      else state end
 
-        # get winning tile after before_scoring does its thing
-        winning_tiles = get_winning_tiles(state, seat, win_source)
+      # get winning tile after before_scoring does its thing
+      winning_tiles = get_winning_tiles(state, seat, win_source)
 
-        # obtain yaku and minipoints
-        {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
-        {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
-          get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
-        else {[], minipoints, new_winning_tile} end
-        if Debug.print_wins() do
-          assigned_winning_hand = state.players[seat].cache.winning_hand
-          IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(new_winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+      # obtain yaku and minipoints
+      {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
+      {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
+        get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
+      else {[], minipoints, new_winning_tile} end
+      if Debug.print_wins() do
+        assigned_winning_hand = state.players[seat].cache.winning_hand
+        IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(new_winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+      end
+
+      # winning tile is nil if you won with e.g. 14 tiles in hand self draw
+      # in that case take the winning tile out of the hand
+      {prev_hand, winning_tile} = if winning_tile == nil do
+        remainder = Match.try_remove_all_tiles(prev_hand, [new_winning_tile], tile_behavior)
+        |> Enum.at(0)
+        winning_tile = Enum.at(prev_hand -- remainder, 0)
+        if winning_tile == nil do
+          IO.puts("Warning: No winning tile found in hand: #{inspect(prev_hand)}")
         end
+        {remainder, winning_tile}
+      else {prev_hand, winning_tile} end
+      
+      # score yaku
+      yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
+      yaku2 = if not Enum.empty?(yaku2) and highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
+      {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
+      if Debug.print_wins() do
+        IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
+      end
 
-        # winning tile is nil if you won with e.g. 14 tiles in hand self draw
-        # in that case take the winning tile out of the hand
-        {prev_hand, winning_tile} = if winning_tile == nil do
-          remainder = Match.try_remove_all_tiles(prev_hand, [new_winning_tile], tile_behavior)
-          |> Enum.at(0)
-          winning_tile = Enum.at(prev_hand -- remainder, 0)
-          if winning_tile == nil do
-            IO.puts("Warning: No winning tile found in hand: #{inspect(prev_hand)}")
-          end
-          {remainder, winning_tile}
-        else {prev_hand, winning_tile} end
-        
-        # score yaku
-        yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-        yaku2 = if not Enum.empty?(yaku2) and highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
-        {score, points, points2, score_name} = score_yaku(state, seat, yaku, yaku2, is_dealer, win_source == :draw, minipoints)
-        if Debug.print_wins() do
-          IO.puts("score: #{inspect(score)}, points: #{inspect(points)}, points2: #{inspect(points2)}, minipoints: #{inspect(minipoints)}, score_name: #{inspect(score_name)}")
-        end
+      # restore winner's hand
+      state = update_player(state, seat, &%Player{ &1 | hand: prev_hand, calls: prev_calls })
 
-        # restore winner's hand
-        state = update_player(state, seat, &%Player{ &1 | hand: prev_hand, calls: prev_calls })
-
-        %{
-          state: state,
-          joker_assignment: joker_assignment,
-          winning_tile: winning_tile,
-          yaku: yaku,
-          yaku2: yaku2,
-          score: score,
-          points: points,
-          points2: points2,
-          minipoints: minipoints,
-          score_name: score_name
-        }
-      end)
-    end
-    |> Task.yield_many(timeout: :infinity)
-    |> Enum.map(fn {_task, {:ok, res}} -> res end)
+      %{
+        state: state,
+        joker_assignment: joker_assignment,
+        winning_tile: winning_tile,
+        yaku: yaku,
+        yaku2: yaku2,
+        score: score,
+        points: points,
+        points2: points2,
+        minipoints: minipoints,
+        score_name: score_name
+      }
+    end, timeout: :infinity, ordered: false)
+    |> Stream.map(fn {:ok, res} -> res end)
     |> Enum.max_by(fn %{score: score, points: points, points2: points2, yaku: yaku, yaku2: yaku2} -> {score, points, points2, -length(yaku), -length(yaku2)} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+
+    # kill the 0.5s timer if it's still sleeping
+    if Task.yield(notify_task, 0) == nil do
+      Task.shutdown(notify_task, :brutal_kill)
+    end
 
     # rearrange their hand for display purposes
     %{hand: arranged_hand, separated_hand: separated_hand, calls: arranged_calls} = rearrange_winner_hand(state, seat, yaku, joker_assignment, winning_tile)

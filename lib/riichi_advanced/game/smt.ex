@@ -55,26 +55,33 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, last_assignment \\ nil, result \\ []) do
-    cond do
-      length(joker_ixs) == 0 -> [%{}]
-      length(result) >= Integer.floor_div(100, length(joker_ixs)) -> result
-      true ->
-        contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i], encoding)})" end) end
-        contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
-        query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
-        smt = Enum.join([contra, "(check-sat)\n", query])
-        if Debug.print_smt() do
-          IO.puts(smt)
+  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _start_time), do: Stream.concat([%{}])
+  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, start_time) do
+    # return a lazy stream of solutions
+    Stream.resource(
+      fn -> nil end, # state = last assignment
+      fn last_assignment ->
+        cond do
+          System.system_time(:millisecond) - start_time >= 30000 -> {:halt, nil}
+          true ->
+            contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i], encoding)})" end) end
+            contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
+            query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
+            smt = Enum.join([contra, "(check-sat)\n", query])
+            if Debug.print_smt() do
+              IO.puts(smt)
+            end
+            {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
+            case ExSMT.Solver.ResponseParser.parse(response) do
+              [:sat | assigns] ->
+                new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
+                {[new_assignment], new_assignment}
+              [:unsat | _] -> {:halt, nil}
+            end
         end
-        {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
-        case ExSMT.Solver.ResponseParser.parse(response) do
-          [:sat | assigns] ->
-            new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
-            obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, new_assignment, [new_assignment | result])
-          [:unsat | _] -> result
-        end
-    end
+      end,
+      fn _ -> nil end
+    )
   end
 
   def get_chain(ordering, x, depth \\ 0)
@@ -295,8 +302,7 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
-  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
+  def _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
@@ -666,10 +672,39 @@ defmodule RiichiAdvanced.SMT do
       # IO.inspect(encoding)
     end
     {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 60000)
-    result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
-    |> Enum.flat_map(&add_attrs_to_assignment(&1, hand, tile_behavior))
-    # IO.inspect(result)
-    result
+
+    # stream responses
+    obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, System.system_time(:millisecond))
+    |> Stream.flat_map(&add_attrs_to_assignment(&1, hand, tile_behavior))
+  end
+
+  # now with streaming without losing memoization!
+  def match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
+    cache_key = {:match_hand_smt_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
+    if value = RiichiAdvanced.Cache.get(cache_key) do
+      Stream.concat([value])
+    else
+      {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
+      _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior)
+      |> Stream.concat([:end_stream])
+      |> Stream.flat_map(fn
+        :end_stream ->
+          try do
+            # assuming order of solutions do not matter (it's reversed)
+            solutions = Agent.get(solutions_agent, & &1)
+            if Debug.print_wins() do
+              IO.puts("#{inspect(length(solutions))} joker assignments: #{inspect(solutions)}")
+            end
+            RiichiAdvanced.Cache.put(cache_key, solutions)
+          after
+            Agent.stop(solutions_agent)
+          end
+          []
+        solution ->
+          Agent.update(solutions_agent, &[solution | &1])
+          [solution]
+      end)
+    end
   end
 
 end
