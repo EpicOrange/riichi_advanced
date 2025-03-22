@@ -71,7 +71,10 @@ defmodule RiichiAdvanced.Compiler do
             if Enum.empty?(opts) do
               {:ok, condition}
             else
-              {:ok, %{"name" => condition, "opts" => opts}}
+              case Enum.at(opts, -1) do
+                %{"as" => seats} -> {:ok, %{"name" => condition, "as" => seats, "opts" => Enum.drop(opts, -1)}} 
+                _                -> {:ok, %{"name" => condition, "opts" => opts}}
+              end
             end
           else
             {:error, "Compiler.compile_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}

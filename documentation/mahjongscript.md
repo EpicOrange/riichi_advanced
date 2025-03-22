@@ -46,13 +46,13 @@ In addition, there is a concept of a numeric "amount". An **amount** is either a
 Any condition in the [supported list of conditions](./documentation.md#conditions-1) can be written like
 
 ```elixir
-(our_turn and has_score(1000)) or has_score(0)
+(our_turn and has_score(1000)) or has_score(0, as: "shimocha")
 ```
 
 This compiles down to the equivalent bracket-ridden JSON
 
 ```json
-[[["our_turn", {"name": "has_score", "opts": [1000]}], {"name": "has_score", "opts": [0]}]]
+[[["our_turn", {"name": "has_score", "opts": [1000]}], {"name": "has_score", "as": "shimocha", "opts": [0]}]]
 ```
 
 You can also write comparisons where the left side is a counter name and the right side is an amount. For example:
