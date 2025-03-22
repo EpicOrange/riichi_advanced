@@ -140,7 +140,7 @@ defmodule RiichiAdvanced.AIPlayer do
     %{player: player, open_riichis: open_riichis, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
     if state.initialized do
       state = Map.put(state, :player, player)
-      if GenServer.call(state.game_state, {:can_discard, state.seat}) do
+      if GenServer.call(state.game_state, {:can_discard, state.seat}, :infinity) do
         state = Map.put(state, :player, player)
         playable_hand = player.hand
         |> Enum.with_index()
@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Enum.with_index()
         |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
         playables = playable_hand ++ playable_draw
-        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
+        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}, :infinity) end)
 
         non_voided_playables = cond do
           "void_manzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_manzu?(tile) end)
@@ -389,7 +389,7 @@ defmodule RiichiAdvanced.AIPlayer do
       choices = marked_objects
       |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() or (mark_info != nil and length(mark_info.marked) >= mark_info.needed) end)
       |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(source, players, revealed_tiles, scryed_tiles) end)
-      |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
+      |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}, :infinity) end)
       |> Enum.shuffle()
 
       has_minefield_hand = if length(player.hand) == 34 do
