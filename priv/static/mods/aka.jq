@@ -45,9 +45,11 @@ if any(.wall[]; . == "1t") then
     ["set_tile_alias_all", ["0t"], ["5t"]],
     ["tag_tiles", "dora", ["0t"]]
   ]
+  |
   .before_win.actions += [
     ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["0t"], 1] ]]]
   ]
+  |
   .dora_indicators += {
     "0t": ["6t"]
   }
