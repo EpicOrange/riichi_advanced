@@ -16,7 +16,7 @@ def replace_n_tiles($tile; $aka; $num):
   else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Aka) \($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with red \"aka dora\" fives that are worth one extra han each.", -99],
+  ["add_rule", "Rules", "Wall", "(Aka) \($man)x 5m, \($pin)x 5p, and \($sou)x 5s are replaced with red \"aka dora\" fives that are worth one extra han each.", -99],
   ["update_rule", "Rules", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi."]
 ]
 |
@@ -45,6 +45,12 @@ if any(.wall[]; . == "1t") then
     ["set_tile_alias_all", ["0t"], ["5t"]],
     ["tag_tiles", "dora", ["0t"]]
   ]
+  .before_win.actions += [
+    ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["0t"], 1] ]]]
+  ]
+  .dora_indicators += {
+    "0t": ["6t"]
+  }
 else . end
 |
 # count aka
