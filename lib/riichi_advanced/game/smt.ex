@@ -55,19 +55,30 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _start_time), do: Stream.concat([%{}])
-  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, start_time) do
+  defp contradict_assignment(assignment, joker_ixs, encoding) do
+    contra = Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(assignment[i], encoding)})" end)
+    contra = "(assert (not (and #{Enum.join(contra, " ")})))\n"
+    contra
+  end
+
+  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([%{}])
+  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
+    {precomputed_mappings, precomputed_mappings_r} = precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior)
+
     # return a lazy stream of solutions
     Stream.resource(
-      fn -> nil end, # state = last assignment
-      fn last_assignment ->
+      fn -> [] end, # state = last assignments
+      fn last_assignments ->
         cond do
           System.system_time(:millisecond) - start_time >= 30000 -> {:halt, nil}
           true ->
-            contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i], encoding)})" end) end
-            contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
+            # contradict the last assignments
+            contra = for assignment <- last_assignments do
+              contradict_assignment(assignment, joker_ixs, encoding)
+            end
+            # get a new assignment
             query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
-            smt = Enum.join([contra, "(check-sat)\n", query])
+            smt = Enum.join(contra ++ ["(check-sat)\n", query])
             if Debug.print_smt() do
               IO.puts(smt)
             end
@@ -75,7 +86,32 @@ defmodule RiichiAdvanced.SMT do
             case ExSMT.Solver.ResponseParser.parse(response) do
               [:sat | assigns] ->
                 new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
-                {[new_assignment], new_assignment}
+                # apply precomputed attributes to the result
+                attr_assignments =
+                  for {ix, tile} <- new_assignment,
+                      potential_tile <- Map.get(precomputed_mappings, {ix, tile}, []),
+                      reduce: [%{}] do
+                    acc -> for assignment <- acc do Map.put(assignment, ix, potential_tile) end
+                  end
+                # (optimization) the next last_assignments value should include all symmetric mappings
+                new_last_assignments = for assignment <- attr_assignments, reduce: [new_assignment] do
+                  new_last_assignments ->
+                    # whenever 2+ indices map to the same tile,
+                    # they can be swapped to get a symmetric assignment
+                    # do this for all permutations of indices
+                    all_permutations = assignment
+                    |> Map.values()
+                    |> Enum.uniq()
+                    |> Enum.map(&Map.get(precomputed_mappings_r, &1, []))
+                    |> Enum.uniq()
+                    |> Enum.flat_map(&Utils.make_permutations/1)
+                    for permutation <- all_permutations,
+                        assignment <- new_last_assignments do
+                      Map.new(assignment, fn {ix, tile} -> {Map.get(permutation, ix, ix), tile} end)
+                    end
+                    |> Enum.uniq()
+                end
+                {attr_assignments, new_last_assignments}
               [:unsat | _] -> {:halt, nil}
             end
         end
@@ -286,21 +322,42 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  defp add_attrs_to_assignment(joker_assignment, smt_hand, tile_behavior) do
-    for {ix, assigned_tile} <- joker_assignment, reduce: MapSet.new([%{}]) do
-      acc -> for {tile, attrs_aliases} <- tile_behavior.aliases,
-                 Utils.same_tile(tile, assigned_tile), # allow for :any to match
-                 {attrs, aliases} <- attrs_aliases,
-                 Utils.has_matching_tile?([Enum.at(smt_hand, ix)], aliases),
-                 assignment <- acc,
-                 into: MapSet.new() do
-        from_tile = Enum.find(aliases, &Utils.same_tile(Enum.at(smt_hand, ix), &1))
-        # orig_attrs = all attributes from the original hand tile that aren't "used up" by the aliasing
+  defp precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior) do
+    # return two maps:
+    # 1. %{{ix, tile} => list of potential tiles (with attributes)}
+    # 2. %{potential tiles => list of ixs that can map to that tile}
+    # attributes are sorted by Enum.sort
+    for ix <- joker_ixs,
+        {tile, attrs_aliases} <- tile_behavior.aliases,
+        {attrs, aliases} <- attrs_aliases,
+        from_tile <- aliases,
+        Utils.same_tile(Enum.at(smt_hand, ix), from_tile),
+        reduce: {%{}, %{}} do
+      {acc1, acc2} ->
         orig_attrs = Utils.get_attrs(Enum.at(smt_hand, ix)) -- Utils.get_attrs(from_tile)
-        Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs ++ orig_attrs))
-      end
+        potential_tile = Utils.add_attr(tile, Enum.sort(attrs ++ orig_attrs))
+        acc1 = Map.update(acc1, {ix, tile}, [potential_tile], &[potential_tile | &1])
+        acc2 = Map.update(acc2, potential_tile, [ix], &[ix | &1])
+        {acc1, acc2}
     end
   end
+
+  # deprecated in favor of the above
+  # defp add_attrs_to_assignment(joker_assignment, smt_hand, tile_behavior) do
+  #   for {ix, assigned_tile} <- joker_assignment, reduce: MapSet.new([%{}]) do
+  #     acc -> for {tile, attrs_aliases} <- tile_behavior.aliases,
+  #                Utils.same_tile(tile, assigned_tile), # allow for :any to match
+  #                {attrs, aliases} <- attrs_aliases,
+  #                Utils.has_matching_tile?([Enum.at(smt_hand, ix)], aliases),
+  #                assignment <- acc,
+  #                into: MapSet.new() do
+  #       from_tile = Enum.find(aliases, &Utils.same_tile(Enum.at(smt_hand, ix), &1))
+  #       # orig_attrs = all attributes from the original hand tile that aren't "used up" by the aliasing
+  #       orig_attrs = Utils.get_attrs(Enum.at(smt_hand, ix)) -- Utils.get_attrs(from_tile)
+  #       Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs ++ orig_attrs))
+  #     end
+  #   end
+  # end
 
   def _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
@@ -674,8 +731,7 @@ defmodule RiichiAdvanced.SMT do
     {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 60000)
 
     # stream responses
-    obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, System.system_time(:millisecond))
-    |> Stream.flat_map(&add_attrs_to_assignment(&1, hand, tile_behavior))
+    obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.system_time(:millisecond))
   end
 
   # now with streaming without losing memoization!

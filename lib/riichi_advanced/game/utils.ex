@@ -502,6 +502,16 @@ defmodule RiichiAdvanced.Utils do
     l <> s2 <> r
   end
 
+  def permutations([]), do: [[]]
+  def permutations(xs) when is_list(xs) do
+    for x <- xs, rest <- permutations(xs -- [x]), do: [x | rest]
+  end
+  def make_permutations(xs) when is_list(xs) do
+    for ys <- permutations(xs) do
+      Map.new(Enum.zip(xs, ys))
+    end
+  end
+
   def walk_json(action, fun) do
     # this just walks the action and calls fun on every node
     case fun.(action) do

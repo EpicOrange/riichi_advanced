@@ -216,8 +216,43 @@ else . end
   ["set_counter", "non_galaxy_jokers", "count_tiles"],
   ["subtract_counter", "non_galaxy_jokers", "galaxy_jokers"],
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
-    #["clear_tile_aliases"], # disable jokers
-    ["set_counter", "fu", 30] # don't try to calculate fu
+    ["set_counter", "fu", 30], # don't try to calculate fu
+    # reset jokers to not have _original (optimization)
+    ["clear_tile_aliases"],
+    ["set_tile_alias_all", ["11m"], add_star_suit($star; ["1m","1p","1s"])],
+    ["set_tile_alias_all", ["12m"], add_star_suit($star; ["2m","2p","2s"])],
+    ["set_tile_alias_all", ["13m"], add_star_suit($star; ["3m","3p","3s"])],
+    ["set_tile_alias_all", ["14m"], add_star_suit($star; ["4m","4p","4s"])],
+    ["set_tile_alias_all", ["15m"], add_star_suit($star; ["5m","5p","5s"])],
+    ["set_tile_alias_all", ["16m"], add_star_suit($star; ["6m","6p","6s"])],
+    ["set_tile_alias_all", ["17m"], add_star_suit($star; ["7m","7p","7s"])],
+    ["set_tile_alias_all", ["18m"], add_star_suit($star; ["8m","8p","8s"])],
+    ["set_tile_alias_all", ["19m"], add_star_suit($star; ["9m","9p","9s"])],
+    ["set_tile_alias_all", ["11p"], add_star_suit($star; ["1m","1p","1s"])],
+    ["set_tile_alias_all", ["12p"], add_star_suit($star; ["2m","2p","2s"])],
+    ["set_tile_alias_all", ["13p"], add_star_suit($star; ["3m","3p","3s"])],
+    ["set_tile_alias_all", ["14p"], add_star_suit($star; ["4m","4p","4s"])],
+    ["set_tile_alias_all", ["15p"], add_star_suit($star; ["5m","5p","5s"])],
+    ["set_tile_alias_all", ["16p"], add_star_suit($star; ["6m","6p","6s"])],
+    ["set_tile_alias_all", ["17p"], add_star_suit($star; ["7m","7p","7s"])],
+    ["set_tile_alias_all", ["18p"], add_star_suit($star; ["8m","8p","8s"])],
+    ["set_tile_alias_all", ["19p"], add_star_suit($star; ["9m","9p","9s"])],
+    ["set_tile_alias_all", ["11s"], add_star_suit($star; ["1m","1p","1s"])],
+    ["set_tile_alias_all", ["12s"], add_star_suit($star; ["2m","2p","2s"])],
+    ["set_tile_alias_all", ["13s"], add_star_suit($star; ["3m","3p","3s"])],
+    ["set_tile_alias_all", ["14s"], add_star_suit($star; ["4m","4p","4s"])],
+    ["set_tile_alias_all", ["15s"], add_star_suit($star; ["5m","5p","5s"])],
+    ["set_tile_alias_all", ["16s"], add_star_suit($star; ["6m","6p","6s"])],
+    ["set_tile_alias_all", ["17s"], add_star_suit($star; ["7m","7p","7s"])],
+    ["set_tile_alias_all", ["18s"], add_star_suit($star; ["8m","8p","8s"])],
+    ["set_tile_alias_all", ["19s"], add_star_suit($star; ["9m","9p","9s"])],
+    ["set_tile_alias_all", ["11z"], ["1z","2z","3z","4z"]],
+    ["set_tile_alias_all", ["12z"], ["1z","2z","3z","4z"]],
+    ["set_tile_alias_all", ["13z"], ["1z","2z","3z","4z"]],
+    ["set_tile_alias_all", ["14z"], ["1z","2z","3z","4z"]],
+    ["set_tile_alias_all", ["15z"], ["5z","6z","7z","0z"]],
+    ["set_tile_alias_all", ["16z"], ["5z","6z","7z","0z"]],
+    ["set_tile_alias_all", ["17z"], ["5z","6z","7z","0z"]]
   ]]
 ] + .
 |
