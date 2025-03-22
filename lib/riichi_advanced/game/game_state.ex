@@ -787,6 +787,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
+    # Push message about pressing the win button
     push_message(state, [
       %{text: "Player #{player_name(state, seat)} called "},
       %{bold: true, text: "#{String.downcase(winner.winning_tile_text)}"},
@@ -797,8 +798,6 @@ defmodule RiichiAdvanced.GameState do
       ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Utils.call_to_tiles/1))
     )
 
-    # TODO print yaku here
-
     state = if Map.get(state.rules, "bloody_end", false) do
       # only end the round once there are three winners; otherwise, continue
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
@@ -808,6 +807,15 @@ defmodule RiichiAdvanced.GameState do
     state = if Map.has_key?(state.rules, "after_win") do
       Actions.run_actions(state, state.rules["after_win"]["actions"], winner)
     else state end
+
+    # Push message about yaku and score
+    winner = state.winners[seat]
+    push_message(state, [
+      %{text: "Player #{player_name(state, seat)} scored a #{winner.displayed_score}-point hand with"},
+    ] ++ Utils.print_yaku(winner.yaku)
+      ++ if Enum.empty?(winner.yaku) or Enum.empty?(winner.yaku2) do [] else [%{text: " / "}] end
+      ++ Utils.print_yaku(winner.yaku2)
+    )
 
     state
   end

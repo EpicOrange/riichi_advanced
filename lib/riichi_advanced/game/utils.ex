@@ -113,6 +113,12 @@ defmodule RiichiAdvanced.Utils do
   end
   def ph(tiles), do: Enum.map(tiles, &pt/1)
 
+  def print_yaku(yaku) do
+    Enum.flat_map(yaku, fn {name, value} ->
+      [%{text: name}, %{bold: true, text: "(#{value})"}]
+    end)
+  end
+
   def sort_tiles(tiles, joker_assignment \\ %{}) do
     tiles
     |> Enum.with_index()
