@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.SMT do
     contra
   end
 
-  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([%{}])
+  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
   def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
     {precomputed_mappings, precomputed_mappings_r} = precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior)
 
@@ -93,6 +93,12 @@ defmodule RiichiAdvanced.SMT do
                       reduce: [%{}] do
                     acc -> for assignment <- acc do Map.put(assignment, ix, potential_tile) end
                   end
+                attr_assignments =
+                  for {ix, tile} <- new_assignment,
+                      {:any, attrs} <- Map.get(precomputed_mappings, {ix, :any}, []) |> Enum.map(&Utils.to_attr_tile/1),
+                      reduce: attr_assignments do
+                    acc -> for assignment <- acc do Map.put(assignment, ix, Utils.add_attr(tile, attrs)) end
+                  end
                 # (optimization) the next last_assignments value should include all symmetric mappings
                 new_last_assignments = for assignment <- attr_assignments, reduce: [new_assignment] do
                   new_last_assignments ->
@@ -102,7 +108,10 @@ defmodule RiichiAdvanced.SMT do
                     all_permutations = assignment
                     |> Map.values()
                     |> Enum.uniq()
-                    |> Enum.map(&Map.get(precomputed_mappings_r, &1, []))
+                    |> Enum.map(fn tile ->
+                      any_tile = Utils.add_attr(:any, Utils.get_attrs(tile))
+                      Map.get(precomputed_mappings_r, tile, []) ++ Map.get(precomputed_mappings_r, any_tile, [])
+                    end)
                     |> Enum.uniq()
                     |> Enum.flat_map(&Utils.make_permutations/1)
                     for permutation <- all_permutations,

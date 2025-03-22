@@ -115,11 +115,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
     use_smt = Map.get(score_rules, "use_smt", true)
     call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     tile_behavior = state.players[seat].tile_behavior
-    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([%{}]) else
+    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([[%{}]]) else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
         RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior)
-      else Stream.concat([%{}]) end
+      else Stream.concat([[%{}]]) end
     end
     # IO.puts("seat_scores_points SMT time: #{inspect(System.system_time(:millisecond) - t)} ms")
     # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -978,11 +978,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # deal with jokers
     tile_behavior = state.players[seat].tile_behavior
     use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([%{}]) else
+    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([[%{}]]) else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
         RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior)
-      else Stream.concat([%{}]) end
+      else Stream.concat([[%{}]]) end
     end
 
     # check if we're dealer
@@ -1086,7 +1086,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       }
     end, timeout: :infinity, ordered: false)
     |> Stream.map(fn {:ok, res} -> res end)
-    |> Enum.max_by(fn %{score: score, points: points, points2: points2, yaku: yaku, yaku2: yaku2} -> {score, points, points2, -length(yaku), -length(yaku2)} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> 0 end)
+    |> Enum.max_by(fn %{score: score, points: points, points2: points2, yaku: yaku, yaku2: yaku2} -> {score, points, points2, -length(yaku), -length(yaku2)} end, if get_worst_yaku do &<=/2 else &>=/2 end, fn -> {:error, "no yaku"} end)
 
     # kill the 0.5s timer if it's still sleeping
     if Task.yield(notify_task, 0) == nil do
