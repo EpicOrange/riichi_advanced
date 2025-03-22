@@ -14,33 +14,37 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_set(set_spec) do
-    set_spec = for subgroup <- String.split(set_spec, ",", trim: true) |> Enum.map(&String.trim/1) do
-      for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
-        # check for attributes
-        item_attrs = case String.split(item, "@") |> Enum.map(&String.trim/1) do
-          [item] -> {:ok, {item, []}}
-          [item, attrs] -> {:ok, {item, String.split(attrs, ",")}}
-          _ -> {:error, "expected no more than one @ in set item"}
-        end
-        with {:ok, {item, attrs}} <- item_attrs do
-          offset = case Integer.parse(item) do
-            {offset, ""} -> offset
-            _ -> item
+    set_spec = for group <- String.split(set_spec, "|") |> Enum.map(&String.trim/1) do
+      for subgroup <- String.split(group, ",", trim: true) |> Enum.map(&String.trim/1) do
+        for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
+          # check for attributes
+          item_attrs = case String.split(item, "@") |> Enum.map(&String.trim/1) do
+            [item] -> {:ok, {item, []}}
+            [item, attrs] -> {:ok, {item, String.split(attrs, "&")}}
+            _ -> {:error, "expected no more than one @ in set item"}
           end
-          if Enum.empty?(attrs) do
-            {:ok, offset}
-          else
-            {:ok, %{"offset" => offset, "attrs" => attrs}}
+          with {:ok, {item, attrs}} <- item_attrs do
+            offset = case Integer.parse(item) do
+              {offset, ""} -> offset
+              _ -> item
+            end
+            if Enum.empty?(attrs) do
+              {:ok, offset}
+            else
+              {:ok, %{"offset" => offset, "attrs" => attrs}}
+            end
           end
-        end
+        end |> Utils.sequence()
       end |> Utils.sequence()
     end |> Utils.sequence()
     # simplify singleton sets, i.e. [[0,1,2]] -> [0,1,2]
     with {:ok, set_spec} <- set_spec do
-      case set_spec do
-        [set] when is_list(set) -> {:ok, set}
-        set -> {:ok, set}
-      end
+      {:ok, for group <- set_spec do
+        case group do
+          [set] when is_list(set) -> set
+          set -> set
+        end
+      end}
     end
   end
 
@@ -63,7 +67,7 @@ defmodule RiichiAdvanced.Parser do
           # check for attributes
           base_attrs = case String.split(group, "@", trim: true) |> Enum.map(&String.trim/1) do
             [base] -> {:ok, {base, []}}
-            [base, attrs] -> {:ok, {base, String.split(attrs, ",", trim: true)}}
+            [base, attrs] -> {:ok, {base, String.split(attrs, "&", trim: true)}}
             _ -> {:error, "invalid attribute syntax: #{group}"}
           end
           with {:ok, {base, attrs}} <- base_attrs do
@@ -101,8 +105,8 @@ defmodule RiichiAdvanced.Parser do
   def parse_sigils(ast) when is_integer(ast) or is_float(ast) or is_binary(ast), do: {:ok, ast}
   def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}) when is_binary(set_spec), do: parse_set(set_spec)
   def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}) when is_binary(match_spec), do: parse_match(match_spec)
-  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
   def parse_sigils([]), do: {:ok, []}
+  def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
     # check if keyword list (except the keys are binaries, not atoms)
     if Enum.all?(ast, &match?({k, _v} when is_binary(k), &1)) do
@@ -115,16 +119,18 @@ defmodule RiichiAdvanced.Parser do
       ast |> Enum.map(&parse_sigils/1) |> Utils.sequence()
     end
   end
+  def parse_sigils(%RiichiAdvanced.Compiler.Constant{} = ast), do: {:ok, ast}
+  def parse_sigils(%RiichiAdvanced.Compiler.Variable{} = ast), do: {:ok, ast}
   def parse_sigils(ast) when is_map(ast), do: parse_sigils_map(ast)
   def parse_sigils({:%{}, _pos, contents}), do: parse_sigils_map(contents)
+  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
   def parse_sigils_map(map) do
     parsed_map = map
     |> Enum.map(fn {key, val} ->
       if is_binary(key) do
-        case {parse_sigils(key), parse_sigils(val)} do
-          {{:ok, key}, {:ok, val}} -> {:ok, {key, val}}
-          {{:error, msg}, _}       -> {:error, "error parsing sigils in map key: " <> msg}
-          {_, {:error, msg}}       -> {:error, "error parsing sigils in map value: " <> msg}
+        case parse_sigils(val) do
+          {:ok, val}    -> {:ok, {key, val}}
+          {:error, msg} -> {:error, "error parsing sigils in map value: " <> msg}
         end
       else {:error, "non-string JSON key: #{inspect(key)}"} end
     end)

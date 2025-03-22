@@ -192,6 +192,17 @@ button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(0);
 }
+button:active::before,
+button:active::before {
+  /* add a clickable area above the button */
+  content: "";
+  position: absolute;
+  background: transparent;
+  width: 100%;
+  height: calc(0.125 * var(--tile-size));
+  top: calc(-0.125 * var(--tile-size));
+  left: 0;
+}
 
 /* hands */
 div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
@@ -1507,38 +1518,33 @@ div.self div.tile:nth-child(29) { z-index: 28; }
 div.self div.tile:nth-child(30) { z-index: 29; }
 
 /* all 3d effects should have reversed color for upside down tiles */
-div.tile.\31 x:not(.flat),
-div.tile.facedown:not(.flat) {
+div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.tile.\31 x.sideways:not(.flat),
-div.tile.facedown.sideways:not(.flat) {
+div.tile.\31 x.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.pond.self div.tile.\31 x:not(.flat),
-div.pond.self div.tile.facedown:not(.flat) {
+div.pond.self div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.shimocha div.tile.\31 x:not(.flat),
-div.shimocha div.tile.facedown:not(.flat) {
+div.shimocha div.tile.\31 x:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.kamicha div.tile.\31 x:not(.flat),
-div.kamicha div.tile.facedown:not(.flat) {
+div.kamicha div.tile.\31 x:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-/* facedown tiles should look facedown */
-div.hand div.tile.facedown:not(.flat) {
+/* facedown tiles in hand should look facedown */
+div.tiles div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));

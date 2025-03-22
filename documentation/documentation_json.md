@@ -32,7 +32,6 @@ Note: this file is for the `json` documentation. The `majs` documentation is [he
   + [Payments](#payments)
     * [Payment-related keys](#payment-related-keys)
     * [Payment-related statuses](#payment-related-statuses)
-  + [Calculating fu](#calculating-fu)
   + [Setting up next-round logic](#setting-up-next-round-logic)
 
 # `ruleset.json` basic concepts
@@ -692,9 +691,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
 - `["push_message", message, vars]`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", {"n": "honba"}]`.
 - `["push_system_message", message, vars]`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
-- `["add_rule", title, text, sort_order]`: Adds the string `text` to the rules tab on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
-- `["update_rule", title, text, sort_order]`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
-- `["delete_rule", title]`: Deletes the rule text identified by `title`.
+- `["add_rule", tab, title, text, sort_order]`: Adds the string `text` to the rules tab on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
+- `["update_rule", tab, title, text, sort_order]`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
+- `["delete_rule", tab, title]`: Deletes the rule text identified by `title`.
 - `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
 - `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.
@@ -731,7 +730,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + `"count_reverse_dora", dora_indicator`: Counts the number of reverse dora in the current player's hand and calls, given the `dora_indicator`. This uses the toplevel `"reverse_dora_indicators"` key to determine the mapping of dora indicator to reverse dora.
   + `"pot"`: The number of points in the pot.
   + `"honba"`: The number of honba (repeats) for the current round.
-  + `"minipoints", action1, action2, ...`: Only usable during or after `before_win`. Calculates minipoints for the winning hand using the following actions. See [Calculating fu](#calculating-fu) for how the actions are specified.
+  + `"minipoints", action1, action2, ...`: Only usable during or after `before_win`. Calculates minipoints for the winning hand using the following actions. See [Calculating fu](./documentation.md#calculating-fu) for how the actions are specified.
 - `["set_counter_all", counter_name, amount or spec, ...opts]`: Same as `set_counter`, but calculates the amount once and sets every player's `counter_name`. Right now this is the only way to pass counters between players.
 - `["add_counter", counter_name, amount or spec, ...opts]`: Same as `set_counter`, but adds to the existing counter instead. For nonexistent counters this is the same as `set_counter` since nonexistent counters are considered to be at zero.
 - `["subtract_counter", counter_name, amount or spec, ...opts]`: Same as `add_counter`, but subtracts.
@@ -894,7 +893,6 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"won_by_call"`: The winner won by stealing a called tile.
 - `"won_by_draw"`: The winner won by drawing the winning tile.
 - `"won_by_discard"`: The winner won by stealing the discard tile.
-- `{"name": "fu_equals", "opts": [fu]}`: The winning player has the given amount of fu. Valid values of fu are multiples of 10.
 - `{"name": "has_yaku_with_hand", "opts": [han]}`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `{"name": "has_yaku_with_hand", "opts": [1]}`
 - `{"name": "has_yaku_with_discard", "opts": [han]}`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `{"name": "has_yaku_with_discard", "opts": [1]}`
 - `{"name": "has_yaku_with_call", "opts": [han]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `{"name": "has_yaku_with_call", "opts": [1]}`
@@ -955,6 +953,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "counter_equals", "opts": [counter_name, amount]}`: The counter `counter_name` equals `amount`.
 - `{"name": "counter_at_least", "opts": [counter_name, amount]}`: The counter `counter_name` is at least `amount`.
 - `{"name": "counter_at_most", "opts": [counter_name, amount]}`: The counter `counter_name` is at most `amount`.
+- `{"name": "counter_more_than", "opts": [counter_name, amount]}`: The counter `counter_name` is more than `amount`.
+- `{"name": "counter_less_than", "opts": [counter_name, amount]}`: The counter `counter_name` is less than `amount`.
 - `{"name": "has_attr", "opts": [tile, attr1, attr2]}`: The given tile is has the given attributes `attr1`, `attr2`, etc. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
 - `{"name": "hand_tile_count", "opts": [count1, count2, ...]}`: The current player has one of `count1`, `count2`, etc. tiles in hand (counts hand+draw, ignores calls and aside tiles)
 - `"genbutsu_kamicha"`: The last discard was genbutsu against kamicha.
@@ -972,6 +972,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"pinzu"`: Matches a pinzu tile (hardcoded).
 - `"souzu"`: Matches a souzu tile (hardcoded).
 - `"jihai"`: Matches a honor tile (hardcoded).
+- `"dragon"`: Matches a dragon tile (hardcoded).
+- `"wind"`: Matches a wind tile (hardcoded).
 - `"terminal"`: Matches a terminal tile (hardcoded).
 - `"yaochuuhai"`: Matches a terminal/honor tile (hardcoded).
 - `"flower"`: Matches a flower tile (hardcoded).
@@ -982,6 +984,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"dora"`: Matches dora (as indicated by visible dora indicators and the `"dora_indicators"` map).
 - `"kuikae"`: Matches a tile that is kuikae to the last call. Only used in `play_restrictions`.
 
+You can also prepend `"not_"` to any of these to get the inverse specification.
+
 ## Match targets
 
 There's quite a few possible match targets that can be passed as the first argument to `"match"`, and here they are.
@@ -989,9 +993,7 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"hand"`: selects the player's hand (not draw).
 - `"draw"`: selects the player's draw.
 - `"pond"`: selects the player's visible pond (not called tiles).
-- `"pond_faceup"`: selects the player's visible pond, flipping facedown tiles faceup.
 - `"discards"`: selects the player's discards, including called discards.
-- `"discards_faceup"`: selects the player's discards, flipping facedown tiles faceup.
 - `"aside"`: selects the player's tiles set aside.
 - `"calls"`: selects the player's calls (not flowers). Calls are treated as a single unit that can only be matched against once.
 - `"flowers"`: selects the player's flowers (including starting flowers and pei).
@@ -1282,106 +1284,6 @@ There are a number of statuses you can set on players that can modify their scor
 - `"delta_score"`: if set, adds to this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments).
 - `"delta_score_multiplier"`: if set, multiplies this counter's player's score change for this round (after processing all other score changes, such as double wins and exhaustive draw payments). This happens before `"delta_score"`.
 - `"score_as_dealer"`: if set, this player's payments are calculated as if they are the dealer.
-
-## Calculating fu
-
-If you want to calculate fu (minipoints), then you need to set the `fu` counter any time before or during `before_scoring`, or else it will default to 0 fu. To do so, run the following action:
-
-    ["set_counter", "fu", "minipoints", [
-      action1,
-      action2,
-      ...
-    ]]
-
-Fu calculation is done by a series of manipulations described by the action list above. For example, riichi uses the following (assuming kan is disabled):
-
-    ["set_counter", "fu", "minipoints", [
-      ["remove_attrs"],
-      // score calls
-      ["convert_calls", {"pon": 2}],
-      ["remove_tanyaohai_calls"],
-      ["convert_calls", {"pon": 2}],
-      ["remove_calls"],
-      // now remove the winning group
-      ["remove_winning_groups", [
-        // kanchan
-        {"group": [-1, 1], "value": 2},
-        // penchan
-        {"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2},
-        {"group": [1, 2], "reject_if_exists": [[3]], "value": 2},
-        // ryanmen
-        {"group": [-1, -2], "reject_if_missing": [[-3]]},
-        {"group": [1, 2], "reject_if_missing": [[3]]},
-        // shanpon
-        {"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2},
-        // tanki
-        {"group": [0], "value": 2, "yakuhai_value": 2}
-      ]],
-      // now remove all closed groups
-      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
-      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
-      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
-      ["remove_groups", [{"group": [0, 1, 2]}, {"group": [0, 0, 0], "value": 4, "yaochuuhai_mult": 2}]],
-      // remove final pair, if any
-      ["remove_groups", {"group": [0, 0], "yakuhai_value": 2}],
-      // only retain configurations with 0 tiles remaining
-      ["retain_empty_hands"],
-      // add 1000 to pinfu hands so we prioritize pinfu later
-      ["add", 1000, [{"name": "minipoints_equals", "opts": [0]}]],
-      // base 20
-      ["add", 20, []],
-      // tsumo +2 (except closed pinfu tsumo)
-      ["add", 2, [
-        "won_by_draw",
-        [
-          {"name": "minipoints_at_most", "opts": [999]},
-          {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}
-        ]
-      ]],
-      // closed ron +10
-      ["add", 10, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]],
-      // open pinfu ron +10
-      ["add", 10, ["not_won_by_draw", {"name": "not_has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_at_least", "opts": [1000]}]],
-      // take max, then subtract 1000 from pinfu hands
-      ["take_maximum"],
-      ["add", -1000, [{"name": "minipoints_at_least", "opts": [1000]}]],
-      // round up to nearest 10
-      ["round_up", 10],
-      // add original hand (for special hands like chiitoitsu and kokushi)
-      ["add_original_hand"],
-      // chiitoitsu
-      ["add", 25, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]]}]],
-      // kokushi
-      ["add", 40, ["not_won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
-      ["add", 30, [{"name": "minipoints_equals", "opts": [0]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kokushi"]]}]],
-      ["take_maximum"]
-    ]]
-
-Essentially, fu calculations start with the winning hand and calls scoring 0 fu. Each fu calculation action manipulates one of these three (hand, calls, fu):
-
-- `["remove_attrs"]`: remove all tile attributes from hand and calls.
-- `["convert_calls", call_mapping]`: adds the score for every call as determined by `call_mapping`, which is an object specifying a map from call name to fu value (e.g. `{"pon": 2}`. Does not remove any calls.
-- `["remove_tanyaohai_calls"]`: deletes all calls that contain tanyaohai. The idea is that you run `"convert_calls"` to score all calls, run `"remove_tanyaohai_calls"` to remove calls that aren't terminal/honors, and then run `"convert_calls"` again to score the remaining terminal/honor calls.
-- `["remove_calls"]`: deletes all calls.
-- `["remove_winning_groups", group1, group2, ...]`: removes one of any of the specified groups centered on the winning tile, which is the winning group. A group is specified like this:
-  * Kanchan: `{"group": [-1, 1], "value": 2}` (remove the tile left and right of the winning tile, and add 2 to the fu counter if you do)
-  * Penchan (left): `{"group": [-1, -2], "reject_if_exists": [[-3]], "value": 2}` (remove the two tiles left of the winning tile, unless the tile (winning tile - 3) also exists; add 2 to the fu counter if you do)
-  * Ryanmen (left): `{"group": [-1, -2], "reject_if_exists": [[-3]]}` (remove the two tiles left of the winning tile, but only if the tile (winning tile - 3) also exists)
-  * Shanpon: `{"group": [0, 0], "value": 2, "yaochuuhai_mult": 2, "tsumo_mult": 2}` (remove two copies of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yaochuuhai, multiply by 2, if the win is self-draw then multiply by 2)
-  * Tanki: `{"group": [0], "value": 2, "yakuhai_value": 2}` (remove a copy of the winning tile, and add 2 to the fu counter if you do; if the winning tile is yakuhai, add 2 per yakuhai (so double wind counts as +4 fu)
-- `["remove_groups", group1, group2, ...]`: same as "remove_winning_groups", but it can be centered on any tile, not just the winning tile
-
-The above manipulations will leave you with multiple possibilities for (hand, calls, fu). To keep only the ones that use up the whole hand, use `["retain_empty_hands"]`. Afterwards the following manipulations are useful:
-
-- `["add", amount, condition]`: Add the given amount to each possibility where the condition evaluates to true. Useful conditions usable only here are:
-  + `{"name": "minipoints_equals", "opts": [fu]}`: you have `fu` minipoints.
-  + `{"name": "minipoints_at_least", "opts": [fu]}`: you have at least `fu` minipoints.
-  + `{"name": "minipoints_at_most", "opts": [fu]}`: you have at most `fu` minipoints.
-- `["take_maximum"]`: Drop all possibilities that aren't the maximum fu among all possibilities.
-- `["round_up", 10]`: Round up all fu values to the nearest 10.
-- `["add_original_hand"]`: Add the original (hand, calls, 0 fu) to the list of possibilities. This is useful if you want to calculate alternate scores for the hand (e.g. chiitoitsu and kokushi)
-
-The list of actions should end with `["take_maximum"]` in order to reduce the list of possible (hand, calls, fu) tuples to the maximum possible. The calculated fu will be the fu for the first possibility in the list.
 
 ## Setting up next-round logic
 

@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("1 Han", "Chanfuun", "If someone calls fuun to upgrade a chon of winds, you may call ron on the added tile. Doing so awards chanfuun (1 han).)")
+end
+
+define_yaku yaku, "Chanfuun", 1, won_by_call and last_call_is("kafuun")

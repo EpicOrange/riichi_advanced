@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.CosmicScoring do
     %{name: "yaku/renhou", config: %{is: "Yakuman"}},
     "yaku/isshoku_yonjun",
     "show_waits",
-    # %{name: "min_han", config: %{min: 1}},
+    %{name: "min_han", config: %{min: 1}},
     # "cancellable_riichi",
     "cosmic_calls",
     "yaku/ippatsu",
@@ -49,9 +49,9 @@ defmodule RiichiAdvanced.CosmicScoring do
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "4p", "4p", "4p", "1z", "1z", "1z", "3z", "3z", "6z", "6z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "7z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z"],
       "starting_dead_wall": ["6z"]
@@ -74,9 +74,9 @@ defmodule RiichiAdvanced.CosmicScoring do
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "4p", "4p", "4p", "1z", "1z", "1z", "3z", "3z", "4z", "4z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "6z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "6z", "7z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "6z", "7z"]
       },
       "starting_draws": ["1z"],
       "starting_dead_wall": ["4z"]

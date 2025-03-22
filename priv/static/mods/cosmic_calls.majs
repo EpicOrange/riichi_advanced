@@ -1,6 +1,6 @@
 # replace closed call check
-apply replace_all, "", [["chii", "pon", "daiminkan", "kakan"], ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]]
-apply replace_all, "buttons.kakan.show_when", [["kakan"], ["kakan", "kakakan"]]
+replace all, "", ["chii", "pon", "daiminkan", "kakan"], ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]
+replace all, "buttons.kakan.show_when", ["kakan"], ["kakan", "kakakan"]
 
 # we need these in case kan mod is not enabled
 def do_kan_draw do

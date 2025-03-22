@@ -56,6 +56,9 @@ defmodule RiichiAdvanced.GameState do
       dismantle_calls: false,
       ignore_suit: false
     ]
+    def get_all_tiles(tile_behavior) do
+      Map.keys(tile_behavior.tile_freqs) ++ Map.keys(tile_behavior.aliases)
+    end
     def tile_mappings(tile_behavior) do
       for {tile1, attrs_aliases} <- tile_behavior.aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases do
         %{tile2 => [Utils.add_attr(tile1, attrs)]}
@@ -82,8 +85,9 @@ defmodule RiichiAdvanced.GameState do
     end
     # the idea is to move the most powerful jokers to the back
     # power is just number of aliases
+    # then we sort by number of attrs (more attrs should be in the back)
     def sort_by_joker_power(tiles, tile_behavior) do
-      Enum.sort_by(tiles, &joker_power(&1, tile_behavior))
+      Enum.sort_by(tiles, &{joker_power(&1, tile_behavior), length(Utils.get_attrs(&1))})
     end
     # replace aliases with the assignment given by the joker solver
     def from_joker_assignment(tile_behavior, smt_hand, joker_assignment) do
@@ -1134,15 +1138,7 @@ defmodule RiichiAdvanced.GameState do
     for match_definition <- match_definitions do
       for match_definition_elem <- match_definition do
         case match_definition_elem do
-          [groups, num] ->
-            translated_groups = for group <- groups do
-              result = Map.get(set_definitions, group, group)
-              # if is_binary(result) and not Utils.is_tile(result) do
-              #   IO.puts("Warning: unrecognized set #{result}. Did you forget to put it in set_definitions?")
-              # end
-              result
-            end
-            [translated_groups, num]
+          [groups, num] -> [Enum.flat_map(groups, &Map.get(set_definitions, &1, [&1])), num]
           _ when is_binary(match_definition_elem) -> match_definition_elem
           _ ->
             IO.puts("#{inspect(match_definition_elem)} is not a valid match definition element.")
@@ -1190,19 +1186,19 @@ defmodule RiichiAdvanced.GameState do
       acc ->
         translated = cond do
           is_binary(match_definition) ->
-            name = match_definition <> "_definition"
-            if Map.has_key?(state.rules, name) do
-              {am_match_definitions, match_definitions} = Enum.split_with(state.rules[name], &is_binary/1)
-              translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
-              translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
-              translated_match_definitions ++ translated_am_match_definitions
-            else
-              if String.contains?(match_definition, " ") do
-                American.translate_american_match_definitions([match_definition])
-              else
-                GenServer.cast(self(), {:show_error, "Could not find match definition \"#{name}\" in the rules."})
-                []
-              end
+            case Map.get(state.rules, match_definition <> "_definition", nil) do
+              nil ->
+                if String.contains?(match_definition, " ") do
+                  American.translate_american_match_definitions([match_definition])
+                else
+                  GenServer.cast(self(), {:show_error, "Could not find match definition \"#{match_definition}_definition\" in the rules."})
+                  []
+                end
+              named_match_definitions -> 
+                {am_match_definitions, match_definitions} = Enum.split_with(named_match_definitions, &is_binary/1)
+                translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
+                translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
+                translated_match_definitions ++ translated_am_match_definitions
             end
           is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
           true                        ->
@@ -1346,18 +1342,28 @@ defmodule RiichiAdvanced.GameState do
     end)
   end
 
-  def get_best_minefield_hand(state, seat, win_definitions, tiles, max_results \\ 100) do
+  def get_best_minefield_hand(state, seat, tenpai_definitions, tiles, max_results \\ 100) do
     # returns {yakuman, han, minipoints, hand}
     tile_behavior = state.players[seat].tile_behavior
+    # all_tiles = TileBehavior.get_all_tiles(tile_behavior)
     score_rules = state.rules["score_calculation"]
-    Enum.flat_map(win_definitions, &Match.remove_match_definition(tiles, [], ["almost" | &1], tile_behavior))
+    Enum.flat_map(tenpai_definitions, &Match.remove_match_definition(tiles, [], &1, tile_behavior))
     |> Enum.take(max_results)
     |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
     |> Enum.uniq()
     |> Enum.map(fn hand ->
-      state2 = update_player(state, seat, &%Player{ &1 | hand: hand })
-      {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku_lists"], seat, [:any], :discard)
-      {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state2, score_rules["yaku2_lists"], seat, [:any], :discard)
+      state = update_player(state, seat, &%Player{ &1 | hand: hand, status: ["riichi"] }) # avoid renhou
+      # run before_win actions
+      state = if Map.has_key?(state.rules, "before_win") do
+        Actions.run_actions(state, state.rules["before_win"]["actions"], %{seat: seat, win_source: :discard})
+      else state end
+      # run before_scoring actions
+      state = if Map.has_key?(state.rules, "before_scoring") do
+        Actions.run_actions(state, state.rules["before_scoring"]["actions"], %{seat: seat, win_source: :discard})
+      else state end
+      {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, [:any], :discard)
+      {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, [:any], :discard)
+      # IO.inspect({yaku, yaku2, hand})
       han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
       yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.sum()
       {yakuman, han, minipoints, hand}
@@ -1398,9 +1404,19 @@ defmodule RiichiAdvanced.GameState do
     if postprocess do
       # async calculate playable indices for current turn player
       GenServer.cast(self(), :calculate_playable_indices)
+      # notify ai marking for all other players
+      for seat <- state.available_seats, seat != state.turn, Marking.needs_marking?(state, seat) do
+        notify_ai_marking(state, seat)
+      end
+      
       # async populate closest_american_hands for all players
       if state.ruleset == "american" do
-        GenServer.cast(self(), :calculate_closest_american_hands)
+        win_definition = Map.get(state.rules, "win_definition", [])
+        # the am_card_free mod sets win_definition to the empty one, because it uses an alternate wincon
+        # in which case we don't calculate closest hands
+        if win_definition != [[]] do
+          GenServer.cast(self(), :calculate_closest_american_hands)
+        end
       end
     end
     # IO.puts("broadcast_state_change called")
@@ -2207,6 +2223,9 @@ defmodule RiichiAdvanced.GameState do
     |> update_player(seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | playable_indices: playable_indices } })
     |> Map.update!(:calculate_playable_indices_pids, &Map.put(&1, seat, nil))
     state = broadcast_state_change(state, false)
+    if Marking.needs_marking?(state, seat) do
+      notify_ai_marking(state, seat)
+    end
     {:noreply, state}
   end
 
@@ -2227,29 +2246,36 @@ defmodule RiichiAdvanced.GameState do
   end
 
   # for minefield ai
-  def handle_cast({:get_best_minefield_hand, seat, win_definitions}, state) do
+  def handle_cast({:get_best_minefield_hand, seat, tenpai_definitions}, state) do
     state = if state.get_best_minefield_hand_pid == nil do
       self = self()
       {:ok, pid} = Task.start(fn ->
-        tiles = Utils.strip_attrs(state.players[seat].hand)
+        tiles = state.players[seat].hand
+
+        # add a fake :any tile to toimen's discards (resulting state is thrown away once this thread completes)
+        toimen = Utils.get_seat(seat, :toimen)
+        state = state
+        |> update_player(toimen, &%Player{ &1 | discards: &1.discards ++ [:any] })
+        |> Actions.register_discard(toimen, :any, true, true)
+
         # look for certain hands
         {_yakuman, _han, _minipoints, hand} = Enum.max([
           # tsuuiisou
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
           # chinitsu
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
           # honitsu
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_manzu?(&1) or Riichi.is_jihai?(&1)), 10),
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_manzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
           # tanyao
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
           # chanta
-          get_best_minefield_hand(state, seat, win_definitions, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
+          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
           # any hand
-          get_best_minefield_hand(state, seat, win_definitions, tiles, 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, tiles, 10),
         ])
         # IO.inspect({yakuman, han, minipoints, hand})
         GenServer.cast(self, {:set_best_minefield_hand, seat, tiles, hand})

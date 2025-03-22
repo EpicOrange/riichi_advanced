@@ -28,17 +28,17 @@ defmodule RiichiAdvanced.Utils do
     else nil end
   end
 
-  def tile_to_attrs(tile) do
-    case tile do
-      {tile, attrs} -> [Atom.to_string(tile) | attrs]
-      tile          -> [Atom.to_string(tile)]
-    end
-  end
-
   def to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}
       tile          -> {tile, []}
+    end
+  end
+
+  def get_attrs(tile) do
+    case tile do
+      {_tile, attrs} -> attrs
+      _tile          -> []
     end
   end
 
@@ -130,18 +130,19 @@ defmodule RiichiAdvanced.Utils do
     else
       # every joker is connected to any-tile jokers
       any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
+      any_tiles = MapSet.new([tile | any_tiles])
       for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
+        # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
         t2 = add_attr(tile2, attrs2)
-        cond do
-          has_matching_tile?([tile], aliases) ->
-            # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
-            MapSet.new(aliases)
-            |> MapSet.delete(:any) # never return :any
-            |> MapSet.put(t2)
-          same_tile(tile, t2) -> MapSet.new(aliases)
-          true -> MapSet.new()
+        {results, extra_attrs} = case Enum.find(aliases, &same_tile(tile, &1)) do
+          nil -> if same_tile(tile, t2) do {aliases, get_attrs(tile) -- attrs2} else {[], []} end
+          t1  -> {MapSet.put(aliases, t2), get_attrs(tile) -- get_attrs(t1)}
         end
-      end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
+        results
+        |> Enum.reject(&strip_attrs(&1) == :any)
+        |> add_attr(extra_attrs)
+        |> MapSet.new()
+      end |> Enum.reduce(any_tiles, &MapSet.union/2)
     end
   end
 
@@ -195,6 +196,7 @@ defmodule RiichiAdvanced.Utils do
     end |> Enum.sum()
   end
 
+  # TODO what about 3-player
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = case seat do
@@ -297,7 +299,7 @@ defmodule RiichiAdvanced.Utils do
     dora = has_attr?(tile, ["dora"])
     last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
-    id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
+    id = if reversed do strip_attrs(tile) else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
     concealed = has_attr?(tile, ["concealed"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
@@ -345,27 +347,8 @@ defmodule RiichiAdvanced.Utils do
     ] ++ extra_classes ++ number_class ++ color_classes
   end
 
-  def flip_faceup(tile) do
-    case tile do
-      {:"1x", attrs} ->
-        tile_attr = Enum.find(attrs, &is_tile/1)
-        if tile_attr != nil do
-          to_tile([tile_attr | attrs]) |> remove_attr([tile_attr])
-        else tile end
-      tile -> tile
-    end
-  end
-
-  def flip_facedown(tile) do
-    case tile do
-      :"1x" -> :"1x"
-      {:"1x", attrs} -> {:"1x", attrs}
-      tile -> {:"1x", tile_to_attrs(tile)}
-    end
-  end
-
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
-    tiles = Enum.map(call, &flip_faceup/1)
+    tiles = remove_attr(call, ["_facedown"])
     if replace_am_jokers and has_matching_tile?(tiles, [:"1j"]) do
       # replace all american jokers with the nonjoker tile
       nonjoker = Enum.find(tiles, &not same_tile(&1, :"1j")) |> strip_attrs()
@@ -517,6 +500,16 @@ defmodule RiichiAdvanced.Utils do
   def insert_at(s1, s2, ix) do
     {l, r} = String.split_at(s1, if ix < 0 do String.length(s1) + ix + 1 else ix end)
     l <> s2 <> r
+  end
+
+  def permutations([]), do: [[]]
+  def permutations(xs) when is_list(xs) do
+    for x <- xs, rest <- permutations(xs -- [x]), do: [x | rest]
+  end
+  def make_permutations(xs) when is_list(xs) do
+    for ys <- permutations(xs) do
+      Map.new(Enum.zip(xs, ys))
+    end
   end
 
   def walk_json(action, fun) do

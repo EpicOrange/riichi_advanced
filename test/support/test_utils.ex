@@ -116,8 +116,8 @@ defmodule RiichiAdvanced.TestUtils do
         if [] not in errs do
           for tuples <- errs, {k, actual, expected} <- tuples do
             IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
-            assert actual == expected
           end
+          assert false
         end
       end
     else
@@ -133,6 +133,13 @@ defmodule RiichiAdvanced.TestUtils do
         Map.get(state.delta_scores, seat, 0)
       end
       assert_list(delta_scores, expected_state.delta_scores)
+    end
+
+    if Map.has_key?(expected_state, :shuugi) do
+      shuugi = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+        Map.get(state.players[seat].counters, "shuugi", 0)
+      end
+      assert_list(shuugi, expected_state.shuugi)
     end
 
     if Map.has_key?(expected_state, :scores) do

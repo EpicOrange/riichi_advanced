@@ -11,7 +11,8 @@
     {"id": "american/am_card_ILoveMahj", "conflicts": ["american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
     {"id": "american/am_card_ATeacherFirst", "conflicts": ["american/am_card_ILoveMahj", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
     {"id": "american/am_card_MahjLife", "conflicts": ["american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/BETA_am_card_AMJForEveryone"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
-    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."}
+    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."},
+    {"id": "american/am_card_free", "name": "Card-Free (beta)", "desc": "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run."}
   ],
   "display_name": "American",
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md",
@@ -54,7 +55,7 @@
            "1j", "1j", "1j", "1j",
            "1j", "1j", "1j", "1j"],
   "set_definitions": {
-    "pair": [0, 0]
+    "pair": [[0, 0]]
   },
   "win_definition": [
     // 2024
@@ -347,7 +348,7 @@
       ]]
     ]
   },
-  "before_win": {
+  "after_scoring": {
     "actions": [
       // jokerless bonus
       ["when", [
@@ -355,7 +356,7 @@
         {"name": "not_match", "opts": [["hand", "call_tiles", "winning_tile"], ["singles_win"]]}
       ], [
         ["push_message", "gets double score for a jokerless hand"],
-        ["set_counter_all", "delta_score_multiplier", 2]
+        ["modify_payout", "all", 2, "multiply"]
       ]]
     ]
   },

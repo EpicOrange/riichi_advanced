@@ -15,11 +15,7 @@
 .set_definitions.baiban_pair = ["0z", "0z"]
 |
 .yaku |= map(
-  if .display_name == "Chanta" then
-    .when[-1].opts[1][0][1][0] += ["baiban"]
-    |
-    .when[-1].opts[1][0][2][0] += ["baiban_pair"]
-  elif .display_name == "Shousangen" then
+  if .display_name == "Shousangen" then
     .value = 1
     |
     .when[0].opts[1] = [[[["haku", "hatsu", "chun", "baiban"], 2], [["haku_pair", "hatsu_pair", "chun_pair", "baiban_pair"], 1]]]

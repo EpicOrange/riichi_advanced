@@ -91,13 +91,13 @@ else . end)
 |
 .functions.discard_passed |= [["as", "others", [
   # if we just reached then place down a riichi stick
-  ["when", [{"name": "status", "opts": ["just_reached"]}], [["run", "put_down_riichi_stick"]]],
+  ["when", [{"name": "status", "opts": ["just_reached"]}], [["run", "place_riichi_stick"]]],
   ["unset_status", "just_reached"]
 ]]] + .
 |
-.functions.put_down_riichi_stick = [
-  ["when", [{"name": "status_missing", "opts": ["put_down_riichi_stick"]}], [
-    ["subtract_score", "riichi_value"], ["put_down_riichi_stick"], ["set_status", "put_down_riichi_stick"]
+.functions.place_riichi_stick = [
+  ["when", [{"name": "status_missing", "opts": ["riichi_stick_placed"]}], [
+    ["subtract_score", "riichi_value"], ["put_down_riichi_stick"], ["set_status", "riichi_stick_placed"]
   ]]
 ]
 |

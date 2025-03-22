@@ -4,18 +4,6 @@
 # remove pei autobutton
 .auto_buttons |= del(.["_5_auto_pei"])
 |
-# add pei yakuhai
-.yaku += [
-  {
-    "display_name": "North Wind",
-    "value": 1,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_triplet"], 1]]]]}]
-  }
-]
-|
-# pei pair gives yakuhai 2 fu
-.score_calculation.north_wind_yakuhai = true
-|
 # add flowers
 .wall += ["1f", "2f", "3f", "4f"]
 |
@@ -48,10 +36,10 @@
 |
 # add flower dora indicators
 .dora_indicators += {
-  "1f": ["1f","2f","3f","4f"],
-  "2f": ["1f","2f","3f","4f"],
-  "3f": ["1f","2f","3f","4f"],
-  "4f": ["1f","2f","3f","4f"]
+  "1f": ["2f","3f","4f"],
+  "2f": ["1f","3f","4f"],
+  "3f": ["1f","2f","4f"],
+  "4f": ["1f","2f","3f"]
 }
 |
 # count flowers

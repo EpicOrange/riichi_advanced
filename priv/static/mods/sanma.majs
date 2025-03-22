@@ -16,12 +16,10 @@ apply subtract, "wall", [
   "8m", "8m", "8m", "8m"
 ]
 
-apply delete, "default_mods", ["suufon_renda", "suucha_riichi"]
-
 # change "pei" set to "pei_triplet" (since our call is named "pei")
 apply delete_key, "set_definitions", "pei"
 define_set pei_triplet, ~s"4z 4z 4z"
-apply replace_all, "", ["pei", "pei_triplet"]
+replace all, ".", "pei", "pei_triplet"
 
 # now we can add stuff related to pei button and status
 apply prepend, "functions.discard_passed", [["as", "others", [["unset_status", "pei"]]]]

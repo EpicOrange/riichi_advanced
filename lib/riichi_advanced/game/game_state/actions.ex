@@ -9,7 +9,6 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Saki, as: Saki
-  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Match, as: Match
@@ -39,23 +38,25 @@ defmodule RiichiAdvanced.GameState.Actions do
     and not Marking.needs_marking?(state, seat)
   end
 
-  def register_discard(state, seat, tile, tsumogiri \\ true) do
+  def register_discard(state, seat, tile, tsumogiri \\ true, quiet \\ false) do
     state = update_action(state, seat, :discard, %{tile: tile})
-    push_message(state, [
-      %{text: "Player #{player_name(state, seat)} discarded"},
-      Utils.pt(tile)
-    ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
     riichi = "just_reached" in state.players[seat].status
     state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
 
-    click_sounds = [
-      "/audio/tile1.mp3",
-      "/audio/tile2.mp3",
-      "/audio/tile3.mp3",
-      "/audio/tile4.mp3",
-      "/audio/tile5.mp3",
-    ]
-    play_sound(state, Enum.random(click_sounds))
+    if not quiet do
+      push_message(state, [
+        %{text: "Player #{player_name(state, seat)} discarded"},
+        Utils.pt(tile)
+      ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
+      click_sounds = [
+        "/audio/tile1.mp3",
+        "/audio/tile2.mp3",
+        "/audio/tile3.mp3",
+        "/audio/tile4.mp3",
+        "/audio/tile5.mp3",
+      ]
+      play_sound(state, Enum.random(click_sounds))
+    end
 
     state
   end
@@ -65,7 +66,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
       facedown = "discard_facedown" in state.players[seat].status or Utils.has_attr?(tile, ["_facedown"])
-      tile = if facedown do {:"1x", Utils.tile_to_attrs(Utils.remove_attr(tile, ["_facedown"]))} else tile end
+      tile = if facedown do Utils.add_attr(tile, ["_facedown"]) else tile end
       tile = Utils.add_attr(tile, ["_discard"])
 
       state = update_player(state, seat, &%Player{ &1 |
@@ -76,12 +77,13 @@ defmodule RiichiAdvanced.GameState.Actions do
         last_discard: {tile, index}
       })
       tsumogiri = index >= length(state.players[seat].hand)
-      state = register_discard(state, seat, tile, tsumogiri)
+      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri)
 
       # trigger play effects
       state = if Map.has_key?(state.rules, "play_effects") do
         doras = get_doras(state)
-        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(if is_list(tile_spec) do tile_spec else [tile_spec] end, %{tile: tile, doras: doras}), reduce: state do
+        context = %{tile: tile, doras: doras}
+        for [tile_spec, actions] <- state.rules["play_effects"], Riichi.tile_matches(List.wrap(tile_spec), context), reduce: state do
           state -> run_actions(state, actions, %{seat: seat, tile: tile})
         end
       else state end
@@ -287,12 +289,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           "call_sideways"                         -> called_tile |> Utils.add_attr(["_sideways"])
           ix when is_integer(ix)                  -> Enum.at(tiles, ix)
           ["sideways", ix] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways"])
-          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.flip_facedown()
-          ["1x", "call"]                          -> called_tile |> Utils.flip_facedown()
-          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.flip_facedown()
-          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.flip_facedown() |> Utils.add_attr(["_sideways"])
-          ["1x_sideways", "call"]                 -> called_tile |> Utils.flip_facedown() |> Utils.add_attr(["_sideways"])
-          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.flip_facedown() |> Utils.add_attr(["_sideways"])
+          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown"])
+          ["1x", "call"]                          -> called_tile |> Utils.add_attr(["_facedown"])
+          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown"])
+          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", "call"]                 -> called_tile |> Utils.add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown", "_sideways"])
           tile                                    -> Utils.to_tile(tile)
         end
       end
@@ -426,7 +428,13 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def interpret_amount(state, context, amt_spec) do
-    case List.wrap(amt_spec) do
+    amt_spec = List.wrap(amt_spec)
+    # counters should take precedence over keywords
+    counter = with [amount | _opts] <- amt_spec do
+      Map.get(state.players[context.seat].counters, amount, nil)
+    end
+    case amt_spec do
+      _ when counter != nil -> counter
       ["count_matches" | opts] ->
         # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -488,20 +496,26 @@ defmodule RiichiAdvanced.GameState.Actions do
         length(state.players[seat].draw)
       ["count_dora" | opts] ->
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
-        {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-        if dora_indicator != nil do
-          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
-        else 0 end
+        case Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) do
+          [] -> 0
+          [{hand, calls} | _] ->
+            hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
+            if dora_indicator != nil do
+              doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+              Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
+            else 0 end
+        end
       ["count_reverse_dora" | opts] ->
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
-        {hand, calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) |> Enum.at(0)
-        hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-        if dora_indicator != nil do
-          doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
-          Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
-        else 0 end
+        case Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 1, [])) do
+          [] -> 0
+          [{hand, calls} | _] ->
+            hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
+            if dora_indicator != nil do
+              doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+              Utils.count_tiles(hand, doras, state.players[context.seat].tile_behavior)
+            else 0 end
+        end
       ["dice" | _opts] -> Enum.sum(state.dice)
       ["pot" | _opts] -> state.pot
       ["honba" | _opts] -> state.honba
@@ -514,124 +528,82 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
         score_actions = Enum.at(opts, 0)
-        yakuhai = Scoring.get_yakuhai(state, context.seat)
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
-        win_source = context.win_source
-        winning_tiles = get_winning_tiles(state, context.seat, context.win_source)
-        winning_tiles = Utils.apply_tile_aliases(winning_tiles, tile_behavior) |> Utils.strip_attrs()
-
-        for [action | opts] <- score_actions, reduce: [{player.hand, player.calls, 0}] do
-          hand_calls_fu -> case action do # IO.inspect(hand_calls_fu, label: action);
-            "put_calls_in_hand" ->
-              for {hand, calls, fu} <- hand_calls_fu do
-                {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in opts end)
-                {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fu}
-              end
-            "remove_attrs" ->
-              for {hand, calls, fu} <- hand_calls_fu do
-                {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
-              end
-            "add" ->
-              amt = interpret_amount(state, context, Enum.at(opts, 0, 0))
-              conditions = Enum.at(opts, 1, [])
-              for {hand, calls, fu} <- hand_calls_fu do
-                context = Map.put(context, :minipoints, fu)
-                if Conditions.check_cnf_condition(state, conditions, context) do
-                  {hand, calls, fu + amt}
-                else {hand, calls, fu} end
-              end
-            "convert_calls" ->
-              value_map = Enum.at(opts, 0, %{})
-              for {hand, calls, fu} <- hand_calls_fu do
-                value = Enum.map(calls, fn {name, _call} -> Map.get(value_map, name, 0) end)
-                |> Enum.sum()
-                {hand, calls, fu + value}
-              end
-            "remove_tanyaohai_calls" ->
-              for {hand, calls, fu} <- hand_calls_fu do
-                {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.is_tanyaohai?/1) end), fu}
-              end
-            "remove_calls" ->
-              for {hand, _calls, fu} <- hand_calls_fu do
-                {hand, [], fu}
-              end
-            "remove_winning_groups" ->
-              Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
-                group = Map.get(group_spec, "group", [])
-                reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
-                reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
-                base_tiles = winning_tiles
-                |> Enum.reject(fn tile -> Enum.any?(reject_if_exists, fn offsets ->
-                  Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) != nil)
-                end) end)
-                |> Enum.reject(fn tile -> Enum.any?(reject_if_missing, fn offsets ->
-                  Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil)
-                end) end)
-
-                value = Map.get(group_spec, "value", 0)
-                suited_mult = Map.get(group_spec, "suited_mult", 1)
-                yaochuuhai_mult = Map.get(group_spec, "yaochuuhai_mult", 1)
-                tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
-                yakuhai_value = Map.get(group_spec, "yakuhai_value", 0)
-                for {hand, calls, fu} <- hand_calls_fu,
-                    tile <- base_tiles,
-                    {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
-                  value = value
-                  * if Riichi.is_suited?(tile) do suited_mult else 1 end
-                  * if Riichi.is_yaochuuhai?(tile) do yaochuuhai_mult else 1 end
-                  * if win_source == :draw do tsumo_mult else 1 end
-                  value = value + yakuhai_value * Utils.count_tiles(yakuhai, [tile], tile_behavior)
+        initial_hand_calls_fu = get_winning_tiles(state, context.seat, context.win_source)
+        |> Enum.map(&{[&1 | player.hand], player.calls, 0})
+        for [action | opts] <- score_actions, reduce: initial_hand_calls_fu do
+          hand_calls_fu -> 
+            conditions = Enum.at(opts, 1, [])
+            passes_conditions = Conditions.check_cnf_condition(state, conditions, context)
+            # IO.inspect(hand_calls_fu, label: action)
+            case action do
+              "add" ->
+                amt = interpret_amount(state, context, Enum.at(opts, 0, 0))
+                for {hand, calls, fu} <- hand_calls_fu do
+                  context = Map.put(context, :minipoints, fu)
+                  if Conditions.check_cnf_condition(state, conditions, context) do
+                    {hand, calls, fu + amt}
+                  else {hand, calls, fu} end
+                end
+              _ when not passes_conditions -> hand_calls_fu
+              "put_calls_in_hand" ->
+                call_names = List.wrap(Enum.at(opts, 0, []))
+                for {hand, calls, fu} <- hand_calls_fu do
+                  {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in call_names or Enum.empty?(call_names) end)
+                  {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fu}
+                end
+              "remove_attrs" ->
+                for {hand, calls, fu} <- hand_calls_fu do
+                  {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
+                end
+              "convert_calls" ->
+                value_map = Enum.at(opts, 0, %{})
+                for {hand, calls, fu} <- hand_calls_fu do
+                  value = Enum.map(calls, fn {name, _call} -> Map.get(value_map, name, 0) end)
+                  |> Enum.sum()
                   {hand, calls, fu + value}
                 end
-              end) ++ hand_calls_fu
-            "remove_groups" ->
-              Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
-                group = Map.get(group_spec, "group", [])
-                reject_if_exists = Map.get(group_spec, "reject_if_exists", [])
-                reject_if_missing = Map.get(group_spec, "reject_if_missing", [])
-
-                value = Map.get(group_spec, "value", 0)
-                suited_mult = Map.get(group_spec, "suited_mult", 1)
-                yaochuuhai_mult = Map.get(group_spec, "yaochuuhai_mult", 1)
-                tsumo_mult = Map.get(group_spec, "tsumo_mult", 1)
-                yakuhai_value = Map.get(group_spec, "yakuhai_value", 0)
-                for {hand, calls, fu} <- hand_calls_fu,
-                    tile <- Match.collect_base_tiles(hand, [], group, tile_behavior),
-                    not Enum.any?(reject_if_exists, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) != nil) end),
-                    not Enum.any?(reject_if_missing, fn offsets -> Enum.all?(offsets, &Match.offset_tile(tile, &1, tile_behavior) == nil) end),
-                    {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
-                  value = value
-                  * if Riichi.is_suited?(tile) do suited_mult else 1 end
-                  * if Riichi.is_yaochuuhai?(tile) do yaochuuhai_mult else 1 end
-                  * if win_source == :draw do tsumo_mult else 1 end
-                  value = value + yakuhai_value * Utils.count_tiles(yakuhai, [tile], tile_behavior)
-                  {hand, calls, fu + value}
+              "remove_calls" ->
+                tile_specs = List.wrap(Enum.at(opts, 0, []))
+                for {hand, calls, fu} <- hand_calls_fu do
+                  {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.tile_matches_all(tile_specs, %{tile: &1})) end), fu}
                 end
-              end) ++ hand_calls_fu
-            "retain_empty_hands" ->
-              for {[], [], fu} <- hand_calls_fu do
-                {[], [], fu}
-              end
-            "round_up" ->
-              to = Enum.at(opts, 0, 10)
-              to = if to == 0 do 10 else to end
-              for {hand, calls, fu} <- hand_calls_fu do
-                remainder = rem(fu, to)
-                {hand, calls, if remainder == 0 do fu else fu - remainder + to end}
-              end
-            "take_maximum" ->
-              if not Enum.empty?(hand_calls_fu) do
-                {_hand, _calls, max_fu} = Enum.max_by(hand_calls_fu, fn {_hand, _calls, fu} -> fu end)
-                for {hand, calls, fu} <- hand_calls_fu, fu == max_fu do
-                  {hand, calls, fu}
+              "remove_groups" ->
+                result = Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
+                  groups = Map.get(group_spec, "groups", [])
+                  value = Map.get(group_spec, "value", 0)
+                  for group <- groups,
+                      {hand, calls, fu} <- hand_calls_fu,
+                      tile <- Match.collect_base_tiles(hand, [], group, tile_behavior),
+                      {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
+                    {hand, calls, fu + value}
+                  end
+                end)
+                if Enum.empty?(result) do hand_calls_fu else result end
+              "retain_empty_hands" ->
+                for {[], [], fu} <- hand_calls_fu do
+                  {[], [], fu}
                 end
-              else hand_calls_fu end
-            "add_original_hand" -> hand_calls_fu ++ [{player.hand, player.calls, 0}]
-            "print" ->
-              IO.inspect(hand_calls_fu, limit: :infinity)
-              hand_calls_fu
-          end |> Enum.uniq()
+              "round_up" ->
+                to = Enum.at(opts, 0, 10)
+                to = if to == 0 do 10 else to end
+                for {hand, calls, fu} <- hand_calls_fu do
+                  remainder = rem(fu, to)
+                  {hand, calls, if remainder == 0 do fu else fu - remainder + to end}
+                end
+              "take_maximum" ->
+                if not Enum.empty?(hand_calls_fu) do
+                  {_hand, _calls, max_fu} = Enum.max_by(hand_calls_fu, fn {_hand, _calls, fu} -> fu end)
+                  for {hand, calls, fu} <- hand_calls_fu, fu == max_fu do
+                    {hand, calls, fu}
+                  end
+                else hand_calls_fu end
+              "add_original_hand" -> hand_calls_fu ++ initial_hand_calls_fu
+              "print" ->
+                IO.inspect(hand_calls_fu, limit: :infinity)
+                hand_calls_fu
+            end |> Enum.uniq()
         end
         |> Enum.take(1)
         |> Enum.map(fn {_hand, _calls, fu} -> fu end)
@@ -737,9 +709,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     end) } end)
   end
 
-  def add_attr_matching(tiles, attrs, tile_specs) do
+  def add_attr_matching(tiles, attrs, tile_specs, tile_behavior) do
     for tile <- tiles do
-      if Riichi.tile_matches_all(tile_specs, %{tile: tile}) do
+      if Riichi.tile_matches_all(tile_specs, %{tile: tile, tile_behavior: tile_behavior}) do
         Utils.add_attr(tile, attrs)
       else tile end
     end
@@ -810,7 +782,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           "draw" -> update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
           "calls" -> update_player(state, seat, &%Player{ &1 | calls: &1.calls ++ [tile] })
           "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })
-          "discard" -> update_player(state, seat, &%Player{ &1 | pond: &1.pond ++ [tile] })
+          "discard" -> update_player(state, seat, &%Player{ &1 | pond: &1.pond ++ [tile], discards: &1.discards ++ [tile] })
           "dead_wall" -> Map.update!(state, :dead_wall, &List.replace_at(&1, destination_ix, tile))
           "atop_wall" -> Map.update!(state, :atop_wall, &Map.update(&1, destination_ix, tile, fn _prev_tile -> tile end))
         end
@@ -975,6 +947,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "print_context"         ->
         IO.inspect(context)
         state
+      "print_hand"         ->
+        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls})
+        state
       "print_discards"         ->
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         IO.inspect({seat, state.players[seat].discards})
@@ -1115,7 +1091,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
         |> Map.update!(:pot, & &1 + amount)
         |> update_player(context.seat, &%Player{ &1 | score: &1.score - amount })
-      "add_honba"             -> Map.update!(state, :honba, & &1 + Enum.at(opts, 0, 1))
+      "add_honba"             -> Map.update!(state, :honba, & &1 + interpret_amount(state, context, Enum.at(opts, 0, 1)))
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
       "discard_draw"          ->
@@ -1275,7 +1251,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "flip_marked_discard_facedown" ->
         {_discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
 
-        state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+        state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
 
         state = Marking.mark_done(state, context.seat)
 
@@ -1322,17 +1298,18 @@ defmodule RiichiAdvanced.GameState.Actions do
         targets = Enum.at(opts, 0, [])
         attrs = List.wrap(Enum.at(opts, 1, []))
         tile_specs = Enum.at(opts, 2, [])
+        tile_behavior = state.players[context.seat].tile_behavior
         for target <- targets, reduce: state do
           state ->
             case target do
-              "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs))
-              "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs))
-              "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs)} end))
-              "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs))
-              "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
-              "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
-              "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs) |> Enum.at(0) end)
-              _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs) |> Enum.at(0)) end)
+              "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+              "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+              "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs, tile_behavior)} end))
+              "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+              "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+              "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+              "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+              _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs, tile_behavior) |> Enum.at(0)) end)
               _      ->
                 IO.inspect("Unhandled add_attr target #{inspect(target)}")
                 state
@@ -1399,6 +1376,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
         |> Enum.flat_map(&case &1 do
           "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+          "all" -> TileBehavior.get_all_tiles(state.players[context.seat].tile_behavior)
           _ -> [from_named_tile(state, context, &1)]
         end)
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
@@ -1422,6 +1400,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         |> Enum.map(&Utils.to_tile/1)
         state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(doras), &MapSet.union(&1, MapSet.new(doras))) end)
         state
+      "untag_tiles"           ->
+        tag = Enum.at(opts, 0, "missing_tag")
+        tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
+        |> Enum.flat_map(&case &1 do
+          "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+          "all" -> TileBehavior.get_all_tiles(state.players[context.seat].tile_behavior)
+          _ -> [from_named_tile(state, context, &1)]
+        end)
+        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.difference(&1, MapSet.new(tiles))) end)
+        state
       "untag"                 ->
         tag = Enum.at(opts, 0, "missing_tag")
         {_, state} = pop_in(state.tags[tag])
@@ -1433,25 +1421,17 @@ defmodule RiichiAdvanced.GameState.Actions do
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state) # TODO remove
         state
-      # "flip_draw_faceup" -> update_player(state, context.seat, fn player -> %Player{ player | draw: Enum.map(player.draw, &Utils.flip_faceup/1) } end)
-      # "flip_last_discard_faceup"  ->
-      #   last_discarder = get_last_discard_action(state).seat
-      #   tile = Utils.flip_faceup(get_last_discard_action(state).tile)
-      #   state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
-      #   state = update_action(state, last_discarder, :discard, %{tile: tile})
-      #   state = Buttons.recalculate_buttons(state) # TODO remove
-      #   state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Enum.map(call, &Utils.flip_faceup/1)} end)
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown"])} end)
           %Player{ player | calls: faceup_calls }
         end)
       "flip_first_visible_discard_facedown" -> 
-        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
+        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.has_attr?(tile, ["_facedown"]) and not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
         if ix != nil do
-          update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+          update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
         else state end
-      "flip_aside_facedown" -> update_in(state.players[context.seat].aside, &Enum.map(&1, fn tile -> {:"1x", Utils.tile_to_attrs(tile)} end))
+      "flip_aside_facedown" -> update_in(state.players[context.seat].aside, &Enum.map(&1, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
       # "shuffle_aside"      -> update_in(state.players[context.seat].aside, &Enum.shuffle/1)
       "draw_from_aside"    ->
         state = case state.players[context.seat].aside do
@@ -1527,7 +1507,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "modify_winner"   ->
         {key, type} = case Enum.at(opts, 0, nil) do
-          "score"              -> {:score, :number}
+          "score"              -> {:displayed_score, :number}
           "points"             -> {:points, :number}
           "points2"            -> {:points2, :number}
           "score_name"         -> {:score_name, :string}
@@ -1772,7 +1752,6 @@ defmodule RiichiAdvanced.GameState.Actions do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
                 end
                 state = schedule_actions(state, seat, actions, %{seat: seat})
-                notify_ai_marking(state, seat)
                 state
               _ ->
                 # just run all button actions as normal
@@ -1802,6 +1781,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       else state end
 
       # ensure playable_indices is populated for the current player
+      # this also notifies ai marking once :set_playable_indices is received
       state = broadcast_state_change(state, true)
 
       state

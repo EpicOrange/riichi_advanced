@@ -42,7 +42,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
                  Riichi.make_calls(state.rules["buttons"][button_name]["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
             |> Enum.flat_map(&Enum.map(&1, fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end))
-            |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
+            |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn k, l, r -> Enum.uniq_by(l ++ r, &MapSet.new(Utils.strip_attrs([k | &1]))) end) end)
+            |> Enum.uniq_by(fn {k, ccs} -> Enum.map(ccs, fn cc -> MapSet.new(Utils.strip_attrs([k | cc])) end) end)
+            |> Map.new()
             {state, call_choices}
           is_flower ->
             flowers = Enum.flat_map(choice_actions, fn [action | opts] -> if action == "flower" do opts else [] end end) |> Enum.map(&Utils.to_tile/1)
@@ -64,6 +66,8 @@ defmodule RiichiAdvanced.GameState.Buttons do
             call_choices = Riichi.make_calls(state.rules["buttons"][button_name]["call"], hand ++ draw, tile_behavior, callable_tiles)
             |> Enum.map(fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile, :invisible) => call_choice} end)
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn _k, l, r -> Enum.uniq_by(l ++ r, &Utils.strip_attrs(&1)) end) end)
+            |> Enum.uniq_by(fn {k, ccs} -> Enum.map(ccs, fn cc -> MapSet.new(Utils.strip_attrs([k | cc])) end) end)
+            |> Map.new()
             {state, call_choices}
         end
         # filter call_choices
@@ -106,20 +110,24 @@ defmodule RiichiAdvanced.GameState.Buttons do
             |> Enum.filter(fn {name, button} ->
               calls_spec = Map.get(button, "call", [])
               upgrades = Map.get(button, "upgrades", nil)
+              show_when = Map.get(button, "show_when", [])
+              if show_when == [] do
+                IO.puts("Warning: button #{name} has an empty show_when key")
+              end
 
               if Debug.debug_buttons() do
                 IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
               end
               Map.get(button, "interrupt_level", 100) >= interrupt_level and 
                 if name in Map.get(Debug.debug_specific_buttons(), seat, []) do
-                  case Enum.find(button["show_when"], &not Conditions.check_cnf_condition(state, [&1], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})) do
+                  case Enum.find(show_when, &not Conditions.check_cnf_condition(state, [&1], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})) do
                     nil -> true
                     condition ->
                       IO.puts("Button #{name} for player #{seat}: failed condition #{inspect(condition)}")
                       false
                   end
                 else
-                  Conditions.check_cnf_condition(state, button["show_when"], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
+                  Conditions.check_cnf_condition(state, show_when, %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
                 end
             end)
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do

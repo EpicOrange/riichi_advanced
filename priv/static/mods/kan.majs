@@ -1,6 +1,8 @@
 on after_initialization do
-  add_rule("Rules", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
-  add_rule("Rules", "Chankan", "If someone calls kan to upgrade a triplet (added kan), you may call ron on the added tile. Doing so awards chankan (1 han).)")
+  add_rule("1 Han", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
+  add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)")
+  add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
+  add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
 end
 
 define_yaku yaku, "Chankan", 1, won_by_call
@@ -38,7 +40,6 @@ define_button daiminkan,
         not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
-    and status_missing("riichi") # TODO should the riichi mod add this?
     and tile_not_drawn(-4)
     and call_available,
   call_conditions: can_discard_after_call,
@@ -62,7 +63,6 @@ define_button ankan,
         our_turn
     and not_no_tiles_remaining
     and has_draw
-    and status_missing("just_reached") # TODO should the riichi mod add this?
     and tile_not_drawn(-4)
     and self_call_available,
   precedence_over: ["chii", "pon", "daiminkan"],
@@ -80,7 +80,6 @@ define_button kakan,
         our_turn
     and not_no_tiles_remaining
     and has_draw
-    and status_missing("just_reached") # TODO should the riichi mod add this?
     and tile_not_drawn(-4)
     and can_upgrade_call,
   precedence_over: ["chii", "pon", "daiminkan"],

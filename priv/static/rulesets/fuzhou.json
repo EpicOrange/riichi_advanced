@@ -12,6 +12,7 @@
     {"id": "discardable_flowers", "conflicts": ["forced_flowers"], "name": "Discardable Flowers", "desc": "You may discard flower tiles like normal tiles."},
     {"id": "forbid_golden_flowers", "name": "No Gold Flowers", "desc": "The gold tile is determined by checking each tile in the dead wall until you find a non-flower tile. Flowers revealed in this process are given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."},
     {"id": "fuzhou_everyone_pays", "name": "Everyone Pays On Discard", "desc": "Non-discarders also pay for a win by discard."},
+    {"id": "reset_honba_on_draw", "name": "Draws Reset Dealer Bonus", "desc": "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -68,28 +69,28 @@
     "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
   },
   "set_definitions": {
-    "pair": [0, 0],
-    "gold_pair": [{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "gold_koutsu": [{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "ton": ["nojoker", "1z", "1z", "1z"],
-    "nan": ["nojoker", "2z", "2z", "2z"],
-    "shaa": ["nojoker", "3z", "3z", "3z"],
-    "pei": ["nojoker", "4z", "4z", "4z"],
-    "haku": ["nojoker", "5z", "5z", "5z"],
-    "hatsu": ["nojoker", "6z", "6z", "6z"],
-    "chun": ["nojoker", "7z", "7z", "7z"],
-    "ton_pair": ["nojoker", "1z", "1z"],
-    "nan_pair": ["nojoker", "2z", "2z"],
-    "shaa_pair": ["nojoker", "3z", "3z"],
-    "pei_pair": ["nojoker", "4z", "4z"],
-    "haku_pair": ["nojoker", "5z", "5z"],
-    "hatsu_pair": ["nojoker", "6z", "6z"],
-    "chun_pair": ["nojoker", "7z", "7z"]
+    "pair": [[0, 0]],
+    "gold_pair": [[{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "gold_koutsu": [[{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ton": [["nojoker", "1z", "1z", "1z"]],
+    "nan": [["nojoker", "2z", "2z", "2z"]],
+    "shaa": [["nojoker", "3z", "3z", "3z"]],
+    "pei": [["nojoker", "4z", "4z", "4z"]],
+    "haku": [["nojoker", "5z", "5z", "5z"]],
+    "hatsu": [["nojoker", "6z", "6z", "6z"]],
+    "chun": [["nojoker", "7z", "7z", "7z"]],
+    "ton_pair": [["nojoker", "1z", "1z"]],
+    "nan_pair": [["nojoker", "2z", "2z"]],
+    "shaa_pair": [["nojoker", "3z", "3z"]],
+    "pei_pair": [["nojoker", "4z", "4z"]],
+    "haku_pair": [["nojoker", "5z", "5z"]],
+    "hatsu_pair": [["nojoker", "6z", "6z"]],
+    "chun_pair": [["nojoker", "7z", "7z"]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
@@ -233,11 +234,6 @@
       ["when", [{"name": "seat_is", "opts": ["east"]}], [["set_counter", "dealer_continuation", "honba"]]],
       ["set_counter", "flower_count", "count_matches", ["flowers"], ["any_flower"]],
       ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["jin"]}], 1] ]]]
-    ]
-  },
-  "before_exhaustive_draw": {
-    "actions": [
-      ["add_honba"]
     ]
   },
   "buttons": {

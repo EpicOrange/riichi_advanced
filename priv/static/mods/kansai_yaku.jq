@@ -34,3 +34,8 @@
   "Honitsu Chiitoitsu": ["Honitsu", "Chiitoitsu"],
   "Chinitsu Chiitoitsu": ["Chinitsu", "Chiitoitsu"]
 }
+|
+# furiten riichi not allowed
+if (.buttons | has("riichi")) then
+  .buttons.riichi.show_when += [{"name": "status_missing", "opts": ["furiten"]}]
+else . end
