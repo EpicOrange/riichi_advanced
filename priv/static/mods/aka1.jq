@@ -16,7 +16,7 @@ def replace_n_tiles($tile; $aka; $num):
   else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Aka) \($man)x 1m, \($pin)x 1p, and \($sou)x 1p are replaced with red \"aka dora\" ones that are worth one extra han each.", -99],
+  ["add_rule", "Rules", "Wall", "(Aka) \($man)x 1m, \($pin)x 1p, and \($sou)x 1s are replaced with red \"aka dora\" ones that are worth one extra han each.", -99],
   ["update_rule", "Rules", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi."]
 ]
 |
