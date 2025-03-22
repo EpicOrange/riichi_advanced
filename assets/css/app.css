@@ -3337,7 +3337,7 @@ div.room div.mods > div.mods-inner-container > div.mod-category-spacer {
 div.room div.mods > div.mods-inner-container button.mod-menu-button {
   font-size: 75%;
 }
-div.room div.mods > div.mods-inner-container div.reset-to-default-button {
+div.room div.mods > div.mods-inner-container div.mods-bottom-buttons {
   width: 100%;
   text-align: center;
 }

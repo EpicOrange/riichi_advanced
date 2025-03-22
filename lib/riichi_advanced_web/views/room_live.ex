@@ -195,8 +195,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
                 <% end %>
                 <div class="mod-category-spacer"></div>
               <% end %>
-              <div class="reset-to-default-button">
+              <div class="mods-bottom-buttons">
                 <button class="mod-menu-button" phx-cancellable-click="reset_mods_to_default">Reset mods to default</button>
+                <button class="mod-menu-button" phx-cancellable-click="randomize_mods">Randomize mods</button>
               </div>
             </div>
           </div>
@@ -330,6 +331,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def handle_event("reset_mods_to_default", _assigns, socket) do
     GenServer.cast(socket.assigns.room_state, :reset_mods_to_default)
+    {:noreply, socket}
+  end
+
+  def handle_event("randomize_mods", _assigns, socket) do
+    GenServer.cast(socket.assigns.room_state, :randomize_mods)
     {:noreply, socket}
   end
 

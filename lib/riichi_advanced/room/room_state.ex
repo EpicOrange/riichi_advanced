@@ -327,6 +327,19 @@ defmodule RiichiAdvanced.RoomState do
     end
   end
 
+  def randomize_mods(state) do
+    random_mods = Map.get(state.rules, "available_mods", [])
+    |> Enum.filter(&is_map/1)
+    |> Enum.map(& &1["id"])
+    random_mods = Enum.take_random(random_mods, Integer.floor_div(length(random_mods), 2))
+    for {mod_name, _mod} <- state.mods, reduce: state do
+      state ->
+        state = toggle_mod(state, mod_name, mod_name in random_mods)
+        state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "values") |> Enum.random())} end))
+        state
+    end
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "state_updated", %{"state" => state})
@@ -484,6 +497,12 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_cast(:reset_mods_to_default, state) do
     state = reset_mods_to_default(state)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:randomize_mods, state) do
+    state = randomize_mods(state)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
