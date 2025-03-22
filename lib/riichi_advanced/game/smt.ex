@@ -61,10 +61,42 @@ defmodule RiichiAdvanced.SMT do
     contra
   end
 
+  # an assignment a1 overlaps a2
+  # if a1 is just a2 with the same attributes or more attributes
+  defp assignment_overlaps(a1, a2) do
+    Enum.all?(a1, fn {ix, tile} ->
+      {tile1, attrs1} = Utils.to_attr_tile(tile)
+      {tile2, attrs2} = Utils.to_attr_tile(Map.get(a2, ix, tile1))
+      tile1 == tile2 and MapSet.subset?(MapSet.new(attrs2), MapSet.new(attrs1))
+    end)
+  end
+  # filters out assignments that are overlapped by some other assignment
+  def remove_overlapping_assignments(assignments, acc \\ [])
+  def remove_overlapping_assignments([], acc), do: acc
+  def remove_overlapping_assignments([assignment | assignments], acc) do
+    if Enum.any?(assignments, &assignment_overlaps(&1, assignment)) do
+      remove_overlapping_assignments(assignments, acc)
+    else
+      remove_overlapping_assignments(assignments, [assignment | acc])
+    end
+  end
+
   def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
   def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
     {precomputed_mappings, precomputed_mappings_r} = precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior)
-
+    # |> IO.inspect(label: "precomputed", charlists: :as_lists)
+    get_attr_tiles = fn {ix, tile} ->
+      tile = Utils.strip_attrs(tile)
+      tiles = Map.get(precomputed_mappings, {ix, tile}, [])
+      any_tiles = Map.get(precomputed_mappings, {ix, :any}, [])
+      |> Enum.map(fn {:any, attrs} -> {tile, attrs} end)
+      Enum.uniq(tiles ++ any_tiles)
+    end
+    get_ixs = fn tile ->
+      ixs = Map.get(precomputed_mappings_r, tile, [])
+      any_ixs = Map.get(precomputed_mappings_r, {:any, Utils.get_attrs(tile)}, [])
+      Enum.uniq(ixs ++ any_ixs)
+    end
     # return a lazy stream of solutions
     Stream.resource(
       fn -> [] end, # state = last assignments
@@ -85,42 +117,37 @@ defmodule RiichiAdvanced.SMT do
             {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
             case ExSMT.Solver.ResponseParser.parse(response) do
               [:sat | assigns] ->
+                # IO.puts("===")
                 new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
-                # apply precomputed attributes to the result
-                attr_assignments =
-                  for {ix, tile} <- new_assignment,
-                      potential_tile <- Map.get(precomputed_mappings, {ix, tile}, []),
-                      reduce: [%{}] do
-                    acc -> for assignment <- acc do Map.put(assignment, ix, potential_tile) end
+                # |> IO.inspect()
+                # for each assignment, for each tile mapped to,
+                # check if other indices can map to the same tile
+                # if so, add a new assignment swapping those indices
+                apply_permutation = fn orig_assignment, permutation ->
+                  for {ix, tile} <- orig_assignment, reduce: [%{}] do
+                    acc ->
+                      new_ix = Map.get(permutation, ix, ix)
+                      for assignment <- acc, potential_tile <- get_attr_tiles.({new_ix, tile}) do
+                        Map.put(assignment, new_ix, potential_tile)
+                      end
+                      |> remove_overlapping_assignments()
                   end
-                attr_assignments =
-                  for {ix, tile} <- new_assignment,
-                      {:any, attrs} <- Map.get(precomputed_mappings, {ix, :any}, []) |> Enum.map(&Utils.to_attr_tile/1),
-                      reduce: attr_assignments do
-                    acc -> for assignment <- acc do Map.put(assignment, ix, Utils.add_attr(tile, attrs)) end
-                  end
-                # (optimization) the next last_assignments value should include all symmetric mappings
-                new_last_assignments = for assignment <- attr_assignments, reduce: [new_assignment] do
-                  new_last_assignments ->
-                    # whenever 2+ indices map to the same tile,
-                    # they can be swapped to get a symmetric assignment
-                    # do this for all permutations of indices
-                    all_permutations = assignment
-                    |> Map.values()
-                    |> Enum.uniq()
-                    |> Enum.map(fn tile ->
-                      any_tile = Utils.add_attr(:any, Utils.get_attrs(tile))
-                      Map.get(precomputed_mappings_r, tile, []) ++ Map.get(precomputed_mappings_r, any_tile, [])
-                    end)
-                    |> Enum.uniq()
-                    |> Enum.flat_map(&Utils.make_permutations/1)
-                    for permutation <- all_permutations,
-                        assignment <- new_last_assignments do
-                      Map.new(assignment, fn {ix, tile} -> {Map.get(permutation, ix, ix), tile} end)
-                    end
-                    |> Enum.uniq()
+                  # |> IO.inspect(label: "Permuting #{inspect(orig_assignment)} with #{inspect(permutation)}")
                 end
-                {attr_assignments, new_last_assignments}
+                final_assignments = new_assignment
+                |> Enum.flat_map(get_attr_tiles)
+                |> Enum.uniq()
+                |> Enum.map(get_ixs)
+                |> Enum.uniq()
+                |> Enum.flat_map(&Utils.make_permutations/1)
+                |> Enum.flat_map(&apply_permutation.(new_assignment, &1))
+                |> remove_overlapping_assignments()
+
+                # deduplicate assignments that result in the exact same tiles
+                # for example, 4 => 4m, 5 => 5s is the same as 4 => 5s, 5 => 4m
+                ret = Enum.uniq_by(final_assignments, &Map.values(&1) |> Enum.sort())
+                # |> IO.inspect(label: "result")
+                {ret, final_assignments}
               [:unsat | _] -> {:halt, nil}
             end
         end
