@@ -1,6 +1,6 @@
 defmodule RiichiAdvanced.RoomState do
-  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 

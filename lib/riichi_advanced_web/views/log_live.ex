@@ -1,8 +1,8 @@
 defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Choice, as: Choice
-  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 

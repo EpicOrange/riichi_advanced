@@ -8,12 +8,12 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   require Logger
   import RiichiAdvanced.GameState
@@ -431,13 +431,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["count_matches" | opts] ->
         # count how many times the given hand calls spec matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        match_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
         tile_behavior = state.players[context.seat].tile_behavior
         Match.binary_search_count_matches(hand_calls, match_definitions, tile_behavior)
       ["count_matching_ways" | opts] ->
         # count how many given hand-calls combinations matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
-        match_definitions = translate_match_definitions(state, Enum.at(opts, 1, []))
+        match_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
         tile_behavior = state.players[context.seat].tile_behavior
         Enum.count(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       ["tiles_in_wall" | _opts] -> length(state.wall) - state.wall_index

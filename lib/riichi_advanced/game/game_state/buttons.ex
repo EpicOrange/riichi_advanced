@@ -5,10 +5,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 

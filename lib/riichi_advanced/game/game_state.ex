@@ -5,6 +5,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Marking, as: Marking
@@ -15,7 +16,6 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.RoomState.RoomPlayer, as: RoomPlayer
-  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
   
@@ -338,22 +338,6 @@ defmodule RiichiAdvanced.GameState do
     })
 
     state = Map.put(state, :rules_ref, Rules.load_rules(state.ruleset, ruleset_json))
-
-    # generate shanten definitions if they don't exist in rules
-    shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
-    shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(state, Rules.get(state.rules_ref, Atom.to_string(shanten) <> "_definition", []))} end)
-    shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
-      shanten_definitions ->
-        # IO.puts("Generating #{to} definitions")
-        if length(shanten_definitions[from]) < 100 do
-          Map.put(shanten_definitions, to, Match.compute_almost_match_definitions(shanten_definitions[from]))
-        else
-          Map.put(shanten_definitions, to, [])
-        end
-    end
-    state = Map.put(state, :shanten_definitions, shanten_definitions)
-    # IO.inspect(state.shanten_definitions)
-    # IO.inspect(Map.new(state.shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
 
     state = Map.put(state, :available_seats, case Rules.get(state.rules_ref, "num_players", 4) do
       1 -> [:east]
@@ -1111,81 +1095,6 @@ defmodule RiichiAdvanced.GameState do
     GenServer.cast(self(), {:notify_ai_declare_yaku, seat})
   end
 
-  defp translate_sets_in_match_definitions(match_definitions, set_definitions) do
-    for match_definition <- match_definitions do
-      for match_definition_elem <- match_definition do
-        case match_definition_elem do
-          [groups, num] -> [Enum.flat_map(groups, &Map.get(set_definitions, &1, [&1])), num]
-          _ when is_binary(match_definition_elem) -> match_definition_elem
-          _ ->
-            IO.puts("#{inspect(match_definition_elem)} is not a valid match definition element.")
-            GenServer.cast(self(), {:show_error, "#{inspect(match_definition_elem)} is not a valid match definition element."})
-            nil
-        end
-      end
-    end
-  end
-
-  # match_definitions is a list of match definitions, each of which is itself
-  # a two-element list [groups, num] representing num times groups.
-  # 
-  # A list of match definitions succeeds when at least one match definition does,
-  # and a match definition succeeds when each of its groups match some part of
-  # the hand / calls in a non-overlapping manner.
-  # 
-  # A group is a list of tile sets. A group matches when any set matches.
-  # 
-  # Named match definitions can be defined as a key "mydef_definition" at the top level.
-  # They expand to a list of match definitions that all get added to the list of
-  # match definitions they appear in.
-  # The toplevel "mydef_definition" may not reference other named match definitions.
-  # 
-  # Named sets can be found in the key "set_definitions".
-  # This function simply swaps out all names for their respective definitions.
-  # 
-  # A match definition can also have one of the following strings as flags:
-  #   "exhaustive": Perform an exhaustive backtracking search.
-  #                 Useful when groups may overlap, thus a naive search without
-  #                 backtracking will fail without this flag.
-  #                 Runs in factorial time n! where n is the total number of groups.
-  #   "unique": Use each group in each group set exactly once. Useful for defining kokushi.
-  #   "nojoker": Ignore joker abilities.
-  #
-  # Example of a list of match definitions representing a winning hand:
-  # [
-  #   ["exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1]],
-  #   [[["pair"], 7]],
-  #   "kokushi_musou" // defined top-level as "kokushi_musou_definition"
-  # ]
-  def translate_match_definitions(state, match_definitions) do
-    set_definitions = Rules.get(state.rules_ref, "set_definitions", %{})
-    for match_definition <- match_definitions, reduce: [] do
-      acc ->
-        translated = cond do
-          is_binary(match_definition) ->
-            case Rules.get(state.rules_ref, match_definition <> "_definition", nil) do
-              nil ->
-                if String.contains?(match_definition, " ") do
-                  American.translate_american_match_definitions([match_definition])
-                else
-                  GenServer.cast(self(), {:show_error, "Could not find match definition \"#{match_definition}_definition\" in the rules."})
-                  []
-                end
-              named_match_definitions -> 
-                {am_match_definitions, match_definitions} = Enum.split_with(named_match_definitions, &is_binary/1)
-                translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
-                translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
-                translated_match_definitions ++ translated_am_match_definitions
-            end
-          is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
-          true                        ->
-            GenServer.cast(self(), {:show_error, "#{inspect(match_definition)} is not a valid match definition."})
-            []
-        end
-        [translated | acc]
-    end |> Enum.reverse() |> Enum.concat()
-  end
-
   def get_revealed_tiles(state) do
     for tile_spec <- state.revealed_tiles, reduce: [] do
       result ->
@@ -1245,7 +1154,7 @@ defmodule RiichiAdvanced.GameState do
     cond do
       win_source in [:worst_discard, :best_draw] ->
         winner = state.players[seat]
-        win_definitions = translate_match_definitions(state, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
+        win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
         waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_behavior)
         if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
     end
@@ -1299,7 +1208,7 @@ defmodule RiichiAdvanced.GameState do
       List.delete_at(hand, index)
     else hand end
     calls = state.players[seat].calls
-    win_definitions = translate_match_definitions(state, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
+    win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
     Riichi.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
@@ -1616,7 +1525,7 @@ defmodule RiichiAdvanced.GameState do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: state.shanten_definitions, tsumogiri_bot: tsumogiri_bot}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: Rules.get(state.rules_ref, :shanten_definitions), tsumogiri_bot: tsumogiri_bot}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")

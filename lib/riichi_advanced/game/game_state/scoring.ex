@@ -6,10 +6,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
@@ -121,7 +121,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([[%{}]]) else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
-        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior)
+        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, Rules.translate_match_definitions(state.rules_ref, ["win"]), tile_behavior)
       else Stream.concat([[%{}]]) end
     end
     Task.async_stream(joker_assignments, fn joker_assignment ->
@@ -478,7 +478,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
       # handle arakawa kei's scoring quirk
       delta_scores = if "use_arakawa_kei_scoring" in winner.player.status do
-        win_definitions = translate_match_definitions(state, ["win"])
+        win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
         visible_tiles = get_visible_tiles(state, winner.seat)
         waits = Riichi.get_waits_and_ukeire(winner.player.hand, winner.player.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_behavior)
         if "arakawa-kei" in winner.player.status do
@@ -535,7 +535,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           delta_scores ->
             if delta_scores[seat] < 0 and "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
-              win_definitions = translate_match_definitions(state, ["win"])
+              win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
               waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_behavior)
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
@@ -908,7 +908,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
 
     # create an alternate separated_hand where sets are separated
-    win_definitions = translate_match_definitions(state, ["win"])
+    win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
     assigned_tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand, joker_assignment)
     separated_hands = [arranged_hand]
     |> Riichi.prepend_group_all(orig_calls, [winning_tile], [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, assigned_tile_behavior)
@@ -1048,7 +1048,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([[%{}]]) else
       smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
       if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
-        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, translate_match_definitions(state, ["win"]), tile_behavior)
+        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, Rules.translate_match_definitions(state.rules_ref, ["win"]), tile_behavior)
       else Stream.concat([[%{}]]) end
     end
 

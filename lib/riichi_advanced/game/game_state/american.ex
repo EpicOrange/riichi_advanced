@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.GameState.American do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
@@ -349,7 +350,7 @@ defmodule RiichiAdvanced.GameState.American do
     hand = List.duplicate(:any, length(state.players[seat].hand) + 1)
     tile_behavior = state.players[seat].tile_behavior
     call_tiles = Utils.replace_jokers_in_calls(state.players[seat].calls, [:"1j"], tile_behavior) |> Enum.flat_map(&Utils.call_to_tiles/1)
-    Enum.filter(am_match_definitions, &Match.match_hand(hand ++ call_tiles, [], translate_match_definitions(state, [&1]), tile_behavior))
+    Enum.filter(am_match_definitions, &Match.match_hand(hand ++ call_tiles, [], Rules.translate_match_definitions(state.rules_ref, [&1]), tile_behavior))
   end
 
   def check_dead_hand(state, seat, am_match_definitions) do
