@@ -282,7 +282,7 @@ defmodule RiichiAdvancedWeb.LogLive do
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
       <div class="ruleset">
-        <textarea readonly><%= @state.ruleset_json %></textarea>
+        <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>
     """

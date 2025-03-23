@@ -52,6 +52,7 @@ defmodule RiichiAdvanced.GameState.Rules do
       # store rules in an anonymous ETS table
       # this is cleaned up once the creating process (GameState) dies
       rules_ref = :ets.new(nil, [:set, :public, read_concurrency: true]) 
+      :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
       for {k, v} <- rules do
         :ets.insert(rules_ref, {k, v})
       end

@@ -150,7 +150,6 @@ defmodule RiichiAdvanced.GameState do
       # params
       ruleset: nil,
       room_code: nil,
-      ruleset_json: nil,
       mods: nil,
       config: nil,
       private: true,
@@ -327,7 +326,6 @@ defmodule RiichiAdvanced.GameState do
       private: state.private,
       reserved_seats: state.reserved_seats,
       init_actions: state.init_actions,
-      ruleset_json: ruleset_json,
       supervisor: state.supervisor,
       mutex: mutex,
       smt_solver: smt_solver,
@@ -2307,7 +2305,6 @@ defmodule RiichiAdvanced.GameState do
     Map.drop(state, [
       :ruleset,
       :room_code,
-      :ruleset_json,
       :mods,
       :supervisor,
       :mutex,
