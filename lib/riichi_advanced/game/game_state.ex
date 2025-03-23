@@ -391,10 +391,7 @@ defmodule RiichiAdvanced.GameState do
           log = Enum.at(opts, 0, nil)
 
           # run before_start actions
-          state = case Rules.get(state.rules_ref, "before_start") do
-            nil -> state
-            before_start -> Actions.run_actions(state, before_start["actions"], %{seat: state.turn})
-          end
+          state = Actions.trigger_event(state, "before_start", %{seat: state.turn})
 
           state = initialize_new_round(state, log)
 
@@ -687,10 +684,7 @@ defmodule RiichiAdvanced.GameState do
     state = Actions.change_turn(state, Riichi.get_east_player_seat(state.kyoku, state.available_seats))
 
     # run after_start actions
-    state = case Rules.get(state.rules_ref, "after_start") do
-      nil -> state
-      after_start -> Actions.run_actions(state, after_start["actions"], %{seat: state.turn})
-    end
+    state = Actions.trigger_event(state, "after_start", %{seat: state.turn})
 
     # initialize interruptible actions
     # we only do this after running change_turn and after_start, so that their actions can't be interrupted
@@ -715,10 +709,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :round_result, :win)
 
     # run before_win actions
-    state = case Rules.get(state.rules_ref, "before_win") do
-      nil -> state
-      before_win -> Actions.run_actions(state, before_win["actions"], %{seat: seat, win_source: win_source})
-    end
+    state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source})
 
     # reset animation (and allow discarding again, in bloody end rules)
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -749,10 +740,7 @@ defmodule RiichiAdvanced.GameState do
     else state end
 
     # run after_win actions
-    state = case Rules.get(state.rules_ref, "after_win") do
-      nil -> state
-      after_win -> Actions.run_actions(state, after_win["actions"], winner)
-    end
+    state = Actions.trigger_event(state, "after_win", winner)
 
     # Push message about yaku and score
     winner = state.winners[seat]
@@ -772,10 +760,7 @@ defmodule RiichiAdvanced.GameState do
     push_message(state, [%{text: "Game ended by exhaustive draw"}])
 
     # run before_exhaustive_draw actions
-    state = case Rules.get(state.rules_ref, "before_exhaustive_draw") do
-      nil -> state
-      before_exhaustive_draw -> Actions.run_actions(state, before_exhaustive_draw["actions"], %{seat: state.turn})
-    end
+    state = Actions.trigger_event(state, "before_exhaustive_draw", %{seat: state.turn})
 
     # reset animation
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -788,10 +773,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :next_dealer, next_dealer)
 
     # run after_scoring actions
-    state = case Rules.get(state.rules_ref, "after_scoring") do
-      nil -> state
-      after_scoring -> Actions.run_actions(state, after_scoring["actions"], %{seat: state.turn})
-    end
+    state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
 
     state = Map.put(state, :visible_screen, :scores)
     state = start_timer(state)
@@ -805,10 +787,7 @@ defmodule RiichiAdvanced.GameState do
     push_message(state, [%{text: "Game ended by abortive draw (#{draw_name})"}])
 
     # run before_abortive_draw actions
-    state = case Rules.get(state.rules_ref, "before_abortive_draw") do
-      nil -> state
-      before_abortive_draw -> Actions.run_actions(state, before_abortive_draw["actions"], %{seat: state.turn})
-    end
+    state = Actions.trigger_event(state, "before_abortive_draw", %{seat: state.turn})
 
     # reset animation
     state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
@@ -906,10 +885,7 @@ defmodule RiichiAdvanced.GameState do
         # we need to run it here instead of in initialize_new_round
         # so that it can impact e.g. tobi calculations and log
         state = if state.round_result != :continue do
-          case Rules.get(state.rules_ref, "before_start") do
-            nil -> state
-            before_start -> Actions.run_actions(state, before_start["actions"], %{seat: state.turn})
-          end
+          Actions.trigger_event(state, "before_start", %{seat: state.turn})
         else state end
 
         # log game, unless we are viewing a log or if this is a tutorial
@@ -980,10 +956,7 @@ defmodule RiichiAdvanced.GameState do
           state = Map.put(state, :game_active, true)
 
           # trigger before_continue actions
-          state = case Rules.get(state.rules_ref, "before_continue") do
-            nil -> state
-            before_continue -> Actions.run_actions(state, before_continue["actions"], %{seat: state.turn})
-          end
+          state = Actions.trigger_event(state, "before_continue", %{seat: state.turn})
 
           state = Buttons.recalculate_buttons(state)
           notify_ai(state)
@@ -1241,15 +1214,9 @@ defmodule RiichiAdvanced.GameState do
     |> Enum.map(fn hand ->
       state = update_player(state, seat, &%Player{ &1 | hand: hand, status: ["riichi"] }) # avoid renhou
       # run before_win actions
-      state = case Rules.get(state.rules_ref, "before_win") do
-        nil -> state
-        before_win -> Actions.run_actions(state, before_win["actions"], %{seat: seat, win_source: :discard})
-      end
+      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard})
       # run before_scoring actions
-      state = case Rules.get(state.rules_ref, "before_scoring") do
-        nil -> state
-        before_scoring -> Actions.run_actions(state, before_scoring["actions"], %{seat: seat, win_source: :discard})
-      end
+      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: :discard})
       {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, [:any], :discard)
       {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, [:any], :discard)
       # IO.inspect({yaku, yaku2, hand})
