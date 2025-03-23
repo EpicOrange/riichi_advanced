@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.RoomState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
@@ -318,7 +319,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def reset_mods_to_default(state) do
-    default_mods = Map.get(state.rules, "default_mods", [])
+    default_mods = Rules.get(state.rules_ref, "default_mods", [])
     for {mod_name, _mod} <- state.mods, reduce: state do
       state ->
         state = put_in(state.mods[mod_name].enabled, mod_name in default_mods)
@@ -328,7 +329,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def randomize_mods(state) do
-    random_mods = Map.get(state.rules, "available_mods", [])
+    random_mods = Rules.get(state.rules_ref, "available_mods", [])
     |> Enum.filter(&is_map/1)
     |> Enum.map(& &1["id"])
     random_mods = Enum.take_random(random_mods, Integer.floor_div(length(random_mods), 2))

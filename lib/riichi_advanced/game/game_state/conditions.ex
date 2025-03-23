@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
@@ -183,11 +184,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
   end
 
   def get_yaku_lists(state) do
-    (get_in(state.rules["score_calculation"]["yaku_lists"]) || []) -- (get_in(state.rules["score_calculation"]["extra_yaku_lists"]) || [])
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+    (get_in(score_rules["yaku_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
   end
 
   def get_yaku2_lists(state) do
-    (get_in(state.rules["score_calculation"]["yaku2_lists"]) || []) -- (get_in(state.rules["score_calculation"]["extra_yaku_lists"]) || [])
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+    (get_in(score_rules["yaku2_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
@@ -321,21 +324,21 @@ defmodule RiichiAdvanced.GameState.Conditions do
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
-          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          doras = Map.get(Rules.get(state.rules_ref, "dora_indicators"), Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(cxt_player.hand, doras) == num
         else false end
       "winning_dora_count"       ->
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
-          doras = Map.get(state.rules["dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          doras = Map.get(Rules.get(state.rules_ref, "dora_indicators"), Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(cxt_player.cache.winning_hand, doras) == num
         else false end
       "winning_reverse_dora_count" ->
         dora_indicator = from_named_tile(state, context, Enum.at(opts, 0, :"1m"))
         if dora_indicator != nil do
           num = Enum.at(opts, 1, 1)
-          doras = Map.get(state.rules["reverse_dora_indicators"], Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
+          doras = Map.get(Rules.get(state.rules_ref, "reverse_dora_indicators"), Utils.tile_to_string(dora_indicator), []) |> Enum.map(&Utils.to_tile/1)
           Utils.count_tiles(cxt_player.cache.winning_hand, doras) == num
         else false end
       "match"                    ->
@@ -539,17 +542,17 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "current_turn_is"     -> state.turn == from_seat_spec(state, context, Enum.at(opts, 0, "self"))
       "hand_is_dead"        ->
         seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        am_match_definitions = Map.get(state.rules, "win_definition", [])
+        am_match_definitions = Rules.get(state.rules_ref, "win_definition", [])
         American.check_dead_hand(state, seat, am_match_definitions)
       "all_calls_deaden_hand" ->
-        am_match_definitions = Map.get(state.rules, "win_definition", [])
+        am_match_definitions = Rules.get(state.rules_ref, "win_definition", [])
         for {button_name, {:call, choices}} <- state.players[context.seat].button_choices,
             {called_tile, call_choices} <- choices,
             call_choice <- call_choices,
             reduce: true do
           false -> false
           true  ->
-            call_name = Map.get(state.rules["buttons"][button_name], "call_name", button_name)
+            call_name = Map.get(Rules.get(state.rules_ref, "buttons", %{})[button_name], "call_name", button_name)
             call = {call_name, Utils.strip_attrs([called_tile | call_choice])}
             # since get_viable_am_match_definitions only uses length of hand,
             # we can just drop the first length(call_choice) tiles instead of removing those from hand

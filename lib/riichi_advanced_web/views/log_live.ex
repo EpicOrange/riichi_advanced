@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
 
@@ -100,8 +101,8 @@ defmodule RiichiAdvancedWeb.LogLive do
       |> assign(:state, state)
       |> assign(:seat, seat)
       |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks"))
-      |> assign(:display_honba, Map.get(state.rules, "display_honba"))
+      |> assign(:display_riichi_sticks, Rules.get(state.rules_ref, "display_riichi_sticks"))
+      |> assign(:display_honba, Rules.get(state.rules_ref, "display_honba"))
       |> assign(:loading, false)
       |> assign(:marking, false)
 
@@ -130,8 +131,8 @@ defmodule RiichiAdvancedWeb.LogLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
-      <%= if Map.has_key?(@state.rules, "custom_style") do %>
-        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={@state.rules["custom_style"]}/>
+      <%= if Rules.has_key?(@state.rules_ref, "custom_style") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={Rules.get(@state.rules_ref, "custom_style", %{})}/>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
@@ -178,7 +179,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
         dead_hand_buttons={false}
-        display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
+        display_round_marker={Rules.get(@state.rules_ref, "display_round_marker", true)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
@@ -197,12 +198,12 @@ defmodule RiichiAdvancedWeb.LogLive do
         tiles_left={length(@state.wall) - @state.wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
-        riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
+        riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
         riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
         score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
         display_riichi_sticks={@display_riichi_sticks}
         display_honba={@display_honba}
-        score_e_notation={Map.get(@state.rules, "score_e_notation", false)}
+        score_e_notation={Rules.get(@state.rules_ref, "score_e_notation", false)}
         available_seats={@state.available_seats}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>
@@ -229,7 +230,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
         marking={@state.marking[@seat]}
         :if={@state.players[@seat].num_scryed_tiles > 0} />
-      <div class="display-wall-hover" :if={Map.get(@state.rules, "display_wall", false)}></div>
+      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)}></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
@@ -238,7 +239,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}
-        wall_length={length(Map.get(@state.rules, "wall", []))}
+        wall_length={length(Rules.get(@state.rules_ref, "wall", []))}
         dice={@state.dice}
         dice_roll={Enum.sum(@state.dice)}
         wall_index={@state.wall_index}
@@ -246,14 +247,14 @@ defmodule RiichiAdvancedWeb.LogLive do
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}
-        :if={Map.get(@state.rules, "display_wall", false)} />
+        :if={Rules.get(@state.rules_ref, "display_wall", false)} />
       <.live_component module={RiichiAdvancedWeb.LogControlComponent}
         id="log-control"
         state={@state}
         log={@log}
         log_control_state={@log_control_state} />
       <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Map.get(@state.rules, "debug_status", false) do %>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Rules.get(@state.rules_ref, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
@@ -261,10 +262,10 @@ defmodule RiichiAdvancedWeb.LogLive do
         </div>
       <% else %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
-          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and status in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for status <- player.status, status in Rules.get(@state.rules_ref, "shown_statuses_public", []) or (seat == @viewer and status in Rules.get(@state.rules_ref, "shown_statuses", [])) do %>
             <div class="status-text"><%= status %></div>
           <% end %>
-          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and name in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for {name, value} <- player.counters, name in Rules.get(@state.rules_ref, "shown_statuses_public", []) or (seat == @viewer and name in Rules.get(@state.rules_ref, "shown_statuses", [])) do %>
             <div class="status-text"><%= "#{name}: #{value}" %></div>
           <% end %>
         </div>
@@ -274,7 +275,7 @@ defmodule RiichiAdvancedWeb.LogLive do
           id="centerpiece-status-bar"
           tiles_left={length(@state.wall) - @state.wall_index}
           honba={@state.honba}
-          riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
+          riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
           display_riichi_sticks={@display_riichi_sticks}
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />

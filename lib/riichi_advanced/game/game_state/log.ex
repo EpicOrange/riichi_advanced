@@ -16,6 +16,7 @@ end
 
 defmodule RiichiAdvanced.GameState.Log do
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
 
   defmodule GameEvent do
@@ -165,6 +166,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def finalize_kyoku(state) do
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     state = update_in(state.log_state.kyokus, fn kyokus -> [%{
       index: length(state.log_state.kyokus),
       players: Enum.map(state.available_seats, fn dir -> %{
@@ -172,12 +174,12 @@ defmodule RiichiAdvanced.GameState.Log do
         haipai: state.haipai[dir]
       } end),
       kyoku: state.kyoku,
-      honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else 0 end,
-      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(state.rules["score_calculation"], "riichi_value", 1)) else 0 end,
+      honba: if Rules.get(state.rules_ref, "display_riichi_sticks", false) do state.honba else 0 end,
+      riichi_sticks: if Rules.get(state.rules_ref, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(score_rules, "riichi_value", 1)) else 0 end,
       doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       kan_tiles: [-2, -1, -4, -3] |> Enum.map(&Enum.at(state.dead_wall, &1)),
-      wall: state.wall |> Enum.drop(length(state.available_seats) * Map.get(state.rules, "starting_tiles", 0)),
+      wall: state.wall |> Enum.drop(length(state.available_seats) * Rules.get(state.rules_ref, "starting_tiles", 0)),
       die1: state.dice |> Enum.at(0),
       die2: state.dice |> Enum.at(1),
       events: state.log_state.log
