@@ -390,7 +390,7 @@ defmodule RiichiAdvanced.GameState do
           state
         ["fetch_messages" | opts] ->
           session_id = Enum.at(opts, 0, nil)
-          RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "fetch_messages", %{"session_id" => session_id})
+          GenServer.cast(self(), {:fetch_messages, session_id})
           state
         ["initialize_game" | opts] ->
           # this should happen after init_player calls (which populate state.reserved_seats)
@@ -1561,6 +1561,11 @@ defmodule RiichiAdvanced.GameState do
       "seat" => seat,
       "spectator" => spectator
     })
+    {:noreply, state}
+  end
+  
+  def handle_cast({:fetch_messages, session_id}, state) do
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "fetch_messages", %{"session_id" => session_id})
     {:noreply, state}
   end
   
