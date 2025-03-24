@@ -710,36 +710,38 @@ defmodule RiichiAdvanced.GameState.Scoring do
     num_nagashi = nagashi |> Map.values() |> Enum.count(& &1)
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
+    # handle sichuan style scoring best hands at draw (if there are 2+ non-winners and anyone is tenpai)
+    score_best_hand_at_draw = Map.get(score_rules, "score_best_hand_at_draw", false)
+      and map_size(state.winners) < 3
+      and Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? and seat not in state.winner_seats end)
+    {state, delta_scores} = if score_best_hand_at_draw do
+      # declare tenpai players as winners, as if they won from non-tenpai people (opponents)
+      opponents = Enum.reject(state.available_seats, &tenpai[&1])
+      # for each tenpai player who hasn't won, find the highest point hand they could get
+      winners_before = state.winner_seats
+      state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners_before, reduce: state do
+        state ->
+          # calculate new winner object
+          state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
+          winner = calculate_winner_details(state2, seat, :best_draw)
+          |> Map.put(:opponents, opponents)
+
+          # add winner to state
+          state
+          |> Map.update!(:winners, &Map.put(&1, seat, winner))
+          |> Map.update!(:winner_seats, & &1 ++ [seat])
+      end
+
+      next_screen = if Enum.any?(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end) do :winner else :scores end
+      state = state
+      |> Map.put(:visible_screen, next_screen)
+      |> Map.put(:round_result, :draw)
+      |> update_all_players(fn _seat, player -> %Player{ player | hand_revealed: true } end)
+      {state, delta_scores}
+    else {state, delta_scores} end
+
+    # handle nagashi and tenpai payments
     {state, delta_scores} = cond do
-      # handle sichuan style scoring best hands at draw (if any non-winner is tenpai)
-      Map.get(score_rules, "score_best_hand_at_draw", false)
-          and map_size(state.winners) < 3
-          and Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? and seat not in state.winner_seats end) ->
-        # declare tenpai players as winners, as if they won from non-tenpai people (opponents)
-        opponents = Enum.flat_map(tenpai, fn {seat, tenpai?} -> if not tenpai? do [seat] else [] end end)
-        # for each tenpai player who hasn't won, find the highest point hand they could get
-        winners_before = state.winner_seats
-        state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners_before, reduce: state do
-          state ->
-            # calculate new winner object
-            state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
-            winner = calculate_winner_details(state2, seat, :best_draw)
-            |> Map.put(:opponents, opponents)
-            |> Map.put(:best_hand_at_draw, true)
-
-            # add winner to state
-            state
-            |> Map.update!(:winners, &Map.put(&1, seat, winner))
-            |> Map.update!(:winner_seats, & &1 ++ [seat])
-        end
-
-        next_screen = if Enum.any?(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end) do :winner else :scores end
-        state = state
-        |> Map.put(:visible_screen, next_screen)
-        |> Map.put(:round_result, :draw)
-        |> update_all_players(fn _seat, player -> %Player{ player | hand_revealed: true } end)
-
-        {state, delta_scores}
       # handle nagashi
       draw_nagashi_payments && num_nagashi > 0 -> 
         # do nagashi payments
@@ -773,7 +775,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             |> update_player(seat, &%Player{ &1 | score: &1.score + payment })
             |> update_player(payer, &%Player{ &1 | score: &1.score - payment })
         end
-        delta_scores = Map.new(state.players, fn {seat, player} -> {seat, player.score - scores_before[seat]} end)
+        delta_scores = Map.new(state.players, fn {seat, player} -> {seat, delta_scores[seat] + player.score - scores_before[seat]} end)
         {state, delta_scores}
       draw_tenpai_payments != nil ->
         [pay1, pay2, pay3] = draw_tenpai_payments
@@ -804,14 +806,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
             if delta < 0 do
               payment = -delta
               push_message(state, [%{text: "Player #{player_name(state, payer)} pays double since the wall ends on their side (Kanbara Satomi)"}])
-              delta_scores = Map.put(delta_scores, payer, delta * 2)
+              delta_scores = Map.update!(delta_scores, payer, & &1 + (delta * 2))
               case num_tenpai do
                 2 -> 
                   # player who gets the doubled payment is predetermined:
                   # always pay to your right, unless right is also paying
                   recipient = Utils.next_turn(payer)
                   recipient = if delta_scores[recipient] < 0 do Utils.prev_turn(payer) else recipient end
-                  Map.put(delta_scores, recipient, delta_scores[recipient] * 2)
+                  Map.update!(delta_scores, recipient, & &1 + (delta_scores[recipient] * 2))
                 _ -> Map.new(tenpai, fn {seat, tenpai} -> {seat, delta_scores[seat] + if tenpai do Integer.floor_div(payment, num_tenpai) else 0 end} end)
               end
             else delta_scores end
@@ -1000,7 +1002,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # winning tile is nil if you won with e.g. 14 tiles in hand self draw
     # in that case take the winning tile out of the hand
-    winning_tile = if winning_tile == nil do
+    winning_tile = if winning_tile == nil and new_winning_tile != nil do
       remainder = Match.try_remove_all_tiles(prev_hand, [new_winning_tile], tile_behavior)
       |> Enum.at(0)
       winning_tile = Enum.at(prev_hand -- remainder, 0)
@@ -1131,9 +1133,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # return the complete winner object
     yaku_2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
     payer = case win_source do
-      :draw    -> nil
-      :discard -> get_last_discard_action(state).seat
-      :call    -> get_last_call_action(state).seat
+      :draw           -> nil
+      :best_draw      -> nil
+      :second_discard -> get_last_discard_action(state).seat
+      :worst_discard  -> get_last_discard_action(state).seat
+      :discard        -> get_last_discard_action(state).seat
+      :call           -> get_last_call_action(state).seat
     end
     yaku = if yaku_2_overrides do [] else yaku end |> Enum.map(fn {name, value} -> {translate(state, name), value} end)
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
@@ -1173,9 +1178,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
         true                                           -> nil
       end,
       winning_tile_text: case win_source do
-        :draw    -> Map.get(score_rules, "win_by_draw_label", "")
-        :discard -> Map.get(score_rules, "win_by_discard_label", "")
-        :call    -> Map.get(score_rules, "win_by_discard_label", "")
+        :draw           -> Map.get(score_rules, "win_by_draw_label", "")
+        :best_draw      -> Map.get(score_rules, "win_by_draw_label", "")
+        :second_discard -> Map.get(score_rules, "win_by_discard_label", "")
+        :worst_discard  -> Map.get(score_rules, "win_by_discard_label", "")
+        :discard        -> Map.get(score_rules, "win_by_discard_label", "")
+        :call           -> Map.get(score_rules, "win_by_discard_label", "")
       end,
       opponents: opponents,
       winning_hand: winning_hand,

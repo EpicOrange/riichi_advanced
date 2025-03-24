@@ -227,7 +227,6 @@ defmodule RiichiAdvanced.GameState do
       drawn_reserved_tiles: [],
       tags: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
-      processed_bloody_end: false,
     ]
   end
 
@@ -622,7 +621,6 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
-      |> Map.put(:processed_bloody_end, false)
 
       scores = kyoku_log["players"]
       |> Enum.zip(state.available_seats)
@@ -745,10 +743,13 @@ defmodule RiichiAdvanced.GameState do
     # Push message about yaku and score
     winner = state.winners[seat]
     push_message(state, [
-      %{text: "Player #{player_name(state, seat)} scored a #{winner.displayed_score}-point hand with"},
-    ] ++ Utils.print_yaku(winner.yaku)
-      ++ if Enum.empty?(winner.yaku) or Enum.empty?(winner.yaku2) do [] else [%{text: " / "}] end
-      ++ Utils.print_yaku(winner.yaku2)
+      %{text: "Player #{player_name(state, seat)} scored a #{winner.displayed_score}-point hand"},
+    ] ++ if not Enum.empty?(winner.yaku) or not Enum.empty?(winner.yaku2) do
+           [%{text: "with"}]
+           ++ Utils.print_yaku(winner.yaku)
+           ++ if Enum.empty?(winner.yaku) or Enum.empty?(winner.yaku2) do [] else [%{text: " / "}] end
+           ++ Utils.print_yaku(winner.yaku2)
+         else [] end
     )
 
     state
@@ -818,34 +819,6 @@ defmodule RiichiAdvanced.GameState do
         state = start_timer(state)
 
         state
-      state.visible_screen == :scores and Rules.get(state.rules_ref, "bloody_end", false) and not state.processed_bloody_end and state.round_result != :continue ->
-        state
-        |> Map.put(:visible_screen, :bloody_end)
-        |> start_timer()
-        |> Map.put(:timer, 0)
-      state.visible_screen == :bloody_end ->
-        # if bloody end is enabled, we also check for tenpai and nagashi after 3 players win
-        # in practice, "nagashi" is used for void suit payments in SBR
-        prev_round_result = state.round_result
-        {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
-        state = Map.put(state, :delta_scores, delta_scores)
-        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-
-        # run after_scoring actions
-        context = state.winners[Enum.at(state.winner_seats, state.winner_index)]
-        state = Actions.trigger_event(state, "after_scoring", context)
-
-        state = Map.put(state, :processed_bloody_end, true)
-        state = Map.put(state, :visible_screen, :scores)
-        state = Map.put(state, :round_result, prev_round_result)
-
-        # run after_bloody_end actions
-        state = Actions.trigger_event(state, "after_bloody_end", %{seat: state.turn})
-
-        # reset timer
-        state = start_timer(state)
-
-        state
       state.visible_screen == :winner -> # need to see score exchange screen
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
         {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_win_scoring(state)
@@ -853,6 +826,25 @@ defmodule RiichiAdvanced.GameState do
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
         # only populate next_dealer the first time we call Scoring.adjudicate_win_scoring
         state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
+
+        state = if Rules.get(state.rules_ref, "bloody_end", false) and state.round_result != :continue do
+          push_message(state, [%{text: "Game ended after three winners"}])
+
+          # run before_exhaustive_draw actions
+          state = Actions.trigger_event(state, "before_exhaustive_draw", %{seat: state.turn})
+
+          # reset animation
+          state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+
+          state = Map.put(state, :game_active, false)
+
+          prev_round_result = state.round_result
+          {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
+          state = Map.put(state, :delta_scores, Map.merge(state.delta_scores, delta_scores, fn _k, l, r -> l + r end))
+          state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+          state = Map.put(state, :round_result, prev_round_result)
+          state
+        else state end
 
         # run after_scoring actions
         context = state.winners[Enum.at(state.winner_seats, state.winner_index)]
