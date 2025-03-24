@@ -62,7 +62,8 @@ define_button ankan,
   show_when:
         our_turn
     and not_no_tiles_remaining
-    and has_draw
+    and not_just_discarded
+    and not_just_called
     and tile_not_drawn(-4)
     and self_call_available,
   precedence_over: ["chii", "pon", "daiminkan"],
@@ -79,7 +80,8 @@ define_button kakan,
   show_when:
         our_turn
     and not_no_tiles_remaining
-    and has_draw
+    and not_just_discarded
+    and not_just_called
     and tile_not_drawn(-4)
     and can_upgrade_call,
   precedence_over: ["chii", "pon", "daiminkan"],

@@ -128,15 +128,18 @@
       ["when_anyone", [[
         [
           {"name": "status", "opts": ["void_manzu"]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["manzu"]]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["manzu"]]},
+          {"name": "match", "opts": [["discards"], ["pinzu", "souzu"]]}
         ],
         [
           {"name": "status", "opts": ["void_pinzu"]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pinzu"]]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pinzu"]]},
+          {"name": "match", "opts": [["discards"], ["manzu", "souzu"]]}
         ],
         [
           {"name": "status", "opts": ["void_souzu"]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["souzu"]]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["souzu"]]},
+          {"name": "match", "opts": [["discards"], ["manzu", "pinzu"]]}
         ]
       ]], [["set_status", "void_penalty"]]],
         // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
@@ -206,7 +209,7 @@
     },
     "void_manzu": {
       "display_name": "No Craks",
-      "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
+      "show_when": [{"name": "status", "opts": ["round_start"]}],
       "actions": [
         ["big_text", "No Craks"], ["set_status", "void_manzu"], ["unset_status", "round_start"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
@@ -218,11 +221,12 @@
         ["merge_draw"],
         ["advance_turn"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "void_pinzu": {
       "display_name": "No Dots",
-      "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
+      "show_when": [{"name": "status", "opts": ["round_start"]}],
       "actions": [
         ["big_text", "No Dots"], ["set_status", "void_pinzu"], ["unset_status", "round_start"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
@@ -234,11 +238,12 @@
         ["merge_draw"],
         ["advance_turn"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "void_souzu": {
       "display_name": "No Bams",
-      "show_when": ["our_turn", {"name": "status", "opts": ["round_start"]}],
+      "show_when": [{"name": "status", "opts": ["round_start"]}],
       "actions": [
         ["big_text", "No Bams"], ["set_status", "void_souzu"], ["unset_status", "round_start"],
         ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
@@ -250,7 +255,8 @@
         ["merge_draw"],
         ["advance_turn"]
       ],
-      "unskippable": true
+      "unskippable": true,
+      "cancellable": false
     },
     "pon": {
       "display_name": "Pong",
