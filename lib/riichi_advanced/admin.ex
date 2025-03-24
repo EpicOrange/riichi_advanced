@@ -124,14 +124,13 @@ defmodule RiichiAdvanced.Admin do
   def handle_cast({:migrate, dst}, state) do
     try do
       if Node.connect(dst) == true do
-        IO.puts("Pulling running games from #{inspect(dst)}")
+        IO.puts("Pushing running games to #{inspect(dst)}")
         DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
         |> Enum.map(&String.replace(&1, "game", "game_state"))
         |> Enum.map(&Registry.lookup(:game_registry, &1))
         |> Enum.map(fn [{pid, _}] -> pid end)
         |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
-        DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         GenServer.cast(self(), :close_server)
       else
         IO.puts("Failed to connect to #{inspect(dst)}!")

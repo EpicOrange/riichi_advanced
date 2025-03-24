@@ -40,7 +40,7 @@ defmodule RiichiAdvanced.TestUtils do
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
     game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)}
-    {:ok, game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
+    {:ok, _game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
     [{game_state, _}] = Utils.registry_lookup("game_state", ruleset, room_code)
 
     # suppress all IO from game_state
@@ -56,7 +56,6 @@ defmodule RiichiAdvanced.TestUtils do
     %LogControl.LogControl{
       ruleset: ruleset,
       room_code: room_code,
-      supervisor: game,
       game_state_pid: game_state,
     }
   end

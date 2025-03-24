@@ -422,7 +422,7 @@ defmodule RiichiAdvanced.GameState do
           Map.put(state, :log_loading_mode, log_loading_mode)
         ["put_state", new_state] ->
           IO.puts("Restoring state for " <> Utils.to_registry_name("game_state", state.ruleset, state.room_code))
-          GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
+          :timer.apply_after(5000, GenServer, :cast, [self(), {:fill_empty_seats_with_ai, true}])
           merge_state(state, new_state)
         _ ->
           IO.puts("Unknown init action #{inspect(action)}")
@@ -2191,7 +2191,7 @@ defmodule RiichiAdvanced.GameState do
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
     }
-    :rpc.call(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
+    :rpc.cast(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
     # kill this game instance
     DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
     # this won't immediately make connections shift over,
@@ -2220,6 +2220,7 @@ defmodule RiichiAdvanced.GameState do
       :messages_states,
       :log_loading_mode,
       :log_seeking_mode,
+      :rules_ref,
     ])
     |> Map.merge(%{
       game_active: true,
