@@ -49,6 +49,8 @@ defmodule RiichiAdvanced.Compiler do
         with {:ok, result} <- compile_cnf_condition(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
         end
+      {:@, _, [{name, _, nil}]} -> Validator.validate_constant(name)
+      {:+, _, [{name, _, nil}]} -> Validator.validate_variable(name)
       _ ->
         condition = case condition do
           false -> {:ok, {"false", []}}
@@ -113,7 +115,11 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_condition_list(condition, line, column) do
     with {:ok, condition} <- compile_cnf_condition(condition, line, column) do
-      {:ok, List.wrap(condition)}
+      case condition do
+        %Constant{} -> {:ok, condition}
+        %Variable{} -> {:ok, condition}
+        _           -> {:ok, List.wrap(condition)}
+      end
     end
   end
 
@@ -441,8 +447,8 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_yaku", name, args, line, column) do
     yaku_spec = case args do
-      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
-      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      [display_name, value, condition] when is_binary(display_name) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 

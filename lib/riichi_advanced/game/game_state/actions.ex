@@ -228,14 +228,16 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # IO.puts("Changing turn from #{prev_turn} to #{seat}")
 
+    # run before_turn_change, unless this turn change was triggered by an action
+    state = if state.game_active and not via_action and prev_turn != nil and seat != prev_turn do
+      trigger_event(state, "before_turn_change", %{seat: prev_turn})
+    else state end
+
     # change turn
     state = Map.put(state, :turn, seat)
 
     if state.game_active do
-      # run on turn change, unless this turn change was triggered by an action
-      state = if not via_action and prev_turn != nil and seat != prev_turn do
-        trigger_event(state, "before_turn_change", %{seat: prev_turn})
-      else state end
+      # run after_turn_change, unless this turn change was triggered by an action
       state = if not via_action and seat != prev_turn do
         trigger_event(state, "after_turn_change", %{seat: seat})
       else state end
@@ -729,13 +731,18 @@ defmodule RiichiAdvanced.GameState.Actions do
       args = Map.new(args, fn {name, value} -> {"$" <> name, value} end)
       state = Map.update!(state, :call_stack, &[[fn_name | args] | &1])
       actions = Rules.get(state.rules_ref, "functions", %{}) |> Map.get(fn_name)
-      actions = Utils.walk_json(actions, &Map.get(args, &1, &1))
-      if Debug.debug_actions() do
-        IO.puts("Running function: #{inspect(actions)}")
+      if actions != nil do
+        actions = Utils.walk_json(actions, &Map.get(args, &1, &1))
+        if Debug.debug_actions() do
+          IO.puts("Running function: #{inspect(actions)}")
+        end
+        state = run_actions(state, actions, context)
+        state = Map.update!(state, :call_stack, &Enum.drop(&1, 1))
+        state
+      else
+        IO.puts("Tried to call nonexistent function #{fn_name}!")
+        state
       end
-      state = run_actions(state, actions, context)
-      state = Map.update!(state, :call_stack, &Enum.drop(&1, 1))
-      state
     else
       IO.puts("Cannot call function #{fn_name}: call stack limit reached")
       state
@@ -1783,7 +1790,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def evaluate_choices(state, from_deferred_actions \\ false) do
     if Debug.debug_actions() do
       IO.puts("Evaluating the following choices:")
-      IO.inspect(Enum.map(state.players, fn {_seat, player} -> player.choice end))
+      IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.choice} end))
     end
 
     # for the current turn's player, if they just acted (have deferred actions) and have no buttons, their choice is "skip"
