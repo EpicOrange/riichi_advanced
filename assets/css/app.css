@@ -3582,6 +3582,7 @@ div.log-control > button.log-control-button {
   height: calc(0.8 * var(--tile-size));
   background: transparent;
   padding: 0;
+  transform: translateY(0);
   filter: none;
 }
 

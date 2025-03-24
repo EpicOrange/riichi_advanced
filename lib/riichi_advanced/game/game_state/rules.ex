@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.GameState.Rules do
       # IO.inspect(shanten_definitions)
       # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
 
-      rules_ref
+      {:ok, rules_ref}
     end
   end
 

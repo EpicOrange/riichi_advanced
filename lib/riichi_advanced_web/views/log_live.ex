@@ -53,6 +53,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       ruleset = Map.get(log["rules"], "ruleset", "riichi")
       mods = Map.get(log["rules"], "mods", [])
+      config = Map.get(log["rules"], "config", nil)
 
       socket = socket
       |> assign(:ruleset, ruleset)
@@ -66,61 +67,31 @@ defmodule RiichiAdvancedWeb.LogLive do
         RiichiAdvanced.ETSCache.put(socket.assigns.room_code <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
       end
 
-      # start a new game process
-      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)}
-      {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
-        {:ok, _pid} ->
-          IO.puts("Starting log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
-          GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
-          GenServer.call(game_state, {:put_log_seeking_mode, true})
-          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
-          GenServer.cast(log_control_state, {:put_log, log})
-          GenServer.cast(log_control_state, {:start_walk, 0, 100})
-          {game_state, log_control_state}
-        {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting log session #{socket.assigns.room_code}")
-          IO.inspect(error)
-          {nil, nil}
-        {:error, {:already_started, _pid}} ->
-          IO.puts("Already started log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
-          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
-          {game_state, log_control_state}
-      end
       # subscribe to state updates
+      # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
-
-
-      # init a new player and get the current state
-      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket.assigns.session_id})
-
-      socket = socket
-      |> assign(:game_state, game_state)
-      |> assign(:log_control_state, log_control_state)
-      |> assign(:state, state)
-      |> assign(:seat, seat)
-      |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Rules.get(state.rules_ref, "display_riichi_sticks"))
-      |> assign(:display_honba, Rules.get(state.rules_ref, "display_honba"))
-      |> assign(:loading, false)
-      |> assign(:marking, false)
-
-      # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
-      socket = if Map.has_key?(messages_init, :messages_state) do
-        socket = assign(socket, :messages_state, messages_init.messages_state)
-        # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
-        GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Viewing log for a"},
-          %{bold: true, text: socket.assigns.ruleset},
-          %{text: "game"},
-        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
-        else [] end})
-        socket
-      else socket end
+      # start a new game process, if it doesn't exist already
+      init_actions = [
+        ["set_log_seeking_mode", true],
+        ["fetch_messages", socket.assigns.session_id],
+        ["initialize_game", socket.assigns.session_id, Enum.at(log["kyokus"], 0)]
+      ]
+      args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, log_id: socket.assigns.log_id, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)]
+      log_spec = %{
+        id: {RiichiAdvanced.LogSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
+        start: {RiichiAdvanced.LogSupervisor, :start_link, [args]}
+      }
+      case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
+        {:ok, _pid} ->
+          IO.puts("Starting game session #{socket.assigns.room_code}")
+        {:error, {:shutdown, error}} ->
+          IO.puts("Error when starting game session #{socket.assigns.room_code}")
+          IO.inspect(error)
+        {:error, {:already_started, _pid}} ->
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
+          IO.puts("Already started game session #{socket.assigns.room_code} #{inspect(game_state)}")
+          GenServer.cast(game_state, {:init_player, socket.assigns.session_id, socket.assigns.seat_param})
+      end
 
       {:ok, socket}
     else
@@ -239,6 +210,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}
+        atop_wall={@state.atop_wall}
         wall_length={length(Rules.get(@state.rules_ref, "wall", []))}
         dice={@state.dice}
         dice_roll={Enum.sum(@state.dice)}
@@ -357,6 +329,48 @@ defmodule RiichiAdvancedWeb.LogLive do
     GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :north})
     socket = assign(socket, :timer, 0)
     {:noreply, socket}
+  end
+
+  def handle_info(%{topic: topic, event: "load_log_control_state", payload: %{"session_id" => session_id, "game_state" => game_state, "log_control_state" => log_control_state}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
+      socket = assign(socket, :game_state, game_state)
+      socket = assign(socket, :log_control_state, log_control_state)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "fetch_messages", payload: %{"session_id" => session_id}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
+      # fetch messages
+      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      socket = if Map.has_key?(messages_init, :messages_state) do
+        socket = assign(socket, :messages_state, messages_init.messages_state)
+        # subscribe to message updates
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        GenServer.cast(messages_init.messages_state, {:add_message, [
+          %{text: "Viewing log for a"},
+          %{bold: true, text: socket.assigns.ruleset},
+          %{text: "game"},
+        ] ++ if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
+          [%{text: "with mods"}] ++ Enum.map(socket.assigns.state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
+        else [] end})
+        socket
+      else socket end
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "load_log_control_state", payload: %{"session_id" => session_id, "log_control_state" => log_control_state}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
+      socket = assign(socket, :log_control_state, log_control_state)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do

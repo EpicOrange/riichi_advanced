@@ -28,12 +28,15 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def init_log(state) do
-    state = Map.put(state, :log_state, %{
-      log: [],
-      kyokus: [],
-      calls: Map.new(state.players, fn {seat, _player} -> {seat, nil} end)
-    })
-    state
+    Map.put(state, :log_state, %{kyokus: []})
+    |> initialize_new_round()
+  end
+
+  def initialize_new_round(state) do
+    log_state = state.log_state
+    |> Map.put(:log, [])
+    |> Map.put(:calls, Map.new(state.players, fn {seat, _player} -> {seat, nil} end))
+    Map.put(state, :log_state, log_state)
   end
 
   def to_seat(seat) do
@@ -167,8 +170,12 @@ defmodule RiichiAdvanced.GameState.Log do
 
   def finalize_kyoku(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    state = update_in(state.log_state.kyokus, fn kyokus -> [%{
-      index: length(state.log_state.kyokus),
+    existing_kyoku = case state.log_state.kyokus do
+      [] -> nil
+      [kyoku | _kyokus] -> if kyoku.kyoku == state.kyoku and kyoku.honba == state.honba do kyoku else nil end
+    end
+    kyoku = %{
+      index: if existing_kyoku != nil do existing_kyoku.index else length(state.log_state.kyokus) end,
       players: Enum.map(state.available_seats, fn dir -> %{
         points: state.players[dir].start_score,
         haipai: state.haipai[dir]
@@ -202,9 +209,11 @@ defmodule RiichiAdvanced.GameState.Log do
           delta_points: Enum.map(state.available_seats, fn dir -> state.delta_scores[dir] end),
         }
       end
-    } | kyokus] end)
-    state = put_in(state.log_state.log, [])
-    state
+    }
+    update_in(state.log_state.kyokus, fn
+      [_ | kyokus] when existing_kyoku != nil -> [kyoku | kyokus]
+      kyokus -> [kyoku | kyokus]
+    end)
   end
 
   # output functions
@@ -226,7 +235,8 @@ defmodule RiichiAdvanced.GameState.Log do
       rules: %{
         ruleset: state.ruleset,
         ruleset_json: "",
-        mods: state.mods
+        mods: state.mods,
+        config: state.config
       },
       kyokus: Enum.reverse(state.log_state.kyokus)
     }

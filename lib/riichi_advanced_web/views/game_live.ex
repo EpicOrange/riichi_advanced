@@ -74,7 +74,11 @@ defmodule RiichiAdvancedWeb.GameLive do
       # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
       # start a new game process, if it doesn't exist already
-      init_actions = [["init_player", socket.assigns.session_id, socket.assigns.seat_param], ["initialize_game"]]
+      init_actions = [
+        ["init_player", socket.assigns.session_id, socket.assigns.seat_param],
+        ["fetch_messages", socket.assigns.session_id],
+        ["initialize_game"]
+      ]
       init_actions = if Map.has_key?(socket.assigns, :tutorial_sequence) do
         [["initialize_tutorial"] | init_actions] # block events if we're a tutorial
       else init_actions end
@@ -705,7 +709,14 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:display_honba, Rules.get(state.rules_ref, "display_honba", false))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, seat))
       |> assign(:loading, false)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
 
+  def handle_info(%{topic: topic, event: "fetch_messages", payload: %{"session_id" => session_id}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # fetch messages
       messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
       socket = if Map.has_key?(messages_init, :messages_state) do
@@ -717,12 +728,11 @@ defmodule RiichiAdvancedWeb.GameLive do
           %{bold: true, text: socket.assigns.ruleset},
           %{text: "game, room code"},
           %{bold: true, text: socket.assigns.room_code}
-        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
+        ] ++ if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
+          [%{text: "with mods"}] ++ Enum.map(socket.assigns.state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
         else [] end})
         socket
       else socket end
-
       {:noreply, socket}
     else
       {:noreply, socket}

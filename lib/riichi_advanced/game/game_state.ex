@@ -336,7 +336,10 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    state = Map.put(state, :rules_ref, Rules.load_rules(state.ruleset, ruleset_json))
+    state = case Rules.load_rules(state.ruleset, ruleset_json) do
+      {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
+      {:error, msg}    -> show_error(state, msg)
+    end
 
     state = Map.put(state, :available_seats, case Rules.get(state.rules_ref, "num_players", 4) do
       1 -> [:east]
@@ -385,19 +388,38 @@ defmodule RiichiAdvanced.GameState do
           seat = Enum.at(opts, 1, "east")
           GenServer.cast(self(), {:init_player, session_id, seat})
           state
+        ["fetch_messages" | opts] ->
+          session_id = Enum.at(opts, 0, nil)
+          RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "fetch_messages", %{"session_id" => session_id})
+          state
         ["initialize_game" | opts] ->
           # this should happen after init_player calls (which populate state.reserved_seats)
-          log = Enum.at(opts, 0, nil)
+          session_id = Enum.at(opts, 0, nil)
+          log = Enum.at(opts, 1, nil)
 
           # run before_start actions
           state = Actions.trigger_event(state, "before_start", %{seat: state.turn})
 
           state = initialize_new_round(state, log)
 
-          # add AI after initialization
-          GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
+          state = if log == nil do
+            # add AI after initialization
+            GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
+            state
+          else
+            # save session id as east reserved seat
+            # this is so when log_control_state sends :load_log_control_state
+            # we can relay it to the log_live with this session id
+            put_in(state.reserved_seats, %{east: session_id})
+          end
 
           state
+        ["set_log_seeking_mode" | opts] ->
+          log_seeking_mode = Enum.at(opts, 0, false)
+          Map.put(state, :log_seeking_mode, log_seeking_mode)
+        ["set_log_loading_mode" | opts] ->
+          log_loading_mode = Enum.at(opts, 0, false)
+          Map.put(state, :log_loading_mode, log_loading_mode)
         ["put_state", new_state] ->
           IO.puts("Restoring state for " <> Utils.to_registry_name("game_state", state.ruleset, state.room_code))
           GenServer.cast(self(), {:fill_empty_seats_with_ai, false})
@@ -674,6 +696,9 @@ defmodule RiichiAdvanced.GameState do
     # initialize marking
     state = Marking.initialize_marking(state)
 
+    # initialize log
+    state = Log.initialize_new_round(state)
+
     # initialize saki if needed
     state = if Rules.get(state.rules_ref, "enable_saki_cards", false) do Saki.initialize_saki(state) else state end
     
@@ -776,7 +801,13 @@ defmodule RiichiAdvanced.GameState do
     # run after_scoring actions
     state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
 
-    state = Map.put(state, :visible_screen, :scores)
+    state = if state.winner_index < map_size(state.winners) do
+      # in sichuan you get winners for tenpai players at draw, so show winner screen if needed
+      Map.put(state, :visible_screen, :winner)
+    else
+      # otherwise show score exchange screen as normal
+      Map.put(state, :visible_screen, :scores)
+    end
     state = start_timer(state)
     state
   end
@@ -1503,6 +1534,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:init_player, session_id, seat}, state) do
     {seat, spectator} = cond do
+      seat == "spectator" -> {:east, true}
       :east in state.available_seats  and Map.get(state, :east)  != nil and Map.get(state.reserved_seats, :east, nil) == session_id -> {:east, false}
       :south in state.available_seats and Map.get(state, :south) != nil and Map.get(state.reserved_seats, :south, nil) == session_id -> {:south, false}
       :west in state.available_seats  and Map.get(state, :west)  != nil and Map.get(state.reserved_seats, :west, nil) == session_id -> {:west, false}
@@ -1511,7 +1543,6 @@ defmodule RiichiAdvanced.GameState do
       :south in state.available_seats and seat == "south" and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
       :west in state.available_seats  and seat == "west"  and (Map.get(state, :west)  == nil or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}
       :north in state.available_seats and seat == "north" and (Map.get(state, :north) == nil or is_pid(Map.get(state, :north))) and Map.get(state.reserved_seats, :north, nil) in [nil, session_id] -> {:north, false}
-      seat == "spectator" -> {:east, true}
       :east in state.available_seats  and (Map.get(state, :east) == nil  or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, session_id] -> {:east, false}
       :south in state.available_seats and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
       :west in state.available_seats  and (Map.get(state, :west) == nil  or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}
@@ -1533,21 +1564,17 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
   
-  def handle_cast({:spectate, session_id}, state) do
-    seat = :east
-    spectator = true
-    state = if spectator do state else disconnect_ai(state, seat) end
-    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "initialize_player", %{
-      "session_id" => session_id,
+  # log control
+  def handle_cast({:load_log_control_state, log_control_state}, state) do
+    # send log_control_state with the liveview client associated with session_id
+    RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "load_log_control_state", %{
+      "session_id" => state.reserved_seats.east,
       "game_state" => self(),
-      "state" => state,
-      "seat" => seat,
-      "spectator" => spectator
+      "log_control_state" => log_control_state
     })
     {:noreply, state}
   end
 
-  # log control
   def handle_cast(:sort_hands, state) do
     state = update_all_players(state, fn _seat, player -> %Player{ player | hand: Utils.sort_tiles(player.hand) } end)
     {:noreply, state}
@@ -1927,6 +1954,7 @@ defmodule RiichiAdvanced.GameState do
         state = timer_finished(state)
         state
       true ->
+        IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.ready} end))
         Debounce.apply(state.timer_debouncer)
         state = Map.put(state, :timer, state.timer - 1)
         state
