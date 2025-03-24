@@ -809,9 +809,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defp timer_finished(state) do
-    bloody_end = Rules.get(state.rules_ref, "bloody_end", false)
-    num_tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end) |> Map.values() |> Enum.count(& &1)
-    num_nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end) |> Map.values() |> Enum.count(& &1)
     cond do
       state.visible_screen == :winner and state.winner_index + 1 < map_size(state.winners) -> # need to see next winner screen
         # show the next winner
@@ -821,7 +818,7 @@ defmodule RiichiAdvanced.GameState do
         state = start_timer(state)
 
         state
-      state.visible_screen == :scores and bloody_end and not state.processed_bloody_end and map_size(state.winners) >= 3 and (num_tenpai > 0 or num_nagashi > 0) ->
+      state.visible_screen == :scores and Rules.get(state.rules_ref, "bloody_end", false) and not state.processed_bloody_end and state.round_result != :continue ->
         state
         |> Map.put(:visible_screen, :bloody_end)
         |> start_timer()

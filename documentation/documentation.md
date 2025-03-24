@@ -420,11 +420,12 @@ Examples:
 - `mark([["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]])`: Mark a terminal/honor in hand and the last discard.
 - `mark([["hand", 1, ["match_suit", "not_riichi"]], ["discard", 1, ["match_suit"]]])`: Mark one tile in your own hand, then mark one tile in your discards. Once you mark one tile, the other tile must match the suit of the marked tile. In addition, the tile in hand can only be your drawn tile, if you are in riichi.
 
-The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These four are the most important:
+The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These five are the most important:
 
 - `move_tiles(src, dst)`: Move tiles from `src` to `dst`.
 - `swap_tiles(src, dst)`: Swap tiles between `src` and `dst`.
 - `copy_tiles(src, dst)`: Copy tiles from `src` to `dst`.
+- `delete_tiles(src)`: Delete every instance of the given tiles in `src` from the current player's hand/draw.
 - `clear_marking`: Exit marking mode. This is required after you're done with moving around marked tiles, since marking mode essentially pauses the game.
 
 There are a number of ad-hoc actions that also interact with the marked tiles, but they are not meant to be used beyond Sakicards (since they are very specific actions, and the plan is to replace them in the future). For example:
@@ -527,7 +528,6 @@ Here are all the toplevel keys. Every key is optional.
 
 Events:
 
-- `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
@@ -565,10 +565,9 @@ Here is the basic event lifecycle for each round:
   + `after_win`
   + `after_scoring`
   + `before_continue` (if bloody end rules are enabled)
-- On a draw:
+- On a draw (or after 3 players win in bloody end rules):
   + `before_exhaustive_draw`/`before_abortive_draw`
   + `after_scoring`
-  + `after_bloody_end` (after 3 players win if bloody end rules are enabled)
 - Then one of these is run:
   - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)
   - `before_start` (otherwise, unless the game is over)
@@ -774,10 +773,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `save_revealed_tiles`: Save the current state of the revealed tiles (e.g. dora indicators).
 - `load_revealed_tiles`: Load the previously saved state of the revealed tiles (e.g. dora indicators).
 - `merge_draw`: Move the draw into the hand. This action will be removed in the future in favor of `"move_tiles"`.
-- `delete_tiles(tile1, tile2, ...)`: Delete every instance of the given tiles from the current player's hand/draw.
 - `pass_draws(seat_spec, num)`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `saki_start`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
-- `modify_winner(key, value, method)`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
+- `modify_winner(key, value, method)`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `modify_winner("score_name", "Mangan")`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
   + Allowed values for `key` are:
     * `key = "score"`: Final score, displayed at the bottom of the win screen.
     * `key = "points"`: Points (e.g. han)
@@ -803,10 +801,11 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + For string values (everything else):
     * `method = "prepend"`
     * `method = "append"`
-- `modify_payout(seat, amount, method)`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_payout", "east", -3000], ["modify_payout", "not_east", 1000]]`.
+- `modify_payout(seat, amount, method)`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `modify_payout("east", -3000); modify_payout("not_east", 1000)]`.
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
   + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
+- `set_scoring_header(header)`: Sets the top banner of the score exchange screen to the given string `header`.
 
 Every unrecognized action is a no-op.
 

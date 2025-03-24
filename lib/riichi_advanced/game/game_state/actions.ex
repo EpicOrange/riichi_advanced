@@ -1118,8 +1118,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :move)
       "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :swap)
       "copy_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :copy)
-      # TODO there is another action below called delete_tiles that is more useful
-      # "delete_tiles" -> move_tiles(state, context.seat, %{}, Enum.at(opts, 0, nil), :delete)
+      "delete_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), nil, :delete)
       "swap_marked_calls" ->
         marked_call = Marking.get_marked(marked_objects, :calls)
         {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
@@ -1475,11 +1474,6 @@ defmodule RiichiAdvanced.GameState.Actions do
       "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
       # deprecated
       "merge_draw"          -> update_player(state, context.seat, &%Player{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), draw: [] })
-      "delete_tiles"    ->
-        # TODO allow specifying target
-        tiles = Enum.map(opts, &Utils.to_tile/1)
-        state = update_player(state, context.seat, &%Player{ &1 | hand: Enum.reject(&1.hand, fn t -> Utils.has_matching_tile?([t], tiles) end), draw: Enum.reject(&1.draw, fn t -> Utils.count_tiles([t], tiles) > 0 end) })
-        state
       "pass_draws"      ->
         to = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         {to_pass, remaining} = Enum.split(state.players[context.seat].draw, Enum.at(opts, 1, 1))
@@ -1561,6 +1555,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             end end))
           end
         else state end
+      "set_scoring_header" -> Map.put(state, :delta_scores_reason, Enum.at(opts, 0, ""))
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

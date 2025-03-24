@@ -317,7 +317,7 @@
     "actions": [
       ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [
         ["unset_status_all", "blind_pass_left"],
-        ["as", "everyone", [["delete_tiles", "1x"]]],
+        ["as", "everyone", [["delete_tiles", {"hand": ["1x"], "draw": ["1x"]}]]],
         ["as", "everyone", [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "kamicha"]
@@ -329,7 +329,7 @@
       ]],
       ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [
         ["unset_status_all", "blind_pass_right"],
-        ["as", "everyone", [["delete_tiles", "1x"]]],
+        ["as", "everyone", [["delete_tiles", {"hand": ["1x"], "draw": ["1x"]}]]],
         ["as", "everyone", [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "shimocha"]

@@ -577,7 +577,6 @@ Here are all the toplevel keys. Every key is optional.
 
 Events:
 
-- `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
@@ -618,7 +617,6 @@ Here is the basic event lifecycle for each round:
 - On a draw:
   + `before_exhaustive_draw`/`before_abortive_draw`
   + `after_scoring`
-  + `after_bloody_end` (after 3 players win if bloody end rules are enabled)
 - Then one of these is run:
   - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)
   - `before_start` (otherwise, unless the game is over)
@@ -855,6 +853,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
   + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
+- `["set_scoring_header", header]`: Sets the top banner of the score exchange screen to the given string `header`.
 
 Every unrecognized action is a no-op.
 
