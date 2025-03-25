@@ -64,9 +64,8 @@ define_yaku_precedence "Golden Single Wait", ["All Triplets"]
 
 set score_calculation, %{
     scoring_method: "score_table",
-    score_table: %{"-2": -1, "-1": 0, "0": 1, "1": 2, "2": 4, max: 8},
+    score_table: %{"0": 1, "1": 2, "2": 4, max: 8},
     yaku_lists: ["yaku"],
-    min_score: -1,
     self_draw_bonus: 1,
     score_best_hand_at_draw: true,
     next_dealer_is_first_winner: true,
@@ -124,9 +123,7 @@ on before_continue do
 end
 
 on before_exhaustive_draw do
-  as east do
-    set_status("ended_by_draw")
-  end
+  set_status_all("ended_by_draw")
 end
 
 on after_scoring do
@@ -145,6 +142,13 @@ on after_scoring do
 end
 
 def before_bloody_end do
+  if status("ended_by_draw") do
+    as winners do
+      # upon exhaustive draw every tenpai player scores takame
+      # so label the takame wait as "Best"
+      modify_winner("winning_tile_text", "Best")
+    end
+  end
   as everyone do
     reveal_hand
     # return kong payments if not tenpai
@@ -506,7 +510,8 @@ define_auto_button _4_auto_discard,
 
 define_auto_button _5_auto_discard_void,
   display_name: "V",
-  desc: "Automatically discard your drawn tile if it's of your voided suit."
+  desc: "Automatically discard your drawn tile if it's of your voided suit.",
+  enabled_at_start: true
   do
     if    (status("void_manzu") and match(["draw"], ~m"manzu:1"))
        or (status("void_pinzu") and match(["draw"], ~m"pinzu:1"))

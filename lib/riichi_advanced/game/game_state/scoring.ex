@@ -1001,15 +1001,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
 
     # winning tile is nil if you won with e.g. 14 tiles in hand self draw
-    # in that case take the winning tile out of the hand
+    # or if it's sichuan bloody rules and you won takame of your tenpai hand
+    # in the first case, take the winning tile out of the hand
+    # in the second case, nothing to take out, so do nothing
     winning_tile = if winning_tile == nil and new_winning_tile != nil do
-      remainder = Match.try_remove_all_tiles(prev_hand, [new_winning_tile], tile_behavior)
-      |> Enum.at(0)
-      winning_tile = Enum.at(prev_hand -- remainder, 0)
-      if winning_tile == nil do
-        IO.puts("Warning: No winning tile found in hand: #{inspect(prev_hand)}")
+      case Match.try_remove_all_tiles(prev_hand, [new_winning_tile], tile_behavior) do
+        [] -> new_winning_tile
+        [remainder | _] -> Enum.at(prev_hand -- remainder, 0)
       end
-      winning_tile
     else winning_tile end
     
     # score yaku

@@ -1147,7 +1147,7 @@ defmodule RiichiAdvanced.GameState do
     cond do
       win_source in [:worst_discard, :best_draw] ->
         winner = state.players[seat]
-        win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
+        win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
         waits = Riichi.get_waits(winner.hand, winner.calls, win_definitions, winner.tile_behavior)
         if Enum.empty?(waits) do MapSet.new([:"2x"]) else waits end
     end
