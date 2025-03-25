@@ -771,7 +771,7 @@ defmodule RiichiAdvanced.GameState do
     push_message(state, player_prefix(state, seat) ++ [
       %{text: "scored a %{score}-point hand", vars: %{score: winner.displayed_score}},
     ] ++ if not Enum.empty?(winner.yaku) or not Enum.empty?(winner.yaku2) do
-           [%{text: "with"}]
+           [%{text: "with yaku:"}]
            ++ Utils.print_yaku(winner.yaku)
            ++ if Enum.empty?(winner.yaku) or Enum.empty?(winner.yaku2) do [] else [%{text: " / "}] end
            ++ Utils.print_yaku(winner.yaku2)
@@ -817,7 +817,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :round_result, :draw)
     IO.puts("Abort")
 
-    push_message(state, [%{text: "Game ended by abortive draw (#{draw_name})"}])
+    push_message(state, [%{text: "Game ended by abortive draw: (%{draw_name})", vars: %{draw_name: draw_name}}])
 
     # run before_abortive_draw actions
     state = Actions.trigger_event(state, "before_abortive_draw", %{seat: state.turn})

@@ -13,6 +13,12 @@ msgstr ""
 msgid "(with AI)"
 msgstr ""
 
+msgid ","
+msgstr ""
+
+msgid "/"
+msgstr ""
+
 msgid "1 Han"
 msgstr ""
 
@@ -37,16 +43,10 @@ msgstr ""
 msgid "19"
 msgstr ""
 
-msgid "1st"
-msgstr ""
-
 msgid "2 Han"
 msgstr ""
 
 msgid "258"
-msgstr ""
-
-msgid "2nd"
 msgstr ""
 
 msgid "3 Han"
@@ -61,9 +61,6 @@ msgstr ""
 msgid "37"
 msgstr ""
 
-msgid "3rd"
-msgstr ""
-
 msgid "4 Han"
 msgstr ""
 
@@ -71,9 +68,6 @@ msgid "456"
 msgstr ""
 
 msgid "46"
-msgstr ""
-
-msgid "4th"
 msgstr ""
 
 msgid "5 Han"
@@ -578,6 +572,15 @@ msgid "Fuzhou"
 msgstr ""
 
 msgid "Galaxy Mahjong"
+msgstr ""
+
+msgid "Game ended after three winners"
+msgstr ""
+
+msgid "Game ended by abortive draw: (%{draw_name})"
+msgstr ""
+
+msgid "Game ended by exhaustive draw"
 msgstr ""
 
 msgid "German"
@@ -1087,6 +1090,9 @@ msgstr ""
 msgid "No description provided."
 msgstr ""
 
+msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr ""
+
 msgid "Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000"
 msgstr ""
 
@@ -1145,6 +1151,9 @@ msgid "Pon"
 msgstr ""
 
 msgid "Pong"
+msgstr ""
+
+msgid "Possible hand:"
 msgstr ""
 
 msgid "Private"
@@ -1223,6 +1232,9 @@ msgid "Ruleset"
 msgstr ""
 
 msgid "Rulesets"
+msgstr ""
+
+msgid "Running joker solver..."
 msgstr ""
 
 msgid "Ryandoukou"
@@ -1537,6 +1549,9 @@ msgstr ""
 msgid "Ura"
 msgstr ""
 
+msgid "Using joker assignment"
+msgstr ""
+
 msgid "Uumensai"
 msgstr ""
 
@@ -1556,6 +1571,9 @@ msgid "Vietnamese Jokers"
 msgstr ""
 
 msgid "View log"
+msgstr ""
+
+msgid "Viewing log for a"
 msgstr ""
 
 msgid "Visayan"
@@ -1609,7 +1627,13 @@ msgstr ""
 msgid "bet"
 msgstr ""
 
+msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
+msgstr ""
+
 msgid "called %{call}"
+msgstr ""
+
+msgid "called %{call} on"
 msgstr ""
 
 msgid "called %{call} on %{tile}"
@@ -1621,7 +1645,16 @@ msgstr ""
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr ""
 
+msgid "chose the following cards: %{choices}"
+msgstr ""
+
+msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)"
+msgstr ""
+
 msgid "declared riichi"
+msgstr ""
+
+msgid "declared the following yaku:"
 msgstr ""
 
 msgid "discarded %{tile}"
@@ -1642,10 +1675,43 @@ msgstr ""
 msgid "from hand"
 msgstr ""
 
+msgid "gains double points for wareme"
+msgstr ""
+
+msgid "game"
+msgstr ""
+
+msgid "gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"
+msgstr ""
+
 msgid "goal"
 msgstr ""
 
+msgid "has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"
+msgstr ""
+
+msgid "has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"
+msgstr ""
+
+msgid "has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr ""
+
+msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr ""
+
 msgid "is"
+msgstr ""
+
+msgid "is considering declaring a player's hand dead"
+msgstr ""
+
+msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
+msgstr ""
+
+msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
+msgstr ""
+
+msgid "loses double points for wareme"
 msgstr ""
 
 msgid "man"
@@ -1657,6 +1723,21 @@ msgstr ""
 msgid "north"
 msgstr ""
 
+msgid "pays double (Yae Kobashiri)"
+msgstr ""
+
+msgid "pays double for tsumo (Maya Yukiko)"
+msgstr ""
+
+msgid "pays double since the wall ends on their side (Kanbara Satomi)"
+msgstr ""
+
+msgid "pays double to their duelist (Megan Davin)"
+msgstr ""
+
+msgid "pays half due to dealing in with their voided suit (Yoshitome Miharu)"
+msgstr ""
+
 msgid "penalty"
 msgstr ""
 
@@ -1664,6 +1745,9 @@ msgid "pin"
 msgstr ""
 
 msgid "points"
+msgstr ""
+
+msgid "revealed tiles %{tiles}"
 msgstr ""
 
 msgid "scored a %{score}-point hand"
@@ -1678,6 +1762,15 @@ msgstr ""
 msgid "start_indicators"
 msgstr ""
 
+msgid "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"
+msgstr ""
+
+msgid "swapped out a joker from the call %{call}"
+msgstr ""
+
+msgid "takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)"
+msgstr ""
+
 msgid "tenhou.net"
 msgstr ""
 
@@ -1690,6 +1783,18 @@ msgstr ""
 msgid "west"
 msgstr ""
 
+msgid "with hand"
+msgstr ""
+
+msgid "with mods"
+msgstr ""
+
+msgid "with yaku:"
+msgstr ""
+
 msgid "worth"
+msgstr ""
+
+msgid "→"
 msgstr ""
 

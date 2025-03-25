@@ -13,7 +13,7 @@ defmodule RiichiAdvancedWeb.EndWindowComponent do
         <div class="scoreboard">
           <%= for {{name, score}, place} <- @placements do %>
             <div class="placement">
-              <div class="placement-place"><%= place %></div>
+              <div class="placement-place"><%= dt(@lang, place) %></div>
               <div class="placement-name"><%= name %>: <span class="placement-score"><%= score %></span></div>
             </div>
           <% end %>

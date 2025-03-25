@@ -34,17 +34,11 @@ msgstr "帶立直規則的16張麻將。"
 msgid "19"
 msgstr "１９"
 
-msgid "1st"
-msgstr "第1名"
-
 msgid "2 Han"
 msgstr "2番"
 
 msgid "258"
 msgstr "２５８"
-
-msgid "2nd"
-msgstr "第2名"
 
 msgid "3 Han"
 msgstr "3番"
@@ -58,9 +52,6 @@ msgstr "３６９"
 msgid "37"
 msgstr "３７"
 
-msgid "3rd"
-msgstr "第3名"
-
 msgid "4 Han"
 msgstr "4番"
 
@@ -69,9 +60,6 @@ msgstr "４５６"
 
 msgid "46"
 msgstr "４６"
-
-msgid "4th"
-msgstr "第4名"
 
 msgid "5 Han"
 msgstr "5番"
@@ -826,79 +814,31 @@ msgstr "地方役種：幺九七對子+第七對為寶牌即滿貫。"
 msgid "Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."
 msgstr "地方役種：混一色+對應三元牌(萬子配中/筒子配發/索子配白)即滿貫。"
 
-msgid "Local yaku. Mangan if you win with houtei (not haitei) on the 9p (9 circles)."
-msgstr "地方役種：河底撈魚-河底和9筒即滿貫。"
-
-msgid "Local yaku. 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
+msgid "Local yaku. \\\"Consecutive Blossom\\\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 msgstr "地方役種：連開花-槓嶺上牌後繼續嶺上和牌2番(不與嶺上複合)。"
 
-msgid "Local yaku. Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."
-msgstr "地方役種：獨釣寒江雪-四副露單騎白即滿貫。"
-
-msgid "Local yaku. 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
-msgstr "地方役種：五門齊-包含萬/筒/索/風/元五種牌型2番。"
-
-msgid "Local yaku. 1 han on top of ittsu if the winning tile is the five needed for ittsu."
-msgstr "地方役種：五心通貫-一氣通貫關鍵5牌和牌追加1番。"
-
-msgid "Local yaku. 2 han for having four honor tile triplets."
-msgstr "地方役種：四字刻-四組字牌刻子2番。"
-
-msgid "Local yaku. Mangan if you win with rinshan on the 5p (5 circles)."
-msgstr "地方役「屋頂摘梅」。嶺上開花和5筒時滿貫。"
-
-msgid "Local yaku. Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."
-msgstr "地方役「金雞獨立」。四副露聽1索（鳥牌）和牌時滿貫（可鳴牌）。"
-
-msgid "Local yaku. 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
-msgstr "地方役「金雞偷食」。搶槓和時通常2翻變為4翻。"
-
-msgid "Local yaku. If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate."
+msgid "Local yaku. \\\"Imitation Mangan\\\". If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate."
 msgstr "地方役「模仿滿貫」。精確模仿對手前五捨牌時，和牌不足滿貫則由對方支付滿貫（鳴牌無效）。"
 
-msgid "Local yaku. 2 han for having sanshoku doukou, except one of the triplets is a pair."
-msgstr "地方役「小混三刻」。三色同刻但其中一組為對子時2翻。"
-
-msgid "Local yaku. 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
+msgid "Local yaku. \\\"Missing Tile\\\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
 msgstr "地方役「缺張」。邊張(12,89)或嵌張(24,57)聽牌且該牌已現三張時1翻（如12333和3不算）。"
 
-msgid "Local yaku. Mangan if you win with haitei (not houtei) on the 1p (1 circles)."
-msgstr "地方役「海底撈月」。海底和1筒時滿貫（非河底）。"
-
-msgid "Local yaku. 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+msgid "Local yaku. \\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
 msgstr "地方役「純三同順」。同花色完全相同的三組順子（如123 123 123）2翻，門清+1翻。不與一盃口或三連刻複合。"
 
-msgid "Local yaku. Mangan if you win with chankan on the 2s (2 bamboo)."
-msgstr "地方役「撓扁擔」。搶槓和2索時滿貫。"
-
-msgid "Local yaku. Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."
-msgstr "地方役「七星不靠」。所有字牌各一張+7種筋牌（如14萬25筒369條）時滿貫。"
-
-msgid "Local yaku. 1 han if you win off the tile discarded by a player who just called kan."
+msgid "Local yaku. \\\"Shoot After Kan\\\". 1 han if you win off the tile discarded by a player who just called kan."
 msgstr "地方役「槓後開花」。和牌來自剛開槓玩家的捨牌時1翻。"
 
-msgid "Local yaku. 1 han if you win off a riichi declaration discard."
-msgstr "地方役「燕子返」。和牌來自立直宣言牌時1翻。"
-
-msgid "Local yaku. 2 han for having three triplets of the same suit in sequence, like 222 333 444."
-msgstr "地方役「三連刻」。同花色連續三組刻子（如222 333 444）2翻。"
-
-msgid "Local yaku. 2 han if you have three wind triplets."
-msgstr "地方役「三風刻」。三組風牌刻子2翻。"
-
-msgid "Local yaku. 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
+msgid "Local yaku. \\\"Twelve Tiles Down\\\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 msgstr "地方役「十二落台」。四副露和牌（必然單騎聽）1翻（暗槓可）。"
 
-msgid "Local yaku. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
+msgid "Local yaku. \\\"Twice Double Triplets\\\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
 msgstr "地方役「雙同刻」。兩組不同花色同數字刻子（如333萬 333筒）2翻。"
 
-msgid "Local yaku. A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
+msgid "Local yaku. \\\"Twice Mixed Double Sequence\\\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
 msgstr "地方役「雙同順」。兩組不同花色同數字順子（如345萬 345筒）2翻。"
 
-msgid "Local yaku. Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap."
-msgstr "地方役「雙龍爭珠」。萬子和條子各兩組不重疊同數字順子+筒子對子時滿貫。"
-
-msgid "Local yaku. 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
+msgid "Local yaku. \\\"Win Without Red\\\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 msgstr "地方役「無赤和」。手牌無赤牌（僅248筒、23468條及非紅中字牌）2翻，無字牌5翻，門清+1翻。"
 
 msgid "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
@@ -940,44 +880,35 @@ msgstr "地方役滿：類似綠一色但含5索對子。"
 msgid "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
 msgstr "地方役滿：莊家八連莊時役滿（流局中斷）。五連莊後需至少2翻和牌。"
 
-msgid "Local yakuman. Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons)."
+msgid "Local yakuman. \\\"A Little Red\\\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons)."
 msgstr "地方役滿「小紅」：類似綠一色但用紅中替代發。"
 
-msgid "Local yakuman. Like ryuuiisou but black: you can only have 248p and winds."
+msgid "Local yakuman. \\\"All Black\\\". Like ryuuiisou but black: you can only have 248p and winds."
 msgstr "地方役滿「全黑」：僅248筒+風牌時役滿。"
 
-msgid "Local yakuman. If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
+msgid "Local yakuman. \\\"First Kan Win\\\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
 msgstr "地方役滿「首槓和」：未捨牌先開槓（含暗槓）後嶺上開花時役滿（對手鳴牌無效）。"
 
-msgid "Local yakuman. If your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
+msgid "Local yakuman. \\\"Flower, Bird, Snow, Moon\\\". If your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
 msgstr "地方役滿「花鳥雪月」：555筒+白板+場風/自風刻子+111筒時役滿。"
 
-msgid "Local yakuman. If your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
-msgstr "地方役滿「花鳥風月」：555筒+1索+場風/自風刻子+111筒時役滿。"
-
-msgid "Local yakuman. If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
+msgid "Local yakuman. \\\"Four Consecutive Triplets\\\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
 msgstr "地方役滿「四連刻」：同花色連續四組刻子（如111 222 333 444）時役滿（第四組鳴牌則包牌）。"
 
-msgid "Local yakuman. If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
+msgid "Local yakuman. \\\"Four Skipped Tile Triplets\\\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
 msgstr "地方役滿「四跳刻」：同花色隔一組刻子（如111 333 555 777）時役滿（第四組鳴牌則包牌）。"
 
-msgid "Local yakuman. If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman."
+msgid "Local yakuman. \\\"One Million Stones\\\". If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman."
 msgstr "地方役滿「百萬石」：萬子牌數字總和≥100時役滿。"
 
-msgid "Local yakuman. If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
+msgid "Local yakuman. \\\"Pure Quadruple Sequences\\\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
 msgstr "地方役滿「純四同順」：同花色完全相同的四組順子（如123萬×4）時役滿（第四組鳴牌則包牌）。"
 
-msgid "Local yakuman. Like ryuuiisou but red bamboo only: you can only have 1579s and red dragon."
+msgid "Local yakuman. \\\"Red Peacock\\\". Like ryuuiisou but red bamboo only: you can only have 1579s and red dragon."
 msgstr "地方役滿「紅孔雀」：僅1579條+紅中時役滿。"
 
-msgid "Local yakuman. If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
-msgstr "地方役滿「十三不靠」：14張不關聯牌起手時役滿（鳴牌無效）。"
-
-msgid "Local yakuman. If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
+msgid "Local yakuman. \\\"Thirteen Unconnected\\\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
 msgstr "地方役滿「十三幺」：13張不關聯牌（含一對）起手時役滿（鳴牌無效）。"
-
-msgid "Local yakuman. If you win with double riichi and haitei/houtei, it's yakuman."
-msgstr "地方役滿「三年刻石」：雙立直+海底/河底和牌時役滿。"
 
 msgid "Log ID:"
 msgstr "日誌ID："
@@ -1609,6 +1540,9 @@ msgstr "下注"
 msgid "called %{call}"
 msgstr "叫了%{call}"
 
+msgid "called %{call} on"
+msgstr "叫了%{call}"
+
 msgid "called %{call} on %{tile}"
 msgstr "在%{tile}叫了%{call}"
 
@@ -1689,3 +1623,111 @@ msgstr "西"
 
 msgid "worth"
 msgstr "價值"
+
+msgid "Game ended after three winners"
+msgstr "遊戲在三位勝者後結束"
+
+msgid "Game ended by abortive draw: (%{draw_name})"
+msgstr "遊戲因流局結束：(%{draw_name})"
+
+msgid "Game ended by exhaustive draw"
+msgstr "遊戲因荒牌流局結束"
+
+msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr "未聽支付三倍 (池田華菜)"
+
+msgid "Possible hand:"
+msgstr "可能的手牌："
+
+msgid "Running joker solver..."
+msgstr "執行鬼牌解析中..."
+
+msgid "Using joker assignment"
+msgstr "使用鬼牌分配"
+
+msgid "Viewing log for a"
+msgstr "查看日誌於"
+
+msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
+msgstr "以自摸支付額下注而非支付 (江崎仁美)"
+
+msgid "chose the following cards: %{choices}"
+msgstr "選擇了以下牌：%{choices}"
+
+msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku:"
+msgstr "聽牌狀態下放銃，手牌 %{hand} 若以 %{tile} 和牌，通過以下役種至少獲得 %{score} 分："
+
+msgid "declared the following yaku:"
+msgstr "宣告了以下役種："
+
+msgid "gains double points for wareme"
+msgstr "因割目獲得雙倍分數"
+
+msgid "game"
+msgstr "遊戲"
+
+msgid "gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"
+msgstr "在他人一發後和牌獲得雙倍分數 (辻垣內聖菜)"
+
+msgid "has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"
+msgstr "聽牌價值高於放銃價值，因此逆轉支付（不包括立直棒）(江崎仁美)"
+
+msgid "has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"
+msgstr "聽牌價值低於或等於放銃價值，因此按正常方式支付 (江崎仁美)"
+
+msgid "has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "自摸支付每1000點賭注減少300點 (%{delta}) (本內成香)"
+
+msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "自摸支付每1000點賭注增加300點 (%{delta}) (本內成香)"
+
+msgid "is considering declaring a player's hand dead"
+msgstr "正在考慮宣告玩家手牌為死亡"
+
+msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
+msgstr "處於默聽狀態，免於自摸支付 (愛宕洋恵)"
+
+msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
+msgstr "為計分目的視為莊家 (龍門淵透華)"
+
+msgid "loses double points for wareme"
+msgstr "因割目失去雙倍分數"
+
+msgid "pays double (Yae Kobashiri)"
+msgstr "支付雙倍 (小走八重)"
+
+msgid "pays double for tsumo (Maya Yukiko)"
+msgstr "自摸時支付雙倍 (真屋由希子)"
+
+msgid "pays double since the wall ends on their side (Kanbara Satomi)"
+msgstr "因牌牆在其側結束而支付雙倍 (神原志保)"
+
+msgid "pays double to their duelist (Megan Davin)"
+msgstr "向其決鬥對象支付雙倍 (梅根·達文)"
+
+msgid "pays half due to dealing in with their voided suit (Yoshitome Miharu)"
+msgstr "因放銃於其缺門花色而支付半額 (吉留未晴)"
+
+msgid "revealed tiles %{tiles}"
+msgstr "揭示了牌 %{tiles}"
+
+msgid "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"
+msgstr "保持零分，並從第一名獲得8000點 (花田煌)"
+
+msgid "swapped out a joker from the call %{call}"
+msgstr "從鳴牌 %{call} 中替換了一張鬼牌"
+
+msgid "takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)"
+msgstr "收取桌上所有賭注 (%{pot}) 並從每位玩家獲得1500點 (奈莉·維爾薩拉澤)"
+
+msgid "with hand"
+msgstr "手牌"
+
+msgid "with mods"
+msgstr "帶有修改"
+
+msgid "with yaku:"
+msgstr "帶有役種："
+
+msgid "→"
+msgstr "→"

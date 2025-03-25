@@ -34,17 +34,11 @@ msgstr "带立直规则的16张麻将。"
 msgid "19"
 msgstr "１９"
 
-msgid "1st"
-msgstr "第1名"
-
 msgid "2 Han"
 msgstr "2番"
 
 msgid "258"
 msgstr "２５８"
-
-msgid "2nd"
-msgstr "第2名"
 
 msgid "3 Han"
 msgstr "3番"
@@ -58,9 +52,6 @@ msgstr "３６９"
 msgid "37"
 msgstr "３７"
 
-msgid "3rd"
-msgstr "第3名"
-
 msgid "4 Han"
 msgstr "4番"
 
@@ -69,9 +60,6 @@ msgstr "４５６"
 
 msgid "46"
 msgstr "４６"
-
-msgid "4th"
-msgstr "第4名"
 
 msgid "5 Han"
 msgstr "5番"
@@ -1609,6 +1597,9 @@ msgstr "下注"
 msgid "called %{call}"
 msgstr "叫了%{call}"
 
+msgid "called %{call} on"
+msgstr "叫了%{call}"
+
 msgid "called %{call} on %{tile}"
 msgstr "在%{tile}叫了%{call}"
 
@@ -1689,3 +1680,111 @@ msgstr "西"
 
 msgid "worth"
 msgstr "价值"
+
+msgid "Game ended after three winners"
+msgstr "游戏在三位胜者产生后结束"
+
+msgid "Game ended by abortive draw: (%{draw_name})"
+msgstr "游戏因流局结束：(%{draw_name})"
+
+msgid "Game ended by exhaustive draw"
+msgstr "游戏因荒牌流局结束"
+
+msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr "未听支付三倍（池田华菜）"
+
+msgid "Possible hand:"
+msgstr "可能的手牌："
+
+msgid "Running joker solver..."
+msgstr "正在运行万能牌解析器..."
+
+msgid "Using joker assignment"
+msgstr "使用万能牌分配"
+
+msgid "Viewing log for a"
+msgstr "查看日志："
+
+msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
+msgstr "用自摸支付下注而非赔付（江崎仁美）"
+
+msgid "chose the following cards: %{choices}"
+msgstr "选择了以下牌：%{choices}"
+
+msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku:"
+msgstr "听牌 %{hand} 时放铳，若用 %{tile} 和牌，通过以下役种至少得 %{score} 分："
+
+msgid "declared the following yaku:"
+msgstr "声明了以下役种："
+
+msgid "gains double points for wareme"
+msgstr "因破目获得双倍点数"
+
+msgid "game"
+msgstr "游戏"
+
+msgid "gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"
+msgstr "在他人一発后和牌获得双倍点数（辻垣内沙智华）"
+
+msgid "has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"
+msgstr "听牌价值高于放铳价值，因此逆转支付（不含立直棒）（江崎仁美）"
+
+msgid "has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"
+msgstr "听牌价值低于或等于放铳价值，因此按常规支付（江崎仁美）"
+
+msgid "has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "自摸支付每1000点赌注减少300点（%{delta}）（本内成香）"
+
+msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "自摸支付每1000点赌注增加300点（%{delta}）（本内成香）"
+
+msgid "is considering declaring a player's hand dead"
+msgstr "正在考虑宣布玩家手牌为死亡状态"
+
+msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
+msgstr "处于默听状态，免疫自摸支付（愛宕洋榎）"
+
+msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
+msgstr "计分时视为庄家（龙门渕透华）"
+
+msgid "loses double points for wareme"
+msgstr "因破目失去双倍点数"
+
+msgid "pays double (Yae Kobashiri)"
+msgstr "支付双倍（小走八重）"
+
+msgid "pays double for tsumo (Maya Yukiko)"
+msgstr "自摸时支付双倍（真屋由希子）"
+
+msgid "pays double since the wall ends on their side (Kanbara Satomi)"
+msgstr "因牌墙在其侧结束而支付双倍（蒲原智美）"
+
+msgid "pays double to their duelist (Megan Davin)"
+msgstr "向其决斗对象支付双倍（梅根·达文）"
+
+msgid "pays half due to dealing in with their voided suit (Yoshitome Miharu)"
+msgstr "因放铳于其空花色而支付半数（吉留未晴）"
+
+msgid "revealed tiles %{tiles}"
+msgstr "展示了牌：%{tiles}"
+
+msgid "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"
+msgstr "保持零分，并从第一名获得8000点（花田煌）"
+
+msgid "swapped out a joker from the call %{call}"
+msgstr "从鸣牌 %{call} 中替换了一张万能牌"
+
+msgid "takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)"
+msgstr "收取桌上所有赌注（%{pot}）并每位玩家支付1500点（妮莉·维沙拉泽）"
+
+msgid "with hand"
+msgstr "手牌："
+
+msgid "with mods"
+msgstr "带修改："
+
+msgid "with yaku:"
+msgstr "役种："
+
+msgid "→"
+msgstr "→"

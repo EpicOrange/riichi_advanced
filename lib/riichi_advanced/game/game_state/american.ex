@@ -331,7 +331,7 @@ defmodule RiichiAdvanced.GameState.American do
     no_one_is_declaring = Enum.all?(state.players, fn {_seat, player} -> not Enum.any?(["declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"], fn status -> status in player.status end) end)
     dead_seat_has_calls = not Enum.empty?(state.players[dead_seat].calls)
     if past_charleston and we_are_not_dead and they_are_not_dead and no_one_is_declaring and dead_seat_has_calls do
-      push_message(state, [%{text: "Player #{player_name(state, seat)} is considering declaring a player's hand dead"}])
+      push_message(state, player_prefix(state, seat) ++ [%{text: "is considering declaring a player's hand dead"}])
       declare_dead_status = case Utils.get_relative_seat(seat, dead_seat) do
         :shimocha -> "declare_shimocha_dead"
         :toimen -> "declare_toimen_dead"

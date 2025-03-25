@@ -7,27 +7,11 @@ defmodule RiichiAdvancedWeb.GettextHints do
     t_noop("true")
     t_noop("false")
 
-    # messages
-    t_noop("Welcome to Riichi Advanced!")
-    t_noop("Player")
-    t_noop("Player %{nickname} joined as %{seat}")
+    # seat values
     t_noop("east")
     t_noop("south")
     t_noop("west")
     t_noop("north")
-    t_noop("exited")
-    t_noop("called %{call} on %{tile} with hand %{hand}")
-    t_noop("discarded %{tile}")
-    t_noop("from hand")
-    t_noop("scored a %{score}-point hand")
-    t_noop("declared riichi")
-    t_noop("called %{call}")
-    t_noop("called %{call} on %{tile} with %{choice}")
-    t_noop("called %{call} on %{tile}")
-    t_noop("Entered room %{room_code} for variant %{ruleset}")
-    t_noop("Entered a %{ruleset} game, room code %{room_code} with mods %{mods}")
-    t_noop("Entered a %{ruleset} game, room code %{room_code}")
-    t_noop("Entered lobby for variant %{ruleset}")
 
     # rules tabs
     t_noop("Rules")

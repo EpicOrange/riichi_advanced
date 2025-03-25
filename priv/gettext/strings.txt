@@ -69,24 +69,21 @@ Source
 Discord
 Logs
 Enter room code:
-1st
-2nd
-3rd
-4th
 Loading...
 Back
 Copy log
 true
 false
-Welcome to Riichi Advanced!
-Player
-Player %{nickname} joined as %{seat}
 east
 south
 west
 north
+Welcome to Riichi Advanced!
+Player
+Player %{nickname} joined as %{seat}
 exited
 called %{call} on %{tile} with hand %{hand}
+with yaku:
 discarded %{tile}
 from hand
 scored a %{score}-point hand
@@ -98,6 +95,38 @@ Entered room %{room_code} for variant %{ruleset}
 Entered a %{ruleset} game, room code %{room_code} with mods %{mods}
 Entered a %{ruleset} game, room code %{room_code}
 Entered lobby for variant %{ruleset}
+Game ended by exhaustive draw
+Game ended by abortive draw: (%{draw_name})
+Game ended after three winners
+declared the following yaku:
+swapped out a joker from the call %{call}
+revealed tiles %{tiles}
+is considering declaring a player's hand dead
+Possible hand:
+chose the following cards: %{choices}
+stays at zero points, and receives 8000 points from first place (Hanada Kirame)
+gains double points for wareme
+pays double to their duelist (Megan Davin)
+pays double (Yae Kobashiri)
+pays double since the wall ends on their side (Kanbara Satomi)
+gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
+pays half due to dealing in with their voided suit (Yoshitome Miharu)
+has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
+has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
+is damaten, and immune to tsumo payments (Atago Hiroe)
+pays double for tsumo (Maya Yukiko)
+pays double (Yae Kobashiri)
+pays double to their duelist (Megan Davin)
+pays double since the wall ends on their side (Kanbara Satomi)
+gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
+loses double points for wareme
+has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)
+has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)
+takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)
+bets their tsumo payment instead of paying out (Ezaki Hitomi)
+pays double since the wall ends on their side (Kanbara Satomi)
+pays double since the wall ends on their side (Kanbara Satomi)
+is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)
 Rules
 1 Han
 2 Han
@@ -690,3 +719,57 @@ sou
 bet
 drawless
 is
+scored a %{score}-point hand
+with yaku:
+/
+Game ended by exhaustive draw
+Game ended by abortive draw: (%{draw_name})
+Game ended after three winners
+Player
+Player %{nickname} joined as %{seat}
+Log ID:
+exited
+stays at zero points, and receives 8000 points from first place (Hanada Kirame)
+gains double points for wareme
+pays double to their duelist (Megan Davin)
+pays double (Yae Kobashiri)
+pays double since the wall ends on their side (Kanbara Satomi)
+gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
+pays half due to dealing in with their voided suit (Yoshitome Miharu)
+has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
+has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
+is damaten, and immune to tsumo payments (Atago Hiroe)
+pays double for tsumo (Maya Yukiko)
+pays double (Yae Kobashiri)
+pays double to their duelist (Megan Davin)
+pays double since the wall ends on their side (Kanbara Satomi)
+gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
+loses double points for wareme
+dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)
+has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)
+has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)
+takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)
+bets their tsumo payment instead of paying out (Ezaki Hitomi)
+pays double since the wall ends on their side (Kanbara Satomi)
+pays double since the wall ends on their side (Kanbara Satomi)
+Noten payments are tripled (Ikeda Kana)
+,
+→
+Using joker assignment
+is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)
+Running joker solver...
+chose the following cards: %{choices}
+discarded %{tile}
+from hand
+declared the following yaku:
+swapped out a joker from the call %{call}
+revealed tiles %{tiles}
+is considering declaring a player's hand dead
+Possible hand:
+called %{call} on %{tile} with hand %{hand}
+called %{call} on
+with hand
+Welcome to Riichi Advanced!
+Viewing log for a
+game
+with mods

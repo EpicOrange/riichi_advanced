@@ -124,9 +124,11 @@ defmodule RiichiAdvanced.GameState.Saki do
     state = if Rules.has_key?(state.rules_ref, "after_saki_start") do
       for {seat, _player} <- state.players, reduce: state do
         state ->
-          push_message(state, [
-            %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
-            %{bold: true, text: "#{Enum.map(state.players[seat].status, &@card_names[&1]) |> Enum.reject(& &1 == nil) |> Enum.join(", ")}"}
+          choices = Enum.map(state.players[seat].status, &@card_names[&1])
+          |> Enum.reject(& &1 == nil)
+          |> Enum.join(", ")
+          push_message(state, player_prefix(state, seat) ++ [
+            %{text: "chose the following cards: %{choices}", vars: %{choices: {:text, choices, %{bold: true}}}}
           ])
           Actions.trigger_event(state, "after_saki_start", %{seat: seat})
       end

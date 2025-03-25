@@ -923,9 +923,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def declare_yaku(state, seat) do
-    prefix = %{text: "Player #{player_name(state, seat)} declared the following yaku:"}
     yaku_string = Enum.map(state.players[seat].declared_yaku, fn yaku -> %{bold: true, text: yaku} end)
-    push_message(state, [prefix] ++ yaku_string)
+    push_message(state, player_prefix(state, seat) ++ [%{text: "declared the following yaku:"}] ++ yaku_string)
     state
   end
 
@@ -1155,9 +1154,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         new_call = with {call_type, call_content} <- call do
           {call_type, List.update_at(call_content, call_joker_index, &Utils.replace_base_tile(&1, tile))}
         end
-        push_message(state, [
-          %{text: "Player #{player_name(state, context.seat)} swapped out a joker from the call"}
-        ] ++ Utils.ph(call_tiles))
+        push_message(state, player_prefix(state, context.seat) ++ [
+          %{text: "swapped out a joker from the call %{call}", vars: %{call: {:hand, call_tiles}}}
+        ])
 
         # replace hand tile with joker
         hand_length = length(state.players[hand_seat].hand)
@@ -1472,9 +1471,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "scry_all"        ->
         num = Enum.at(opts, 0, 1)
         state = update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: num } end)
-        push_message(state, [
-          %{text: "Player #{player_name(state, context.seat)} revealed "}
-        ] ++ Utils.ph(get_scryed_tiles(state, context.seat)))
+        push_message(state, player_prefix(state, context.seat) ++ [
+          %{text: "revealed tiles %{tiles}", vars: %{tiles: {:hand, get_scryed_tiles(state, context.seat)}}}
+        ])
         state
       "clear_scry"      -> update_all_players(state, fn _seat, player -> %Player{ player | num_scryed_tiles: 0 } end)
       "choose_yaku"     -> declare_yaku(state, context.seat)

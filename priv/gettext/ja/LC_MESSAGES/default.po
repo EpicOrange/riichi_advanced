@@ -32,6 +32,12 @@ msgstr "（再接続？）"
 msgid "(with AI)"
 msgstr "（AI搭載）"
 
+msgid ","
+msgstr "、"
+
+msgid "/"
+msgstr "/"
+
 msgid "1 Han"
 msgstr "1飜"
 
@@ -56,17 +62,11 @@ msgstr "リーチのある16枚麻雀です。"
 msgid "19"
 msgstr "１９"
 
-msgid "1st"
-msgstr "1位"
-
 msgid "2 Han"
 msgstr "2飜"
 
 msgid "258"
 msgstr "２５８"
-
-msgid "2nd"
-msgstr "2位"
 
 msgid "3 Han"
 msgstr "3飜"
@@ -80,9 +80,6 @@ msgstr "３６９"
 msgid "37"
 msgstr "３７"
 
-msgid "3rd"
-msgstr "3位"
-
 msgid "4 Han"
 msgstr "4飜"
 
@@ -91,9 +88,6 @@ msgstr "４５６"
 
 msgid "46"
 msgstr "４６"
-
-msgid "4th"
-msgstr "4位"
 
 msgid "5 Han"
 msgstr "5飜"
@@ -598,6 +592,15 @@ msgstr "福州"
 
 msgid "Galaxy Mahjong"
 msgstr "銀河麻将"
+
+msgid "Game ended after three winners"
+msgstr "三人の勝者が決まったためゲーム終了"
+
+msgid "Game ended by abortive draw: (%{draw_name})"
+msgstr "流局によりゲーム終了: (%{draw_name})"
+
+msgid "Game ended by exhaustive draw"
+msgstr "流局によりゲーム終了"
 
 msgid "German"
 msgstr "ドイツ語"
@@ -1106,6 +1109,9 @@ msgstr "リーチ中の暗槓禁止"
 msgid "No description provided."
 msgstr "説明なし。"
 
+msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr "ノーテン罰符が3倍 (池田佳菜)"
+
 msgid "Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000"
 msgstr "各プレイヤーの初期点数。Configタブに「initial_score: 100000」と入力しても設定可能。"
 
@@ -1165,6 +1171,9 @@ msgstr "ポン"
 
 msgid "Pong"
 msgstr "ポン"
+
+msgid "Possible hand:"
+msgstr "可能な手:"
 
 msgid "Private"
 msgstr "プライベート"
@@ -1243,6 +1252,9 @@ msgstr "ルールセット"
 
 msgid "Rulesets"
 msgstr "ルールセット"
+
+msgid "Running joker solver..."
+msgstr "ジョーカー解決中..."
 
 msgid "Ryandoukou"
 msgstr "両同刻"
@@ -1556,6 +1568,9 @@ msgstr "ウマ"
 msgid "Ura"
 msgstr "裏ドラ"
 
+msgid "Using joker assignment"
+msgstr "ジョーカー割り当てを使用"
+
 msgid "Uumensai"
 msgstr "五門斉"
 
@@ -1576,6 +1591,9 @@ msgstr "ベトナムジョーカー"
 
 msgid "View log"
 msgstr "ログを見る"
+
+msgid "Viewing log for a"
+msgstr "ログを表示中:"
 
 msgid "Visayan"
 msgstr "ビサヤ人"
@@ -1628,7 +1646,14 @@ msgstr "最小"
 msgid "bet"
 msgstr "ベット"
 
+msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
+msgstr "ツモ支払いの代わりにベットする (江崎仁美)"
+
 msgid "called %{call}"
+msgstr "が%{call}"
+
+#, fuzzy
+msgid "called %{call} on"
 msgstr "が%{call}"
 
 msgid "called %{call} on %{tile}"
@@ -1640,8 +1665,17 @@ msgstr "が%{tile}で%{call}（選択：%{choice}）"
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr "が%{tile}で%{call}をしました（手牌：%{hand}）"
 
+msgid "chose the following cards: %{choices}"
+msgstr "次の牌を選択: %{choices}"
+
+msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)"
+msgstr "手牌 %{hand} で聴牌状態で放銃。%{tile} で和了した場合、以下の役で最低 %{score} 点:"
+
 msgid "declared riichi"
 msgstr "がリーチを宣言"
+
+msgid "declared the following yaku:"
+msgstr "以下の役を宣言:"
 
 msgid "discarded %{tile}"
 msgstr "が%{tile}を打"
@@ -1661,11 +1695,44 @@ msgstr "なし"
 msgid "from hand"
 msgstr "手出し"
 
+msgid "gains double points for wareme"
+msgstr "割れ目で2倍得点"
+
+msgid "game"
+msgstr "ゲーム"
+
+msgid "gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"
+msgstr "他人の一発後に和了で2倍得点 (辻ヶ戸爽葉)"
+
 msgid "goal"
 msgstr "目標点"
 
+msgid "has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"
+msgstr "聴牌価値が放銃価値より高いため、支払いが逆転 (リーチ棒除く) (江崎仁美)"
+
+msgid "has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"
+msgstr "聴牌価値が放銃価値以下なので通常通り支払い (江崎仁美)"
+
+msgid "has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "ツモ支払いが1000点ベットごとに300点減少 (%{delta}) (元内成香)"
+
+msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "ツモ支払いが1000点ベットごとに300点増加 (%{delta}) (元内成香)"
+
 msgid "is"
 msgstr "である"
+
+msgid "is considering declaring a player's hand dead"
+msgstr "手牌の死亡を宣言検討中"
+
+msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
+msgstr "黙聴状態でツモ支払い免除 (愛宕洋恵)"
+
+msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
+msgstr "得点計算上親として扱われる (龍門淵透華)"
+
+msgid "loses double points for wareme"
+msgstr "割れ目で2倍失点"
 
 msgid "man"
 msgstr "萬"
@@ -1676,6 +1743,21 @@ msgstr "最小"
 msgid "north"
 msgstr "北"
 
+msgid "pays double (Yae Kobashiri)"
+msgstr "2倍支払い (小走やえ)"
+
+msgid "pays double for tsumo (Maya Yukiko)"
+msgstr "ツモで2倍支払い (摩耶幸子)"
+
+msgid "pays double since the wall ends on their side (Kanbara Satomi)"
+msgstr "山が自側で終了するため2倍支払い (神原聡美)"
+
+msgid "pays double to their duelist (Megan Davin)"
+msgstr "対戦相手に2倍支払い (メーガン・ダヴィン)"
+
+msgid "pays half due to dealing in with their voided suit (Yoshitome Miharu)"
+msgstr "捨て牌で放銃したため半額支払い (吉留美陽)"
+
 msgid "penalty"
 msgstr "罰符"
 
@@ -1684,6 +1766,9 @@ msgstr "筒"
 
 msgid "points"
 msgstr "点数"
+
+msgid "revealed tiles %{tiles}"
+msgstr "公開された牌: %{tiles}"
 
 msgid "scored a %{score}-point hand"
 msgstr "が%{score}点の和了"
@@ -1697,6 +1782,15 @@ msgstr "南"
 msgid "start_indicators"
 msgstr "初期ドラ枚数"
 
+msgid "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"
+msgstr "0点で留まり、1位から8000点獲得 (花田煌め)"
+
+msgid "swapped out a joker from the call %{call}"
+msgstr "鳴き %{call} からジョーカーを交換"
+
+msgid "takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)"
+msgstr "テーブルの全ベット (%{pot}) を獲得し、各プレイヤーから1500点受け取る (ネリー・ヴィルサラーゼ)"
+
 msgid "tenhou.net"
 msgstr "tenhou.net"
 
@@ -1709,5 +1803,17 @@ msgstr "点数"
 msgid "west"
 msgstr "西"
 
+msgid "with hand"
+msgstr "手牌:"
+
+msgid "with mods"
+msgstr "修正付き:"
+
+msgid "with yaku:"
+msgstr "役:"
+
 msgid "worth"
 msgstr "点数"
+
+msgid "→"
+msgstr "→"
