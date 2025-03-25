@@ -52,10 +52,10 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = Log.log(state, seat, :discard, %{tile: Utils.strip_attrs(tile), tsumogiri: tsumogiri, riichi: riichi})
 
     if not quiet do
-      push_message(state, [
-        %{text: "Player #{player_name(state, seat)} discarded"},
-        Utils.pt(tile)
+      push_message(state, player_prefix(state, seat) ++ [
+        %{text: "discarded %{tile}", vars: %{tile: {:tile, tile}}},
       ] ++ if tsumogiri do [] else [%{text: "from hand"}] end)
+
       click_sounds = [
         "/audio/tile1.mp3",
         "/audio/tile2.mp3",

@@ -746,16 +746,17 @@ defmodule RiichiAdvanced.GameState do
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
-    # Push message about pressing the win button
-    push_message(state, [
-      %{text: "Player #{player_name(state, seat)} called "},
-      %{bold: true, text: "#{String.downcase(winner.winning_tile_text)}"},
-      %{text: " on "},
-      Utils.pt(winner.winning_tile),
-      %{text: " with hand "}
-    ] ++ Utils.ph(state.players[seat].hand |> Utils.sort_tiles())
-      ++ Utils.ph(state.players[seat].calls |> Enum.flat_map(&Utils.call_to_tiles/1))
-    )
+    hand = (state.players[seat].hand ++ Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1))
+    |> Utils.sort_tiles()
+
+    push_message(state, player_prefix(state, seat) ++ [%{
+      text: "called %{call} on %{tile} with hand %{hand}",
+      vars: %{
+        call: "#{String.downcase(winner.winning_tile_text)}",
+        tile: {:tile, winner.winning_tile},
+        hand: {:hand, hand}
+      }
+    }])
 
     state = if Rules.get(state.rules_ref, "bloody_end", false) do
       # only end the round once there are three winners; otherwise, continue
@@ -1258,6 +1259,14 @@ defmodule RiichiAdvanced.GameState do
     "#{Riichi.get_seat_wind(state.kyoku, seat, state.available_seats)} #{state.players[seat].nickname}"
   end
 
+  def player_prefix(state, seat) do
+    [
+      %{text: "Player"},
+      %{text: Riichi.get_seat_wind(state.kyoku, seat, state.available_seats) |> Atom.to_string()},
+      %{bold: true, text: state.players[seat].nickname}
+    ]
+  end
+
   def push_message(state, message) do
     if not state.log_loading_mode do
       for {_seat, messages_states} <- state.messages_states, messages_states != nil, {_id, messages_state} <- messages_states do
@@ -1347,7 +1356,7 @@ defmodule RiichiAdvanced.GameState do
     if not spectator do
       # tell everyone else if it's a new player
       if Map.get(state, seat, nil) == nil do
-        push_message(state, %{text: "Player %{nickname} joined as %{seat}", vars: %{"nickname": nickname, "seat": Atom.to_string(seat)}})
+        push_message(state, %{text: "Player %{nickname} joined as %{seat}", vars: %{nickname: nickname || "", seat: Atom.to_string(seat)}})
       end
 
       # initialize the player
@@ -1436,7 +1445,7 @@ defmodule RiichiAdvanced.GameState do
           state = Map.put(state, seat, nil)
           state = put_in(state.messages_states[seat], nil)
           # tell everyone else
-          push_message(state, %{text: "Player #{player_name(state, seat)} exited"})
+          push_message(state, player_prefix(state, seat) ++ [%{text: "exited"}])
           state
         [_id | ids]  ->
           state = Map.put(state, seat, ids)

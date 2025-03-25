@@ -23,6 +23,21 @@ msgstr ""
 msgid "(with AI)"
 msgstr ""
 
+msgid "1 Han"
+msgstr ""
+
+msgid "2 Han"
+msgstr ""
+
+msgid "3 Han"
+msgstr ""
+
+msgid "4 Han"
+msgstr ""
+
+msgid "5 Han"
+msgstr ""
+
 msgid "About"
 msgstr ""
 
@@ -99,6 +114,10 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
+#, fuzzy
+msgid "Player"
+msgstr ""
+
 msgid "Player %{nickname} joined as %{seat}"
 msgstr ""
 
@@ -106,6 +125,10 @@ msgid "Randomize mods"
 msgstr ""
 
 msgid "Reset mods to default"
+msgstr ""
+
+#, fuzzy
+msgid "Rules"
 msgstr ""
 
 msgid "Ruleset"
@@ -159,7 +182,22 @@ msgstr ""
 msgid "Welcome to Riichi Advanced!"
 msgstr ""
 
+msgid "Yakuman"
+msgstr ""
+
+msgid "called %{call} on %{tile} with hand %{hand}"
+msgstr ""
+
+msgid "discarded %{tile}"
+msgstr ""
+
 msgid "east"
+msgstr ""
+
+msgid "exited"
+msgstr ""
+
+msgid "from hand"
 msgstr ""
 
 msgid "game, room code"

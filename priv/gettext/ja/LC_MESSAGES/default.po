@@ -32,6 +32,21 @@ msgstr "（再接続？）"
 msgid "(with AI)"
 msgstr "（AI搭載）"
 
+msgid "1 Han"
+msgstr "1飜"
+
+msgid "2 Han"
+msgstr "2飜"
+
+msgid "3 Han"
+msgstr "3飜"
+
+msgid "4 Han"
+msgstr "4飜"
+
+msgid "5 Han"
+msgstr "5飜"
+
 msgid "About"
 msgstr "について"
 
@@ -107,6 +122,9 @@ msgstr "ニックネーム（任意）"
 msgid "Play"
 msgstr "プレー"
 
+msgid "Player"
+msgstr "プレイヤ"
+
 msgid "Player %{nickname} joined as %{seat}"
 msgstr "プレイヤー%{nickname}が%{seat}として参加しました"
 
@@ -115,6 +133,9 @@ msgstr "MODのランダム化"
 
 msgid "Reset mods to default"
 msgstr "MODをデフォルトに戻す"
+
+msgid "Rules"
+msgstr "ルール"
 
 msgid "Ruleset"
 msgstr "ルールセット"
@@ -167,8 +188,23 @@ msgstr "ログを見る"
 msgid "Welcome to Riichi Advanced!"
 msgstr "ようこそRiichi Advancedへ！"
 
+msgid "Yakuman"
+msgstr "役満"
+
+msgid "called %{call} on %{tile} with hand %{hand}"
+msgstr "が%{tile}で%{call}をしました（手牌：%{hand}）"
+
+msgid "discarded %{tile}"
+msgstr "が%{tile}を打"
+
 msgid "east"
 msgstr "東"
+
+msgid "exited"
+msgstr "退場"
+
+msgid "from hand"
+msgstr "手出し"
 
 msgid "game, room code"
 msgstr "ゲーム、ルームコード"
