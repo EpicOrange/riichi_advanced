@@ -2988,7 +2988,7 @@ div#container > div.index-bottom-buttons > button {
 div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
-  height: calc(7.5 * var(--tile-size));
+  height: calc(7 * var(--tile-size));
   top: calc(50% - 1.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
@@ -3010,6 +3010,8 @@ div#container > form > div.form-error {
 }
 div#container > form > input.nickname-input {
   margin: calc(0.5 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  height: 1em;
   margin-bottom: 0;
 }
 div#container > form > div.ruleset-selection {
@@ -3045,16 +3047,16 @@ div#container > form > ul.beta-testers {
 }
 div#container > form > ul.beta-testers > li { padding: 0.1em 0.25em; }
 div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
-
 /* enter buttons for index and lobby */
-div.enter-buttons {
+div#container > form > div.enter-buttons {
   width: 100%;
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
   margin-top: calc(0.5 * var(--tile-size));
 }
-div.enter-buttons > button {
+div#container > form > div.enter-buttons > button {
+  font-size: calc(0.6 * var(--tile-size));
   flex-grow: 1;
 }
 
