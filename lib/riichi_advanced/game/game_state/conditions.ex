@@ -38,7 +38,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             for winning_tile <- get_winning_tiles(state, context.seat, context.win_source) do
               {hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}
             end
-          "last_call" -> [{hand, calls ++ [get_last_call(state)]}]
+          "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
           "second_last_visible_discard" ->

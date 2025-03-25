@@ -21,7 +21,11 @@ defmodule RiichiAdvanced.GameState.Actions do
   def trigger_event(state, event_name, context) do
     case Rules.get(state.rules_ref, event_name) do
       nil -> state
-      event -> run_actions(state, event["actions"], context)
+      event ->
+        if Debug.debug_actions() do
+          IO.puts("Triggered event #{event_name}: running #{inspect(event["actions"])}")
+        end
+        run_actions(state, event["actions"], context)
     end
   end
 
