@@ -367,4 +367,13 @@ defmodule RiichiAdvanced.Constants do
 
   def tutorials, do: @tutorials
 
+  @langs [
+    {"English", "en"},
+    {"日本語", "ja"},
+    {"简体中文", "zh_CN"},
+    {"繁體中文", "zh_TW"}
+  ]
+
+  def langs, do: @langs
+
 end

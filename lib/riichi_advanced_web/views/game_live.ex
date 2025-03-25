@@ -178,6 +178,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         game_state={@game_state}
         seat={seat}
         relative_seat={Utils.get_relative_seat(@seat, seat)}
+        lang={@lang}
         big_text={player.big_text}
         :if={player.big_text != ""}
         :for={{seat, player} <- @state.players} />

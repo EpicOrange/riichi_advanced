@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.MenuButtonsComponent do
+  alias RiichiAdvanced.Constants
   use RiichiAdvancedWeb, :live_component
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   import RiichiAdvancedWeb.Translations
@@ -15,7 +16,7 @@ defmodule RiichiAdvancedWeb.MenuButtonsComponent do
       <button class="language-dropdown-container">
         <form class="language-dropdown" phx-change="change_language">
           <select id="language-dropdown" name="lang">
-            <%= for {name, code} <- [{"English", "en"}, {"日本語", "ja"}] do %>
+            <%= for {name, code} <- Constants.langs() do %>
               <%= if code == @lang do %>
                 <option value={code} selected><%= name %></option>
               <% else %>

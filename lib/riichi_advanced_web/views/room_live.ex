@@ -167,7 +167,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
                 </div>
                 <%= for {mod_id, mod} <- Enum.sort_by(mods, fn {_mod_name, mod} -> mod.index end) do %>
                   <input id={mod_id} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod_id} phx-value-enabled={if @state.mods[mod_id].enabled do "true" else "false" end} checked={@state.mods[mod_id].enabled}>
-                  <label for={mod_id} title={dt(@lang, mod.desc)} data-name={mod.name} tabindex={mod.index} class={["mod", mod.class]}>
+                  <label for={mod_id} title={dt(@lang, mod.desc)} data-name={dt(@lang, mod.name)} tabindex={mod.index} class={["mod", mod.class]}>
                     <%= dt(@lang, mod.name) %>
                     <%= if mod.enabled and not Enum.empty?(mod.config) do %>
                       |
