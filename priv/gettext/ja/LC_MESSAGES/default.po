@@ -35,14 +35,26 @@ msgstr "（AI搭載）"
 msgid "1 Han"
 msgstr "1飜"
 
+msgid "1st"
+msgstr "1位"
+
 msgid "2 Han"
 msgstr "2飜"
+
+msgid "2nd"
+msgstr "2位"
 
 msgid "3 Han"
 msgstr "3飜"
 
+msgid "3rd"
+msgstr "3位"
+
 msgid "4 Han"
 msgstr "4飜"
+
+msgid "4th"
+msgstr "4位"
 
 msgid "5 Han"
 msgstr "5飜"
@@ -50,14 +62,89 @@ msgstr "5飜"
 msgid "About"
 msgstr "について"
 
+msgid "Aka"
+msgstr "赤ドラ"
+
+msgid "American Civil War"
+msgstr "南北戦争"
+
+msgid "Ankan"
+msgstr "暗槓"
+
 msgid "Back"
 msgstr "戻る"
+
+msgid "Baiman"
+msgstr "倍満"
+
+msgid "Benikujaku"
+msgstr "紅孔雀"
+
+msgid "Blue Tunnel"
+msgstr "青ノ洞門"
 
 msgid "Button"
 msgstr "ボタン"
 
 msgid "Cancel"
 msgstr "キャンセル"
+
+msgid "Chankan"
+msgstr "槍槓"
+
+msgid "Chanta"
+msgstr "混全帯幺九"
+
+msgid "Chii"
+msgstr "吃"
+
+msgid "Chiihou"
+msgstr "地和"
+
+msgid "Chiishin Uushii"
+msgstr "七星無靠"
+
+msgid "Chiitoitsu"
+msgstr "七対子"
+
+msgid "Chinitsu"
+msgstr "清一色"
+
+msgid "Chinpeikou"
+msgstr "清盃口"
+
+msgid "Chinroutou"
+msgstr "清老頭"
+
+msgid "Chinryuusou"
+msgstr "清緑色"
+
+msgid "Chintanfon"
+msgstr "清断紅"
+
+msgid "Choupaikou"
+msgstr "跳牌刻"
+
+msgid "Chousangen"
+msgstr "超三元"
+
+msgid "Chousankou"
+msgstr "頂三刻"
+
+msgid "Chousuushii"
+msgstr "超四喜"
+
+msgid "Chow"
+msgstr "吃"
+
+msgid "Chun"
+msgstr "役牌 中"
+
+msgid "Chuupin Raoyui"
+msgstr "九筒撈魚"
+
+msgid "Chuurenpoutou"
+msgstr "九蓮宝燈"
 
 msgid "Clear"
 msgstr "クリア"
@@ -80,8 +167,41 @@ msgstr "自分だけのチュートリアルを作ろう！"
 msgid "Created by Dani in their spare time."
 msgstr "ダニが余暇を利用して制作した。"
 
+msgid "Daichikurin"
+msgstr "大竹林"
+
+msgid "Daichisei"
+msgstr "大七星"
+
+msgid "Daisangen"
+msgstr "大三元"
+
+msgid "Daisharin"
+msgstr "大車輪"
+
+msgid "Daisuurin"
+msgstr "大数隣"
+
+msgid "Daisuushii"
+msgstr "大四喜"
+
+msgid "Discard"
+msgstr "ロン"
+
 msgid "Discord"
 msgstr "ディスコード"
+
+msgid "Dora"
+msgstr "ドラ"
+
+msgid "Double Riichi"
+msgstr "ダブル立直"
+
+msgid "Double Ron"
+msgstr "二人あがり"
+
+msgid "Draw"
+msgstr "ツモ"
 
 msgid "Empty"
 msgstr "空"
@@ -95,11 +215,119 @@ msgstr "参加しました"
 msgid "For more information, drop a message in our Discord!"
 msgstr "詳しくはDiscordにメッセージをください！"
 
+msgid "Fu"
+msgstr "符"
+
+msgid "Fuukasetsugetsu"
+msgstr "風花雪月"
+
+msgid "Golden Gate Bridge"
+msgstr "金門橋"
+
+msgid "Haitei"
+msgstr "海底摸月"
+
+msgid "Haku"
+msgstr "役牌 白"
+
+msgid "Han"
+msgstr "飜"
+
+msgid "Haneman"
+msgstr "跳満"
+
+msgid "Hatsu"
+msgstr "役牌 發"
+
 msgid "Hit the back button to return to the main menu."
 msgstr "戻るボタンでメインメニューに戻る。"
 
+msgid "Honitsu"
+msgstr "混一色"
+
+msgid "Honroutou"
+msgstr "混老頭"
+
+msgid "Houtei"
+msgstr "河底撈魚"
+
+msgid "Hyakuman Goku"
+msgstr "百万石"
+
+msgid "Iipeikou"
+msgstr "一盃口"
+
+msgid "Iipin Mouyue"
+msgstr "一筒摸月"
+
+msgid "Ippatsu"
+msgstr "一発"
+
+msgid "Ishino Uenimo Sannan"
+msgstr "石の上にも三年"
+
+msgid "Isshoku Sanjun"
+msgstr "一色三順"
+
+msgid "Isshoku Yonjun"
+msgstr "一色四順"
+
+msgid "Ittsu"
+msgstr "一気通貫"
+
+msgid "Ittsu Chanta"
+msgstr "一気通貫全帯么九"
+
+msgid "Ittsu Junchan"
+msgstr "純一気通貫全帯么九"
+
 msgid "Join private room"
 msgstr "個室に入る"
+
+msgid "Junchan"
+msgstr "純全帯幺九"
+
+msgid "Junsei Chuurenpoutou"
+msgstr "純正九蓮宝燈"
+
+msgid "Junsei Ryuuiisou"
+msgstr "純正緑一色"
+
+msgid "Kachoufuugetsu"
+msgstr "花鳥風月"
+
+msgid "Kan"
+msgstr "槓"
+
+msgid "Kanburi"
+msgstr "槓振り"
+
+msgid "Kazoe Yakuman"
+msgstr "数え役満"
+
+msgid "Kinkei Dokuritsu"
+msgstr "金鶏独立"
+
+msgid "Kokuiisou"
+msgstr "黒一色"
+
+msgid "Kokushi Musou"
+msgstr "国士無双"
+
+msgid "Kokushi Musou Juusan Menmachi"
+msgstr "国士無双十三面待ち"
+
+msgid "Kong"
+msgstr "槓"
+
+msgid "Kouitten"
+msgstr "紅一点"
+
+msgid "Kouittenrin"
+msgstr "紅一点輪"
+
+msgid "Kyandonhou"
+msgstr "鏡同和"
 
 msgid "Learn"
 msgstr "学ぶ"
@@ -113,11 +341,35 @@ msgstr "ログID："
 msgid "Logs"
 msgstr "ログ"
 
+msgid "Mah Jongg"
+msgstr "和がり"
+
+msgid "Maneshi Mangan"
+msgstr "真似満貫"
+
+msgid "Mangan"
+msgstr "満貫"
+
 msgid "Mods"
 msgstr "MOD"
 
 msgid "Nickname (optional)"
 msgstr "ニックネーム（任意）"
+
+msgid "Open Double Riichi"
+msgstr "開ダブル立直"
+
+msgid "Open Riichi"
+msgstr "開立直"
+
+msgid "Paarenchan"
+msgstr "八連荘"
+
+msgid "Pei"
+msgstr "抜きドラ"
+
+msgid "Pinfu"
+msgstr "平和"
 
 msgid "Play"
 msgstr "プレー"
@@ -128,11 +380,38 @@ msgstr "プレイヤ"
 msgid "Player %{nickname} joined as %{seat}"
 msgstr "プレイヤー%{nickname}が%{seat}として参加しました"
 
+msgid "Pon"
+msgstr "ポン"
+
+msgid "Pong"
+msgstr "ポン"
+
+msgid "Pung"
+msgstr "ポン"
+
 msgid "Randomize mods"
 msgstr "MODのランダム化"
 
+msgid "Renhou"
+msgstr "人和"
+
+msgid "Renkaihou"
+msgstr "連開花"
+
 msgid "Reset mods to default"
 msgstr "MODをデフォルトに戻す"
+
+msgid "Riichi"
+msgstr "立直"
+
+msgid "Rinshan"
+msgstr "嶺上開花"
+
+msgid "Ron"
+msgstr "ロン"
+
+msgid "Round Wind"
+msgstr "場風"
 
 msgid "Rules"
 msgstr "ルール"
@@ -142,6 +421,93 @@ msgstr "ルールセット"
 
 msgid "Rulesets"
 msgstr "ルールセット"
+
+msgid "Ryandoukou"
+msgstr "両同刻"
+
+msgid "Ryanpeikou"
+msgstr "二盃口"
+
+msgid "Ryanzou Chankan"
+msgstr "二索槍槓"
+
+msgid "Ryuuiisou"
+msgstr "緑一色"
+
+msgid "Ryuuiisourin"
+msgstr "緑一色輪"
+
+msgid "Ryuukyoku"
+msgstr "流局"
+
+msgid "Sanankou"
+msgstr "三暗刻"
+
+msgid "Sanbaiman"
+msgstr "三倍満"
+
+msgid "Sanchahou"
+msgstr "三家和"
+
+msgid "Sangen Chiitoitsu"
+msgstr "三元七対子"
+
+msgid "Sankantsu"
+msgstr "三槓子"
+
+msgid "Sanpuukou"
+msgstr "三風刻"
+
+msgid "Sanrenkou"
+msgstr "三連刻"
+
+msgid "Sanshoku"
+msgstr "三色同順"
+
+msgid "Sanshoku Choupaikou"
+msgstr "三色跳牌刻"
+
+msgid "Sanshoku Chousankou"
+msgstr "三色頂三刻"
+
+msgid "Sanshoku Doukou"
+msgstr "三色同刻"
+
+msgid "Sanshoku Ittsu"
+msgstr "混一気通貫"
+
+msgid "Sanshoku Sujipaikou"
+msgstr "三色筋牌刻"
+
+msgid "Seat Wind"
+msgstr "自風"
+
+msgid "Shanron Chonchu"
+msgstr "双竜争珠"
+
+msgid "Shiiaru Raotai"
+msgstr "十二落抬"
+
+msgid "Shiisanpuutaa"
+msgstr "十三不塔"
+
+msgid "Shiisanuushi"
+msgstr "十三無靠"
+
+msgid "Shouchikurin"
+msgstr "小竹林"
+
+msgid "Shousangen"
+msgstr "小三元"
+
+msgid "Shousharin"
+msgstr "小車輪"
+
+msgid "Shousuurin"
+msgstr "小数隣"
+
+msgid "Shousuushii"
+msgstr "小四喜"
 
 msgid "Show wall"
 msgstr "壁を見せる"
@@ -167,17 +533,89 @@ msgstr "試合開始"
 msgid "Starting game..."
 msgstr "試合開始..."
 
+msgid "Sujipaikou"
+msgstr "筋牌刻"
+
+msgid "Suuankou"
+msgstr "四暗刻"
+
+msgid "Suuankou Tanki"
+msgstr "四暗刻単騎"
+
+msgid "Suuchoupaikou"
+msgstr "四跳牌刻"
+
+msgid "Suukantsu"
+msgstr "四槓子"
+
+msgid "Suurenkou"
+msgstr "四連刻"
+
+msgid "Suushi Chiitoitsu"
+msgstr "四喜七対子"
+
+msgid "Suuzuukou"
+msgstr "四字刻"
+
+msgid "Tanfonhou"
+msgstr "断紅和"
+
+msgid "Tanyao"
+msgstr "断幺九"
+
+msgid "Tenhou"
+msgstr "天和"
+
 msgid "To be implemented:"
 msgstr "実施予定："
 
 msgid "Toggle all"
 msgstr "すべてトグル"
 
+msgid "Tohoku Expressway"
+msgstr "東北自動車道"
+
+msgid "Tohoku Shinkansen"
+msgstr "東北新幹線"
+
+msgid "Toitoi"
+msgstr "対々和"
+
+msgid "Touchao Hanchanshue"
+msgstr "独釣寒江雪"
+
+msgid "Toukanhou"
+msgstr "頭槓和"
+
+msgid "Triple Ron"
+msgstr "三家和"
+
+msgid "Tsubame Gaeshi"
+msgstr "燕返し"
+
+msgid "Tsumo"
+msgstr "門前清自摸和"
+
+msgid "Tsuuiisou"
+msgstr "字一色"
+
 msgid "Tutorial"
 msgstr "チュートリアル"
 
 msgid "Tutorials for ruleset:"
 msgstr "ルールセットのチュートリアル："
+
+msgid "Ura"
+msgstr "裏ドラ"
+
+msgid "Uumensai"
+msgstr "五門斉"
+
+msgid "Uupin Kaihou"
+msgstr "五筒開花"
+
+msgid "Uushin Tsuukan"
+msgstr "五心通貫"
 
 msgid "Variant:"
 msgstr "バリアント："
@@ -191,8 +629,20 @@ msgstr "ようこそRiichi Advancedへ！"
 msgid "Yakuman"
 msgstr "役満"
 
+msgid "called %{call}"
+msgstr "が%{call}"
+
+msgid "called %{call} on %{tile}"
+msgstr "が%{tile}で%{call}"
+
+msgid "called %{call} on %{tile} with %{choice}"
+msgstr "が%{tile}で%{call}（選択：%{choice}）"
+
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr "が%{tile}で%{call}をしました（手牌：%{hand}）"
+
+msgid "declared riichi"
+msgstr "がリーチを宣言"
 
 msgid "discarded %{tile}"
 msgstr "が%{tile}を打"
@@ -211,6 +661,9 @@ msgstr "ゲーム、ルームコード"
 
 msgid "north"
 msgstr "北"
+
+msgid "scored a %{score}-point hand"
+msgstr "が%{score}点の和了"
 
 msgid "south"
 msgstr "南"

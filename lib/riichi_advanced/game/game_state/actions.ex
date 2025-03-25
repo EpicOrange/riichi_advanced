@@ -353,24 +353,27 @@ defmodule RiichiAdvanced.GameState.Actions do
       # messages and log
       cond do
         hidden ->
-          push_message(state, [
-            %{text: "Player #{player_name(state, seat)} called "},
+          push_message(state, player_prefix(state, seat) ++ [
+            %{text: "called"},
             %{bold: true, text: "#{call_name}"}
           ])
         called_tile != nil ->
-          push_message(state, [
-            %{text: "Player #{player_name(state, seat)} called "},
-            %{bold: true, text: "#{call_name}"},
-            %{text: " on "},
-            Utils.pt(called_tile),
-            %{text: " with "}
-          ] ++ Utils.ph(call_choice))
+          push_message(state, player_prefix(state, seat) ++ [%{
+            text: "called %{call} on %{tile} with %{choice}",
+            vars: %{
+              call: {:text, call_name, %{bold: true}},
+              tile: {:tile, called_tile},
+              choice: {:hand, call_choice}
+            }
+          }])
         true ->
-          push_message(state, [
-            %{text: "Player #{player_name(state, seat)} called "},
-            %{bold: true, text: "#{call_name}"},
-            %{text: " on "}
-          ] ++ Utils.ph(call_choice))
+          push_message(state, player_prefix(state, seat) ++ [%{
+            text: "called %{call} on %{tile}",
+            vars: %{
+              call: {:text, call_name, %{bold: true}},
+              tile: {:tile, called_tile}
+            }
+          }])
       end
       # play sound
       click_sounds = [
@@ -959,7 +962,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "push_message"          ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
         # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
-        push_message(state, Enum.map(["Player #{player_name(state, context.seat)}", message], &%{text: &1}))
+        push_message(state, player_prefix(state, context.seat) ++ [%{text: message}])
         state
       "push_system_message"   ->
         message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))

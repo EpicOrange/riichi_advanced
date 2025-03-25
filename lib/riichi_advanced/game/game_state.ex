@@ -752,7 +752,7 @@ defmodule RiichiAdvanced.GameState do
     push_message(state, player_prefix(state, seat) ++ [%{
       text: "called %{call} on %{tile} with hand %{hand}",
       vars: %{
-        call: "#{String.downcase(winner.winning_tile_text)}",
+        call: {:text, "#{String.downcase(winner.winning_tile_text)}", %{bold: true}},
         tile: {:tile, winner.winning_tile},
         hand: {:hand, hand}
       }
@@ -768,8 +768,8 @@ defmodule RiichiAdvanced.GameState do
 
     # Push message about yaku and score
     winner = state.winners[seat]
-    push_message(state, [
-      %{text: "Player #{player_name(state, seat)} scored a #{winner.displayed_score}-point hand"},
+    push_message(state, player_prefix(state, seat) ++ [
+      %{text: "scored a %{score}-point hand", vars: %{score: winner.displayed_score}},
     ] ++ if not Enum.empty?(winner.yaku) or not Enum.empty?(winner.yaku2) do
            [%{text: "with"}]
            ++ Utils.print_yaku(winner.yaku)

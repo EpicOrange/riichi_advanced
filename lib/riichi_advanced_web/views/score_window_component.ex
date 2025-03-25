@@ -1,6 +1,7 @@
 defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
+  import RiichiAdvancedWeb.Translations
 
   def mount(socket) do
     {:ok, socket}
@@ -10,14 +11,14 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     placements = assigns.players
       |> Enum.map(fn {seat, player} -> {seat, player.score + Map.get(assigns.delta_scores, seat, 0)} end)
       |> Enum.sort_by(fn {_seat, score} -> -score end)
-      |> Enum.zip(["1st", "2nd", "3rd", "4th"])
+      |> Enum.zip([t(assigns.lang, "1st"), t(assigns.lang, "2nd"), t(assigns.lang, "3rd"), t(assigns.lang, "4th")])
       |> Map.new(fn {{seat, _score}, place} -> {seat, place} end)
     assigns = Map.put(assigns, :placements, placements)
     ~H"""
     <div class={["game-modal-container", @visible_screen != :scores && "inactive"]}>
       <div class="game-modal game-modal-hide">
         <%= if not Enum.empty?(@delta_scores) do %>
-          <div class="delta-score-reason"><%= @delta_scores_reason %></div>
+          <div class="delta-score-reason"><%= dt(@lang, @delta_scores_reason) %></div>
           <div class="delta-score self" :if={@seat in @available_seats}>
             <%= if @delta_scores[@seat] != 0 do %>
               <div class="initial"><%= @players[@seat].score %></div>

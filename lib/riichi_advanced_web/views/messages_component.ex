@@ -50,16 +50,18 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
                 {:hand, hand} ->
                   acc = acc ++ [Map.merge(message, %{text: current, vars: current_vars})] ++ Utils.ph(hand)
                   {acc, "", %{}}
-                val when is_binary(val) ->
+                {:text, text, attrs} ->
+                  acc = acc ++ [Map.merge(message, %{text: current, vars: current_vars}), Map.put(attrs, :text, text)]
+                  {acc, "", %{}}
+                val ->
                   current = current <> "%{#{var_name}}"
-                  current_vars = Map.put(current_vars, String.to_existing_atom(var_name), val)
+                  current_vars = Map.put(current_vars, String.to_existing_atom(var_name), to_string(val))
                   {acc, current, current_vars}
               end
             segment -> {acc, current <> segment, current_vars}
           end
         end
         messages ++ [Map.merge(message, %{text: current, vars: current_vars})]
-        |> IO.inspect()
     end
   end
 end

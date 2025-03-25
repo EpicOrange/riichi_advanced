@@ -26,13 +26,25 @@ msgstr ""
 msgid "1 Han"
 msgstr ""
 
+msgid "1st"
+msgstr ""
+
 msgid "2 Han"
+msgstr ""
+
+msgid "2nd"
 msgstr ""
 
 msgid "3 Han"
 msgstr ""
 
+msgid "3rd"
+msgstr ""
+
 msgid "4 Han"
+msgstr ""
+
+msgid "4th"
 msgstr ""
 
 msgid "5 Han"
@@ -41,13 +53,91 @@ msgstr ""
 msgid "About"
 msgstr ""
 
+#, fuzzy
+msgid "Aka"
+msgstr ""
+
+msgid "American Civil War"
+msgstr ""
+
+msgid "Ankan"
+msgstr ""
+
 msgid "Back"
+msgstr ""
+
+msgid "Baiman"
+msgstr ""
+
+msgid "Benikujaku"
+msgstr ""
+
+msgid "Blue Tunnel"
 msgstr ""
 
 msgid "Button"
 msgstr ""
 
 msgid "Cancel"
+msgstr ""
+
+msgid "Chankan"
+msgstr ""
+
+msgid "Chanta"
+msgstr ""
+
+msgid "Chii"
+msgstr ""
+
+#, fuzzy
+msgid "Chiihou"
+msgstr ""
+
+msgid "Chiishin Uushii"
+msgstr ""
+
+msgid "Chiitoitsu"
+msgstr ""
+
+#, fuzzy
+msgid "Chinitsu"
+msgstr ""
+
+msgid "Chinpeikou"
+msgstr ""
+
+msgid "Chinroutou"
+msgstr ""
+
+msgid "Chinryuusou"
+msgstr ""
+
+msgid "Chintanfon"
+msgstr ""
+
+msgid "Choupaikou"
+msgstr ""
+
+msgid "Chousangen"
+msgstr ""
+
+msgid "Chousankou"
+msgstr ""
+
+msgid "Chousuushii"
+msgstr ""
+
+msgid "Chow"
+msgstr ""
+
+msgid "Chun"
+msgstr ""
+
+msgid "Chuupin Raoyui"
+msgstr ""
+
+msgid "Chuurenpoutou"
 msgstr ""
 
 msgid "Clear"
@@ -71,7 +161,44 @@ msgstr ""
 msgid "Created by Dani in their spare time."
 msgstr ""
 
+msgid "Daichikurin"
+msgstr ""
+
+msgid "Daichisei"
+msgstr ""
+
+msgid "Daisangen"
+msgstr ""
+
+msgid "Daisharin"
+msgstr ""
+
+msgid "Daisuurin"
+msgstr ""
+
+msgid "Daisuushii"
+msgstr ""
+
+#, fuzzy
+msgid "Discard"
+msgstr ""
+
 msgid "Discord"
+msgstr ""
+
+#, fuzzy
+msgid "Dora"
+msgstr ""
+
+#, fuzzy
+msgid "Double Riichi"
+msgstr ""
+
+#, fuzzy
+msgid "Double Ron"
+msgstr ""
+
+msgid "Draw"
 msgstr ""
 
 msgid "Empty"
@@ -87,10 +214,119 @@ msgstr ""
 msgid "For more information, drop a message in our Discord!"
 msgstr ""
 
+msgid "Fu"
+msgstr ""
+
+msgid "Fuukasetsugetsu"
+msgstr ""
+
+msgid "Golden Gate Bridge"
+msgstr ""
+
+msgid "Haitei"
+msgstr ""
+
+msgid "Haku"
+msgstr ""
+
+msgid "Han"
+msgstr ""
+
+msgid "Haneman"
+msgstr ""
+
+msgid "Hatsu"
+msgstr ""
+
 msgid "Hit the back button to return to the main menu."
 msgstr ""
 
+msgid "Honitsu"
+msgstr ""
+
+msgid "Honroutou"
+msgstr ""
+
+msgid "Houtei"
+msgstr ""
+
+msgid "Hyakuman Goku"
+msgstr ""
+
+msgid "Iipeikou"
+msgstr ""
+
+msgid "Iipin Mouyue"
+msgstr ""
+
+msgid "Ippatsu"
+msgstr ""
+
+msgid "Ishino Uenimo Sannan"
+msgstr ""
+
+msgid "Isshoku Sanjun"
+msgstr ""
+
+msgid "Isshoku Yonjun"
+msgstr ""
+
+msgid "Ittsu"
+msgstr ""
+
+msgid "Ittsu Chanta"
+msgstr ""
+
+msgid "Ittsu Junchan"
+msgstr ""
+
 msgid "Join private room"
+msgstr ""
+
+msgid "Junchan"
+msgstr ""
+
+msgid "Junsei Chuurenpoutou"
+msgstr ""
+
+msgid "Junsei Ryuuiisou"
+msgstr ""
+
+msgid "Kachoufuugetsu"
+msgstr ""
+
+msgid "Kan"
+msgstr ""
+
+#, fuzzy
+msgid "Kanburi"
+msgstr ""
+
+msgid "Kazoe Yakuman"
+msgstr ""
+
+msgid "Kinkei Dokuritsu"
+msgstr ""
+
+msgid "Kokuiisou"
+msgstr ""
+
+msgid "Kokushi Musou"
+msgstr ""
+
+msgid "Kokushi Musou Juusan Menmachi"
+msgstr ""
+
+msgid "Kong"
+msgstr ""
+
+msgid "Kouitten"
+msgstr ""
+
+msgid "Kouittenrin"
+msgstr ""
+
+msgid "Kyandonhou"
 msgstr ""
 
 msgid "Learn"
@@ -105,10 +341,35 @@ msgstr ""
 msgid "Logs"
 msgstr ""
 
+msgid "Mah Jongg"
+msgstr ""
+
+msgid "Maneshi Mangan"
+msgstr ""
+
+msgid "Mangan"
+msgstr ""
+
 msgid "Mods"
 msgstr ""
 
 msgid "Nickname (optional)"
+msgstr ""
+
+#, fuzzy
+msgid "Open Double Riichi"
+msgstr ""
+
+msgid "Open Riichi"
+msgstr ""
+
+msgid "Paarenchan"
+msgstr ""
+
+msgid "Pei"
+msgstr ""
+
+msgid "Pinfu"
 msgstr ""
 
 msgid "Play"
@@ -121,10 +382,37 @@ msgstr ""
 msgid "Player %{nickname} joined as %{seat}"
 msgstr ""
 
+msgid "Pon"
+msgstr ""
+
+msgid "Pong"
+msgstr ""
+
+msgid "Pung"
+msgstr ""
+
 msgid "Randomize mods"
 msgstr ""
 
+msgid "Renhou"
+msgstr ""
+
+msgid "Renkaihou"
+msgstr ""
+
 msgid "Reset mods to default"
+msgstr ""
+
+msgid "Riichi"
+msgstr ""
+
+msgid "Rinshan"
+msgstr ""
+
+msgid "Ron"
+msgstr ""
+
+msgid "Round Wind"
 msgstr ""
 
 #, fuzzy
@@ -135,6 +423,96 @@ msgid "Ruleset"
 msgstr ""
 
 msgid "Rulesets"
+msgstr ""
+
+msgid "Ryandoukou"
+msgstr ""
+
+msgid "Ryanpeikou"
+msgstr ""
+
+msgid "Ryanzou Chankan"
+msgstr ""
+
+msgid "Ryuuiisou"
+msgstr ""
+
+msgid "Ryuuiisourin"
+msgstr ""
+
+msgid "Ryuukyoku"
+msgstr ""
+
+#, fuzzy
+msgid "Sanankou"
+msgstr ""
+
+msgid "Sanbaiman"
+msgstr ""
+
+#, fuzzy
+msgid "Sanchahou"
+msgstr ""
+
+msgid "Sangen Chiitoitsu"
+msgstr ""
+
+msgid "Sankantsu"
+msgstr ""
+
+msgid "Sanpuukou"
+msgstr ""
+
+msgid "Sanrenkou"
+msgstr ""
+
+#, fuzzy
+msgid "Sanshoku"
+msgstr ""
+
+msgid "Sanshoku Choupaikou"
+msgstr ""
+
+msgid "Sanshoku Chousankou"
+msgstr ""
+
+msgid "Sanshoku Doukou"
+msgstr ""
+
+msgid "Sanshoku Ittsu"
+msgstr ""
+
+msgid "Sanshoku Sujipaikou"
+msgstr ""
+
+msgid "Seat Wind"
+msgstr ""
+
+msgid "Shanron Chonchu"
+msgstr ""
+
+msgid "Shiiaru Raotai"
+msgstr ""
+
+msgid "Shiisanpuutaa"
+msgstr ""
+
+msgid "Shiisanuushi"
+msgstr ""
+
+msgid "Shouchikurin"
+msgstr ""
+
+msgid "Shousangen"
+msgstr ""
+
+msgid "Shousharin"
+msgstr ""
+
+msgid "Shousuurin"
+msgstr ""
+
+msgid "Shousuushii"
 msgstr ""
 
 msgid "Show wall"
@@ -161,16 +539,88 @@ msgstr ""
 msgid "Starting game..."
 msgstr ""
 
+msgid "Sujipaikou"
+msgstr ""
+
+msgid "Suuankou"
+msgstr ""
+
+msgid "Suuankou Tanki"
+msgstr ""
+
+msgid "Suuchoupaikou"
+msgstr ""
+
+msgid "Suukantsu"
+msgstr ""
+
+msgid "Suurenkou"
+msgstr ""
+
+msgid "Suushi Chiitoitsu"
+msgstr ""
+
+msgid "Suuzuukou"
+msgstr ""
+
+msgid "Tanfonhou"
+msgstr ""
+
+msgid "Tanyao"
+msgstr ""
+
+msgid "Tenhou"
+msgstr ""
+
 msgid "To be implemented:"
 msgstr ""
 
 msgid "Toggle all"
 msgstr ""
 
+msgid "Tohoku Expressway"
+msgstr ""
+
+msgid "Tohoku Shinkansen"
+msgstr ""
+
+msgid "Toitoi"
+msgstr ""
+
+msgid "Touchao Hanchanshue"
+msgstr ""
+
+msgid "Toukanhou"
+msgstr ""
+
+msgid "Triple Ron"
+msgstr ""
+
+msgid "Tsubame Gaeshi"
+msgstr ""
+
+msgid "Tsumo"
+msgstr ""
+
+msgid "Tsuuiisou"
+msgstr ""
+
 msgid "Tutorial"
 msgstr ""
 
 msgid "Tutorials for ruleset:"
+msgstr ""
+
+msgid "Ura"
+msgstr ""
+
+msgid "Uumensai"
+msgstr ""
+
+msgid "Uupin Kaihou"
+msgstr ""
+
+msgid "Uushin Tsuukan"
 msgstr ""
 
 msgid "Variant:"
@@ -185,7 +635,21 @@ msgstr ""
 msgid "Yakuman"
 msgstr ""
 
+msgid "called %{call}"
+msgstr ""
+
+#, fuzzy
+msgid "called %{call} on %{tile}"
+msgstr ""
+
+#, fuzzy
+msgid "called %{call} on %{tile} with %{choice}"
+msgstr ""
+
 msgid "called %{call} on %{tile} with hand %{hand}"
+msgstr ""
+
+msgid "declared riichi"
 msgstr ""
 
 msgid "discarded %{tile}"
@@ -204,6 +668,9 @@ msgid "game, room code"
 msgstr ""
 
 msgid "north"
+msgstr ""
+
+msgid "scored a %{score}-point hand"
 msgstr ""
 
 msgid "south"
